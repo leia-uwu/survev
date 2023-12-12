@@ -1,0 +1,6 @@
+# Public directories
+client/
+reference/
+
+# Compiled source
+dist/
