@@ -1,8 +1,8 @@
 export const RoleDefs = {
     leader: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0, dead: !0 },
+        announce: true,
+        killFeed: { assign: true, dead: true },
         sound: {
             assign: "leader_assigned_01",
             dead: "leader_dead_01"
@@ -15,15 +15,15 @@ export const RoleDefs = {
     },
     lieutenant: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "lt_assigned_01" },
         perks: ["firepower"]
     },
     medic: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "medic_assigned_01" },
         mapIcon: {
             alive: "player-medic.img",
@@ -33,50 +33,50 @@ export const RoleDefs = {
     },
     marksman: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "marksman_assigned_01" },
         perks: ["targeting"]
     },
     recon: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "recon_assigned_01" },
         perks: ["small_arms"]
     },
     grenadier: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "grenadier_assigned_01" },
         perks: ["flak_jacket"]
     },
     bugler: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "bugler_assigned_01" },
         perks: ["inspiration", "final_bugle"]
     },
     last_man: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0 },
+        announce: true,
+        killFeed: { assign: true },
         sound: { assign: "last_man_assigned_01" },
         perks: ["steelskin", "splinter"]
     },
     woods_king: {
         type: "role",
-        announce: !1,
-        killFeed: { dead: !0, color: "#12ff00" },
+        announce: false,
+        killFeed: { dead: true, color: "#12ff00" },
         sound: { dead: "leader_dead_01" },
         perks: ["gotw", "windwalk"]
     },
     kill_leader: {
         type: "role",
-        announce: !1,
-        killFeed: { assign: !0, dead: !0, color: "#ff8400" },
+        announce: false,
+        killFeed: { assign: true, dead: true, color: "#ff8400" },
         sound: {
             assign: "leader_assigned_01",
             dead: "leader_dead_01"
@@ -84,8 +84,8 @@ export const RoleDefs = {
     },
     the_hunted: {
         type: "role",
-        announce: !0,
-        killFeed: { assign: !0, dead: !0, color: "#ff8400" },
+        announce: true,
+        killFeed: { assign: true, dead: true, color: "#ff8400" },
         sound: {
             assign: "leader_assigned_01",
             dead: "leader_dead_01"
@@ -93,14 +93,14 @@ export const RoleDefs = {
         mapIndicator: {
             sprite: "player-the-hunted.img",
             tint: 16745472,
-            pulse: !0,
+            pulse: true,
             pulseTint: 16745472
         },
         perks: ["hunted"]
     },
     healer: {
         type: "role",
-        announce: !1,
+        announce: false,
         sound: { assign: "spawn_01" },
         perks: ["field_medic", "windwalk"],
         visorImg: {
@@ -112,7 +112,7 @@ export const RoleDefs = {
     },
     tank: {
         type: "role",
-        announce: !1,
+        announce: false,
         sound: { assign: "spawn_01" },
         perks: ["steelskin", "endless_ammo"],
         visorImg: {
@@ -124,7 +124,7 @@ export const RoleDefs = {
     },
     sniper: {
         type: "role",
-        announce: !1,
+        announce: false,
         sound: { assign: "spawn_01" },
         perks: ["chambered", "takedown"],
         visorImg: {
@@ -136,7 +136,7 @@ export const RoleDefs = {
     },
     scout: {
         type: "role",
-        announce: !1,
+        announce: false,
         sound: { assign: "spawn_01" },
         perks: ["small_arms", "tree_climbing"],
         visorImg: {
@@ -148,7 +148,7 @@ export const RoleDefs = {
     },
     demo: {
         type: "role",
-        announce: !1,
+        announce: false,
         sound: { assign: "spawn_01" },
         perks: ["fabricate", "flak_jacket"],
         visorImg: {
@@ -160,7 +160,7 @@ export const RoleDefs = {
     },
     assault: {
         type: "role",
-        announce: !1,
+        announce: false,
         sound: { assign: "spawn_01" },
         perks: ["firepower", "bonus_assault"],
         visorImg: {

@@ -1,13 +1,13 @@
 import { type WebSocket } from "uWebSockets.js";
 import { type Game } from "../game";
-import { gameConfig } from "../gameConfig";
+import { GameConfig } from "../gameConfig";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type PlayerInfo, type ActivePlayerData, UpdateMsg } from "../net/updateMsg";
 import { collider } from "../utils/collider";
 import { type Vec2, v2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
 import { type PlayerContainer } from "../server";
-import { MsgStream, MsgType } from "../net/net";
+import { type Msg, MsgStream } from "../net/net";
 import { coldet } from "../utils/coldet";
 import { InputMsg } from "../net/inputMsg";
 import { JoinedMsg } from "../net/joinedMsg";
@@ -16,18 +16,20 @@ import { GameObjectDefs } from "../defs/gameObjectDefs";
 import { Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { AliveCountMsg } from "../net/aliveCountMsg";
-import { GameObjectDef } from "../defs/objectsTypings";
-import math from "../utils/math";
+import { math } from "../utils/math";
+import { GameOverMsg } from "../net/gameOverMsg";
+import { KillMsg } from "../net/KillMsg";
+import { DeadBody } from "./DeadBody";
+import { type GunDef, type MeleeDef, type ThrowableDef } from "../defs/objectsTypings";
+import { MeleeDefs } from "../defs/meleeDefs";
 
 type PlayerFullData = ObjectsFullData[ObjectType.Player];
 type PlayerPartialData = ObjectsPartialData[ObjectType.Player];
 
 export class Player extends GameObject implements PlayerFullData, PlayerPartialData, ActivePlayerData, PlayerInfo {
-    override readonly kind = ObjectType.Player;
+    override readonly __type = ObjectType.Player;
 
-    get bounds() {
-        return collider.createCircle(this.pos, gameConfig.player.maxVisualRadius);
-    }
+    bounds = collider.toAabb(collider.createCircle(v2.create(0, 0), GameConfig.player.maxVisualRadius));
 
     scale = 1;
 
@@ -36,10 +38,13 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     }
 
     get rad(): number {
-        return gameConfig.player.radius * this.scale;
+        return GameConfig.player.radius * this.scale;
     }
 
     dir = v2.create(0, 0);
+
+    posOld = v2.create(0, 0);
+    dirOld = v2.create(0, 0);
 
     dirty = {
         health: true,
@@ -52,7 +57,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         activeId: true
     };
 
-    private _health: number = gameConfig.player.health;
+    private _health: number = GameConfig.player.health;
 
     get health(): number {
         return this._health;
@@ -61,74 +66,91 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     set health(health: number) {
         if (this._health === health) return;
         this._health = health;
-        this._health = math.clamp(this._health, 0, gameConfig.player.health);
+        this._health = math.clamp(this._health, 0, GameConfig.player.health);
         this.dirty.health = true;
     }
 
     boost = 0;
 
     zoomDirty = true;
-    zoom = gameConfig.scopeZoomRadius.desktop["1xscope"];
+    zoom: number;
 
     action!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
-    scope = "1xscope";
+    scope = "4xscope";
 
     inventory: Record<string, number> = {};
 
-    curWeapIdx = 2;
-    weapons: Array<{ type: string, ammo: number }> = [
-        {
-            type: "",
-            ammo: 0
-        },
-        {
-            type: "",
-            ammo: 0
-        },
-        {
-            type: "pan",
-            ammo: 0
-        },
-        {
-            type: "",
-            ammo: 0
+    get curWeapIdx() {
+        return this.weaponManager.curWeapIdx;
+    }
+
+    set curWeapIdx(idx: number) {
+        if (this.weapons[idx].type === "" || idx === this.weaponManager.curWeapIdx) return;
+
+        for (const timeout of this.weaponManager.timeouts) {
+            clearTimeout(timeout);
         }
-    ];
+        this.animType = GameConfig.Anim.None;
+
+        this.weaponManager.curWeapIdx = idx;
+        this.setDirty();
+        this.dirty.weapons = true;
+    }
+
+    get weapons() {
+        return this.weaponManager.weapons;
+    }
+
+    get activeWeapon() {
+        return this.weaponManager.activeWeapon;
+    }
 
     spectatorCountDirty = false;
     spectatorCount = 0;
 
     outfit = "outfitBase";
     pack = "backpack00";
-    helmet = "";
-    chest = "";
-
-    get activeWeapon() {
-        return this.weapons[this.curWeapIdx].type;
-    }
+    helmet = "helmet02";
+    chest = "chest02";
 
     layer = 0;
     dead = false;
     downed = false;
 
-    animType: number = gameConfig.Anim.None;
+    indoors = false;
+
+    private _animType: number = GameConfig.Anim.None;
+    get animType() {
+        return this._animType;
+    }
+
+    set animType(anim: number) {
+        if (this._animType === anim) return;
+        this._animType = anim;
+        this.animSeq++;
+        this.setDirty();
+    }
+
     animSeq = 0;
 
-    actionType: number = gameConfig.Action.None;
+    actionType: number = GameConfig.Action.None;
     actionSeq = 0;
 
-    wearingPan = false;
+    get wearingPan(): boolean {
+        return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
+    }
+
     healEffect = false;
     frozen = false;
     frozenOri = 0;
 
     get hasHaste(): boolean {
-        return this.hasteType !== gameConfig.HasteType.None;
+        return this.hasteType !== GameConfig.HasteType.None;
     }
 
-    hasteType = gameConfig.HasteType.None;
+    hasteType: number = GameConfig.HasteType.None;
     hasteSeq = 0;
 
     actionItem = "";
@@ -139,11 +161,44 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
     role = "";
 
+    perks: Array<{ type: string, droppable: boolean }> = [];
+
+    perkTypes: string[] = [];
+
+    addPerk(type: string, droppable = false) {
+        this.perks.push({
+            type,
+            droppable
+        });
+        this.perkTypes.push(type);
+    }
+
+    removePerk(type: string): void {
+        const idx = this.perks.findIndex(perk => perk.type === type);
+        this.perks.splice(idx, 1);
+        this.perkTypes.splice(this.perkTypes.indexOf(type));
+    }
+
     get hasPerks(): boolean {
         return this.perks.length > 0;
     }
 
-    perks: Array<{ type: string, droppable: boolean }> = [];
+    hasPerk(type: string) {
+        return this.perkTypes.includes(type);
+    }
+
+    hasActivePan() {
+        return (
+            this.wearingPan ||
+            (this.activeWeapon === "pan" &&
+                this.animType !== GameConfig.Anim.Melee)
+        );
+    }
+
+    getPanSegment() {
+        const type = this.wearingPan ? "unequipped" : "equipped";
+        return MeleeDefs.pan.reflectSurface[type];
+    }
 
     name = "Player";
 
@@ -153,29 +208,40 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: [
-            "emote_happyface",
-            "emote_happyface",
-            "emote_happyface",
-            "emote_happyface"
-        ]
+        emotes: [...GameConfig.defaultEmoteLoadout]
     };
 
     damageTaken = 0;
     damageDealt = 0;
+    joinedTime = 0;
+    kills = 0;
+
+    get timeAlive(): number {
+        return (Date.now() - this.joinedTime) / 1000;
+    }
 
     socket: WebSocket<PlayerContainer>;
 
+    msgsToSend: Msg[] = [];
+
     weaponManager = new WeaponManager(this);
+    recoilTicker = 0;
 
     constructor(game: Game, pos: Vec2, socket: WebSocket<PlayerContainer>) {
         super(game, pos);
         this.socket = socket;
 
-        for (const item in gameConfig.bagSizes) {
+        this.groupId = this.teamId = this.game.nextGroupId++;
+
+        for (const item in GameConfig.bagSizes) {
             this.inventory[item] = 0;
         }
         this.inventory[this.scope] = 1;
+
+        this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
+
+        // this.addPerk("splinter");
+        // this.addPerk("")
     }
 
     visibleObjects = new Set<GameObject>();
@@ -183,25 +249,43 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     lastInputMsg = new InputMsg();
 
     update(): void {
+        if (this.dead) return;
+
         const input = this.lastInputMsg;
 
-        const lastPos = v2.copy(this.pos);
+        this.posOld = v2.copy(this.pos);
 
         const movement = v2.create(0, 0);
-        if (input.moveUp) movement.y++;
-        if (input.moveDown) movement.y--;
-        if (input.moveLeft) movement.x--;
-        if (input.moveRight) movement.x++;
 
-        if (movement.x * movement.y !== 0) { // If the product is non-zero, then both of the components must be non-zero
-            movement.x *= Math.SQRT1_2;
-            movement.y *= Math.SQRT1_2;
+        if (this.lastInputMsg.touchMoveActive) {
+            movement.x = this.lastInputMsg.touchMoveDir.x;
+            movement.y = this.lastInputMsg.touchMoveDir.y;
+        } else {
+            if (input.moveUp) movement.y++;
+            if (input.moveDown) movement.y--;
+            if (input.moveLeft) movement.x--;
+            if (input.moveRight) movement.x++;
+
+            if (movement.x * movement.y !== 0) { // If the product is non-zero, then both of the components must be non-zero
+                movement.x *= Math.SQRT1_2;
+                movement.y *= Math.SQRT1_2;
+            }
         }
 
-        this.pos = v2.add(this.pos, v2.mul(movement, this.game.config.movementSpeed * this.game.dt));
+        let speed = this.game.config.movementSpeed;
 
-        for (let step = 0; step < 10; step++) {
-            let collided = false;
+        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+        if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
+            speed += weaponDef.speed.equip;
+        }
+
+        this.pos = v2.add(this.pos, v2.mul(movement, (speed / 1000) * this.game.dt));
+
+        let collided = true;
+        let step = 0;
+        while (step < 20 && collided) {
+            step++;
+            collided = false;
             const coll = collider.createCircle(this.pos, this.rad);
             const objs = this.game.grid.intersectCollider(coll);
 
@@ -211,22 +295,26 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                     util.sameLayer(obj.layer, this.layer) &&
                     !obj.dead
                 ) {
+                    const coll = collider.createCircle(this.pos, this.rad);
                     const collision = collider.intersect(coll, obj.collider);
                     if (collision) {
                         collided = true;
-                        this.pos = v2.sub(this.pos, v2.mul(collision.dir, collision.pen));
+                        this.pos = v2.sub(this.pos, v2.mul(collision.dir, collision.pen + 0.001));
                     }
                 }
             }
-            if (!collided) break;
         }
 
-        if (!v2.eq(this.pos, lastPos)) {
+        this.pos = math.v2Clamp(
+            this.pos,
+            v2.create(this.rad, this.rad),
+            v2.create(this.game.map.width - this.rad, this.game.map.height - this.rad)
+        );
+
+        if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
             this.game.grid.addObject(this);
         }
-
-        this.weaponManager.update();
     }
 
     private _firstUpdate = true;
@@ -239,7 +327,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             joinedMsg.playerId = this.id;
             joinedMsg.emotes = this.loadout.emotes;
             const joinedStream = new MsgStream(new ArrayBuffer(64));
-            joinedStream.serializeMsg(MsgType.Joined, joinedMsg);
+            joinedStream.serializeMsg(joinedMsg);
             this.sendData(joinedStream.getBuffer());
 
             const mapStream = this.game.map.mapStream.stream;
@@ -249,8 +337,8 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
         if (this.game.aliveCountDirty) {
             const aliveMsg = new AliveCountMsg();
-            aliveMsg.aliveCounts.push(this.game.livingPlayers.size);
-            msgStream.serializeMsg(MsgType.AliveCounts, aliveMsg);
+            aliveMsg.aliveCounts.push(this.game.aliveCount);
+            msgStream.serializeMsg(aliveMsg);
         }
 
         const updateMsg = new UpdateMsg();
@@ -290,19 +378,32 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         updateMsg.activePlayerData = this;
         updateMsg.playerInfos = this._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
-        msgStream.serializeMsg(MsgType.Update, updateMsg);
+        updateMsg.bullets = this.game.newBullets;
+        updateMsg.explosions = this.game.explosions;
+
+        msgStream.serializeMsg(updateMsg);
+
+        for (const msg of this.msgsToSend) {
+            msgStream.serializeMsg(msg);
+        }
+
+        this.msgsToSend.length = 0;
+
+        for (const msg of this.game.msgsToSend) {
+            msgStream.serializeMsg(msg);
+        }
 
         this.sendData(msgStream.getBuffer());
         this._firstUpdate = false;
     }
 
-    damage(amount: number, source: GameObject, sourceDef: GameObjectDef, damageType: number) {
+    damage(amount: number, source: GameObject, sourceType: string, damageType: number) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
         let finalDamage: number = amount;
 
-                const chest = GameObjectDefs[this.chest];
+        const chest = GameObjectDefs[this.chest];
         if (chest !== undefined && chest.type === "chest") {
             finalDamage -= finalDamage * chest.damageReduction;
         }
@@ -324,6 +425,36 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             this.actionType = this.actionSeq = 0;
             this.animType = this.animSeq = 0;
             this.setDirty();
+
+            this.game.aliveCountDirty = true;
+            this.game.livingPlayers.delete(this);
+
+            if (source instanceof Player) {
+                if (source !== this) source.kills++;
+
+                const killMsg = new KillMsg();
+                killMsg.damageType = damageType;
+                killMsg.itemSourceType = sourceType;
+                killMsg.targetId = this.id;
+                killMsg.killerId = source.id;
+                killMsg.killCreditId = source.id;
+                killMsg.killerKills = source.kills;
+                killMsg.killed = true;
+                killMsg.damageType = GameConfig.DamageType.Player;
+                this.game.msgsToSend.push(killMsg);
+            }
+
+            const gameOverMsg = new GameOverMsg();
+
+            gameOverMsg.teamRank = this.game.aliveCount;
+            gameOverMsg.playerStats = [{
+                ...this,
+                playerId: this.id
+            }];
+            this.msgsToSend.push(gameOverMsg);
+
+            const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
+            this.game.grid.addObject(deadBody);
         }
     }
 
@@ -332,6 +463,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         this.lastInputMsg = msg;
 
         if (!v2.eq(this.dir, msg.toMouseDir)) this.setPartDirty();
+        this.dirOld = v2.copy(this.dir);
         this.dir = msg.toMouseDir;
 
         if (msg.shootStart) {
@@ -340,6 +472,40 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         if (msg.shootHold) {
             this.weaponManager.shootHold();
         }
+
+        for (const input of msg.inputs) {
+            switch (input) {
+            case GameConfig.Input.EquipMelee:
+                this.curWeapIdx = 2;
+                this.setDirty();
+                break;
+            case GameConfig.Input.EquipPrimary:
+                if (this.weapons[0].type) {
+                    this.curWeapIdx = 0;
+                    this.setDirty();
+                }
+                break;
+            case GameConfig.Input.EquipSecondary:
+                if (this.weapons[1].type) {
+                    this.curWeapIdx = 1;
+                    this.setDirty();
+                }
+                break;
+            case GameConfig.Input.EquipThrowable:
+                if (this.weapons[3].type) {
+                    this.curWeapIdx = 3;
+                    this.setDirty();
+                }
+                break;
+            case GameConfig.Input.Interact:
+
+                break;
+            }
+        }
+    }
+
+    cancelAction(uh?: boolean): void {
+
     }
 
     sendData(buffer: ArrayBuffer): void {

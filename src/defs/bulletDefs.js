@@ -13,7 +13,7 @@ export const BaseDefs = {
         distance: 100,
         speed: 85,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -26,7 +26,7 @@ export const BaseDefs = {
         distance: 200,
         speed: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -39,7 +39,7 @@ export const BaseDefs = {
         distance: 175,
         speed: 108,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -52,7 +52,7 @@ export const BaseDefs = {
         distance: 300,
         speed: 110,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -65,7 +65,7 @@ export const BaseDefs = {
         distance: 175,
         speed: 104,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -78,8 +78,8 @@ export const BaseDefs = {
         distance: 185,
         speed: 106,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -92,7 +92,7 @@ export const BaseDefs = {
         distance: 175,
         speed: 156,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.12,
         tracerLength: 1
@@ -105,7 +105,7 @@ export const BaseDefs = {
         distance: 400,
         speed: 160,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.14,
         tracerLength: 1
@@ -118,7 +118,7 @@ export const BaseDefs = {
         distance: 500,
         speed: 178,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.16,
         tracerLength: 1
@@ -131,7 +131,7 @@ export const BaseDefs = {
         distance: 520,
         speed: 182,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.2,
         tracerLength: 1
@@ -144,8 +144,8 @@ export const BaseDefs = {
         distance: 300,
         speed: 136,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "308sub",
         tracerWidth: 0.2,
         tracerLength: 1
@@ -158,8 +158,8 @@ export const BaseDefs = {
         distance: 200,
         speed: 108,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "308sub",
         tracerWidth: 0.14,
         tracerLength: 1
@@ -172,7 +172,7 @@ export const BaseDefs = {
         distance: 400,
         speed: 125,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -185,7 +185,7 @@ export const BaseDefs = {
         distance: 425,
         speed: 127,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -198,7 +198,7 @@ export const BaseDefs = {
         distance: 400,
         speed: 130,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.12,
         tracerLength: 0.9
@@ -211,7 +211,7 @@ export const BaseDefs = {
         speed: 66,
         distance: 27,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.1,
         tracerLength: 0.8
@@ -224,7 +224,7 @@ export const BaseDefs = {
         speed: 88,
         distance: 45,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.075,
         tracerLength: 0.5
@@ -237,7 +237,7 @@ export const BaseDefs = {
         speed: 72,
         distance: 24,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "frag",
         tracerWidth: 0.1,
         tracerLength: 0.5,
@@ -251,7 +251,7 @@ export const BaseDefs = {
         speed: 118,
         distance: 60,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.2,
         tracerLength: 0.4
@@ -264,7 +264,7 @@ export const BaseDefs = {
         speed: 66,
         distance: 25,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.1,
         tracerLength: 0.1
@@ -277,7 +277,7 @@ export const BaseDefs = {
         speed: 85,
         distance: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -290,7 +290,7 @@ export const BaseDefs = {
         speed: 85,
         distance: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm_cursed",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -303,7 +303,7 @@ export const BaseDefs = {
         speed: 85,
         distance: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -316,7 +316,7 @@ export const BaseDefs = {
         speed: 94,
         distance: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.12,
         tracerLength: 0.8
@@ -329,7 +329,7 @@ export const BaseDefs = {
         speed: 112,
         distance: 125,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.09,
         tracerLength: 0.8
@@ -342,8 +342,8 @@ export const BaseDefs = {
         speed: 115,
         distance: 135,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.8
@@ -356,7 +356,7 @@ export const BaseDefs = {
         speed: 106,
         distance: 110,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.09,
         tracerLength: 0.8
@@ -369,7 +369,7 @@ export const BaseDefs = {
         speed: 80,
         distance: 88,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -382,7 +382,7 @@ export const BaseDefs = {
         distance: 88,
         speed: 80,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -395,7 +395,7 @@ export const BaseDefs = {
         distance: 145,
         speed: 126,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -408,7 +408,7 @@ export const BaseDefs = {
         speed: 115,
         distance: 120,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "50AE",
         tracerWidth: 0.12,
         tracerLength: 0.8
@@ -421,7 +421,7 @@ export const BaseDefs = {
         distance: 50,
         speed: 75,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -434,7 +434,7 @@ export const BaseDefs = {
         distance: 100,
         speed: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -447,7 +447,7 @@ export const BaseDefs = {
         distance: 46,
         speed: 88,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -460,7 +460,7 @@ export const BaseDefs = {
         distance: 45,
         speed: 82,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -473,8 +473,8 @@ export const BaseDefs = {
         distance: 120,
         speed: 90,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -487,8 +487,8 @@ export const BaseDefs = {
         distance: 125,
         speed: 95,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.8
@@ -501,7 +501,7 @@ export const BaseDefs = {
         distance: 225,
         speed: 110,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -514,7 +514,7 @@ export const BaseDefs = {
         distance: 275,
         speed: 114,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -527,7 +527,7 @@ export const BaseDefs = {
         distance: 200,
         speed: 120,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -540,7 +540,7 @@ export const BaseDefs = {
         speed: 70,
         distance: 44,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
         tracerLength: 0.7
@@ -553,7 +553,7 @@ export const BaseDefs = {
         distance: 150,
         speed: 110,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -566,7 +566,7 @@ export const BaseDefs = {
         distance: 175,
         speed: 105,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -579,8 +579,8 @@ export const BaseDefs = {
         distance: 165,
         speed: 98,
         variance: 0,
-        shrapnel: !1,
-        suppressed: !0,
+        shrapnel: false,
+        suppressed: true,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -593,7 +593,7 @@ export const BaseDefs = {
         distance: 400,
         speed: 132,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -606,7 +606,7 @@ export const BaseDefs = {
         distance: 425,
         speed: 134,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -619,7 +619,7 @@ export const BaseDefs = {
         distance: 220,
         speed: 125,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -632,7 +632,7 @@ export const BaseDefs = {
         distance: 200,
         speed: 118,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
         tracerLength: 0.9
@@ -645,7 +645,7 @@ export const BaseDefs = {
         distance: 450,
         speed: 164,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.14,
         tracerLength: 0.95
@@ -658,14 +658,14 @@ export const BaseDefs = {
         distance: 16,
         speed: 4,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "flare",
         tracerWidth: 0.3,
         tracerLength: 1.2,
         flareColor: 16733184,
-        addFlare: !0,
+        addFlare: true,
         maxFlareScale: 2,
-        skipCollision: !0
+        skipCollision: true
     },
     bullet_potato: {
         type: "bullet",
@@ -675,11 +675,11 @@ export const BaseDefs = {
         distance: 1,
         speed: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "invis",
         tracerWidth: 0,
         tracerLength: 1.2,
-        skipCollision: !0
+        skipCollision: true
     },
     bullet_bugle: {
         type: "bullet",
@@ -689,11 +689,11 @@ export const BaseDefs = {
         distance: 1,
         speed: 100,
         variance: 0,
-        shrapnel: !1,
+        shrapnel: false,
         tracerColor: "invis",
         tracerWidth: 0,
         tracerLength: 1.2,
-        skipCollision: !0
+        skipCollision: true
     },
     shrapnel_barrel: {
         type: "bullet",
@@ -703,7 +703,7 @@ export const BaseDefs = {
         speed: 20,
         distance: 8,
         variance: 1.5,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
         tracerLength: 0.6
@@ -716,7 +716,7 @@ export const BaseDefs = {
         speed: 30,
         distance: 24,
         variance: 1.5,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
         tracerLength: 0.6
@@ -729,7 +729,7 @@ export const BaseDefs = {
         speed: 20,
         distance: 8,
         variance: 1.5,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
         tracerLength: 0.6
@@ -742,7 +742,7 @@ export const BaseDefs = {
         speed: 20,
         distance: 3,
         variance: 1.5,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.1,
         tracerLength: 0.3
@@ -755,7 +755,7 @@ export const BaseDefs = {
         speed: 20,
         distance: 5,
         variance: 1.2,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.1,
         tracerLength: 0.5
@@ -768,7 +768,7 @@ export const BaseDefs = {
         speed: 20,
         distance: 5,
         variance: 1.3,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.1,
         tracerLength: 0.5
@@ -781,7 +781,7 @@ export const BaseDefs = {
         speed: 24,
         distance: 12,
         variance: 1.5,
-        shrapnel: !0,
+        shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
         tracerLength: 0.6

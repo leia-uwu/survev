@@ -1,6 +1,8 @@
-import { Msg, NetConstants, type SurvivBitStream } from "./net";
+import { Msg, MsgType, NetConstants, type SurvivBitStream } from "./net";
 
 export class JoinMsg extends Msg {
+    override readonly type = MsgType.Join;
+
     protocol = 0;
     matchPriv = "";
     loadoutPriv = "";

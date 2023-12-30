@@ -1,5 +1,5 @@
 import { type Collider, type AABB, coldet } from "./coldet";
-import math from "./math";
+import { math } from "./math";
 import { v2, type Vec2 } from "./v2";
 
 //

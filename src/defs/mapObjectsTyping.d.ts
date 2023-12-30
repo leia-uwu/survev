@@ -23,6 +23,8 @@ interface ObstacleDef {
     }>
     isBush?: boolean
     isWindow?: boolean
+    isWall?: boolean
+    destroyType?: string
     map: {
         display: boolean
         color: number
@@ -31,6 +33,19 @@ interface ObstacleDef {
     terrain: {
         grass: boolean
         beach: boolean
+    }
+    door?: {
+        interactionRad: number
+        openSpeed?: number
+        openOneWay?: number
+        openDelay?: number
+        openOnce?: number
+        canUse: boolean
+        autoOpen?: boolean
+        autoClose?: boolean
+        autoCloseDelay?: boolean
+        slideToOpen?: boolean
+        slideOffset?: boolean
     }
 }
 
@@ -44,26 +59,46 @@ interface BuildingDef {
     terrain: {
         grass: boolean
         beach: boolean
+        bridge?: {
+            nearbyWidthMult: number
+        }
     }
     zIdx: number
     floor: {
-        surfaces: never[]
+        surfaces: Array<{
+            type: "string"
+            collision: AABB[]
+        }>
     }
     ceiling: {
-        zoomRegions: never[]
-        vision: {
+        zoomRegions: Array<{
+            zoomIn: AABB
+            zoomOut?: AABB
+            zoom?: number
+        }>
+        vision?: {
             dist: number
             width: number
-            linger: number
-            fadeRate: number
+            linger?: number
+            fadeRate?: number
         }
     }
+    mapObstacleBounds?: Collider[]
     mapObjects: Array<{
-        type: string
+        type: string | (() => string)
         pos: Vec2
         scale: number
         ori: number
+        inheritOri: boolean
     }>
+    puzzle?: {
+        solution: string
+        completeUseType: string
+        completeOffDelay: number
+        completeUseDelay: number
+        errorResetDelay: number
+        pieceResetDelay: number
+    }
 }
 
 interface StructureDef {
@@ -85,7 +120,7 @@ interface StructureDef {
     }>
     bridgeLandBounds?: Collider[]
     stairs: Array<{
-        collision: Collider
+        collision: AABB
         downDir: Vec2
         lootOnly?: boolean
     }>
@@ -113,4 +148,4 @@ interface DecalDef {
     height: number
 }
 
-export type MapObjectDefs = ObstacleDef | BuildingDef | StructureDef | DecalDef | LootSpawnerDef;
+type MapObjectDefs = ObstacleDef | BuildingDef | StructureDef | DecalDef | LootSpawnerDef;

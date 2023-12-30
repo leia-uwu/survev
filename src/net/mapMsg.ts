@@ -1,5 +1,5 @@
 import { type Vec2 } from "../utils/v2";
-import { Msg, NetConstants, type SurvivBitStream } from "./net";
+import { Msg, MsgType, NetConstants, type SurvivBitStream } from "./net";
 
 export interface MapRiver {
     width: number
@@ -107,6 +107,8 @@ function deserializeMapObj(s: SurvivBitStream): MapObj {
 }
 
 export class MapMsg extends Msg {
+    override readonly type = MsgType.Map;
+
     mapName = "";
     seed = 0;
     width = 0;

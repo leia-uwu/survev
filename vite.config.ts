@@ -15,7 +15,7 @@ export default defineConfig(() => {
                     secure: false
                 },
                 "/play": {
-                    target: `http://${Config.host}:${Config.port}/play`,
+                    target: `http://${Config.host}:${Config.port}`,
                     changeOrigin: true,
                     secure: false,
                     ws: true

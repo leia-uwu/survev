@@ -1,5 +1,5 @@
 import { type AABB } from "./coldet";
-import math from "./math";
+import { math } from "./math";
 import { v2 } from "./v2";
 
 export const util = {
@@ -106,6 +106,22 @@ export const util = {
             arr[i] = arr[idx];
             arr[idx] = tmp;
         }
+    },
+
+    // functions not copied from surviv
+    // https://stackoverflow.com/a/55671924/5905216
+    /**
+    * Pick a random element from a weighted series of elements.
+    * @param items The elements to choose from.
+    * @param weights A legend of the elements' relative weight.
+    */
+    weightedRandom<T>(items: T[], weights: number[]): T {
+        let i: number;
+        for (i = 1; i < weights.length; i++) weights[i] += weights[i - 1];
+
+        const random = Math.random() * weights[weights.length - 1];
+        for (i = 0; i < weights.length; i++) { if (weights[i] > random) break; }
+        return items[i];
     }
 
 };

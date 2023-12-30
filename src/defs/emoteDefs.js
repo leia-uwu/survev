@@ -194,7 +194,7 @@ export const EmotesDefs = {
         texture: "bugle-inspiration-red.img",
         sound: "emote_01",
         channel: "ui",
-        noCustom: !0,
+        noCustom: true,
         category: EmoteCategory.Other
     },
     emote_bugle_final_red: {
@@ -202,7 +202,7 @@ export const EmotesDefs = {
         texture: "bugle-final-red.img",
         sound: "emote_01",
         channel: "ui",
-        noCustom: !0,
+        noCustom: true,
         category: EmoteCategory.Other
     },
     emote_bugle_inspiration_blue: {
@@ -210,7 +210,7 @@ export const EmotesDefs = {
         texture: "bugle-inspiration-blue.img",
         sound: "emote_01",
         channel: "ui",
-        noCustom: !0,
+        noCustom: true,
         category: EmoteCategory.Other
     },
     emote_bugle_final_blue: {
@@ -218,7 +218,7 @@ export const EmotesDefs = {
         texture: "bugle-final-blue.img",
         sound: "emote_01",
         channel: "ui",
-        noCustom: !0,
+        noCustom: true,
         category: EmoteCategory.Other
     },
     emote_thumbsup: {

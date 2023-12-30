@@ -556,7 +556,7 @@ const SkinDefs = {
         mapIndicator: {
             sprite: "player-king-woods.img",
             tint: 65280,
-            pulse: !0,
+            pulse: true,
             pulseTint: 65280
         },
         skinImg: {
@@ -585,7 +585,7 @@ const SkinDefs = {
     }),
     helmet03_lt: defineSkin("helmet03", {
         name: "Lieutenant Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -626,7 +626,7 @@ const SkinDefs = {
     }),
     helmet03_marksman: defineSkin("helmet03", {
         name: "Marksman Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -642,7 +642,7 @@ const SkinDefs = {
     }),
     helmet03_recon: defineSkin("helmet03", {
         name: "Recon Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -658,7 +658,7 @@ const SkinDefs = {
     }),
     helmet03_grenadier: defineSkin("helmet03", {
         name: "Grenadier Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -674,7 +674,7 @@ const SkinDefs = {
     }),
     helmet03_bugler: defineSkin("helmet03", {
         name: "Bugler Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -690,7 +690,7 @@ const SkinDefs = {
     }),
     helmet04_medic: defineSkin("helmet04", {
         name: "Medic Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -706,7 +706,7 @@ const SkinDefs = {
     }),
     helmet04_last_man_red: defineSkin("helmet04", {
         name: "Lone Survivr Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -722,7 +722,7 @@ const SkinDefs = {
     }),
     helmet04_last_man_blue: defineSkin("helmet04", {
         name: "Lone Survivr Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,
@@ -738,7 +738,7 @@ const SkinDefs = {
     }),
     helmet04_leader: defineSkin("helmet04", {
         name: "Leader Helmet",
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 16777215,
             baseTintRed: 16777215,

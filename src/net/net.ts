@@ -151,28 +151,29 @@ export enum MsgType {
     None,
     Join, // done
     Disconnect,
-    Input,
+    Input, // done
     Edit,
     Joined, // done
     Update, // done
     Kill,
-    GameOver,
+    GameOver, // done
     Pickup,
     Map, // done
     Spectate,
     DropItem,
     Emote,
-    PlayerStats,
+    PlayerStats, // done
     AdStatus,
     Loadout,
     RoleAnnouncement,
     Stats,
     UpdatePass,
-    AliveCounts,
+    AliveCounts, // done
     PerkModeRoleSelect
 }
 
 export abstract class Msg {
+    abstract type: MsgType;
     abstract deserialize(stream: SurvivBitStream): void;
     abstract serialize(stream: SurvivBitStream): void;
 }
@@ -195,9 +196,9 @@ export class MsgStream {
         return new Uint8Array(this.arrayBuf, 0, this.stream.byteIndex);
     }
 
-    serializeMsg(type: MsgType, msg: Msg) {
+    serializeMsg(msg: Msg) {
         // assert(this.stream.index % 8 == 0);
-        this.stream.writeUint8(type);
+        this.stream.writeUint8(msg.type);
         msg.serialize(this.stream);
         // assert(this.stream.index % 8 == 0);
     }

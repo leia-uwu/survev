@@ -1,3 +1,5 @@
+import { type Vec2 } from "../utils/v2";
+
 interface BulletDef {
     type: "bullet"
     damage: number
@@ -95,6 +97,8 @@ interface GunDef {
     dualWieldType?: string
     pistol?: boolean
     isDual?: boolean
+    toMouseHit?: boolean
+    jitter?: number
     dualOffset?: number
     maxClip: number
     maxReload: number
@@ -154,6 +158,16 @@ interface MeleeDef {
     anim: {
         idlePose: string
         attackAnims: string[]
+    }
+    reflectSurface?: {
+        equipped: {
+            p0: Vec2
+            p1: Vec2
+        }
+        unequipped: {
+            p0: Vec2
+            p1: Vec2
+        }
     }
 }
 
@@ -221,4 +235,4 @@ interface XPDef {
     xp: number
 }
 
-export type GameObjectDef = BulletDef | EmoteDef | ExplosionDef | AmmoDef | HealDef | BackpackDef | HelmetDef | ChestDef | ScopeDef | GunDef | MeleeDef | OutfitDef | PerkDef | PingDef | RoleDef | ThrowableDef | XPDef;
+type GameObjectDef = BulletDef | EmoteDef | ExplosionDef | AmmoDef | HealDef | BackpackDef | HelmetDef | ChestDef | ScopeDef | GunDef | MeleeDef | OutfitDef | PerkDef | PingDef | RoleDef | ThrowableDef | XPDef;

@@ -1,7 +1,7 @@
 import { type Obstacle } from "../objects/obstacle";
 import { type Collider } from "./coldet";
 import { collider } from "./collider";
-import math from "./math";
+import { math } from "./math";
 import { util } from "./util";
 import { type Vec2, v2 } from "./v2";
 

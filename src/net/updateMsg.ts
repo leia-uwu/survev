@@ -1,8 +1,8 @@
 import { type Vec2 } from "../utils/v2";
-import { Msg, NetConstants, type SurvivBitStream } from "./net";
+import { Msg, MsgType, NetConstants, type SurvivBitStream } from "./net";
 import { ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "./objectSerialization";
 import { type ObjectType } from "../objects/gameObject";
-import { gameConfig } from "../gameConfig";
+import { GameConfig } from "../gameConfig";
 
 export interface GasData {
     mode: number
@@ -75,7 +75,7 @@ function serializeActivePlayerData(s: SurvivBitStream, data: ActivePlayerData) {
     s.writeBoolean(data.dirty.inventory);
     if (data.dirty.inventory) {
         s.writeGameType(data.scope);
-        for (const key of Object.keys(gameConfig.bagSizes)) {
+        for (const key of Object.keys(GameConfig.bagSizes)) {
             const hasItem = data.inventory[key] > 0;
             s.writeBoolean(hasItem);
             if (hasItem) s.writeBits(data.inventory[key], 9);
@@ -85,7 +85,7 @@ function serializeActivePlayerData(s: SurvivBitStream, data: ActivePlayerData) {
     s.writeBoolean(data.dirty.weapons);
     if (data.dirty.weapons) {
         s.writeBits(data.curWeapIdx, 2);
-        for (let i = 0; i < gameConfig.WeaponSlot.Count; i++) {
+        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             s.writeGameType(data.weapons[i].type);
             s.writeUint8(data.weapons[i].ammo);
         }
@@ -167,7 +167,7 @@ function serializeGroupStatus(s: SurvivBitStream, data: GroupStatus[]) {
 
 export interface BulletData {
     playerId: number
-    pos: Vec2
+    startPos: Vec2
     dir: Vec2
     bulletType: string
     layer: number
@@ -246,16 +246,21 @@ const UpdateExtFlags = {
 };
 
 export class UpdateMsg extends Msg {
+    override readonly type = MsgType.Update;
+
     allocBytes = 1 << 16;
 
     delObjIds: number[] = [];
     fullObjects: Array<
     ObjectsFullData[ObjectType] & ObjectsPartialData[ObjectType] & {
         id: number
-        kind: ObjectType
+        __type: ObjectType
     }> = [];
 
-    partObjects: Array<ObjectsPartialData[ObjectType] & { id: number }> = [];
+    partObjects: Array<ObjectsPartialData[ObjectType] & {
+        id: number
+        __type: ObjectType
+    }> = [];
 
     activePlayerId = 0;
     activePlayerIdDirty = false;
@@ -321,12 +326,12 @@ export class UpdateMsg extends Msg {
         if ((flags & UpdateExtFlags.FullObjects) !== 0) {
             s.writeUint16(this.fullObjects.length);
             for (const obj of this.fullObjects) {
-                s.writeUint8(obj.kind);
+                s.writeUint8(obj.__type);
                 s.writeUint16(obj.id);
                 // @ts-expect-error ...
-                ObjectSerializeFns[obj.kind].serializePart(s, obj);
+                ObjectSerializeFns[obj.__type].serializePart(s, obj);
                 // @ts-expect-error ...
-                ObjectSerializeFns[obj.kind].serializeFull(s, obj);
+                ObjectSerializeFns[obj.__type].serializeFull(s, obj);
             }
         }
 
@@ -334,7 +339,7 @@ export class UpdateMsg extends Msg {
         for (const obj of this.partObjects) {
             s.writeUint16(obj.id);
             // @ts-expect-error ...
-            ObjectSerializeFns[obj.kind].serializePart(s, obj);
+            ObjectSerializeFns[obj.__type].serializePart(s, obj);
         }
 
         if ((flags & UpdateExtFlags.ActivePlayerId) !== 0) {
@@ -378,7 +383,7 @@ export class UpdateMsg extends Msg {
 
             for (const bullet of this.bullets) {
                 s.writeUint16(bullet.playerId);
-                s.writeVec(bullet.pos, 0, 0, 1024, 1024, 16);
+                s.writeVec(bullet.startPos, 0, 0, 1024, 1024, 16);
                 s.writeUnitVec(bullet.dir, 8);
                 s.writeGameType(bullet.bulletType);
                 s.writeBits(bullet.layer, 2);

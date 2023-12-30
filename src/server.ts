@@ -12,7 +12,7 @@ import {
 import { URLSearchParams } from "node:url";
 import { Game } from "./game";
 // import { type Player } from "./objects/player";
-import { Logger } from "./utils/misc";
+import { Logger, readPostedJSON } from "./utils/misc";
 import { type Player } from "./objects/player";
 
 /**
@@ -105,53 +105,77 @@ app.get("/api/site_info", (res) => {
     }
 });
 
+app.post("/api/user/profile", (res, req) => {
+    res.writeHeader("Content-Type", "application/json");
+    res.end("{err: \"\"}");
+});
+app.post("/api/user/get_pass", (res, req) => {
+    res.writeHeader("Content-Type", "application/json");
+    res.end("{err: \"\"}");
+});
+
 app.post("/api/find_game", async(res) => {
-    const host = `${Config.host}:${Config.port}`;
+    readPostedJSON(res, (body: { region: string | number, zones: any[] }) => {
+        let response: {
+            zone: string
+            gameId: number
+            useHttps: boolean
+            hosts: string[]
+            addrs: string[]
+            data: string
+        } | { err: string } = {
+            zone: "",
+            data: "",
+            gameId: 0,
+            useHttps: true,
+            hosts: [],
+            addrs: []
+        };
 
-    let response: {
-        zone: string
-        gameId: number
-        useHttps: boolean
-        hosts: string[]
-        addrs: string[]
-        data: string
-    } | { err: string } = {
-        zone: "",
-        data: "",
-        gameId: 0,
-        useHttps: Config.https,
-        hosts: [host],
-        addrs: [host]
-    };
+        const region = (Config.regions[body?.region] ?? Config.regions[Config.defaultRegion]);
+        if (region !== undefined) {
+            response.hosts.push(region.address);
+            response.addrs.push(region.address);
+            response.useHttps = region.https;
 
-    let foundGame = false;
-    for (let gameID = 0; gameID < Config.maxGames; gameID++) {
-        const game = games[gameID];
-        if (canJoin(game) && game?.allowJoin) {
-            response.gameId = game.id;
-            foundGame = true;
-            break;
-        }
-    }
-    if (!foundGame) {
-        // Create a game if there's a free slot
-        const gameID = newGame();
-        if (gameID !== -1) {
-            response.gameId = gameID;
+            let foundGame = false;
+            for (let gameID = 0; gameID < Config.maxGames; gameID++) {
+                const game = games[gameID];
+                if (canJoin(game) && game?.allowJoin) {
+                    response.gameId = game.id;
+                    foundGame = true;
+                    break;
+                }
+            }
+            if (!foundGame) {
+                // Create a game if there's a free slot
+                const gameID = newGame();
+                if (gameID !== -1) {
+                    response.gameId = gameID;
+                } else {
+                    // Join the game that most recently started
+                    const game = games
+                        .filter(g => g && !g.over)
+                        .reduce((a, b) => (a!).startedTime > (b!).startedTime ? a : b);
+
+                    if (game) response.gameId = game.id;
+                    else response = { err: "failed finding game" };
+                }
+            }
         } else {
-            // Join the game that most recently started
-            const game = games
-                .filter(g => g && !g.over)
-                .reduce((a, b) => (a!).startedTime > (b!).startedTime ? a : b);
-
-            if (game) response.gameId = game.id;
-            else response = { err: "failed finding game" };
+            Logger.warn("/api/find_game: Invalid region");
+            response = {
+                err: "Invalid Region"
+            };
         }
-    }
 
-    res.writeHeader("Content-Type", "application/json").end(JSON.stringify({
-        res: [response]
-    }));
+        res.writeHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({
+            res: [response]
+        }));
+    }, () => {
+        Logger.warn("/api/find_game: Error retrieving body");
+    });
 });
 
 export interface PlayerContainer {

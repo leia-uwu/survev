@@ -1,4 +1,4 @@
-import { gameConfig } from "../../gameConfig";
+import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import { Main } from "./main";
@@ -44,12 +44,12 @@ const desertBaseDef = {
                 {
                     circleIdx: 1,
                     wait: 10,
-                    options: { type: gameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop }
                 },
                 {
                     circleIdx: 3,
                     wait: 2,
-                    options: { type: gameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop }
                 }
             ],
             crates: [

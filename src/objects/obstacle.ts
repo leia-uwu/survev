@@ -4,6 +4,8 @@ import { type Game } from "../game";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type Collider } from "../utils/coldet";
 import { collider } from "../utils/collider";
+import { mapHelpers } from "../utils/mapHelpers";
+import { math } from "../utils/math";
 import { type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
 
@@ -11,11 +13,9 @@ type FullObstacle = ObjectsFullData[ObjectType.Obstacle];
 type PartialObstacle = ObjectsPartialData[ObjectType.Obstacle];
 
 export class Obstacle extends GameObject implements FullObstacle, PartialObstacle {
-    override kind = ObjectType.Obstacle;
+    override __type = ObjectType.Obstacle;
 
-    get bounds(): Collider {
-        return this.collider;
-    }
+    bounds: Collider;
 
     collider: Collider;
 
@@ -56,6 +56,7 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
 
     collidable: boolean;
     isWindow: boolean;
+    isWall: boolean;
 
     layer: number;
 
@@ -67,19 +68,33 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         this.layer = layer;
         const def = MapObjectDefs[type];
 
+        this.bounds = mapHelpers.getBoundingCollider(type);
+
         if (def === undefined || def.type !== "obstacle") {
             throw new Error(`Invalid obstacle with type ${type}`);
         }
-        this.collider = collider.transform(def.collision, pos, ori, scale);
         this.height = def.height;
 
         this.collidable = def.collidable ?? true;
         this.isWindow = def.isWindow ?? false;
+        this.isWall = def.isWall ?? false;
 
         this.maxHealth = def.health;
         this.health = def.health;
+
         this.maxScale = scale;
         this.minScale = def.scale.destroy;
+
+        this.collider = collider.transform(def.collision, pos, math.oriToRad(ori), scale);
+
+        if (def.door) {
+            this.isDoor = true;
+            this.door = {
+                canUse: def.door.canUse,
+                open: false,
+                seq: 0
+            };
+        }
     }
 
     damage(amount: number): void {
@@ -92,11 +107,15 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
             this.health = this.healthT = 0;
             this.dead = true;
             this.setDirty();
+
+            if (def.destroyType) {
+                this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
+            }
         } else {
             this.healthT = this.health / this.maxHealth;
             if (this.minScale < 1) {
                 this.scale = this.healthT * (this.maxScale - this.minScale) + this.minScale;
-                this.collider = collider.transform(def.collision, this.pos, this.ori, this.scale);
+                this.collider = collider.transform(def.collision, this.pos, math.oriToRad(this.ori), this.scale);
             }
 
             this.setPartDirty();

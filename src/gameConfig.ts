@@ -1,4 +1,4 @@
-export const gameConfig = {
+export const GameConfig = {
     protocolVersion: 76,
     Input: {
         MoveLeft: 0,
@@ -248,14 +248,14 @@ export const gameConfig = {
             "4xscope": 48,
             "8xscope": 68,
             "15xscope": 104
-        },
+        } as Record<string, number>,
         mobile: {
             "1xscope": 32,
             "2xscope": 40,
             "4xscope": 48,
             "8xscope": 64,
             "15xscope": 88
-        }
+        } as Record<string, number>
     },
     bagSizes: {
         "9mm": [120, 240, 330, 420],

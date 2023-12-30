@@ -1,5 +1,5 @@
 import { collider } from "./collider";
-import math from "./math";
+import { math } from "./math";
 import { v2, type Vec2 } from "./v2";
 
 /* eslint-disable no-mixed-operators */

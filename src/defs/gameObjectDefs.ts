@@ -6,7 +6,6 @@ import { GearDefs } from "./gearDefs";
 import { GunDefs } from "./gunDefs";
 import { HealEffectDefs } from "./healEffectDefs";
 import { MeleeDefs } from "./meleeDefs";
-import { type GameObjectDef } from "./objectsTypings";
 import { OutfitDefs } from "./outfitDefs";
 import { PassDefs } from "./passDefs";
 import { PerkDefs } from "./perkDefs";
@@ -40,7 +39,7 @@ const ObjectDefsList: Array<Record<string, unknown>> = [
 
 export const GameObjectDefs: Record<string, GameObjectDef> = {};
 
-// Merge all item defs in game-objects/ together into one object
+// Merge all item defs in together into one object
 for (let i = 0; i < ObjectDefsList.length; i++) {
     const gameObjectDefs = ObjectDefsList[i];
     const objectTypes = Object.keys(gameObjectDefs);

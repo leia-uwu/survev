@@ -982,7 +982,7 @@ const SkinDefs = {
         name: "Knuckles Rusted",
         rarity: 2,
         lore: "Rust up for the dust up.",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-knuckles-rusted.img"
         },
@@ -994,7 +994,7 @@ const SkinDefs = {
         name: "Knuckles Heroic",
         rarity: 3,
         lore: "Give 'em a hero sandwich.",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-knuckles-heroic.img"
         },
@@ -1005,7 +1005,7 @@ const SkinDefs = {
     karambit_rugged: defineSkin("karambit", {
         name: "Karambit Rugged",
         rarity: 3,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         anim: {
             idlePose: "slash",
             attackAnims: ["slash", "fists"]
@@ -1020,7 +1020,7 @@ const SkinDefs = {
     karambit_prismatic: defineSkin("karambit", {
         name: "Karambit Prismatic",
         rarity: 4,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-karambit-prismatic.img"
         },
@@ -1031,7 +1031,7 @@ const SkinDefs = {
     karambit_drowned: defineSkin("karambit", {
         name: "Karambit Drowned",
         rarity: 4,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-karambit-drowned.img"
         },
@@ -1042,7 +1042,7 @@ const SkinDefs = {
     bayonet_rugged: defineSkin("bayonet", {
         name: "Bayonet Rugged",
         rarity: 3,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-bayonet-rugged.img"
         },
@@ -1053,7 +1053,7 @@ const SkinDefs = {
     bayonet_woodland: defineSkin("bayonet", {
         name: "Bayonet Woodland",
         rarity: 4,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-bayonet-woodland.img"
         },
@@ -1064,7 +1064,7 @@ const SkinDefs = {
     huntsman_rugged: defineSkin("huntsman", {
         name: "Huntsman Rugged",
         rarity: 3,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-huntsman-rugged.img"
         },
@@ -1075,7 +1075,7 @@ const SkinDefs = {
     huntsman_burnished: defineSkin("huntsman", {
         name: "Huntsman Burnished",
         rarity: 4,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-huntsman-burnished.img"
         },
@@ -1086,7 +1086,7 @@ const SkinDefs = {
     bowie_vintage: defineSkin("bowie", {
         name: "Bowie Vintage",
         rarity: 3,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-bowie-vintage.img" },
         worldImg: {
             sprite: "loot-melee-bowie-vintage.img"
@@ -1095,7 +1095,7 @@ const SkinDefs = {
     bowie_frontier: defineSkin("bowie", {
         name: "Bowie Frontier",
         rarity: 4,
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-bowie-frontier.img"
         },
@@ -1105,7 +1105,7 @@ const SkinDefs = {
     }),
     machete_taiga: defineSkin("machete", {
         name: "UVSR Taiga",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-machete-taiga.img" },
         worldImg: {
             sprite: "loot-melee-machete-taiga.img"
@@ -1113,7 +1113,7 @@ const SkinDefs = {
     }),
     kukri_trad: defineSkin("machete", {
         name: "Tallow's Kukri",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-kukri-trad.img" },
         worldImg: {
             sprite: "loot-melee-kukri-trad.img",
@@ -1122,7 +1122,7 @@ const SkinDefs = {
     }),
     bonesaw_rusted: defineSkin("saw", {
         name: "Bonesaw Rusted",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-bonesaw-rusted.img"
         },
@@ -1164,11 +1164,11 @@ const SkinDefs = {
     }),
     crowbar_scout: defineSkin("crowbar", {
         name: "Scouting Crowbar",
-        noPotatoSwap: !1
+        noPotatoSwap: false
     }),
     crowbar_recon: defineSkin("crowbar", {
         name: "Crowbar Carbon",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-crowbar-recon.img" },
         worldImg: {
             sprite: "loot-melee-crowbar-recon.img"
@@ -1176,7 +1176,7 @@ const SkinDefs = {
     }),
     kukri_sniper: defineSkin("machete", {
         name: "Marksman's Recurve",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-kukri-sniper.img" },
         worldImg: {
             sprite: "loot-melee-kukri-sniper.img",
@@ -1185,7 +1185,7 @@ const SkinDefs = {
     }),
     bonesaw_healer: defineSkin("saw", {
         name: "The Separator",
-        noPotatoSwap: !1,
+        noPotatoSwap: false,
         lootImg: {
             sprite: "loot-melee-bonesaw-healer.img"
         },
@@ -1200,7 +1200,7 @@ const SkinDefs = {
     }),
     spade_assault: defineSkin("spade", {
         name: "Trench Spade",
-        noPotatoSwap: !1
+        noPotatoSwap: false
     }),
     warhammer_tank: defineSkin("stonehammer", {
         name: "Panzerhammer",

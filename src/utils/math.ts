@@ -5,7 +5,7 @@ const kEpsilon = 0.000001;
 
 /* eslint-disable no-mixed-operators */
 
-const math = {
+export const math = {
     clamp(a: number, min: number, max: number) {
         return a < max ? a > min ? a : min : max;
     },
@@ -290,7 +290,28 @@ const math = {
         const y = y1 + ua * (y2 - y1);
 
         return { x, y };
+    },
+
+    // functions not copied from surviv
+    addAdjust(position1: Vec2, position2: Vec2, orientation: number): Vec2 {
+        if (orientation === 0) return v2.add(position1, position2);
+        let xOffset: number, yOffset: number;
+        switch (orientation) {
+        case 1:
+            xOffset = -position2.y;
+            // noinspection JSSuspiciousNameCombination
+            yOffset = position2.x;
+            break;
+        case 2:
+            xOffset = -position2.x;
+            yOffset = -position2.y;
+            break;
+        case 3:
+            // noinspection JSSuspiciousNameCombination
+            xOffset = position2.y;
+            yOffset = -position2.x;
+            break;
+        }
+        return v2.add(position1, v2.create(xOffset!, yOffset!));
     }
 };
-
-export default math;

@@ -1,6 +1,6 @@
 import { ObjectType } from "../objects/gameObject";
 import { NetConstants, type SurvivBitStream } from "./net";
-import { gameConfig } from "../gameConfig";
+import { GameConfig } from "../gameConfig";
 import { type Vec2 } from "../utils/v2";
 
 export interface ObjectsPartialData {
@@ -294,7 +294,7 @@ export const ObjectSerializeFns: { [K in ObjectType]: ObjectSerialization<K> } =
             s.writeBits(data.ori, 2);
             s.writeBoolean(data.interiorSoundAlt);
             s.writeBoolean(data.interiorSoundEnabled);
-            for (let i = 0; i < gameConfig.structureLayerCount; i++) {
+            for (let i = 0; i < GameConfig.structureLayerCount; i++) {
                 s.writeUint16(data.layerObjIds[i]);
             }
         }
@@ -339,7 +339,7 @@ export const ObjectSerializeFns: { [K in ObjectType]: ObjectSerialization<K> } =
     [ObjectType.Projectile]: {
         serializePart(s, data) {
             s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
-            s.writeFloat(data.posZ, 0, gameConfig.projectile.maxHeight, 10);
+            s.writeFloat(data.posZ, 0, GameConfig.projectile.maxHeight, 10);
             s.writeUnitVec(data.dir, 7);
         },
         serializeFull(s, data) {

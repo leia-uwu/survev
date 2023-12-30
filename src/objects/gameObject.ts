@@ -18,8 +18,8 @@ export enum ObjectType {
 }
 
 export abstract class GameObject {
-    abstract readonly kind: ObjectType;
-    abstract get bounds(): Collider;
+    abstract readonly __type: ObjectType;
+    abstract bounds: Collider;
 
     readonly id: number;
     readonly game: Game;

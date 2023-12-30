@@ -1,7 +1,7 @@
 import { type GameObject } from "../objects/gameObject";
 import { type Collider } from "./coldet";
 import { collider } from "./collider";
-import math from "./math";
+import { math } from "./math";
 import { type Vec2, v2 } from "./v2";
 
 /**
@@ -32,27 +32,27 @@ export class Grid {
     /**
      * Add an object to the grid system
      */
-    addObject(object: GameObject): void {
-        this.removeObject(object);
+    addObject(obj: GameObject): void {
+        this.removeObject(obj);
 
         const cells: Vec2[] = [];
 
-        const rect = collider.toAabb(object.bounds);
+        const aabb = collider.toAabb(obj.bounds);
         // Get the bounds of the hitbox
         // Round it to the grid cells
-        const min = this._roundToCells(rect.min);
-        const max = this._roundToCells(rect.max);
+        const min = this._roundToCells(v2.add(aabb.min, obj.pos));
+        const max = this._roundToCells(v2.add(aabb.max, obj.pos));
 
         // Add it to all grid cells that it intersects
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
-                (xRow[y] ??= new Map()).set(object.id, object);
+                (xRow[y] ??= new Map()).set(obj.id, obj);
                 cells.push(v2.create(x, y));
             }
         }
         // Store the cells this object is occupying
-        this._objectsCells.set(object.id, cells);
+        this._objectsCells.set(obj.id, cells);
     }
 
     /**

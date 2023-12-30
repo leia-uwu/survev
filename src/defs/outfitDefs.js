@@ -96,7 +96,7 @@ const SkinDefs = {
         }
     }),
     outfitScout: defineSkin("outfitBase", {
-        noDrop: !0,
+        noDrop: true,
         skinImg: {
             baseTint: 11326819,
             baseSprite: "player-base-02.img",

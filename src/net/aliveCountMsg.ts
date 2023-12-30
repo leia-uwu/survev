@@ -1,6 +1,8 @@
-import { Msg, type SurvivBitStream } from "./net";
+import { Msg, MsgType, type SurvivBitStream } from "./net";
 
 export class AliveCountMsg extends Msg {
+    override readonly type = MsgType.AliveCounts;
+
     aliveCounts: number[] = [];
 
     serialize(stream: SurvivBitStream): void {

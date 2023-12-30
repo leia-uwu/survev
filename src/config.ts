@@ -13,11 +13,20 @@ export enum GasMode {
 }
 
 export const Config = {
-    host: "127.0.0.1",
+    host: "0.0.0.0",
     port: 8000,
     https: false,
 
     mode: "main",
+
+    regions: {
+        local: {
+            https: false,
+            address: "127.0.0.1:3000"
+        }
+    },
+
+    defaultRegion: "local",
 
     spawn: { mode: SpawnMode.Random },
 
@@ -27,7 +36,7 @@ export const Config = {
 
     gas: { mode: GasMode.Normal },
 
-    movementSpeed: 0.013,
+    movementSpeed: 12,
     tps: 30
 
 } satisfies ConfigType as ConfigType;
@@ -43,6 +52,13 @@ export interface ConfigType {
         readonly keyFile: string
         readonly certFile: string
     }
+
+    readonly regions: Record<string, {
+        readonly https: boolean
+        readonly address: string
+    }>
+
+    readonly defaultRegion: string
 
     readonly mode: string
 
