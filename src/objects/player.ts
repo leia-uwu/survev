@@ -203,7 +203,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
     name = "Player";
 
-    teamId = 0;
+    teamId = 1;
     groupId = 0;
 
     loadout = {
@@ -232,7 +232,9 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         super(game, pos);
         this.socket = socket;
 
-        this.groupId = this.teamId = this.game.nextGroupId++;
+        if (game.config.mode !== "faction") {
+            this.groupId = this.teamId = this.game.nextGroupId++;
+        }
 
         for (const item in GameConfig.bagSizes) {
             this.inventory[item] = 0;
@@ -533,7 +535,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         }
     }
 
-    cancelAction(uh?: boolean): void {
+    cancelAction(_?: boolean): void {
 
     }
 

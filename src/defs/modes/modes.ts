@@ -1,10 +1,18 @@
 import { type Vec2 } from "../../utils/v2";
 import { Desert } from "./desert";
+import { Faction } from "./faction";
+import { Halloween } from "./halloween";
 import { Main } from "./main";
+import { Potato } from "./potato";
+import { Woods } from "./woods";
 
 export const ModeDefinitions: Record<string, ModeDefinition> = {
     main: Main,
-    desert: Desert
+    desert: Desert,
+    woods: Woods,
+    potato: Potato,
+    faction: Faction,
+    halloween: Halloween
 };
 
 export interface ModeDefinition {

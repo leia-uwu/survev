@@ -128,6 +128,20 @@ export const coldet = {
         return false;
     },
 
+    test(coll1: Collider, coll2: Collider): boolean {
+        if (coll1.type === 0) {
+            if (coll2.type === 0) {
+                return coldet.testCircleCircle(coll1.pos, coll1.rad, coll2.pos, coll2.rad);
+            }
+            return coldet.testCircleAabb(coll1.pos, coll1.rad, coll2.min, coll2.max);
+        } else {
+            if (coll2.type === 0) {
+                return coldet.testCircleAabb(coll2.pos, coll2.rad, coll1.min, coll1.max);
+            }
+            return coldet.testAabbAabb(coll1.min, coll1.max, coll2.min, coll2.max);
+        }
+    },
+
     aabbInsideAabb(min0: Vec2, max0: Vec2, min1: Vec2, max1: Vec2) {
         return min0.x >= min1.x && min0.y >= min1.y && max0.x <= max1.x && max0.y <= max1.y;
     },

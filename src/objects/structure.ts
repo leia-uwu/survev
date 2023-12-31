@@ -42,6 +42,8 @@ export class Structure extends GameObject implements FullStructure, PartialStruc
     scale = 1;
     rot: number;
 
+    mapObstacleBounds: Collider[];
+
     constructor(game: Game, type: string, pos: Vec2, layer: number, ori: number, layerObjIds: number[]) {
         super(game, pos);
         this.layer = layer;
@@ -76,6 +78,10 @@ export class Structure extends GameObject implements FullStructure, PartialStruc
                 lootOnly: !!stairsDef.lootOnly
             });
         }
+
+        this.mapObstacleBounds = mapHelpers.getColliders(type).map(coll => {
+            return collider.transform(coll, pos, this.rot, 1);
+        });
     }
 
     static checkStairs(circle: Circle, stair: Stair, object: GameObject): boolean {

@@ -1,6 +1,19 @@
 import { type AABB, type Collider } from "../utils/coldet";
 import { type Vec2 } from "../utils/v2";
 
+interface TerrainSpawnDef {
+    grass?: boolean
+    beach?: boolean
+    bridge?: {
+        nearbyWidthMult: number
+    }
+    waterEdge?: {
+        dir: Vec2
+        distMin: number
+        distMax: number
+    }
+}
+
 interface ObstacleDef {
     type: "obstacle"
     obstacleType: string
@@ -15,6 +28,7 @@ interface ObstacleDef {
     destructible: boolean
     health: number
     reflectBullets?: boolean
+    explosion?: string
     loot: Array<{
         tier: any
         min: any
@@ -30,10 +44,7 @@ interface ObstacleDef {
         color: number
         scale: number
     }
-    terrain: {
-        grass: boolean
-        beach: boolean
-    }
+    terrain: TerrainSpawnDef
     door?: {
         interactionRad: number
         openSpeed?: number
@@ -64,13 +75,7 @@ interface BuildingDef {
         color: number
         scale: number
     }
-    terrain: {
-        grass: boolean
-        beach: boolean
-        bridge?: {
-            nearbyWidthMult: number
-        }
-    }
+    terrain: TerrainSpawnDef
     zIdx: number
     floor: {
         surfaces: Array<{
@@ -119,13 +124,7 @@ interface BuildingDef {
 
 interface StructureDef {
     type: "structure"
-    terrain: {
-        grass: boolean
-        beach: boolean
-        bridge?: {
-            nearbyWidthMult: number
-        }
-    }
+    terrain: TerrainSpawnDef
     ori: number
     mapObstacleBounds: Collider[]
     layers: Array<{
@@ -152,11 +151,7 @@ interface LootSpawnerDef {
         max: any
         props: any
     }>
-    terrain?: {
-        grass?: boolean
-        beach?: boolean
-        riverShore?: boolean
-    }
+    terrain?: TerrainSpawnDef
 }
 
 interface DecalDef {
@@ -165,4 +160,4 @@ interface DecalDef {
     height: number
 }
 
-type MapObjectDefs = ObstacleDef | BuildingDef | StructureDef | DecalDef | LootSpawnerDef;
+type MapObjectDef = ObstacleDef | BuildingDef | StructureDef | DecalDef | LootSpawnerDef;

@@ -135,7 +135,11 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
                 this.collider = collider.transform(def.collision, this.pos, math.oriToRad(this.ori), this.scale);
             }
 
-            this.setPartDirty();
+            // need to send full object for obstacles with explosions
+            // so smoke particles work on the client
+            // since they depend on healthT
+            if (def.explosion) this.setDirty();
+            else this.setPartDirty();
         }
     }
 }

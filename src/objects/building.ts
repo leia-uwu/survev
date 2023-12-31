@@ -42,18 +42,16 @@ export class Building extends GameObject implements FullBuilding, PartialBuildin
 
         const rotation = math.oriToRad(ori);
 
-        this.bounds = this.bounds = collider.transform(
+        this.bounds = collider.transform(
             mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
             rotation,
             1
         );
 
-        if (def.mapObstacleBounds) {
-            this.mapObstacleBounds = def.mapObstacleBounds.map(bound => {
-                return collider.transform(bound, pos, rotation, 1);
-            });
-        }
+        this.mapObstacleBounds = mapHelpers.getColliders(type).map(coll => {
+            return collider.transform(coll, pos, rotation, 1);
+        });
 
         if (def.puzzle) {
             this.hasPuzzle = true;

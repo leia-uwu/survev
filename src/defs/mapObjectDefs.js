@@ -8670,7 +8670,7 @@ const MaterialDefs = {
 };
 
 /**
- * @type {Object.<string, import('./mapObjectsTyping.ts').MapObjectDefs>}
+ * @type {Object.<string, import('./mapObjectsTyping.ts').MapObjectDef>}
  */
 export const MapObjectDefs = {
     barrel_01: createBarrel({}),
