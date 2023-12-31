@@ -52,6 +52,9 @@ export class Game {
     grid: Grid;
 
     tickInterval: NodeJS.Timeout;
+
+    realDt: number;
+    // realDt divided by 1000, used for physics since speed values are in unit/second
     dt: number;
 
     config: ConfigType;
@@ -59,6 +62,8 @@ export class Game {
     now = Date.now();
 
     tickTimes: number[] = [];
+
+    // serializationCache = new SerializationCache();
 
     constructor(id: number, config: ConfigType) {
         const start = Date.now();
@@ -69,9 +74,9 @@ export class Game {
         this.grid = new Grid(1024, 1024);
         this.map = new GameMap(this);
 
-        this.dt = 1000 / config.tps;
-        this.tickInterval = setInterval(() => this.tick(), this.dt);
-
+        this.realDt = 1000 / config.tps;
+        this.dt = this.realDt / 1000;
+        this.tickInterval = setInterval(() => this.tick(), this.realDt);
         this.allowJoin = true;
 
         Logger.log(`Game ${this.id} | Created in ${Date.now() - start} ms`);
@@ -90,6 +95,8 @@ export class Game {
         for (const player of this.players) {
             player.update();
         }
+
+        // this.serializationCache.update(this);
 
         for (const player of this.connectedPlayers) {
             player.sendMsgs();
@@ -121,7 +128,7 @@ export class Game {
         if (this.tickTimes.length >= 200) {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            Logger.log(`Game ${this.id} | Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / this.dt) * 100).toFixed(1)}%`);
+            Logger.log(`Game ${this.id} | Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / this.realDt) * 100).toFixed(1)}%`);
             this.tickTimes = [];
         }
     }
@@ -129,7 +136,7 @@ export class Game {
     addPlayer(socket: WebSocket<PlayerContainer>): Player {
         const player = new Player(
             this,
-            v2.add(v2.create(100, 100), v2.mul(v2.randomUnit(), 10)),
+            v2.add(v2.create(this.map.width / 2, this.map.height / 2), v2.mul(v2.randomUnit(), 10)),
             socket);
 
         return player;

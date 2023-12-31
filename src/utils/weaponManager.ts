@@ -15,29 +15,9 @@ import { type Vec2, v2 } from "./v2";
 export class WeaponManager {
     player: Player;
 
-    constructor(player: Player) {
-        this.player = player;
-    }
-
     curWeapIdx = 2;
-    weapons: Array<{ type: string, ammo: number }> = [
-        {
-            type: "m870",
-            ammo: 1
-        },
-        {
-            type: "mosin",
-            ammo: 0
-        },
-        {
-            type: "pan",
-            ammo: 0
-        },
-        {
-            type: "warhammer_tank",
-            ammo: 0
-        }
-    ];
+
+    weapons: Array<{ type: string, ammo: number }> = [];
 
     get activeWeapon(): string {
         return this.weapons[this.curWeapIdx].type;
@@ -46,6 +26,17 @@ export class WeaponManager {
     meleeCooldown = 0;
 
     timeouts: NodeJS.Timeout[] = [];
+
+    constructor(player: Player) {
+        this.player = player;
+
+        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
+            this.weapons.push({
+                type: GameConfig.WeaponType[i] === "melee" ? "fists" : "",
+                ammo: 0
+            });
+        }
+    }
 
     shootStart(): void {
         const def = GameObjectDefs[this.activeWeapon];

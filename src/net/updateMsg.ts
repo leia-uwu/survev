@@ -3,6 +3,7 @@ import { Msg, MsgType, NetConstants, type SurvivBitStream } from "./net";
 import { ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "./objectSerialization";
 import { type ObjectType } from "../objects/gameObject";
 import { GameConfig } from "../gameConfig";
+import { type SerializationCache } from "./serializationCache";
 
 export interface GasData {
     mode: number
@@ -247,8 +248,9 @@ const UpdateExtFlags = {
 
 export class UpdateMsg extends Msg {
     override readonly type = MsgType.Update;
-
     allocBytes = 1 << 16;
+
+    serializationCache!: SerializationCache;
 
     delObjIds: number[] = [];
     fullObjects: Array<

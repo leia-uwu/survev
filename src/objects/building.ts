@@ -5,7 +5,8 @@ import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSeri
 import { type Collider } from "../utils/coldet";
 import { collider } from "../utils/collider";
 import { mapHelpers } from "../utils/mapHelpers";
-import { type Vec2 } from "../utils/v2";
+import { math } from "../utils/math";
+import { v2, type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
 
 type FullBuilding = ObjectsFullData[ObjectType.Building];
@@ -39,12 +40,23 @@ export class Building extends GameObject implements FullBuilding, PartialBuildin
         this.type = type;
         const def = MapObjectDefs[this.type] as BuildingDef;
 
-        this.bounds = mapHelpers.getBoundingCollider(type);
+        const rotation = math.oriToRad(ori);
+
+        this.bounds = this.bounds = collider.transform(
+            mapHelpers.getBoundingCollider(type),
+            v2.create(0, 0),
+            rotation,
+            1
+        );
 
         if (def.mapObstacleBounds) {
             this.mapObstacleBounds = def.mapObstacleBounds.map(bound => {
-                return collider.transform(bound, pos, ori, 1);
+                return collider.transform(bound, pos, rotation, 1);
             });
+        }
+
+        if (def.puzzle) {
+            this.hasPuzzle = true;
         }
     }
 }

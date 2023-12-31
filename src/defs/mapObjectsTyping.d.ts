@@ -47,6 +47,14 @@ interface ObstacleDef {
         slideToOpen?: boolean
         slideOffset?: boolean
     }
+    button?: {
+        interactionRad: number
+        interactionText: string
+        useOnce: boolean
+        useType: string
+        useDelay: number
+        useDir: Vec2
+    }
 }
 
 interface BuildingDef {
@@ -89,7 +97,7 @@ interface BuildingDef {
         pos: Vec2
         scale: number
         ori: number
-        inheritOri: boolean
+        inheritOri?: boolean
     }>
     puzzle?: {
         solution: string
@@ -99,6 +107,14 @@ interface BuildingDef {
         errorResetDelay: number
         pieceResetDelay: number
     }
+    mapGroundPatches?: Array<{
+        bound: AABB
+        color: number
+        roughness: number
+        offsetDist: number
+        order?: number
+        useAsMapShape?: boolean
+    }>
 }
 
 interface StructureDef {
@@ -123,6 +139,7 @@ interface StructureDef {
         collision: AABB
         downDir: Vec2
         lootOnly?: boolean
+        noCeilingReveal?: boolean
     }>
     mask: AABB[]
 }

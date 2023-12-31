@@ -1,12 +1,13 @@
 import { MapObjectDefs } from "../defs/mapObjectDefs";
 import { type ObstacleDef } from "../defs/mapObjectsTyping";
 import { type Game } from "../game";
+import { NetConstants } from "../net/net";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type Collider } from "../utils/coldet";
 import { collider } from "../utils/collider";
 import { mapHelpers } from "../utils/mapHelpers";
 import { math } from "../utils/math";
-import { type Vec2 } from "../utils/v2";
+import { v2, type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
 
 type FullObstacle = ObjectsFullData[ObjectType.Obstacle];
@@ -68,7 +69,14 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         this.layer = layer;
         const def = MapObjectDefs[type];
 
-        this.bounds = mapHelpers.getBoundingCollider(type);
+        const rotation = math.oriToRad(ori);
+
+        this.bounds = collider.transform(
+            mapHelpers.getBoundingCollider(type),
+            v2.create(0, 0),
+            rotation,
+            NetConstants.MapObjectMaxScale
+        );
 
         if (def === undefined || def.type !== "obstacle") {
             throw new Error(`Invalid obstacle with type ${type}`);
@@ -85,13 +93,22 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         this.maxScale = scale;
         this.minScale = def.scale.destroy;
 
-        this.collider = collider.transform(def.collision, pos, math.oriToRad(ori), scale);
+        this.collider = collider.transform(def.collision, pos, rotation, scale);
 
         if (def.door) {
             this.isDoor = true;
             this.door = {
                 canUse: def.door.canUse,
                 open: false,
+                seq: 0
+            };
+        }
+
+        if (def.button) {
+            this.isButton = true;
+            this.button = {
+                onOff: false,
+                canUse: true,
                 seq: 0
             };
         }

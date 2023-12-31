@@ -1,11 +1,12 @@
 import { MapObjectDefs } from "./defs/mapObjectDefs";
-import { type BuildingDef, type ObstacleDef } from "./defs/mapObjectsTyping";
+import { type StructureDef, type BuildingDef, type ObstacleDef } from "./defs/mapObjectsTyping";
 import { ModeDefinitions } from "./defs/modes/modes";
 import { type Game } from "./game";
 import { MapMsg } from "./net/mapMsg";
 import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
 import { Obstacle } from "./objects/obstacle";
+import { Structure } from "./objects/structure";
 import { type Collider, coldet, type AABB } from "./utils/coldet";
 import { collider } from "./utils/collider";
 import { math } from "./utils/math";
@@ -23,6 +24,8 @@ export class GameMap {
     seed = util.randomInt(0, 2 ** 31);
 
     bounds: AABB;
+
+    objectCount: Record<string, number> = {};
 
     constructor(game: Game) {
         this.game = game;
@@ -44,33 +47,79 @@ export class GameMap {
         this.msg.grassInset = mapDef.grassInset;
         this.msg.shoreInset = mapDef.shoreInset;
 
-        for (const densitySpawns of modeDef.mapGen.densitySpawns) {
-            for (const type in densitySpawns) {
-                const count = densitySpawns[type];
+        for (const customSpawnRule of modeDef.mapGen.customSpawnRules.locationSpawns) {
+            const pos = v2.add(
+                util.randomPointInCircle(customSpawnRule.rad),
+                v2.mulElems(customSpawnRule.pos,
+                    v2.create(this.width, this.height)));
 
-                const def = MapObjectDefs[type];
+            this.genAuto(customSpawnRule.type, 1, pos);
+        }
 
-                switch (def.type) {
-                case "obstacle":
-                    for (let i = 0; i < count; i++) {
-                        this.genObstacle(type, this.getRandomPositionFor(def.collision), 0, 0);
+        for (const fixedSpawns of modeDef.mapGen.fixedSpawns) {
+            for (const type in fixedSpawns) {
+                let count = fixedSpawns[type];
+                if (typeof count !== "number") {
+                    if ("small" in count) {
+                        count = count.small;
+                    } else {
+                        count = Math.random() < count.odds ? 1 : 0;
                     }
-                    break;
-                case "building":
-                    for (let i = 0; i < count; i++) {
-                        this.genBuilding(type, this.getRandomPositionFor(collider.createCircle(v2.create(0, 0), 10)), 0);
-                    }
+                }
+                if ((this.objectCount[type] ?? 0) < count) {
+                    this.genAuto(type, count);
                 }
             }
         }
 
-        this.genBuilding("house_red_01", v2.create(100, 100), 0);
+        for (const randomSpawns of modeDef.mapGen.randomSpawns) {
+            const spawns = [...randomSpawns.spawns];
+
+            for (let i = 0; i < randomSpawns.choose; i++) {
+                const idx = util.randomInt(0, spawns.length - 1);
+                const spawn = spawns.splice(idx, 1)[0];
+                this.genAuto(spawn);
+            }
+        }
+
+        for (const densitySpawns of modeDef.mapGen.densitySpawns) {
+            for (const type in densitySpawns) {
+                const count = densitySpawns[type];
+                this.genAuto(type, count);
+            }
+        }
 
         for (const place of modeDef.mapGen.places) {
             this.msg.places.push(place);
         }
 
         this.mapStream.serializeMsg(this.msg);
+    }
+
+    genAuto(type: string, count = 1, pos?: Vec2, ori?: number, scale?: number): void {
+        const def = MapObjectDefs[type];
+        switch (def.type) {
+        case "obstacle":
+            for (let i = 0; i < count; i++) {
+                this.genObstacle(
+                    type,
+                    pos ?? this.getRandomPositionFor(def.collision),
+                    0,
+                    ori ?? 0,
+                    scale ?? util.random(def.scale.createMax, def.scale.createMin)
+                );
+            }
+            break;
+        case "building":
+            for (let i = 0; i < count; i++) {
+                this.genBuilding(type, pos ?? this.getRandomPositionFor(collider.createCircle(v2.create(0, 0), 10)), 0);
+            }
+            break;
+        case "structure":
+            for (let i = 0; i < count; i++) {
+                this.genStructure(type, pos ?? this.getRandomPositionFor(collider.createCircle(v2.create(0, 0), 10)), 0, 0);
+            }
+        }
     }
 
     genObstacle(type: string, pos: Vec2, layer: number, ori: number, scale = 1): Obstacle {
@@ -86,11 +135,12 @@ export class GameMap {
 
         const def = MapObjectDefs[type] as ObstacleDef;
         if (def.map?.display) this.msg.objects.push(obstacle);
+        this.objectCount[type]++;
         return obstacle;
     }
 
     genBuilding(type: string, pos: Vec2, ori = 0, layer = 0): Building {
-        const building = new Building(this.game, type, pos, 0, 0);
+        const building = new Building(this.game, type, pos, ori, layer);
         const def = MapObjectDefs[type] as BuildingDef;
 
         this.game.grid.addObject(building);
@@ -107,14 +157,14 @@ export class GameMap {
             const part = MapObjectDefs[partType];
 
             let partOrientation: number;
-            if (!mapObject.inheritOri) partOrientation = mapObject.ori;
+            if (mapObject.inheritOri === false) partOrientation = mapObject.ori;
             else partOrientation = (mapObject.ori + ori) % 4;
 
             const partPosition = math.addAdjust(pos, mapObject.pos, ori);
 
             switch (part.type) {
             case "structure":
-                // this.genStructure(partType, part, partPosition, partOrientation);
+                this.genStructure(partType, partPosition, layer, partOrientation);
                 break;
             case "building":
                 this.genBuilding(partType, partPosition, partOrientation, layer);
@@ -128,14 +178,48 @@ export class GameMap {
                     mapObject.scale
                     // part,
                     // building,
-                    // mapObject.bunkerWall ?? false,
                     // mapObject.puzzlePiece
                 );
                 break;
             }
         }
 
+        for (const patch of def.mapGroundPatches ?? []) {
+            this.msg.groundPatches.push({
+                min: math.addAdjust(pos, patch.bound.min, ori),
+                max: math.addAdjust(pos, patch.bound.max, ori),
+                color: patch.color,
+                roughness: patch.roughness,
+                offsetDist: patch.offsetDist,
+                order: patch.order ?? 0,
+                useAsMapShape: patch.useAsMapShape ?? true
+            });
+        }
+
+        this.objectCount[type]++;
         return building;
+    }
+
+    genStructure(type: string, pos: Vec2, layer: number, ori: number): Structure {
+        const layerObjIds: number[] = [];
+
+        const def = MapObjectDefs[type] as StructureDef;
+
+        layer = 0;
+        for (const layerDef of def.layers) {
+            const building = this.genBuilding(
+                layerDef.type,
+                math.addAdjust(pos, layerDef.pos, ori),
+                (layerDef.ori + ori) % 4,
+                layer);
+            layer++;
+            layerObjIds.push(building.id);
+        }
+
+        const structure = new Structure(this.game, type, pos, layer, ori, layerObjIds);
+        this.game.grid.addObject(structure);
+        this.objectCount[type]++;
+        return structure;
     }
 
     getRandomPositionFor(coll: Collider, ori = 0, scale = 1): Vec2 {

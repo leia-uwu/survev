@@ -3,8 +3,10 @@ import { NetConstants, type SurvivBitStream } from "./net";
 import { GameConfig } from "../gameConfig";
 import { type Vec2 } from "../utils/v2";
 
+/* eslint-disable @typescript-eslint/ban-types */
+
 export interface ObjectsPartialData {
-    [ObjectType.Invalid]: null
+    [ObjectType.Invalid]: {}
     [ObjectType.Player]: {
         pos: Vec2
         dir: Vec2
@@ -17,7 +19,7 @@ export interface ObjectsPartialData {
     [ObjectType.Loot]: {
         pos: Vec2
     }
-    [ObjectType.LootSpawner]: null
+    [ObjectType.LootSpawner]: {}
     [ObjectType.DeadBody]: {
         pos: Vec2
     }
@@ -29,8 +31,8 @@ export interface ObjectsPartialData {
         puzzleSolved: boolean
         puzzleErrSeq: number
     }
-    [ObjectType.Structure]: null
-    [ObjectType.Decal]: null
+    [ObjectType.Structure]: {}
+    [ObjectType.Decal]: {}
     [ObjectType.Projectile]: {
         pos: Vec2
         posZ: number
@@ -292,8 +294,8 @@ export const ObjectSerializeFns: { [K in ObjectType]: ObjectSerialization<K> } =
             s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
             s.writeMapType(data.type);
             s.writeBits(data.ori, 2);
-            s.writeBoolean(data.interiorSoundAlt);
             s.writeBoolean(data.interiorSoundEnabled);
+            s.writeBoolean(data.interiorSoundAlt);
             for (let i = 0; i < GameConfig.structureLayerCount; i++) {
                 s.writeUint16(data.layerObjIds[i]);
             }

@@ -22,6 +22,7 @@ import { KillMsg } from "../net/KillMsg";
 import { DeadBody } from "./DeadBody";
 import { type GunDef, type MeleeDef, type ThrowableDef } from "../defs/objectsTypings";
 import { MeleeDefs } from "../defs/meleeDefs";
+import { Structure } from "./structure";
 
 type PlayerFullData = ObjectsFullData[ObjectType.Player];
 type PlayerPartialData = ObjectsPartialData[ObjectType.Player];
@@ -236,6 +237,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         for (const item in GameConfig.bagSizes) {
             this.inventory[item] = 0;
         }
+        this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
 
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
@@ -279,15 +281,17 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             speed += weaponDef.speed.equip;
         }
 
-        this.pos = v2.add(this.pos, v2.mul(movement, (speed / 1000) * this.game.dt));
+        this.pos = v2.add(this.pos, v2.mul(movement, speed * this.game.dt));
 
         let collided = true;
         let step = 0;
+
+        let objs: GameObject[];
         while (step < 20 && collided) {
             step++;
             collided = false;
             const coll = collider.createCircle(this.pos, this.rad);
-            const objs = this.game.grid.intersectCollider(coll);
+            objs = [...this.game.grid.intersectCollider(coll)];
 
             for (const obj of objs) {
                 if (obj instanceof Obstacle &&
@@ -301,6 +305,29 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                         collided = true;
                         this.pos = v2.sub(this.pos, v2.mul(collision.dir, collision.pen + 0.001));
                     }
+                }
+            }
+        }
+
+        let onStair = false;
+        const originalLayer = this.layer;
+        const coll = collider.createCircle(this.pos, this.rad);
+
+        for (const obj of objs!) {
+            if (obj instanceof Structure) {
+                for (const stair of obj.stairs) {
+                    if (stair.lootOnly) continue;
+                    if (Structure.checkStairs(coll, stair, this)) {
+                        onStair = true;
+                        break;
+                    }
+                }
+                if (!onStair) {
+                    if (this.layer === 2) this.layer = 0;
+                    if (this.layer === 3) this.layer = 1;
+                }
+                if (this.layer !== originalLayer) {
+                    this.setDirty();
                 }
             }
         }
@@ -342,6 +369,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         }
 
         const updateMsg = new UpdateMsg();
+        // updateMsg.serializationCache = this.game.serializationCache;
 
         const radius = this.zoom + 4;
         const rect = coldet.circleToAabb(this.pos, radius);
@@ -475,6 +503,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
         for (const input of msg.inputs) {
             switch (input) {
+            case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
                 this.curWeapIdx = 2;
                 this.setDirty();

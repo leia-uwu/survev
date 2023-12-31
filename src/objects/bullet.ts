@@ -147,7 +147,7 @@ export class Bullet implements BulletData {
     update(): void {
         const posOld = v2.copy(this.pos);
         const distLeft = this.distance - v2.length(v2.sub(this.startPos, this.pos));
-        const moveDist = math.min(distLeft, (this.game.dt * this.speed) / 1000);
+        const moveDist = math.min(distLeft, this.game.dt * this.speed);
         this.distanceTraveled += moveDist;
 
         v2.set(this.pos, v2.add(this.pos, v2.mul(this.dir, moveDist)));
@@ -309,15 +309,15 @@ export class Bullet implements BulletData {
             const obj = collision.object;
 
             if (obj instanceof Obstacle) {
-                obj.damage(this.damage);
+                const bulletDef = GameObjectDefs[this.bulletType] as BulletDef;
+                obj.damage(this.damage * bulletDef.obstacleDamage);
 
-                const def = (MapObjectDefs[obj.type] as ObstacleDef);
-
-                stopBullet = def.collidable;
-
-                if (def.reflectBullets) {
+                const obstacleDef = (MapObjectDefs[obj.type] as ObstacleDef);
+                if (obstacleDef.reflectBullets && !obj.dead) {
                     this.reflect(collision.point, collision.normal, obj.id);
                 }
+
+                stopBullet = obstacleDef.collidable;
             } else if (obj instanceof Player) {
                 stopBullet = collision.collidable;
 

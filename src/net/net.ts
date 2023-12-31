@@ -99,7 +99,7 @@ export class SurvivBitStream extends BitStream {
 
     writeBytes(src: SurvivBitStream, offset: number, length: number) {
         // assert(this._index % 8 == 0);
-        const data = new Uint8Array(src.view.buffer, offset, length);
+        const data = new Uint8Array(src.view.buffer).slice(offset, length);
         this.view.buffer.set(data, this.index / 8);
         this.index += length * 8;
     }
