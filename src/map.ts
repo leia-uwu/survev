@@ -2,6 +2,7 @@ import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { type StructureDef, type BuildingDef, type ObstacleDef } from "./defs/mapObjectsTyping";
 import { ModeDefinitions } from "./defs/modes/modes";
 import { type Game } from "./game";
+import { GameConfig } from "./gameConfig";
 import { MapMsg } from "./net/mapMsg";
 import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
@@ -128,26 +129,26 @@ export class GameMap {
         const def = MapObjectDefs[type];
 
         switch (def.type) {
-        case "obstacle":
-            for (let i = 0; i < count; i++) {
-                this.genObstacle(
-                    type,
-                    pos ?? this.getRandomPositionFor(type),
-                    0,
-                    ori ?? 0,
-                    scale ?? util.random(def.scale.createMax, def.scale.createMin)
-                );
-            }
-            break;
-        case "building":
-            for (let i = 0; i < count; i++) {
-                this.genBuilding(type);
-            }
-            break;
-        case "structure":
-            for (let i = 0; i < count; i++) {
-                this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
-            }
+            case "obstacle":
+                for (let i = 0; i < count; i++) {
+                    this.genObstacle(
+                        type,
+                        pos ?? this.getRandomPositionFor(type),
+                        0,
+                        ori ?? 0,
+                        scale ?? util.random(def.scale.createMax, def.scale.createMin)
+                    );
+                }
+                break;
+            case "building":
+                for (let i = 0; i < count; i++) {
+                    this.genBuilding(type);
+                }
+                break;
+            case "structure":
+                for (let i = 0; i < count; i++) {
+                    this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
+                }
         }
     }
 
@@ -196,36 +197,36 @@ export class GameMap {
             const partPosition = math.addAdjust(pos, mapObject.pos, ori);
 
             switch (part.type) {
-            case "structure":
-                this.genStructure(partType, partPosition, layer, partOrientation);
-                break;
-            case "building":
-                this.genBuilding(partType, partPosition, partOrientation, layer);
-                break;
-            case "obstacle":
-                this.genObstacle(
-                    partType,
-                    partPosition,
-                    layer,
-                    partOrientation,
-                    mapObject.scale
-                    // part,
-                    // building,
-                    // mapObject.puzzlePiece
-                );
-                break;
-            case "decal": {
-                const decal = new Decal(
-                    this.game,
-                    partType,
-                    partPosition,
-                    layer,
-                    partOrientation,
-                    mapObject.scale
-                );
-                this.game.grid.addObject(decal);
-                break;
-            }
+                case "structure":
+                    this.genStructure(partType, partPosition, layer, partOrientation);
+                    break;
+                case "building":
+                    this.genBuilding(partType, partPosition, partOrientation, layer);
+                    break;
+                case "obstacle":
+                    this.genObstacle(
+                        partType,
+                        partPosition,
+                        layer,
+                        partOrientation,
+                        mapObject.scale
+                        // part,
+                        // building,
+                        // mapObject.puzzlePiece
+                    );
+                    break;
+                case "decal": {
+                    const decal = new Decal(
+                        this.game,
+                        partType,
+                        partPosition,
+                        layer,
+                        partOrientation,
+                        mapObject.scale
+                    );
+                    this.game.grid.addObject(decal);
+                    break;
+                }
             }
         }
 
@@ -320,11 +321,48 @@ export class GameMap {
         return pos;
     }
 
-    clampToMapBounds(pos: Vec2): Vec2 {
-        return coldet.clampPosToAabb(pos, this.bounds);
+    getRandomSpawnPosition(): Vec2 {
+        const getPos = () => {
+            return {
+                x: util.random(this.msg.shoreInset, this.width - this.msg.shoreInset),
+                y: util.random(this.msg.shoreInset, this.height - this.msg.shoreInset)
+            };
+        };
+
+        let attempts = 0;
+        let collided = true;
+
+        const circle = collider.createCircle(getPos(), GameConfig.player.radius)
+
+        while (attempts++ < 200 && collided) {
+            collided = false;
+            v2.set(circle.pos, getPos());
+
+            const objs = this.game.grid.intersectCollider(circle);
+
+            for (const obj of objs) {
+                if (obj.layer !== 0) continue;
+                if (obj instanceof Obstacle && coldet.test(obj.collider, circle)) {
+                    collided = true;
+                    break;
+                }
+
+                if (obj instanceof Building || obj instanceof Structure) {
+                    for (const bound of obj.mapObstacleBounds) {
+                        if (coldet.test(bound, circle)) {
+                            collided = true;
+                            break;
+                        }
+                    }
+                    if (collided) break;
+                }
+            }
+        }
+
+        return circle.pos;
     }
 
-    isOnWater(pos: Vec2, layer: number): boolean {
-        return false;
+    clampToMapBounds(pos: Vec2): Vec2 {
+        return coldet.clampPosToAabb(pos, this.bounds);
     }
 }

@@ -2,20 +2,21 @@ import { type WebSocket } from "uWebSockets.js";
 import { type PlayerContainer } from "./server";
 import { type Msg, MsgStream, MsgType } from "./net/net";
 import { Player } from "./objects/player";
-import { v2 } from "./utils/v2";
+import { Vec2, v2 } from "./utils/v2";
 import { InputMsg } from "./net/inputMsg";
 import { Grid } from "./utils/grid";
 import { JoinMsg } from "./net/joinMsg";
 import { type GameObject } from "./objects/gameObject";
-import { type ConfigType } from "./config";
+import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { Logger } from "./utils/misc";
 import { BulletManager } from "./objects/bullet";
 import { type ExplosionData } from "./net/updateMsg";
+import { util } from "./utils/util";
 
 export class Game {
     stopped = false;
-    allowJoin = false;
+    allowJoin = true;
     over = false;
     startedTime = 0;
 
@@ -127,9 +128,23 @@ export class Game {
     }
 
     addPlayer(socket: WebSocket<PlayerContainer>): Player {
+        let position: Vec2
+
+        switch (this.config.spawn.mode) {
+            case SpawnMode.Center:
+                position = v2.create(this.map.width / 2, this.map.height / 2)
+                break;
+            case SpawnMode.Fixed:
+                position = v2.copy(this.config.spawn.position)
+                break;
+            case SpawnMode.Random:
+                position = this.map.getRandomSpawnPosition();
+                break;
+        }
+
         const player = new Player(
             this,
-            v2.add(v2.create(this.map.width / 2, this.map.height / 2), v2.mul(v2.randomUnit(), 10)),
+            position,
             socket);
 
         return player;

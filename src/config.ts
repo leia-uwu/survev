@@ -28,13 +28,10 @@ export const Config = {
 
     defaultRegion: "local",
 
-    spawn: { mode: SpawnMode.Random },
+    spawn: { mode: SpawnMode.Center },
 
     maxPlayersPerGame: 80,
     maxGames: 1,
-    preventJoinAfter: 60000,
-
-    gas: { mode: GasMode.Normal },
 
     movementSpeed: 12,
     tps: 30
@@ -65,16 +62,11 @@ export interface ConfigType {
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.
      * SpawnMode.Random spawns the player at a random location.
-     * SpawnMode.Radius spawns the player at a random location within the circle with the given position and radius.
      * SpawnMode.Fixed always spawns the player at the exact position given.
      * SpawnMode.Center always spawns the player in the center of the map.
      */
     readonly spawn: {
         readonly mode: SpawnMode.Random
-    } | {
-        readonly mode: SpawnMode.Radius
-        readonly position: Vec2
-        readonly radius: number
     } | {
         readonly mode: SpawnMode.Fixed
         readonly position: Vec2
@@ -92,36 +84,9 @@ export interface ConfigType {
      */
     readonly maxGames: number
 
-    /**
-     * The number of milliseconds after which players are prevented from joining a game.
-     */
-    readonly preventJoinAfter: number
-
-    /**
-     * There are 3 gas modes: GasMode.Normal, GasMode.Debug, and GasMode.Disabled.
-     * GasMode.Normal: Default gas behavior. overrideDuration is ignored.
-     * GasMode.Debug: The duration of each stage is always the duration specified by overrideDuration.
-     * GasMode.Disabled: Gas is disabled.
-     */
-    readonly gas: {
-        readonly mode: GasMode.Disabled
-    } | {
-        readonly mode: GasMode.Normal
-    } | {
-        readonly mode: GasMode.Debug
-        readonly overrideDuration: number
-    }
-
     readonly movementSpeed: number
     /**
      * Server tick rate
      */
     readonly tps: number
-
-    /**
-     * If this option is specified, the given HTTP header will be used to determine IP addresses.
-     * If using nginx with the sample config, set it to `"X-Real-IP"`.
-     * If using Cloudflare, set it to `"CF-Connecting-IP"`.
-     */
-    readonly ipHeader?: string
 }
