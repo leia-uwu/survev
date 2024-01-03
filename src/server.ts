@@ -12,7 +12,7 @@ import {
 import { URLSearchParams } from "node:url";
 import { Game } from "./game";
 // import { type Player } from "./objects/player";
-import { Logger, readPostedJSON } from "./utils/misc";
+import { Logger } from "./utils/logger";
 import { type Player } from "./objects/player";
 
 /**
@@ -30,6 +30,58 @@ function forbidden(res: HttpResponse): void {
     res.writeStatus("403 Forbidden").end("403 Forbidden");
 }
 
+/**
+ * Read the body of a POST request.
+ * @link https://github.com/uNetworking/uWebSockets.js/blob/master/examples/JsonPost.js
+ * @param res The response from the client.
+ * @param cb A callback containing the request body.
+ * @param err A callback invoked whenever the request cannot be retrieved.
+ */
+function readPostedJSON<T>(
+    res: HttpResponse,
+    cb: (json: T) => void,
+    err: () => void
+): void {
+    let buffer: Buffer | Uint8Array;
+    /* Register data cb */
+    res.onData((ab, isLast) => {
+        const chunk = Buffer.from(ab);
+        if (isLast) {
+            let json: T;
+            if (buffer) {
+                try {
+                    // @ts-expect-error JSON.parse can accept a Buffer as an argument
+                    json = JSON.parse(Buffer.concat([buffer, chunk]));
+                } catch (e) {
+                    /* res.close calls onAborted */
+                    res.close();
+                    return;
+                }
+                cb(json);
+            } else {
+                try {
+                    // @ts-expect-error JSON.parse can accept a Buffer as an argument
+                    json = JSON.parse(chunk);
+                } catch (e) {
+                    /* res.close calls onAborted */
+                    res.close();
+                    return;
+                }
+                cb(json);
+            }
+        } else {
+            if (buffer) {
+                buffer = Buffer.concat([buffer, chunk]);
+            } else {
+                buffer = Buffer.concat([chunk]);
+            }
+        }
+    });
+
+    /* Register error cb */
+    res.onAborted(err);
+}
+
 // Initialize the server
 const app = Config.ssl
     ? SSLApp({
@@ -40,10 +92,11 @@ const app = Config.ssl
 
 const games: Array<Game | undefined> = [];
 
+const logger = new Logger("Server");
+
 export function newGame(id?: number): number {
     if (id !== undefined) {
         if (!games[id] || games[id]?.stopped) {
-            Logger.log(`Game ${id} | Creating...`);
             games[id] = new Game(id, Config);
             return id;
         }
@@ -63,9 +116,8 @@ export function endGame(id: number, createNewGame: boolean): void {
     for (const player of game.connectedPlayers) {
         player.socket.close();
     }
-    Logger.log(`Game ${id} | Ended`);
+    game.logger.log(`Game ${id} | Ended`);
     if (createNewGame) {
-        Logger.log(`Game ${id} | Creating...`);
         games[id] = new Game(id, Config);
     } else {
         games[id] = undefined;
@@ -163,7 +215,7 @@ app.post("/api/find_game", async(res) => {
                 }
             }
         } else {
-            Logger.warn("/api/find_game: Invalid region");
+            logger.warn("/api/find_game: Invalid region");
             response = {
                 err: "Invalid Region"
             };
@@ -174,7 +226,7 @@ app.post("/api/find_game", async(res) => {
             res: [response]
         }));
     }, () => {
-        Logger.warn("/api/find_game: Error retrieving body");
+        logger.warn("/api/find_game: Error retrieving body");
     });
 });
 
@@ -258,16 +310,16 @@ app.ws("/play", {
         const game = games[data.gameID];
         const player = data.player;
         if (game === undefined || player === undefined) return;
-        Logger.log(`Game ${data.gameID} | "${player.name}" left`);
+        game.logger.log(`"${player.name}" left`);
         game.removePlayer(player);
     }
 });
 
 // Start the server
 app.listen(Config.host, Config.port, (): void => {
-    Logger.log(`Resurviv Server v${version}`);
-    Logger.log(`Listening on ${Config.host}:${Config.port}`);
-    Logger.log("Press Ctrl+C to exit.");
+    logger.log(`Resurviv Server v${version}`);
+    logger.log(`Listening on ${Config.host}:${Config.port}`);
+    logger.log("Press Ctrl+C to exit.");
 
     newGame(0);
 });
@@ -277,5 +329,5 @@ setInterval(() => {
 
     const perfString = `Server | Memory usage: ${Math.round(memoryUsage / 1024 / 1024 * 100) / 100} MB`;
 
-    Logger.log(perfString);
+    logger.log(perfString);
 }, 60000);

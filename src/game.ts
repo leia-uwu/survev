@@ -2,17 +2,16 @@ import { type WebSocket } from "uWebSockets.js";
 import { type PlayerContainer } from "./server";
 import { type Msg, MsgStream, MsgType } from "./net/net";
 import { Player } from "./objects/player";
-import { Vec2, v2 } from "./utils/v2";
+import { type Vec2, v2 } from "./utils/v2";
 import { InputMsg } from "./net/inputMsg";
 import { Grid } from "./utils/grid";
 import { JoinMsg } from "./net/joinMsg";
 import { type GameObject } from "./objects/gameObject";
 import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
-import { Logger } from "./utils/misc";
 import { BulletManager } from "./objects/bullet";
 import { type ExplosionData } from "./net/updateMsg";
-import { util } from "./utils/util";
+import { Logger } from "./utils/logger";
 
 export class Game {
     stopped = false;
@@ -65,10 +64,14 @@ export class Game {
 
     // serializationCache = new SerializationCache();
 
+    logger: Logger;
+
     constructor(id: number, config: ConfigType) {
+        this.id = id;
+        this.logger = new Logger(`Game #${this.id}`);
+        this.logger.log("Creating");
         const start = Date.now();
 
-        this.id = id;
         this.config = config;
 
         this.grid = new Grid(1024, 1024);
@@ -79,7 +82,7 @@ export class Game {
         this.tickInterval = setInterval(() => this.tick(), this.realDt);
         this.allowJoin = true;
 
-        Logger.log(`Game ${this.id} | Created in ${Date.now() - start} ms`);
+        this.logger.log(`Created in ${Date.now() - start} ms`);
     }
 
     tick(): void {
@@ -122,24 +125,24 @@ export class Game {
         if (this.tickTimes.length >= 200) {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            Logger.log(`Game ${this.id} | Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / this.realDt) * 100).toFixed(1)}%`);
+            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / this.realDt) * 100).toFixed(1)}%`);
             this.tickTimes = [];
         }
     }
 
     addPlayer(socket: WebSocket<PlayerContainer>): Player {
-        let position: Vec2
+        let position: Vec2;
 
         switch (this.config.spawn.mode) {
-            case SpawnMode.Center:
-                position = v2.create(this.map.width / 2, this.map.height / 2)
-                break;
-            case SpawnMode.Fixed:
-                position = v2.copy(this.config.spawn.position)
-                break;
-            case SpawnMode.Random:
-                position = this.map.getRandomSpawnPosition();
-                break;
+        case SpawnMode.Center:
+            position = v2.create(this.map.width / 2, this.map.height / 2);
+            break;
+        case SpawnMode.Fixed:
+            position = v2.copy(this.config.spawn.position);
+            break;
+        case SpawnMode.Random:
+            position = this.map.getRandomSpawnPosition();
+            break;
         }
 
         const player = new Player(

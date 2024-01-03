@@ -129,26 +129,26 @@ export class GameMap {
         const def = MapObjectDefs[type];
 
         switch (def.type) {
-            case "obstacle":
-                for (let i = 0; i < count; i++) {
-                    this.genObstacle(
-                        type,
-                        pos ?? this.getRandomPositionFor(type),
-                        0,
-                        ori ?? 0,
-                        scale ?? util.random(def.scale.createMax, def.scale.createMin)
-                    );
-                }
-                break;
-            case "building":
-                for (let i = 0; i < count; i++) {
-                    this.genBuilding(type);
-                }
-                break;
-            case "structure":
-                for (let i = 0; i < count; i++) {
-                    this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
-                }
+        case "obstacle":
+            for (let i = 0; i < count; i++) {
+                this.genObstacle(
+                    type,
+                    pos ?? this.getRandomPositionFor(type),
+                    0,
+                    ori ?? 0,
+                    scale ?? util.random(def.scale.createMax, def.scale.createMin)
+                );
+            }
+            break;
+        case "building":
+            for (let i = 0; i < count; i++) {
+                this.genBuilding(type);
+            }
+            break;
+        case "structure":
+            for (let i = 0; i < count; i++) {
+                this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
+            }
         }
     }
 
@@ -197,36 +197,36 @@ export class GameMap {
             const partPosition = math.addAdjust(pos, mapObject.pos, ori);
 
             switch (part.type) {
-                case "structure":
-                    this.genStructure(partType, partPosition, layer, partOrientation);
-                    break;
-                case "building":
-                    this.genBuilding(partType, partPosition, partOrientation, layer);
-                    break;
-                case "obstacle":
-                    this.genObstacle(
-                        partType,
-                        partPosition,
-                        layer,
-                        partOrientation,
-                        mapObject.scale
-                        // part,
-                        // building,
-                        // mapObject.puzzlePiece
-                    );
-                    break;
-                case "decal": {
-                    const decal = new Decal(
-                        this.game,
-                        partType,
-                        partPosition,
-                        layer,
-                        partOrientation,
-                        mapObject.scale
-                    );
-                    this.game.grid.addObject(decal);
-                    break;
-                }
+            case "structure":
+                this.genStructure(partType, partPosition, layer, partOrientation);
+                break;
+            case "building":
+                this.genBuilding(partType, partPosition, partOrientation, layer);
+                break;
+            case "obstacle":
+                this.genObstacle(
+                    partType,
+                    partPosition,
+                    layer,
+                    partOrientation,
+                    mapObject.scale
+                    // part,
+                    // building,
+                    // mapObject.puzzlePiece
+                );
+                break;
+            case "decal": {
+                const decal = new Decal(
+                    this.game,
+                    partType,
+                    partPosition,
+                    layer,
+                    partOrientation,
+                    mapObject.scale
+                );
+                this.game.grid.addObject(decal);
+                break;
+            }
             }
         }
 
@@ -332,7 +332,7 @@ export class GameMap {
         let attempts = 0;
         let collided = true;
 
-        const circle = collider.createCircle(getPos(), GameConfig.player.radius)
+        const circle = collider.createCircle(getPos(), GameConfig.player.radius);
 
         while (attempts++ < 200 && collided) {
             collided = false;
