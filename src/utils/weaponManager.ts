@@ -36,6 +36,10 @@ export class WeaponManager {
                 ammo: 0
             });
         }
+        this.weapons[0].type = "awc";
+        this.weapons[1].type = "vector";
+        this.weapons[0].ammo = 1;
+        this.weapons[1].ammo = 1;
     }
 
     shootStart(): void {
@@ -58,11 +62,17 @@ export class WeaponManager {
     }
 
     shootHold(): void {
-        // this.shootStart();
+        this.shootStart();
     }
 
+    // TODO: proper firing delays and stuff
+    fireDelay = 0;
     fireWeapon(offhand: boolean, type: string) {
+        if (this.fireDelay > this.player.game.now) return;
         const itemDef = GameObjectDefs[type] as GunDef;
+
+        this.fireDelay = this.player.game.now + (itemDef.fireDelay * 1000);
+
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
             // const msg = new PickupMsg();
@@ -72,7 +82,7 @@ export class WeaponManager {
         }
 
         const direction = this.player.dir;
-        const toMouseLen = this.player.lastInputMsg.toMouseLen;
+        const toMouseLen = this.player.toMouseLen;
 
         this.player.cancelAction(false);
 
@@ -93,7 +103,7 @@ export class WeaponManager {
         let clipNrm = v2.mul(direction, -1.0);
         const aabb = collider.createAabbExtents(this.player.pos, v2.create(this.player.rad + gunLen + 1.5));
 
-        const nearbyObjs = [...this.player.game.grid.intersectCollider(aabb)].filter(obj => obj.__type === ObjectType.Obstacle) as Obstacle[];
+        const nearbyObjs = this.player.game.grid.intersectCollider(aabb).filter(obj => obj.__type === ObjectType.Obstacle) as Obstacle[];
 
         for (let i = 0; i < nearbyObjs.length; i++) {
             const obj = nearbyObjs[i];
@@ -177,14 +187,15 @@ export class WeaponManager {
             const damageMult = 1.0;
 
             const params: BulletParams = {
-                player: this.player,
+                playerId: this.player.id,
                 bulletType: itemDef.bulletType,
-                shotSourceType: type,
+                sourceType: type,
                 damageType: GameConfig.DamageType.Player,
                 pos: shotPos,
                 dir: shotDir,
                 layer: bulletLayer,
-                distance: maxDistance,
+                maxDistance,
+                variance: 1,
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: offhand,
@@ -192,9 +203,9 @@ export class WeaponManager {
                 reflectCount: 0,
                 splinter: hasSplinter,
                 // reflectObjId: this.player.linkedObstacleId,
-                onHitFx: hasExplosive ? "explosion_rounds" : ""
+                onHitFx: hasExplosive ? "explosion_rounds" : undefined
             };
-            this.player.game.addBullet(params);
+            this.player.game.bulletManager.fireBullet(params);
 
             // Shoot a projectile if defined
             if (itemDef.projType) {
@@ -218,7 +229,7 @@ export class WeaponManager {
                     sParams.trailSmall = true;
                     sParams.damageMult *= 0.45;
 
-                    this.player.game.addBullet(sParams);
+                    this.player.game.bulletManager.fireBullet(sParams);
                 }
             }
         }
@@ -273,7 +284,7 @@ export class WeaponManager {
             pen: number
         }> = [];
 
-        const objs = [...this.player.game.grid.intersectCollider(coll)];
+        const objs = this.player.game.grid.intersectCollider(coll);
 
         const obstacles = objs.filter(obj => obj.__type === ObjectType.Obstacle) as Obstacle[];
 
@@ -374,9 +385,9 @@ export class WeaponManager {
             const obj = hit.obj;
 
             if (obj instanceof Obstacle) {
-                obj.damage(meleeDef.damage * meleeDef.obstacleDamage);
+                obj.damage(meleeDef.damage * meleeDef.obstacleDamage, this.activeWeapon, GameConfig.DamageType.Player);
             } else if (obj instanceof Player) {
-                obj.damage(meleeDef.damage, this.player, this.activeWeapon, GameConfig.DamageType.Player);
+                obj.damage(meleeDef.damage, this.activeWeapon, GameConfig.DamageType.Player, this.player);
             }
         }
     }

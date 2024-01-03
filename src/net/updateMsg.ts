@@ -177,7 +177,7 @@ export interface BulletData {
     clipDistance: boolean
     distance: number
     shotFx: boolean
-    shotSourceType: string
+    sourceType: string
     shotOffhand: boolean
     lastShot: boolean
     reflectCount: number
@@ -397,7 +397,7 @@ export class UpdateMsg extends Msg {
                 }
                 s.writeBoolean(bullet.shotFx);
                 if (bullet.shotFx) {
-                    s.writeGameType(bullet.shotSourceType);
+                    s.writeGameType(bullet.sourceType);
                     s.writeBoolean(bullet.shotOffhand);
                     s.writeBoolean(bullet.lastShot);
                 }

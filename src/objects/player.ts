@@ -79,7 +79,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     action!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
-    scope = "4xscope";
+    scope = "15xscope";
 
     inventory: Record<string, number> = {};
 
@@ -293,7 +293,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             step++;
             collided = false;
             const coll = collider.createCircle(this.pos, this.rad);
-            objs = [...this.game.grid.intersectCollider(coll)];
+            objs = this.game.grid.intersectCollider(coll);
 
             for (const obj of objs) {
                 if (obj instanceof Obstacle &&
@@ -342,7 +342,14 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
-            this.game.grid.addObject(this);
+            this.game.grid.updateObject(this);
+        }
+
+        if (this.shootStart) {
+            this.weaponManager.shootStart();
+        }
+        if (this.shootHold) {
+            this.weaponManager.shootHold();
         }
     }
 
@@ -376,7 +383,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         const radius = this.zoom + 4;
         const rect = coldet.circleToAabb(this.pos, radius);
 
-        const newVisibleObjects = this.game.grid.intersectCollider(rect);
+        const newVisibleObjects = new Set(this.game.grid.intersectCollider(rect));
 
         for (const obj of this.visibleObjects) {
             if (!newVisibleObjects.has(obj)) {
@@ -408,7 +415,26 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         updateMsg.activePlayerData = this;
         updateMsg.playerInfos = this._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
-        updateMsg.bullets = this.game.newBullets;
+        let newBullets = [];
+        const extendedRadius = 1.1 * radius;
+        const radiusSquared = extendedRadius * extendedRadius;
+
+        const bullets = this.game.bulletManager.newBullets;
+        for (let i = 0; i < bullets.length; i++) {
+            const bullet = bullets[i];
+            if (v2.lengthSqr(v2.sub(bullet.pos, this.pos)) < radiusSquared ||
+                v2.lengthSqr(v2.sub(bullet.clientEndPos, this.pos)) < radiusSquared ||
+                coldet.intersectSegmentCircle(bullet.pos, bullet.clientEndPos, this.pos, extendedRadius)
+            ) {
+                newBullets.push(bullet);
+            }
+        }
+        if (newBullets.length > 255) {
+            console.error("Too many new bullets created!", newBullets.length);
+            newBullets = newBullets.slice(0, 255);
+        }
+
+        updateMsg.bullets = newBullets;
         updateMsg.explosions = this.game.explosions;
 
         msgStream.serializeMsg(updateMsg);
@@ -427,21 +453,23 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         this._firstUpdate = false;
     }
 
-    damage(amount: number, source: GameObject, sourceType: string, damageType: number) {
+    damage(amount: number, sourceType: string, damageType: number, source: GameObject | undefined, isHeadShot?: boolean) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
-        let finalDamage: number = amount;
+        let finalDamage = amount;
 
         const chest = GameObjectDefs[this.chest];
+
         if (chest !== undefined && chest.type === "chest") {
-            finalDamage -= finalDamage * chest.damageReduction;
+            finalDamage -= finalDamage * (chest.damageReduction * (isHeadShot ? 1 : 0.3));
         }
 
         const helmet = GameObjectDefs[this.helmet];
-        if (helmet !== undefined && helmet.type === "helmet") {
+        if (helmet !== undefined && helmet.type === "helmet" && !isHeadShot) {
             finalDamage -= finalDamage * helmet.damageReduction;
         }
+
         if (this._health - finalDamage < 0) finalDamage += this._health - finalDamage;
 
         this.damageTaken += finalDamage;
@@ -488,6 +516,10 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         }
     }
 
+    toMouseLen = 0;
+    shootHold = false;
+    shootStart = false;
+
     handleInput(msg: InputMsg): void {
         if (this.dead) return;
         this.lastInputMsg = msg;
@@ -495,13 +527,9 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         if (!v2.eq(this.dir, msg.toMouseDir)) this.setPartDirty();
         this.dirOld = v2.copy(this.dir);
         this.dir = msg.toMouseDir;
-
-        if (msg.shootStart) {
-            this.weaponManager.shootStart();
-        }
-        if (msg.shootHold) {
-            this.weaponManager.shootHold();
-        }
+        this.shootHold = msg.shootHold;
+        this.shootStart = msg.shootStart;
+        this.toMouseLen = msg.toMouseLen;
 
         for (const input of msg.inputs) {
             switch (input) {

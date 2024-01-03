@@ -39,6 +39,8 @@ interface ObstacleDef {
     isWindow?: boolean
     isWall?: boolean
     destroyType?: string
+    stonePlated?: boolean
+    armorPlated?: boolean
     map: {
         display: boolean
         color: number

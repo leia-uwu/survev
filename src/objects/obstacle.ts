@@ -1,3 +1,4 @@
+import { GameObjectDefs } from "../defs/gameObjectDefs";
 import { MapObjectDefs } from "../defs/mapObjectDefs";
 import { type ObstacleDef } from "../defs/mapObjectsTyping";
 import { type Game } from "../game";
@@ -61,6 +62,8 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
 
     layer: number;
 
+    destructible: boolean;
+
     constructor(game: Game, pos: Vec2, type: string, layer: number, ori = 0, scale = 1) {
         super(game, pos);
         this.type = type;
@@ -95,6 +98,8 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
 
         this.collider = collider.transform(def.collision, pos, rotation, scale);
 
+        this.destructible = !!def.destructible;
+
         if (def.door) {
             this.isDoor = true;
             this.door = {
@@ -114,9 +119,17 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         }
     }
 
-    damage(amount: number): void {
+    damage(amount: number, sourceType: string, _damageType: number): void {
         const def = MapObjectDefs[this.type] as ObstacleDef;
-        if (this.health === 0 || !def.destructible) return;
+        if (this.health === 0 || !this.destructible) return;
+
+        const sourceDef = GameObjectDefs[sourceType] as {
+            armorPiercing?: boolean
+            stonePiercing?: boolean
+        };
+
+        if (def.armorPlated && !sourceDef.armorPiercing) return;
+        if (def.stonePlated && !sourceDef.stonePiercing) return;
 
         this.health -= amount;
 

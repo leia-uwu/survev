@@ -10,7 +10,7 @@ import { type GameObject } from "./objects/gameObject";
 import { type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { Logger } from "./utils/misc";
-import { Bullet, type BulletParams } from "./objects/bullet";
+import { BulletManager } from "./objects/bullet";
 import { type ExplosionData } from "./net/updateMsg";
 
 export class Game {
@@ -40,9 +40,6 @@ export class Game {
 
     newPlayers: Player[] = [];
 
-    bullets = new Set<Bullet>();
-    newBullets: Bullet[] = [];
-
     explosions: ExplosionData[] = [];
 
     id: number;
@@ -62,6 +59,8 @@ export class Game {
     now = Date.now();
 
     tickTimes: number[] = [];
+
+    bulletManager = new BulletManager(this);
 
     // serializationCache = new SerializationCache();
 
@@ -85,12 +84,7 @@ export class Game {
     tick(): void {
         this.now = Date.now();
 
-        for (const bullet of this.bullets) {
-            bullet.update();
-            if (!bullet.alive) {
-                this.bullets.delete(bullet);
-            }
-        }
+        this.bulletManager.update();
 
         for (const player of this.players) {
             player.update();
@@ -115,7 +109,6 @@ export class Game {
         this.partialObjs.clear();
         this.newPlayers.length = 0;
         this.msgsToSend.length = 0;
-        this.newBullets.length = 0;
         this.explosions.length = 0;
         this.aliveCountDirty = false;
 
@@ -140,13 +133,6 @@ export class Game {
             socket);
 
         return player;
-    }
-
-    addBullet(params: BulletParams): Bullet {
-        const bullet = new Bullet(this, params);
-        this.bullets.add(bullet);
-        this.newBullets.push(bullet);
-        return bullet;
     }
 
     handleMsg(buff: ArrayBuffer, player: Player): void {

@@ -92,10 +92,10 @@ export class Structure extends GameObject implements FullStructure, PartialStruc
 
             const collidesDown = coldet.testCircleAabb(circle.pos, circle.rad, stair.downAabb.min, stair.downAabb.max);
 
-            if (collidesUp && !collidesDown) {
+            if (collidesUp) {
                 object.layer = 2;
             }
-            if (!collidesUp && collidesDown) {
+            if (collidesDown) {
                 object.layer = 3;
             }
         }

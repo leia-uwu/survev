@@ -6,6 +6,7 @@ import { GearDefs } from "./gearDefs";
 import { GunDefs } from "./gunDefs";
 import { HealEffectDefs } from "./healEffectDefs";
 import { MeleeDefs } from "./meleeDefs";
+import { type GameObjectDef } from "./objectsTypings";
 import { OutfitDefs } from "./outfitDefs";
 import { PassDefs } from "./passDefs";
 import { PerkDefs } from "./perkDefs";

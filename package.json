@@ -2,7 +2,6 @@
   "name": "resurviv",
   "version": "0.0.1",
   "description": "A community-made resurrection of the defunct online game surviv.io.",
-  "main": "dist/src/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node --enable-source-maps dist/src/server.js",

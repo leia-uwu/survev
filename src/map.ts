@@ -128,26 +128,26 @@ export class GameMap {
         const def = MapObjectDefs[type];
 
         switch (def.type) {
-            case "obstacle":
-                for (let i = 0; i < count; i++) {
-                    this.genObstacle(
-                        type,
-                        pos ?? this.getRandomPositionFor(type),
-                        0,
-                        ori ?? 0,
-                        scale ?? util.random(def.scale.createMax, def.scale.createMin)
-                    );
-                }
-                break;
-            case "building":
-                for (let i = 0; i < count; i++) {
-                    this.genBuilding(type);
-                }
-                break;
-            case "structure":
-                for (let i = 0; i < count; i++) {
-                    this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
-                }
+        case "obstacle":
+            for (let i = 0; i < count; i++) {
+                this.genObstacle(
+                    type,
+                    pos ?? this.getRandomPositionFor(type),
+                    0,
+                    ori ?? 0,
+                    scale ?? util.random(def.scale.createMax, def.scale.createMin)
+                );
+            }
+            break;
+        case "building":
+            for (let i = 0; i < count; i++) {
+                this.genBuilding(type);
+            }
+            break;
+        case "structure":
+            for (let i = 0; i < count; i++) {
+                this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
+            }
         }
     }
 
@@ -196,43 +196,40 @@ export class GameMap {
             const partPosition = math.addAdjust(pos, mapObject.pos, ori);
 
             switch (part.type) {
-                case "structure":
-                    this.genStructure(partType, partPosition, layer, partOrientation);
-                    break;
-                case "building":
-                    this.genBuilding(partType, partPosition, partOrientation, layer);
-                    break;
-                case "obstacle":
-                    this.genObstacle(
-                        partType,
-                        partPosition,
-                        layer,
-                        partOrientation,
-                        mapObject.scale
-                        // part,
-                        // building,
-                        // mapObject.puzzlePiece
-                    );
-                    break;
-                case "decal":
-                    const decal = new Decal(
-                        this.game,
-                        partType,
-                        partPosition,
-                        layer,
-                        partOrientation,
-                        mapObject.scale
-                    )
-                    this.game.grid.addObject(decal)
-                    break;
+            case "structure":
+                this.genStructure(partType, partPosition, layer, partOrientation);
+                break;
+            case "building":
+                this.genBuilding(partType, partPosition, partOrientation, layer);
+                break;
+            case "obstacle":
+                this.genObstacle(
+                    partType,
+                    partPosition,
+                    layer,
+                    partOrientation,
+                    mapObject.scale
+                    // part,
+                    // building,
+                    // mapObject.puzzlePiece
+                );
+                break;
+            case "decal": {
+                const decal = new Decal(
+                    this.game,
+                    partType,
+                    partPosition,
+                    layer,
+                    partOrientation,
+                    mapObject.scale
+                );
+                this.game.grid.addObject(decal);
+                break;
+            }
             }
         }
 
         for (const patch of def.mapGroundPatches ?? []) {
-            const width = patch.bound.max.x - patch.bound.min.x;
-            const height = patch.bound.max.y - patch.bound.min.y;
-            const ratio = (width + height) / 2;
-
             this.msg.groundPatches.push({
                 min: math.addAdjust(pos, patch.bound.min, ori),
                 max: math.addAdjust(pos, patch.bound.max, ori),
@@ -273,10 +270,8 @@ export class GameMap {
     getRandomPositionFor(type: string, ori = 0, scale = 1): Vec2 {
         const colliders = mapHelpers.getColliders(type);
 
-
         const rot = math.oriToRad(ori);
 
-        const def = MapObjectDefs[type];
         const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
 
         const width = bounds.max.x - bounds.min.x;
@@ -288,7 +283,6 @@ export class GameMap {
                 y: util.random(this.msg.shoreInset + height, this.height - this.msg.shoreInset - height)
             };
         };
-
 
         let pos = getPos();
 

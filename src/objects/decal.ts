@@ -1,6 +1,6 @@
 import { type Game } from "../game";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
-import { Collider } from "../utils/coldet";
+import { type Collider } from "../utils/coldet";
 import { mapHelpers } from "../utils/mapHelpers";
 import { type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
@@ -15,7 +15,7 @@ export class Decal extends GameObject implements FullDecal, PartialDecal {
 
     layer: number;
     type: string;
-    scale: number
+    scale: number;
     goreKills = 1;
     ori: number;
 

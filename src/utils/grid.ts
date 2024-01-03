@@ -1,5 +1,5 @@
 import { type GameObject } from "../objects/gameObject";
-import { type Collider } from "./coldet";
+import { coldet, type Collider } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";
 import { type Vec2, v2 } from "./v2";
@@ -20,6 +20,8 @@ export class Grid {
     // so removing the object from the grid is faster
     private readonly _objectsCells = new Map<number, Vec2[]>();
 
+    private readonly objects = new Map<number, GameObject>();
+
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
         this.height = Math.floor(height / this.cellSize);
@@ -29,11 +31,20 @@ export class Grid {
         this._grid = Array.from({ length: this.width + 1 }, () => []);
     }
 
+    getById(id: number) {
+        return this.objects.get(id);
+    }
+
+    addObject(obj: GameObject): void {
+        this.objects.set(obj.id, obj);
+        this.updateObject(obj);
+    }
+
     /**
      * Add an object to the grid system
      */
-    addObject(obj: GameObject): void {
-        this.removeObject(obj);
+    updateObject(obj: GameObject): void {
+        this.removeFromGrid(obj);
 
         const cells: Vec2[] = [];
 
@@ -55,10 +66,15 @@ export class Grid {
         this._objectsCells.set(obj.id, cells);
     }
 
+    remove(object: GameObject): void {
+        this.objects.delete(object.id);
+        this.removeFromGrid(object);
+    }
+
     /**
      * Remove an object from the grid system
      */
-    removeObject(object: GameObject): void {
+    removeFromGrid(object: GameObject): void {
         const cells = this._objectsCells.get(object.id);
         if (!cells) return;
 
@@ -75,7 +91,7 @@ export class Grid {
      * @param hitbox The hitbox
      * @return A set with the objects near this hitbox
      */
-    intersectCollider(hitbox: Collider): Set<GameObject> {
+    intersectCollider(hitbox: Collider): GameObject[] {
         const rect = collider.toAabb(hitbox);
 
         const min = this._roundToCells(rect.min);
@@ -95,7 +111,12 @@ export class Grid {
             }
         }
 
-        return objects;
+        return [...objects];
+    }
+
+    // TODO: optimize this
+    intersectLineSegment(a: Vec2, b: Vec2): GameObject[] {
+        return this.intersectCollider(coldet.lineSegmentToAabb(a, b));
     }
 
     /**
