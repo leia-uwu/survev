@@ -470,7 +470,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             finalDamage -= finalDamage * helmet.damageReduction;
         }
 
-        if (this._health - finalDamage < 0) finalDamage += this._health - finalDamage;
+        if (this._health - finalDamage < 0) finalDamage = this.health;
 
         this.damageTaken += finalDamage;
         if (source instanceof Player) source.damageDealt += finalDamage;
