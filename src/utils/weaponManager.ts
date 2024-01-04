@@ -17,7 +17,10 @@ export class WeaponManager {
 
     curWeapIdx = 2;
 
-    weapons: Array<{ type: string, ammo: number }> = [];
+    weapons: Array<{
+        type: string
+        ammo: number
+    }> = [];
 
     get activeWeapon(): string {
         return this.weapons[this.curWeapIdx].type;
@@ -37,7 +40,7 @@ export class WeaponManager {
             });
         }
         this.weapons[0].type = "awc";
-        this.weapons[1].type = "vector";
+        this.weapons[1].type = "mp220";
         this.weapons[0].ammo = 1;
         this.weapons[1].ammo = 1;
     }

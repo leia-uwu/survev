@@ -11,7 +11,6 @@ import {
 
 import { URLSearchParams } from "node:url";
 import { Game } from "./game";
-// import { type Player } from "./objects/player";
 import { Logger } from "./utils/logger";
 import { type Player } from "./objects/player";
 
@@ -139,7 +138,7 @@ app.get("/api/site_info", (res) => {
 
     const data = {
         modes: [
-            { mapName: "main", teamMode: 1 }
+            { mapName: Config.mode, teamMode: 1 }
         ],
         pops: {
             local: `${playerCount} players`
@@ -283,7 +282,6 @@ app.ws("/play", {
         const game = games[data.gameID];
         if (game === undefined) return;
         data.player = game.addPlayer(socket);
-        // data.player.sendGameOverPacket(false) // uncomment to test game over screen
     },
 
     /**

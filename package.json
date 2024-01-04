@@ -1,7 +1,7 @@
 {
   "name": "resurviv",
   "version": "0.0.1",
-  "description": "A community-made resurrection of the defunct online game surviv.io.",
+  "description": "Open Source Surviv.io Server",
   "scripts": {
     "build": "tsc",
     "start": "node --enable-source-maps dist/src/server.js",
@@ -13,16 +13,8 @@
   "engines": {
     "node": ">=18.16.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/SurvivReloaded/survivreloaded-server.git"
-  },
   "author": "Leia",
   "license": "GPL-3.0-or-later",
-  "bugs": {
-    "url": "https://github.com/SurvivReloaded/survivreloaded-server/issues"
-  },
-  "homepage": "https://resurviv.io",
   "dependencies": {
     "bit-buffer": "^0.2.5",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.34.0"

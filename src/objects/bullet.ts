@@ -468,7 +468,8 @@ export class Bullet implements BulletData {
 
                 let isHeadShot = false;
                 // headshots >:3
-                if (Math.random() < 0.15) {
+                const sourceDef = GameObjectDefs[this.sourceType] as GunDef;
+                if ((sourceDef.headshotMult ?? 1) > 1 && Math.random() < 0.15) {
                     finalDamage *= (GameObjectDefs[this.sourceType] as GunDef).headshotMult;
                     isHeadShot = true;
                 }

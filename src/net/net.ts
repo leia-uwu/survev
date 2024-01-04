@@ -149,26 +149,26 @@ export const NetConstants = {
 
 export enum MsgType {
     None,
-    Join, // done
+    Join,
     Disconnect,
-    Input, // done
+    Input,
     Edit,
-    Joined, // done
-    Update, // done
+    Joined,
+    Update,
     Kill,
-    GameOver, // done
+    GameOver,
     Pickup,
-    Map, // done
+    Map,
     Spectate,
     DropItem,
     Emote,
-    PlayerStats, // done
+    PlayerStats,
     AdStatus,
     Loadout,
     RoleAnnouncement,
     Stats,
     UpdatePass,
-    AliveCounts, // done
+    AliveCounts,
     PerkModeRoleSelect
 }
 

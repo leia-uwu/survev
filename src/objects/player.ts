@@ -233,7 +233,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         this.socket = socket;
 
         if (game.config.mode !== "faction") {
-            this.groupId = this.teamId = this.game.nextGroupId++;
+            this.groupId = this.teamId = ++this.game.nextGroupId;
         }
 
         for (const item in GameConfig.bagSizes) {
@@ -509,6 +509,8 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                 ...this,
                 playerId: this.id
             }];
+            gameOverMsg.teamId = this.teamId;
+            gameOverMsg.winningTeamId = -1;
             this.msgsToSend.push(gameOverMsg);
 
             const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
