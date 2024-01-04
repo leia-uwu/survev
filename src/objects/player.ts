@@ -329,11 +329,11 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                 if (!onStair) {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
-                    // TODO
-                    this.aimLayer = this.layer;
                 }
                 if (this.layer !== originalLayer) {
                     this.setDirty();
+                    // TODO
+                    this.aimLayer = this.layer;
                 }
             }
         }
@@ -530,9 +530,11 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         if (this.dead) return;
         this.lastInputMsg = msg;
 
-        if (!v2.eq(this.dir, msg.toMouseDir)) this.setPartDirty();
-        this.dirOld = v2.copy(this.dir);
-        this.dir = msg.toMouseDir;
+        if (!v2.eq(this.dir, msg.toMouseDir)) {
+            this.setPartDirty();
+            this.dirOld = v2.copy(this.dir);
+            this.dir = msg.toMouseDir;
+        }
         this.shootHold = msg.shootHold;
         this.shootStart = msg.shootStart;
         this.toMouseLen = msg.toMouseLen;

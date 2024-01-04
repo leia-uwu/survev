@@ -139,7 +139,7 @@ function serializePlayerStatus(s: SurvivBitStream, data: PlayerStatus[]) {
         s.writeBoolean(info.hasData);
 
         if (info.hasData) {
-            s.writeVec(info.pos, 0, 0, 1024, 1024, 16);
+            s.writeVec(info.pos, 0, 0, 1024, 1024, 11);
             s.writeBoolean(info.visible);
             s.writeBoolean(info.dead);
             s.writeBoolean(info.downed);
