@@ -42,7 +42,7 @@
  - [ ] Doors
  - [ ] Sliding doors
  - [ ] Buttons
- - [ ] Loot
+ - [x] Loot
 
 ### Buildings
  - [x] Generation
@@ -62,7 +62,9 @@
  - [ ] River generation
 
 ### Loot
- - [ ] Loot game object and physics
+ - [x] Loot game object
+ - [x] Loot tables
+ - [ ] Physics
  - [ ] Picking up loot
  - [ ] Switching layers
  - [ ] River flow

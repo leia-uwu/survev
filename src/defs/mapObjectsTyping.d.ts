@@ -29,11 +29,16 @@ interface ObstacleDef {
     health: number
     reflectBullets?: boolean
     explosion?: string
-    loot: Array<{
-        tier: any
-        min: any
-        max: any
-        props: any
+    loot: Array<({
+        tier: string
+        min: number
+        max: number
+    } | {
+        type: string
+        count: number
+    }) & {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        props: {} | number
     }>
     isBush?: boolean
     isWindow?: boolean

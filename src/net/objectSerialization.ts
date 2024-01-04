@@ -116,10 +116,9 @@ export interface ObjectsFullData {
     [ObjectType.Loot]: {
         type: string
         layer: number
-        isOld: number
+        isOld: boolean
         isPreloadedGun: boolean
         count: number
-        hasOwner: boolean
         ownerId: number
     }
     [ObjectType.LootSpawner]: null
@@ -309,10 +308,10 @@ export const ObjectSerializeFns: { [K in ObjectType]: ObjectSerialization<K> } =
             s.writeGameType(data.type);
             s.writeUint8(data.count);
             s.writeBits(data.layer, 2);
-            s.writeBits(data.isOld, 3);
+            s.writeBoolean(data.isOld);
             s.writeBoolean(data.isPreloadedGun);
-            s.writeBoolean(data.hasOwner);
-            if (data.hasOwner) {
+            s.writeBoolean(data.ownerId !== 0);
+            if (data.ownerId !== 0) {
                 s.writeUint16(data.ownerId);
             }
             s.readBits(1);

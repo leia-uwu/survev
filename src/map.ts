@@ -7,6 +7,7 @@ import { MapMsg } from "./net/mapMsg";
 import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
+import { Loot, getLootTable } from "./objects/loot";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "./utils/coldet";
@@ -226,6 +227,16 @@ export class GameMap {
                 );
                 this.game.grid.addObject(decal);
                 break;
+            }
+            case "loot_spawner": {
+                for (const tier of part.loot) {
+                    const items = getLootTable(this.game.config.mode, tier.tier);
+
+                    for (const item of items) {
+                        const loot = new Loot(this.game, item.name, partPosition, layer, item.count);
+                        this.game.grid.addObject(loot);
+                    }
+                }
             }
             }
         }

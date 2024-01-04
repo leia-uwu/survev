@@ -8,8 +8,10 @@ import { type Collider } from "../utils/coldet";
 import { collider } from "../utils/collider";
 import { mapHelpers } from "../utils/mapHelpers";
 import { math } from "../utils/math";
+import { util } from "../utils/util";
 import { v2, type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
+import { Loot, getLootTable } from "./loot";
 
 type FullObstacle = ObjectsFullData[ObjectType.Obstacle];
 type PartialObstacle = ObjectsPartialData[ObjectType.Obstacle];
@@ -84,6 +86,7 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         if (def === undefined || def.type !== "obstacle") {
             throw new Error(`Invalid obstacle with type ${type}`);
         }
+
         this.height = def.height;
 
         this.collidable = def.collidable ?? true;
@@ -140,6 +143,24 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
 
             if (def.destroyType) {
                 this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
+            }
+
+            for (const lootTierOrItem of def.loot) {
+                if ("tier" in lootTierOrItem) {
+                    const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
+
+                    for (let i = 0; i < count; i++) {
+                        const items = getLootTable(this.game.config.mode, lootTierOrItem.tier);
+
+                        for (const item of items) {
+                            const loot = new Loot(this.game, item.name, this.pos, this.layer, item.count);
+                            this.game.grid.addObject(loot);
+                        }
+                    }
+                } else {
+                    const loot = new Loot(this.game, lootTierOrItem.type, this.pos, this.layer, lootTierOrItem.count);
+                    this.game.grid.addObject(loot);
+                }
             }
         } else {
             this.healthT = this.health / this.maxHealth;

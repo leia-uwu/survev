@@ -17,6 +17,44 @@ export const ModeDefinitions: Record<string, ModeDefinition> = {
 
 export interface ModeDefinition {
     mapId: number
+    desc: {
+        name: string
+        icon: string
+        buttonCss: string
+    }
+    assets: {
+        audio: Array<{
+            name: string
+            channel: string
+        }>
+        atlases: string[]
+    }
+    biome: {
+        colors: {
+            background: number
+            water: number
+            waterRipple: number
+            beach: number
+            riverbank: number
+            grass: number
+            underground: number
+            playerSubmerge: number
+        }
+        valueAdjust: number
+        sound: {
+            riverShore: string
+        }
+        particles: {
+            camera: string
+        }
+        tracerColors: Record<string, number>
+        airdrop: {
+            planeImg: string
+            planeSound: string
+            airdropImg: string
+        }
+    }
+
     gameMode: {
         maxPlayers: number
         killLeaderEnabled: boolean
