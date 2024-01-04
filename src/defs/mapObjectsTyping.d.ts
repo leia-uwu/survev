@@ -40,6 +40,10 @@ interface ObstacleDef {
         // eslint-disable-next-line @typescript-eslint/ban-types
         props: {} | number
     }>
+    lootSpawn: {
+        offset: Vec2
+        speedMult: number
+    }
     isBush?: boolean
     isWindow?: boolean
     isWall?: boolean

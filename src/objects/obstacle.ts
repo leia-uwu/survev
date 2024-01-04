@@ -66,6 +66,8 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
 
     destructible: boolean;
 
+    rot: number;
+
     constructor(game: Game, pos: Vec2, type: string, layer: number, ori = 0, scale = 1) {
         super(game, pos);
         this.type = type;
@@ -74,12 +76,12 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         this.layer = layer;
         const def = MapObjectDefs[type];
 
-        const rotation = math.oriToRad(ori);
+        this.rot = math.oriToRad(ori);
 
         this.bounds = collider.transform(
             mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
-            rotation,
+            this.rot,
             NetConstants.MapObjectMaxScale
         );
 
@@ -99,7 +101,7 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
         this.maxScale = scale;
         this.minScale = def.scale.destroy;
 
-        this.collider = collider.transform(def.collision, pos, rotation, scale);
+        this.collider = collider.transform(def.collision, pos, this.rot, scale);
 
         this.destructible = !!def.destructible;
 
@@ -145,6 +147,11 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
                 this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
             }
 
+            const lootPos = v2.copy(this.pos);
+            if (def.lootSpawn) {
+                v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
+            }
+
             for (const lootTierOrItem of def.loot) {
                 if ("tier" in lootTierOrItem) {
                     const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
@@ -153,12 +160,12 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
                         const items = getLootTable(this.game.config.mode, lootTierOrItem.tier);
 
                         for (const item of items) {
-                            const loot = new Loot(this.game, item.name, this.pos, this.layer, item.count);
+                            const loot = new Loot(this.game, item.name, lootPos, this.layer, item.count);
                             this.game.grid.addObject(loot);
                         }
                     }
                 } else {
-                    const loot = new Loot(this.game, lootTierOrItem.type, this.pos, this.layer, lootTierOrItem.count);
+                    const loot = new Loot(this.game, lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
                     this.game.grid.addObject(loot);
                 }
             }
