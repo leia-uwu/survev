@@ -17,16 +17,19 @@
  - [ ] Roles and cobalt classes
 
 ### Guns
+ - [x] Firing logic (should be 1/1 to surviv firing logic)
+ - [ ] fix bullet spawn layer when on stairs
  - [ ] Switch delays
  - [ ] Firing delays
  - [ ] Ammo
  - [ ] Reloading
- - [x] Firing logic (should be 1/1 to surviv firing logic)
+
 
 ### Bullets
  - [x] Collision
  - [x] Reflection
  - [x] Culling
+ - [ ] Damage falloff
 
 ### Melee weapons
  - [x] Collision

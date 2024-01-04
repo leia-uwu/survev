@@ -117,6 +117,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     chest = "chest02";
 
     layer = 0;
+    aimLayer = 0;
     dead = false;
     downed = false;
 
@@ -324,9 +325,12 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                         break;
                     }
                 }
+
                 if (!onStair) {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
+                    // TODO
+                    this.aimLayer = this.layer;
                 }
                 if (this.layer !== originalLayer) {
                     this.setDirty();
