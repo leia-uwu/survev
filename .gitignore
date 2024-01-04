@@ -6,7 +6,6 @@ dist/
 
 # Node modules
 node_modules/
-pnpm-lock.yaml
 
 user-data/
 .idea/
