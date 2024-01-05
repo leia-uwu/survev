@@ -281,7 +281,7 @@ export const GameConfig = {
         "4xscope": [1, 1, 1, 1],
         "8xscope": [1, 1, 1, 1],
         "15xscope": [1, 1, 1, 1]
-    },
+    } as Record<string, number[]>,
     lootRadius: {
         outfit: 1,
         melee: 1.25,
@@ -296,5 +296,5 @@ export const GameConfig = {
         scope: 1,
         perk: 1.25,
         xp: 1
-    }
+    } as Record<string, number>
 } as const;

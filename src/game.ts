@@ -6,12 +6,14 @@ import { type Vec2, v2 } from "./utils/v2";
 import { InputMsg } from "./net/inputMsg";
 import { Grid } from "./utils/grid";
 import { JoinMsg } from "./net/joinMsg";
-import { type GameObject } from "./objects/gameObject";
+import { ObjectType, type GameObject } from "./objects/gameObject";
 import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { type ExplosionData } from "./net/updateMsg";
 import { Logger } from "./utils/logger";
+import { Loot } from "./objects/loot";
+import { GameObjectDefs } from "./defs/gameObjectDefs";
 
 export class Game {
     stopped = false;
@@ -90,6 +92,10 @@ export class Game {
 
         this.bulletManager.update();
 
+        for (const loot of this.grid.categories[ObjectType.Loot]) {
+            (loot as Loot).update();
+        }
+
         for (const player of this.players) {
             player.update();
         }
@@ -151,6 +157,29 @@ export class Game {
             socket);
 
         return player;
+    }
+
+    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
+        const loot = new Loot(this, type, pos, layer, count);
+        this.grid.addObject(loot);
+
+        const def = GameObjectDefs[type];
+
+        if (def.type === "gun") {
+            const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
+            const halfAmmo = Math.floor(ammoCount / 2);
+
+            const leftAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo);
+            leftAmmo.push(v2.create(-1, -1), 0.5);
+            this.grid.addObject(leftAmmo);
+
+            if (ammoCount - halfAmmo >= 1) {
+                const rightAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo);
+                rightAmmo.push(v2.create(1, -1), 0.5);
+
+                this.grid.addObject(rightAmmo);
+            }
+        }
     }
 
     handleMsg(buff: ArrayBuffer, player: Player): void {

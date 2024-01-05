@@ -7,7 +7,7 @@ import { MapMsg } from "./net/mapMsg";
 import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
-import { Loot, getLootTable } from "./objects/loot";
+import { getLootTable } from "./objects/loot";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "./utils/coldet";
@@ -150,6 +150,18 @@ export class GameMap {
             for (let i = 0; i < count; i++) {
                 this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
             }
+            break;
+        case "loot_spawner":
+            for (let i = 0; i < count; i++) {
+                for (const tier of def.loot) {
+                    const items = getLootTable(this.game.config.mode, tier.tier);
+
+                    for (const item of items) {
+                        this.game.addLoot(item.name, pos ?? this.getRandomPositionFor(type), 0, item.count);
+                    }
+                }
+            }
+            break;
         }
     }
 
@@ -233,8 +245,7 @@ export class GameMap {
                     const items = getLootTable(this.game.config.mode, tier.tier);
 
                     for (const item of items) {
-                        const loot = new Loot(this.game, item.name, partPosition, layer, item.count);
-                        this.game.grid.addObject(loot);
+                        this.game.addLoot(item.name, partPosition, layer, item.count);
                     }
                 }
             }

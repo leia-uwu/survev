@@ -1,4 +1,4 @@
-import { type GameObject } from "../objects/gameObject";
+import { ObjectType, type GameObject } from "../objects/gameObject";
 import { coldet, type Collider } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";
@@ -10,7 +10,7 @@ import { type Vec2, v2 } from "./v2";
 export class Grid {
     readonly width: number;
     readonly height: number;
-    readonly cellSize = 32;
+    readonly cellSize = 16;
 
     //                        X     Y     Object ID
     //                      __^__ __^__     ___^__
@@ -22,13 +22,29 @@ export class Grid {
 
     private readonly objects = new Map<number, GameObject>();
 
+    readonly categories: Record<ObjectType, Set<GameObject>> = {
+        [ObjectType.Invalid]: new Set(),
+        [ObjectType.Player]: new Set(),
+        [ObjectType.Obstacle]: new Set(),
+        [ObjectType.Loot]: new Set(),
+        [ObjectType.LootSpawner]: new Set(),
+        [ObjectType.DeadBody]: new Set(),
+        [ObjectType.Building]: new Set(),
+        [ObjectType.Structure]: new Set(),
+        [ObjectType.Decal]: new Set(),
+        [ObjectType.Projectile]: new Set(),
+        [ObjectType.Smoke]: new Set(),
+        [ObjectType.Airdrop]: new Set()
+    };
+
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
         this.height = Math.floor(height / this.cellSize);
 
-        // fill the grid X row with arrays for the Y column
-        // maps are created on demand to save memory usage
-        this._grid = Array.from({ length: this.width + 1 }, () => []);
+        this._grid = Array.from(
+            { length: this.width + 1 },
+            () => Array.from({ length: this.height + 1 }, () => new Map())
+        );
     }
 
     getById(id: number) {
@@ -37,6 +53,7 @@ export class Grid {
 
     addObject(obj: GameObject): void {
         this.objects.set(obj.id, obj);
+        this.categories[obj.__type].add(obj);
         this.updateObject(obj);
     }
 
@@ -58,7 +75,7 @@ export class Grid {
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
-                (xRow[y] ??= new Map()).set(obj.id, obj);
+                xRow[y].set(obj.id, obj);
                 cells.push(v2.create(x, y));
             }
         }
@@ -66,36 +83,37 @@ export class Grid {
         this._objectsCells.set(obj.id, cells);
     }
 
-    remove(object: GameObject): void {
-        this.objects.delete(object.id);
-        this.removeFromGrid(object);
+    remove(obj: GameObject): void {
+        this.objects.delete(obj.id);
+        this.removeFromGrid(obj);
+        this.categories[obj.__type].delete(obj);
     }
 
     /**
      * Remove an object from the grid system
      */
-    removeFromGrid(object: GameObject): void {
-        const cells = this._objectsCells.get(object.id);
+    removeFromGrid(obj: GameObject): void {
+        const cells = this._objectsCells.get(obj.id);
         if (!cells) return;
 
         for (const cell of cells) {
-            this._grid[cell.x][cell.y].delete(object.id);
+            this._grid[cell.x][cell.y].delete(obj.id);
         }
-        this._objectsCells.delete(object.id);
+        this._objectsCells.delete(obj.id);
     }
 
     /**
-     * Get all objects near this hitbox
-     * This transforms the hitbox into a rectangle
+     * Get all objects near this collider
+     * This transforms the collider into a rectangle
      * and gets all objects intersecting it after rounding it to grid cells
-     * @param hitbox The hitbox
-     * @return A set with the objects near this hitbox
+     * @param coll The collider
+     * @return A set with the objects near this collider
      */
-    intersectCollider(hitbox: Collider): GameObject[] {
-        const rect = collider.toAabb(hitbox);
+    intersectCollider(coll: Collider): GameObject[] {
+        const aabb = collider.toAabb(coll);
 
-        const min = this._roundToCells(rect.min);
-        const max = this._roundToCells(rect.max);
+        const min = this._roundToCells(aabb.min);
+        const max = this._roundToCells(aabb.max);
 
         const objects = new Set<GameObject>();
 
@@ -103,8 +121,6 @@ export class Grid {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
                 const objectsMap = xRow[y];
-                if (!objectsMap) continue;
-
                 for (const object of objectsMap.values()) {
                     objects.add(object);
                 }

@@ -122,6 +122,8 @@ interface GunDef {
     outsideOnly?: boolean
     ignoreEndlessAmmo?: boolean
     noPotatoSwap?: boolean
+    noDrop?: boolean
+    noDropOnDeath?: boolean
     speed: {
         equip: number
         attack: number
@@ -215,6 +217,8 @@ interface ThrowableDef {
     aimDistance: number
     rad: number
     noPotatoSwap?: boolean
+    noDropOnDeath?: boolean
+    noDrop?: boolean
     throwPhysics: {
         playerVelMult: number
         velZ: number

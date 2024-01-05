@@ -101,7 +101,7 @@ function getColliders(type: string) {
                 ? object.type
                 : object.type();
             colliders.push(...getColliders(type).map(coll => {
-                const rot = math.oriToRad(object.ori);
+                const rot = object.inheritOri ? math.oriToRad(object.ori) : 0;
                 return collider.transform(coll, v2.rotate(object.pos, rot), rot, 1);
             }));
         }

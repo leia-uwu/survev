@@ -11,7 +11,7 @@ import { math } from "../utils/math";
 import { util } from "../utils/util";
 import { v2, type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
-import { Loot, getLootTable } from "./loot";
+import { getLootTable } from "./loot";
 
 type FullObstacle = ObjectsFullData[ObjectType.Obstacle];
 type PartialObstacle = ObjectsPartialData[ObjectType.Obstacle];
@@ -160,13 +160,11 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
                         const items = getLootTable(this.game.config.mode, lootTierOrItem.tier);
 
                         for (const item of items) {
-                            const loot = new Loot(this.game, item.name, lootPos, this.layer, item.count);
-                            this.game.grid.addObject(loot);
+                            this.game.addLoot(item.name, lootPos, this.layer, item.count);
                         }
                     }
                 } else {
-                    const loot = new Loot(this.game, lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
-                    this.game.grid.addObject(loot);
+                    this.game.addLoot(lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
                 }
             }
         } else {

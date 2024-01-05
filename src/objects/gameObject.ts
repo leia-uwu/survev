@@ -24,13 +24,20 @@ export abstract class GameObject {
     readonly id: number;
     readonly game: Game;
 
-    pos: Vec2;
+    _pos: Vec2;
+    get pos() {
+        return this._pos;
+    }
+
+    set pos(pos: Vec2) {
+        this._pos = pos;
+    }
 
     abstract layer: number;
 
     constructor(game: Game, pos: Vec2) {
         this.game = game;
-        this.pos = pos;
+        this._pos = pos;
         this.id = game.nextObjId++;
     }
 

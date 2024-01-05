@@ -20,7 +20,7 @@ import { math } from "../utils/math";
 import { GameOverMsg } from "../net/gameOverMsg";
 import { KillMsg } from "../net/KillMsg";
 import { DeadBody } from "./DeadBody";
-import { type GunDef, type MeleeDef, type ThrowableDef } from "../defs/objectsTypings";
+import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef } from "../defs/objectsTypings";
 import { MeleeDefs } from "../defs/meleeDefs";
 import { Structure } from "./structure";
 
@@ -79,7 +79,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
     action!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
-    scope = "15xscope";
+    scope = "1xscope";
 
     inventory: Record<string, number> = {};
 
@@ -113,8 +113,8 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
     outfit = "outfitBase";
     pack = "backpack00";
-    helmet = "helmet02";
-    chest = "chest02";
+    helmet = "helmet01";
+    chest = "";
 
     layer = 0;
     aimLayer = 0;
@@ -401,6 +401,8 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             }
         }
 
+        this.visibleObjects = newVisibleObjects;
+
         for (const obj of this.game.fullObjs) {
             if (this.visibleObjects.has(obj)) {
                 updateMsg.fullObjects.push(obj);
@@ -412,7 +414,6 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                 updateMsg.partObjects.push(obj);
             }
         }
-        this.visibleObjects = newVisibleObjects;
 
         updateMsg.activePlayerId = this.id;
         updateMsg.activePlayerIdDirty = this.dirty.activeId;
@@ -457,21 +458,21 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         this._firstUpdate = false;
     }
 
-    damage(amount: number, sourceType: string, damageType: number, source: GameObject | undefined, isHeadShot?: boolean) {
+    damage(amount: number, sourceType: string, damageType: number, source: GameObject | undefined, isHeadShot = false) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
         let finalDamage = amount;
 
-        const chest = GameObjectDefs[this.chest];
+        const chest = GameObjectDefs[this.chest] as ChestDef;
 
-        if (chest !== undefined && chest.type === "chest") {
-            finalDamage -= finalDamage * (chest.damageReduction * (isHeadShot ? 1 : 0.3));
+        if (chest && !isHeadShot) {
+            finalDamage -= finalDamage * chest.damageReduction;
         }
 
-        const helmet = GameObjectDefs[this.helmet];
-        if (helmet !== undefined && helmet.type === "helmet" && !isHeadShot) {
-            finalDamage -= finalDamage * helmet.damageReduction;
+        const helmet = GameObjectDefs[this.helmet] as HelmetDef;
+        if (helmet) {
+            finalDamage -= finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
         }
 
         if (this._health - finalDamage < 0) finalDamage = this.health;
@@ -482,43 +483,72 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         this.health -= finalDamage;
 
         if (this._health === 0) {
-            this.dead = true;
-            this.boost = 0;
-            this.actionType = this.actionSeq = 0;
-            this.animType = this.animSeq = 0;
-            this.setDirty();
+            this.kill(sourceType, damageType, source);
+        }
+    }
 
-            this.game.aliveCountDirty = true;
-            this.game.livingPlayers.delete(this);
+    kill(sourceType: string, damageType: number, source?: GameObject): void {
+        this.dead = true;
+        this.boost = 0;
+        this.actionType = this.actionSeq = 0;
+        this.animType = this.animSeq = 0;
+        this.setDirty();
 
-            if (source instanceof Player) {
-                if (source !== this) source.kills++;
+        this.game.aliveCountDirty = true;
+        this.game.livingPlayers.delete(this);
 
-                const killMsg = new KillMsg();
-                killMsg.damageType = damageType;
-                killMsg.itemSourceType = sourceType;
-                killMsg.targetId = this.id;
-                killMsg.killerId = source.id;
-                killMsg.killCreditId = source.id;
-                killMsg.killerKills = source.kills;
-                killMsg.killed = true;
-                killMsg.damageType = GameConfig.DamageType.Player;
-                this.game.msgsToSend.push(killMsg);
+        const killMsg = new KillMsg();
+        killMsg.damageType = damageType;
+        killMsg.itemSourceType = sourceType;
+        killMsg.targetId = this.id;
+        killMsg.killed = true;
+
+        if (source instanceof Player) {
+            if (source !== this) source.kills++;
+            killMsg.killerId = source.id;
+            killMsg.killCreditId = source.id;
+            killMsg.killerKills = source.kills;
+        }
+
+        this.game.msgsToSend.push(killMsg);
+
+        const gameOverMsg = new GameOverMsg();
+
+        gameOverMsg.teamRank = this.game.aliveCount;
+        gameOverMsg.playerStats = [{
+            ...this,
+            playerId: this.id
+        }];
+        gameOverMsg.teamId = this.teamId;
+        gameOverMsg.winningTeamId = -1;
+        this.msgsToSend.push(gameOverMsg);
+
+        const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
+        this.game.grid.addObject(deadBody);
+
+        // drop loot
+        for (const weapon of this.weapons) {
+            if (!weapon.type) continue;
+            const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
+
+            if (!def.noDropOnDeath) {
+                this.game.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
             }
+        }
 
-            const gameOverMsg = new GameOverMsg();
+        for (const item of ["helmet", "chest", "pack"] as const) {
+            const type = this[item];
+            if (!type) continue;
+            const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
+            if (!!def.noDrop || def.level < 1) continue;
+            this.game.addLoot(type, this.pos, this.layer, 1);
+        }
 
-            gameOverMsg.teamRank = this.game.aliveCount;
-            gameOverMsg.playerStats = [{
-                ...this,
-                playerId: this.id
-            }];
-            gameOverMsg.teamId = this.teamId;
-            gameOverMsg.winningTeamId = -1;
-            this.msgsToSend.push(gameOverMsg);
-
-            const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
-            this.game.grid.addObject(deadBody);
+        if (this.outfit) {
+            const def = GameObjectDefs[this.outfit] as OutfitDef;
+            if (!def.noDropOnDeath) {
+                this.game.addLoot(this.outfit, this.pos, this.layer, 1);
+            }
         }
     }
 
