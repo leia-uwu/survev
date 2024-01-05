@@ -169,12 +169,12 @@ export class Game {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
             const halfAmmo = Math.floor(ammoCount / 2);
 
-            const leftAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo);
+            const leftAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
             leftAmmo.push(v2.create(-1, -1), 0.5);
             this.grid.addObject(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
-                const rightAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo);
+                const rightAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
                 rightAmmo.push(v2.create(1, -1), 0.5);
 
                 this.grid.addObject(rightAmmo);

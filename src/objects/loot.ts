@@ -41,7 +41,7 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
         this.collider.pos = pos;
     }
 
-    constructor(game: Game, type: string, pos: Vec2, layer: number, count: number) {
+    constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2) {
         super(game, pos);
 
         const def = GameObjectDefs[type];
@@ -57,7 +57,7 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
 
         this.dragConstant = Math.exp(-3.69 / game.config.tps);
 
-        this.push(v2.randomUnit(), 1);
+        this.push(v2.randomUnit(), pushSpeed);
     }
 
     update(): void {
