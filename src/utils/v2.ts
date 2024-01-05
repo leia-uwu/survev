@@ -72,7 +72,7 @@ export const v2 = {
         return v2.normalize(diffPos);
     },
 
-    normalizeSafe(a: Vec2, v = v2.create(1.0, 0.0)) {
+    normalizeSafe(a: Vec2, v = { x: 1.0, y: 0.0 }) {
         const eps = 0.000001;
         const len = v2.length(a);
         return {
