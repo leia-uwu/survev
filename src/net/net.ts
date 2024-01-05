@@ -78,11 +78,11 @@ export class SurvivBitStream extends BitStream {
     }
 
     writeUnitVec(vec: Vec2, bitCount: number): void {
-        this.writeVec(vec, -1, -1, 1, 1, bitCount);
+        this.writeVec(vec, -1.0001, -1.0001, 1.0001, 1.0001, bitCount);
     }
 
     readUnitVec(bitCount: number): Vec2 {
-        return this.readVec(-1, -1, 1, 1, bitCount);
+        return this.readVec(-1.0001, -1.0001, 1.0001, 1.0001, bitCount);
     }
 
     writeVec32(vec: Vec2): void {
