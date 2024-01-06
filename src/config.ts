@@ -15,7 +15,6 @@ export enum GasMode {
 export const Config = {
     host: "0.0.0.0",
     port: 8000,
-    https: false,
 
     mode: "main",
 
@@ -41,7 +40,7 @@ export const Config = {
 export interface ConfigType {
     readonly host: string
     readonly port: number
-    readonly https: boolean
+
     /**
      * HTTPS/SSL options. Not used if running locally or with nginx.
      */

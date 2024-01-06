@@ -100,6 +100,7 @@ export interface ObjectsFullData {
         door?: {
             open: boolean
             canUse: boolean
+            locked: boolean
             seq: number
         }
         isButton: boolean
@@ -249,7 +250,8 @@ export const ObjectSerializeFns: { [K in ObjectType]: ObjectSerialization<K> } =
             if (data.isDoor) {
                 s.writeBoolean(data.door!.open);
                 s.writeBoolean(data.door!.canUse);
-                s.writeBits(data.door!.seq, 6);
+                s.writeBoolean(data.door!.locked);
+                s.writeBits(data.door!.seq, 5);
             }
 
             s.writeBoolean(data.isButton);

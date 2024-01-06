@@ -56,18 +56,20 @@ interface ObstacleDef {
         scale: number
     }
     terrain: TerrainSpawnDef
+    hinge?: Vec2
     door?: {
         interactionRad: number
         openSpeed?: number
-        openOneWay?: number
+        openOneWay?: boolean
         openDelay?: number
-        openOnce?: number
+        openOnce?: boolean
         canUse: boolean
         autoOpen?: boolean
+        locked?: boolean
         autoClose?: boolean
-        autoCloseDelay?: boolean
+        autoCloseDelay?: number
         slideToOpen?: boolean
-        slideOffset?: boolean
+        slideOffset?: number
     }
     button?: {
         interactionRad: number
@@ -114,8 +116,10 @@ interface BuildingDef {
         scale: number
         ori: number
         inheritOri?: boolean
+        puzzlePiece?: string
     }>
     puzzle?: {
+        name: string
         solution: string
         completeUseType: string
         completeOffDelay: number
@@ -152,6 +156,9 @@ interface StructureDef {
         noCeilingReveal?: boolean
     }>
     mask: AABB[]
+    interiorSound?: {
+        puzzle: string
+    }
 }
 
 interface LootSpawnerDef {

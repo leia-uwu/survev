@@ -167,7 +167,7 @@ export class Game {
 
         if (def.type === "gun") {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
-            const halfAmmo = Math.floor(ammoCount / 2);
+            const halfAmmo = Math.ceil(ammoCount / 2);
 
             const leftAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
             leftAmmo.push(v2.create(-1, -1), 0.5);

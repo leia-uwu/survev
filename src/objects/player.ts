@@ -531,8 +531,16 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
             if (!weapon.type) continue;
             const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
 
-            if (!def.noDropOnDeath) {
+            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists") {
                 this.game.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
+            }
+        }
+
+        for (const item in GameConfig.bagSizes) {
+            // const def = GameObjectDefs[item] as AmmoDef | HealDef;
+
+            if (this.inventory[item] > 0) {
+                this.game.addLoot(item, this.pos, this.layer, this.inventory[item]);
             }
         }
 
@@ -599,6 +607,16 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                 break;
             }
         }
+    }
+
+    isOnOtherSide(door: Obstacle): boolean {
+        switch (door.ori) {
+        case 0: return this.pos.x < door.pos.x;
+        case 1: return this.pos.y < door.pos.y;
+        case 2: return this.pos.x > door.pos.x;
+        case 3: return this.pos.y > door.pos.y;
+        }
+        return false;
     }
 
     cancelAction(_?: boolean): void {

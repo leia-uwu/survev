@@ -33,7 +33,7 @@ export class Structure extends GameObject implements FullStructure, PartialStruc
 
     ori: number;
     type: string;
-    layerObjIds: number[];
+    layerObjIds: number[] = [];
     interiorSoundAlt = false;
     interiorSoundEnabled = true;
 
@@ -44,12 +44,11 @@ export class Structure extends GameObject implements FullStructure, PartialStruc
 
     mapObstacleBounds: Collider[];
 
-    constructor(game: Game, type: string, pos: Vec2, layer: number, ori: number, layerObjIds: number[]) {
+    constructor(game: Game, type: string, pos: Vec2, layer: number, ori: number) {
         super(game, pos);
         this.layer = layer;
         this.type = type;
         this.ori = ori;
-        this.layerObjIds = layerObjIds;
 
         this.rot = math.oriToRad(ori);
 

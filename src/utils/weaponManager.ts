@@ -39,7 +39,7 @@ export class WeaponManager {
                 ammo: 0
             });
         }
-        this.weapons[0].type = "awc";
+        this.weapons[0].type = "vector";
         this.weapons[1].type = "mp220";
         this.weapons[0].ammo = 1;
         this.weapons[1].ammo = 1;
@@ -389,6 +389,7 @@ export class WeaponManager {
 
             if (obj instanceof Obstacle) {
                 obj.damage(meleeDef.damage * meleeDef.obstacleDamage, this.activeWeapon, GameConfig.DamageType.Player);
+                if (obj.interactable) obj.interact(this.player);
             } else if (obj instanceof Player) {
                 obj.damage(meleeDef.damage, this.activeWeapon, GameConfig.DamageType.Player, this.player);
             }

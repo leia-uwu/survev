@@ -1,4 +1,4 @@
-export const puzzles: Record<string, string> = {
+export const Puzzles: Record<string, string> = {
     bunker_eye_02: "egg,hydra,storm,conch,crossing,hatchet",
     bunker_chrys_01: "ichi,ni,san,shi",
     saloon: "red,orange,yellow,green,blue,indigo,violet",

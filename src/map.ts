@@ -129,50 +129,51 @@ export class GameMap {
     genAuto(type: string, count = 1, pos?: Vec2, ori?: number, scale?: number): void {
         const def = MapObjectDefs[type];
 
-        switch (def.type) {
-        case "obstacle":
-            for (let i = 0; i < count; i++) {
+        for (let i = 0; i < count; i++) {
+            const finalPos = pos ?? this.getRandomPositionFor(type);
+            switch (def.type) {
+            case "obstacle":
                 this.genObstacle(
                     type,
-                    pos ?? this.getRandomPositionFor(type),
+                    finalPos,
                     0,
                     ori ?? 0,
                     scale ?? util.random(def.scale.createMax, def.scale.createMin)
                 );
-            }
-            break;
-        case "building":
-            for (let i = 0; i < count; i++) {
-                this.genBuilding(type);
-            }
-            break;
-        case "structure":
-            for (let i = 0; i < count; i++) {
-                this.genStructure(type, pos ?? this.getRandomPositionFor(type), 0, 0);
-            }
-            break;
-        case "loot_spawner":
-            for (let i = 0; i < count; i++) {
+
+                break;
+            case "building":
+                this.genBuilding(type, finalPos);
+
+                break;
+            case "structure":
+                this.genStructure(type, finalPos, 0, 0);
+
+                break;
+            case "loot_spawner":
                 for (const tier of def.loot) {
                     const items = getLootTable(this.game.config.mode, tier.tier);
 
                     for (const item of items) {
-                        this.game.addLoot(item.name, pos ?? this.getRandomPositionFor(type), 0, item.count);
+                        this.game.addLoot(item.name, finalPos, 0, item.count);
                     }
                 }
+
+                break;
             }
-            break;
         }
     }
 
-    genObstacle(type: string, pos: Vec2, layer: number, ori: number, scale = 1): Obstacle {
+    genObstacle(type: string, pos: Vec2, layer: number, ori: number, scale = 1, buildingId?: number, puzzlePiece?: string): Obstacle {
         const obstacle = new Obstacle(
             this.game,
             pos,
             type,
             layer,
             ori,
-            scale
+            scale,
+            buildingId,
+            puzzlePiece
         );
         this.game.grid.addObject(obstacle);
 
@@ -182,15 +183,16 @@ export class GameMap {
         return obstacle;
     }
 
-    genBuilding(type: string, pos?: Vec2, ori?: number, layer = 0): Building {
+    genBuilding(type: string, pos?: Vec2, ori?: number, layer = 0, parentStructure?: Structure): Building {
         ori = ori ?? util.randomInt(0, 3);
 
         pos = pos ?? this.getRandomPositionFor(type, ori);
 
-        const building = new Building(this.game, type, pos, ori, layer);
+        const building = new Building(this.game, type, pos, ori, layer, parentStructure);
+        this.game.grid.addObject(building);
+
         const def = MapObjectDefs[type] as BuildingDef;
 
-        this.game.grid.addObject(building);
         if (def.map?.display && layer === 0) this.msg.objects.push(building);
 
         for (const mapObject of def.mapObjects ?? []) {
@@ -211,22 +213,25 @@ export class GameMap {
 
             switch (part.type) {
             case "structure":
-                this.genStructure(partType, partPosition, layer, partOrientation);
+                building.childObjects.push(
+                    this.genStructure(partType, partPosition, layer, partOrientation)
+                );
                 break;
             case "building":
-                this.genBuilding(partType, partPosition, partOrientation, layer);
+                building.childObjects.push(
+                    this.genBuilding(partType, partPosition, partOrientation, layer)
+                );
                 break;
             case "obstacle":
-                this.genObstacle(
+                building.childObjects.push(this.genObstacle(
                     partType,
                     partPosition,
                     layer,
                     partOrientation,
-                    mapObject.scale
-                    // part,
-                    // building,
-                    // mapObject.puzzlePiece
-                );
+                    mapObject.scale,
+                    building.id,
+                    mapObject.puzzlePiece
+                ));
                 break;
             case "decal": {
                 const decal = new Decal(
@@ -237,6 +242,7 @@ export class GameMap {
                     partOrientation,
                     mapObject.scale
                 );
+                building.childObjects.push(decal);
                 this.game.grid.addObject(decal);
                 break;
             }
@@ -269,22 +275,22 @@ export class GameMap {
     }
 
     genStructure(type: string, pos: Vec2, layer: number, ori: number): Structure {
-        const layerObjIds: number[] = [];
-
         const def = MapObjectDefs[type] as StructureDef;
 
+        const structure = new Structure(this.game, type, pos, layer, ori);
         layer = 0;
         for (const layerDef of def.layers) {
             const building = this.genBuilding(
                 layerDef.type,
                 math.addAdjust(pos, layerDef.pos, ori),
                 (layerDef.ori + ori) % 4,
-                layer);
+                layer,
+                structure
+            );
             layer++;
-            layerObjIds.push(building.id);
+            structure.layerObjIds.push(building.id);
         }
 
-        const structure = new Structure(this.game, type, pos, layer, ori, layerObjIds);
         this.game.grid.addObject(structure);
         this.objectCount[type]++;
         return structure;

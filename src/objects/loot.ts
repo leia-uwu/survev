@@ -71,16 +71,19 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
 
         const halfDt = this.game.dt / 2;
 
-        this.pos = v2.add(this.pos, v2.mul(this.vel, halfDt));
+        const calculateSafeDisplacement = (): Vec2 => {
+            let displacement = v2.mul(this.vel, halfDt);
+            if (v2.lengthSqr(displacement) >= 1) {
+                displacement = v2.normalizeSafe(displacement);
+            }
+
+            return displacement;
+        };
+
+        this.pos = v2.add(this.pos, calculateSafeDisplacement());
         this.vel = v2.mul(this.vel, this.dragConstant);
 
-        let displacement = v2.mul(this.vel, halfDt);
-        if (v2.lengthSqr(displacement) >= 1) {
-            displacement = v2.normalizeSafe(displacement);
-        }
-
-        this.pos = v2.add(this.pos, displacement);
-
+        this.pos = v2.add(this.pos, calculateSafeDisplacement());
         this.game.map.clampToMapBounds(this.pos);
 
         const objects = this.game.grid.intersectCollider(this.collider);

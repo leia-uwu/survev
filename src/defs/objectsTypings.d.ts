@@ -143,6 +143,7 @@ interface MeleeDef {
     armorPiercing?: boolean
     stonePiercing?: boolean
     noDropOnDeath?: boolean
+    noDrop?: boolean
     noPotatoSwap?: boolean
     wallCheck?: boolean
     attack: {
