@@ -157,8 +157,6 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
                 openPosition: v2.create(0, 0)
             };
 
-            if (this.layer === 1) this.layer = 3;
-
             if (!this.door.slideToOpen) {
                 switch (ori) {
                 case 0:

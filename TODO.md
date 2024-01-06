@@ -39,16 +39,18 @@
 ### Obstacles
  - [x] Spawning, destroying, collision
  - [x] Windows
- - [ ] Doors
- - [ ] Sliding doors
- - [ ] Buttons
+ - [x] Doors
+ - [x] Sliding doors
+ - [ ] Auto opening doors
+ - [ ] Door layer on stairs
+ - [x] Buttons
  - [x] Loot
 
 ### Buildings
  - [x] Generation
  - [ ] Ceiling Zoom
  - [ ] Destroying and damaging ceilings
- - [ ] Puzzles
+ - [x] Puzzles
 
 ### Structures
  - [x] Generation
