@@ -10,7 +10,7 @@
  - [ ] Scopes
  - [ ] Consumable items
  - [ ] Spectating
- - [ ] Slowdown on water
+ - [x] Slowdown on water
  - [ ] Kill Leader
  - [ ] Loadouts
  - [ ] Emotes
@@ -61,12 +61,13 @@
  - [ ] Getting objects to not overlap
  	- [x] Partially done
  - [ ] Spawning objects on beach and rivers properly
- - [ ] River generation
+ - [x] Port Terrain and river code
+ - [ ] Randomized River generation
 
 ### Loot
  - [x] Loot game object
  - [x] Loot tables
- - [ ] Physics
+ - [x] Physics
  - [ ] Picking up loot
  - [ ] Switching layers
  - [ ] River flow
@@ -114,7 +115,7 @@ won't list all that need to be competently done because lazy
  - [x] Port all definitions from the client
  - [x] Port all game objects serializations
  - [ ] Port all msgs serializations
- 	- [ ] Join
+ 	- [x] Join
  	- [ ] Disconnect
  	- [x] Input
  	- [ ] Edit
