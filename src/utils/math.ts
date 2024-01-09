@@ -299,7 +299,6 @@ export const math = {
         switch (orientation) {
         case 1:
             xOffset = -position2.y;
-            // noinspection JSSuspiciousNameCombination
             yOffset = position2.x;
             break;
         case 2:
@@ -307,7 +306,6 @@ export const math = {
             yOffset = -position2.y;
             break;
         case 3:
-            // noinspection JSSuspiciousNameCombination
             xOffset = position2.y;
             yOffset = -position2.x;
             break;

@@ -92,7 +92,8 @@ export class WeaponManager {
         this.player.dirty.weapons = true;
 
         const collisionLayer = util.toGroundLayer(this.player.layer);
-        const bulletLayer = this.player.aimLayer;
+        // const bulletLayer = this.player.aimLayer;
+        const bulletLayer = this.player.layer;
 
         const gunOff = itemDef.isDual ? itemDef.dualOffset! * (offhand ? 1.0 : -1.0) : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));

@@ -43,86 +43,7 @@ export class GameMap {
 
     mapDef: MapDef;
 
-    riverDescs: MapRiver[] = [
-        {
-            width: 8,
-            looped: false,
-            points: [
-                { x: 85.00129701686122, y: 719.4953536278324 },
-                { x: 104.62659647516594, y: 702.5575951781491 },
-                { x: 120.59559014267185, y: 682.1354085603112 },
-                { x: 115.50176241702907, y: 656.1037613488976 },
-                { x: 122.68937209124896, y: 630.5721217669948 },
-                { x: 126.7363088426032, y: 604.9311055161364 },
-                { x: 137.53334859235522, y: 581.3213702601663 },
-                { x: 130.92387273975737, y: 556.1803616388189 },
-                { x: 123.14250400549325, y: 533.6643930724041 },
-                { x: 127.51757076371405, y: 511.9765621423667 },
-                { x: 126.62693217364767, y: 487.5074387731746 },
-                { x: 118.59555962462807, y: 464.4289616235599 },
-                { x: 121.59560540169375, y: 440.17859159227896 },
-                { x: 123.0018768596933, y: 416.6313572899977 },
-                { x: 121.23622491798275, y: 393.09974822613873 },
-                { x: 120.95497062638285, y: 369.4587624933242 },
-                { x: 125.03315785458152, y: 346.17715724422067 },
-                { x: 140.72089723048754, y: 325.94247348744943 },
-                { x: 163.61187151903562, y: 314.4891737239643 },
-                { x: 174.4245365072099, y: 291.082566567483 },
-                { x: 195.22172884718088, y: 275.8479591058213 },
-                { x: 209.44069581139848, y: 253.26948958571757 },
-                { x: 220.3783627069505, y: 228.92536812390327 },
-                { x: 213.9095140001526, y: 203.11247425040054 },
-                { x: 207.56566720073243, y: 177.25270466163118 },
-                { x: 211.76885633630883, y: 152.3616998550393 },
-                { x: 215.98767071030747, y: 129.53322652018005 },
-                { x: 230.65976958876936, y: 111.43920042725262 },
-                { x: 245.84750133516442, y: 91.14201571679256 },
-                { x: 238.9880216678111, y: 66.51663996337835 },
-                { x: 249.51943236438544, y: 43.20378423743038 },
-                { x: 265.894682230869, y: 24.60975051499199 },
-                { x: 271.59789425497826, y: 0.5000076295109483 }
-            ]
-        },
-        {
-            width: 4,
-            looped: false,
-            points: [
-                { x: 694.6981002517739, y: 719.4953536278324 },
-                { x: 675.4790569924468, y: 701.2294499122606 },
-                { x: 662.1507286182956, y: 678.3228503852903 },
-                { x: 639.5722590981918, y: 664.7288929579614 },
-                { x: 619.8532082093537, y: 647.2598764019226 },
-                { x: 612.5562218661784, y: 622.103242542153 },
-                { x: 607.6030212863355, y: 596.3997253376059 },
-                { x: 603.9779659723812, y: 570.2743266956588 },
-                { x: 606.7905088883803, y: 544.0708018616007 },
-                { x: 610.8686961165789, y: 518.0860303654536 },
-                { x: 612.8531013962005, y: 491.86688029297324 },
-                { x: 597.4778667887389, y: 469.7259174486915 },
-                { x: 593.2278019378958, y: 443.10051117723356 },
-                { x: 578.4307011520561, y: 419.7407797360189 },
-                { x: 569.1024338139925, y: 398.14670023651485 },
-                { x: 546.5864652475776, y: 387.0684061951629 },
-                { x: 529.2737010757611, y: 363.8180514229038 },
-                { x: 515.6797436484321, y: 342.83335622186615 },
-                { x: 508.9608911268788, y: 318.7548638132296 },
-                { x: 500.74201571679254, y: 295.3795071335927 },
-                { x: 489.1637140459297, y: 273.4729228656443 },
-                { x: 466.3196154726482, y: 259.73833829251544 },
-                { x: 446.47556267643245, y: 241.95681696803234 },
-                { x: 446.803692683299, y: 214.86265354390784 },
-                { x: 436.444159609369, y: 189.8466468299382 },
-                { x: 426.9283894102388, y: 165.15877012283514 },
-                { x: 418.78764019226367, y: 139.9865110246433 },
-                { x: 419.1626459143969, y: 112.84547188525215 },
-                { x: 431.42845807583734, y: 88.62635233081559 },
-                { x: 422.9283283741512, y: 62.8290836957351 },
-                { x: 400.05297932402533, y: 48.17261005569543 },
-                { x: 393.6153810940719, y: 23.203479056992446 },
-                { x: 381.38081940947586, y: 0.5000076295109483 }
-            ]
-        }
-    ];
+    riverDescs: MapRiver[] = [];
 
     constructor(game: Game) {
         this.game = game;
@@ -154,6 +75,46 @@ export class GameMap {
         for (const weightedRiver of mapConfig.rivers.weights) {
             riverWeights.push(weightedRiver.weight);
             weightedWidths.push(weightedRiver.widths);
+        }
+        const randomGenerator = util.seededRand(this.seed);
+
+        const widths = util.weightedRandom(weightedWidths, riverWeights);
+        const halfWidth = this.width / 2;
+        const halfHeight = this.height / 2;
+
+        const riverRect = collider.createAabb(
+            v2.create(1, 1),
+            v2.create(this.width - 1, this.height - 1)
+        );
+        const center = v2.create(halfWidth, halfHeight);
+        const mapWidth = this.width - 1;
+        const mapHeight = this.height - 1;
+
+        while (this.riverDescs.length < widths.length) {
+            let start: Vec2;
+
+            const horizontal = !!randomGenerator();
+            const reverse = !!randomGenerator();
+
+            if (horizontal) {
+                const topHalf = randomGenerator(1, halfHeight);
+                const bottomHalf = randomGenerator(halfHeight, mapHeight);
+                start = v2.create(1, reverse ? bottomHalf : topHalf);
+            } else {
+                const leftHalf = randomGenerator(1, halfWidth);
+                const rightHalf = randomGenerator(halfWidth, mapWidth);
+                start = v2.create(reverse ? rightHalf : leftHalf, 1);
+            }
+
+            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI);
+
+            this.generateRiver(
+                start,
+                startAngle,
+                widths[this.riverDescs.length],
+                riverRect,
+                randomGenerator
+            );
         }
 
         this.terrain = generateTerrain(
@@ -268,6 +229,58 @@ export class GameMap {
                 break;
             }
         }
+    }
+
+    generateRiver(
+        startPos: Vec2,
+        startAngle: number,
+        width: number,
+        bounds: AABB,
+        randomGenerator: ReturnType<typeof util["seededRand"]>
+    ): void {
+        const riverPoints: Vec2[] = [];
+
+        riverPoints.push(startPos);
+
+        let angle = startAngle;
+
+        const smoothness = this.mapDef.mapGen.map.rivers.smoothness;
+
+        for (let i = 1; i < 100; i++) {
+            const lastPoint = riverPoints[i - 1];
+
+            angle = angle + randomGenerator(
+                -smoothness,
+                smoothness
+            );
+
+            const len = randomGenerator(20, 30);
+            const pos = v2.add(lastPoint, v2.create(Math.cos(angle) * len, Math.sin(angle) * len));
+
+            let collided = false;
+
+            // end the river if it collides with another river
+            for (const river of this.riverDescs) {
+                const points = river.points;
+                for (let j = 1; j < points.length; j++) {
+                    const intersection = coldet.intersectSegmentSegment(lastPoint, pos, points[j - 1], points[j]);
+                    if (intersection) {
+                        const dist = v2.distance(intersection.point, riverPoints[i - 1]);
+                        if (dist > 6) riverPoints[i] = intersection.point;
+                        collided = true;
+                        break;
+                    }
+                }
+                if (collided) break;
+            }
+            if (collided) break;
+            riverPoints[i] = pos;
+
+            if (!coldet.testPointAabb(pos, bounds.min, bounds.max)) break;
+        }
+        if (riverPoints.length < 20) return;
+
+        this.riverDescs.push({ width, points: riverPoints, looped: false });
     }
 
     genObstacle(type: string, pos: Vec2, layer: number, ori: number, scale = 1, buildingId?: number, puzzlePiece?: string): Obstacle {

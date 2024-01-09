@@ -58,11 +58,10 @@
 
 ### Map Generation
  - [x] Basic generation
- - [ ] Getting objects to not overlap
- 	- [x] Partially done
+ - [ ] Getting objects to not overlap (WIP)
  - [ ] Spawning objects on beach and rivers properly
  - [x] Port Terrain and river code
- - [ ] Randomized River generation
+ - [ ] Randomized River generation (WIP)
 
 ### Loot
  - [x] Loot game object
