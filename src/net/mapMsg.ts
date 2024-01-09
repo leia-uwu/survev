@@ -3,13 +3,13 @@ import { Msg, MsgType, NetConstants, type SurvivBitStream } from "./net";
 
 export interface MapRiver {
     width: number
-    looped: number
+    looped: boolean
     points: Vec2[]
 }
 
 function serializeMapRiver(s: SurvivBitStream, data: MapRiver) {
     s.writeFloat32(data.width);
-    s.writeUint8(data.looped);
+    s.writeUint8(+data.looped);
     s.writeUint8(data.points.length);
 
     for (const point of data.points) {
@@ -20,7 +20,7 @@ function serializeMapRiver(s: SurvivBitStream, data: MapRiver) {
 function deserializeMapRiver(s: SurvivBitStream) {
     const x: MapRiver = {
         width: s.readFloat32(),
-        looped: s.readUint8(),
+        looped: !!s.readUint8(),
         points: []
     };
     const count = s.readUint8();

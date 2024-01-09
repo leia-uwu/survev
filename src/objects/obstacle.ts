@@ -226,7 +226,7 @@ export class Obstacle extends GameObject implements FullObstacle, PartialObstacl
                     const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
 
                     for (let i = 0; i < count; i++) {
-                        const items = getLootTable(this.game.config.mode, lootTierOrItem.tier);
+                        const items = getLootTable(this.game.config.map, lootTierOrItem.tier);
 
                         for (const item of items) {
                             this.game.addLoot(item.name, lootPos, this.layer, item.count);

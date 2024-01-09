@@ -2,7 +2,7 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import { Main } from "./main";
-import { type ModeDefinition } from "./modes";
+import { type MapDef } from "./maps";
 
 const factionBaseDef = {
     mapId: 3,
@@ -367,4 +367,4 @@ const factionBaseDef = {
     }
 };
 
-export const Faction = util.mergeDeep({}, Main, factionBaseDef) as ModeDefinition;
+export const Faction = util.mergeDeep({}, Main, factionBaseDef) as MapDef;

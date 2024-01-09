@@ -51,9 +51,15 @@ interface HealDef {
     type: "heal"
     name: string
     useTime: number
-    heal?: number
-    maxHeal?: number
-    boost?: number
+    heal: number
+    maxHeal: number
+}
+
+interface BoostDef {
+    type: "boost"
+    name: string
+    useTime: number
+    boost: number
 }
 
 interface BackpackDef {
@@ -240,4 +246,35 @@ interface XPDef {
     xp: number
 }
 
-type GameObjectDef = BulletDef | EmoteDef | ExplosionDef | AmmoDef | HealDef | BackpackDef | HelmetDef | ChestDef | ScopeDef | GunDef | MeleeDef | OutfitDef | PerkDef | PingDef | RoleDef | ThrowableDef | XPDef;
+type GameObjectDef = BulletDef |
+EmoteDef |
+ExplosionDef |
+AmmoDef |
+HealDef |
+BoostDef |
+BackpackDef |
+HelmetDef |
+ChestDef |
+ScopeDef |
+GunDef |
+MeleeDef |
+OutfitDef |
+PerkDef |
+PingDef |
+RoleDef |
+ThrowableDef |
+XPDef;
+
+type LootDef = AmmoDef |
+HealDef |
+BoostDef |
+BackpackDef |
+HelmetDef |
+ChestDef |
+ScopeDef |
+GunDef |
+MeleeDef |
+OutfitDef |
+PerkDef |
+ThrowableDef |
+XPDef;

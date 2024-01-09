@@ -1,5 +1,5 @@
 import { GameObjectDefs } from "../defs/gameObjectDefs";
-import { ModeDefinitions } from "../defs/modes/modes";
+import { MapDefs } from "../defs/maps/maps";
 import { type Game } from "../game";
 import { GameConfig } from "../gameConfig";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
@@ -135,8 +135,8 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
     }
 }
 
-export function getLootTable(modeName: string, tier: string): Array<{ name: string, count: number }> {
-    const lootTable = ModeDefinitions[modeName].lootTable[tier];
+export function getLootTable(modeName: keyof typeof MapDefs, tier: string): Array<{ name: string, count: number }> {
+    const lootTable = MapDefs[modeName].lootTable[tier];
     const items: Array<{ name: string, count: number }> = [];
 
     if (!lootTable) {

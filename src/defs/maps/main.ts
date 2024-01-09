@@ -1,8 +1,8 @@
 import { GameConfig } from "../../gameConfig";
 import { v2 } from "../../utils/v2";
-import { type ModeDefinition } from "./modes";
+import { type MapDef } from "./maps";
 
-export const Main: ModeDefinition = {
+export const Main: MapDef = {
     mapId: 0,
     desc: { name: "Normal", icon: "", buttonCss: "" },
     assets: {
@@ -180,6 +180,9 @@ export const Main: ModeDefinition = {
             { name: "katana", count: 1, weight: 1 },
             { name: "katana_rusted", count: 1, weight: 1 },
             { name: "katana_orchid", count: 1, weight: 1 }
+        ],
+        tier_eye_02: [
+            { name: "stonehammer", count: 1, weight: 1 }
         ],
         tier_eye_block: [
             { name: "m9", count: 1, weight: 1 },

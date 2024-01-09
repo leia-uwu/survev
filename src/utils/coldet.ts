@@ -9,11 +9,13 @@ export interface Circle {
     pos: Vec2
     rad: number
 }
+
 export interface AABB {
     type: 1
     min: Vec2
     max: Vec2
 }
+
 export type Collider = Circle | AABB;
 
 export const coldet = {

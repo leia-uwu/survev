@@ -130,6 +130,11 @@ export class Grid {
         return [...objects];
     }
 
+    intersectPos(pos: Vec2) {
+        pos = this._roundToCells(pos);
+        return [...this._grid[pos.x][pos.y].values()];
+    }
+
     // TODO: optimize this
     intersectLineSegment(a: Vec2, b: Vec2): GameObject[] {
         return this.intersectCollider(coldet.lineSegmentToAabb(a, b));

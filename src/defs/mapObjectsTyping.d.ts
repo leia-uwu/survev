@@ -1,4 +1,4 @@
-import { type AABB, type Collider } from "../utils/coldet";
+import { type Circle, type AABB, type Collider } from "../utils/coldet";
 import { type Vec2 } from "../utils/v2";
 
 interface TerrainSpawnDef {
@@ -89,7 +89,7 @@ interface BuildingDef {
         scale: number
     }
     terrain: TerrainSpawnDef
-    zIdx: number
+    zIdx?: number
     floor: {
         surfaces: Array<{
             type: "string"
@@ -109,6 +109,10 @@ interface BuildingDef {
             fadeRate?: number
         }
     }
+    surfaces: Array<{
+        type: string
+        collision: Collider
+    }>
     mapObstacleBounds?: Collider[]
     mapObjects: Array<{
         type: string | (() => string)
@@ -174,8 +178,11 @@ interface LootSpawnerDef {
 
 interface DecalDef {
     type: "decal"
-    collision: Collider
+    collision: Circle
     height: number
+    surface?: {
+        type: string
+    }
 }
 
 type MapObjectDef = ObstacleDef | BuildingDef | StructureDef | DecalDef | LootSpawnerDef;

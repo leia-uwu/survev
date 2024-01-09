@@ -6,7 +6,7 @@ import { Main } from "./main";
 import { Potato } from "./potato";
 import { Woods } from "./woods";
 
-export const ModeDefinitions: Record<string, ModeDefinition> = {
+export const MapDefs = {
     main: Main,
     desert: Desert,
     woods: Woods,
@@ -15,7 +15,7 @@ export const ModeDefinitions: Record<string, ModeDefinition> = {
     halloween: Halloween
 };
 
-export interface ModeDefinition {
+export interface MapDef {
     mapId: number
     desc: {
         name: string

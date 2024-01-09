@@ -75,9 +75,6 @@ export class BulletManager {
     }> = [];
 
     update(): void {
-        this.newBullets.length = 0;
-        this.damages.length = 0;
-
         for (let i = 0; i < this.bullets.length; i++) {
             const bullet = this.bullets[i];
 
@@ -100,6 +97,11 @@ export class BulletManager {
                 damageRecord.isHeadShot
             );
         }
+    }
+
+    reset(): void {
+        this.newBullets.length = 0;
+        this.damages.length = 0;
     }
 
     fireBullet(params: BulletParams): Bullet {

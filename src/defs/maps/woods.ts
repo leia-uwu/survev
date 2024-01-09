@@ -2,7 +2,7 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import { Main } from "./main";
-import { type ModeDefinition } from "./modes";
+import { type MapDef } from "./maps";
 
 const woodsBaseDef = {
     mapId: 2,
@@ -236,4 +236,4 @@ const woodsBaseDef = {
         ]
     }
 };
-export const Woods = util.mergeDeep({}, Main, woodsBaseDef) as ModeDefinition;
+export const Woods = util.mergeDeep({}, Main, woodsBaseDef) as MapDef;

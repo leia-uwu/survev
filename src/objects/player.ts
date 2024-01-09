@@ -233,7 +233,7 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         super(game, pos);
         this.socket = socket;
 
-        if (game.config.mode !== "faction") {
+        if (game.config.map !== "faction") {
             this.groupId = this.teamId = ++this.game.nextGroupId;
         }
 
@@ -280,9 +280,13 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         let speed = this.game.config.movementSpeed;
 
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+
         if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
             speed += weaponDef.speed.equip;
         }
+
+        const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        if (isOnWater) speed -= 3;
 
         this.pos = v2.add(this.pos, v2.mul(movement, speed * this.game.dt));
 
@@ -325,15 +329,12 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
                         break;
                     }
                 }
-
                 if (!onStair) {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
                 }
                 if (this.layer !== originalLayer) {
                     this.setDirty();
-                    // TODO
-                    this.aimLayer = this.layer;
                 }
             }
         }

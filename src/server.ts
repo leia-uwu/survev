@@ -138,7 +138,7 @@ app.get("/api/site_info", (res) => {
 
     const data = {
         modes: [
-            { mapName: Config.mode, teamMode: 1 }
+            { mapName: Config.map, teamMode: 1 }
         ],
         pops: {
             local: `${playerCount} players`

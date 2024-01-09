@@ -2,7 +2,7 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import { Main } from "./main";
-import { type ModeDefinition } from "./modes";
+import { type MapDef } from "./maps";
 
 const desertBaseDef = {
     mapId: 1,
@@ -310,4 +310,4 @@ const desertBaseDef = {
     }
 };
 
-export const Desert = util.mergeDeep({}, Main, desertBaseDef) as ModeDefinition;
+export const Desert = util.mergeDeep({}, Main, desertBaseDef) as MapDef;

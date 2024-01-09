@@ -1,3 +1,4 @@
+import { type MapDefs } from "./defs/maps/maps";
 import { type Vec2 } from "./utils/v2";
 
 export enum SpawnMode {
@@ -16,7 +17,7 @@ export const Config = {
     host: "0.0.0.0",
     port: 8000,
 
-    mode: "main",
+    map: "main",
 
     regions: {
         local: {
@@ -56,7 +57,7 @@ export interface ConfigType {
 
     readonly defaultRegion: string
 
-    readonly mode: string
+    readonly map: keyof typeof MapDefs
 
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.

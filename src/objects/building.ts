@@ -43,6 +43,15 @@ export class Building extends GameObject implements FullBuilding, PartialBuildin
     childObjects: Array<Obstacle | Building | Structure | Decal> = [];
     parentStructure?: Structure;
 
+    surfaces: Array<{
+        type: string
+        colliders: Collider[]
+    }> = [];
+
+    rot: number;
+
+    zIdx: number;
+
     constructor(
         game: Game,
         type: string,
@@ -58,18 +67,34 @@ export class Building extends GameObject implements FullBuilding, PartialBuildin
         this.parentStructure = parentStructure;
         const def = MapObjectDefs[this.type] as BuildingDef;
 
-        const rotation = math.oriToRad(ori);
+        this.rot = math.oriToRad(ori);
+
+        this.zIdx = def.zIdx ?? 0;
 
         this.bounds = collider.transform(
             mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
-            rotation,
+            this.rot,
             1
         );
 
         this.mapObstacleBounds = mapHelpers.getColliders(type).map(coll => {
-            return collider.transform(coll, pos, rotation, 1);
+            return collider.transform(coll, pos, this.rot, 1);
         });
+
+        this.surfaces = [];
+
+        for (let i = 0; i < def.floor.surfaces.length; i++) {
+            const surfaceDef = def.floor.surfaces[i];
+            const surface = {
+                type: surfaceDef.type,
+                colliders: [] as Collider[]
+            };
+            for (let i = 0; i < surfaceDef.collision.length; i++) {
+                surface.colliders.push(collider.transform(surfaceDef.collision[i], this.pos, this.rot, 1));
+            }
+            this.surfaces.push(surface);
+        }
 
         if (def.puzzle) {
             this.hasPuzzle = true;

@@ -1,7 +1,7 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { Main } from "./main";
-import { type ModeDefinition } from "./modes";
+import { type MapDef } from "./maps";
 
 const halloweenBaseDef = {
     assets: {
@@ -173,4 +173,4 @@ const halloweenBaseDef = {
     }
 };
 
-export const Halloween = util.mergeDeep({}, Main, halloweenBaseDef) as ModeDefinition;
+export const Halloween = util.mergeDeep({}, Main, halloweenBaseDef) as MapDef;

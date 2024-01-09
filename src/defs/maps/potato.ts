@@ -1,7 +1,7 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { Main } from "./main";
-import { type ModeDefinition } from "./modes";
+import { type MapDef } from "./maps";
 
 const PotatoBaseDef = {
     mapId: 4,
@@ -223,4 +223,4 @@ const PotatoBaseDef = {
         importantSpawns: ["club_complex_01"]
     }
 };
-export const Potato = util.mergeDeep({}, Main, PotatoBaseDef) as ModeDefinition;
+export const Potato = util.mergeDeep({}, Main, PotatoBaseDef) as MapDef;

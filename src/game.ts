@@ -118,6 +118,7 @@ export class Game {
         this.fullObjs.clear();
         this.partialObjs.clear();
         this.newPlayers.length = 0;
+        this.bulletManager.reset();
         this.msgsToSend.length = 0;
         this.explosions.length = 0;
         this.aliveCountDirty = false;

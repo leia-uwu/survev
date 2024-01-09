@@ -13,7 +13,6 @@ type FullStructure = ObjectsFullData[ObjectType.Structure];
 type PartialStructure = ObjectsPartialData[ObjectType.Structure];
 
 interface Stair {
-
     collision: AABB
     center: Vec2
     downDir: Vec2
@@ -21,7 +20,6 @@ interface Stair {
     upAabb: AABB
     noCeilingReveal: boolean
     lootOnly: boolean
-
 }
 
 export class Structure extends GameObject implements FullStructure, PartialStructure {
