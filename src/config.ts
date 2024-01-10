@@ -30,7 +30,6 @@ export const Config = {
 
     spawn: { mode: SpawnMode.Center },
 
-    maxPlayersPerGame: 80,
     maxGames: 1,
 
     movementSpeed: 12,
@@ -73,11 +72,6 @@ export interface ConfigType {
     } | {
         readonly mode: SpawnMode.Center
     }
-
-    /**
-     * The maximum number of players allowed to join a game.
-     */
-    readonly maxPlayersPerGame: number
 
     /**
      * The maximum number of concurrent games.

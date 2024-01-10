@@ -124,7 +124,7 @@ export function endGame(id: number, createNewGame: boolean): void {
 }
 
 function canJoin(game?: Game): boolean {
-    return game !== undefined && game.aliveCount < Config.maxPlayersPerGame && !game.over;
+    return game !== undefined && game.aliveCount < game.map.mapDef.gameMode.maxPlayers && !game.over;
 }
 
 app.get("/api/site_info", (res) => {

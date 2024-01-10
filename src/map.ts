@@ -8,7 +8,7 @@ import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
 import { ObjectType } from "./objects/gameObject";
-import { Loot, getLootTable } from "./objects/loot";
+import { getLootTable } from "./objects/loot";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "./utils/coldet";
@@ -19,7 +19,6 @@ import { type River } from "./utils/river";
 import { generateTerrain } from "./utils/terrainGen";
 import { util } from "./utils/util";
 import { type Vec2, v2 } from "./utils/v2";
-import { GameObjectDefs } from "./defs/gameObjectDefs";
 
 export class GameMap {
     game: Game;
@@ -68,7 +67,7 @@ export class GameMap {
         this.grassInset = this.msg.grassInset = mapConfig.grassInset;
         this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
 
-        /*const lootPos = v2.create(this.width / 2, this.height / 2);
+        /* const lootPos = v2.create(this.width / 2, this.height / 2);
         for (const loot in GameObjectDefs) {
             const def = GameObjectDefs[loot];
             if ("lootImg" in def) {
@@ -80,7 +79,7 @@ export class GameMap {
                     lootPos.y -= 3.5;
                 }
             }
-        }*/
+        } */
 
         this.generateTerrain();
         this.generateObjects();
