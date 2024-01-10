@@ -41,6 +41,8 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
         this.collider.pos = pos;
     }
 
+    ticks = 0;
+
     constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2) {
         super(game, pos);
 
@@ -61,6 +63,8 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
     }
 
     update(): void {
+        if (this.ticks > 2) this.isOld = true;
+        else this.ticks++;
         const moving = Math.abs(this.vel.x) > 0.001 ||
             Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
