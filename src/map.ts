@@ -8,7 +8,7 @@ import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
 import { ObjectType } from "./objects/gameObject";
-import { getLootTable } from "./objects/loot";
+import { Loot, getLootTable } from "./objects/loot";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "./utils/coldet";
@@ -19,6 +19,7 @@ import { type River } from "./utils/river";
 import { generateTerrain } from "./utils/terrainGen";
 import { util } from "./utils/util";
 import { type Vec2, v2 } from "./utils/v2";
+import { GameObjectDefs } from "./defs/gameObjectDefs";
 
 export class GameMap {
     game: Game;
@@ -34,12 +35,10 @@ export class GameMap {
 
     objectCount: Record<string, number> = {};
 
-    beachAABBs: AABB[];
-
     grassInset: number;
     shoreInset: number;
 
-    terrain: ReturnType<typeof generateTerrain>;
+    terrain!: ReturnType<typeof generateTerrain>;
 
     mapDef: MapDef;
 
@@ -68,6 +67,90 @@ export class GameMap {
         this.msg.rivers = this.riverDescs;
         this.grassInset = this.msg.grassInset = mapConfig.grassInset;
         this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
+
+        /*const lootPos = v2.create(this.width / 2, this.height / 2);
+        for (const loot in GameObjectDefs) {
+            const def = GameObjectDefs[loot];
+            if ("lootImg" in def) {
+                this.game.grid.addObject(new Loot(this.game, loot, lootPos, 0, 1, 0));
+
+                lootPos.x += 3.5;
+                if (lootPos.x > this.width / 2 + 80) {
+                    lootPos.x = this.width / 2;
+                    lootPos.y -= 3.5;
+                }
+            }
+        }*/
+
+        this.generateTerrain();
+        this.generateObjects();
+
+        this.mapStream.serializeMsg(this.msg);
+    }
+
+    generateTerrain(): void {
+        const mapConfig = this.mapDef.mapGen.map;
+        const riverWeights: number[] = [];
+        const weightedWidths: number[][] = [];
+
+        for (const weightedRiver of mapConfig.rivers.weights) {
+            riverWeights.push(weightedRiver.weight);
+            weightedWidths.push(weightedRiver.widths);
+        }
+        const randomGenerator = util.seededRand(this.seed);
+
+        const widths = util.weightedRandom(weightedWidths, riverWeights);
+        const halfWidth = this.width / 2;
+        const halfHeight = this.height / 2;
+
+        const riverRect = collider.createAabb(
+            v2.create(1, 1),
+            v2.create(this.width - 1, this.height - 1)
+        );
+        const center = v2.create(halfWidth, halfHeight);
+        const mapWidth = this.width - 1;
+        const mapHeight = this.height - 1;
+
+        while (this.riverDescs.length < widths.length) {
+            let start: Vec2;
+
+            const horizontal = !!randomGenerator();
+            const reverse = !!randomGenerator();
+
+            if (horizontal) {
+                const topHalf = randomGenerator(1, halfHeight);
+                const bottomHalf = randomGenerator(halfHeight, mapHeight);
+                start = v2.create(1, reverse ? bottomHalf : topHalf);
+            } else {
+                const leftHalf = randomGenerator(1, halfWidth);
+                const rightHalf = randomGenerator(halfWidth, mapWidth);
+                start = v2.create(reverse ? rightHalf : leftHalf, 1);
+            }
+
+            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI);
+
+            this.generateRiver(
+                start,
+                startAngle,
+                widths[this.riverDescs.length],
+                riverRect,
+                randomGenerator
+            );
+        }
+
+        this.terrain = generateTerrain(
+            this.width,
+            this.height,
+            this.shoreInset,
+            this.grassInset,
+            this.riverDescs,
+            this.seed
+        );
+    }
+
+    generateObjects(): void {
+        const mapDef = this.mapDef;
+        const mapConfig = mapDef.mapGen.map;
 
         const riverWeights: number[] = [];
         const weightedWidths: number[][] = [];
@@ -126,27 +209,6 @@ export class GameMap {
             this.seed
         );
 
-        const beachPadding = this.shoreInset + this.grassInset;
-
-        this.beachAABBs = [
-            collider.createAabb(
-                v2.create(this.shoreInset, this.height - beachPadding),
-                v2.create(this.width - beachPadding, this.height - this.shoreInset)
-            ),
-            collider.createAabb(
-                v2.create(this.shoreInset, this.shoreInset),
-                v2.create(beachPadding, this.height - beachPadding)
-            ),
-            collider.createAabb(
-                v2.create(this.shoreInset, this.shoreInset),
-                v2.create(this.width - beachPadding, beachPadding)
-            ),
-            collider.createAabb(
-                v2.create(this.width - beachPadding, this.shoreInset),
-                v2.create(this.width - this.shoreInset, this.height - this.shoreInset)
-            )
-        ];
-
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
             const pos = v2.add(
                 util.randomPointInCircle(customSpawnRule.rad),
@@ -191,8 +253,6 @@ export class GameMap {
         for (const place of mapDef.mapGen.places) {
             this.msg.places.push(place);
         }
-
-        this.mapStream.serializeMsg(this.msg);
     }
 
     genAuto(type: string, count = 1, pos?: Vec2, ori?: number, scale?: number): void {

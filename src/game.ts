@@ -166,7 +166,7 @@ export class Game {
 
         const def = GameObjectDefs[type];
 
-        if (def.type === "gun") {
+        if (def.type === "gun" && GameObjectDefs[def.ammo]) {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
             const halfAmmo = Math.ceil(ammoCount / 2);
 
