@@ -21,7 +21,7 @@ import { GameOverMsg } from "../net/gameOverMsg";
 import { KillMsg } from "../net/KillMsg";
 import { DeadBody } from "./DeadBody";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef } from "../defs/objectsTypings";
-import { MeleeDefs } from "../defs/meleeDefs";
+import { MeleeDefs } from "../defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 
 type PlayerFullData = ObjectsFullData[ObjectType.Player];

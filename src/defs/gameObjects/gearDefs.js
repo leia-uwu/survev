@@ -1,4 +1,4 @@
-import { util } from "../utils/util";
+import { util } from "../../utils/util";
 
 function defineSkin(baseType, params) {
     return util.mergeDeep({}, BaseDefs[baseType], { baseType }, params);

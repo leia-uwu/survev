@@ -1,21 +1,21 @@
-import { BulletDefs } from "./bulletDefs";
-import { CrosshairDefs } from "./crosshairDefs";
-import { EmotesDefs } from "./emoteDefs";
-import { ExplosionDefs } from "./explosionsDefs";
-import { GearDefs } from "./gearDefs";
-import { GunDefs } from "./gunDefs";
-import { HealEffectDefs } from "./healEffectDefs";
-import { MeleeDefs } from "./meleeDefs";
+import { BulletDefs } from "./gameObjects/bulletDefs";
+import { CrosshairDefs } from "./gameObjects/crosshairDefs";
+import { EmotesDefs } from "./gameObjects/emoteDefs";
+import { ExplosionDefs } from "./gameObjects/explosionsDefs";
+import { GearDefs } from "./gameObjects/gearDefs";
+import { GunDefs } from "./gameObjects/gunDefs";
+import { HealEffectDefs } from "./gameObjects/healEffectDefs";
+import { MeleeDefs } from "./gameObjects/meleeDefs";
+import { OutfitDefs } from "./gameObjects/outfitDefs";
+import { PassDefs } from "./gameObjects/passDefs";
+import { PerkDefs } from "./gameObjects/perkDefs";
+import { PingDefs } from "./gameObjects/pingDefs";
+import { QuestDefs } from "./gameObjects/questDefs";
+import { RoleDefs } from "./gameObjects/roleDefs";
+import { ThrowableDefs } from "./gameObjects/throwableDefs";
+import { UnlockDefs } from "./gameObjects/unlockDefs";
+import { XPDefs } from "./gameObjects/xpDefs";
 import { type GameObjectDef } from "./objectsTypings";
-import { OutfitDefs } from "./outfitDefs";
-import { PassDefs } from "./passDefs";
-import { PerkDefs } from "./perkDefs";
-import { PingDefs } from "./pingDefs";
-import { QuestDefs } from "./questDefs";
-import { RoleDefs } from "./roleDefs";
-import { ThrowableDefs } from "./throwableDefs";
-import { UnlockDefs } from "./unlockDefs";
-import { XPDefs } from "./xpDefs";
 
 // !!! DON'T REORDER THIS OR ANY OTHER DEFINITION OR IT WILL DESYNC WITH THE CLIENT
 const ObjectDefsList: Array<Record<string, unknown>> = [
