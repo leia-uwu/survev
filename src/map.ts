@@ -1,6 +1,6 @@
 import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { type StructureDef, type BuildingDef, type ObstacleDef } from "./defs/mapObjectsTyping";
-import { type MapDef, MapDefs } from "./defs/maps/mapDefs";
+import { type MapDef, MapDefs } from "./defs/mapDefs";
 import { type Game } from "./game";
 import { GameConfig } from "./gameConfig";
 import { MapMsg, type MapRiver } from "./net/mapMsg";

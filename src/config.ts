@@ -1,4 +1,4 @@
-import { type MapDefs } from "./defs/maps/mapDefs";
+import { type MapDefs } from "./defs/mapDefs";
 import { type Vec2 } from "./utils/v2";
 
 export enum SpawnMode {

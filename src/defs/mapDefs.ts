@@ -1,20 +1,20 @@
-import { type Vec2 } from "../../utils/v2";
-import { Cobalt } from "./cobaltDefs";
-import { Desert } from "./desertDefs";
-import { Faction } from "./factionDefs";
-import { Halloween } from "./halloweenDefs";
-import { Main } from "./baseDefs";
-import { MainSpring } from "./mainSpringDefs";
-import { MainSummer } from "./mainSummerDefs";
-import { Potato } from "./potatoDefs";
-import { PotatoSpring } from "./potatoSpringDefs";
-import { Savannah } from "./savannahDefs";
-import { Snow } from "./snowDefs";
-import { Turkey } from "./turkeyDefs";
-import { Woods } from "./woodsDefs";
-import { WoodsSnow } from "./woodsSnowDefs";
-import { WoodsSpring } from "./woodsSpringDefs";
-import { WoodsSummer } from "./woodsSummerDefs";
+import { type Vec2 } from "../utils/v2";
+import { Cobalt } from "./maps/cobaltDefs";
+import { Desert } from "./maps/desertDefs";
+import { Faction } from "./maps/factionDefs";
+import { Halloween } from "./maps/halloweenDefs";
+import { Main } from "./maps/baseDefs";
+import { MainSpring } from "./maps/mainSpringDefs";
+import { MainSummer } from "./maps/mainSummerDefs";
+import { Potato } from "./maps/potatoDefs";
+import { PotatoSpring } from "./maps/potatoSpringDefs";
+import { Savannah } from "./maps/savannahDefs";
+import { Snow } from "./maps/snowDefs";
+import { Turkey } from "./maps/turkeyDefs";
+import { Woods } from "./maps/woodsDefs";
+import { WoodsSnow } from "./maps/woodsSnowDefs";
+import { WoodsSpring } from "./maps/woodsSpringDefs";
+import { WoodsSummer } from "./maps/woodsSummerDefs";
 
 export const MapDefs = {
     main: Main,
