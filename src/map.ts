@@ -1,6 +1,6 @@
 import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { type StructureDef, type BuildingDef, type ObstacleDef } from "./defs/mapObjectsTyping";
-import { type MapDef, MapDefs } from "./defs/maps/maps";
+import { type MapDef, MapDefs } from "./defs/maps/mapDefs";
 import { type Game } from "./game";
 import { GameConfig } from "./gameConfig";
 import { MapMsg, type MapRiver } from "./net/mapMsg";
@@ -156,37 +156,36 @@ export class GameMap {
             this.genAuto(customSpawnRule.type, 1, pos);
         }
 
-        for (const fixedSpawns of mapDef.mapGen.fixedSpawns) {
-            for (const type in fixedSpawns) {
-                let count = fixedSpawns[type];
-                if (typeof count !== "number") {
-                    if ("small" in count) {
-                        count = count.small;
-                    } else {
-                        count = Math.random() < count.odds ? 1 : 0;
-                    }
-                }
-                if ((this.objectCount[type] ?? 0) < count) {
-                    this.genAuto(type, count);
+        // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
+        const fixedSpawns = mapDef.mapGen.fixedSpawns[0];
+        for (const type in fixedSpawns) {
+            let count = fixedSpawns[type];
+            if (typeof count !== "number") {
+                if ("small" in count) {
+                    count = count.small;
+                } else {
+                    count = Math.random() < count.odds ? 1 : 0;
                 }
             }
-        }
-
-        for (const randomSpawns of mapDef.mapGen.randomSpawns) {
-            const spawns = [...randomSpawns.spawns];
-
-            for (let i = 0; i < randomSpawns.choose; i++) {
-                const idx = util.randomInt(0, spawns.length - 1);
-                const spawn = spawns.splice(idx, 1)[0];
-                this.genAuto(spawn);
-            }
-        }
-
-        for (const densitySpawns of mapDef.mapGen.densitySpawns) {
-            for (const type in densitySpawns) {
-                const count = densitySpawns[type];
+            if ((this.objectCount[type] ?? 0) < count) {
                 this.genAuto(type, count);
             }
+        }
+
+        const randomSpawns = mapDef.mapGen.randomSpawns[0];
+
+        const spawns = [...randomSpawns.spawns];
+
+        for (let i = 0; i < randomSpawns.choose; i++) {
+            const idx = util.randomInt(0, spawns.length - 1);
+            const spawn = spawns.splice(idx, 1)[0];
+            this.genAuto(spawn);
+        }
+
+        const densitySpawns = mapDef.mapGen.densitySpawns[0];
+        for (const type in densitySpawns) {
+            const count = densitySpawns[type];
+            this.genAuto(type, count);
         }
 
         for (const place of mapDef.mapGen.places) {

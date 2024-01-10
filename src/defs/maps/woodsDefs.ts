@@ -1,10 +1,10 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { Main } from "./main";
-import { type MapDef } from "./maps";
+import { Main } from "./baseDefs";
+import { type MapDef } from "./mapDefs";
 
-const woodsBaseDef = {
+const mapDef = {
     mapId: 2,
     desc: {
         name: "Woods",
@@ -31,7 +31,7 @@ const woodsBaseDef = {
         },
         particles: { camera: "falling_leaf" }
     },
-    gameMode: { maxPlayers: 80, woodsMode: !0 },
+    gameMode: { maxPlayers: 80, woodsMode: true },
     gameConfig: {
         planes: {
             timings: [
@@ -180,7 +180,7 @@ const woodsBaseDef = {
                     type: "logging_complex_01",
                     pos: v2.create(0.5, 0.5),
                     rad: 200,
-                    retryOnFailure: !0
+                    retryOnFailure: true
                 }
             ]
         },
@@ -236,4 +236,4 @@ const woodsBaseDef = {
         ]
     }
 };
-export const Woods = util.mergeDeep({}, Main, woodsBaseDef) as MapDef;
+export const Woods = util.mergeDeep({}, Main, mapDef) as MapDef;

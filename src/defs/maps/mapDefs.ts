@@ -1,18 +1,38 @@
 import { type Vec2 } from "../../utils/v2";
-import { Desert } from "./desert";
-import { Faction } from "./faction";
-import { Halloween } from "./halloween";
-import { Main } from "./main";
-import { Potato } from "./potato";
-import { Woods } from "./woods";
+import { Cobalt } from "./cobaltDefs";
+import { Desert } from "./desertDefs";
+import { Faction } from "./factionDefs";
+import { Halloween } from "./halloweenDefs";
+import { Main } from "./baseDefs";
+import { MainSpring } from "./mainSpringDefs";
+import { MainSummer } from "./mainSummerDefs";
+import { Potato } from "./potatoDefs";
+import { PotatoSpring } from "./potatoSpringDefs";
+import { Savannah } from "./savannahDefs";
+import { Snow } from "./snowDefs";
+import { Turkey } from "./turkeyDefs";
+import { Woods } from "./woodsDefs";
+import { WoodsSnow } from "./woodsSnowDefs";
+import { WoodsSpring } from "./woodsSpringDefs";
+import { WoodsSummer } from "./woodsSummerDefs";
 
 export const MapDefs = {
     main: Main,
+    main_spring: MainSpring,
+    main_summer: MainSummer,
     desert: Desert,
-    woods: Woods,
-    potato: Potato,
     faction: Faction,
-    halloween: Halloween
+    halloween: Halloween,
+    potato: Potato,
+    potato_spring: PotatoSpring,
+    snow: Snow,
+    woods: Woods,
+    woods_snow: WoodsSnow,
+    woods_spring: WoodsSpring,
+    woods_summer: WoodsSummer,
+    savannah: Savannah,
+    cobalt: Cobalt,
+    turkey: Turkey
 };
 
 export interface MapDef {

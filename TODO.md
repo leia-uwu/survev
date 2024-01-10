@@ -76,16 +76,23 @@ Some modes server definitions were leaked in an old stats page app.js
 but they are outdated and missing some stuff
 this is the ones ported so far (but not fully updated):
  - [x] Main Mode
+ - [x] Main spring
+ - [x] Main Summer
  - [x] Desert
  - [x] Faction
  - [x] Halloween
  - [x] Potato
+ - [x] Potato spring
+ - [x] Snow
  - [x] Woods
- - [ ] Seasonal variants of normal and woods map
+ - [x] Woods snow
+ - [x] Woods Spring
 
-Modes not in the leaked definitions:
- - [ ] Cobalt
+Modes not in the leaked definitions (need map generation code):
+ - [ ] Woods summer
  - [ ] Savannah
+ - [ ] Cobalt
+ - [ ] turkey
 
 ### Perks
  - [ ] Cast Iron Skin

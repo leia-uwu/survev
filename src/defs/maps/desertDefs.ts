@@ -1,10 +1,10 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { Main } from "./main";
-import { type MapDef } from "./maps";
+import { Main } from "./baseDefs";
+import { type MapDef } from "./mapDefs";
 
-const desertBaseDef = {
+const mapDef = {
     mapId: 1,
     desc: {
         name: "Desert",
@@ -310,4 +310,4 @@ const desertBaseDef = {
     }
 };
 
-export const Desert = util.mergeDeep({}, Main, desertBaseDef) as MapDef;
+export const Desert = util.mergeDeep({}, Main, mapDef) as MapDef;

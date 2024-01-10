@@ -1,9 +1,9 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
-import { Main } from "./main";
-import { type MapDef } from "./maps";
+import { Main } from "./baseDefs";
+import { type MapDef } from "./mapDefs";
 
-const PotatoBaseDef = {
+const mapDef = {
     mapId: 4,
     desc: {
         name: "Potato",
@@ -49,7 +49,7 @@ const PotatoBaseDef = {
             "player-mash-03.img"
         ]
     },
-    gameMode: { maxPlayers: 80, potatoMode: !0 },
+    gameMode: { maxPlayers: 80, potatoMode: true },
     gameConfig: {
         planes: {
             timings: [
@@ -223,4 +223,4 @@ const PotatoBaseDef = {
         importantSpawns: ["club_complex_01"]
     }
 };
-export const Potato = util.mergeDeep({}, Main, PotatoBaseDef) as MapDef;
+export const Potato = util.mergeDeep({}, Main, mapDef) as MapDef;

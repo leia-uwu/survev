@@ -1,9 +1,9 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
-import { Main } from "./main";
-import { type MapDef } from "./maps";
+import { Main } from "./baseDefs";
+import { type MapDef } from "./mapDefs";
 
-const halloweenBaseDef = {
+const mapDef = {
     assets: {
         audio: [
             { name: "log_01", channel: "sfx" },
@@ -173,4 +173,4 @@ const halloweenBaseDef = {
     }
 };
 
-export const Halloween = util.mergeDeep({}, Main, halloweenBaseDef) as MapDef;
+export const Halloween = util.mergeDeep({}, Main, mapDef) as MapDef;

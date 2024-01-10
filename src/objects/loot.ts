@@ -1,5 +1,5 @@
 import { GameObjectDefs } from "../defs/gameObjectDefs";
-import { MapDefs } from "../defs/maps/maps";
+import { MapDefs } from "../defs/maps/mapDefs";
 import { type Game } from "../game";
 import { GameConfig } from "../gameConfig";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";

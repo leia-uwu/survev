@@ -1,10 +1,10 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { Main } from "./main";
-import { type MapDef } from "./maps";
+import { Main } from "./baseDefs";
+import { type MapDef } from "./mapDefs";
 
-const factionBaseDef = {
+const mapDef = {
     mapId: 3,
     desc: { name: "50v50", icon: "img/modes/star.svg" },
     assets: {
@@ -36,7 +36,7 @@ const factionBaseDef = {
     },
     gameMode: {
         maxPlayers: 100,
-        factionMode: !0,
+        factionMode: true,
         factions: 2
     },
     gameConfig: {
@@ -367,4 +367,4 @@ const factionBaseDef = {
     }
 };
 
-export const Faction = util.mergeDeep({}, Main, factionBaseDef) as MapDef;
+export const Faction = util.mergeDeep({}, Main, mapDef) as MapDef;
