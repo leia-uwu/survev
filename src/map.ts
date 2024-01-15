@@ -27,7 +27,7 @@ export class GameMap {
     height: number;
 
     msg = new MapMsg();
-    mapStream = new MsgStream(new ArrayBuffer(65536));
+    mapStream = new MsgStream(new ArrayBuffer(1 << 14));
     seed = util.randomInt(0, 2 ** 31);
 
     bounds: AABB;

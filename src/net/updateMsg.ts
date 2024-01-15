@@ -247,7 +247,7 @@ const UpdateExtFlags = {
 };
 
 export class UpdateMsg extends Msg {
-    override readonly type = MsgType.Update;
+    override readonly msgType = MsgType.Update;
     allocBytes = 1 << 16;
 
     serializationCache!: SerializationCache;

@@ -122,24 +122,24 @@ won't list all that need to be competently done because lazy
  - [x] Port all game objects serializations
  - [ ] Port all msgs serializations
  	- [x] Join
- 	- [ ] Disconnect
+ 	- [x] Disconnect
  	- [x] Input
- 	- [ ] Edit
+ 	- [ ] Edit (empty class on client, idk what it was for, probably debugging stuff)
  	- [x] Joined
- 	- [x] Update
+ 	- [x] Update (deserialization still needs to be done, but its not used for now)
  	- [x] Kill
  	- [x] GameOver
- 	- [ ] Pickup
+ 	- [x] Pickup
  	- [x] Map
- 	- [ ] Spectate
- 	- [ ] DropItem
- 	- [ ] Emote
+ 	- [x] Spectate
+ 	- [x] DropItem
+ 	- [x] Emote
  	- [x] PlayerStats
  	- [ ] AdStatus
- 	- [ ] Loadout
- 	- [ ] RoleAnnouncement
- 	- [ ] Stats
- 	- [ ] UpdatePass
+ 	- [x] Loadout
+ 	- [x] RoleAnnouncement
+ 	- [x] Stats
+ 	- [ ] UpdatePass (also an empty class on client)
  	- [x] AliveCounts
  	- [ ] PerkModeRoleSelect
  - [ ] Connections limit per ip

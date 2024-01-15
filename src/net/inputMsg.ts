@@ -2,7 +2,7 @@ import { v2 } from "../utils/v2";
 import { Msg, MsgType, NetConstants, type SurvivBitStream } from "./net";
 
 export class InputMsg extends Msg {
-    override readonly type = MsgType.Input;
+    override readonly msgType = MsgType.Input;
 
     seq = 0;
     moveLeft = false;

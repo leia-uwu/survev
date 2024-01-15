@@ -1,8 +1,8 @@
-import { PlayerStatsMsg } from "./PlayerStatsMsg";
+import { PlayerStatsMsg } from "./playerStatsMsg";
 import { Msg, MsgType, type SurvivBitStream } from "./net";
 
 export class GameOverMsg extends Msg {
-    override readonly type = MsgType.GameOver;
+    override readonly msgType = MsgType.GameOver;
 
     teamId = 1;
     teamRank = 0;

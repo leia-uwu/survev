@@ -107,7 +107,7 @@ function deserializeMapObj(s: SurvivBitStream): MapObj {
 }
 
 export class MapMsg extends Msg {
-    override readonly type = MsgType.Map;
+    override readonly msgType = MsgType.Map;
 
     mapName = "";
     seed = 0;

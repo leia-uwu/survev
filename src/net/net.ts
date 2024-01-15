@@ -173,9 +173,9 @@ export enum MsgType {
 }
 
 export abstract class Msg {
-    abstract type: MsgType;
-    abstract deserialize(stream: SurvivBitStream): void;
-    abstract serialize(stream: SurvivBitStream): void;
+    abstract msgType: MsgType;
+    abstract deserialize(s: SurvivBitStream): void;
+    abstract serialize(s: SurvivBitStream): void;
 }
 
 export class MsgStream {
@@ -198,7 +198,7 @@ export class MsgStream {
 
     serializeMsg(msg: Msg) {
         // assert(this.stream.index % 8 == 0);
-        this.stream.writeUint8(msg.type);
+        this.stream.writeUint8(msg.msgType);
         msg.serialize(this.stream);
         // assert(this.stream.index % 8 == 0);
     }

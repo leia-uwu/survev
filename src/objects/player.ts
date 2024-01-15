@@ -365,11 +365,10 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
         if (this._firstUpdate) {
             const joinedMsg = new JoinedMsg();
+            joinedMsg.teamMode = 1;
             joinedMsg.playerId = this.id;
             joinedMsg.emotes = this.loadout.emotes;
-            const joinedStream = new MsgStream(new ArrayBuffer(64));
-            joinedStream.serializeMsg(joinedMsg);
-            this.sendData(joinedStream.getBuffer());
+            this.sendMsg(joinedMsg);
 
             const mapStream = this.game.map.mapStream.stream;
 
@@ -622,6 +621,12 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
 
     cancelAction(_?: boolean): void {
 
+    }
+
+    sendMsg(msg: Msg, bytes = 128): void {
+        const stream = new MsgStream(new ArrayBuffer(bytes));
+        stream.serializeMsg(msg);
+        this.sendData(stream.getBuffer());
     }
 
     sendData(buffer: ArrayBuffer): void {

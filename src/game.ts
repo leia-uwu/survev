@@ -14,6 +14,8 @@ import { type ExplosionData } from "./net/updateMsg";
 import { Logger } from "./utils/logger";
 import { Loot } from "./objects/loot";
 import { GameObjectDefs } from "./defs/gameObjectDefs";
+import { GameConfig } from "./gameConfig";
+import { DisconnectMsg } from "./net/disconnectMsg";
 
 export class Game {
     stopped = false;
@@ -196,6 +198,17 @@ export class Game {
         case MsgType.Join: {
             const joinMsg = new JoinMsg();
             joinMsg.deserialize(msgStream.stream);
+
+            if (joinMsg.protocol !== GameConfig.protocolVersion) {
+                const disconnectMsg = new DisconnectMsg();
+                disconnectMsg.reason = "index-invalid-protocol";
+                player.sendMsg(disconnectMsg);
+                setTimeout(() => {
+                    player.socket.close();
+                }, 1);
+                return;
+            }
+
             let name = joinMsg.name;
             if (name.trim() === "") name = "Player";
             player.name = name;

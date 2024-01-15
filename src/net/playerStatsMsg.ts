@@ -1,7 +1,7 @@
 import { Msg, MsgType, type SurvivBitStream } from "./net";
 
 export class PlayerStatsMsg extends Msg {
-    override readonly type = MsgType.PlayerStats;
+    override readonly msgType = MsgType.PlayerStats;
 
     playerId = 0;
     playerStats = {

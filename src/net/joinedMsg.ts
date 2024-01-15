@@ -1,7 +1,7 @@
 import { Msg, MsgType, type SurvivBitStream } from "./net";
 
 export class JoinedMsg extends Msg {
-    override readonly type = MsgType.Joined;
+    override readonly msgType = MsgType.Joined;
 
     teamMode = 0;
     playerId = 0;

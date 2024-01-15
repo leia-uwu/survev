@@ -1,5 +1,5 @@
 export const GameConfig = {
-    protocolVersion: 76,
+    protocolVersion: 78,
     Input: {
         MoveLeft: 0,
         MoveRight: 1,

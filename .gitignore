@@ -1,6 +1,8 @@
 # Public directory/symlink
 client/
 
+reference/
+
 # Compiled source
 dist/
 

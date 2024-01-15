@@ -1,7 +1,7 @@
 import { Msg, MsgType, type SurvivBitStream } from "./net";
 
 export class KillMsg extends Msg {
-    override readonly type = MsgType.Kill;
+    override readonly msgType = MsgType.Kill;
     itemSourceType = "";
     mapSourceType = "";
     damageType = 0;

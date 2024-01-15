@@ -1,7 +1,7 @@
 import { Msg, MsgType, type SurvivBitStream } from "./net";
 
 export class AliveCountMsg extends Msg {
-    override readonly type = MsgType.AliveCounts;
+    override readonly msgType = MsgType.AliveCounts;
 
     aliveCounts: number[] = [];
 
