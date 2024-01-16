@@ -126,8 +126,8 @@ export class Spline {
         let nearestT = (idx0 + t) / len;
         let nearestDistSq = Number.MAX_VALUE;
         const kIter = 8;
-        for (let _i2 = 0; _i2 <= kIter; _i2++) {
-            const testT = math.lerp(_i2 / kIter, tMin, tMax);
+        for (let i = 0; i <= kIter; i++) {
+            const testT = math.lerp(i / kIter, tMin, tMax);
             const testPos = this.getPos(testT);
             const testDistSq = v2.lengthSqr(v2.sub(testPos, pos));
             if (testDistSq < nearestDistSq) {

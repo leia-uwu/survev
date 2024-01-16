@@ -208,6 +208,44 @@ export class GameMap {
             this.seed
         );
 
+        for (const river of this.terrain.rivers) {
+            for (let i = 0.2; i < 0.8; i += 0.05) {
+                if (Math.random() < 0.1) {
+                    const pos = river.spline.getPos(i);
+
+                    const rot = river.spline.getNormal(i);
+                    const ori = math.radToOri(Math.atan2(rot.y, rot.x));
+
+                    const width = river.waterWidth;
+
+                    let bridgeType: string;
+                    if (width < 9) {
+                        bridgeType = mapDef.mapGen.bridgeTypes.medium;
+                    } else if (width < 20) {
+                        bridgeType = mapDef.mapGen.bridgeTypes.large;
+                    } else {
+                        bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
+                    }
+
+                    const coll = collider.transform(
+                        mapHelpers.getBoundingCollider(bridgeType),
+                        pos,
+                        math.oriToRad(ori),
+                        1
+                    ) as AABB;
+
+                    if (this.getGroundSurface(coll.min, 0).type === "water" ||
+                        this.getGroundSurface(coll.max, 0).type === "water") {
+                        continue;
+                    }
+
+                    if (bridgeType) {
+                        this.genStructure(bridgeType, pos, 0, ori);
+                    }
+                }
+            }
+        }
+
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
             const pos = v2.add(
                 util.randomPointInCircle(customSpawnRule.rad),
@@ -498,6 +536,11 @@ export class GameMap {
         while (attempts++ < 200 && collided) {
             collided = false;
             pos = getPos();
+
+            // if (this.getGroundSurface(pos, 0).type === "water") {
+            //     collided = true;
+            //     continue;
+            // }
 
             for (const coll of colliders) {
                 const newCollider = collider.transform(coll, pos, rot, scale);

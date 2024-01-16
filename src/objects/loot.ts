@@ -9,6 +9,7 @@ import { util } from "../utils/util";
 import { v2, type Vec2 } from "../utils/v2";
 import { GameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
+import { Structure } from "./structure";
 
 type FullLoot = ObjectsFullData[ObjectType.Loot];
 type PartialLoot = ObjectsPartialData[ObjectType.Loot];
@@ -125,6 +126,35 @@ export class Loot extends GameObject implements FullLoot, PartialLoot {
                 this.vel.y -= speed * vecCollisionNorm.y;
                 obj.vel.x += speed * vecCollisionNorm.x;
                 obj.vel.y += speed * vecCollisionNorm.y;
+            }
+        }
+
+        const river = this.game.map.getGroundSurface(this.pos, 0).river;
+        if (river) {
+            const tangent = river.spline.getTangent(
+                river.spline.getClosestTtoPoint(this.pos)
+            );
+            this.push(tangent, 0.5 * this.game.dt);
+        }
+
+        let onStair = false;
+        const originalLayer = this.layer;
+        const objs = this.game.grid.intersectCollider(this.collider);
+        for (const obj of objs) {
+            if (obj instanceof Structure) {
+                for (const stair of obj.stairs) {
+                    if (Structure.checkStairs(this.collider, stair, this)) {
+                        onStair = true;
+                        break;
+                    }
+                }
+                if (!onStair) {
+                    if (this.layer === 2) this.layer = 0;
+                    if (this.layer === 3) this.layer = 1;
+                }
+                if (this.layer !== originalLayer) {
+                    this.setDirty();
+                }
             }
         }
 
