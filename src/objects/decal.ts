@@ -7,12 +7,12 @@ import { collider } from "../utils/collider";
 import { mapHelpers } from "../utils/mapHelpers";
 import { math } from "../utils/math";
 import { v2, type Vec2 } from "../utils/v2";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, ObjectType } from "./gameObject";
 
 type FullDecal = ObjectsFullData[ObjectType.Decal];
 type PartialDecal = ObjectsPartialData[ObjectType.Decal];
 
-export class Decal extends GameObject implements FullDecal, PartialDecal {
+export class Decal extends BaseGameObject implements FullDecal, PartialDecal {
     bounds: Collider;
 
     override __type = ObjectType.Decal;

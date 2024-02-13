@@ -10,7 +10,7 @@ import { collider } from "../utils/collider";
 import { math } from "../utils/math";
 import { util } from "../utils/util";
 import { type Vec2, v2 } from "../utils/v2";
-import { type GameObject, ObjectType } from "./gameObject";
+import { ObjectType, type GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
 

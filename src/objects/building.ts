@@ -9,14 +9,14 @@ import { mapHelpers } from "../utils/mapHelpers";
 import { math } from "../utils/math";
 import { v2, type Vec2 } from "../utils/v2";
 import { type Decal } from "./decal";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { type Structure } from "./structure";
 
 type FullBuilding = ObjectsFullData[ObjectType.Building];
 type PartialBuilding = ObjectsPartialData[ObjectType.Building];
 
-export class Building extends GameObject implements FullBuilding, PartialBuilding {
+export class Building extends BaseGameObject implements FullBuilding, PartialBuilding {
     bounds: Collider;
 
     mapObstacleBounds: Collider[] = [];

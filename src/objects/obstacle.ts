@@ -11,14 +11,14 @@ import { math } from "../utils/math";
 import { util } from "../utils/util";
 import { v2, type Vec2 } from "../utils/v2";
 import { type Building } from "./building";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, ObjectType } from "./gameObject";
 import { getLootTable } from "./loot";
 import { type Player } from "./player";
 
 type FullObstacle = ObjectsFullData[ObjectType.Obstacle];
 type PartialObstacle = ObjectsPartialData[ObjectType.Obstacle];
 
-export class Obstacle extends GameObject implements FullObstacle, PartialObstacle {
+export class Obstacle extends BaseGameObject implements FullObstacle, PartialObstacle {
     override __type = ObjectType.Obstacle;
 
     bounds: Collider;

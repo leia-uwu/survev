@@ -6,7 +6,7 @@ import { type Vec2, v2 } from "./utils/v2";
 import { InputMsg } from "./net/inputMsg";
 import { Grid } from "./utils/grid";
 import { JoinMsg } from "./net/joinMsg";
-import { ObjectType, type GameObject } from "./objects/gameObject";
+import { ObjectType, type BaseGameObject } from "./objects/gameObject";
 import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
@@ -39,8 +39,8 @@ export class Game {
 
     msgsToSend: Msg[] = [];
 
-    partialObjs = new Set<GameObject>();
-    fullObjs = new Set<GameObject>();
+    partialObjs = new Set<BaseGameObject>();
+    fullObjs = new Set<BaseGameObject>();
 
     newPlayers: Player[] = [];
 
@@ -95,7 +95,7 @@ export class Game {
         this.bulletManager.update();
 
         for (const loot of this.grid.categories[ObjectType.Loot]) {
-            (loot as Loot).update();
+            loot.update();
         }
 
         for (const player of this.players) {

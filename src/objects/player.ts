@@ -5,7 +5,7 @@ import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSeri
 import { type PlayerInfo, type ActivePlayerData, UpdateMsg } from "../net/updateMsg";
 import { collider } from "../utils/collider";
 import { type Vec2, v2 } from "../utils/v2";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
 import { type PlayerContainer } from "../server";
 import { type Msg, MsgStream } from "../net/net";
 import { coldet } from "../utils/coldet";
@@ -27,7 +27,7 @@ import { Structure } from "./structure";
 type PlayerFullData = ObjectsFullData[ObjectType.Player];
 type PlayerPartialData = ObjectsPartialData[ObjectType.Player];
 
-export class Player extends GameObject implements PlayerFullData, PlayerPartialData, ActivePlayerData, PlayerInfo {
+export class Player extends BaseGameObject implements PlayerFullData, PlayerPartialData, ActivePlayerData, PlayerInfo {
     override readonly __type = ObjectType.Player;
 
     bounds = collider.toAabb(collider.createCircle(v2.create(0, 0), GameConfig.player.maxVisualRadius));
@@ -404,13 +404,13 @@ export class Player extends GameObject implements PlayerFullData, PlayerPartialD
         this.visibleObjects = newVisibleObjects;
 
         for (const obj of this.game.fullObjs) {
-            if (this.visibleObjects.has(obj)) {
+            if (this.visibleObjects.has(obj as GameObject)) {
                 updateMsg.fullObjects.push(obj);
             }
         }
 
         for (const obj of this.game.partialObjs) {
-            if (this.visibleObjects.has(obj) && !updateMsg.fullObjects.includes(obj)) {
+            if (this.visibleObjects.has(obj as GameObject) && !updateMsg.fullObjects.includes(obj)) {
                 updateMsg.partObjects.push(obj);
             }
         }

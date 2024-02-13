@@ -7,7 +7,7 @@ import { collider } from "../utils/collider";
 import { mapHelpers } from "../utils/mapHelpers";
 import { math } from "../utils/math";
 import { v2, type Vec2 } from "../utils/v2";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, ObjectType } from "./gameObject";
 
 type FullStructure = ObjectsFullData[ObjectType.Structure];
 type PartialStructure = ObjectsPartialData[ObjectType.Structure];
@@ -22,7 +22,7 @@ interface Stair {
     lootOnly: boolean
 }
 
-export class Structure extends GameObject implements FullStructure, PartialStructure {
+export class Structure extends BaseGameObject implements FullStructure, PartialStructure {
     bounds: Collider;
 
     override __type = ObjectType.Structure;
@@ -81,7 +81,7 @@ export class Structure extends GameObject implements FullStructure, PartialStruc
         });
     }
 
-    static checkStairs(circle: Circle, stair: Stair, object: GameObject): boolean {
+    static checkStairs(circle: Circle, stair: Stair, object: BaseGameObject): boolean {
         const collides = coldet.testCircleAabb(circle.pos, circle.rad, stair.collision.min, stair.collision.max);
 
         if (collides) {

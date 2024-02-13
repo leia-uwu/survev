@@ -2,7 +2,7 @@ import { GameObjectDefs } from "../defs/gameObjectDefs";
 import { type GunDef, type MeleeDef } from "../defs/objectsTypings";
 import { GameConfig } from "../gameConfig";
 import { type BulletParams } from "../objects/bullet";
-import { type GameObject, ObjectType } from "../objects/gameObject";
+import { type BaseGameObject, ObjectType } from "../objects/gameObject";
 import { Obstacle } from "../objects/obstacle";
 import { Player } from "../objects/player";
 import { coldet } from "./coldet";
@@ -282,7 +282,7 @@ export class WeaponManager {
         const lineEnd = coll.rad + v2.length(v2.sub(this.player.pos, coll.pos));
 
         const hits: Array<{
-            obj: GameObject
+            obj: BaseGameObject
             prio: number
             pos: Vec2
             pen: number

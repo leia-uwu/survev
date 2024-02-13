@@ -7,14 +7,14 @@ import { type Circle, coldet } from "../utils/coldet";
 import { collider } from "../utils/collider";
 import { util } from "../utils/util";
 import { v2, type Vec2 } from "../utils/v2";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Structure } from "./structure";
 
 type FullLoot = ObjectsFullData[ObjectType.Loot];
 type PartialLoot = ObjectsPartialData[ObjectType.Loot];
 
-export class Loot extends GameObject implements FullLoot, PartialLoot {
+export class Loot extends BaseGameObject implements FullLoot, PartialLoot {
     bounds = collider.createCircle(v2.create(0.0, 0.0), 3.0);
 
     override __type = ObjectType.Loot;

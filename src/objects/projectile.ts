@@ -5,12 +5,12 @@ import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSeri
 import { type Collider } from "../utils/coldet";
 import { collider } from "../utils/collider";
 import { v2, type Vec2 } from "../utils/v2";
-import { GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, ObjectType } from "./gameObject";
 
 type FullProjectile = ObjectsFullData[ObjectType.Projectile];
 type PartialProjectile = ObjectsPartialData[ObjectType.Projectile];
 
-export class Projectile extends GameObject implements FullProjectile, PartialProjectile {
+export class Projectile extends BaseGameObject implements FullProjectile, PartialProjectile {
     bounds: Collider;
 
     override __type = ObjectType.Projectile;

@@ -1,4 +1,14 @@
+import { type DeadBody } from "../objects/DeadBody";
+import { type Airdrop } from "../objects/airdrop";
+import { type Building } from "../objects/building";
+import { type Decal } from "../objects/decal";
 import { ObjectType, type GameObject } from "../objects/gameObject";
+import { type Loot } from "../objects/loot";
+import { type Obstacle } from "../objects/obstacle";
+import { type Player } from "../objects/player";
+import { type Projectile } from "../objects/projectile";
+import { type Smoke } from "../objects/smoke";
+import { type Structure } from "../objects/structure";
 import { coldet, type Collider } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";
@@ -22,19 +32,19 @@ export class Grid {
 
     private readonly objects = new Map<number, GameObject>();
 
-    readonly categories: Record<ObjectType, Set<GameObject>> = {
+    readonly categories = {
         [ObjectType.Invalid]: new Set(),
-        [ObjectType.Player]: new Set(),
-        [ObjectType.Obstacle]: new Set(),
-        [ObjectType.Loot]: new Set(),
+        [ObjectType.Player]: new Set<Player>(),
+        [ObjectType.Obstacle]: new Set<Obstacle>(),
+        [ObjectType.Loot]: new Set<Loot>(),
         [ObjectType.LootSpawner]: new Set(),
-        [ObjectType.DeadBody]: new Set(),
-        [ObjectType.Building]: new Set(),
-        [ObjectType.Structure]: new Set(),
-        [ObjectType.Decal]: new Set(),
-        [ObjectType.Projectile]: new Set(),
-        [ObjectType.Smoke]: new Set(),
-        [ObjectType.Airdrop]: new Set()
+        [ObjectType.DeadBody]: new Set<DeadBody>(),
+        [ObjectType.Building]: new Set<Building>(),
+        [ObjectType.Structure]: new Set<Structure>(),
+        [ObjectType.Decal]: new Set<Decal>(),
+        [ObjectType.Projectile]: new Set<Projectile>(),
+        [ObjectType.Smoke]: new Set<Smoke>(),
+        [ObjectType.Airdrop]: new Set<Airdrop>()
     };
 
     constructor(width: number, height: number) {
@@ -53,7 +63,7 @@ export class Grid {
 
     addObject(obj: GameObject): void {
         this.objects.set(obj.id, obj);
-        this.categories[obj.__type].add(obj);
+        (this.categories[obj.__type] as Set<typeof obj>).add(obj);
         this.updateObject(obj);
     }
 
@@ -86,7 +96,7 @@ export class Grid {
     remove(obj: GameObject): void {
         this.objects.delete(obj.id);
         this.removeFromGrid(obj);
-        this.categories[obj.__type].delete(obj);
+        (this.categories[obj.__type] as Set<typeof obj>).delete(obj);
     }
 
     /**
