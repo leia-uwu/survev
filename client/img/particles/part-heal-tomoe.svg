@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="128"
+   height="128"
+   viewBox="0 0 33.866666 33.866667"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="part-heal-tomoe.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient876">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0"
+         id="stop872" />
+      <stop
+         style="stop-color:#7d7d7d;stop-opacity:1"
+         offset="1"
+         id="stop874" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient876"
+       id="linearGradient864"
+       x1="5.8208332"
+       y1="9.5249996"
+       x2="30.691668"
+       y2="22.225"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0299529,0,0,1.0299529,-0.34044262,-1.184639)" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview6"
+     showgrid="true"
+     inkscape:zoom="2.7812867"
+     inkscape:cx="48.558615"
+     inkscape:cy="71.90157"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4">
+    <inkscape:grid
+       type="xygrid"
+       id="grid819"
+       empspacing="4"
+       spacingy="0.52916667"
+       spacingx="0.52916667" />
+  </sodipodi:namedview>
+  <path
+     style="fill:url(#linearGradient864);fill-opacity:1;stroke:#000000;stroke-width:1.6350503;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     d="M 15.458656,1.8502103 C 10.605804,1.7947712 6.1417611,5.0312684 4.8271041,9.9376417 3.2689903,15.752601 6.7195549,21.729777 12.534513,23.287891 c 4.483892,1.19566 9.233357,-0.579144 11.834954,-4.421874 0.346793,2.083692 0.269396,4.272619 -0.312959,6.445994 -0.520652,1.936736 -1.506362,3.479455 -2.640989,5.341589 4.404728,-2.407148 7.236292,-5.345835 7.805344,-9.624548 C 30.725496,9.7156757 23.095424,3.5643469 18.177353,2.2296995 17.269548,1.9833426 16.357332,1.8604768 15.458656,1.8502103 Z m -3.263713,7.4758844 c 1.612593,3.4e-5 2.91985,1.3072903 2.919884,2.9198843 -3.4e-5,1.612594 -1.307291,2.919851 -2.919884,2.919885 -1.612594,-3.4e-5 -2.9198506,-1.307291 -2.9198847,-2.919885 3.41e-5,-1.612594 1.3072907,-2.9198503 2.9198847,-2.9198843 z"
+     id="path815"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ssccccsssccccc" />
+</svg>

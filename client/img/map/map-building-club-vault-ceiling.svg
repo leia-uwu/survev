@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="160"
+   height="176"
+   viewBox="0 0 42.333361 46.566666"
+   version="1.1"
+   id="svg306"
+   sodipodi:docname="map-building-club-vault-ceiling.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:export-filename="C:\Users\kjust\Desktop\projects\surviv\client\src\img\map\map-building-bathhouse-basement-01.png"
+   inkscape:export-xdpi="256"
+   inkscape:export-ydpi="256">
+  <metadata
+     id="metadata310">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview308"
+     showgrid="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     inkscape:zoom="1.0925926"
+     inkscape:cx="-10.054137"
+     inkscape:cy="133.69676"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg306"
+     inkscape:showpageshadow="false"
+     showguides="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid1117"
+       empspacing="8"
+       spacingy="1.0583336"
+       spacingx="1.0583336"
+       originx="0"
+       originy="0"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs190">
+    <pattern
+       xlink:href="#a-4"
+       id="d-2"
+       patternTransform="matrix(0.25001749,0.25001749,-0.25001749,0.25001749,321.73344,16.933616)" />
+    <pattern
+       xlink:href="#b-8"
+       id="a-4"
+       patternTransform="rotate(-45 6.06 -178.51) scale(1.33636)" />
+    <pattern
+       xlink:href="#c-1"
+       id="b-8"
+       patternTransform="rotate(-45 309.562 -18.588) scale(.35358)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="175.039"
+       height="75.039"
+       patternTransform="translate(108.576 213.448) scale(.26458)"
+       id="c-1">
+      <path
+         d="M0 0h175.039v15.04H0z"
+         fill="#fff"
+         id="path5-3" />
+      <path
+         d="M0 11.84h175.039v3.12H0z"
+         fill="#191919"
+         id="path7-8" />
+      <path
+         d="M0 15.04h175.039V60H0z"
+         fill="#b1b1b1"
+         id="path9-4" />
+      <path
+         d="M0 60h175.039v15.04H0z"
+         fill="#fff"
+         id="path11-2" />
+      <path
+         d="M0 60h175.039v3.2H0z"
+         fill="#191919"
+         id="path13" />
+    </pattern>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1750">
+      <path
+         sodipodi:nodetypes="ccccccccccc"
+         style="fill:url(#pattern1754);stroke:none;stroke-width:4.23333454;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         inkscape:connector-curvature="0"
+         d="M 313.26679,-2.6862733e-5 V 93.13334 h -25.40001 v -3e-6 c 0,-8.466669 -8.46667,-8.466669 -8.46667,-8.466669 h -16.93335 c 0,0 -8.46667,0 -8.46667,8.466669 v 3e-6 H 228.60008 V -2.6862733e-5 Z"
+         id="path1752"
+         clip-path="none" />
+    </clipPath>
+  </defs>
+  <path
+     sodipodi:nodetypes="ccccccccc"
+     inkscape:connector-curvature="0"
+     id="path2392"
+     d="M 67.733362,-376.76678 H 203.20006 l -1e-5,42.33335 -4.23333,4.23333 v 25.4 l 4.23333,4.23334 1e-5,42.33335 H 67.733362 Z"
+     style="fill:url(#pattern2394);fill-opacity:1;stroke:none;stroke-width:1.01996911;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.30980392;paint-order:normal" />
+  <path
+     transform="matrix(0.49999987,0,0,0.49999987,-114.30001,2.6849995e-5)"
+     clip-path="url(#clipPath1750)"
+     id="path1746"
+     d="M 313.26678,-2.6862733e-5 V 93.133339 h -25.40001 v -1e-6 c 0,-8.466669 -8.46667,-8.466669 -8.46667,-8.466669 h -16.93334 c 0,0 -8.46667,0 -8.46667,8.466669 v 1e-6 H 228.60008 V -2.6862732e-5 Z"
+     inkscape:connector-curvature="0"
+     style="fill:url(#d-2);stroke:#000000;stroke-width:3.17500114;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     sodipodi:nodetypes="ccccccccccc" />
+</svg>

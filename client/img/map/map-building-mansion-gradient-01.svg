@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="248"
+   height="220"
+   viewBox="0 0 65.6165 58.2085"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="map-building-mansion-gradient-01.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview11"
+     showgrid="false"
+     inkscape:zoom="3.0341309"
+     inkscape:cx="203.82421"
+     inkscape:cy="217.66655"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9" />
+  <defs
+     id="defs5">
+    <filter
+       id="a"
+       x="-0.050000001"
+       width="1.099"
+       y="-0.056000002"
+       height="1.113"
+       style="color-interpolation-filters:sRGB">
+      <feGaussianBlur
+         stdDeviation="9.965"
+         id="feGaussianBlur2" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter876"
+       x="-0.027071066"
+       width="1.0541421"
+       y="-0.030860911"
+       height="1.0617218">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="5.4435176"
+         id="feGaussianBlur878" />
+    </filter>
+  </defs>
+  <path
+     d="M 25.4,-271.198 V 50.535 h 6.35 V 78.052 H 205.315 V 50.536 h 40.216 v 33.866 h 67.734 V 50.605 L 507.998,50.536 V -271.198 H 389.466 v -67.733 H 177.799 v 67.733 z"
+     transform="matrix(0.12090906,0,0,0.11933174,0.56192504,44.290945)"
+     id="path7"
+     inkscape:connector-curvature="0"
+     style="fill-opacity:0.506;filter:url(#filter876)" />
+</svg>

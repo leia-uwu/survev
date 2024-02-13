@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="224"
+   viewBox="0 0 8.467 59.266666"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="map-wall-07.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview11"
+     showgrid="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="1.2291667"
+     inkscape:cx="-101.55932"
+     inkscape:cy="172.4708"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9">
+    <inkscape:grid
+       type="xygrid"
+       id="grid820"
+       empspacing="8"
+       spacingy="1.0583333"
+       spacingx="1.058375"
+       originx="0"
+       originy="-0.00099996062" />
+  </sodipodi:namedview>
+  <defs
+     id="defs5">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath825">
+      <path
+         id="path827"
+         d="M 0,-8.4679981 H 8.467 V 50.8 H 0 Z"
+         inkscape:connector-curvature="0"
+         style="fill:#fbfbfb;stroke-width:3.74699044" />
+    </clipPath>
+  </defs>
+  <path
+     style="fill:#ffffff;stroke:#000000;stroke-width:3.17512488;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+     inkscape:connector-curvature="0"
+     d="M 0,-8.4679981 H 8.467 V 50.8 H 0 Z"
+     id="path823"
+     clip-path="url(#clipPath825)"
+     transform="translate(0,8.4679994)" />
+</svg>

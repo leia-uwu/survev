@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="144"
+   height="144"
+   viewBox="0 0 38.1 38.1"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="map-stone-01cb.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview8"
+     showgrid="false"
+     inkscape:zoom="1.6388889"
+     inkscape:cx="84.395719"
+     inkscape:cy="155.57598"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg6" />
+  <path
+     sodipodi:type="star"
+     style="fill:#9ca2a8;fill-opacity:1;stroke:#2d2d2d;stroke-width:2.42411256;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     id="path862"
+     sodipodi:sides="12"
+     sodipodi:cx="19.049999"
+     sodipodi:cy="19.05"
+     sodipodi:r1="17.706743"
+     sodipodi:r2="17.706743"
+     sodipodi:arg1="-1.5707963"
+     sodipodi:arg2="-1.3089969"
+     inkscape:flatsided="true"
+     inkscape:rounded="0.5"
+     inkscape:randomized="0"
+     d="m 19.05,1.343256 c 4.582842,1e-7 4.884513,0.080833 8.853371,2.372254 3.968858,2.2914213 4.189697,2.51226 6.481118,6.481118 2.291421,3.968858 2.372254,4.270529 2.372253,8.853372 0,4.582842 -0.08083,4.884513 -2.372254,8.853371 -2.291421,3.968858 -2.51226,4.189697 -6.481118,6.481118 -3.968858,2.291421 -4.270529,2.372254 -8.853371,2.372253 -4.582843,0 -4.884514,-0.08083 -8.853372,-2.372254 C 6.2277693,32.093067 6.0069306,31.872228 3.7155095,27.90337 1.4240885,23.934512 1.3432559,23.632841 1.343256,19.049999 c 1e-7,-4.582843 0.080833,-4.884514 2.372254,-8.853372 C 6.0069313,6.2277693 6.22777,6.0069306 10.196628,3.7155095 14.165486,1.4240885 14.467157,1.3432559 19.05,1.343256 Z"
+     inkscape:transform-center-y="-0.35815856" />
+  <path
+     inkscape:transform-center-y="-0.11494734"
+     d="m 22.895483,7.8060064 c 1.470819,10e-8 1.567638,0.025943 2.841404,0.761352 1.273767,0.7354095 1.344643,0.8062856 2.080052,2.0800526 0.73541,1.273766 0.761352,1.370585 0.761352,2.841404 0,1.470818 -0.02594,1.567637 -0.761352,2.841403 -0.73541,1.273767 -0.806286,1.344643 -2.080052,2.080052 -1.273767,0.73541 -1.370585,0.761352 -2.841404,0.761352 -1.470819,0 -1.567638,-0.02594 -2.841404,-0.761352 -1.273767,-0.735409 -1.344643,-0.806285 -2.080052,-2.080052 -0.73541,-1.273766 -0.761352,-1.370585 -0.761352,-2.841404 0,-1.470819 0.02594,-1.567637 0.761352,-2.841404 0.73541,-1.2737663 0.806286,-1.3446423 2.080052,-2.0800517 1.273767,-0.7354095 1.370585,-0.7613519 2.841404,-0.7613519 z"
+     inkscape:randomized="0"
+     inkscape:rounded="0.5"
+     inkscape:flatsided="true"
+     sodipodi:arg2="-1.3089969"
+     sodipodi:arg1="-1.5707963"
+     sodipodi:r2="5.6828079"
+     sodipodi:r1="5.6828079"
+     sodipodi:cy="13.488814"
+     sodipodi:cx="22.895483"
+     sodipodi:sides="12"
+     id="path864"
+     style="fill:#c7cacd;fill-opacity:1;stroke:none;stroke-width:0.7335695;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     sodipodi:type="star"
+     inkscape:transform-center-x="1.9404455e-006" />
+</svg>

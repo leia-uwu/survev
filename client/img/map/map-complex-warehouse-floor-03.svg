@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="60"
+   height="224"
+   viewBox="0 0 15.875 59.266746"
+   version="1.1"
+   id="svg34"
+   sodipodi:docname="map-complex-warehouse-floor-03.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata38">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview36"
+     showgrid="true"
+     inkscape:zoom="1.3387889"
+     inkscape:cx="50.783795"
+     inkscape:cy="176.63187"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg34"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid827"
+       empspacing="8"
+       spacingy="1.0583347"
+       spacingx="1.0583333"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs6">
+    <pattern
+       inkscape:collect="always"
+       xlink:href="#b"
+       id="pattern1552"
+       patternTransform="matrix(0.26458,0,0,0.26458,-266.70044,76.209984)" />
+    <pattern
+       xlink:href="#a"
+       id="b"
+       patternTransform="matrix(0.26458,0,0,0.26458,-211.66212,88.909999)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="80"
+       height="144"
+       patternTransform="matrix(.26458 0 0 .26458 -135.467 88.9)"
+       id="a">
+      <path
+         d="M0 0v16l80 80V80zM0 48v16l80 80v-16zM0 96v16l32 32h16zM48 0H32l48 48V32z"
+         fill="#f5d000"
+         id="path3" />
+    </pattern>
+  </defs>
+  <g
+     id="g1596"
+     transform="translate(139.70043,-423.34425)">
+    <path
+       sodipodi:nodetypes="ccccc"
+       d="m -139.70044,423.34425 h 12.7 v 59.26674 h -12.7 z"
+       id="path1548"
+       inkscape:connector-curvature="0"
+       style="fill:url(#pattern1552)" />
+    <path
+       style="fill:#f5d000;stroke-width:0.3854126"
+       inkscape:connector-curvature="0"
+       id="path1592"
+       d="m -127.00044,423.34425 h 3.175 v 59.26674 h -3.175 z"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+</svg>

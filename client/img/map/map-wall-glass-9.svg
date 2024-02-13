@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="288"
+   viewBox="0 0 8.467 76.2003"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="map-wall-glass-9.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview11"
+     showgrid="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="1.475"
+     inkscape:cx="-37.220489"
+     inkscape:cy="144.75272"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4509"
+       empspacing="8"
+       spacingy="1.0583375"
+       spacingx="1.058375"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs5">
+    <clipPath
+       id="a">
+      <rect
+         ry="1.058"
+         rx="1.058"
+         y="-54.000999"
+         x="-167.01601"
+         height="8.467"
+         width="84.667"
+         id="rect2"
+         style="fill:#00baff;fill-opacity:0.294;stroke-width:6.0539999" />
+    </clipPath>
+    <clipPath
+       id="a-6">
+      <rect
+         style="fill:#00baff;fill-opacity:0.294;stroke-width:6.63199997"
+         width="101.6"
+         height="8.467"
+         x="-167.01601"
+         y="-54.000999"
+         rx="1.058"
+         ry="1.058"
+         id="rect2-3" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4545">
+      <rect
+         style="fill:#1694c3;fill-opacity:0.43939394;stroke-width:7.16332054"
+         ry="1.058"
+         rx="1.4812543"
+         y="-5.0683617e-008"
+         x="-93.135498"
+         height="8.467"
+         width="118.53815"
+         id="rect4547" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4577">
+      <rect
+         id="rect4579"
+         width="152.40645"
+         height="8.467"
+         x="-118.53635"
+         y="-5.0683617e-008"
+         rx="1.9044732"
+         ry="1.058"
+         style="fill:#008abc;fill-opacity:0.5254902;stroke-width:8.12244892" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath829">
+      <rect
+         style="fill:#008abc;fill-opacity:0.5254902;stroke-width:5.74345303"
+         ry="1.058"
+         rx="0.95224124"
+         y="-5.0683607e-008"
+         x="-152.4039"
+         height="8.467"
+         width="76.203598"
+         id="rect831" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath830">
+      <rect
+         id="rect832"
+         width="76.203598"
+         height="8.467"
+         x="-76.200302"
+         y="-5.068361e-008"
+         rx="1.058375"
+         ry="1.058375"
+         style="fill:#006c7c;fill-opacity:0.62745098;stroke-width:5.74345303" />
+    </clipPath>
+  </defs>
+  <rect
+     transform="rotate(-90)"
+     style="fill:#006c7c;fill-opacity:0.627451;stroke-width:3.175125;stroke:#000000;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+     ry="1.058375"
+     rx="1.058375"
+     y="-5.068361e-008"
+     x="-76.200302"
+     height="8.467"
+     width="76.203598"
+     id="rect827"
+     clip-path="url(#clipPath830)" />
+</svg>
