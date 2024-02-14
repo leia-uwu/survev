@@ -113,8 +113,8 @@ export const collisionHelpers = {
         }
         const rayHeight = height;
 
-        for (let _i = 0; _i < rayPositions.length; _i++) {
-            const rayPos = rayPositions[_i];
+        for (let i = 0; i < rayPositions.length; i++) {
+            const rayPos = rayPositions[i];
 
             const circleRes = collider.intersectCircle(col, rayPos, scanDist);
             if (!circleRes) {

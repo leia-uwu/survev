@@ -273,12 +273,13 @@ export class GameMap {
 
         const randomSpawns = mapDef.mapGen.randomSpawns[0];
 
-        const spawns = [...randomSpawns.spawns];
-
-        for (let i = 0; i < randomSpawns.choose; i++) {
-            const idx = util.randomInt(0, spawns.length - 1);
-            const spawn = spawns.splice(idx, 1)[0];
-            this.genAuto(spawn);
+        if (randomSpawns) {
+            const spawns = [...randomSpawns.spawns];
+            for (let i = 0; i < randomSpawns.choose; i++) {
+                const idx = util.randomInt(0, spawns.length - 1);
+                const spawn = spawns.splice(idx, 1)[0];
+                this.genAuto(spawn);
+            }
         }
 
         const densitySpawns = mapDef.mapGen.densitySpawns[0];
