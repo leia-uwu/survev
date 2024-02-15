@@ -97,10 +97,13 @@ export class SurvivBitStream extends BitStream {
         };
     }
 
+    // private properties? what is that
+    declare _view: BitView & { _view: Uint8Array };
+
     writeBytes(src: SurvivBitStream, offset: number, length: number) {
         // assert(this._index % 8 == 0);
-        const data = new Uint8Array(src.view.buffer).slice(offset, length);
-        this.view.buffer.set(data, this.index / 8);
+        const data = new Uint8Array(src._view._view.buffer, offset, length);
+        this._view._view.set(data, this.index / 8);
         this.index += length * 8;
     }
 
