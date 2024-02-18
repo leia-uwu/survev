@@ -1,0 +1,176 @@
+import { GameConfig } from "../../gameConfig";
+import { util } from "../../utils/util";
+import { Main } from "./baseDefs";
+import { type MapDef } from "../mapDefs";
+
+const mapDef = {
+    assets: {
+        audio: [
+            { name: "log_01", channel: "sfx" },
+            { name: "log_02", channel: "sfx" },
+            { name: "pumpkin_break_01", channel: "sfx" },
+            { name: "vault_change_02", channel: "sfx" }
+        ],
+        atlases: [
+            "gradient",
+            "loadout",
+            "shared",
+            "halloween"
+        ]
+    },
+    biome: {
+        colors: {
+            background: 1507328,
+            water: 2621440,
+            waterRipple: 1048833,
+            beach: 6570254,
+            riverbank: 3939077,
+            grass: 2171908,
+            underground: 1181697,
+            playerSubmerge: 1310720
+        },
+        particles: { camera: "falling_leaf_halloween" },
+        valueAdjust: 0.3
+    },
+    gameConfig: {
+        planes: {
+            timings: [
+                {
+                    circleIdx: 1,
+                    wait: 10,
+                    options: { type: GameConfig.Plane.Airdrop }
+                },
+                {
+                    circleIdx: 3,
+                    wait: 2,
+                    options: { type: GameConfig.Plane.Airdrop }
+                }
+            ],
+            crates: [
+                { name: "airdrop_crate_01", weight: 10 },
+                { name: "airdrop_crate_02", weight: 1 }
+            ]
+        }
+    },
+    lootTable: {
+        tier_throwables: [
+            { name: "frag", count: 2, weight: 0.5 },
+            { name: "smoke", count: 1, weight: 1 },
+            { name: "mirv", count: 2, weight: 0.05 }
+        ],
+        tier_airdrop_outfits: [
+            { name: "", count: 1, weight: 4 },
+            { name: "outfitAirdrop", count: 1, weight: 1 }
+        ],
+        tier_toilet: [
+            { name: "tier_guns", count: 1, weight: 0.1 },
+            { name: "tier_scopes", count: 1, weight: 0.05 },
+            { name: "tier_medical", count: 1, weight: 0.6 },
+            {
+                name: "tier_throwables",
+                count: 1,
+                weight: 0.05
+            },
+            { name: "tier_outfits", count: 1, weight: 0 }
+        ],
+        tier_container: [
+            { name: "tier_guns", count: 1, weight: 0.29 },
+            { name: "tier_ammo", count: 1, weight: 0.04 },
+            { name: "tier_scopes", count: 1, weight: 0.15 },
+            { name: "tier_armor", count: 1, weight: 0.1 },
+            {
+                name: "tier_medical",
+                count: 1,
+                weight: 0.17
+            },
+            {
+                name: "tier_throwables",
+                count: 1,
+                weight: 0.05
+            },
+            { name: "tier_packs", count: 1, weight: 0.09 },
+            { name: "tier_outfits", count: 1, weight: 0 }
+        ],
+        tier_scopes: [
+            { name: "2xscope", count: 1, weight: 24 },
+            { name: "4xscope", count: 1, weight: 5 }
+        ],
+        tier_airdrop_scopes: [
+            { name: "", count: 1, weight: 18 },
+            { name: "4xscope", count: 1, weight: 0 }
+        ]
+    },
+    mapGen: {
+        map: {
+            scale: { small: 1.1875, large: 1.1875 },
+            rivers: {
+                weights: [
+                    { weight: 0.1, widths: [4] },
+                    { weight: 0.15, widths: [8] },
+                    { weight: 0.25, widths: [8, 4] },
+                    { weight: 0.21, widths: [8] },
+                    { weight: 0.09, widths: [8, 8] },
+                    { weight: 0.2, widths: [8, 8, 4] },
+                    {
+                        weight: 1e-4,
+                        widths: [8, 8, 8, 6, 4]
+                    }
+                ]
+            }
+        },
+        densitySpawns: [
+            {
+                stone_01: 125,
+                barrel_01: 76,
+                crate_01: 120,
+                crate_02: 6,
+                crate_03: 8,
+                bush_01: 90,
+                hedgehog_01: 12,
+                cache_pumpkin_01: 32,
+                cache_pumpkin_03: 32,
+                shack_01: 6,
+                outhouse_01: 6,
+                loot_tier_1: 48,
+                loot_tier_beach: 8
+            }
+        ],
+        fixedSpawns: [
+            {
+                junkyard_01: 1,
+                warehouse_01h: 4,
+                house_red_01h: 7,
+                cache_03: 36,
+                cache_01: 1,
+                cache_02: 1,
+                mansion_structure_02: 1,
+                bunker_structure_01: 1,
+                bunker_structure_03: 1,
+                bunker_structure_07: 1,
+                mil_crate_02: { odds: 0.25 },
+                tree_05: 72,
+                tree_07: 700,
+                tree_08: 200,
+                tree_09: 36,
+                barrel_02: 24,
+                oven_01: 24,
+                refrigerator_01: 24,
+                table_01: 24,
+                vending_01: 24,
+                woodpile_01: 24
+            }
+        ],
+        randomSpawns: [],
+        spawnReplacements: [
+            {
+                tree_01: "tree_07",
+                stone_03: "stone_01",
+                cabin_01: "cabin_02",
+                house_red_01: "house_red_01b",
+                house_red_02: "house_red_01b"
+            }
+        ]
+    }
+};
+
+export const Halloween = util.mergeDeep({}, Main, mapDef) as MapDef;

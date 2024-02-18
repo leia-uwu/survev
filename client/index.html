@@ -22,38 +22,6 @@
     <link rel="canonical" href="http://surviv.io" />
     <link rel="apple-touch-icon-precomposed" href="img/icon_app.png">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <!-- <script>
-     window.adsBlocked = false;
-     window.adBlockDetected = function() { window.adsBlocked = true; }
-     window.alert = function() { }
-     /* Cookie consent */
-     var cfg = {};
-     var consented = true;
-     var webview = false;
-     try {
-       cfg = JSON.parse(localStorage.getItem('surviv_config')) || {};
-       if (cfg.cookiesConsented != undefined) { consented = cfg.cookiesConsented; }
-       webview = localStorage.getItem('surviv_webview');
-     } catch (e) { }
-     window.cookiesConsented = consented;
-     if (window.cookiesConsented) {
-       document.write("<script async src='https://www.googletagmanager.com/gtag/js?id=UA-108811301-1' onerror='adBlockDetected();'>\x3C/script>");
-       window.dataLayer = window.dataLayer || [];
-       function gtag(){dataLayer.push(arguments);}
-       gtag('js', new Date());
-       gtag('config', 'UA-108811301-1', { 'anonymize_ip': true });
-     }
-     window.webviewDetected = new RegExp("[?&]webview=true","gi").test(window.location.href) || webview;
-    </script>
-    <script>
-     document.write("<script async src='//api.adinplay.com/libs/aiptag/pub/SRV/surviv.io/tag.min.js'>\x3C/script>");
-     var aiptag = aiptag || {};
-     aiptag.gdprConsent = window.cookiesConsented;
-     aiptag.consented = window.cookiesConsented;
-     aiptag.cmd = aiptag.cmd || [];
-     aiptag.cmd.display = aiptag.cmd.display || [];
-    </script> -->
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
@@ -1352,7 +1320,7 @@
         <div class='modal-content modal-close'>
           <div class='modal-header'>
             <span class='close close-hamburger icon-hamburger'></span>
-            <h2>&nbsp</h2>
+            <h2>&nbsp;</h2>
           </div>
           <div id='modal-hamburger-body' class='modal-body'>
             <div id='modal-hamburger-leaderboards'>
@@ -1454,10 +1422,12 @@
         </div>
       </div>
     </div>
-  <script type="text/javascript" src="js/manifest.7619645b.js"></script>
-  <script type="text/javascript" src="js/vendor.bd0cb293.js"></script>
-  <script type="text/javascript" src="js/app.js"></script></body>
-      <script>
+    <script>
+
+      // this is to make pixi v4 work with vite
+      window.global = window;
+
+      // make loadouts work
       function setCookie(cname, cvalue, exdays) {
           const d = new Date();
           d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -1466,4 +1436,8 @@
       }
       setCookie("app-data", "1", 3650);
     </script>
+<!--     <script type="text/javascript" src="js/manifest.7619645b.js"></script> -->
+<!--     <script type="text/javascript" src="js/vendor.bd0cb293.js"></script> -->
+<!--     <script type="text/javascript" src="js/app.js"></script></body> -->
+    <script type="module" src="src/main.js"></script>
 </html>

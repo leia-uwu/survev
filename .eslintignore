@@ -1,6 +1,7 @@
 # Public directories
-client/
+client/public/
 reference/
 
 # Compiled source
 dist/
+node_modules/

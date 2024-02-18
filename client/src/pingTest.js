@@ -1,0 +1,235 @@
+const o = [
+    /* {
+  region: "na",
+  zone: "sfo",
+  url: "na-sfo-p1.surviv.io",
+},
+{
+  region: "na",
+  zone: "mia",
+  url: "na-mia-p1.surviv.io",
+},
+{
+  region: "na",
+  zone: "nyc",
+  url: "na-nyc-p1.surviv.io",
+},
+{
+  region: "na",
+  zone: "chi",
+  url: "na-chi-p1.surviv.io",
+},
+{
+  region: "sa",
+  zone: "sao",
+  url: "sa-sao-p1.surviv.io",
+},
+{
+  region: "eu",
+  zone: "fra",
+  url: "eu-fra-p1.surviv.io",
+},
+{
+  region: "eu",
+  zone: "waw",
+  url: "eu-waw-p1.surviv.io",
+},
+{
+  region: "as",
+  zone: "sgp",
+  url: "as-sgp-p1.surviv.io",
+},
+{
+  region: "as",
+  zone: "nrt",
+  url: "as-nrt-p1.surviv.io",
+},
+{
+  region: "as",
+  zone: "hkg",
+  url: "as-hkg-p1.surviv.io",
+},
+{
+  region: "kr",
+  zone: "sel",
+  url: "kr-sel-p1.surviv.io",
+}, */
+];
+class PingTest {
+    constructor() {
+        this.ptcDataBuf = new ArrayBuffer(1);
+        this.tests = o.map((e) => {
+            return {
+                region: e.region,
+                zone: e.zone,
+                url: e.url,
+                ping: 9999,
+                active: false,
+                complete: false,
+                ws: null,
+                sendDelay: 0,
+                sendTime: 0,
+                sendCount: 0,
+                recvCount: 0,
+                recvCountMax: 6,
+                retryCount: 0,
+                retryCountMax: 1
+            };
+        });
+        this.testsStarted = 0;
+        this.testsCompleted = 0;
+        this.printSummary = true;
+    }
+    start(e) {
+        if ("WebSocket" in window) {
+            var t = 0;
+            for (var r = 0; r < this.tests.length; r++) {
+                const a = this.tests[r];
+                if (
+                    !a.active &&
+                    !a.complete &&
+                    e.indexOf(a.region) !== -1
+                ) {
+                    a.active = true;
+                    this.testsStarted++;
+                    t++;
+                }
+            }
+            if (t > 0) {
+                this.printSummary = true;
+            }
+        }
+    }
+    update(e) {
+        var t = this;
+        var r = function(e) {
+            e.active = false;
+            e.complete = true;
+            t.testsCompleted++;
+        };
+        var a = function(e) {
+            if (e.ws) {
+                e.ws.close();
+                e.ws = null;
+            }
+            if (!e.complete) {
+                if (e.retryCount++ >= e.retryCountMax) {
+                    r(e);
+                }
+            }
+        };
+        for (var i = 0; i < this.tests.length; i++) {
+            (function(i) {
+                const o = t.tests[i];
+                if (!o.active) {
+                    return "continue";
+                }
+                if (!o.ws) {
+                    const s = new WebSocket(
+                        `wss://${o.url}/ptc`
+                    );
+                    s.binaryType = "arraybuffer";
+                    s.onopen = function() { };
+                    s.onmessage = function(e) {
+                        const t =
+                            (Date.now() - o.sendTime) /
+                            1000;
+                        o.ping = Math.min(o.ping, t);
+                        o.recvCount++;
+                        o.sendDelay = 0.125;
+                    };
+                    s.onerror = function(e) {
+                        a(o);
+                    };
+                    s.onclose = function() {
+                        a(o);
+                    };
+                    o.ws = s;
+                    o.sendDelay = 0;
+                    o.sendCount = 0;
+                    o.recvCount = 0;
+                }
+                if (o.ws.readyState == o.ws.OPEN) {
+                    o.sendDelay -= e;
+                    if (
+                        o.sendCount == o.recvCount &&
+                        o.sendDelay < 0
+                    ) {
+                        o.sendTime = Date.now();
+                        o.sendCount++;
+                        try {
+                            o.ws.send(t.ptcDataBuf);
+                        } catch (e) {
+                            o.ws.close();
+                        }
+                    }
+                    if (o.recvCount >= o.recvCountMax) {
+                        r(o);
+                        o.ws.close();
+                    }
+                }
+            })(i);
+        }
+        if (this.printSummary && this.isComplete()) {
+            const o = this.tests.sort((e, t) => {
+                return e.ping - t.ping;
+            });
+            console.log("Ping test results");
+            console.log(
+                "----------------------------------------"
+            );
+            for (var i = 0; i < o.length; i++) {
+                const s = o[i];
+                console.log(
+                    "region",
+                    s.region,
+                    "zone  ",
+                    s.zone,
+                    "ping  ",
+                    s.ping
+                );
+            }
+            this.printSummary = false;
+        }
+    }
+    isComplete() {
+        return (
+            this.testsCompleted == this.testsStarted &&
+            this.testsStarted > 0
+        );
+    }
+    getRegionList() {
+        var e = [];
+        for (var t = 0; t < o.length; t++) {
+            const r = o[t].region;
+            if (!e.includes(r)) {
+                e.push(r);
+            }
+        }
+        return e;
+    }
+    getRegion() {
+        this.tests.sort((e, t) => {
+            return e.ping - t.ping;
+        });
+        return this.tests[0].region;
+    }
+    getZones(e) {
+        for (
+            var t = this.tests.sort((e, t) => {
+                return e.ping - t.ping;
+            }),
+            r = [],
+            a = 0;
+            a < t.length;
+            a++
+        ) {
+            const i = t[a];
+            if (i.region == e) {
+                r.push(i.zone);
+            }
+        }
+        return r;
+    }
+}
+export default PingTest

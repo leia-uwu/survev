@@ -3,10 +3,8 @@
   "version": "0.0.1",
   "description": "Open Source Surviv.io Server",
   "scripts": {
-    "build": "tsc",
-    "start": "node --enable-source-maps dist/src/server.js",
-    "dev": "ts-node-dev --respawn --rs --transpile-only src/server.ts",
-    "client": "vite preview --outDir client",
+    "dev:server": "cd server; pnpm dev",
+    "dev:client": "cd client; pnpm dev",
     "lint": "eslint . --fix --ext .ts,.js",
     "lint:ci": "eslint . --ext .ts,.js"
   },
@@ -15,10 +13,6 @@
   },
   "author": "Leia",
   "license": "GPL-3.0-or-later",
-  "dependencies": {
-    "bit-buffer": "^0.2.5",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.34.0"
-  },
   "devDependencies": {
     "@types/node": "^20.11.17",
     "@typescript-eslint/eslint-plugin": "6.6.0",
@@ -30,7 +24,6 @@
     "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^3.0.3",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.1"
+    "typescript": "^5.3.3"
   }
 }

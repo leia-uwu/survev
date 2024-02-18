@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="504"
+   height="480"
+   version="1.1"
+   id="svg114"
+   sodipodi:docname="map-building-police-ceiling-03.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata118">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview116"
+     showgrid="true"
+     inkscape:zoom="2.6222222"
+     inkscape:cx="43.607213"
+     inkscape:cy="37.787972"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg114"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid895"
+       empspacing="4"
+       spacingy="4"
+       spacingx="4"
+       originx="-0.00096086401"
+       originy="-7.6293945e-005" />
+  </sodipodi:namedview>
+  <defs
+     id="defs90">
+    <pattern
+       xlink:href="#a"
+       id="T"
+       patternTransform="translate(2112.022 1040.948)" />
+    <pattern
+       xlink:href="#b"
+       id="a"
+       patternTransform="translate(2112.022 1040.948)" />
+    <pattern
+       xlink:href="#c"
+       id="S"
+       patternTransform="translate(403.126 209.445) scale(.26458)" />
+    <pattern
+       xlink:href="#d"
+       id="c"
+       patternTransform="translate(403.126 209.445) scale(.26458)" />
+    <pattern
+       xlink:href="#e"
+       id="d"
+       patternTransform="translate(2112 1088)" />
+    <pattern
+       xlink:href="#f"
+       id="R"
+       patternTransform="translate(403.13 209.449) scale(.26458)" />
+    <pattern
+       xlink:href="#g"
+       id="f"
+       patternTransform="translate(2112.018 1088.014)" />
+    <pattern
+       xlink:href="#h"
+       id="g"
+       patternTransform="translate(403.13 209.449) scale(.26458)" />
+    <pattern
+       xlink:href="#i"
+       id="h"
+       patternTransform="translate(542.835 230.59) scale(.26458)" />
+    <pattern
+       xlink:href="#j"
+       id="i"
+       patternTransform="translate(2640.035 1167.92)" />
+    <pattern
+       xlink:href="#k"
+       id="Q"
+       patternTransform="translate(326.962 217.839) scale(.26458)" />
+    <pattern
+       xlink:href="#l"
+       id="k"
+       patternTransform="translate(1824.139 1119.724)" />
+    <pattern
+       xlink:href="#m"
+       id="P"
+       patternTransform="translate(403.126 268.712) scale(.26458)" />
+    <pattern
+       xlink:href="#n"
+       id="m"
+       patternTransform="translate(2112 1312)" />
+    <pattern
+       xlink:href="#o"
+       id="n"
+       patternTransform="translate(403.126 268.712) scale(.26458)" />
+    <pattern
+       xlink:href="#p"
+       id="b"
+       patternTransform="translate(2112.022 1040.948)" />
+    <pattern
+       xlink:href="#q"
+       id="p"
+       patternTransform="translate(2320 1311.993)" />
+    <pattern
+       xlink:href="#r"
+       id="O"
+       patternTransform="translate(428.458 217.973) scale(.26458)" />
+    <pattern
+       xlink:href="#s"
+       id="r"
+       patternTransform="translate(2207.744 1120.233)" />
+    <pattern
+       xlink:href="#t"
+       id="s"
+       patternTransform="translate(428.458 217.973) scale(.26458)" />
+    <pattern
+       xlink:href="#u"
+       id="t"
+       patternTransform="translate(2239.744 1088.233)" />
+    <pattern
+       xlink:href="#v"
+       id="j"
+       patternTransform="translate(542.835 230.59) scale(.26458)" />
+    <pattern
+       xlink:href="#w"
+       id="v"
+       patternTransform="translate(2720.07 1311.956)" />
+    <pattern
+       xlink:href="#x"
+       id="l"
+       patternTransform="translate(326.962 217.839) scale(.26458)" />
+    <pattern
+       xlink:href="#y"
+       id="x"
+       patternTransform="translate(1824.139 1215.67)" />
+    <pattern
+       xlink:href="#z"
+       id="o"
+       patternTransform="translate(420.06 260.245) scale(.26458)" />
+    <pattern
+       xlink:href="#A"
+       id="z"
+       patternTransform="translate(2176 1280)" />
+    <pattern
+       xlink:href="#B"
+       id="y"
+       patternTransform="translate(326.963 243.224) scale(.26458)" />
+    <pattern
+       xlink:href="#C"
+       id="B"
+       patternTransform="translate(1760.07 1295.826)" />
+    <pattern
+       xlink:href="#D"
+       id="u"
+       patternTransform="translate(436.925 209.506) scale(.26458)" />
+    <pattern
+       xlink:href="#E"
+       id="D"
+       patternTransform="translate(2255.744 1088.233)" />
+    <pattern
+       xlink:href="#F"
+       id="E"
+       patternTransform="translate(441.158 209.506) scale(.26458)" />
+    <pattern
+       xlink:href="#G"
+       id="q"
+       patternTransform="translate(458.16 268.71) scale(.26458)" />
+    <pattern
+       xlink:href="#H"
+       id="G"
+       patternTransform="translate(2160 1247.993)" />
+    <pattern
+       xlink:href="#F"
+       id="H"
+       patternTransform="translate(415.826 251.776) scale(.26458)" />
+    <pattern
+       xlink:href="#I"
+       id="C"
+       patternTransform="translate(310.01 264.432) scale(.26458)" />
+    <pattern
+       xlink:href="#J"
+       id="I"
+       patternTransform="translate(1920.139 1167.993)" />
+    <pattern
+       xlink:href="#F"
+       id="J"
+       patternTransform="translate(352.363 230.61) scale(.26458)" />
+    <pattern
+       xlink:href="#K"
+       id="w"
+       patternTransform="translate(564.01 268.7) scale(.26458)" />
+    <pattern
+       xlink:href="#L"
+       id="K"
+       patternTransform="translate(2240.07 1119.715)" />
+    <pattern
+       xlink:href="#F"
+       id="L"
+       patternTransform="translate(437.01 217.836) scale(.26458)" />
+    <pattern
+       xlink:href="#M"
+       id="A"
+       patternTransform="translate(420.06 260.245) scale(.26458)" />
+    <pattern
+       xlink:href="#N"
+       id="M"
+       patternTransform="translate(2208 1198)" />
+    <pattern
+       xlink:href="#F"
+       id="N"
+       patternTransform="translate(428.526 238.55) scale(.26458)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="160"
+       height="160"
+       patternTransform="translate(403.126 209.445) scale(.26458)"
+       id="F">
+      <path
+         fill="none"
+         stroke-width="1.89"
+         d="M0 0h160v160H0z"
+         id="path46" />
+      <path
+         fill="#665a4e"
+         stroke-width="18.898"
+         stroke-miterlimit="10"
+         d="M0 0h160v160H0z"
+         id="path48" />
+      <path
+         fill-opacity=".354"
+         stroke-width="6.158"
+         stroke-miterlimit="10"
+         d="M40 0h2v160h-2zM0 0h2v160H0z"
+         id="path50" />
+      <path
+         transform="rotate(90)"
+         fill-opacity=".354"
+         stroke-width="3.001"
+         stroke-miterlimit="10"
+         d="M0-40h2v38H0zm120-40h2v38h-2z"
+         id="path52" />
+      <path
+         fill-opacity=".354"
+         stroke-width="6.158"
+         stroke-miterlimit="10"
+         d="M80 0h2v160h-2zm40 0h2v160h-2z"
+         id="path54" />
+      <path
+         transform="rotate(90)"
+         fill-opacity=".354"
+         stroke-width="3.001"
+         stroke-miterlimit="10"
+         d="M40-120h2v38h-2zm40-40h2v38h-2z"
+         id="path56" />
+    </pattern>
+    <clipPath
+       id="X">
+      <path
+         d="M 589.392,116.312 547.06,31.645 589.393,-53.022 Z"
+         id="path59"
+         inkscape:connector-curvature="0"
+         style="fill:url(#O);stroke-width:2.1170001" />
+    </clipPath>
+    <clipPath
+       id="Y">
+      <path
+         d="m 199.926,378.778 93.142,-42.295 93.124,42.295 z"
+         id="path62"
+         inkscape:connector-curvature="0"
+         style="fill:url(#P);stroke-width:2.20600009" />
+    </clipPath>
+    <clipPath
+       id="Z">
+      <path
+         d="m 216.84,285.701 0.038,-254.112 -93.127,-84.646 -0.025,380.962 z"
+         id="path65"
+         inkscape:connector-curvature="0"
+         style="fill:url(#Q);stroke-width:2.66100001" />
+    </clipPath>
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="160"
+       height="160"
+       patternTransform="translate(403.126 209.445) scale(.26458)"
+       id="e">
+      <path
+         fill="none"
+         stroke-width="1.89"
+         d="M0 0h160v160H0z"
+         id="path68" />
+      <path
+         fill="#665a4e"
+         stroke-width="18.898"
+         stroke-miterlimit="10"
+         d="M0 0h160v160H0z"
+         id="path70" />
+      <path
+         fill-opacity=".354"
+         stroke-width="6.158"
+         stroke-miterlimit="10"
+         d="M40 0h2v160h-2zM0 0h2v160H0z"
+         id="path72" />
+      <path
+         transform="rotate(90)"
+         fill-opacity=".354"
+         stroke-width="3.001"
+         stroke-miterlimit="10"
+         d="M0-40h2v38H0zm120-40h2v38h-2z"
+         id="path74" />
+      <path
+         fill-opacity=".354"
+         stroke-width="6.158"
+         stroke-miterlimit="10"
+         d="M80 0h2v160h-2zm40 0h2v160h-2z"
+         id="path76" />
+      <path
+         transform="rotate(90)"
+         fill-opacity=".354"
+         stroke-width="3.001"
+         stroke-miterlimit="10"
+         d="M40-120h2v38h-2zm40-40h2v38h-2z"
+         id="path78" />
+    </pattern>
+    <clipPath
+       id="W">
+      <path
+         d="m 293.045,23.199 v 254.025 l 93.152,42.291 V 107.852 Z m 25.414,93.113 h 8.467 v 8.466 h 8.466 v 21.167 h 8.467 v 25.4 h -8.467 v 12.7 H 318.46 v -8.467 h -8.467 v -16.933 h 8.467 v -12.7 h -8.467 v -16.933 h 8.467 z"
+         id="path81"
+         inkscape:connector-curvature="0"
+         style="fill:url(#R);stroke-width:2.66100001" />
+    </clipPath>
+    <clipPath
+       id="V">
+      <path
+         d="m 1343.947,64.078 352,320 h 864.008 l 159.992,-320 z M 2000,112 h 64 v 32 h 32 v 64 h -48 v 32 h -96 v -32 h -48 v -32 h 32 v -32 h 64 z"
+         id="path84"
+         inkscape:connector-curvature="0"
+         style="fill:url(#S);stroke-width:8" />
+    </clipPath>
+    <clipPath
+       id="U">
+      <path
+         d="m 2048.019,656.956 -352.074,-319.951 864.08,-0.064 159.996,320.004 z"
+         id="path87"
+         inkscape:connector-curvature="0"
+         style="fill:url(#T);stroke-width:8.0010004" />
+    </clipPath>
+  </defs>
+  <path
+     clip-path="url(#U)"
+     d="m 2048.019,656.956 -352.074,-319.951 864.08,-0.064 159.996,320.004 z"
+     transform="matrix(0.74995184,0,0,0.74995625,-1535.9165,-12.688264)"
+     id="path92"
+     inkscape:connector-curvature="0"
+     style="fill:url(#b);stroke:#000000;stroke-width:8" />
+  <path
+     transform="matrix(0.74995184,0,0,0.74995625,-1535.9165,-48.042704)"
+     d="m 1343.947,64.078 352,320 h 864.008 l 159.992,-320 z M 2000,112 h 64 v 32 h 32 v 64 h -48 v 32 h -96 v -32 h -48 v -32 h 32 v -32 h 64 z"
+     clip-path="url(#V)"
+     id="path94"
+     inkscape:connector-curvature="0"
+     style="fill:url(#d);stroke:#000000;stroke-width:8" />
+  <path
+     d="m 293.045,23.199 v 254.025 l 93.152,42.291 V 107.852 Z m 25.414,93.113 h 8.467 v 8.466 h 8.466 v 21.167 h 8.467 v 25.4 h -8.467 v 12.7 H 318.46 v -8.467 h -8.467 v -16.933 h 8.467 v -12.7 h -8.467 v -16.933 h 8.467 z"
+     clip-path="url(#W)"
+     transform="matrix(2.834488,0,0,2.8345047,-1094.6718,174.29308)"
+     id="path96"
+     inkscape:connector-curvature="0"
+     style="fill:url(#g);stroke:#000000;stroke-width:2.1170001" />
+  <path
+     d="M -263.9883,239.99975 0,479.98875 V 1079.9568 L -263.98755,959.96378 Z"
+     id="path98"
+     inkscape:connector-curvature="0"
+     style="fill-opacity:0.23500001;stroke-width:0.74995404" />
+  <path
+     clip-path="url(#X)"
+     d="M 589.392,116.312 547.06,31.645 589.393,-53.022 Z"
+     transform="matrix(2.834488,0,0,2.8345047,-1166.6537,150.30198)"
+     id="path100"
+     inkscape:connector-curvature="0"
+     style="fill:url(#s);stroke:#000000;stroke-width:2.1170001" />
+  <path
+     clip-path="url(#Y)"
+     d="m 199.926,378.778 93.142,-42.295 93.124,42.295 z"
+     transform="matrix(2.834488,0,0,2.8345047,-1094.6718,6.2556363)"
+     id="path102"
+     inkscape:connector-curvature="0"
+     style="fill:url(#n);stroke:#000000;stroke-width:2.1170001" />
+  <path
+     clip-path="url(#Z)"
+     d="m 216.84,285.701 0.038,-254.112 -93.127,-84.646 -0.025,380.962 z"
+     transform="matrix(2.834488,0,0,2.8345047,-878.72608,150.46022)"
+     id="path104"
+     inkscape:connector-curvature="0"
+     style="fill:url(#l);stroke:#000000;stroke-width:2.1170001" />
+  <path
+     d="M -264.01079,960.14828 0.0135,1080.0108 h -527.97209 z"
+     id="path106"
+     inkscape:connector-curvature="0"
+     style="fill-opacity:0.353;stroke-width:0.74995404" />
+  <path
+     d="m -191.99217,695.97845 h 47.99917 v -35.9979 h 23.99696 V 587.9832 H -143.993 v -59.998 h -23.99846 v -23.9986 h -24.00071 v 35.9979 h -23.99696 v 47.99945 h 23.99696 v 35.9979 h -23.99696 v 47.9972 h 23.99696 z M 35.99694,108.0052 V 60.008746 H 11.99848 v -24.0001 h -47.996923 v 24.0001 h -47.99992 v 23.99935 H -107.99456 V 108.0052 h 35.997677 v 24.0001 H -0.0015 v -24.0001 z"
+     id="path108"
+     inkscape:connector-curvature="0"
+     style="fill:#665a4e;fill-opacity:0.4;stroke-width:0.74995404" />
+  <path
+     d="M 383.97909,239.99975 503.97364,0.0107463 V 479.98875 Z"
+     id="path110"
+     inkscape:connector-curvature="0"
+     style="fill-opacity:0.353;stroke-width:0.74995404" />
+  <path
+     d="m -0.0165,479.29129 -264.03854,-239.9485 648.01838,-0.0488 119.9893,239.989 z"
+     id="path112"
+     inkscape:connector-curvature="0"
+     style="fill-opacity:0.23500001;stroke-width:0.74995404" />
+</svg>

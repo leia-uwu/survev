@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg4"
+   version="1.1"
+   height="140"
+   width="140">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8">
+    <linearGradient
+       id="linearGradient821-3">
+      <stop
+         id="stop817-2"
+         offset="0"
+         style="stop-color:#ffffff;stop-opacity:1" />
+      <stop
+         style="stop-color:#bfbfbf;stop-opacity:1"
+         offset="0.4567937"
+         id="stop834-0" />
+      <stop
+         id="stop819-8"
+         offset="1"
+         style="stop-color:#797979;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient
+       r="66.500023"
+       fy="-64.397835"
+       fx="-140.05359"
+       cy="-64.397835"
+       cx="-140.05359"
+       gradientTransform="matrix(1.8088133,0.75634257,-0.88515259,2.116981,40.774251,157.03397)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient923"
+       xlink:href="#linearGradient821-3" />
+    <clipPath
+       id="clipPath925"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         id="path927"
+         d="m -9.8198689,-67.40596 32.6696349,-6.739049 18.420192,20.705573 -10.499276,31.66463 7.594889,2.517548 10.499275,-31.66463 27.139574,-5.598316 22.172276,24.925185 5.978714,-5.317493 -22.172661,-24.927099 8.721685,-26.302371 32.671556,-6.739445 -1.61617,-7.835043 -32.66963,6.73905 -18.420194,-20.70557 10.499273,-31.66463 -7.594881,-2.51755 -10.49928,31.66463 -27.139574,5.59832 -22.172271,-24.92519 -5.9787248,5.3175 22.1722718,24.92518 -8.723208,26.304678 -32.669635,6.73905 z m 38.6483589,-12.056544 8.721295,-26.304286 27.141487,-5.59871 18.420192,20.705575 -8.721295,26.304285 -27.141487,5.59871 z"
+         style="fill:#2b2b2b;fill-opacity:1;stroke:none;stroke-width:6.22858;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.490196" />
+    </clipPath>
+  </defs>
+  <ellipse
+     transform="matrix(-0.97938026,-0.20202549,0.2020205,-0.97938129,0,0)"
+     stroke-miterlimit="10"
+     id="ellipse921"
+     style="fill:url(#radialGradient923);fill-opacity:1;stroke:none;stroke-width:6.00109;stroke-miterlimit:10;stroke-opacity:0.769"
+     ry="66.499977"
+     rx="66.500023"
+     cy="-54.41481"
+     cx="-82.698471" />
+  <ellipse
+     clip-path="url(#clipPath925)"
+     cx="55.969978"
+     cy="-85.061211"
+     rx="66.500023"
+     ry="66.499977"
+     style="fill:#000000;fill-opacity:0.409091;stroke:none;stroke-width:6.00109;stroke-miterlimit:10;stroke-opacity:0.769"
+     id="ellipse2-6"
+     stroke-miterlimit="10"
+     transform="matrix(-0.97938026,-0.20202549,0.2020205,-0.97938129,141.99995,-2.0000292)" />
+</svg>

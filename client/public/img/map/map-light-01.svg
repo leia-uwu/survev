@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="144"
+   height="144"
+   viewBox="0 0 209.16 209.16"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="map-light-01.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata16">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview14"
+     showgrid="false"
+     inkscape:zoom="2.3177389"
+     inkscape:cx="65.306175"
+     inkscape:cy="113.79225"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg12" />
+  <defs
+     id="defs8">
+    <linearGradient
+       id="a">
+      <stop
+         offset="0"
+         stop-color="#f55900"
+         id="stop2"
+         style="stop-color:#fcfcfc;stop-opacity:1" />
+      <stop
+         offset="1"
+         stop-color="#f55900"
+         stop-opacity="0"
+         id="stop4"
+         style="stop-color:#ffffff;stop-opacity:0" />
+    </linearGradient>
+    <radialGradient
+       xlink:href="#a"
+       id="b"
+       cx="65.449997"
+       cy="65.449997"
+       fx="65.449997"
+       fy="65.449997"
+       r="48.290001"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.1030961,0,0,2.1030961,-235.72543,-26.946682)" />
+  </defs>
+  <circle
+     cx="-98.077789"
+     cy="110.70095"
+     r="101.55851"
+     transform="rotate(-86.54)"
+     id="circle10"
+     style="fill:url(#b);stroke-width:2.10309601" />
+</svg>

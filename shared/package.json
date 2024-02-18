@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "bit-buffer": "^0.2.5"
+  }
+}

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="146"
+   height="146"
+   version="1.1"
+   id="svg14"
+   sodipodi:docname="pass-unlock-type-bg.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="1.6164383"
+     inkscape:cx="67.855276"
+     inkscape:cy="5.7195759"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg14" />
+  <defs
+     id="defs8">
+    <radialGradient
+       xlink:href="#a-4"
+       id="b"
+       cx="-68.456001"
+       cy="77.266998"
+       fx="-68.456001"
+       fy="77.266998"
+       r="71.966003"
+       gradientTransform="matrix(1,0,0,0.99872001,-65.891308,-187.43409)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="a">
+      <stop
+         offset="0"
+         stop-color="#fcfcfc"
+         id="stop3" />
+      <stop
+         offset="1"
+         stop-color="#3d3d3d"
+         stop-opacity="0"
+         id="stop5" />
+    </linearGradient>
+    <radialGradient
+       xlink:href="#a-4"
+       id="b-4"
+       cx="-68.456001"
+       cy="77.266998"
+       fx="-68.456001"
+       fy="77.266998"
+       r="71.966003"
+       gradientTransform="matrix(1,0,0,0.99872001,1.4103906e-4,0.09862695)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="a-4">
+      <stop
+         offset="0"
+         stop-color="#fcfcfc"
+         id="stop3-4"
+         style="stop-color:#000000;stop-opacity:1" />
+      <stop
+         offset="1"
+         stop-color="#3d3d3d"
+         stop-opacity="0"
+         id="stop5-4"
+         style="stop-color:#000000;stop-opacity:0" />
+    </linearGradient>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4547">
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:6.19999981;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.76862745"
+         inkscape:connector-curvature="0"
+         d="m -130.35939,46.344399 57.722979,-38.1462477 61.90439,30.9226857 4.1796819,69.068023 -57.7229879,38.14626 -61.904383,-30.92269 z"
+         id="path4549" />
+    </clipPath>
+  </defs>
+  <ellipse
+     style="fill:#1e2717;fill-opacity:1;stroke:none;stroke-width:6.21000004;stroke-miterlimit:10;stroke-opacity:1"
+     id="ellipse828"
+     stroke-miterlimit="10"
+     ry="68.768997"
+     rx="68.861"
+     transform="matrix(0.06026459,-0.99818244,0.99817296,0.06042138,0,0)"
+     cy="77.266632"
+     cx="-68.455864" />
+  <ellipse
+     cx="-68.455864"
+     cy="77.266632"
+     transform="matrix(0.06026459,-0.99818244,0.99817296,0.06042138,0,0)"
+     rx="65.436562"
+     ry="65.349136"
+     stroke-miterlimit="10"
+     id="ellipse10"
+     style="fill:none;fill-opacity:0.27099998;stroke:#000000;stroke-width:11.40324402;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+  <ellipse
+     transform="matrix(0.06026459,-0.99818244,0.99817296,0.06042138,0,0)"
+     ry="68.768997"
+     rx="68.861"
+     cy="-110.2661"
+     cx="-134.34729"
+     id="ellipse12"
+     style="fill:url(#b);fill-opacity:1" />
+</svg>

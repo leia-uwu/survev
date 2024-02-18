@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="136"
+   height="136"
+   viewBox="0 0 35.983 35.983"
+   version="1.1"
+   id="svg17"
+   sodipodi:docname="map-bunker-vent-03.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata21">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview19"
+     showgrid="false"
+     inkscape:zoom="3.4705882"
+     inkscape:cx="61.986947"
+     inkscape:cy="89.751512"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg17" />
+  <defs
+     id="defs5">
+    <clipPath
+       id="a">
+      <ellipse
+         ry="10.319"
+         rx="10.335"
+         cy="243.216"
+         cx="-24.735"
+         fill="#3f3f3f"
+         fill-opacity=".612"
+         stroke-width="3.49"
+         stroke-opacity=".706"
+         id="ellipse2" />
+    </clipPath>
+    <pattern
+       xlink:href="#a-9"
+       id="c"
+       patternTransform="matrix(0,0.0661493,0.0661493,0,153.45707,-53.973742)" />
+    <pattern
+       xlink:href="#b"
+       id="a-9"
+       patternTransform="translate(-159.834 378.683) scale(.06615)" />
+    <pattern
+       patternUnits="userSpaceOnUse"
+       width="32"
+       height="32"
+       patternTransform="translate(-159.834 378.683) scale(.26458)"
+       id="b">
+      <path
+         fill="none"
+         stroke-width="3.78"
+         d="M0 0h32v32H0z"
+         id="path4" />
+      <path
+         fill="none"
+         stroke-width="4"
+         d="M0 0h32v32H0z"
+         id="path6" />
+      <path
+         d="M16 0v32M0 16h32"
+         fill="none"
+         stroke="#000"
+         stroke-width="4"
+         id="path8" />
+    </pattern>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1575">
+      <ellipse
+         transform="translate(42.7265,-225.2245)"
+         clip-path="url(#a)"
+         ry="10.319"
+         rx="10.335"
+         cy="243.216"
+         cx="-24.735001"
+         id="ellipse1577"
+         style="fill:#3f3f3f;fill-opacity:1;stroke:none;stroke-width:2.1170001;stroke-opacity:0.5" />
+    </clipPath>
+  </defs>
+  <ellipse
+     style="fill:#3f3f3f;fill-opacity:0.61199999;stroke:#404040;stroke-width:2.1170001;stroke-opacity:0.5"
+     id="ellipse9"
+     cx="-24.735001"
+     cy="243.216"
+     rx="10.335"
+     ry="10.319"
+     clip-path="url(#a)"
+     transform="translate(42.727,-225.136)" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:url(#c);stroke-width:0.99998951"
+     d="M 5.291634,5.2916331 V 30.691367 H 30.691366 V 5.2916331 Z"
+     id="path34"
+     clip-path="url(#clipPath1575)" />
+  <ellipse
+     style="fill:#3f3f3f;fill-opacity:0.61199999"
+     id="ellipse7"
+     ry="12.612"
+     rx="12.67"
+     cy="17.991999"
+     cx="17.992001" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#225c03;fill-opacity:0.94099998;stroke-width:1"
+     d="m 15.395027,0.42394016 c -0.638,0.106 -2.204,3.97700104 -2.799,4.23000004 -0.593,0.257001 -4.2919993,-1.42 -4.8169993,-1.054999 -0.532,0.361999 -0.103,4.478 -0.513,4.97 -0.418,0.496999 -4.73,0.811 -4.98,1.415999 -0.252,0.6079998 1.726,3.7329998 1.591,4.3699998 -0.146001,0.637 -3.3,3.65 -3.25,4.308001 0.05,0.657999 3.318,3.043999 3.517999,3.669999 0.190001,0.62 -1.111999,4.131 -0.779999,4.705 0.324,0.573001 3.47,0.805001 3.938,1.252 0.467,0.448001 1.29,3.900001 1.838,4.269999 0.545,0.366 3.3749993,-0.665998 4.0039993,-0.475999 0.625,0.192001 3.052,3.422001 3.693,3.478 0.642,0.055 3.202,-3.459998 3.832,-3.550001 0.631,-0.097 3.753,1.718001 4.352,1.481002 0.594,-0.233 1.886,-3.326001 2.411001,-3.690001 0.523,-0.368 3.469999,-0.593 3.865,-1.1 0.396998,-0.503 -0.134,-3.544999 0.14,-4.127999 0.267,-0.580001 3.773,-2.283001 3.91,-2.927001 l 0.003,-0.003 c 0.140001,-0.64 -2.423,-3.712 -2.464999,-4.375 -0.04,-0.658 1.948,-2.826 1.775001,-3.456 -0.171993,-0.63 -3.519992,-2.88 -3.871993,-3.436 -0.35,-0.5569998 0.032,-3.4639988 -0.431999,-3.9259988 -0.470002,-0.464 -4.254001,-0.608 -4.786001,-0.980001 -0.53,-0.38 -1.149,-3.47 -1.758,-3.667 -0.61,-0.188 -3.788,2.084001 -4.429,2.028 -0.64,-0.055 -3.359,-3.51900004 -3.99,-3.41000004 z m 1.558,6.90700004 c 0.481,-0.065 2.49,1.378 2.992,1.468 0.496,0.091 1.495,-1.109999 1.97,-0.945 0.47,0.166001 0.844,1.39 1.256,1.645001 0.411,0.266999 1.453,-0.347 1.848,-0.032 0.395,0.314999 0.192,1.9439988 0.497,2.3299988 0.31,0.39 1.591,1.494 1.773,1.96 0.182,0.46 -0.16,1.382 -0.075,1.87 0.086,0.49 2.062001,1.532 2.056,2.044 -0.005,0.513 -1.164,0.694 -1.212,1.191 -0.054,0.497 0.62,2.56 0.427002,3.04 -0.197002,0.48 -1.159002,0.827 -1.383001,1.265 -0.219,0.438 -0.299,1.950001 -0.652,2.33 -0.352999,0.373 -2.74,0.544 -3.12,0.875001 -0.378,0.331 0.375,0.939999 -0.069,1.148 -0.438,0.202999 -2.58,-0.656001 -3.06,-0.523 -0.486,0.134 -0.956,1.794999 -1.453,1.820999 -0.497,0.032 -1.282,-0.533998 -1.773,-0.649998 -0.48,-0.108002 -1.998,0.756997 -2.484,0.586999 -0.48,-0.170001 -0.32,-1.657002 -0.77,-1.897001 -0.442,-0.24 -2.723,-0.064 -3.06,-0.41 -0.339999,-0.354 -0.271999,-1.497 -0.564999,-1.924 -0.2940003,-0.417 -1.4600003,-1.041999 -1.7100003,-1.464 -0.24,-0.427 0.096,-1.826 0.01,-2.333 -0.085,-0.502 -0.7,-1.55 -0.768,-2.04 -0.07,-0.492 1.26,-1.294 1.281,-1.785 0.022,-0.49 -0.63,-1.393999 -0.427001,-1.87 0.203001,-0.48 1.074001,-1.26 1.31,-1.698 0.2340013,-0.433 0.3410013,-2.12 0.6560003,-2.505 0.31,-0.38 1.533,0.24 1.902,-0.096 0.373,-0.336999 0.94,-1.8699998 1.372,-2.1299988 0.438,-0.263 1.298,-0.508001 1.778,-0.61 0.481,-0.096 0.972001,-0.598001 1.452999,-0.662001 z"
+     id="path13" />
+</svg>

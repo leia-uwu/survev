@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   style="isolation:isolate"
+   width="128"
+   height="128"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="proj-frag-nopin-02.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata14">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs12" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview10"
+     showgrid="false"
+     inkscape:zoom="7.375"
+     inkscape:cx="46.260076"
+     inkscape:cy="56.764673"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
+  <path
+     fill="#63590d"
+     stroke="#202020"
+     stroke-width="11.8"
+     d="M43.292 12h41.416v36H43.292z"
+     id="path2"
+     style="fill:#b05502;fill-opacity:1" />
+  <circle
+     cx="64"
+     cy="81.399"
+     r="38.904"
+     fill="#827717"
+     fill-opacity=".995"
+     stroke="#202020"
+     stroke-width="12"
+     id="circle4"
+     style="fill:#f27503;fill-opacity:1" />
+  <path
+     d="M84 24h20l20 12v16l-20-12H84z"
+     fill="#827717"
+     fill-opacity=".996"
+     stroke="#202020"
+     stroke-width="8"
+     id="path6"
+     style="fill:#f27503;fill-opacity:1" />
+  <g
+     transform="matrix(0.23224288,0,0,0.25666244,23.764153,30.193549)"
+     id="g18">
+    <polygon
+       style="fill:#231f20"
+       points="243.649,210.57 257.249,224.97 302.049,196.57 257.249,264.97 243.649,250.57 199.249,279.77 173.249,258.17 147.249,279.77 102.849,250.57 88.849,264.97 44.449,196.57 88.849,224.97 102.849,210.57 147.249,239.77 173.249,218.17 199.249,239.77 "
+       id="polygon12" />
+    <polygon
+       style="fill:#231f20"
+       points="198.449,162.17 271.649,194.17 247.649,162.17 271.649,130.57 "
+       id="polygon14" />
+    <polygon
+       style="fill:#231f20"
+       points="152.049,162.17 79.249,194.17 103.249,162.17 79.249,130.57 "
+       id="polygon16" />
+  </g>
+</svg>

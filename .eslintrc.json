@@ -18,6 +18,8 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "eqeqeq": 0,
+        "no-mixed-operators": 0,
         "@typescript-eslint/indent": [1, 4, { "SwitchCase": 0 }],
         "@typescript-eslint/semi": [2, "always"],
         "@typescript-eslint/quotes": [1, "double", { "avoidEscape": true }],

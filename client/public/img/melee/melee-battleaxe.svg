@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="108"
+   height="72"
+   viewBox="0 0 108 72"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="melee-battleaxe.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:export-filename="C:\Users\kjust\Desktop\projects\surviv\client\img\melee\melee-battleaxe.png"
+   inkscape:export-xdpi="228"
+   inkscape:export-ydpi="228">
+  <metadata
+     id="metadata13">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview11"
+     showgrid="true"
+     inkscape:showpageshadow="false"
+     inkscape:zoom="3.6277652"
+     inkscape:cx="14.679028"
+     inkscape:cy="85.978496"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid822"
+       empspacing="4"
+       spacingx="1"
+       spacingy="1"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs5">
+    <clipPath
+       id="a">
+      <rect
+         ry="3.836"
+         rx="2.4690001"
+         y="272.65799"
+         x="0.52899998"
+         height="24.341999"
+         width="3.704"
+         stroke-miterlimit="10"
+         id="rect2"
+         style="fill:#515151;stroke-width:1.32299995;stroke-miterlimit:10;stroke-opacity:0.49000005" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4557">
+      <rect
+         rx="2.3333333"
+         ry="2.2439024"
+         style="fill:#c15800;fill-opacity:1;stroke:none;stroke-width:11.57296276;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4559"
+         width="13.999999"
+         height="92"
+         x="29"
+         y="-1.2434498e-014" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4585">
+      <path
+         style="fill:#929292;fill-opacity:1;stroke:none;stroke-width:1.17260396px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 68,21 V 16 C 68,12 56,5 36,5 16,5 4,12 4,16 v 5 c 0,8 12,-3 32,-3 20,0 32,11 32,3 z"
+         id="path4587"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccsc" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4585-9">
+      <path
+         style="fill:#929292;fill-opacity:1;stroke:none;stroke-width:1.17260396px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 68,21 V 16 C 68,12 56,5 36,5 16,5 4,12 4,16 v 5 c 0,8 12,-3 32,-3 20,0 32,11 32,3 z"
+         id="path4587-2"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccsc" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4557-0">
+      <rect
+         rx="2.3333333"
+         ry="2.2439024"
+         style="fill:#c15800;fill-opacity:1;stroke:none;stroke-width:11.57296276;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect4559-1"
+         width="13.999999"
+         height="92"
+         x="29"
+         y="-1.2434498e-014" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath837">
+      <path
+         sodipodi:nodetypes="ccccccc"
+         inkscape:connector-curvature="0"
+         id="path839"
+         d="M 96,56 V 36 C 96,20 108,8 108,8 96,0 76,0 64,8 64,8 76,20 76,36 v 20 z"
+         style="fill:#929292;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </clipPath>
+  </defs>
+  <rect
+     y="-1.2434498e-014"
+     x="29"
+     height="92"
+     width="13.999999"
+     id="rect4555"
+     style="fill:#934300;fill-opacity:1;stroke:#000000;stroke-width:7.99974104;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     ry="2.2439024"
+     rx="2.3333333"
+     clip-path="url(#clipPath4557)"
+     transform="matrix(0,1.173913,-1.173913,0,108,1.7391326)" />
+  <path
+     style="fill:#929292;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+     d="M 96,56 V 36 C 96,20 108,8 108,8 96,0 76,0 64,8 64,8 76,20 76,36 v 20 z"
+     id="path835"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccccc"
+     clip-path="url(#clipPath837)" />
+</svg>
