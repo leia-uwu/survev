@@ -6,21 +6,72 @@ import { type MapDef } from "../mapDefs";
 
 const mapDef = {
     mapId: 3,
-    desc: { name: "50v50", icon: "img/modes/star.svg" },
+    desc: {
+        name: "50v50",
+        icon: "img/modes/star.svg",
+        buttonCss: "btn-mode-faction",
+        buttonText: "50v50"
+    },
     assets: {
         audio: [
-            { name: "leader_dead_01", channel: "ui" },
-            { name: "leader_assigned_01", channel: "ui" },
-            { name: "lt_assigned_01", channel: "ui" },
-            { name: "medic_assigned_01", channel: "ui" },
-            { name: "ping_leader_01", channel: "ui" }
+            {
+                name: "lt_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "medic_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "marksman_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "recon_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "grenadier_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "bugler_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "last_man_assigned_01",
+                channel: "ui"
+            },
+            {
+                name: "ping_leader_01",
+                channel: "ui"
+            },
+            {
+                name: "bugle_01",
+                channel: "activePlayer"
+            },
+            {
+                name: "bugle_02",
+                channel: "activePlayer"
+            },
+            {
+                name: "bugle_03",
+                channel: "activePlayer"
+            },
+            {
+                name: "bugle_01",
+                channel: "otherPlayers"
+            },
+            {
+                name: "bugle_02",
+                channel: "otherPlayers"
+            },
+            {
+                name: "bugle_03",
+                channel: "otherPlayers"
+            }
         ],
-        atlases: [
-            "gradient",
-            "loadout",
-            "shared",
-            "faction"
-        ]
+        atlases: ["gradient", "loadout", "shared", "faction"]
     },
     biome: {
         colors: {
@@ -31,7 +82,8 @@ const mapDef = {
             riverbank: 6632211,
             grass: 5136680,
             underground: 1772803,
-            playerSubmerge: 1192009
+            playerSubmerge: 1192009,
+            playerGhillie: 5005348
         }
     },
     gameMode: {

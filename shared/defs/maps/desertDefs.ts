@@ -8,7 +8,8 @@ const mapDef = {
     mapId: 1,
     desc: {
         name: "Desert",
-        icon: "img/modes/loot-weapon-flare-gun.svg"
+        icon: "img/loot/loot-weapon-flare-gun.svg",
+        buttonCss: "btn-mode-desert"
     },
     assets: {
         audio: [

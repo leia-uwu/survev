@@ -8,7 +8,8 @@ const mapDef = {
     mapId: 2,
     desc: {
         name: "Woods",
-        icon: "img/modes/player-king-woods.svg"
+        icon: "img/gui/player-king-woods.svg",
+        buttonCss: "btn-mode-woods"
     },
     assets: {
         audio: [

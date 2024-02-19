@@ -7,7 +7,8 @@ const mapDef = {
     mapId: 4,
     desc: {
         name: "Potato",
-        icon: "img/modes/loot-throwable-potato.svg"
+        icon: "img/loot/loot-throwable-potato.svg",
+        buttonCss: "btn-mode-potato"
     },
     assets: {
         audio: [
