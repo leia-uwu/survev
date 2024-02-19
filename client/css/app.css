@@ -3891,7 +3891,7 @@ a:active {
     width: 30px;
 }
 #featured-youtuber {
-    display: none;
+    display: none!important;
     margin-top: 12px;
 }
 .youtube-header {
@@ -4113,7 +4113,7 @@ a:active {
     }
 }
 #start-bottom-middle {
-    bottom: 148px;
+    bottom: 20px;
     color: #fff;
     position: absolute;
     left: var(--side-pad);
