@@ -72,7 +72,7 @@ s.prototype = {
             a.container = new PIXI.Container();
             a.container.pivot.set(14.5, 0);
             a.container.visible = false;
-            a.bulletTrail = PIXI.Sprite.fromImage(
+            a.bulletTrail = PIXI.Sprite.from(
                 "player-bullet-trail-02.img"
             );
             a.bulletTrail.anchor.set(0.5, 0.5);

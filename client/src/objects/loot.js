@@ -64,15 +64,15 @@ a.prototype = {
             this.imgScale = i.lootImg.scale * 1.25;
             const n = i.lootImg.innerScale || 0.8;
             this.sprite.scale.set(n, n);
-            this.sprite.texture = PIXI.Texture.fromImage(
+            this.sprite.texture = PIXI.Texture.from(
                 i.lootImg.sprite
             );
             this.sprite.tint = i.lootImg.tint;
             this.container.texture = i.lootImg.border
-                ? PIXI.Texture.fromImage(i.lootImg.border)
+                ? PIXI.Texture.from(i.lootImg.border)
                 : PIXI.Texture.EMPTY;
             if (this.isPreloadedGun) {
-                this.container.texture = PIXI.Texture.fromImage(
+                this.container.texture = PIXI.Texture.from(
                     "loot-circle-outer-06.img"
                 );
             }

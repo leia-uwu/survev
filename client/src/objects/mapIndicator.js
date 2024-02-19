@@ -67,7 +67,7 @@ a.prototype = {
         c.alpha = 1;
         c.zOrder = n;
         c.visible = true;
-        c.sprite.texture = PIXI.Texture.fromImage(
+        c.sprite.texture = PIXI.Texture.from(
             r.mapIndicator.sprite
         );
         c.sprite.tint = r.mapIndicator.tint;
@@ -78,7 +78,7 @@ a.prototype = {
             m.zOrder = n - 1;
             m.visible = true;
             m.sprite.texture =
-                PIXI.Texture.fromImage("part-pulse-01.img");
+                PIXI.Texture.from("part-pulse-01.img");
             m.sprite.tint = r.mapIndicator.pulseTint;
         }
     },

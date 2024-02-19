@@ -184,10 +184,10 @@ c.prototype = {
                             const S = b.y - _.y;
                             const v = _.x * 2;
                             const k = _.y * 2;
-                            // r.beginHole();
+                            r.beginHole();
                             l(r, x, S, v, k);
-                            r.addHole();
-                            // r.endHole();
+                            // r.addHole();
+                            r.endHole();
                         }
                     }
                 }

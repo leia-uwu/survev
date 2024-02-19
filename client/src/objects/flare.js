@@ -28,13 +28,13 @@ a.prototype = {
             a.alive = false;
             a.flareContainer = new PIXI.Container();
             a.flareContainer.visible = false;
-            a.flare = PIXI.Sprite.fromImage("part-flare-01.img");
+            a.flare = PIXI.Sprite.from("part-flare-01.img");
             a.flare.anchor.set(0.5, 0.5);
             a.flareContainer.addChild(a.flare);
             a.trailContainer = new PIXI.Container();
             a.trailContainer.visible = false;
             a.trailContainer.pivot.set(14.5, 0);
-            a.bulletTrail = PIXI.Sprite.fromImage(
+            a.bulletTrail = PIXI.Sprite.from(
                 "player-bullet-trail-02.img"
             );
             a.bulletTrail.anchor.set(0.5, 0.5);

@@ -864,7 +864,7 @@ i.prototype = {
             p.alpha = r;
             p.visible = a;
             p.zOrder = o;
-            p.sprite.texture = PIXI.Texture.fromImage(n);
+            p.sprite.texture = PIXI.Texture.from(n);
             p.sprite.tint = c;
         };
         for (
@@ -971,7 +971,7 @@ i.prototype = {
                 a.lifetime = n.mapLife;
                 a.pulse = false;
                 a.zOrder = 100;
-                a.sprite.texture = PIXI.Texture.fromImage(
+                a.sprite.texture = PIXI.Texture.from(
                     n.mapTexture
                 );
                 a.sprite.tint = r;
@@ -985,7 +985,7 @@ i.prototype = {
                 r.pulse = true;
                 r.zOrder = 99;
                 r.sprite.texture =
-                    PIXI.Texture.fromImage("ping-map-pulse.img");
+                    PIXI.Texture.from("ping-map-pulse.img");
                 r.sprite.tint = e;
                 return r;
             };

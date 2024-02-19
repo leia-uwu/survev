@@ -13,7 +13,7 @@ import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 function Projectile() {
     this.container = new PIXI.Container();
     this.container.visible = false;
-    this.trail = PIXI.Sprite.fromImage("player-bullet-trail-02.img");
+    this.trail = PIXI.Sprite.from("player-bullet-trail-02.img");
     this.trail.anchor.set(1, 0.5);
     this.trail.scale.set(1, 1);
     this.trail.visible = false;
@@ -79,7 +79,7 @@ Projectile.prototype = {
                     p = false;
                 }
             }
-            this.sprite.texture = PIXI.Texture.fromImage(l.sprite);
+            this.sprite.texture = PIXI.Texture.from(l.sprite);
             this.sprite.tint = l.tint;
             this.sprite.alpha = 1;
             this.container.visible = p;
@@ -87,7 +87,7 @@ Projectile.prototype = {
                 if (!this.strobeSprite) {
                     this.strobeSprite = new PIXI.Sprite();
                     this.strobeSprite.texture =
-                        PIXI.Texture.fromImage("part-strobe-01.img");
+                        PIXI.Texture.from("part-strobe-01.img");
                     this.strobeSprite.anchor.set(0.5, 0.5);
                     this.container.addChild(this.strobeSprite);
                 }

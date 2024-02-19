@@ -290,28 +290,28 @@ function s(e, t, r, a, o) {
         const r = new PIXI.Container();
         const a = new PIXI.Container();
         const i = GameConfig.groupColors[e] || t;
-        const o = PIXI.Sprite.fromImage("ping-border.img");
+        const o = PIXI.Sprite.from("ping-border.img");
         o.scale.set(0.4, 0.4);
         o.anchor.set(0.5, 0.5);
         o.tint = i;
         o.alpha = 0;
         o.visible = true;
         r.addChild(o);
-        const s = PIXI.Sprite.fromImage("ping-team-danger.img");
+        const s = PIXI.Sprite.from("ping-team-danger.img");
         s.scale.set(0.4, 0.4);
         s.anchor.set(0.5, 0.5);
         s.tint = i;
         s.alpha = 0;
         s.visible = true;
         r.addChild(s);
-        const c = PIXI.Sprite.fromImage("ping-team-danger.img");
+        const c = PIXI.Sprite.from("ping-team-danger.img");
         c.scale.set(0.5, 0.5);
         c.anchor.set(0.5, 0.5);
         c.tint = i;
         c.alpha = 0;
         c.visible = true;
         a.addChild(c);
-        const m = PIXI.Sprite.fromImage("ping-indicator.img");
+        const m = PIXI.Sprite.from("ping-indicator.img");
         m.scale.set(0.5, 0.5);
         m.anchor.set(0.5, 0);
         m.alpha = 0;
@@ -511,9 +511,9 @@ s.prototype = {
                 if (a) {
                     a.pos = e.pos;
                     a.pingSprite.sprite.texture =
-                        PIXI.Texture.fromImage(r.texture);
+                        PIXI.Texture.from(r.texture);
                     a.indSpriteInner.sprite.texture =
-                        PIXI.Texture.fromImage(r.texture);
+                        PIXI.Texture.from(r.texture);
                     a.indSpriteInner.sprite.tint = r.mapEvent
                         ? r.tint
                         : a.indSpriteInner.baseTint;
@@ -558,7 +558,7 @@ s.prototype = {
                 r.alive = false;
                 r.pos = v2.create(0, 0);
                 r.container = new PIXI.Container();
-                r.circleOuter = new PIXI.Sprite.fromImage(
+                r.circleOuter = new PIXI.Sprite.from(
                     "emote-circle-outer.img"
                 );
                 r.circleOuter.anchor.set(0.5, 0.5);
@@ -588,7 +588,7 @@ s.prototype = {
             r.life = this.emoteLife;
             r.lifeOut = this.emoteLifeOut;
             r.zIdx = this.zIdxNext++;
-            r.sprite.texture = PIXI.Texture.fromImage(t.texture);
+            r.sprite.texture = PIXI.Texture.from(t.texture);
             r.container.visible = false;
             r.baseScale = 0.55;
             r.sound = t.sound;
@@ -596,7 +596,7 @@ s.prototype = {
             if (e.type == "emote_loot") {
                 const i = GameObjectDefs[e.itemType];
                 if (i?.lootImg) {
-                    r.sprite.texture = PIXI.Texture.fromImage(
+                    r.sprite.texture = PIXI.Texture.from(
                         i.lootImg.sprite
                     );
                     const o = GameObjectDefs[i.ammo];

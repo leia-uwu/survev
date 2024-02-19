@@ -30,7 +30,7 @@ function i() {
     this.active = false;
     this.pos = v2.create(0, 0);
     this.container = new PIXI.Container();
-    this.sprite = PIXI.Sprite.fromImage("skull.img");
+    this.sprite = PIXI.Sprite.from("skull.img");
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.scale.set(0.4, 0.4);
     this.sprite.tint = 5921370;

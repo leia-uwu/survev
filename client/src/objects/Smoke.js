@@ -11,7 +11,7 @@ function Smoke() {
     const e = ["part-smoke-02.img", "part-smoke-03.img"];
     this.active = false;
     this.zIdx = 0;
-    this.sprite = PIXI.Sprite.fromImage(
+    this.sprite = PIXI.Sprite.from(
         e[Math.floor(Math.random() * e.length)]
     );
     this.sprite.anchor = new PIXI.Point(0.5, 0.5);

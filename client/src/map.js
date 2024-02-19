@@ -238,10 +238,10 @@ s.prototype = {
         e.endFill();
         e.beginFill(u.beach);
         i(e, c.shore);
-        // e.beginHole();
+        e.beginHole();
         i(e, c.grass);
-        e.addHole();
-        // e.endHole();
+        // e.addHole();
+        e.endHole();
         e.endFill();
         if (r) {
             e.beginFill(u.grass);
@@ -271,10 +271,10 @@ s.prototype = {
         e.lineTo(d.x, d.y);
         e.lineTo(p.x, p.y);
         e.lineTo(m.x, m.y);
-        // e.beginHole();
+        e.beginHole();
         i(e, c.shore);
-        e.addHole();
-        // e.endHole();
+        // e.addHole();
+        e.endHole();
         e.closePath();
         e.endFill();
         const x = e;

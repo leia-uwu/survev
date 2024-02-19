@@ -58,7 +58,7 @@ const g = (function() {
         this.aimStyle = "locked";
         this.touchAimLine = true;
         const o = function(e, t) {
-            const r = PIXI.Sprite.fromImage("pad.img");
+            const r = PIXI.Sprite.from("pad.img");
             r.anchor.set(0.5, 0.5);
             r.scale.set(1, 1);
             r.alpha = 0.2;
@@ -720,7 +720,7 @@ var y = (function() {
             key: "createDot",
             value: function() {
                 const e = new PIXI.Sprite();
-                e.texture = PIXI.Texture.fromImage("dot.img");
+                e.texture = PIXI.Texture.from("dot.img");
                 e.anchor.set(0.5, 0.5);
                 e.position.set(0, 0);
                 e.scale.set(1, 1);

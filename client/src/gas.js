@@ -33,7 +33,7 @@ class GasRenderer {
             i.lineTo(p, p);
             i.lineTo(-p, p);
             i.closePath();
-            // i.beginHole();
+            i.beginHole();
             i.moveTo(0, 1);
             for (let s = 1; s < h; s++) {
                 const n = s / h;
@@ -41,8 +41,8 @@ class GasRenderer {
                 const c = Math.cos(Math.PI * 2 * n);
                 i.lineTo(l, c);
             }
-            i.addHole();
-            // i.endHole();
+            // i.addHole();
+            i.endHole();
             i.closePath();
         }
         this.display.visible = false;

@@ -88,7 +88,7 @@ Obstacle.prototype = {
                     let h = p.pos || v2.create(0, 0);
                     h = v2.rotate(h, this.rot + Math.PI * 0.5);
                     const d = new PIXI.Sprite();
-                    d.texture = PIXI.Texture.fromImage(p.sprite);
+                    d.texture = PIXI.Texture.from(p.sprite);
                     d.anchor.set(0.5, 0.5);
                     d.posOffset = h;
                     d.imgScale = p.scale;
@@ -175,7 +175,7 @@ Obstacle.prototype = {
                 this.sprite.texture =
                     (w == "none" || !w)
                         ? PIXI.Texture.EMPTY
-                        : PIXI.Texture.fromImage(w);
+                        : PIXI.Texture.from(w);
                 this.sprite.anchor.set(f.x, f.y);
                 this.sprite.tint = m.img.tint;
                 this.sprite.imgAlpha = this.dead

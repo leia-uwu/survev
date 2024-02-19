@@ -289,7 +289,7 @@ var F = (function() {
             value: function(e, t) {
                 const r = GameObjectDefs[e];
                 const a = r.worldImg;
-                this.gunBarrel.texture = PIXI.Texture.fromImage(
+                this.gunBarrel.texture = PIXI.Texture.from(
                     a.sprite
                 );
                 this.gunBarrel.anchor.set(0.5, 1);
@@ -302,7 +302,7 @@ var F = (function() {
                 this.gunBarrel.visible = true;
                 if (a.magImg) {
                     const i = a.magImg;
-                    this.gunMag.texture = PIXI.Texture.fromImage(
+                    this.gunMag.texture = PIXI.Texture.from(
                         i.sprite
                     );
                     this.gunMag.anchor.set(0.5, 0.5);
@@ -1145,7 +1145,7 @@ l.prototype = {
         const r = GameObjectDefs[this.Le.se];
         const a = r.skinImg;
         const i = this.bodyRad / GameConfig.player.radius;
-        this.bodySprite.texture = PIXI.Texture.fromImage(a.baseSprite);
+        this.bodySprite.texture = PIXI.Texture.from(a.baseSprite);
         this.bodySprite.tint = r.ghillie
             ? t.getMapDef().biome.colors.playerGhillie
             : a.baseTint;
@@ -1160,7 +1160,7 @@ l.prototype = {
                     Math.PI * 0.5 +
                     (Math.random() - 0.5) * Math.PI * 0.25;
                 this.bodyEffectSprite.texture =
-                    PIXI.Texture.fromImage(s);
+                    PIXI.Texture.from(s);
                 this.bodyEffectSprite.rotation = n;
                 this.bodyEffectSprite.tint = 16777215;
                 this.bodyEffectSprite.scale.set(0.25, 0.25);
@@ -1178,7 +1178,7 @@ l.prototype = {
             const y = m[g];
             const w = GameConfig.teamColors[g];
             const f = math.oriToRad(3) + Math.PI * 0.5;
-            this.patchSprite.texture = PIXI.Texture.fromImage(y);
+            this.patchSprite.texture = PIXI.Texture.from(y);
             this.patchSprite.rotation = f;
             this.patchSprite.tint = w;
             this.patchSprite.scale.set(0.25, 0.25);
@@ -1187,7 +1187,7 @@ l.prototype = {
             this.patchSprite.visible = false;
         }
         const _ = function(e, t, r) {
-            e.texture = PIXI.Texture.fromImage(t);
+            e.texture = PIXI.Texture.from(t);
             e.scale.set(0.175, 0.175);
             e.tint = r;
             e.visible = true;
@@ -1198,7 +1198,7 @@ l.prototype = {
         _(this.handLSprite, a.handSprite, x);
         _(this.handRSprite, a.handSprite, x);
         const S = function(e, t, r) {
-            e.texture = PIXI.Texture.fromImage("player-feet-01.img");
+            e.texture = PIXI.Texture.from("player-feet-01.img");
             e.scale.set(0.45, 0.45);
             e.rotation = Math.PI * 0.5;
             e.tint = t;
@@ -1210,7 +1210,7 @@ l.prototype = {
         S(this.footLSprite, v, this.downed);
         S(this.footRSprite, v, this.downed);
         if (this.hasPerk("flak_jacket") && !r.ghillie) {
-            this.flakSprite.texture = PIXI.Texture.fromImage(
+            this.flakSprite.texture = PIXI.Texture.from(
                 "player-armor-base-01.img"
             );
             this.flakSprite.scale.set(0.215, 0.215);
@@ -1225,7 +1225,7 @@ l.prototype = {
         } else {
             const k = GameObjectDefs[this.Le.ce];
             const z = k.skinImg;
-            this.chestSprite.texture = PIXI.Texture.fromImage(
+            this.chestSprite.texture = PIXI.Texture.from(
                 z.baseSprite
             );
             this.chestSprite.scale.set(0.25, 0.25);
@@ -1233,7 +1233,7 @@ l.prototype = {
             this.chestSprite.visible = true;
         }
         if (this.hasPerk("steelskin") && !r.ghillie) {
-            this.steelskinSprite.texture = PIXI.Texture.fromImage(
+            this.steelskinSprite.texture = PIXI.Texture.from(
                 "loot-melee-pan-black.img"
             );
             this.steelskinSprite.scale.set(0.4, 0.4);
@@ -1249,7 +1249,7 @@ l.prototype = {
             const I = GameObjectDefs[this.Le.le];
             const T = I.skinImg;
             const M = (this.downed ? 1 : -1) * 3.33;
-            this.helmetSprite.texture = PIXI.Texture.fromImage(
+            this.helmetSprite.texture = PIXI.Texture.from(
                 T.baseSprite
             );
             this.helmetSprite.position.set(M, 0);
@@ -1277,7 +1277,7 @@ l.prototype = {
             const O = this.Vr();
             const D = A[math.min(O - 1, A.length - 1)];
             const E = (0.4 + O * 0.03) * 0.5;
-            this.backpackSprite.texture = PIXI.Texture.fromImage(
+            this.backpackSprite.texture = PIXI.Texture.from(
                 "player-circle-base-01.img"
             );
             this.backpackSprite.position.set(-D, 0);
@@ -1285,7 +1285,7 @@ l.prototype = {
             this.backpackSprite.tint = a.backpackTint;
             this.backpackSprite.visible = true;
             (function(e, t, r) {
-                e.texture = PIXI.Texture.fromImage(t);
+                e.texture = PIXI.Texture.from(t);
                 e.tint = r;
             })(
                 this.backpackSprite,
@@ -1297,7 +1297,7 @@ l.prototype = {
         }
         if (this.Le._e) {
             const B = GameObjectDefs.pan.hipImg;
-            this.hipSprite.texture = PIXI.Texture.fromImage(B.sprite);
+            this.hipSprite.texture = PIXI.Texture.from(B.sprite);
             this.hipSprite.position.set(B.pos.x, B.pos.y);
             this.hipSprite.scale.set(B.scale.x, B.scale.y);
             this.hipSprite.rotation = B.rot;
@@ -1370,7 +1370,7 @@ l.prototype = {
         }
         if (R.type == "melee" && this.Le.me != "fists") {
             const V = R.worldImg;
-            this.meleeSprite.texture = PIXI.Texture.fromImage(
+            this.meleeSprite.texture = PIXI.Texture.from(
                 V.sprite
             );
             this.meleeSprite.pivot.set(-V.pos.x, -V.pos.y);
@@ -1412,7 +1412,7 @@ l.prototype = {
         if (R.type == "throwable") {
             const K = function(e, t) {
                 if (t.sprite && t.sprite != "none") {
-                    e.texture = PIXI.Texture.fromImage(t.sprite);
+                    e.texture = PIXI.Texture.from(t.sprite);
                     e.position.set(t.pos.x, t.pos.y);
                     e.scale.set(t.scale, t.scale);
                     e.rotation = Math.PI * 0.5;
@@ -1458,7 +1458,7 @@ l.prototype = {
                 ? GameConfig.player.medicHealRange
                 : GameConfig.player.medicReviveRange;
             $ *= 0.125;
-            this.auraCircle.texture = PIXI.Texture.fromImage(J);
+            this.auraCircle.texture = PIXI.Texture.from(J);
             this.auraCircle.scale.set($, $);
             this.auraCircle.tint = Q;
             this.auraCircle.visible = true;
@@ -1473,7 +1473,7 @@ l.prototype = {
             const te = ee.visorImg;
             if (te) {
                 const re = (this.downed ? 1 : -1) * 3.33;
-                this.visorSprite.texture = PIXI.Texture.fromImage(
+                this.visorSprite.texture = PIXI.Texture.from(
                     te.baseSprite
                 );
                 this.visorSprite.position.set(re, 0);
@@ -2022,7 +2022,7 @@ l.prototype = {
     },
     initSubmergeSprites: function() {
         const e = function(e, t) {
-            e.texture = PIXI.Texture.fromImage(t);
+            e.texture = PIXI.Texture.from(t);
             e.anchor.set(0.5, 0.5);
             e.tint = 16777215;
             e.alpha = 0;

@@ -47,7 +47,7 @@ Plane.prototype = {
         this.rad = this.config.planeRad;
         switch (this.type) {
             case GameConfig.Plane.Airdrop:
-                this.sprite.texture = PIXI.Texture.fromImage(
+                this.sprite.texture = PIXI.Texture.from(
                     t.getMapDef().biome.airdrop.planeImg
                 );
                 this.planeSound =
@@ -55,7 +55,7 @@ Plane.prototype = {
                 break;
             case GameConfig.Plane.Airstrike:
                 this.sprite.texture =
-                    PIXI.Texture.fromImage("map-plane-02.img");
+                    PIXI.Texture.from("map-plane-02.img");
                 this.planeSound = "fighter_01";
         }
         this.sprite.visible = true;

@@ -6,7 +6,7 @@ import device from "./device";
 function PieTimer() {
     this.container = new PIXI.Container();
     this.container.visible = false;
-    this.timerBackground = PIXI.Sprite.fromImage(
+    this.timerBackground = PIXI.Sprite.from(
         "timer-background.img"
     );
     this.timerBackground.anchor.set(0.5, 0.5);

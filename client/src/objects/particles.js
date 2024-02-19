@@ -3089,7 +3089,7 @@ s.prototype = {
         const y = Array.isArray(g.image)
             ? g.image[Math.floor(Math.random() * g.image.length)]
             : g.image;
-        this.sprite.texture = PIXI.Texture.fromImage(y);
+        this.sprite.texture = PIXI.Texture.from(y);
         this.sprite.visible = false;
         this.valueAdjust = g.ignoreValueAdjust ? 1 : u;
         this.setColor(o(g.color));

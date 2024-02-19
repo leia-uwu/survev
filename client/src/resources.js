@@ -11,7 +11,7 @@ const AtlasDefs = {
 };
 
 function i(e, t) {
-    const r = PIXI.Texture.fromImage(t, true, undefined, 1);
+    const r = PIXI.Texture.from(t);
     const a = r.baseTexture;
     let i = 0;
     if (!a.hasLoaded) {
@@ -42,7 +42,7 @@ function o(e, t) {
     const r = i(e, `assets/${t.meta.image}`);
     const a = new PIXI.Spritesheet(r, t);
     a.resolution = r.resolution;
-    a.parse(() => { });
+    a.parse();
     return a;
 }
 function s(e, t) {

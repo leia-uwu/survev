@@ -37,7 +37,7 @@ AirDrop.prototype = {
             this.isNew = true;
             this.fallTicker = e.fallT * GameConfig.airdrop.fallTime;
             const i = a.map.getMapDef().biome.airdrop.airdropImg;
-            this.sprite.texture = PIXI.Texture.fromImage(i);
+            this.sprite.texture = PIXI.Texture.from(i);
         }
         if (t) {
             this.pos = v2.copy(e.pos);

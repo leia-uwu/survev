@@ -104,7 +104,9 @@ Building.prototype = {
                 const r = math.oriToRad(e.rot || 0);
                 const s = i.allocSprite();
                 if (e.sprite && e.sprite != "none") {
-                    s.texture = PIXI.Texture.fromImage(e.sprite);
+                    s.texture = PIXI.Texture.from(e.sprite);
+                } else {
+                    s.texture = PIXI.Texture.EMPTY;
                 }
                 s.tint = e.tint;
                 const l = a.map.getMapDef().biome.valueAdjust;
@@ -326,7 +328,7 @@ Building.prototype = {
             const S = MapObjectDefs[this.type];
             if (S.ceiling.destroy !== undefined) {
                 const v = this.allocSprite();
-                v.texture = PIXI.Texture.fromImage(
+                v.texture = PIXI.Texture.from(
                     S.ceiling.destroy.residue
                 );
                 v.position.set(0, 0);
