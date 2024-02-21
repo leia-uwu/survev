@@ -331,6 +331,7 @@ export class Player extends BaseGameObject implements PlayerFullData, PlayerPart
 
                         if (ori === stair.downOri) this.aimLayer = 3;
                         else if (ori === stair.upOri) this.aimLayer = 2;
+                        else this.aimLayer = this.layer;
                         break;
                     }
                 }
