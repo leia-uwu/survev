@@ -16,6 +16,8 @@ interface Stair {
     collision: AABB
     center: Vec2
     downDir: Vec2
+    downOri: number
+    upOri: number
     downAabb: AABB
     upAabb: AABB
     noCeilingReveal: boolean
@@ -64,11 +66,17 @@ export class Structure extends BaseGameObject implements FullStructure, PartialS
             const stairsDef = def.stairs[i];
             const stairsCol = collider.transform(stairsDef.collision, this.pos, this.rot, this.scale) as AABB;
             const downDir = v2.rotate(stairsDef.downDir, this.rot);
+
+            const downRot = Math.atan2(downDir.y, downDir.x);
+            const downOri = math.radToOri(downRot);
+
             const childAabbs = coldet.splitAabb(stairsCol, downDir);
             this.stairs.push({
                 collision: stairsCol,
                 center: v2.add(stairsCol.min, v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)),
                 downDir,
+                downOri,
+                upOri: (downOri + 2) % 4,
                 downAabb: collider.createAabb(childAabbs[0].min, childAabbs[0].max),
                 upAabb: collider.createAabb(childAabbs[1].min, childAabbs[1].max),
                 noCeilingReveal: !!stairsDef.noCeilingReveal,

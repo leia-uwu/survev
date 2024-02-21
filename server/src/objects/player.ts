@@ -319,18 +319,26 @@ export class Player extends BaseGameObject implements PlayerFullData, PlayerPart
         const originalLayer = this.layer;
         const coll = collider.createCircle(this.pos, this.rad);
 
+        const rot = Math.atan2(this.dir.y, this.dir.x);
+        const ori = math.radToOri(rot);
+
         for (const obj of objs!) {
-            if (obj instanceof Structure) {
+            if (obj.__type === ObjectType.Structure) {
                 for (const stair of obj.stairs) {
                     if (stair.lootOnly) continue;
                     if (Structure.checkStairs(coll, stair, this)) {
                         onStair = true;
+
+                        if (ori === stair.downOri) this.aimLayer = 3;
+                        else if (ori === stair.upOri) this.aimLayer = 2;
                         break;
                     }
                 }
                 if (!onStair) {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
+
+                    this.aimLayer = this.layer;
                 }
                 if (this.layer !== originalLayer) {
                     this.setDirty();
