@@ -495,6 +495,8 @@ export class GameMap {
         const def = MapObjectDefs[type] as StructureDef;
 
         const structure = new Structure(this.game, type, pos, layer, ori);
+        this.game.grid.addObject(structure);
+
         layer = 0;
         for (const layerDef of def.layers) {
             const building = this.genBuilding(
@@ -508,7 +510,6 @@ export class GameMap {
             structure.layerObjIds.push(building.id);
         }
 
-        this.game.grid.addObject(structure);
         this.objectCount[type]++;
         return structure;
     }

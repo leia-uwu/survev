@@ -4,7 +4,7 @@ import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { type Game } from "../game";
 import { NetConstants } from "../net/net";
 import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
-import { type Collider } from "../../../shared/utils/coldet";
+import { coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
@@ -86,6 +86,8 @@ export class Obstacle extends BaseGameObject implements FullObstacle, PartialObs
 
     layer: number;
 
+    originalLayer: number;
+
     destructible: boolean;
 
     rot: number;
@@ -100,6 +102,7 @@ export class Obstacle extends BaseGameObject implements FullObstacle, PartialObs
         this.ori = ori;
         this.scale = scale;
         this.layer = layer;
+        this.originalLayer = layer;
         this.parentBuildingId = parentBuildingId;
         this.isPuzzlePiece = !!puzzlePiece;
         this.puzzlePiece = puzzlePiece;
@@ -177,6 +180,7 @@ export class Obstacle extends BaseGameObject implements FullObstacle, PartialObs
                     break;
                 }
             }
+            this.checkLayer();
         }
 
         if (def.button) {
@@ -190,6 +194,28 @@ export class Obstacle extends BaseGameObject implements FullObstacle, PartialObs
                 useDelay: def.button.useDelay,
                 useDir: def.button.useDir
             };
+        }
+    }
+
+    checkLayer(): void {
+        let newLayer = this.originalLayer;
+        const def = MapObjectDefs[this.type] as ObstacleDef;
+        const coll = collider.createCircle(this.pos, def.door!.interactionRad + 1);
+        const objs = this.game.grid.intersectCollider(coll);
+        for (const obj of objs) {
+            if (obj.__type === ObjectType.Structure) {
+                for (const stair of obj.stairs) {
+                    if (coldet.test(coll, stair.downAabb)) {
+                        newLayer = 3;
+                    } else if (coldet.test(coll, stair.upAabb)) {
+                        newLayer = 2;
+                    }
+                }
+            }
+        }
+        if (newLayer !== this.layer) {
+            this.layer = newLayer;
+            this.setDirty();
         }
     }
 
@@ -337,6 +363,7 @@ export class Obstacle extends BaseGameObject implements FullObstacle, PartialObs
 
         this.bounds = collider.transform(def.collision, v2.create(0, 0), this.rot, 1);
         this.game.grid.updateObject(this);
+        this.checkLayer();
         this.setDirty();
     }
 }
