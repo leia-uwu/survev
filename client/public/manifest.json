@@ -1,6 +1,7 @@
 {
-    "name": "Surviv Reloaded",
-    "short_name": "SurvivReloaded",
+    "name": "Resurviv",
+    "short_name": "Resurviv",
+    "description": "",
     "icons": [
         {
             "src": "img/icon_app.png",
@@ -9,7 +10,8 @@
             "density": 3.0
         }
     ],
-    "start_url": "index.html",
+    "categories": ["games"],
+    "start_url": ".",
     "theme_color": "#80af49",
     "background_color": "#80af49",
     "display": "fullscreen",
