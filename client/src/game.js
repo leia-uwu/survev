@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js"
+import * as PIXI from "pixi.js";
 import { GameConfig } from "../../shared/gameConfig";
 import GameObject from "../../shared/utils/gameObject";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
@@ -37,7 +37,6 @@ import Ui from "./ui";
 import Ui2 from "./ui2";
 
 const n = GameConfig.Input;
-GameConfig.EmoteSlot;
 
 function a(e, t, r) {
     if (t in e) {
@@ -146,8 +145,8 @@ export class Game {
             }
         }
     }
+
     o() {
-        let e;
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.I = false;
@@ -157,20 +156,20 @@ export class Game {
         this.Mt = new Touch.Pt(this.bt, this.config);
         this.De = new Camera();
         this.Ct = new Renderer.At(this, this.canvasMode);
-        this.Ot = new Particles.f(this.Ct);
-        this.Dt = new Decal.k();
+        this.Ot = new Particles.ParticleBarn(this.Ct);
+        this.Dt = new Decal.DecalBarn();
         this.Et = new map.Bt(this.Dt);
         this.Rt = new Player.Lt();
         this.qt = new Bullet.Ft();
         this.jt = new flare.Nt();
         this.Ht = new Projectile.Vt();
-        this.Ut = new explosion.et();
+        this.Ut = new explosion.ExplosionBarn();
         this.Wt = new Plane.Gt(this.ft);
         this.Xt = new AirDropPool();
-        this.Kt = new Smoke.d();
-        this.Zt = new DeadBody.st();
+        this.Kt = new Smoke.SmokeBarn();
+        this.Zt = new DeadBody.DeadBodyBarn();
         this.Yt = new loot.Jt();
-        this.Qt = new gas.$t(this.canvasMode);
+        this.Qt = new gas.Gas(this.canvasMode);
         this.zt = new Ui.He(
             this,
             this.ft,
@@ -180,18 +179,18 @@ export class Game {
             this.canvasMode,
             this.Mt,
             this.xt,
-            this.St,
+            this.St
         );
-        this.er = new Ui2.rr(this.localization, this.xt);
-        this.ar = new emote.ir(
+        this.er = new Ui2.Ui2(this.localization, this.xt);
+        this.ar = new emote.EmoteBarn(
             this.ft,
             this.zt,
             this.Rt,
             this.De,
             this.Et
         );
-        this.or = new Shot.at(this.Ot, this.ft, this.zt);
-        e = {};
+        this.or = new Shot.ShotBarn(this.Ot, this.ft, this.zt);
+        const e = {};
         a(e, GameObject.Type.Player, this.Rt.$e);
         a(e, GameObject.Type.Obstacle, this.Et.Ve);
         a(e, GameObject.Type.Loot, this.Yt.sr);
@@ -212,21 +211,21 @@ export class Game {
         this.debugDisplay = new PIXI.Graphics();
         for (
             let i = [
-                this.Et.display.ground,
-                this.Ct.layers[0],
-                this.Ct.ground,
-                this.Ct.layers[1],
-                this.Ct.layers[2],
-                this.Ct.layers[3],
-                this.debugDisplay,
-                this.Qt.gasRenderer.display,
-                this.Mt.container,
-                this.ar.container,
-                this.zt.container,
-                this.zt.Pe.container,
-                this.ar.indContainer
-            ],
-            s = 0;
+                    this.Et.display.ground,
+                    this.Ct.layers[0],
+                    this.Ct.ground,
+                    this.Ct.layers[1],
+                    this.Ct.layers[2],
+                    this.Ct.layers[3],
+                    this.debugDisplay,
+                    this.Qt.gasRenderer.display,
+                    this.Mt.container,
+                    this.ar.container,
+                    this.zt.container,
+                    this.zt.Pe.container,
+                    this.ar.indContainer
+                ],
+                s = 0;
             s < i.length;
             s++
         ) {
@@ -263,6 +262,7 @@ export class Game {
             this.config.get("anonPlayerNames");
         this.initialized = true;
     }
+
     n() {
         if (this.ws) {
             this.ws.onmessage = function() { };
@@ -295,6 +295,7 @@ export class Game {
             }
         }
     }
+
     gr() {
         return (
             this.initialized &&
@@ -303,6 +304,7 @@ export class Game {
             !this.zt.displayingStats
         );
     }
+
     m(e) {
         const t = this.Kt.particles;
         const r = this.Et.Ve.p();
@@ -449,24 +451,24 @@ export class Game {
             z.portrait = this.De.screenWidth < this.De.screenHeight;
             for (
                 let E = [
-                    n.Reload,
-                    n.Revive,
-                    n.Use,
-                    n.Loot,
-                    n.Cancel,
-                    n.EquipPrimary,
-                    n.EquipSecondary,
-                    n.EquipThrowable,
-                    n.EquipMelee,
-                    n.EquipNextWeap,
-                    n.EquipPrevWeap,
-                    n.EquipLastWeap,
-                    n.EquipOtherGun,
-                    n.EquipPrevScope,
-                    n.EquipNextScope,
-                    n.StowWeapons
-                ],
-                B = 0;
+                        n.Reload,
+                        n.Revive,
+                        n.Use,
+                        n.Loot,
+                        n.Cancel,
+                        n.EquipPrimary,
+                        n.EquipSecondary,
+                        n.EquipThrowable,
+                        n.EquipMelee,
+                        n.EquipNextWeap,
+                        n.EquipPrevWeap,
+                        n.EquipLastWeap,
+                        n.EquipOtherGun,
+                        n.EquipPrevScope,
+                        n.EquipNextScope,
+                        n.StowWeapons
+                    ],
+                    B = 0;
                 B < E.length;
                 B++
             ) {
@@ -476,13 +478,9 @@ export class Game {
                 }
             }
             if (this.xt.isBindPressed(n.Interact)) {
-                for (
-                    var L = [n.Revive, n.Use, n.Loot],
-                    q = [],
-                    F = 0;
-                    F < L.length;
-                    F++
-                ) {
+                const q = [];
+                const L = [n.Revive, n.Use, n.Loot];
+                for (let F = 0; F < L.length; F++) {
                     const j = L[F];
                     if (!this.xt.getBind(j)) {
                         q.push(j);
@@ -538,8 +536,8 @@ export class Game {
             } else if (this.xt.isBindPressed(n.UsePainkiller)) {
                 z.useItem = "painkiller";
             }
-            var G = false;
-            for (var X = 0; X < this.er.uiEvents.length; X++) {
+            let G = false;
+            for (let X = 0; X < this.er.uiEvents.length; X++) {
                 const K = this.er.uiEvents[X];
                 if (K.action == "drop") {
                     const Z = new net.DropItemMsg();
@@ -785,8 +783,8 @@ export class Game {
         this.ar.newEmotes = [];
         this.br(e, i);
         if (++this.It % 30 == 0) {
-            var fe = mapHelpers.ct;
-            for (var _e = 0; _e < t.length; _e++) {
+            const fe = mapHelpers.ct;
+            for (let _e = 0; _e < t.length; _e++) {
                 const be = t[_e];
                 if (be.active && !be.fade && fe(be, mapHelpers.nt)) {
                     a++;
@@ -806,6 +804,7 @@ export class Game {
             }
         }
     }
+
     br(e, t) {
         const r = this.Et.mapLoaded
             ? this.Et.getMapDef().biome.colors.grass
@@ -828,6 +827,7 @@ export class Game {
         this.ar.render(this.De);
         debugLines.flush();
     }
+
     updateAmbience() {
         const e = this.dr.pos;
         let t = 0;
@@ -864,6 +864,7 @@ export class Game {
         this._t.getTrack("river").weight = r;
         this._t.getTrack("waves").weight = t;
     }
+
     xr() {
         this.De.screenWidth = device.screenWidth;
         this.De.screenHeight = device.screenHeight;
@@ -873,8 +874,8 @@ export class Game {
         this.Mt.resize();
         this.Ct.resize(this.Et, this.De);
     }
+
     Sr(e) {
-        this.hr;
         const t = {
             audioManager: this.ft,
             renderer: this.Ct,
@@ -908,7 +909,6 @@ export class Game {
             this.Rt.Tr(s, e.groupStatus);
         }
         for (let n = 0; n < e.delObjIds.length; n++) {
-            e.delObjIds[n];
             this.mr.deleteObj(e.delObjIds[n]);
         }
         for (let l = 0; l < e.fullObjects.length; l++) {
@@ -991,368 +991,383 @@ export class Game {
             this.seqInFlight = false;
         }
     }
+
     kt(e, t) {
         switch (e) {
-            case net.Msg.Joined:
-                var r = new net.JoinedMsg();
-                r.deserialize(t);
-                this.onJoin();
-                this.teamMode = r.teamMode;
-                this.pr = r.playerId;
-                this.ur = true;
-                this.ar.updateEmoteWheel(r.emotes);
-                if (!r.started) {
-                    this.zt.setWaitingForPlayers(true);
-                }
-                this.zt.removeAds();
-                if (this.victoryMusic) {
-                    this.victoryMusic.stop();
-                    this.victoryMusic = null;
-                }
-                if (!document.hasFocus()) {
-                    this.ft.playSound("notification_start_01", {
-                        channel: "ui"
-                    });
-                }
-                if (helpers.ee() || helpers.te()) {
-                    this.U = true;
-                }
-                break;
-            case net.Msg.Map:
-                var a = new net.MapMsg();
-                a.deserialize(t);
-                this.Et.loadMap(
-                    a,
-                    this.De,
-                    this.canvasMode,
-                    this.Ot
+        case net.Msg.Joined: {
+            const r = new net.JoinedMsg();
+            r.deserialize(t);
+            this.onJoin();
+            this.teamMode = r.teamMode;
+            this.pr = r.playerId;
+            this.ur = true;
+            this.ar.updateEmoteWheel(r.emotes);
+            if (!r.started) {
+                this.zt.setWaitingForPlayers(true);
+            }
+            this.zt.removeAds();
+            if (this.victoryMusic) {
+                this.victoryMusic.stop();
+                this.victoryMusic = null;
+            }
+            if (!document.hasFocus()) {
+                this.ft.playSound("notification_start_01", {
+                    channel: "ui"
+                });
+            }
+            if (helpers.ee() || helpers.te()) {
+                this.U = true;
+            }
+            break;
+        }
+        case net.Msg.Map: {
+            const a = new net.MapMsg();
+            a.deserialize(t);
+            this.Et.loadMap(
+                a,
+                this.De,
+                this.canvasMode,
+                this.Ot
+            );
+            this.resourceManager.loadMapAssets(this.Et.mapName);
+            this.Et.renderMap(
+                this.pixi.renderer,
+                this.canvasMode
+            );
+            this.Rt.onMapLoad(this.Et);
+            this.qt.onMapLoad(this.Et);
+            this.Ot.onMapLoad(this.Et);
+            this.zt.onMapLoad(this.Et, this.De);
+            if (this.Et.perkMode) {
+                const i = this.config.get("perkModeRole");
+                this.zt.setRoleMenuOptions(
+                    i,
+                    this.Et.getMapDef().gameMode.perkModeRoles
                 );
-                this.resourceManager.loadMapAssets(this.Et.mapName);
-                this.Et.renderMap(
-                    this.pixi.renderer,
-                    this.canvasMode
-                );
-                this.Rt.onMapLoad(this.Et);
-                this.qt.onMapLoad(this.Et);
-                this.Ot.onMapLoad(this.Et);
-                this.zt.onMapLoad(this.Et, this.De);
-                if (this.Et.perkMode) {
-                    const i = this.config.get("perkModeRole");
-                    this.zt.setRoleMenuOptions(
-                        i,
-                        this.Et.getMapDef().gameMode.perkModeRoles
-                    );
-                    this.zt.setRoleMenuActive(true);
-                } else {
-                    this.zt.setRoleMenuActive(false);
-                }
-                break;
-            case net.Msg.Update:
-                var o = new net.UpdateMsg();
-                o.deserialize(t, this.mr);
-                /* if (o.partObjects.length) {
-            console.log(o)
-        } */
-                this.playing = true;
-                this.Sr(o);
-                break;
-            case net.Msg.Kill:
-                var n = new net.KillMsg();
-                n.deserialize(t);
-                var l = n.itemSourceType || n.mapSourceType;
-                var c = this.Rt.qe(this.hr).teamId;
-                var m =
+                this.zt.setRoleMenuActive(true);
+            } else {
+                this.zt.setRoleMenuActive(false);
+            }
+            break;
+        }
+        case net.Msg.Update: {
+            const o = new net.UpdateMsg();
+            o.deserialize(t, this.mr);
+            /* if (o.partObjects.length) {
+                console.log(o)
+            } */
+            this.playing = true;
+            this.Sr(o);
+            break;
+        }
+        case net.Msg.Kill:{
+            const n = new net.KillMsg();
+            n.deserialize(t);
+            const l = n.itemSourceType || n.mapSourceType;
+            const c = this.Rt.qe(this.hr).teamId;
+            const m =
                     (n.downed && !n.killed) ||
                     n.damageType == GameConfig.DamageType.Gas ||
                     n.damageType == GameConfig.DamageType.Bleeding ||
                     n.damageType == GameConfig.DamageType.Airdrop;
-                var h = this.Rt.qe(n.targetId);
-                var d = this.Rt.qe(n.killCreditId);
-                var g = m ? d : this.Rt.qe(n.killerId);
-                var y = this.Rt.getPlayerName(
-                    h.playerId,
-                    this.hr,
-                    true
-                );
-                var w = this.Rt.getPlayerName(
-                    d.playerId,
-                    this.hr,
-                    true
-                );
-                var f = this.Rt.getPlayerName(
-                    g.playerId,
-                    this.hr,
-                    true
-                );
-                y = helpers.htmlEscape(y);
-                w = helpers.htmlEscape(w);
-                f = helpers.htmlEscape(f);
-                if (n.killCreditId == this.hr) {
-                    const _ = n.killerId == this.hr;
-                    const b =
+            const h = this.Rt.qe(n.targetId);
+            const d = this.Rt.qe(n.killCreditId);
+            const g = m ? d : this.Rt.qe(n.killerId);
+            let y = this.Rt.getPlayerName(
+                h.playerId,
+                this.hr,
+                true
+            );
+            let w = this.Rt.getPlayerName(
+                d.playerId,
+                this.hr,
+                true
+            );
+            let f = this.Rt.getPlayerName(
+                g.playerId,
+                this.hr,
+                true
+            );
+            y = helpers.htmlEscape(y);
+            w = helpers.htmlEscape(w);
+            f = helpers.htmlEscape(f);
+            if (n.killCreditId == this.hr) {
+                const _ = n.killerId == this.hr;
+                const b =
                         n.killerId == n.targetId ||
                         n.killCreditId == n.targetId;
-                    const x = this.er.getKillText(
-                        w,
-                        y,
-                        _,
-                        n.downed,
-                        n.killed,
-                        b,
-                        l,
-                        n.damageType,
-                        this.spectating
-                    );
-                    const S =
+                const x = this.er.getKillText(
+                    w,
+                    y,
+                    _,
+                    n.downed,
+                    n.killed,
+                    b,
+                    l,
+                    n.damageType,
+                    this.spectating
+                );
+                const S =
                         n.killed && !b
                             ? this.er.getKillCountText(
                                 n.killerKills
                             )
                             : "";
-                    this.er.displayKillMessage(x, S);
-                } else if (
-                    n.targetId == this.hr &&
+                this.er.displayKillMessage(x, S);
+            } else if (
+                n.targetId == this.hr &&
                     n.downed &&
                     !n.killed
-                ) {
-                    const v = this.er.getDownedText(
-                        w,
-                        y,
-                        l,
-                        n.damageType,
-                        this.spectating
-                    );
-                    this.er.displayKillMessage(v, "");
-                }
-                if (n.killCreditId == this.pr && n.killed) {
-                    this.zt.setLocalKills(n.killerKills);
-                }
-                var k = this.er.getKillFeedText(
+            ) {
+                const v = this.er.getDownedText(
+                    w,
                     y,
-                    g.teamId ? f : "",
                     l,
                     n.damageType,
-                    n.downed && !n.killed
+                    this.spectating
                 );
-                var z = this.er.getKillFeedColor(
-                    c,
-                    h.teamId,
-                    d.teamId,
-                    this.Et.factionMode
+                this.er.displayKillMessage(v, "");
+            }
+            if (n.killCreditId == this.pr && n.killed) {
+                this.zt.setLocalKills(n.killerKills);
+            }
+            const k = this.er.getKillFeedText(
+                y,
+                g.teamId ? f : "",
+                l,
+                n.damageType,
+                n.downed && !n.killed
+            );
+            const z = this.er.getKillFeedColor(
+                c,
+                h.teamId,
+                d.teamId,
+                this.Et.factionMode
+            );
+            this.er.addKillFeedMessage(k, z);
+            if (n.killed) {
+                this.Rt.addDeathEffect(
+                    n.targetId,
+                    n.killerId,
+                    l,
+                    this.ft,
+                    this.Ot
                 );
-                this.er.addKillFeedMessage(k, z);
-                if (n.killed) {
-                    this.Rt.addDeathEffect(
-                        n.targetId,
-                        n.killerId,
-                        l,
-                        this.ft,
-                        this.Ot
-                    );
-                }
-                if (n.type == GameConfig.DamageType.Player) {
-                    this.qt.createBulletHit(
-                        this.Rt,
-                        n.targetId,
-                        this.ft
-                    );
-                }
+            }
+            if (n.type == GameConfig.DamageType.Player) {
+                this.qt.createBulletHit(
+                    this.Rt,
+                    n.targetId,
+                    this.ft
+                );
+            }
+            break;
+        }
+        case net.Msg.RoleAnnouncement: {
+            const I = new net.RoleAnnouncementMsg();
+            I.deserialize(t);
+            const T = RoleDefs[I.role];
+            if (!T) {
                 break;
-            case net.Msg.RoleAnnouncement:
-                var I = new net.RoleAnnouncementMsg();
-                I.deserialize(t);
-                var T = RoleDefs[I.role];
-                if (!T) {
-                    break;
-                }
-                var M = this.Rt.qe(I.playerId);
-                var P = helpers.htmlEscape(
-                    this.Rt.getPlayerName(I.playerId, this.hr, true)
-                );
-                if (I.assigned) {
-                    if (T.sound?.assign) {
-                        if (
-                            I.role == "kill_leader" &&
+            }
+            const M = this.Rt.qe(I.playerId);
+            const P = helpers.htmlEscape(
+                this.Rt.getPlayerName(I.playerId, this.hr, true)
+            );
+            if (I.assigned) {
+                if (T.sound?.assign) {
+                    if (
+                        I.role == "kill_leader" &&
                             this.Et.getMapDef().gameMode
                                 .spookyKillSounds
-                        ) {
-                            this.ft.playGroup(
-                                "kill_leader_assigned",
-                                {
-                                    channel: "ui"
-                                }
-                            );
-                        } else if (
-                            I.role == "kill_leader" ||
+                    ) {
+                        this.ft.playGroup(
+                            "kill_leader_assigned",
+                            {
+                                channel: "ui"
+                            }
+                        );
+                    } else if (
+                        I.role == "kill_leader" ||
                             !this.Et.perkMode ||
                             this.pr == I.playerId
-                        ) {
-                            this.ft.playSound(T.sound.assign, {
-                                channel: "ui"
-                            });
-                        }
+                    ) {
+                        this.ft.playSound(T.sound.assign, {
+                            channel: "ui"
+                        });
                     }
-                    if (this.Et.perkMode && this.pr == I.playerId) {
-                        this.zt.setRoleMenuActive(false);
-                    }
-                    if (T.killFeed?.assign) {
-                        const C =
+                }
+                if (this.Et.perkMode && this.pr == I.playerId) {
+                    this.zt.setRoleMenuActive(false);
+                }
+                if (T.killFeed?.assign) {
+                    const C =
                             this.er.getRoleAssignedKillFeedText(
                                 I.role,
                                 M.teamId,
                                 P
                             );
-                        const A = this.er.getRoleKillFeedColor(
-                            I.role,
-                            M.teamId,
-                            this.Rt
-                        );
-                        this.er.addKillFeedMessage(C, A);
+                    const A = this.er.getRoleKillFeedColor(
+                        I.role,
+                        M.teamId,
+                        this.Rt
+                    );
+                    this.er.addKillFeedMessage(C, A);
+                }
+                if (T.announce && this.pr == I.playerId) {
+                    const O = this.er.getRoleAnnouncementText(
+                        I.role,
+                        M.teamId
+                    );
+                    this.zt.displayAnnouncement(
+                        O.toUpperCase()
+                    );
+                }
+            } else if (I.killed) {
+                if (T.killFeed?.dead) {
+                    let D = helpers.htmlEscape(
+                        this.Rt.getPlayerName(
+                            I.killerId,
+                            this.hr,
+                            true
+                        )
+                    );
+                    if (I.playerId == I.killerId) {
+                        D = "";
                     }
-                    if (T.announce && this.pr == I.playerId) {
-                        const O = this.er.getRoleAnnouncementText(
-                            I.role,
-                            M.teamId
-                        );
-                        this.zt.displayAnnouncement(
-                            O.toUpperCase()
-                        );
-                    }
-                } else if (I.killed) {
-                    if (T.killFeed?.dead) {
-                        let D = helpers.htmlEscape(
-                            this.Rt.getPlayerName(
-                                I.killerId,
-                                this.hr,
-                                true
-                            )
-                        );
-                        if (I.playerId == I.killerId) {
-                            D = "";
-                        }
-                        const E = this.er.getRoleKilledKillFeedText(
-                            I.role,
-                            M.teamId,
-                            D
-                        );
-                        const B = this.er.getRoleKillFeedColor(
-                            I.role,
-                            M.teamId,
-                            this.Rt
-                        );
-                        this.er.addKillFeedMessage(E, B);
-                    }
-                    if (T.sound?.dead) {
-                        if (
-                            this.Et.getMapDef().gameMode
-                                .spookyKillSounds
-                        ) {
-                            this.ft.playGroup("kill_leader_dead", {
-                                channel: "ui"
-                            });
-                        } else {
-                            this.ft.playSound(T.sound.dead, {
-                                channel: "ui"
-                            });
-                        }
+                    const E = this.er.getRoleKilledKillFeedText(
+                        I.role,
+                        M.teamId,
+                        D
+                    );
+                    const B = this.er.getRoleKillFeedColor(
+                        I.role,
+                        M.teamId,
+                        this.Rt
+                    );
+                    this.er.addKillFeedMessage(E, B);
+                }
+                if (T.sound?.dead) {
+                    if (
+                        this.Et.getMapDef().gameMode
+                            .spookyKillSounds
+                    ) {
+                        this.ft.playGroup("kill_leader_dead", {
+                            channel: "ui"
+                        });
+                    } else {
+                        this.ft.playSound(T.sound.dead, {
+                            channel: "ui"
+                        });
                     }
                 }
-                break;
-            case net.Msg.PlayerStats:
-                var R = new net.PlayerStatsMsg();
-                R.deserialize(t);
-                this.zt.setLocalStats(R.playerStats);
-                this.zt.showTeamAd(R.playerStats, this.er);
-                break;
-            case net.Msg.Stats:
-                var L = new net.StatsMsg();
-                L.deserialize(t);
-                helpers.J(L.data, this);
-                break;
-            case net.Msg.GameOver:
-                var q = new net.GameOverMsg();
-                q.deserialize(t);
-                this.gameOver = q.gameOver;
-                var F = this.Rt.qe(this.pr).teamId;
-                for (var j = 0; j < q.playerStats.length; j++) {
-                    const V = q.playerStats[j];
-                    if (V.playerId == this.pr) {
-                        this.zt.setLocalStats(V);
-                        break;
-                    }
+            }
+            break;
+        }
+        case net.Msg.PlayerStats: {
+            const R = new net.PlayerStatsMsg();
+            R.deserialize(t);
+            this.zt.setLocalStats(R.playerStats);
+            this.zt.showTeamAd(R.playerStats, this.er);
+            break;
+        }
+        case net.Msg.Stats: {
+            const L = new net.StatsMsg();
+            L.deserialize(t);
+            helpers.J(L.data, this);
+            break;
+        }
+        case net.Msg.GameOver: {
+            const q = new net.GameOverMsg();
+            q.deserialize(t);
+            this.gameOver = q.gameOver;
+            const F = this.Rt.qe(this.pr).teamId;
+            for (let j = 0; j < q.playerStats.length; j++) {
+                const V = q.playerStats[j];
+                if (V.playerId == this.pr) {
+                    this.zt.setLocalStats(V);
+                    break;
                 }
-                this.zt.showStats(
-                    q.playerStats,
-                    q.teamId,
-                    q.teamRank,
-                    q.winningTeamId,
-                    q.gameOver,
-                    F,
-                    this.teamMode,
-                    this.spectating,
-                    this.Rt,
-                    this.ft,
-                    this.Et,
-                    this.er
+            }
+            this.zt.showStats(
+                q.playerStats,
+                q.teamId,
+                q.teamRank,
+                q.winningTeamId,
+                q.gameOver,
+                F,
+                this.teamMode,
+                this.spectating,
+                this.Rt,
+                this.ft,
+                this.Et,
+                this.er
+            );
+            if (F == q.winningTeamId) {
+                this.victoryMusic = this.ft.playSound(
+                    "menu_music",
+                    {
+                        channel: "music",
+                        delay: 1300,
+                        forceStart: true
+                    }
                 );
-                if (F == q.winningTeamId) {
-                    this.victoryMusic = this.ft.playSound(
-                        "menu_music",
-                        {
-                            channel: "music",
-                            delay: 1300,
-                            forceStart: true
-                        }
-                    );
+            }
+            this.Mt.hideAll();
+            break;
+        }
+        case net.Msg.Pickup: {
+            const U = new net.PickupMsg();
+            U.deserialize(t);
+            if (U.type == net.PickupMsgType.Success && U.item) {
+                this.dr.playItemPickupSound(U.item, this.ft);
+                const W = GameObjectDefs[U.item];
+                if (W && W.type == "xp") {
+                    this.er.addRareLootMessage(U.item, true);
                 }
-                this.Mt.hideAll();
-                break;
-            case net.Msg.Pickup:
-                var U = new net.PickupMsg();
-                U.deserialize(t);
-                if (U.type == net.PickupMsgType.Success && U.item) {
-                    this.dr.playItemPickupSound(U.item, this.ft);
-                    const W = GameObjectDefs[U.item];
-                    if (W && W.type == "xp") {
-                        this.er.addRareLootMessage(U.item, true);
-                    }
-                } else {
-                    this.er.displayPickupMessage(U.type);
-                }
-                break;
-            case net.Msg.UpdatePass:
-                new net.UpdatePassMsg().deserialize(t);
-                this.updatePass = true;
-                this.updatePassDelay = 0;
-                break;
-            case net.Msg.AliveCounts:
-                var G = new net.AliveCountsMsg();
-                G.deserialize(t);
-                if (G.teamAliveCounts.length == 1) {
-                    this.zt.updatePlayersAlive(
-                        G.teamAliveCounts[0]
-                    );
-                } else if (G.teamAliveCounts.length >= 2) {
-                    this.zt.updatePlayersAliveRed(
-                        G.teamAliveCounts[0]
-                    );
-                    this.zt.updatePlayersAliveBlue(
-                        G.teamAliveCounts[1]
-                    );
-                }
-                break;
-            case net.Msg.Disconnect:
-                var X = new net.DisconnectMsg();
-                X.deserialize(t);
-                this.disconnectMsg = X.reason;
+            } else {
+                this.er.displayPickupMessage(U.type);
+            }
+            break;
+        }
+        case net.Msg.UpdatePass: {
+            new net.UpdatePassMsg().deserialize(t);
+            this.updatePass = true;
+            this.updatePassDelay = 0;
+            break;
+        }
+        case net.Msg.AliveCounts: {
+            const G = new net.AliveCountsMsg();
+            G.deserialize(t);
+            if (G.teamAliveCounts.length == 1) {
+                this.zt.updatePlayersAlive(
+                    G.teamAliveCounts[0]
+                );
+            } else if (G.teamAliveCounts.length >= 2) {
+                this.zt.updatePlayersAliveRed(
+                    G.teamAliveCounts[0]
+                );
+                this.zt.updatePlayersAliveBlue(
+                    G.teamAliveCounts[1]
+                );
+            }
+            break;
+        }
+        case net.Msg.Disconnect: {
+            const X = new net.DisconnectMsg();
+            X.deserialize(t);
+            this.disconnectMsg = X.reason;
+        }
         }
     }
+
     $(e, t, r) {
         const a = r || 128;
         const i = new net.MsgStream(new ArrayBuffer(a));
         i.serializeMsg(e, t);
         this.Ar(i);
     }
+
     Ar(e) {
         if (this.ws && this.ws.readyState == this.ws.OPEN) {
             try {

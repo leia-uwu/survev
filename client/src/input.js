@@ -449,9 +449,11 @@ class InputValue {
         this.type = t;
         this.code = r;
     }
+
     equals(e) {
         return this.type == e.type && this.code == e.code;
     }
+
     toString() {
         if (this.type == InputType.None) {
             return "";
@@ -514,38 +516,38 @@ o.prototype = {
     },
     isInputValuePressed: function(e) {
         switch (e.type) {
-            case InputType.Key:
-                return this.We(e.code);
-            case InputType.MouseButton:
-                return this.Ge(e.code);
-            case InputType.MouseWheel:
-                return this.Xe() == e.code;
-            default:
-                return false;
+        case InputType.Key:
+            return this.We(e.code);
+        case InputType.MouseButton:
+            return this.Ge(e.code);
+        case InputType.MouseWheel:
+            return this.Xe() == e.code;
+        default:
+            return false;
         }
     },
     isInputValueReleased: function(e) {
         switch (e.type) {
-            case InputType.Key:
-                return this.Ke(e.code);
-            case InputType.MouseButton:
-                return this.Ze(e.code);
-            case InputType.MouseWheel:
-                return this.Xe() == e.code;
-            default:
-                return false;
+        case InputType.Key:
+            return this.Ke(e.code);
+        case InputType.MouseButton:
+            return this.Ze(e.code);
+        case InputType.MouseWheel:
+            return this.Xe() == e.code;
+        default:
+            return false;
         }
     },
     isInputValueDown: function(e) {
         switch (e.type) {
-            case InputType.Key:
-                return this.Ye(e.code);
-            case InputType.MouseButton:
-                return this.Je(e.code);
-            case InputType.MouseWheel:
-                return this.Xe() == e.code;
-            default:
-                return false;
+        case InputType.Key:
+            return this.Ye(e.code);
+        case InputType.MouseButton:
+            return this.Je(e.code);
+        case InputType.MouseWheel:
+            return this.Xe() == e.code;
+        default:
+            return false;
         }
     },
     onKeyDown: function(e) {
@@ -620,12 +622,12 @@ o.prototype = {
                 a < e.changedTouches.length;
                 a++
             ) {
-                var o = e.changedTouches[a];
-                var s = o.identifier;
-                var n = o.clientX;
-                var l = o.clientY;
-                var c = null;
-                for (var m = 0; m < this.touches.length; m++) {
+                const o = e.changedTouches[a];
+                const s = o.identifier;
+                const n = o.clientX;
+                const l = o.clientY;
+                let c = null;
+                for (let m = 0; m < this.touches.length; m++) {
                     if (
                         this.touches[m].osId == s &&
                         !this.touches[m].isDead
@@ -682,10 +684,10 @@ o.prototype = {
 };
 export default {
     Qe: o,
-    InputType: InputType,
-    InputValue: InputValue,
-    Key: Key,
-    MouseButton: MouseButton,
-    MouseWheel: MouseWheel,
-    Touch: Touch
+    InputType,
+    InputValue,
+    Key,
+    MouseButton,
+    MouseWheel,
+    Touch
 };

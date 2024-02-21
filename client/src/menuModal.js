@@ -1,6 +1,5 @@
 import $ from "jquery";
 
-
 class MenuModal {
     constructor(t) {
         const r = this;
@@ -23,15 +22,19 @@ class MenuModal {
             }
         };
     }
+
     onShow(e) {
         this.onShowFn = e;
     }
+
     onHide(e) {
         this.onHideFn = e;
     }
+
     isVisible() {
         return this.visible;
     }
+
     show(e) {
         if (!this.visible) {
             this.visible = true;
@@ -46,6 +49,7 @@ class MenuModal {
             }
         }
     }
+
     hide() {
         if (this.visible) {
             this.visible = false;

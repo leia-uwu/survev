@@ -17,7 +17,7 @@ function Smoke() {
     this.sprite.anchor = new PIXI.Point(0.5, 0.5);
     this.sprite.visible = false;
 }
-function o() {
+function SmokeBarn() {
     this.e = new objectPool.Pool(a);
     this.particles = [];
     this.zIdx = 2147483647;
@@ -74,10 +74,10 @@ Smoke.prototype = {
         this.fade = true;
     }
 };
-o.prototype = {
+SmokeBarn.prototype = {
     allocParticle: function() {
-        var e = null;
-        for (var t = 0; t < this.particles.length; t++) {
+        let e = null;
+        for (let t = 0; t < this.particles.length; t++) {
             if (!this.particles[t].active) {
                 e = this.particles[t];
                 break;
@@ -137,5 +137,5 @@ o.prototype = {
     }
 };
 export default {
-    d: o
+    SmokeBarn
 };

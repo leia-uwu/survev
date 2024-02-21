@@ -14,7 +14,7 @@ const passUtil = {
         }
     },
     getPassLevelAndXp: function(e, t) {
-        var r = t;
+        let r = t;
         for (var a = 1; a < 99;) {
             const o = passUtil.getPassLevelXp(e, a);
             if (r < o) {
@@ -37,6 +37,6 @@ const passUtil = {
             Date.now()
         );
     }
-}
+};
 
 export default passUtil;

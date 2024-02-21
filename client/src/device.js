@@ -100,7 +100,6 @@ function u(e) {
     return t;
 }
 
-
 class Device {
     constructor() {
         this.os = "pc";
@@ -146,6 +145,7 @@ class Device {
         this.isLandscape = true;
         this.onResize();
     }
+
     onResize() {
         this.isLandscape =
             window.innerWidth > window.innerHeight ||

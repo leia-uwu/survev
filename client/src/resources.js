@@ -93,9 +93,11 @@ class ResourceManager {
         }
         console.log(atlases) */
     }
+
     isAtlasLoaded(e) {
         return this.atlases[e]?.loaded;
     }
+
     atlasTexturesLoaded(e) {
         if (!this.isAtlasLoaded(e)) {
             return false;
@@ -112,6 +114,7 @@ class ResourceManager {
         }
         return true;
     }
+
     loadAtlas(e) {
         if (!this.isAtlasLoaded(e)) {
             console.log("Load atlas", e);
@@ -121,8 +124,8 @@ class ResourceManager {
             };
             for (
                 let t = AtlasDefs[this.textureRes] || AtlasDefs.low,
-                r = t[e],
-                a = 0;
+                    r = t[e],
+                    a = 0;
                 a < r.length;
                 a++
             ) {
@@ -132,6 +135,7 @@ class ResourceManager {
             this.atlases[e].loaded = true;
         }
     }
+
     unloadAtlas(e) {
         if (this.isAtlasLoaded(e)) {
             console.log("Unload atlas", e);
@@ -146,6 +150,7 @@ class ResourceManager {
             t.spritesheets = [];
         }
     }
+
     loadMapAssets(e) {
         const t = this;
         console.log("Load map", e);
@@ -155,9 +160,9 @@ class ResourceManager {
                 `Failed loading mapDef ${this.mapName}`
             );
         }
-        var a = r.assets.atlases;
+        const a = r.assets.atlases;
         for (
-            var i = Object.keys(this.atlases), o = 0;
+            let i = Object.keys(this.atlases), o = 0;
             o < i.length;
             o++
         ) {
@@ -200,12 +205,13 @@ class ResourceManager {
             }
         }, 0);
     }
+
     update(e) {
         if (!this.loaded) {
             this.loadTicker += e;
-            var t = !this.preloadMap;
+            let t = !this.preloadMap;
             for (
-                var r = Object.keys(this.atlases), a = 0;
+                let r = Object.keys(this.atlases), a = 0;
                 a < r.length;
                 a++
             ) {
@@ -229,5 +235,5 @@ class ResourceManager {
 }
 
 export default {
-    ResourceManager: ResourceManager
+    ResourceManager
 };

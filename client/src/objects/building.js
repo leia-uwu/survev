@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js"
-    ;
+;
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
@@ -134,12 +134,12 @@ Building.prototype = {
             for (let u = 0; u < p.floor.surfaces.length; u++) {
                 for (
                     var g = p.floor.surfaces[u],
-                    y = {
-                        type: g.type,
-                        data: g.data || {},
-                        colliders: []
-                    },
-                    w = 0;
+                        y = {
+                            type: g.type,
+                            data: g.data || {},
+                            colliders: []
+                        },
+                        w = 0;
                     w < g.collision.length;
                     w++
                 ) {
@@ -224,8 +224,8 @@ Building.prototype = {
                 let O = I.scale;
                 let D = null;
                 if (I.parentToCeiling) {
-                    var E = -1;
-                    for (var B = 0; B < this.imgs.length; B++) {
+                    let E = -1;
+                    for (let B = 0; B < this.imgs.length; B++) {
                         if (this.imgs[B].isCeiling) {
                             E = B;
                         }
@@ -277,9 +277,9 @@ Building.prototype = {
                 this.puzzleErrSeqModified &&
                 ((this.puzzleErrSeqModified = false), !this.isNew)
             ) {
-                var y = this;
-                var w = v2.length(v2.sub(l.pos, y.pos));
-                for (var f = t.Ve.p(), _ = 0; _ < f.length; _++) {
+                let y = this;
+                let w = v2.length(v2.sub(l.pos, y.pos));
+                for (let f = t.Ve.p(), _ = 0; _ < f.length; _++) {
                     const b = f[_];
                     if (
                         b.active &&
@@ -341,10 +341,10 @@ Building.prototype = {
             }
         }
         this.ceiling.visionTicker -= e;
-        var k = this.ceiling.vision;
+        const k = this.ceiling.vision;
 
-        var canSeeInside = false;
-        for (var I = 0; I < this.ceiling.zoomRegions.length; I++) {
+        let canSeeInside = false;
+        for (let I = 0; I < this.ceiling.zoomRegions.length; I++) {
             const T = this.ceiling.zoomRegions[I].zoomIn;
             if (
                 T &&
@@ -467,8 +467,8 @@ Building.prototype = {
         return false;
     },
     getDistanceToBuilding: function(e, t) {
-        var r = t;
-        for (var a = 0; a < this.ceiling.zoomRegions.length; a++) {
+        let r = t;
+        for (let a = 0; a < this.ceiling.zoomRegions.length; a++) {
             const i = this.ceiling.zoomRegions[a].zoomIn;
             if (i) {
                 const o = collider.intersectCircle(i, e, t);
@@ -480,9 +480,9 @@ Building.prototype = {
         return r;
     },
     destroyCeilingFx: function(e, t) {
-        var r = MapObjectDefs[this.type].ceiling.destroy;
+        const r = MapObjectDefs[this.type].ceiling.destroy;
         for (
-            var a = this.surfaces[0], i = 0;
+            let a = this.surfaces[0], i = 0;
             i < a.colliders.length;
             i++
         ) {

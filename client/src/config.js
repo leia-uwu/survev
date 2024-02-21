@@ -34,6 +34,7 @@ export default class ConfigManager {
         this.config = {};
         this.onModifiedListeners = [];
     }
+
     load(e) {
         const t = this;
         const r = function(r) {
@@ -81,37 +82,39 @@ export default class ConfigManager {
             } catch (e) { }
         }
     }
-    set(e, t) {
-        if (e) {
-            for (
-                var r = e.split("."), a = this.config;
-                r.length > 1;
 
-            ) {
-                a = a[r.shift()];
-            }
-            a[r.shift()] = t;
-            this.store();
-            this.onModified(e);
+    set(key, value) {
+        if (!key) {
+            return;
         }
-    }
-    get(e) {
-        if (e) {
-            for (
-                var t = e.split("."),
-                r = this.config,
-                a = 0;
-                a < t.length;
-                a++
-            ) {
-                r = r[t[a]];
-            }
-            return r;
+        const path = key.split(".");
+        let elem = this.config;
+        while (path.length > 1) {
+            elem = elem[path.shift()];
         }
+        elem[path.shift()] = value;
+
+        this.store();
+        this.onModified(key);
     }
+
+    get(key) {
+        if (!key) {
+            return undefined;
+        }
+
+        const path = key.split(".");
+        let elem = this.config;
+        for (let i = 0; i < path.length; i++) {
+            elem = elem[path[i]];
+        }
+        return elem;
+    }
+
     addModifiedListener(e) {
         this.onModifiedListeners.push(e);
     }
+
     onModified(e) {
         for (
             let t = 0;

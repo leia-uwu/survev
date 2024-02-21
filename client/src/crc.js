@@ -11,4 +11,4 @@ function crc16(buf) {
 }
 export default {
     crc16
-}
+};

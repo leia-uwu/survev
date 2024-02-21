@@ -41,7 +41,7 @@ function i() {
     this.container.addChild(this.nameText);
     this.container.visible = this.sprite;
 }
-function o() {
+function DeadBodyBarn() {
     this.ot = new ObjectPool.Pool(i);
 }
 
@@ -62,7 +62,7 @@ i.prototype = {
         }
     }
 };
-o.prototype = {
+DeadBodyBarn.prototype = {
     m: function(e, t, r, a, i, o) {
         for (let s = this.ot.p(), l = 0; l < s.length; l++) {
             const c = s[l];
@@ -102,5 +102,5 @@ o.prototype = {
     }
 };
 export default {
-    st: o
+    DeadBodyBarn
 };

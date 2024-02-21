@@ -115,6 +115,7 @@ class ProfileUi {
         this.initUi();
         this.render();
     }
+
     initUi() {
         const e = this;
         const t = function() {
@@ -393,6 +394,7 @@ class ProfileUi {
             return false;
         });
     }
+
     onError(e, t) {
         const r = {
             server_error:
@@ -416,6 +418,7 @@ class ProfileUi {
             this.errorModal.show();
         }
     }
+
     onLogin() {
         this.createAccountModal.hide();
         this.loginOptionsModalMobile.hide();
@@ -424,13 +427,15 @@ class ProfileUi {
             this.setNameModal.show(true);
         }
     }
+
     onLoadoutUpdated(e) {
         this.updateUserIcon();
     }
+
     onItemsUpdated(e) {
-        var t = 0;
-        var r = 0;
-        for (var a = 0; a < e.length; a++) {
+        let t = 0;
+        let r = 0;
+        for (let a = 0; a < e.length; a++) {
             const i = e[a];
             if (i.status < loadout.ItemStatus.Confirmed) {
                 t++;
@@ -450,6 +455,7 @@ class ProfileUi {
             display: o ? "block" : "none"
         });
     }
+
     waitOnLogin(e) {
         const t = this;
         if (
@@ -471,6 +477,7 @@ class ProfileUi {
             e();
         }
     }
+
     showLoginMenu(e) {
         e = Object.assign(
             {
@@ -492,6 +499,7 @@ class ProfileUi {
         );
         t.show();
     }
+
     updateUserIcon() {
         const e =
             helpers.getSvgFromGameType(
@@ -502,6 +510,7 @@ class ProfileUi {
             `url(${e})`
         );
     }
+
     render() {
         const e = this.account.requestsInFlight > 0;
         $(".account-loading").css("opacity", e ? 1 : 0);

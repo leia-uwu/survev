@@ -1,8 +1,5 @@
-import $ from "jquery"
+import $ from "jquery";
 import { GameConfig } from "../../shared/gameConfig";
-
-const c = GameConfig.Input;
-var m = GameConfig.EmoteSlot;
 import * as PIXI from "pixi.js";
 import { coldet } from "../../shared/utils/coldet";
 import { v2 } from "../../shared/utils/v2";
@@ -13,7 +10,8 @@ import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 
-
+const c = GameConfig.Input;
+const m = GameConfig.EmoteSlot;
 
 function a(e) {
     if (e.displayCloseIcon) {
@@ -42,7 +40,7 @@ function o(e, t, r) {
         return t <= e || e <= r;
     }
 }
-function s(e, t, r, a, o) {
+function EmoteBarn(e, t, r, a, o) {
     const s = this;
     this.audioManager = e;
     this.uiManager = t;
@@ -73,7 +71,7 @@ function s(e, t, r, a, o) {
     this.emoteScreenPos = v2.create(0, 0);
     this.triggerPing = function() {
         if (s.dr) {
-            let e = undefined;
+            let e;
             if (s.emoteSelector.ping && !s.emoteWheelsGreyed) {
                 const t = PingDefs[s.emoteSelector.ping];
                 if (t?.pingMap) {
@@ -107,7 +105,7 @@ function s(e, t, r, a, o) {
     };
     this.triggerEmote = function() {
         if (s.dr) {
-            let e = undefined;
+            let e;
             if (s.emoteSelector.emote && !s.emoteWheelsGreyed) {
                 e = s.dr.pos;
                 s.sendEmote({
@@ -259,11 +257,6 @@ function s(e, t, r, a, o) {
     for (const h in c) {
         if (c.hasOwnProperty(h)) {
             const g = c[h];
-            if (g.ping) {
-                PingDefs[g.ping];
-            } else {
-                EmotesDefs[g.emote];
-            }
             const w = i(g.vA);
             const f = i(g.vC);
             this.teamPingSelectors.push({
@@ -394,8 +387,8 @@ function s(e, t, r, a, o) {
     this.socialUnlocked = false;
 }
 
-var x = 4;
-var S = 5;
+const x = 4;
+const S = 5;
 const v = function(e) {
     return e
         .map((e) => {
@@ -406,7 +399,7 @@ const v = function(e) {
 v([109, 101, 110, 117]);
 v([105, 110, 105, 116]);
 v([99, 104, 101, 97, 116]);
-s.prototype = {
+EmoteBarn.prototype = {
     n: function() {
         if (device.touch) {
             $(document).off("touchstart", this.onTouchStart);
@@ -540,8 +533,8 @@ s.prototype = {
     addEmote: function(e) {
         const t = EmotesDefs[e.type];
         if (t) {
-            var r = null;
-            for (var a = 0; a < this.emotes.length; a++) {
+            let r = null;
+            for (let a = 0; a < this.emotes.length; a++) {
                 if (this.emotes[a].alive || r) {
                     if (
                         this.emotes[a].alive &&
@@ -558,7 +551,7 @@ s.prototype = {
                 r.alive = false;
                 r.pos = v2.create(0, 0);
                 r.container = new PIXI.Container();
-                r.circleOuter = new PIXI.Sprite.from(
+                r.circleOuter = PIXI.Sprite.from(
                     "emote-circle-outer.img"
                 );
                 r.circleOuter.anchor.set(0.5, 0.5);
@@ -706,35 +699,35 @@ s.prototype = {
             !z &&
             ((this.wheelKeyTriggered =
                 this.aa || this.emoteMouseTriggered),
-                (this.emoteSoftTicker -= e),
-                this.emoteCounter >= GameConfig.player.emoteThreshold &&
+            (this.emoteSoftTicker -= e),
+            this.emoteCounter >= GameConfig.player.emoteThreshold &&
                     this.emoteHardTicker > 0
-                    ? ((this.emoteHardTicker -= e),
-                        this.emoteHardTicker < 0 &&
+                ? ((this.emoteHardTicker -= e),
+                this.emoteHardTicker < 0 &&
                         (this.emoteCounter = 0))
-                    : this.emoteSoftTicker < 0 &&
+                : this.emoteSoftTicker < 0 &&
                     this.emoteCounter > 0 &&
                     (this.emoteCounter--,
-                        (this.emoteSoftTicker =
+                    (this.emoteSoftTicker =
                             GameConfig.player.emoteSoftCooldown * 1.5)),
-                (!this.pingMouseTriggered &&
+            (!this.pingMouseTriggered &&
                     !this.emoteMouseTriggered) ||
                 this.wheelDisplayed ||
                 ((this.parentDisplayed = this.pingMouseTriggered
                     ? this.teamPingWheel
                     : this.emoteWheel),
-                    this.parentDisplayed.css({
-                        display: "block",
-                        left: this.emoteScreenPos.x,
-                        top: this.emoteScreenPos.y
-                    }),
-                    this.displayWheel(this.parentDisplayed, true),
-                    (this.wheelDisplayed = true),
-                    (this.displayedSelectors = this.pingMouseTriggered
-                        ? this.teamPingSelectors
-                        : this.emoteWheelSelectors),
-                    (this.worldPos = v.j(this.emoteScreenPos))),
-                this.wheelDisplayed)
+                this.parentDisplayed.css({
+                    display: "block",
+                    left: this.emoteScreenPos.x,
+                    top: this.emoteScreenPos.y
+                }),
+                this.displayWheel(this.parentDisplayed, true),
+                (this.wheelDisplayed = true),
+                (this.displayedSelectors = this.pingMouseTriggered
+                    ? this.teamPingSelectors
+                    : this.emoteWheelSelectors),
+                (this.worldPos = v.j(this.emoteScreenPos))),
+            this.wheelDisplayed)
         ) {
             this.emoteTimeoutTicker += e;
             if (this.emoteTimeoutTicker > 10) {
@@ -875,7 +868,6 @@ s.prototype = {
                 }
                 if (W) {
                     if (U.isNew) {
-                        EmotesDefs[U.type];
                         this.audioManager.playSound(U.sound, {
                             channel: U.channel,
                             soundPos: G,
@@ -901,16 +893,16 @@ s.prototype = {
         }
         for (
             let J = v2.create(
-                (v.screenWidth * 0.5) / v.z(),
-                (v.screenHeight * 0.5) / v.z()
-            ),
-            Q = {
-                min: v2.sub(v.pos, J),
-                max: v2.add(v.pos, J)
-            },
-            $ = S.qe(r.__id).groupId,
-            ee = S.getGroupInfo($),
-            te = (ee.playerIds.length, 0);
+                    (v.screenWidth * 0.5) / v.z(),
+                    (v.screenHeight * 0.5) / v.z()
+                ),
+                Q = {
+                    min: v2.sub(v.pos, J),
+                    max: v2.add(v.pos, J)
+                },
+                $ = S.qe(r.__id).groupId,
+                ee = S.getGroupInfo($),
+                te = (ee.playerIds.length, 0);
             te < this.pingIndicators.length;
             te++
         ) {
@@ -1039,7 +1031,6 @@ s.prototype = {
         for (const n in this.emoteWheelData) {
             if (this.emoteWheelData.hasOwnProperty(n)) {
                 const l = this.emoteWheelData[n];
-                EmotesDefs[l.emote];
                 const c = i(l.vA);
                 const p = i(l.vC);
                 this.emoteWheelSelectors.push(
@@ -1088,5 +1079,5 @@ s.prototype = {
     }
 };
 export default {
-    ir: s
+    EmoteBarn
 };

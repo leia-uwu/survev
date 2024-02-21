@@ -112,9 +112,9 @@ const loadout = {
         return !deepEqual(e, t);
     },
     getUserAvailableItems: function(e) {
-        var t = [];
+        const t = [];
         for (
-            var r = GameObjectDefs.unlock_default, a = 0;
+            let r = GameObjectDefs.unlock_default, a = 0;
             a < r.unlocks.length;
             a++
         ) {

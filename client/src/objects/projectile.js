@@ -114,16 +114,16 @@ i.prototype = {
                 }
                 f.rotVel *= 1 / (1 + e * b);
                 f.rot += f.rotVel * e;
-                var x = {
+                const x = {
                     obj: null,
                     pen: 0
                 };
-                var S = {
+                const S = {
                     obj: null,
                     pen: 0
                 };
-                var v = collider.createCircle(f.pos, f.rad);
-                for (var k = i.Ve.p(), z = 0; z < k.length; z++) {
+                const v = collider.createCircle(f.pos, f.rad);
+                for (let k = i.Ve.p(), z = 0; z < k.length; z++) {
                     const I = k[z];
                     if (
                         I.active &&

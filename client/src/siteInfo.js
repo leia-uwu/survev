@@ -5,7 +5,6 @@ import { MapDefs } from "../../shared/defs/mapDefs";
 
 // const privacy = r("privacy.js");
 
-
 function SiteInfo(e, t) {
     this.config = e;
     this.localization = t;
@@ -25,14 +24,14 @@ SiteInfo.prototype = {
         });
     },
     getGameModeStyles: function() {
-        var e = {
+        const e = {
             1: "solo",
             2: "duo",
             4: "squad"
         };
-        var t = [];
+        const t = [];
         for (
-            var r = this.info.modes || [], a = 0;
+            let r = this.info.modes || [], a = 0;
             a < r.length;
             a++
         ) {

@@ -9,7 +9,7 @@ import { v2 } from "../../shared/utils/v2";
 import device from "./device";
 import helpers from "./helpers";
 
-var Input = GameConfig.Input;
+const Input = GameConfig.Input;
 const Action = GameConfig.Action;
 const DamageType = GameConfig.DamageType;
 const PickupMsgType = net.PickupMsgType;
@@ -56,15 +56,15 @@ function n(e, t, r) {
 }
 function l(e, t, r) {
     if (t instanceof Array) {
-        var a = [];
-        for (var i = 0; i < t.length; i++) {
+        const a = [];
+        for (let i = 0; i < t.length; i++) {
             a[i] = l(e[i], t[i], r);
         }
         return a;
     }
     if (t instanceof Object) {
-        var o = {};
-        for (var s = Object.keys(t), n = 0; n < s.length; n++) {
+        const o = {};
+        for (let s = Object.keys(t), n = 0; n < s.length; n++) {
             const c = s[n];
             o[c] = l(e[c], t[c], r);
         }
@@ -73,8 +73,10 @@ function l(e, t, r) {
     return e != t || r;
 }
 function c() {
-    for (var e = Object.keys(GameObjectDefs), t = [], r = 0; r < e.length; r++) {
-        const a = e[r];
+    const e = Object.keys(GameObjectDefs);
+    const t = [];
+    for (let i = 0; i < e.length; i++) {
+        const a = e[i];
         if (GameObjectDefs[a].type == "scope") {
             t.push(a);
         }
@@ -203,7 +205,7 @@ function h() {
     this.boost = 0;
     this.downed = false;
 }
-function d(e, t) {
+function Ui2(e, t) {
     const r = this;
     this.localization = e;
     this.inputBinds = t;
@@ -350,7 +352,7 @@ function d(e, t) {
         t.addEventListener(e, a);
     };
     this.itemActions = [];
-    var H = function(e, t, a, i) {
+    const H = function(e, t, a, i) {
         r.itemActions.push({
             action: e,
             type: t,
@@ -360,7 +362,7 @@ function d(e, t) {
             actionTime: 0
         });
     };
-    for (var V = 0; V < this.dom.weapons.length; V++) {
+    for (let V = 0; V < this.dom.weapons.length; V++) {
         H("use", "weapon", V, this.dom.weapons[V].div);
         H("drop", "weapon", V, this.dom.weapons[V].div);
     }
@@ -475,10 +477,10 @@ function loadStaticDomImages() {
 }
 let g;
 
-var C = 6;
-var A = 750;
-var O = 3;
-var D = {
+const C = 6;
+const A = 750;
+const O = 3;
+const D = {
     None: 0,
     Cancel: 1,
     Loot: 2,
@@ -490,8 +492,8 @@ a(g, GameConfig.WeaponSlot.Primary, Input.EquipPrimary);
 a(g, GameConfig.WeaponSlot.Secondary, Input.EquipSecondary);
 a(g, GameConfig.WeaponSlot.Melee, Input.EquipMelee);
 a(g, GameConfig.WeaponSlot.Throwable, Input.EquipThrowable);
-var E = g;
-d.prototype = {
+const E = g;
+Ui2.prototype = {
     n: function() {
         for (let e = 0; e < this.eventListeners.length; e++) {
             const t = this.eventListeners[e];
@@ -584,9 +586,9 @@ d.prototype = {
         let R = null;
         let L = true;
         if (t.canInteract(o)) {
-            var q = null;
-            var F = 0;
-            for (var j = o.Ve.p(), N = 0; N < j.length; N++) {
+            let q = null;
+            let F = 0;
+            for (let j = o.Ve.p(), N = 0; N < j.length; N++) {
                 const H = j[N];
                 if (
                     H.active &&
@@ -648,8 +650,8 @@ d.prototype = {
             if (t.action.type == Action.None && (!t.Le.ue || Q)) {
                 for (
                     let $ = a.qe(t.__id).teamId,
-                    ee = a.$e.p(),
-                    te = 0;
+                        ee = a.$e.p(),
+                        te = 0;
                     te < ee.length;
                     te++
                 ) {
@@ -935,37 +937,37 @@ d.prototype = {
         if (e.health || e.downed) {
             for (
                 var u = [
-                    {
-                        health: 100,
-                        color: [179, 179, 179]
-                    },
-                    {
-                        health: 100,
-                        color: [255, 255, 255]
-                    },
-                    {
-                        health: 75,
-                        color: [255, 255, 255]
-                    },
-                    {
-                        health: 75,
-                        color: [255, 158, 158]
-                    },
-                    {
-                        health: 25,
-                        color: [255, 82, 82]
-                    },
-                    {
-                        health: 25,
-                        color: [255, 0, 0]
-                    },
-                    {
-                        health: 0,
-                        color: [255, 0, 0]
-                    }
-                ],
-                g = 0,
-                y = Math.ceil(t.health);
+                        {
+                            health: 100,
+                            color: [179, 179, 179]
+                        },
+                        {
+                            health: 100,
+                            color: [255, 255, 255]
+                        },
+                        {
+                            health: 75,
+                            color: [255, 255, 255]
+                        },
+                        {
+                            health: 75,
+                            color: [255, 158, 158]
+                        },
+                        {
+                            health: 25,
+                            color: [255, 82, 82]
+                        },
+                        {
+                            health: 25,
+                            color: [255, 0, 0]
+                        },
+                        {
+                            health: 0,
+                            color: [255, 0, 0]
+                        }
+                    ],
+                    g = 0,
+                    y = Math.ceil(t.health);
                 u[g].health > y && g < u.length - 1;
 
             ) {
@@ -1295,79 +1297,79 @@ d.prototype = {
     },
     getKillFeedText: function(e, t, r, a, i) {
         switch (a) {
-            case DamageType.Player:
-                return `${t} ${this.localization.translate(
-                    i ? "game-knocked-out" : "game-killed"
-                )} ${e} ${this.localization.translate(
-                    "game-with"
-                )} ${this.localization.translate(`game-${r}`)}`;
-            case DamageType.Bleeding:
-                var o = this.localization.translate(
-                    t
-                        ? "game-finally-killed"
-                        : "game-finally-bled-out"
-                );
-                if (t) {
-                    return `${t} ${o} ${e}`;
-                } else {
-                    return `${e} ${o}`;
-                }
-            case DamageType.Gas:
-                var s = undefined;
-                var n = undefined;
-                if (i) {
-                    s =
+        case DamageType.Player:
+            return `${t} ${this.localization.translate(
+                i ? "game-knocked-out" : "game-killed"
+            )} ${e} ${this.localization.translate(
+                "game-with"
+            )} ${this.localization.translate(`game-${r}`)}`;
+        case DamageType.Bleeding:
+            var o = this.localization.translate(
+                t
+                    ? "game-finally-killed"
+                    : "game-finally-bled-out"
+            );
+            if (t) {
+                return `${t} ${o} ${e}`;
+            } else {
+                return `${e} ${o}`;
+            }
+        case DamageType.Gas:
+            var s = undefined;
+            var n = undefined;
+            if (i) {
+                s =
                         this.localization.translate(
                             "game-the-red-zone"
                         );
-                    n =
+                n =
                         this.localization.translate(
                             "game-knocked-out"
                         );
-                } else {
-                    n = this.localization.translate(
-                        t
-                            ? "game-finally-killed"
-                            : "game-died-outside"
-                    );
-                }
-                if (s) {
-                    return `${s} ${n} ${e}`;
-                } else {
-                    return `${e} ${n}`;
-                }
-            case DamageType.Airdrop:
-                var l = MapObjectDefs[r];
-                var c =
+            } else {
+                n = this.localization.translate(
+                    t
+                        ? "game-finally-killed"
+                        : "game-died-outside"
+                );
+            }
+            if (s) {
+                return `${s} ${n} ${e}`;
+            } else {
+                return `${e} ${n}`;
+            }
+        case DamageType.Airdrop:
+            var l = MapObjectDefs[r];
+            var c =
                     this.localization.translate(
                         "game-the-air-drop"
                     );
-                var m = undefined;
-                m = i
-                    ? this.localization.translate(
-                        "game-knocked-out"
-                    )
-                    : l && !l.airdropCrate
-                        ? this.localization.translate("game-killed")
-                        : this.localization.translate("game-crushed");
-                return `${c} ${m} ${e}`;
-            case DamageType.Airstrike:
-                var p = this.localization.translate(
-                    i ? "game-knocked-out" : "game-killed"
-                );
-                if (t) {
-                    return `${t} ${p} ${e} ${this.localization.translate(
-                        "game-with"
-                    )} ${this.localization.translate(
-                        "game-an-air-strike"
-                    )}`;
-                } else {
-                    return `${this.localization.translate(
-                        "game-the-air-strike"
-                    )} ${p} ${e}`;
-                }
-            default:
-                return "";
+            var m = undefined;
+            m = i
+                ? this.localization.translate(
+                    "game-knocked-out"
+                )
+                : l && !l.airdropCrate
+                    ? this.localization.translate("game-killed")
+                    : this.localization.translate("game-crushed");
+            return `${c} ${m} ${e}`;
+        case DamageType.Airstrike:
+            var p = this.localization.translate(
+                i ? "game-knocked-out" : "game-killed"
+            );
+            if (t) {
+                return `${t} ${p} ${e} ${this.localization.translate(
+                    "game-with"
+                )} ${this.localization.translate(
+                    "game-an-air-strike"
+                )}`;
+            } else {
+                return `${this.localization.translate(
+                    "game-the-air-strike"
+                )} ${p} ${e}`;
+            }
+        default:
+            return "";
         }
     },
     getKillFeedColor: function(e, t, r, a) {
@@ -1501,61 +1503,61 @@ d.prototype = {
     },
     getInteractionText: function(e, t, r) {
         switch (e) {
-            case D.None:
-                return "";
-            case D.Cancel:
-                return this.localization.translate("game-cancel");
-            case D.Revive:
-                if (t && r && t == r && r.hasPerk("self_revive")) {
-                    return this.localization.translate(
-                        "game-revive-self"
-                    );
-                } else {
-                    return this.localization.translate(
-                        "game-revive-teammate"
-                    );
-                }
-            case D.Object:
-                var a = t.getInteraction();
-                return `${this.localization.translate(
-                    a.action
-                )} ${this.localization.translate(a.object)}`;
-            case D.Loot:
-                var i =
+        case D.None:
+            return "";
+        case D.Cancel:
+            return this.localization.translate("game-cancel");
+        case D.Revive:
+            if (t && r && t == r && r.hasPerk("self_revive")) {
+                return this.localization.translate(
+                    "game-revive-self"
+                );
+            } else {
+                return this.localization.translate(
+                    "game-revive-teammate"
+                );
+            }
+        case D.Object:
+            var a = t.getInteraction();
+            return `${this.localization.translate(
+                a.action
+            )} ${this.localization.translate(a.object)}`;
+        case D.Loot:
+            var i =
                     this.localization.translate(`game-${t.type}`) ||
                     t.type;
-                if (t.count > 1) {
-                    i += ` (${t.count})`;
-                }
-                return i;
-            default:
-                return "";
+            if (t.count > 1) {
+                i += ` (${t.count})`;
+            }
+            return i;
+        default:
+            return "";
         }
     },
     getInteractionKey: function(e) {
         let t = null;
         switch (e) {
-            case D.Cancel:
-                t = this.inputBinds.getBind(Input.Cancel);
-                break;
-            case D.Loot:
-                t =
+        case D.Cancel:
+            t = this.inputBinds.getBind(Input.Cancel);
+            break;
+        case D.Loot:
+            t =
                     this.inputBinds.getBind(Input.Loot) ||
                     this.inputBinds.getBind(Input.Interact);
-                break;
-            case D.Object:
-                t =
+            break;
+        case D.Object:
+            t =
                     this.inputBinds.getBind(Input.Use) ||
                     this.inputBinds.getBind(Input.Interact);
-                break;
-            case D.Revive:
-                t =
+            break;
+        case D.Revive:
+            t =
                     this.inputBinds.getBind(Input.Revive) ||
                     this.inputBinds.getBind(Input.Interact);
-                break;
-            case D.None:
-            default:
-                t = this.inputBinds.getBind(Input.Use);
+            break;
+        case D.None:
+        default:
+            t = this.inputBinds.getBind(Input.Use);
         }
         if (t) {
             return t.toString();
@@ -1565,6 +1567,6 @@ d.prototype = {
     }
 };
 export default {
-    rr: d,
-    loadStaticDomImages: loadStaticDomImages
+    Ui2,
+    loadStaticDomImages
 };

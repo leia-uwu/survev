@@ -12,7 +12,7 @@ function a() {
 function i(e) {
     this.active = false;
 }
-function o() {
+function ExplosionBarn() {
     this.explosions = [];
     this.physicsParticles = [];
 }
@@ -325,8 +325,8 @@ a.prototype = {
         const a = v2.copy(this.pos);
         this.pos = v2.add(this.pos, v2.mul(this.vel, e));
         this.vel = v2.mul(this.vel, 1 / (1 + e * 5));
-        var i = [];
-        for (var o = t.Ve.p(), n = 0; n < o.length; n++) {
+        const i = [];
+        for (let o = t.Ve.p(), n = 0; n < o.length; n++) {
             const m = o[n];
             if (
                 m.active &&
@@ -346,8 +346,8 @@ a.prototype = {
                 i.push(collider.createCircle(d.pos, d.rad, 0));
             }
         }
-        var u = [];
-        for (var g = 0; g < i.length; g++) {
+        const u = [];
+        for (let g = 0; g < i.length; g++) {
             const y = collider.intersectSegment(i[g], a, this.pos);
             if (y) {
                 const w = v2.length(v2.sub(y.point, a));
@@ -421,7 +421,7 @@ i.prototype = {
                         0,
                         null
                     ),
-                    d.scatter)
+                d.scatter)
             ) {
                 for (let y = 0; y < d.scatter.count; y++) {
                     const w = r.addParticle(
@@ -506,10 +506,10 @@ i.prototype = {
         }
     }
 };
-o.prototype = {
+ExplosionBarn.prototype = {
     addExplosion: function(e, t, r) {
-        var a = null;
-        for (var o = 0; o < this.explosions.length; o++) {
+        let a = null;
+        for (let o = 0; o < this.explosions.length; o++) {
             if (!this.explosions[o].active) {
                 a = this.explosions[o];
                 break;
@@ -522,8 +522,8 @@ o.prototype = {
         a.o(e, t, r);
     },
     addPhysicsParticle: function() {
-        var e = null;
-        for (var t = 0; t < this.physicsParticles.length; t++) {
+        let e = null;
+        for (let t = 0; t < this.physicsParticles.length; t++) {
             const r = this.physicsParticles[t];
             if (!r.active) {
                 e = r;
@@ -555,5 +555,5 @@ o.prototype = {
     }
 };
 export default {
-    et: o
+    ExplosionBarn
 };

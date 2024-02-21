@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-expressions, no-sequences, prefer-const, no-return-assign, @typescript-eslint/no-dynamic-delete, no-inner-declarations, @typescript-eslint/no-unused-vars */
 
 /*!
  * ==========================================================
@@ -7,604 +8,590 @@
  * License: MIT
  * ----------------------------------------------------------
  */
-(function(e, t, r) {
-    function a(e) {
-        return e !== undefined;
+
+(function(win, doc, NS) {
+    const instance = "__instance__";
+    const first = "firstChild";
+    const delay = setTimeout;
+
+    function is_set(x) {
+        return typeof x !== "undefined";
     }
-    function i(e) {
-        return typeof e === "string";
+
+    function is_string(x) {
+        return typeof x === "string";
     }
-    function o(e) {
-        return typeof e === "object";
+
+    function is_object(x) {
+        return typeof x === "object";
     }
-    function s(e) {
-        return Object.keys(e).length;
+
+    function object_length(x) {
+        return Object.keys(x).length;
     }
-    function n(e, t, r) {
-        if (e < t) {
-            return t;
-        } else if (e > r) {
-            return r;
-        } else {
-            return e;
-        }
+
+    function edge(a, b, c) {
+        if (a < b) return b;
+        if (a > c) return c;
+        return a;
     }
-    function l(e, t) {
-        return parseInt(e, t || 10);
+
+    function num(i, j) {
+        return parseInt(i, j || 10);
     }
-    function c(e) {
-        return Math.round(e);
+
+    function round(i) {
+        return Math.round(i);
     }
-    function m(e) {
-        let t;
-        let r;
-        let a;
-        let i;
-        let o;
-        let s;
-        let n;
-        let l;
-        const m = +e[0];
-        const p = +e[1];
-        const h = +e[2];
-        i = Math.floor(m * 6);
-        o = m * 6 - i;
-        s = h * (1 - p);
-        n = h * (1 - o * p);
-        l = h * (1 - (1 - o) * p);
+
+    // [h, s, v] ... 0 <= h, s, v <= 1
+    function HSV2RGB(a) {
+        const h = +a[0];
+        const s = +a[1];
+        const v = +a[2];
+        let r; let g; let b; let i; let f; let p; let q; let
+            t;
+        i = Math.floor(h * 6);
+        f = h * 6 - i;
+        p = v * (1 - s);
+        q = v * (1 - f * s);
+        t = v * (1 - (1 - f) * s);
         i = i || 0;
-        n = n || 0;
-        l = l || 0;
+        q = q || 0;
+        t = t || 0;
         switch (i % 6) {
-            case 0:
-                t = h;
-                r = l;
-                a = s;
-                break;
-            case 1:
-                t = n;
-                r = h;
-                a = s;
-                break;
-            case 2:
-                t = s;
-                r = h;
-                a = l;
-                break;
-            case 3:
-                t = s;
-                r = n;
-                a = h;
-                break;
-            case 4:
-                t = l;
-                r = s;
-                a = h;
-                break;
-            case 5:
-                t = h;
-                r = s;
-                a = n;
+        case 0:
+            r = v, g = t, b = p;
+            break;
+        case 1:
+            r = q, g = v, b = p;
+            break;
+        case 2:
+            r = p, g = v, b = t;
+            break;
+        case 3:
+            r = p, g = q, b = v;
+            break;
+        case 4:
+            r = t, g = p, b = v;
+            break;
+        case 5:
+            r = v, g = p, b = q;
+            break;
         }
-        return [c(t * 255), c(r * 255), c(a * 255)];
+        return [round(r * 255), round(g * 255), round(b * 255)];
     }
-    function p(e) {
-        return d(m(e));
+
+    function HSV2HEX(a) {
+        return RGB2HEX(HSV2RGB(a));
     }
-    function h(e) {
-        let t;
-        const r = +e[0];
-        const a = +e[1];
-        const i = +e[2];
-        const o = Math.max(r, a, i);
-        const s = Math.min(r, a, i);
-        const n = o - s;
-        const l = o === 0 ? 0 : n / o;
-        const c = o / 255;
-        switch (o) {
-            case s:
-                t = 0;
-                break;
-            case r:
-                t = a - i + n * (a < i ? 6 : 0);
-                t /= n * 6;
-                break;
-            case a:
-                t = i - r + n * 2;
-                t /= n * 6;
-                break;
-            case i:
-                t = r - a + n * 4;
-                t /= n * 6;
+
+    // [r, g, b] ... 0 <= r, g, b <= 255
+    function RGB2HSV(a) {
+        const r = +a[0];
+        const g = +a[1];
+        const b = +a[2];
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const d = max - min;
+        let h; const s = (max === 0 ? 0 : d / max);
+        const v = max / 255;
+        switch (max) {
+        case min:
+            h = 0;
+            break;
+        case r:
+            h = (g - b) + d * (g < b ? 6 : 0);
+            h /= 6 * d;
+            break;
+        case g:
+            h = (b - r) + d * 2;
+            h /= 6 * d;
+            break;
+        case b:
+            h = (r - g) + d * 4;
+            h /= 6 * d;
+            break;
         }
-        return [t, l, c];
+        return [h, s, v];
     }
-    function d(e) {
-        let t = +e[2] | (+e[1] << 8) | (+e[0] << 16);
-        t = `000000${t.toString(16)}`;
-        return t.slice(-6);
+
+    function RGB2HEX(a) {
+        let s = +a[2] | (+a[1] << 8) | (+a[0] << 16);
+        s = `000000${s.toString(16)}`;
+        return s.slice(-6);
     }
-    function u(e) {
-        return h(g(e));
+
+    // rrggbb or rgb
+    function HEX2HSV(s) {
+        return RGB2HSV(HEX2RGB(s));
     }
-    function g(e) {
-        if (e.length === 3) {
-            e = e.replace(/./g, "$&$&");
+
+    function HEX2RGB(s) {
+        if (s.length === 3) {
+            s = s.replace(/./g, "$&$&");
         }
-        return [
-            l(e[0] + e[1], 16),
-            l(e[2] + e[3], 16),
-            l(e[4] + e[5], 16)
-        ];
+        return [num(s[0] + s[1], 16), num(s[2] + s[3], 16), num(s[4] + s[5], 16)];
     }
-    function y(e) {
-        return [+e[0] / 360, +e[1] / 100, +e[2] / 100];
+
+    // convert range from `0` to `360` and `0` to `100` in color into range from `0` to `1`
+    function _2HSV_pri(a) {
+        return [+a[0] / 360, +a[1] / 100, +a[2] / 100];
     }
-    function w(e) {
-        return [c(+e[0] * 360), c(+e[1] * 100), c(+e[2] * 100)];
+
+    // convert range from `0` to `1` into `0` to `360` and `0` to `100` in color
+    function _2HSV_pub(a) {
+        return [round(+a[0] * 360), round(+a[1] * 100), round(+a[2] * 100)];
     }
-    function f(e) {
-        return [+e[0] / 255, +e[1] / 255, +e[2] / 255];
+
+    // convert range from `0` to `255` in color into range from `0` to `1`
+    function _2RGB_pri(a) {
+        return [+a[0] / 255, +a[1] / 255, +a[2] / 255];
     }
-    function _(e) {
-        if (o(e)) {
-            return e;
+
+    // *
+    function parse(x) {
+        if (is_object(x)) return x;
+        const rgb = /\s*rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i.exec(x);
+        const hsv = /\s*hsv\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)\s*$/i.exec(x);
+        const hex = x[0] === "#" && x.match(/^#([\da-f]{3}|[\da-f]{6})$/i);
+        if (hex) {
+            return HEX2HSV(x.slice(1));
+        } if (hsv) {
+            return _2HSV_pri([+hsv[1], +hsv[2], +hsv[3]]);
+        } if (rgb) {
+            return RGB2HSV([+rgb[1], +rgb[2], +rgb[3]]);
         }
-        const t =
-            /\s*rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)\s*$/i.exec(
-                e
-            );
-        const r =
-            /\s*hsv\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)\s*$/i.exec(
-                e
-            );
-        if (
-            e[0] === "#" &&
-            e.match(/^#([\da-f]{3}|[\da-f]{6})$/i)
-        ) {
-            return u(e.slice(1));
-        } else if (r) {
-            return y([+r[1], +r[2], +r[3]]);
-        } else if (t) {
-            return h([+t[1], +t[2], +t[3]]);
-        } else {
-            return [0, 1, 1];
-        }
+        return [0, 1, 1]; // default is red
     }
-    const b = "firstChild";
-    const x = setTimeout;
-    (function(e) {
-        e.version = "1.4.1";
-        e.__instance__ = {};
-        e.each = function(t, r) {
-            x(
-                () => {
-                    let r;
-                    const a = e.__instance__;
-                    for (r in a) {
-                        t.call(a[r], r, a);
-                    }
-                },
-                r === 0 ? 0 : r || 1
-            );
-            return e;
-        };
-        e.parse = _;
-        e._HSV2RGB = m;
-        e._HSV2HEX = p;
-        e._RGB2HSV = h;
-        e._HEX2HSV = u;
-        e._HEX2RGB = function(e) {
-            return f(g(e));
-        };
-        e.HSV2RGB = function(e) {
-            return m(y(e));
-        };
-        e.HSV2HEX = function(e) {
-            return p(y(e));
-        };
-        e.RGB2HSV = function(e) {
-            return w(h(e));
-        };
-        e.RGB2HEX = d;
-        e.HEX2HSV = function(e) {
-            return w(u(e));
-        };
-        e.HEX2RGB = g;
-    })(
-        (e.CP = function(r, l, c) {
-            function h(e, t, r) {
-                e = e.split(/\s+/);
-                for (let a = 0, i = e.length; a < i; ++a) {
-                    t.addEventListener(e[a], r, false);
+
+    (function($) {
+        // plugin version
+        $.version = "1.4.1";
+
+        // collect all instance(s)
+        $[instance] = {};
+
+        // plug to all instance(s)
+        $.each = function(fn, t) {
+            return delay(() => {
+                const ins = $[instance]; let
+                    i;
+                for (i in ins) {
+                    fn.call(ins[i], i, ins);
                 }
+            }, t === 0 ? 0 : (t || 1)), $;
+        };
+
+        // static method(s)
+        $.parse = parse;
+        $._HSV2RGB = HSV2RGB;
+        $._HSV2HEX = HSV2HEX;
+        $._RGB2HSV = RGB2HSV;
+        $._HEX2HSV = HEX2HSV;
+        $._HEX2RGB = function(a) {
+            return _2RGB_pri(HEX2RGB(a));
+        };
+        $.HSV2RGB = function(a) {
+            return HSV2RGB(_2HSV_pri(a));
+        };
+        $.HSV2HEX = function(a) {
+            return HSV2HEX(_2HSV_pri(a));
+        };
+        $.RGB2HSV = function(a) {
+            return _2HSV_pub(RGB2HSV(a));
+        };
+        $.RGB2HEX = RGB2HEX;
+        $.HEX2HSV = function(s) {
+            return _2HSV_pub(HEX2HSV(s));
+        };
+        $.HEX2RGB = HEX2RGB;
+    }(win[NS] = function(source, events, parent) {
+        const b = doc.body;
+        const h = doc.documentElement;
+        const $ = this;
+        const $$ = win[NS];
+        let _ = false;
+        let hooks = {};
+        const self = doc.createElement("div");
+        const on_down = "touchstart mousedown";
+        const on_move = "touchmove mousemove";
+        const on_up = "touchend mouseup";
+        const on_resize = "orientationchange resize";
+
+        // return a new instance if `CP` was called without the `new` operator
+        if (!($ instanceof $$)) {
+            return new $$(source, events);
+        }
+
+        // store color picker instance to `CP.__instance__`
+        $$[instance][source.id || source.name || object_length($$[instance])] = $;
+
+        // trigger color picker panel on click by default
+        if (!is_set(events) || events === true) {
+            events = on_down;
+        }
+
+        // add event
+        function on(ev, el, fn) {
+            ev = ev.split(/\s+/);
+            for (let i = 0, ien = ev.length; i < ien; ++i) {
+                el.addEventListener(ev[i], fn, false);
             }
-            function d(e, t, r) {
-                e = e.split(/\s+/);
-                for (let a = 0, i = e.length; a < i; ++a) {
-                    t.removeEventListener(e[a], r);
+        }
+
+        // remove event
+        function off(ev, el, fn) {
+            ev = ev.split(/\s+/);
+            for (let i = 0, ien = ev.length; i < ien; ++i) {
+                el.removeEventListener(ev[i], fn);
+            }
+        }
+
+        // get mouse/finger coordinate
+        function point(el, e) {
+            const T = "touches";
+            const X = "clientX";
+            const Y = "clientY";
+            const x = e[T] ? e[T][0][X] : e[X];
+            const y = e[T] ? e[T][0][Y] : e[Y];
+            const o = offset(el);
+            return {
+                x: x - o.l,
+                y: y - o.t
+            };
+        }
+
+        // get position
+        function offset(el) {
+            let left; let top; let
+                rect;
+            if (el === win) {
+                left = win.pageXOffset || h.scrollLeft;
+                top = win.pageYOffset || h.scrollTop;
+            } else {
+                rect = el.getBoundingClientRect();
+                left = rect.left;
+                top = rect.top;
+            }
+            return {
+                l: left,
+                t: top
+            };
+        }
+
+        // get closest parent
+        function closest(a, b) {
+            while ((a = a.parentElement) && a !== b);
+            return a;
+        }
+
+        // prevent default
+        function prevent(e) {
+            if (e) e.preventDefault();
+        }
+
+        // get dimension
+        function size(el) {
+            return el === win
+                ? {
+                    w: win.innerWidth,
+                    h: win.innerHeight
                 }
-            }
-            function u(e, t) {
-                const r = "touches";
-                const a = "clientX";
-                const i = "clientY";
-                const o = t[r] ? t[r][0][a] : t[a];
-                const s = t[r] ? t[r][0][i] : t[i];
-                const n = g(e);
-                return {
-                    x: o - n.l,
-                    y: s - n.t
+                : {
+                    w: el.offsetWidth,
+                    h: el.offsetHeight
                 };
-            }
-            function g(t) {
-                let r;
-                let a;
-                let i;
-                if (t === e) {
-                    r = e.pageXOffset || A.scrollLeft;
-                    a = e.pageYOffset || A.scrollTop;
-                } else {
-                    i = t.getBoundingClientRect();
-                    r = i.left;
-                    a = i.top;
+        }
+
+        // get color data
+        function get_data(a) {
+            return _ || (is_set(a) ? a : false);
+        }
+
+        // set color data
+        function set_data(a) {
+            _ = a;
+        }
+
+        // add hook
+        function add(ev, fn, id) {
+            if (!is_set(ev)) return hooks;
+            if (!is_set(fn)) return hooks[ev];
+            if (!is_set(hooks[ev])) hooks[ev] = {};
+            if (!is_set(id)) id = object_length(hooks[ev]);
+            return hooks[ev][id] = fn, $;
+        }
+
+        // remove hook
+        function remove(ev, id) {
+            if (!is_set(ev)) return hooks = {}, $;
+            if (!is_set(id)) return hooks[ev] = {}, $;
+            return delete hooks[ev][id], $;
+        }
+
+        // trigger hook
+        function trigger(ev, a, id) {
+            if (!is_set(hooks[ev])) return $;
+            if (!is_set(id)) {
+                for (const i in hooks[ev]) {
+                    hooks[ev][i].apply($, a);
                 }
-                return {
-                    l: r,
-                    t: a
-                };
+            } else if (is_set(hooks[ev][id])) {
+                hooks[ev][id].apply($, a);
             }
-            function y(e, t) {
-                while ((e = e.parentElement) && e !== t);
-                return e;
+            return $;
+        }
+
+        // initialize data ...
+        set_data($$.parse(source.getAttribute("data-color") || source.value || [0, 1, 1]));
+
+        // generate color picker pane ...
+        self.className = "color-picker";
+        self.innerHTML = '<div class="color-picker-container"><span class="color-picker-h"><i></i></span><span class="color-picker-sv"><i></i></span></div>';
+        const c = self[first].children;
+        let HSV = get_data([0, 1, 1]); // default is red
+        const H = c[0];
+        const SV = c[1];
+        const H_point = H[first];
+        const SV_point = SV[first];
+        let start_H = 0;
+        let start_SV = 0;
+        let drag_H = 0;
+        let drag_SV = 0;
+        let left = 0;
+        let top = 0;
+        let P_W = 0;
+        let P_H = 0;
+        let v = [HSV2HEX(HSV)];
+        let set;
+
+        // on update ...
+        function trigger_(k, x) {
+            if (!k || k === "h") {
+                trigger("change:h", x);
             }
-            function w(e) {
-                e?.preventDefault();
+            if (!k || k === "sv") {
+                trigger("change:sv", x);
             }
-            function f(t) {
-                if (t === e) {
-                    return {
-                        w: e.innerWidth,
-                        h: e.innerHeight
-                    };
-                } else {
-                    return {
-                        w: t.offsetWidth,
-                        h: t.offsetHeight
-                    };
-                }
+            trigger("change", x);
+        }
+
+        // is visible?
+        function visible() {
+            return self.parentNode;
+        }
+
+        // create
+        function create(first, bucket) {
+            if (!first) {
+                (parent || bucket || b).appendChild(self), $.visible = true;
             }
-            function _(e) {
-                return E || (!!a(e) && e);
-            }
-            function S(e) {
-                E = e;
-            }
-            function v(e, t, r) {
-                if (a(e)) {
-                    if (a(t)) {
-                        if (!a(B[e])) {
-                            B[e] = {};
-                        }
-                        if (!a(r)) {
-                            r = s(B[e]);
-                        }
-                        B[e][r] = t;
-                        return O;
-                    } else {
-                        return B[e];
-                    }
-                } else {
-                    return B;
-                }
-            }
-            function k(e, t) {
-                if (a(e)) {
-                    if (a(t)) {
-                        delete B[e][t];
-                        return O;
-                    } else {
-                        B[e] = {};
-                        return O;
-                    }
-                } else {
-                    B = {};
-                    return O;
-                }
-            }
-            function z(e, t, r) {
-                if (!a(B[e])) {
-                    return O;
-                }
-                if (a(r)) {
-                    if (a(B[e][r])) {
-                        B[e][r].apply(O, t);
-                    }
-                } else {
-                    for (const i in B[e]) {
-                        B[e][i].apply(O, t);
-                    }
-                }
-                return O;
-            }
-            function I(e, t) {
-                if (!e || e === "h") {
-                    z("change:h", t);
-                }
-                if (!e || e === "sv") {
-                    z("change:sv", t);
-                }
-                z("change", t);
-            }
-            function T() {
-                return R.parentNode;
-            }
-            function M(a, i) {
-                function o(e) {
+            P_W = size(self).w;
+            P_H = size(self).h;
+            const SV_size = size(SV);
+            const SV_point_size = size(SV_point);
+            const H_H = size(H).h;
+            const SV_W = SV_size.w;
+            const SV_H = SV_size.h;
+            const H_point_H = size(H_point).h;
+            const SV_point_W = SV_point_size.w;
+            const SV_point_H = SV_point_size.h;
+            if (first) {
+                self.style.left = self.style.top = "-9999px";
+                function click(e) {
                     const t = e.target;
-                    if (t === r || y(t, r) === r) {
-                        M();
-                        z("enter");
+                    const is_source = t === source || closest(t, source) === source;
+                    if (is_source) {
+                        create(), trigger("enter");
                     } else {
-                        O.exit();
+                        $.exit();
                     }
                 }
-                function s(e) {
-                    m(V);
-                    const t = m([V[0], 1, 1]);
-                    W.style.backgroundColor = `rgb(${t.join(",")})`;
-                    S(V);
-                    w(e);
+                if (events !== false) {
+                    on(events, source, click);
                 }
-                function g(e) {
-                    const t = n(u(U, e).y, 0, B);
-                    V[0] = (B - t) / B;
-                    G.style.top = `${t - $ / 2}px`;
-                    s(e);
-                }
-                function b(e) {
-                    const t = u(W, e);
-                    const r = n(t.x, 0, H);
-                    const a = n(t.y, 0, Q);
-                    V[1] = 1 - (H - r) / H;
-                    V[2] = (Q - a) / Q;
-                    X.style.right = `${H - r - ae / 2}px`;
-                    X.style.top = `${a - ie / 2}px`;
-                    s(e);
-                }
-                function x(e) {
-                    if (Y) {
-                        g(e);
-                        re = [p(V)];
-                        if (!K) {
-                            z("drag:h", re);
-                            z("drag", re);
-                            I("h", re);
-                        }
-                    }
-                    if (J) {
-                        b(e);
-                        re = [p(V)];
-                        if (!Z) {
-                            z("drag:sv", re);
-                            z("drag", re);
-                            I("sv", re);
-                        }
-                    }
-                    K = 0;
-                    Z = 0;
-                }
-                function v(e) {
-                    const t = e.target;
-                    const a = Y ? "h" : "sv";
-                    const i = [p(V), O];
-                    const o = t === r || y(t, r) === r;
-                    const s = t === R || y(t, R) === R;
-                    if (o || s) {
-                        if (s) {
-                            z(`stop:${a}`, i);
-                            z("stop", i);
-                            I(a, i);
-                        }
-                    } else if (T() && l !== false) {
-                        O.exit();
-                        I(0, i);
-                    }
-                    Y = 0;
-                    J = 0;
-                }
-                function k(e) {
-                    K = 1;
-                    Y = 1;
-                    x(e);
-                    w(e);
-                    z("start:h", re);
-                    z("start", re);
-                    I("h", re);
-                }
-                function A(e) {
-                    Z = 1;
-                    J = 1;
-                    x(e);
-                    w(e);
-                    z("start:sv", re);
-                    z("start", re);
-                    I("sv", re);
-                }
-                if (!a) {
-                    (c || i || C).appendChild(R);
-                    O.visible = true;
-                }
-                ee = f(R).w;
-                te = f(R).h;
-                const D = f(W);
-                const E = f(X);
-                var B = f(U).h;
-                var H = D.w;
-                var Q = D.h;
-                var $ = f(G).h;
-                var ae = E.w;
-                var ie = E.h;
-                if (a) {
-                    R.style.left = R.style.top = "-9999px";
-                    if (l !== false) {
-                        h(l, r, o);
-                    }
-                    O.create = function() {
-                        M(1);
-                        z("create");
-                        return O;
-                    };
-                    O.destroy = function() {
-                        if (l !== false) {
-                            d(l, r, o);
-                        }
-                        O.exit();
-                        S(false);
-                        z("destroy");
-                        return O;
-                    };
-                } else {
-                    P();
-                }
-                N = function() {
-                    V = _(V);
-                    s();
-                    G.style.top = `${B - $ / 2 - B * +V[0]}px`;
-                    X.style.right = `${H - ae / 2 - H * +V[1]}px`;
-                    X.style.top = `${Q - ie / 2 - Q * +V[2]}px`;
+                $.create = function() {
+                    return create(1), trigger("create"), $;
                 };
-                O.exit = function(r) {
-                    if (T()) {
-                        T().removeChild(R);
-                        O.visible = false;
+                $.destroy = function() {
+                    if (events !== false) {
+                        off(events, source, click);
                     }
-                    d(L, U, k);
-                    d(L, W, A);
-                    d(q, t, x);
-                    d(F, t, v);
-                    d(j, e, P);
-                    z("exit");
-                    return O;
+                    $.exit(), set_data(false);
+                    return trigger("destroy"), $;
                 };
-                N();
-                if (!a) {
-                    h(L, U, k);
-                    h(L, W, A);
-                    h(q, t, x);
-                    h(F, t, v);
-                    h(j, e, P);
+            } else {
+                fit();
+            }
+            set = function() {
+                HSV = get_data(HSV), color();
+                H_point.style.top = `${H_H - (H_point_H / 2) - (H_H * +HSV[0])}px`;
+                SV_point.style.right = `${SV_W - (SV_point_W / 2) - (SV_W * +HSV[1])}px`;
+                SV_point.style.top = `${SV_H - (SV_point_H / 2) - (SV_H * +HSV[2])}px`;
+            };
+            $.exit = function(e) {
+                if (visible()) {
+                    visible().removeChild(self);
+                    $.visible = false;
                 }
+                off(on_down, H, down_H);
+                off(on_down, SV, down_SV);
+                off(on_move, doc, move);
+                off(on_up, doc, stop);
+                off(on_resize, win, fit);
+                return trigger("exit"), $;
+            };
+            function color(e) {
+                const a = HSV2RGB(HSV);
+                const b = HSV2RGB([HSV[0], 1, 1]);
+                SV.style.backgroundColor = `rgb(${b.join(",")})`;
+                set_data(HSV);
+                prevent(e);
             }
-            function P() {
-                return O.fit();
+            set();
+            function do_H(e) {
+                const y = edge(point(H, e).y, 0, H_H);
+                HSV[0] = (H_H - y) / H_H;
+                H_point.style.top = `${y - (H_point_H / 2)}px`;
+                color(e);
             }
-            var C = t.body;
-            var A = t.documentElement;
-            var O = this;
-            const D = e.CP;
-            var E = false;
-            var B = {};
-            var R = t.createElement("div");
-            var L = "touchstart mousedown";
-            var q = "touchmove mousemove";
-            var F = "touchend mouseup";
-            var j = "orientationchange resize";
-            if (!(O instanceof D)) {
-                return new D(r, l);
+            function do_SV(e) {
+                const o = point(SV, e);
+                const x = edge(o.x, 0, SV_W);
+                const y = edge(o.y, 0, SV_H);
+                HSV[1] = 1 - ((SV_W - x) / SV_W);
+                HSV[2] = (SV_H - y) / SV_H;
+                SV_point.style.right = `${SV_W - x - (SV_point_W / 2)}px`;
+                SV_point.style.top = `${y - (SV_point_H / 2)}px`;
+                color(e);
             }
-            D.__instance__[r.id || r.name || s(D.__instance__)] = O;
-            if (!a(l) || l === true) {
-                l = L;
-            }
-            S(
-                D.parse(
-                    r.getAttribute("data-color") ||
-                    r.value || [0, 1, 1]
-                )
-            );
-            R.className = "color-picker";
-            R.innerHTML =
-                '<div class="color-picker-container"><span class="color-picker-h"><i></i></span><span class="color-picker-sv"><i></i></span></div>';
-            let N;
-            const H = R[b].children;
-            var V = _([0, 1, 1]);
-            var U = H[0];
-            var W = H[1];
-            var G = U[b];
-            var X = W[b];
-            var K = 0;
-            var Z = 0;
-            var Y = 0;
-            var J = 0;
-            let Q = 0;
-            let $ = 0;
-            var ee = 0;
-            var te = 0;
-            var re = [p(V)];
-            M(1);
-            x(() => {
-                const e = [p(V)];
-                z("create", e);
-                I(0, e);
-            }, 0);
-            O.fit = function(t) {
-                const i = f(e);
-                const s = f(A);
-                const l = i.w - s.w;
-                const c = i.h - A.clientHeight;
-                const m = g(e);
-                const p = g(r);
-                Q = p.l + m.l;
-                $ = p.t + m.t + f(r).h;
-                if (o(t)) {
-                    if (a(t[0])) {
-                        Q = t[0];
+            function move(e) {
+                if (drag_H) {
+                    do_H(e), v = [HSV2HEX(HSV)];
+                    if (!start_H) {
+                        trigger("drag:h", v);
+                        trigger("drag", v);
+                        trigger_("h", v);
                     }
-                    if (a(t[1])) {
-                        $ = t[1];
-                    }
-                } else {
-                    const h = m.l;
-                    const d = m.t;
-                    const u = m.l + i.w - ee - l;
-                    const y = m.t + i.h - te - c;
-                    Q = n(Q, h, u) >> 0;
-                    $ = n($, d, y) >> 0;
                 }
-                R.style.left = `${Q}px`;
-                R.style.top = `${$}px`;
-                z("fit");
-                return O;
-            };
-            O.set = function(e) {
-                if (a(e)) {
-                    if (i(e)) {
-                        e = D.parse(e);
+                if (drag_SV) {
+                    do_SV(e), v = [HSV2HEX(HSV)];
+                    if (!start_SV) {
+                        trigger("drag:sv", v);
+                        trigger("drag", v);
+                        trigger_("sv", v);
                     }
-                    S(e);
-                    N();
-                    return O;
-                } else {
-                    return _();
                 }
-            };
-            O.get = function(e) {
-                return _(e);
-            };
-            O.source = r;
-            O.self = R;
-            O.visible = false;
-            O.on = v;
-            O.off = k;
-            O.fire = z;
-            O.hooks = B;
-            O.enter = function(e) {
-                M(0, e);
-                z("enter");
-                return O;
-            };
-            return O;
-        })
-    );
-})(window, document);
+                start_H = 0,
+                start_SV = 0;
+            }
+            function stop(e) {
+                const t = e.target;
+                const k = drag_H ? "h" : "sv";
+                const a = [HSV2HEX(HSV), $];
+                const is_source = t === source || closest(t, source) === source;
+                const is_self = t === self || closest(t, self) === self;
+                if (!is_source && !is_self) {
+                    // click outside the source or picker element to exit
+                    if (visible() && events !== false) $.exit(), trigger_(0, a);
+                } else if (is_self) {
+                    trigger(`stop:${k}`, a);
+                    trigger("stop", a);
+                    trigger_(k, a);
+                }
+                drag_H = 0,
+                drag_SV = 0;
+            }
+            function down_H(e) {
+                start_H = 1,
+                drag_H = 1,
+                move(e), prevent(e);
+                trigger("start:h", v);
+                trigger("start", v);
+                trigger_("h", v);
+            }
+            function down_SV(e) {
+                start_SV = 1,
+                drag_SV = 1,
+                move(e), prevent(e);
+                trigger("start:sv", v);
+                trigger("start", v);
+                trigger_("sv", v);
+            }
+            if (!first) {
+                on(on_down, H, down_H);
+                on(on_down, SV, down_SV);
+                on(on_move, doc, move);
+                on(on_up, doc, stop);
+                on(on_resize, win, fit);
+            }
+        } create(1);
+
+        delay(() => {
+            const a = [HSV2HEX(HSV)];
+            trigger("create", a);
+            trigger_(0, a);
+        }, 0);
+
+        // fit to window
+        $.fit = function(o) {
+            const w = size(win);
+            const y = size(h);
+            const screen_w = w.w - y.w; // vertical scroll bar
+            const screen_h = w.h - h.clientHeight; // horizontal scroll bar
+            const ww = offset(win);
+            const to = offset(source);
+            left = to.l + ww.l;
+            top = to.t + ww.t + size(source).h; // drop!
+            if (is_object(o)) {
+                is_set(o[0]) && (left = o[0]);
+                is_set(o[1]) && (top = o[1]);
+            } else {
+                const min_x = ww.l;
+                const min_y = ww.t;
+                const max_x = ww.l + w.w - P_W - screen_w;
+                const max_y = ww.t + w.h - P_H - screen_h;
+                left = edge(left, min_x, max_x) >> 0;
+                top = edge(top, min_y, max_y) >> 0;
+            }
+            self.style.left = `${left}px`;
+            self.style.top = `${top}px`;
+            return trigger("fit"), $;
+        };
+
+        // for event listener ID
+        function fit() {
+            return $.fit();
+        }
+
+        // set hidden color picker data
+        $.set = function(a) {
+            if (!is_set(a)) return get_data();
+            if (is_string(a)) {
+                a = $$.parse(a);
+            }
+            return set_data(a), set(), $;
+        };
+
+        // alias for `$.set()`
+        $.get = function(a) {
+            return get_data(a);
+        };
+
+        // register to global
+        $.source = source;
+        $.self = self;
+        $.visible = false;
+        $.on = add;
+        $.off = remove;
+        $.fire = trigger;
+        $.hooks = hooks;
+        $.enter = function(bucket) {
+            return create(0, bucket), trigger("enter"), $;
+        };
+
+        // return the global object
+        return $;
+    }));
+}(window, document, "CP"));

@@ -33,14 +33,14 @@ function createCasingParticle(e, t, r, a, i, l, c, m) {
         );
     }
 }
-function i() {
+function ShotBarn() {
     this.shots = [];
 }
 
-i.prototype = {
+ShotBarn.prototype = {
     addShot: function(e) {
-        var t = null;
-        for (var r = 0; r < this.shots.length; r++) {
+        let t = null;
+        for (let r = 0; r < this.shots.length; r++) {
             if (!this.shots[r].active) {
                 t = this.shots[r];
                 break;
@@ -170,6 +170,6 @@ i.prototype = {
     }
 };
 export default {
-    createCasingParticle: createCasingParticle,
-    at: i
+    createCasingParticle,
+    ShotBarn
 };

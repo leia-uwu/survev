@@ -32,9 +32,9 @@ export default class AudioManager {
             ) {
                 for (
                     let a = t[r],
-                    o = soundDefs.Sounds[a],
-                    s = Object.keys(o),
-                    n = 0;
+                        o = soundDefs.Sounds[a],
+                        s = Object.keys(o),
+                        n = 0;
                     n < s.length;
                     n++
                 ) {
@@ -47,18 +47,18 @@ export default class AudioManager {
                     e[c] = true;
                 }
             }
-            var m = [];
+            const m = [];
             for (
-                var p = Object.keys(soundDefs.Channels), h = 0;
+                let p = Object.keys(soundDefs.Channels), h = 0;
                 h < p.length;
                 h++
             ) {
                 for (
                     let d = p[h],
-                    u = soundDefs.Channels[d],
-                    g = soundDefs.Sounds[u.list],
-                    y = Object.keys(g),
-                    w = 0;
+                        u = soundDefs.Channels[d],
+                        g = soundDefs.Sounds[u.list],
+                        y = Object.keys(g),
+                        w = 0;
                     w < y.length;
                     w++
                 ) {
@@ -98,6 +98,7 @@ export default class AudioManager {
             }
         }
     }
+
     loadSound(e) {
         const t = e.name + e.channel;
         if (!this.sounds[t]) {
@@ -109,9 +110,11 @@ export default class AudioManager {
             };
         }
     }
+
     loadHandler(e) {
         this.loadedFiles[e] = true;
     }
+
     m(e) {
         for (let t = this.soundInstances.length - 1; t >= 0; t--) {
             const r = this.soundInstances[t];
@@ -130,6 +133,7 @@ export default class AudioManager {
         });
         createJS.Sound.update(e);
     }
+
     playSound(e, t = {}) {
         if (!e || e == "none") {
             return null;
@@ -213,6 +217,7 @@ export default class AudioManager {
         }
         return r;
     }
+
     playGroup(e, t = {}) {
         const r = soundDefs.Groups[e];
         if (r) {
@@ -223,6 +228,7 @@ export default class AudioManager {
         }
         return null;
     }
+
     updateSound(e, t, r, a = {}) {
         a.fallOff = a.fallOff || 0;
         a.rangeMult = a.rangeMult || 1;
@@ -258,16 +264,18 @@ export default class AudioManager {
             }
         }
     }
+
     setMasterVolume(e) {
         e = math.clamp(e, 0, 1);
         createJS.Sound.volume = e;
     }
+
     _setInstanceTypeVolume(e, t) {
         t = math.clamp(t, 0, 1);
         for (
             let r = this.getTypeVolume(e),
-            a = r > 0.0001 ? t / r : 0,
-            i = 0;
+                a = r > 0.0001 ? t / r : 0,
+                i = 0;
             i < this.soundInstances.length;
             i++
         ) {
@@ -277,14 +285,17 @@ export default class AudioManager {
             }
         }
     }
+
     setSoundVolume(e) {
         this._setInstanceTypeVolume("sound", e);
         this.soundVolume = e;
     }
+
     setMusicVolume(e) {
         this._setInstanceTypeVolume("music", e);
         this.musicVolume = e;
     }
+
     setVolume(e, t, r) {
         if (e) {
             r = r || "sound";
@@ -292,6 +303,7 @@ export default class AudioManager {
             e.volume = t * a;
         }
     }
+
     getVolume(e) {
         if (e) {
             return e.volume;
@@ -299,25 +311,31 @@ export default class AudioManager {
             return 0;
         }
     }
+
     setMute(e) {
         this.mute = e;
         createJS.Sound.setMute(this.mute);
         return this.mute;
     }
+
     muteToggle() {
         return this.setMute(!this.mute);
     }
+
     setDelayn(e, t) {
         if (e) {
             e.delay = t;
         }
     }
+
     stopSound(e) {
         e?.stop();
     }
+
     stopAll() {
         createJS.Sound.stop();
     }
+
     allLoaded() {
         for (
             let e = Object.keys(this.sounds), t = 0;
@@ -331,13 +349,16 @@ export default class AudioManager {
         }
         return true;
     }
+
     isSoundLoaded(e, t) {
         const r = this.sounds[e + t];
         return r && this.loadedFiles[r.path];
     }
+
     isSoundPlaying(e) {
         return !!e && e.playState == createJS.Sound.PLAY_SUCCEEDED;
     }
+
     getSoundDefVolume(e, t) {
         const r = soundDefs.Sounds[t][e];
         const a = soundDefs.Channels[t];
@@ -347,13 +368,14 @@ export default class AudioManager {
             return 1;
         }
     }
+
     getTypeVolume(e) {
         switch (e) {
-            case "music":
-                return this.musicVolume;
-            case "sound":
-            default:
-                return this.soundVolume;
+        case "music":
+            return this.musicVolume;
+        case "sound":
+        default:
+            return this.soundVolume;
         }
     }
-};
+}

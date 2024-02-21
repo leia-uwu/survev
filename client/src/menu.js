@@ -1,4 +1,4 @@
-import $ from "jquery"
+import $ from "jquery";
 import device from "./device";
 import helpers from "./helpers";
 import firebaseManager from "./firebaseManager";
@@ -298,8 +298,8 @@ function applyMobileBrowserStyling(e) {
 }
 
 export default {
-    setupModals: setupModals,
-    onResize: onResize,
-    applyWebviewStyling: applyWebviewStyling,
-    applyMobileBrowserStyling: applyMobileBrowserStyling
+    setupModals,
+    onResize,
+    applyWebviewStyling,
+    applyMobileBrowserStyling
 };

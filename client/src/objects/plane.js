@@ -12,7 +12,7 @@ function Plane() {
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.visible = false;
 }
-function i(e) {
+function AirstrikeZone(e) {
     this.active = false;
     this.pos = v2.create(0, 0);
     this.rad = 0;
@@ -21,7 +21,7 @@ function i(e) {
     this.gfx = new PIXI.Graphics();
     e.addChild(this.gfx);
 }
-function o(e) {
+function PlaneBarn(e) {
     this.ia = [];
     this.oa = [];
     this.airstrikeZoneContainer = new PIXI.Container();
@@ -46,17 +46,17 @@ Plane.prototype = {
             this.type == GameConfig.Plane.Airdrop ? GameConfig.airdrop : GameConfig.airstrike;
         this.rad = this.config.planeRad;
         switch (this.type) {
-            case GameConfig.Plane.Airdrop:
-                this.sprite.texture = PIXI.Texture.from(
-                    t.getMapDef().biome.airdrop.planeImg
-                );
-                this.planeSound =
+        case GameConfig.Plane.Airdrop:
+            this.sprite.texture = PIXI.Texture.from(
+                t.getMapDef().biome.airdrop.planeImg
+            );
+            this.planeSound =
                     t.getMapDef().biome.airdrop.planeSound;
-                break;
-            case GameConfig.Plane.Airstrike:
-                this.sprite.texture =
+            break;
+        case GameConfig.Plane.Airstrike:
+            this.sprite.texture =
                     PIXI.Texture.from("map-plane-02.img");
-                this.planeSound = "fighter_01";
+            this.planeSound = "fighter_01";
         }
         this.sprite.visible = true;
         this.sprite.rotation = Math.atan2(
@@ -75,7 +75,7 @@ Plane.prototype = {
         }
     }
 };
-i.prototype = {
+AirstrikeZone.prototype = {
     o: function(e, t, r) {
         this.active = true;
         this.pos = v2.copy(e);
@@ -133,7 +133,7 @@ i.prototype = {
         this.gfx.alpha = l;
     }
 };
-o.prototype = {
+PlaneBarn.prototype = {
     n: function() {
         for (let e = 0; e < this.ia.length; e++) {
             this.ia[e].n(this.audioManager);
@@ -144,9 +144,9 @@ o.prototype = {
             this.ia[r].dirty = true;
         }
         for (let a = 0; a < e.length; a++) {
-            var i = e[a];
-            var o = null;
-            for (var s = 0; s < this.ia.length; s++) {
+            const i = e[a];
+            let o = null;
+            for (let s = 0; s < this.ia.length; s++) {
                 const n = this.ia[s];
                 if (n.active && n.id == i.id) {
                     o = n;
@@ -165,8 +165,8 @@ o.prototype = {
         }
     },
     sa: function(e, t) {
-        var r = null;
-        for (var i = 0; i < this.ia.length; i++) {
+        let r = null;
+        for (let i = 0; i < this.ia.length; i++) {
             if (!this.ia[i].active) {
                 r = this.ia[i];
                 break;
@@ -180,15 +180,15 @@ o.prototype = {
         return r;
     },
     Cr: function(e) {
-        var t = null;
-        for (var r = 0; r < this.oa.length; r++) {
+        let t = null;
+        for (let r = 0; r < this.oa.length; r++) {
             if (!this.oa[r]) {
                 t = this.oa[r];
                 break;
             }
         }
         if (!t) {
-            t = new i(this.airstrikeZoneContainer);
+            t = new AirstrikeZone(this.airstrikeZoneContainer);
             this.oa.push(t);
         }
         t.o(e.pos, e.rad, e.duration);
@@ -218,7 +218,6 @@ o.prototype = {
                         s.spriteUpdateTime + e,
                         2
                     );
-                    s.spriteUpdateTime;
                     s.rad = math.lerp(
                         s.spriteUpdateTime,
                         s.config.planeRad,
@@ -323,5 +322,5 @@ o.prototype = {
     }
 };
 export default {
-    Gt: o
+    Gt: PlaneBarn
 };

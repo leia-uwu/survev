@@ -1,6 +1,6 @@
-import $ from "jquery"
+import $ from "jquery";
 import * as PIXI from "pixi.js"
-    ;
+;
 import { coldet } from "../../shared/utils/coldet";
 import { GameConfig } from "../../shared/gameConfig";
 import net from "../../shared/net";
@@ -15,7 +15,6 @@ import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import "./objects/particles";
 import "./objects/shot";
 import "./inputBinds";
-import "./objects/shot";
 import mapIndicator from "./objects/mapIndicator";
 import mapSprite from "./objects/mapSprite";
 import pieTimer from "./pieTimer";
@@ -23,8 +22,8 @@ import { v2 } from "../../shared/utils/v2";
 
 const Action = GameConfig.Action;
 const GasMode = GameConfig.GasMode;
-var GasRenderer = gas.GasRenderer;
-var GasSafeZoneRenderer = gas.GasSafeZoneRenderer;
+const GasRenderer = gas.GasRenderer;
+const GasSafeZoneRenderer = gas.GasSafeZoneRenderer;
 
 function a(e) {
     const t = Math.floor(e / 3600);
@@ -596,40 +595,40 @@ i.prototype = {
         if (
             this.actionSeq != t.action.seq &&
             ((this.actionSeq = t.action.seq),
-                this.Pe.stop(),
-                t.action.type != Action.None && !this.displayingStats)
+            this.Pe.stop(),
+            t.action.type != Action.None && !this.displayingStats)
         ) {
             let I = "";
             let T = "";
             let M = "";
             switch (t.action.type) {
-                case Action.Reload:
-                case Action.ReloadAlt:
-                    if (GameObjectDefs[t.action.item]) {
-                        T =
+            case Action.Reload:
+            case Action.ReloadAlt:
+                if (GameObjectDefs[t.action.item]) {
+                    T =
                             this.localization.translate(
                                 "game-reloading"
                             );
-                    }
-                    break;
-                case Action.UseItem:
-                    if (GameObjectDefs[t.action.item]) {
-                        T =
+                }
+                break;
+            case Action.UseItem:
+                if (GameObjectDefs[t.action.item]) {
+                    T =
                             this.localization.translate(
                                 "game-using"
                             );
-                        M = this.localization.translate(
-                            `game-${t.action.item}`
-                        );
-                    }
-                    break;
-                case Action.Revive:
-                    var P = o.qe(t.action.targetId).name;
-                    T =
+                    M = this.localization.translate(
+                        `game-${t.action.item}`
+                    );
+                }
+                break;
+            case Action.Revive:
+                var P = o.qe(t.action.targetId).name;
+                T =
                         this.localization.translate(
                             "game-reviving"
                         );
-                    M = d.downed ? "" : P;
+                M = d.downed ? "" : P;
             }
             if (T != "" || M != "") {
                 if (
@@ -678,7 +677,7 @@ i.prototype = {
             };
             firebaseManager.logError(`badTeamInfo_1: ${JSON.stringify(E)}`);
         }
-        var B = device.uiLayout == device.UiLayout.Sm;
+        const B = device.uiLayout == device.UiLayout.Sm;
         for (var R = D.playerIds.length, L = 0; L < R; L++) {
             const q = this.teamSelectors[L];
             const F = D.playerIds[L];
@@ -848,12 +847,12 @@ i.prototype = {
         }
     },
     updatePlayerMapSprites: function(e, t, r, a) {
-        var i = this;
-        var o = r.qe(t.__id);
+        const i = this;
+        const o = r.qe(t.__id);
         r.getGroupInfo(o.groupId);
         r.getTeamInfo(o.teamId);
-        var s = 0;
-        var n = function(e, t, r, a, o, n, c) {
+        let s = 0;
+        const n = function(e, t, r, a, o, n, c) {
             if (s >= i.playerMapSprites.length) {
                 const m = i.mapSpriteBarn.addSprite();
                 i.playerMapSprites.push(m);
@@ -868,7 +867,7 @@ i.prototype = {
             p.sprite.tint = c;
         };
         for (
-            var c = Object.keys(r.playerStatus), m = 0;
+            let c = Object.keys(r.playerStatus), m = 0;
             m < c.length;
             m++
         ) {
@@ -1174,7 +1173,7 @@ i.prototype = {
     getTitleVictoryText: function(e, t) {
         if (e) {
             return `${this.spectatedPlayerName
-                } ${this.localization.translate("game-won-the-game")}`;
+            } ${this.localization.translate("game-won-the-game")}`;
         }
         let r = "game-chicken";
         if (t.turkeyMode) {
@@ -1185,7 +1184,7 @@ i.prototype = {
     getTitleDefeatText: function(e, t) {
         if (t) {
             return `${this.spectatedPlayerName
-                } ${this.localization.translate("game-player-died")}.`;
+            } ${this.localization.translate("game-player-died")}.`;
         } else if (e > 1) {
             return this.localization.translate(
                 "game-team-eliminated"
@@ -1240,16 +1239,16 @@ i.prototype = {
             const w = s == i;
             const f = w ? 1750 : 2500;
             this.setBannerAd(f, d, true);
-            var _ = s == i || (c && i == t);
-            var b = c && s != t;
-            var S = _
+            const _ = s == i || (c && i == t);
+            const b = c && s != t;
+            const S = _
                 ? this.getTitleVictoryText(
                     b,
                     h.getMapDef().gameMode
                 )
                 : this.getTitleDefeatText(l, b);
-            var v = 0;
-            for (var k = 0; k < e.length; k++) {
+            let v = 0;
+            for (let k = 0; k < e.length; k++) {
                 v += e[k].kills;
             }
             const z = this.getOverviewElems(
@@ -1342,30 +1341,30 @@ i.prototype = {
                     );
                 if (h.getMapDef().gameMode.factionMode && o) {
                     switch (C) {
-                        case 1:
-                            B.append(
-                                $("<div/>", {
-                                    class: "ui-stats-info-player-badge ui-stats-info-player-red-leader"
-                                })
-                            );
-                            break;
-                        case 2:
-                            B.append(
-                                $("<div/>", {
-                                    class: "ui-stats-info-player-badge ui-stats-info-player-blue-leader"
-                                })
-                            );
-                            break;
-                        case 3:
-                            var R =
+                    case 1:
+                        B.append(
+                            $("<div/>", {
+                                class: "ui-stats-info-player-badge ui-stats-info-player-red-leader"
+                            })
+                        );
+                        break;
+                    case 2:
+                        B.append(
+                            $("<div/>", {
+                                class: "ui-stats-info-player-badge ui-stats-info-player-blue-leader"
+                            })
+                        );
+                        break;
+                    case 3:
+                        var R =
                                 O.teamId == 1
                                     ? "ui-stats-info-player-red-ribbon"
                                     : "ui-stats-info-player-blue-ribbon";
-                            B.append(
-                                $("<div/>", {
-                                    class: `ui-stats-info-player-badge ${R}`
-                                })
-                            );
+                        B.append(
+                            $("<div/>", {
+                                class: `ui-stats-info-player-badge ${R}`
+                            })
+                        );
                     }
                 }
                 this.statsInfoBox.append(B);
@@ -1770,13 +1769,13 @@ i.prototype = {
     cycleVisibilityMode: function() {
         if (!this.bigmapDisplayed) {
             switch (this.visibilityMode) {
-                case 0:
-                    this.hideMiniMap();
-                    this.visibilityMode = 1;
-                    break;
-                case 1:
-                    this.displayMiniMap();
-                    this.visibilityMode = 0;
+            case 0:
+                this.hideMiniMap();
+                this.visibilityMode = 1;
+                break;
+            case 1:
+                this.displayMiniMap();
+                this.visibilityMode = 0;
             }
         }
     },
@@ -1828,25 +1827,25 @@ i.prototype = {
     displayGasAnnouncement: function(e, t) {
         let r = "";
         switch (e) {
-            case GasMode.Waiting:
-                r = this.localization.translate(
-                    "game-red-zone-advances"
-                );
-                var a = Math.floor(t / 60);
-                var i = t - a * 60;
-                r +=
+        case GasMode.Waiting:
+            r = this.localization.translate(
+                "game-red-zone-advances"
+            );
+            var a = Math.floor(t / 60);
+            var i = t - a * 60;
+            r +=
                     a > 1
                         ? ` ${a} ${this.localization.translate(
                             "game-minutes"
                         )}`
                         : "";
-                r +=
+            r +=
                     a == 1
                         ? ` ${a} ${this.localization.translate(
                             "game-minute"
                         )}`
                         : "";
-                r +=
+            r +=
                     i > 0
                         ? ` ${Math.floor(
                             i
@@ -1854,11 +1853,11 @@ i.prototype = {
                             "game-seconds"
                         )}`
                         : "";
-                break;
-            case GasMode.Moving:
-                r = this.localization.translate(
-                    "game-red-zone-advancing"
-                );
+            break;
+        case GasMode.Moving:
+            r = this.localization.translate(
+                "game-red-zone-advancing"
+            );
         }
         this.displayAnnouncement(r);
     },
@@ -2222,10 +2221,10 @@ i.prototype = {
         const s = t.color ? helpers.colorToHexString(t.color) : "default";
         this.roleMenuElem.css("border-color", s);
         r.append(a).append(i);
-        var l = $("<div/>", {
+        const l = $("<div/>", {
             class: "ui-role-body-right"
         });
-        for (var c = t.perks, m = 0; m < c.length; m++) {
+        for (let c = t.perks, m = 0; m < c.length; m++) {
             const p = c[m];
             const h = $("<div/>", {
                 class: "ui-role-body-perk"

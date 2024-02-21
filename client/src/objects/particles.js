@@ -4,12 +4,18 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 
-function a(e, t) {
-    this.min = e;
-    this.max = t;
+class Range {
+    constructor(e, t) {
+        this.min = e;
+        this.max = t;
+    }
+
+    getRandom() {
+        return util.random(this.min, this.max);
+    }
 }
 function i(e) {
-    if (e instanceof a) {
+    if (e instanceof Range) {
         return e.getRandom();
     } else {
         return e;
@@ -22,7 +28,7 @@ function o(e) {
         return e;
     }
 }
-function s() {
+function Particle() {
     this.active = false;
     this.ticker = 0;
     this.def = {};
@@ -32,39 +38,34 @@ function s() {
     this.sprite.visible = false;
     this.hasParent = false;
 }
-function n() {
+function Emitter() {
     this.active = false;
 }
-function l(e) {
+function ParticleBarn(e) {
     this.renderer = e;
     this.particles = [];
     this.emitters = [];
     for (let t = 0; t < 256; t++) {
-        this.particles[t] = new s(this.display);
+        this.particles[t] = new Particle(this.display);
     }
     this.valueAdjust = 1;
 }
 
-a.prototype = {
-    getRandom: function() {
-        return util.random(this.min, this.max);
-    }
-};
 const d = {
     archwayBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.2, 0.35),
-            end: new a(0.08, 0.12),
-            lerp: new a(0, 1)
+            start: new Range(0.2, 0.35),
+            end: new Range(0.08, 0.12),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -83,13 +84,13 @@ const d = {
         rotVel: 0,
         scale: {
             start: 0.04,
-            end: new a(0.15, 0.2),
-            lerp: new a(0, 1)
+            end: new Range(0.15, 0.2),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -99,18 +100,18 @@ const d = {
     },
     barrelPlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(3, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(3, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.08, 0.18),
-            end: new a(0.07, 0.17),
-            lerp: new a(0, 1)
+            start: new Range(0.08, 0.18),
+            end: new Range(0.07, 0.17),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -121,17 +122,17 @@ const d = {
     barrelChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -141,18 +142,18 @@ const d = {
     },
     barrelBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -162,18 +163,18 @@ const d = {
     },
     blackChip: {
         image: ["part-woodchip-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -184,17 +185,17 @@ const d = {
     blueChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -204,18 +205,18 @@ const d = {
     },
     book: {
         image: ["part-book-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(3, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(3, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.09, 0.19),
-            end: new a(0.07, 0.17),
-            lerp: new a(0, 1)
+            start: new Range(0.09, 0.19),
+            end: new Range(0.07, 0.17),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -226,119 +227,119 @@ const d = {
     bottleBrownChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.02, 0.04),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.02, 0.04),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: 7878664
     },
     bottleBrownBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.4, 0.8),
-        drag: new a(1, 4),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        life: new Range(0.4, 0.8),
+        drag: new Range(1, 4),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.03, 0.06),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.03, 0.06),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 7878664
     },
     bottleBlueChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.02, 0.04),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.02, 0.04),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: 19544
     },
     bottleWhiteBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.4, 0.8),
-        drag: new a(1, 4),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        life: new Range(0.4, 0.8),
+        drag: new Range(1, 4),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.03, 0.06),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.03, 0.06),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.75,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 16777215
     },
     bottleWhiteChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.02, 0.04),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.02, 0.04),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.75,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: 16777215
     },
     bottleBlueBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.4, 0.8),
-        drag: new a(1, 4),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        life: new Range(0.4, 0.8),
+        drag: new Range(1, 4),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.03, 0.06),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.03, 0.06),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 19544
     },
     brickChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -348,18 +349,18 @@ const d = {
     },
     clothBreak: {
         image: ["part-cloth-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.95, 1)));
@@ -368,17 +369,17 @@ const d = {
     clothHit: {
         image: ["part-cloth-01.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.95, 1)));
@@ -386,18 +387,18 @@ const d = {
     },
     depositBoxGreyBreak: {
         image: ["part-plate-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(7, 8),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(7, 8),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.15, 0.25),
-            end: new a(0.12, 0.2),
-            lerp: new a(0, 1)
+            start: new Range(0.15, 0.25),
+            end: new Range(0.12, 0.2),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -407,18 +408,18 @@ const d = {
     },
     depositBoxGoldBreak: {
         image: ["part-plate-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(6, 8),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(6, 8),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.2, 0.35),
-            end: new a(0.18, 0.25),
-            lerp: new a(0, 1)
+            start: new Range(0.2, 0.35),
+            end: new Range(0.18, 0.25),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -429,51 +430,51 @@ const d = {
     glassChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: 8444415
     },
     glassPlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 8444415
     },
     goldChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -484,17 +485,17 @@ const d = {
     greenChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -504,18 +505,18 @@ const d = {
     },
     greenPlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.08, 0.16),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.08, 0.16),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 3884335
     },
@@ -525,35 +526,35 @@ const d = {
             "part-plate-01.img",
             "part-panel-01.img"
         ],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 8444415
     },
     hutBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -563,18 +564,18 @@ const d = {
     },
     leaf: {
         image: ["part-leaf-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -584,18 +585,18 @@ const d = {
     },
     leafPrickly: {
         image: ["part-leaf-01sv.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -605,18 +606,18 @@ const d = {
     },
     leafRiver: {
         image: ["part-leaf-02.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -626,18 +627,18 @@ const d = {
     },
     lockerBreak: {
         image: ["part-plate-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(7, 8),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(7, 8),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.15, 0.2),
-            end: new a(0.12, 0.15),
-            lerp: new a(0, 1)
+            start: new Range(0.15, 0.2),
+            end: new Range(0.12, 0.15),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -647,18 +648,18 @@ const d = {
     },
     ltgreenChip: {
         image: ["part-woodchip-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -668,18 +669,18 @@ const d = {
     },
     outhouseChip: {
         image: ["part-woodchip-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -689,18 +690,18 @@ const d = {
     },
     outhouseBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -710,18 +711,18 @@ const d = {
     },
     outhousePlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -732,17 +733,17 @@ const d = {
     potChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -752,18 +753,18 @@ const d = {
     },
     potBreak: {
         image: ["part-pot-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -774,17 +775,17 @@ const d = {
     potatoChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -794,18 +795,18 @@ const d = {
     },
     potatoBreak: {
         image: ["part-pumpkin-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -816,17 +817,17 @@ const d = {
     pumpkinChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -836,18 +837,18 @@ const d = {
     },
     pumpkinBreak: {
         image: ["part-pumpkin-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -858,17 +859,17 @@ const d = {
     squashChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -878,18 +879,18 @@ const d = {
     },
     squashBreak: {
         image: ["part-pumpkin-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -900,17 +901,17 @@ const d = {
     redChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -920,18 +921,18 @@ const d = {
     },
     redBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -941,18 +942,18 @@ const d = {
     },
     redPlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -963,17 +964,17 @@ const d = {
     rockChip: {
         image: ["map-stone-01.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -983,18 +984,18 @@ const d = {
     },
     rockBreak: {
         image: ["map-stone-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1005,51 +1006,51 @@ const d = {
     rockEyeChip: {
         image: ["map-stone-01.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.03, 0.06),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.03, 0.06),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: 2696225
     },
     rockEyeBreak: {
         image: ["map-stone-01.img"],
-        life: new a(0.8, 1),
-        drag: new a(4, 12),
+        life: new Range(0.8, 1),
+        drag: new Range(4, 12),
         rotVel: 0,
         scale: {
-            start: new a(0.05, 0.1),
-            end: new a(0.03, 0.06),
-            lerp: new a(0, 1)
+            start: new Range(0.05, 0.1),
+            end: new Range(0.03, 0.06),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 2696225
     },
     shackBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1059,35 +1060,35 @@ const d = {
     },
     shackGreenBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 5730406
     },
     tanChip: {
         image: ["part-woodchip-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1097,18 +1098,18 @@ const d = {
     },
     teahouseBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1118,18 +1119,18 @@ const d = {
     },
     teapavilionBreak: {
         image: ["part-panel-01.img"],
-        life: new a(0.5, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(0.5, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.25, 0.55),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.25, 0.55),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1139,18 +1140,18 @@ const d = {
     },
     toiletBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.8, 1),
-        drag: new a(1, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(1, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1160,18 +1161,18 @@ const d = {
     },
     toiletMetalBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.8, 1),
-        drag: new a(4, 5),
+        life: new Range(0.8, 1),
+        drag: new Range(4, 5),
         rotVel: 0,
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1181,18 +1182,18 @@ const d = {
     },
     turkeyFeathersHit: {
         image: ["part-feather-01.img", "part-feather-02.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 10),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 10),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.12),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.12),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return 16777215;
@@ -1200,18 +1201,18 @@ const d = {
     },
     turkeyFeathersDeath: {
         image: ["part-feather-01.img", "part-feather-02.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 10),
-        rotVel: new a(0, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 10),
+        rotVel: new Range(0, Math.PI * 3),
         scale: {
-            start: new a(0.15, 0.25),
-            end: new a(0.12, 0.2),
-            lerp: new a(0, 1)
+            start: new Range(0.15, 0.25),
+            end: new Range(0.12, 0.2),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return 16777215;
@@ -1220,17 +1221,17 @@ const d = {
     whiteChip: {
         image: ["part-spark-02.img"],
         life: 0.5,
-        drag: new a(1, 10),
+        drag: new Range(1, 10),
         rotVel: 0,
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1240,18 +1241,18 @@ const d = {
     },
     whitePlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1261,35 +1262,35 @@ const d = {
     },
     windowBreak: {
         image: ["part-spark-02.img"],
-        life: new a(0.4, 0.8),
-        drag: new a(1, 4),
-        rotVel: new a(Math.PI * 1, Math.PI * 6),
+        life: new Range(0.4, 0.8),
+        drag: new Range(1, 4),
+        rotVel: new Range(Math.PI * 1, Math.PI * 6),
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 8444415
     },
     woodChip: {
         image: ["part-woodchip-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.04, 0.08),
-            end: new a(0.01, 0.02),
-            lerp: new a(0, 1)
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1299,18 +1300,18 @@ const d = {
     },
     woodLog: {
         image: ["part-log-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1320,18 +1321,18 @@ const d = {
     },
     woodPlank: {
         image: ["part-plank-01.img"],
-        life: new a(1, 1.5),
-        drag: new a(1, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.1, 0.2),
-            end: new a(0.08, 0.18),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.2),
+            end: new Range(0.08, 0.18),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1341,18 +1342,18 @@ const d = {
     },
     woodShard: {
         image: ["part-spark-02.img"],
-        life: new a(1, 1.5),
-        drag: new a(3, 5),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(1, 1.5),
+        drag: new Range(3, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
-            start: new a(0.06, 0.15),
-            end: new a(0.02, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.06, 0.15),
+            end: new Range(0.02, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1362,18 +1363,18 @@ const d = {
     },
     "9mm": {
         image: ["part-shell-01.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1383,18 +1384,18 @@ const d = {
     },
     "9mm_cursed": {
         image: ["part-shell-01.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1404,18 +1405,18 @@ const d = {
     },
     "762mm": {
         image: ["part-shell-02.img"],
-        life: new a(0.75, 1),
-        drag: new a(1.5, 2.5),
-        rotVel: new a(Math.PI * 2.5, Math.PI * 2.5),
+        life: new Range(0.75, 1),
+        drag: new Range(1.5, 2.5),
+        rotVel: new Range(Math.PI * 2.5, Math.PI * 2.5),
         scale: {
             start: 0.075,
             end: 0.045,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.925, 1)
+            lerp: new Range(0.925, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1425,18 +1426,18 @@ const d = {
     },
     "556mm": {
         image: ["part-shell-04.img"],
-        life: new a(0.75, 1),
-        drag: new a(1.5, 2.5),
-        rotVel: new a(Math.PI * 2.5, Math.PI * 2.5),
+        life: new Range(0.75, 1),
+        drag: new Range(1.5, 2.5),
+        rotVel: new Range(Math.PI * 2.5, Math.PI * 2.5),
         scale: {
             start: 0.075,
             end: 0.045,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.925, 1)
+            lerp: new Range(0.925, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1446,18 +1447,18 @@ const d = {
     },
     "12gauge": {
         image: ["part-shell-03.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(1, 2),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(1, 2),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.1,
             end: 0.05,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1467,18 +1468,18 @@ const d = {
     },
     "50AE": {
         image: ["part-shell-01.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1488,18 +1489,18 @@ const d = {
     },
     "308sub": {
         image: ["part-shell-05.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1509,18 +1510,18 @@ const d = {
     },
     flare: {
         image: ["part-shell-03.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(1, 2),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(1, 2),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.1,
             end: 0.05,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1530,18 +1531,18 @@ const d = {
     },
     "45acp": {
         image: ["part-shell-01.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.07,
             end: 0.04,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1551,69 +1552,69 @@ const d = {
     },
     potato_ammo: {
         image: ["part-wedge-01.img"],
-        life: new a(0.5, 0.75),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 3, Math.PI * 3),
+        life: new Range(0.5, 0.75),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
         scale: {
             start: 0.07,
             end: 0.04,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.95, 1)
+            lerp: new Range(0.95, 1)
         },
         color: 16777215
     },
     bugle_ammo: {
         image: ["part-note-02.img"],
-        life: new a(1.25, 1.3),
-        drag: new a(3, 4),
-        rotVel: new a(Math.PI * 1, Math.PI * 1),
+        life: new Range(1.25, 1.3),
+        drag: new Range(3, 4),
+        rotVel: new Range(Math.PI * 1, Math.PI * 1),
         scale: {
             start: 0.1,
             end: 0.14,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.5, 1)
+            lerp: new Range(0.5, 1)
         },
         color: 16767488
     },
     fragPin: {
         image: ["part-frag-pin-01.img"],
-        life: new a(0.5, 0.5),
-        drag: new a(0.9, 1),
+        life: new Range(0.5, 0.5),
+        drag: new Range(0.9, 1),
         rotVel: 0,
         scale: {
             start: 0.18,
             end: 0.14,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.5, 1)
+            lerp: new Range(0.5, 1)
         },
         color: 16777215
     },
     fragLever: {
         image: ["part-frag-lever-01.img"],
-        life: new a(0.5, 0.5),
-        drag: new a(0.9, 1),
+        life: new Range(0.5, 0.5),
+        drag: new Range(0.9, 1),
         rotVel: Math.PI * 9,
         scale: {
             start: 0.18,
             end: 0.14,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.5, 1)
+            lerp: new Range(0.5, 1)
         },
         color: 16777215
     },
@@ -1625,12 +1626,12 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1646,12 +1647,12 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1661,18 +1662,18 @@ const d = {
     },
     explosionSmoke: {
         image: ["part-smoke-01.img"],
-        life: new a(2, 3),
+        life: new Range(2, 3),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1688,12 +1689,12 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1709,12 +1710,12 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1730,12 +1731,12 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 16777215
     },
@@ -1747,12 +1748,12 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 11363866
     },
@@ -1764,30 +1765,30 @@ const d = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.75, 1)
+            lerp: new Range(0.75, 1)
         },
         color: 12888074
     },
     airdropSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
         zOrd: 499,
-        life: new a(1, 1.5),
+        life: new Range(1, 1.5),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.67, 0.72),
-            end: new a(0.55, 0.61),
-            lerp: new a(0, 1)
+            start: new Range(0.67, 0.72),
+            end: new Range(0.55, 0.61),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -1797,261 +1798,261 @@ const d = {
     },
     airdropCrate01: {
         image: ["part-airdrop-01.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate01h: {
         image: ["part-airdrop-01h.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate01x: {
         image: ["part-airdrop-01x.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate02: {
         image: ["part-airdrop-02.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate02h: {
         image: ["part-airdrop-02h.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate02x: {
         image: ["part-airdrop-02x.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate03: {
         image: ["part-airdrop-03.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     airdropCrate04: {
         image: ["part-airdrop-04.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     classShell01a: {
         image: ["part-class-shell-01a.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     classShell01b: {
         image: ["part-class-shell-01b.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     classShell02a: {
         image: ["part-class-shell-02a.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     classShell02b: {
         image: ["part-class-shell-02b.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     classShell03a: {
         image: ["part-class-shell-03a.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(2, 2.25),
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(2, 2.25),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     classShell03b: {
         image: ["part-class-shell-03b.img"],
-        life: new a(0.85, 1.15),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(0, Math.PI * 2),
+        life: new Range(0.85, 1.15),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(0, Math.PI * 2),
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new a(0, 1)
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16777215
     },
     cabinSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
-        life: new a(3, 3.25),
-        drag: new a(0.2, 0.22),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(3, 3.25),
+        drag: new Range(0.2, 0.22),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.2, 0.25),
-            end: new a(0.6, 0.65),
-            lerp: new a(0, 1)
+            start: new Range(0.2, 0.25),
+            end: new Range(0.6, 0.65),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.7,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 0.7,
-            lerp: new a(0, 0.1)
+            lerp: new Range(0, 0.1)
         },
         color: function() {
             return util.rgbToInt(
@@ -2061,23 +2062,23 @@ const d = {
     },
     bathhouseSteam: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
-        life: new a(10, 12),
-        drag: new a(0.04, 0.06),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 12),
+        drag: new Range(0.04, 0.06),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.2, 0.25),
-            end: new a(0.9, 0.95),
-            lerp: new a(0, 1)
+            start: new Range(0.2, 0.25),
+            end: new Range(0.9, 0.95),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.5,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 0.5,
-            lerp: new a(0, 0.1)
+            lerp: new Range(0, 0.1)
         },
         color: function() {
             return util.rgbToInt(
@@ -2088,18 +2089,18 @@ const d = {
     bunkerBubbles: {
         image: ["player-ripple-01.img"],
         zOrd: 10,
-        life: new a(2.25, 2.5),
-        drag: new a(1.85, 2.15),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(2.25, 2.5),
+        drag: new Range(1.85, 2.15),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.2, 0.25),
-            end: new a(0.65, 0.7),
-            lerp: new a(0, 1)
+            start: new Range(0.2, 0.25),
+            end: new Range(0.65, 0.7),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 0.25,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.95, 1)));
@@ -2128,23 +2129,23 @@ const d = {
             "part-leaf-05.img",
             "part-leaf-06.img"
         ],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.15),
-            end: new a(0.08, 0.11),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.15),
+            end: new Range(0.08, 0.11),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2159,23 +2160,23 @@ const d = {
             "part-leaf-05.img",
             "part-leaf-06.img"
         ],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.15),
-            end: new a(0.08, 0.11),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.15),
+            end: new Range(0.08, 0.11),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2191,23 +2192,23 @@ const d = {
             "part-blossom-03.img",
             "part-blossom-04.img"
         ],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.13, 0.15),
-            end: new a(0.08, 0.11),
-            lerp: new a(0, 1)
+            start: new Range(0.13, 0.15),
+            end: new Range(0.08, 0.11),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2217,23 +2218,23 @@ const d = {
     },
     leafSummer: {
         image: ["part-leaf-06.img"],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.15),
-            end: new a(0.08, 0.11),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.15),
+            end: new Range(0.08, 0.11),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2250,23 +2251,23 @@ const d = {
             "part-blossom-04.img",
             "part-potato-02.img"
         ],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.13, 0.15),
-            end: new a(0.08, 0.11),
-            lerp: new a(0, 1)
+            start: new Range(0.13, 0.15),
+            end: new Range(0.08, 0.11),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2276,23 +2277,23 @@ const d = {
     },
     potato: {
         image: ["part-potato-02.img"],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.13, 0.15),
-            end: new a(0.08, 0.11),
-            lerp: new a(0, 1)
+            start: new Range(0.13, 0.15),
+            end: new Range(0.08, 0.11),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2302,23 +2303,23 @@ const d = {
     },
     snow: {
         image: ["part-snow-01.img"],
-        life: new a(10, 15),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(10, 15),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.07, 0.12),
-            end: new a(0.05, 0.1),
-            lerp: new a(0, 1)
+            start: new Range(0.07, 0.12),
+            end: new Range(0.05, 0.1),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2328,18 +2329,18 @@ const d = {
     },
     snowball_impact: {
         image: ["part-snow-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(0.5, 1),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.13, 0.23),
-            end: new a(0.07, 0.14),
-            lerp: new a(0, 1)
+            start: new Range(0.13, 0.23),
+            end: new Range(0.07, 0.14),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -2349,18 +2350,18 @@ const d = {
     },
     potato_impact: {
         image: ["part-potato-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(0.5, 1),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.13, 0.23),
-            end: new a(0.07, 0.14),
-            lerp: new a(0, 1)
+            start: new Range(0.13, 0.23),
+            end: new Range(0.07, 0.14),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: function() {
             return util.rgbToInt(
@@ -2370,40 +2371,40 @@ const d = {
     },
     potato_smg_impact: {
         image: ["part-potato-01.img"],
-        life: new a(0.5, 1),
-        drag: new a(0, 0),
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        life: new Range(0.5, 1),
+        drag: new Range(0, 0),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.13, 0.23),
-            end: new a(0.07, 0.14),
-            lerp: new a(0, 1)
+            start: new Range(0.13, 0.23),
+            end: new Range(0.07, 0.14),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.9, 1)
+            lerp: new Range(0.9, 1)
         },
         color: 16770437
     },
     heal_basic: {
         image: ["part-heal-basic.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0.25,
         rotVel: 0,
         scale: {
-            start: new a(0.1, 0.12),
-            end: new a(0.05, 0.07),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.12),
+            end: new Range(0.05, 0.07),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
@@ -2412,23 +2413,23 @@ const d = {
     },
     heal_heart: {
         image: ["part-heal-heart.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0.25,
         rotVel: 0,
         scale: {
-            start: new a(0.1, 0.12),
-            end: new a(0.05, 0.07),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.12),
+            end: new Range(0.05, 0.07),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
@@ -2437,23 +2438,23 @@ const d = {
     },
     heal_moon: {
         image: ["part-heal-moon.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0.25,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.1, 0.12),
-            end: new a(0.05, 0.07),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.12),
+            end: new Range(0.05, 0.07),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
@@ -2462,23 +2463,23 @@ const d = {
     },
     heal_tomoe: {
         image: ["part-heal-tomoe.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0.25,
-        rotVel: new a(Math.PI * 0.5, Math.PI * 1),
+        rotVel: new Range(Math.PI * 0.5, Math.PI * 1),
         scale: {
-            start: new a(0.1, 0.12),
-            end: new a(0.05, 0.07),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.12),
+            end: new Range(0.05, 0.07),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
@@ -2487,23 +2488,23 @@ const d = {
     },
     boost_basic: {
         image: ["part-boost-basic.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
@@ -2512,23 +2513,23 @@ const d = {
     },
     boost_star: {
         image: ["part-boost-star.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
@@ -2537,23 +2538,23 @@ const d = {
     },
     boost_naturalize: {
         image: ["part-boost-naturalize.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 0.35, Math.PI * 0.7),
+        rotVel: new Range(Math.PI * 0.35, Math.PI * 0.7),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
@@ -2562,23 +2563,23 @@ const d = {
     },
     boost_shuriken: {
         image: ["part-boost-shuriken.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 1, Math.PI * 2),
+        rotVel: new Range(Math.PI * 1, Math.PI * 2),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
@@ -2587,23 +2588,23 @@ const d = {
     },
     revive_basic: {
         image: ["part-heal-basic.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0.25,
         rotVel: 0,
         scale: {
-            start: new a(0.1, 0.12),
-            end: new a(0.05, 0.07),
-            lerp: new a(0, 1)
+            start: new Range(0.1, 0.12),
+            end: new Range(0.05, 0.07),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2619,23 +2620,23 @@ const d = {
             "part-blossom-03.img",
             "part-blossom-04.img"
         ],
-        life: new a(4, 5),
+        life: new Range(4, 5),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2645,45 +2646,45 @@ const d = {
     },
     takedownStim: {
         image: ["part-takedown-01.img"],
-        life: new a(4, 5),
+        life: new Range(4, 5),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: 13107200
     },
     inspireStim: {
         image: ["part-note-01.img"],
-        life: new a(4, 5),
+        life: new Range(4, 5),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             return util.rgbToInt(
@@ -2693,23 +2694,23 @@ const d = {
     },
     xp_common: {
         image: ["part-boost-basic.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             if (Math.random() > 0.5) {
@@ -2726,23 +2727,23 @@ const d = {
     },
     xp_rare: {
         image: ["part-boost-basic.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             if (Math.random() > 0.5) {
@@ -2759,23 +2760,23 @@ const d = {
     },
     xp_mythic: {
         image: ["part-boost-basic.img"],
-        life: new a(0.75, 1),
+        life: new Range(0.75, 1),
         drag: 0,
-        rotVel: new a(Math.PI * 0.25, Math.PI * 0.5),
+        rotVel: new Range(Math.PI * 0.25, Math.PI * 0.5),
         scale: {
-            start: new a(0.12, 0.14),
-            end: new a(0.06, 0.08),
-            lerp: new a(0, 1)
+            start: new Range(0.12, 0.14),
+            end: new Range(0.06, 0.08),
+            lerp: new Range(0, 1)
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new a(0.7, 1)
+            lerp: new Range(0.7, 1)
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new a(0, 0.05)
+            lerp: new Range(0, 0.05)
         },
         color: function() {
             if (Math.random() > 0.5) {
@@ -2794,266 +2795,266 @@ const d = {
 const EmitterDefs = {
     smoke_barrel: {
         particle: "explosionSmoke",
-        rate: new a(0.2, 0.3),
+        rate: new Range(0.2, 0.3),
         radius: 0,
-        speed: new a(2, 3),
+        speed: new Range(2, 3),
         angle: Math.PI * 0.1,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     cabin_smoke_parent: {
         particle: "cabinSmoke",
-        rate: new a(0.72, 0.83),
+        rate: new Range(0.72, 0.83),
         radius: 0,
-        speed: new a(64, 96),
+        speed: new Range(64, 96),
         angle: Math.PI * 0.1,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     bathhouse_steam: {
         particle: "bathhouseSteam",
-        rate: new a(2, 3),
+        rate: new Range(2, 3),
         radius: 1,
-        speed: new a(1.5, 2),
+        speed: new Range(1.5, 2),
         angle: Math.PI * 0.1,
         maxCount: Number.MAX_VALUE
     },
     bunker_bubbles_01: {
         particle: "bunkerBubbles",
-        rate: new a(0.3, 0.325),
+        rate: new Range(0.3, 0.325),
         radius: 0,
-        speed: new a(1.6, 1.8),
+        speed: new Range(1.6, 1.8),
         angle: Math.PI * -2.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     bunker_bubbles_02: {
         particle: "bunkerBubbles",
-        rate: new a(0.4, 0.425),
+        rate: new Range(0.4, 0.425),
         radius: 0,
-        speed: new a(1.6, 1.8),
+        speed: new Range(1.6, 1.8),
         angle: Math.PI * -2.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     falling_leaf: {
         particle: "leafAutumn",
-        rate: new a(0.08, 0.12),
+        rate: new Range(0.08, 0.12),
         radius: 120,
-        speed: new a(2, 3),
+        speed: new Range(2, 3),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_leaf_halloween: {
         particle: "leafHalloween",
-        rate: new a(0.08, 0.12),
+        rate: new Range(0.08, 0.12),
         radius: 120,
-        speed: new a(2, 3),
+        speed: new Range(2, 3),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_leaf_spring: {
         particle: "leafSpring",
-        rate: new a(0.1, 0.14),
+        rate: new Range(0.1, 0.14),
         radius: 120,
-        speed: new a(2, 3),
+        speed: new Range(2, 3),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_leaf_summer: {
         particle: "leafSummer",
-        rate: new a(0.18, 0.24),
+        rate: new Range(0.18, 0.24),
         radius: 120,
-        speed: new a(1.4, 2.4),
+        speed: new Range(1.4, 2.4),
         angle: Math.PI * 0.2,
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_leaf_potato: {
         particle: "leafPotato",
-        rate: new a(0.1, 0.14),
+        rate: new Range(0.1, 0.14),
         radius: 120,
-        speed: new a(2, 3),
+        speed: new Range(2, 3),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_potato: {
         particle: "potato",
-        rate: new a(0.2, 0.24),
+        rate: new Range(0.2, 0.24),
         radius: 120,
-        speed: new a(2, 3),
+        speed: new Range(2, 3),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_snow_fast: {
         particle: "snow",
-        rate: new a(0.12, 0.17),
-        maxRate: new a(0.05, 0.07),
+        rate: new Range(0.12, 0.17),
+        maxRate: new Range(0.05, 0.07),
         maxElapsed: 240,
         radius: 70,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     falling_snow_slow: {
         particle: "snow",
-        rate: new a(0.08, 0.12),
+        rate: new Range(0.08, 0.12),
         radius: 70,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: Math.PI * 0.2,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
         zOrd: 999
     },
     heal_basic: {
         particle: "heal_basic",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     heal_heart: {
         particle: "heal_heart",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     heal_moon: {
         particle: "heal_moon",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     heal_tomoe: {
         particle: "heal_tomoe",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     boost_basic: {
         particle: "boost_basic",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     boost_star: {
         particle: "boost_star",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     boost_naturalize: {
         particle: "boost_naturalize",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     boost_shuriken: {
         particle: "boost_shuriken",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
-        rot: new a(0, Math.PI * 2),
+        rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE
     },
     revive_basic: {
         particle: "revive_basic",
-        rate: new a(0.5, 0.55),
+        rate: new Range(0.5, 0.55),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     windwalk: {
         particle: "leafStim",
-        rate: new a(0.1, 0.12),
+        rate: new Range(0.1, 0.12),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     takedown: {
         particle: "takedownStim",
-        rate: new a(0.1, 0.12),
+        rate: new Range(0.1, 0.12),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     inspire: {
         particle: "inspireStim",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     xp_common: {
         particle: "xp_common",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     xp_rare: {
         particle: "xp_rare",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     },
     xp_mythic: {
         particle: "xp_mythic",
-        rate: new a(0.3, 0.35),
+        rate: new Range(0.3, 0.35),
         radius: 1.5,
-        speed: new a(1, 1.5),
+        speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
         maxCount: Number.MAX_VALUE
     }
 };
-s.prototype = {
+Particle.prototype = {
     o: function(e, t, r, a, s, n, l, m, p, u) {
         const g = d[t];
         this.active = true;
@@ -3108,7 +3109,7 @@ s.prototype = {
         this.sprite.tint = e;
     }
 };
-n.prototype = {
+Emitter.prototype = {
     o: function(e, t = {}) {
         const r = EmitterDefs[e];
         this.active = true;
@@ -3144,7 +3145,7 @@ n.prototype = {
         this.duration = this.ticker;
     }
 };
-l.prototype = {
+ParticleBarn.prototype = {
     onMapLoad: function(e) {
         this.valueAdjust = e.getMapDef().biome.valueAdjust;
     },
@@ -3158,15 +3159,15 @@ l.prototype = {
         }
     },
     addParticle: function(e, t, r, a, i, o, n, l) {
-        var c = null;
-        for (var m = 0; m < this.particles.length; m++) {
+        let c = null;
+        for (let m = 0; m < this.particles.length; m++) {
             if (!this.particles[m].active) {
                 c = this.particles[m];
                 break;
             }
         }
         if (!c) {
-            c = new s();
+            c = new Particle();
             this.particles.push(c);
         }
         i = i !== undefined ? i : 1;
@@ -3200,15 +3201,15 @@ l.prototype = {
         return a;
     },
     addEmitter: function(e, t = {}) {
-        var r = null;
-        for (var a = 0; a < this.emitters.length; a++) {
+        let r = null;
+        for (let a = 0; a < this.emitters.length; a++) {
             if (!this.emitters[a].active) {
                 r = this.emitters[a];
                 break;
             }
         }
         if (!r) {
-            r = new n();
+            r = new Emitter();
             this.emitters.push(r);
         }
         r.o(e, t);
@@ -3218,7 +3219,6 @@ l.prototype = {
         for (let a = 0; a < this.emitters.length; a++) {
             const o = this.emitters[a];
             if (o.active && o.enabled) {
-                o.ticker;
                 o.ticker += e;
                 o.nextSpawn -= e;
                 for (
@@ -3329,6 +3329,6 @@ l.prototype = {
     }
 };
 export default {
-    EmitterDefs: EmitterDefs,
-    f: l
+    EmitterDefs,
+    ParticleBarn
 };

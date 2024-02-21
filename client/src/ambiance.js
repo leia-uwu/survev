@@ -29,9 +29,11 @@ export default class Ambiance {
         r("interior_1", "", "ambient", true);
         this.initTime = Date.now();
     }
+
     getTrack(e) {
         return this.tracks[this.trackToIdx[e]];
     }
+
     onGameStart() {
         this.introMusic = false;
         for (let e = 0; e < this.tracks.length; e++) {
@@ -40,6 +42,7 @@ export default class Ambiance {
         this.getTrack("wind").weight = 1;
         this.soundUpdateThrottle = 0;
     }
+
     onGameComplete(e) {
         for (let t = 0; t < this.tracks.length; t++) {
             const r = this.tracks[t];

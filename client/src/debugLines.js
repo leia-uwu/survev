@@ -11,6 +11,7 @@ class DebugLines {
     constructor() {
         this.shapes = [];
     }
+
     addLine(e, t, r, a) {
         this.shapes.push({
             type: n.Line,
@@ -20,6 +21,7 @@ class DebugLines {
             fill: a
         });
     }
+
     addRay(e, t, r, a, i) {
         this.shapes.push({
             type: n.Ray,
@@ -30,6 +32,7 @@ class DebugLines {
             fill: i
         });
     }
+
     addCircle(e, t, r, a) {
         this.shapes.push({
             type: n.Circle,
@@ -39,6 +42,7 @@ class DebugLines {
             fill: a
         });
     }
+
     addAabb(e, t, r, a) {
         this.shapes.push({
             type: n.Aabb,
@@ -48,6 +52,7 @@ class DebugLines {
             fill: a
         });
     }
+
     addCollider(e, t, r) {
         if (e.type == collider.Type.Aabb) {
             this.addAabb(e.min, e.max, t, r);
@@ -55,12 +60,14 @@ class DebugLines {
             this.addCircle(e.pos, e.rad, t, r);
         }
     }
+
     render(e, t) {
     }
+
     flush() {
         this.shapes = [];
     }
 }
 
 const debugLines = new DebugLines();
-export default debugLines
+export default debugLines;

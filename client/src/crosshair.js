@@ -1,4 +1,4 @@
-import $ from "jquery"
+import $ from "jquery";
 import { util } from "../../shared/utils/util";
 import { CrosshairDefs } from "../../shared/defs/gameObjects/crosshairDefs";
 

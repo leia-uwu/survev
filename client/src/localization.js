@@ -45,12 +45,12 @@ var c = {
 };
 Localization.prototype = {
     detectLocale: function() {
-        var e = (
+        let e = (
             navigator.language || navigator.userLanguage
         ).toLowerCase();
         for (
-            var t = ["pt", "de", "es", "fr", "ko", "ru", "en"],
-            r = 0;
+            let t = ["pt", "de", "es", "fr", "ko", "ru", "en"],
+                r = 0;
             r < t.length;
             r++
         ) {

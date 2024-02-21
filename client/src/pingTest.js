@@ -80,10 +80,11 @@ class PingTest {
         this.testsCompleted = 0;
         this.printSummary = true;
     }
+
     start(e) {
         if ("WebSocket" in window) {
-            var t = 0;
-            for (var r = 0; r < this.tests.length; r++) {
+            let t = 0;
+            for (let r = 0; r < this.tests.length; r++) {
                 const a = this.tests[r];
                 if (
                     !a.active &&
@@ -100,14 +101,15 @@ class PingTest {
             }
         }
     }
+
     update(e) {
-        var t = this;
-        var r = function(e) {
+        const t = this;
+        const r = function(e) {
             e.active = false;
             e.complete = true;
             t.testsCompleted++;
         };
-        var a = function(e) {
+        const a = function(e) {
             if (e.ws) {
                 e.ws.close();
                 e.ws = null;
@@ -192,15 +194,17 @@ class PingTest {
             this.printSummary = false;
         }
     }
+
     isComplete() {
         return (
             this.testsCompleted == this.testsStarted &&
             this.testsStarted > 0
         );
     }
+
     getRegionList() {
-        var e = [];
-        for (var t = 0; t < o.length; t++) {
+        const e = [];
+        for (let t = 0; t < o.length; t++) {
             const r = o[t].region;
             if (!e.includes(r)) {
                 e.push(r);
@@ -208,19 +212,21 @@ class PingTest {
         }
         return e;
     }
+
     getRegion() {
         this.tests.sort((e, t) => {
             return e.ping - t.ping;
         });
         return this.tests[0].region;
     }
+
     getZones(e) {
         for (
             var t = this.tests.sort((e, t) => {
-                return e.ping - t.ping;
-            }),
-            r = [],
-            a = 0;
+                    return e.ping - t.ping;
+                }),
+                r = [],
+                a = 0;
             a < t.length;
             a++
         ) {
@@ -232,4 +238,4 @@ class PingTest {
         return r;
     }
 }
-export default PingTest
+export default PingTest;

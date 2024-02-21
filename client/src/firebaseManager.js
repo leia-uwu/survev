@@ -1,5 +1,3 @@
-import $ from "jquery";
-
 class FireBaseManager {
     constructor() {
         this.requests = 0;
@@ -9,6 +7,7 @@ class FireBaseManager {
         this.errorLogCount = 0;
         this.appErrorLogCount = 0;
     }
+
     update() {
         const e = new Date().getTime();
         if (this.throttle) {
@@ -20,9 +19,11 @@ class FireBaseManager {
             this.requests = Math.max(this.requests - 1, 0);
         }
     }
+
     sample() {
         return Math.random() <= 0.01;
     }
+
     store(e, t) {
         /* if (this.enabled) {
   if (++this.requests > 5)
@@ -46,6 +47,7 @@ class FireBaseManager {
       });
 } */
     }
+
     storeGeneric(e, t) {
         if (this.sample()) {
             this.store("storeGeneric", {
@@ -54,6 +56,7 @@ class FireBaseManager {
             });
         }
     }
+
     logWindowOnError(e) {
         if (this.errorLogCount < 2) {
             this.store("windowOnError", {
@@ -62,6 +65,7 @@ class FireBaseManager {
             this.errorLogCount++;
         }
     }
+
     logWindowOnAppError(e) {
         if (this.appErrorLogCount < 2) {
             this.store("windowOnAppError", {
@@ -70,16 +74,19 @@ class FireBaseManager {
             this.appErrorLogCount++;
         }
     }
+
     logError(e) {
         this.store("errorLog", {
             error: e
         });
     }
+
     logTest(e) {
         this.store("testLog", {
             error: e
         });
     }
+
     logProxy(e) {
         this.store("onProxy", {
             data: e
@@ -93,4 +100,3 @@ setInterval(() => {
 }, 1000);
 
 export default firebaseManager;
-

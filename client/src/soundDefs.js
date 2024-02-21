@@ -2024,4 +2024,4 @@ export default {
     Groups,
     Channels,
     Reverbs
-}
+};

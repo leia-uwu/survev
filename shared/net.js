@@ -38,16 +38,6 @@ function getPlayerStatusUpdateRate(factionMode) {
     }
 }
 
-function setSerializeFns(e, t, r, a, i, o) {
-    ObjectSerializeFns[e] = {
-        serializedFullSize: t,
-        serializePart: r,
-        serializeFull: a,
-        deserializePart: i,
-        deserializeFull: o
-    };
-}
-
 function deserializeActivePlayer(e, t) {
     t.healthDirty = e.readBoolean();
     if (t.healthDirty) {
@@ -144,13 +134,13 @@ function deserializePlayerInfos(e, t) {
     e.readAlignToNextByte();
 }
 
-function deserializeGasData(e, t) {
-    t.mode = e.readUint8();
-    t.duration = e.readFloat32();
-    t.posOld = e.readVec(0, 0, 1024, 1024, 16);
-    t.posNew = e.readVec(0, 0, 1024, 1024, 16);
-    t.radOld = e.readFloat(0, 2048, 16);
-    t.radNew = e.readFloat(0, 2048, 16);
+function deserializeGasData(s, data) {
+    data.mode = s.readUint8();
+    data.duration = s.readFloat32();
+    data.posOld = s.readVec(0, 0, 1024, 1024, 16);
+    data.posNew = s.readVec(0, 0, 1024, 1024, 16);
+    data.radOld = s.readFloat(0, 2048, 16);
+    data.radNew = s.readFloat(0, 2048, 16);
 }
 
 function deserializeMapRiver(e, t) {
@@ -367,7 +357,19 @@ const Constants = {
     MaxPerks: 8,
     MaxMapIndicators: 16
 };
+
 const ObjectSerializeFns = {};
+
+function setSerializeFns(type, serializedFullSize, serializePart, serializeFull, deserializePart, deserializeFull) {
+    ObjectSerializeFns[type] = {
+        serializedFullSize,
+        serializePart,
+        serializeFull,
+        deserializePart,
+        deserializeFull
+    };
+}
+
 setSerializeFns(
     GameObject.Type.Player,
     32,
@@ -941,6 +943,7 @@ const UpdateExtFlags = {
     MapIndicators: 1 << 14,
     KillLeader: 1 << 15
 };
+
 class UpdateMsg {
     constructor() {
         this.serializedObjectCache = null;
@@ -982,187 +985,202 @@ class UpdateMsg {
         this.ack = 0;
     }
 
-    deserialize(e, t) {
-        const flags = e.readUint16();
-        let a = 0;
+    deserialize(s, objectCreator) {
+        const flags = s.readUint16();
+
         if ((flags & UpdateExtFlags.DeletedObjects) != 0) {
-            a = e.readUint16();
-            for (let i = 0; i < a; i++) {
-                this.delObjIds.push(e.readUint16());
+            const count = s.readUint16();
+            for (let i = 0; i < count; i++) {
+                this.delObjIds.push(s.readUint16());
             }
         }
-        let o = 0;
+
         if ((flags & UpdateExtFlags.FullObjects) != 0) {
-            o = e.readUint16();
-            for (let s = 0; s < o; s++) {
-                const h = {};
-                h.__type = e.readUint8();
-                h.__id = e.readUint16();
-                ObjectSerializeFns[h.__type].deserializePart(e, h);
-                ObjectSerializeFns[h.__type].deserializeFull(e, h);
-                this.fullObjects.push(h);
+            const count = s.readUint16();
+            for (let i = 0; i < count; i++) {
+                const data = {};
+                data.__type = s.readUint8();
+                data.__id = s.readUint16();
+                ObjectSerializeFns[data.__type].deserializePart(s, data);
+                ObjectSerializeFns[data.__type].deserializeFull(s, data);
+                this.fullObjects.push(data);
             }
         }
-        for (let d = e.readUint16(), u = 0; u < d; u++) {
-            const g = {};
-            g.__id = e.readUint16();
-            const y = t.getTypeById(g.__id, e);
-            ObjectSerializeFns[y].deserializePart(e, g);
-            this.partObjects.push(g);
+
+        for (let count = s.readUint16(), i = 0; i < count; i++) {
+            const data = {};
+            data.__id = s.readUint16();
+            const type = objectCreator.getTypeById(data.__id, s);
+            ObjectSerializeFns[type].deserializePart(s, data);
+            this.partObjects.push(data);
         }
+
         if ((flags & UpdateExtFlags.ActivePlayerId) != 0) {
-            this.activePlayerId = e.readUint16();
+            this.activePlayerId = s.readUint16();
             this.activePlayerIdDirty = true;
         }
-        const w = {};
-        deserializeActivePlayer(e, w);
-        this.activePlayerData = w;
+
+        const activePlayerData = {};
+        deserializeActivePlayer(s, activePlayerData);
+        this.activePlayerData = activePlayerData;
+
         if ((flags & UpdateExtFlags.Gas) != 0) {
             const f = {};
-            deserializeGasData(e, f);
+            deserializeGasData(s, f);
             this.gasData = f;
             this.gasDirty = true;
         }
+
         if ((flags & UpdateExtFlags.GasCircle) != 0) {
-            this.gasT = e.readFloat(0, 1, 16);
+            this.gasT = s.readFloat(0, 1, 16);
             this.gasTDirty = true;
         }
+
         if ((flags & UpdateExtFlags.PlayerInfos) != 0) {
-            for (let _ = e.readUint8(), b = 0; b < _; b++) {
+            for (let i = s.readUint8(), b = 0; b < i; b++) {
                 const x = {};
-                deserializePlayerInfos(e, x);
+                deserializePlayerInfos(s, x);
                 this.playerInfos.push(x);
             }
         }
+
         if ((flags & UpdateExtFlags.DeletePlayerIds) != 0) {
-            for (let v = e.readUint8(), k = 0; k < v; k++) {
-                const z = e.readUint16();
-                this.deletedPlayerIds.push(z);
+            for (let count = s.readUint8(), i = 0; i < count; i++) {
+                const id = s.readUint16();
+                this.deletedPlayerIds.push(id);
             }
         }
+
         if ((flags & UpdateExtFlags.PlayerStatus) != 0) {
-            const I = {};
-            deserializePlayerStatus(e, I);
-            this.playerStatus = I;
+            const playerStatus = {};
+            deserializePlayerStatus(s, playerStatus);
+            this.playerStatus = playerStatus;
             this.playerStatusDirty = true;
         }
+
         if ((flags & UpdateExtFlags.GroupStatus) != 0) {
-            const T = {};
-            deserializeGroupStatus(e, T);
-            this.groupStatus = T;
+            const groupStatus = {};
+            deserializeGroupStatus(s, groupStatus);
+            this.groupStatus = groupStatus;
             this.groupStatusDirty = true;
         }
+
         if ((flags & UpdateExtFlags.Bullets) != 0) {
-            for (let M = e.readUint8(), A = 0; A < M; A++) {
-                const O = {};
-                O.playerId = e.readUint16();
-                O.pos = e.readVec(0, 0, 1024, 1024, 16);
-                O.dir = e.readUnitVec(8);
-                O.bulletType = e.readGameType();
-                O.layer = e.readBits(2);
-                O.varianceT = e.readFloat(0, 1, 4);
-                O.distAdjIdx = e.readBits(4);
-                O.clipDistance = e.readBoolean();
-                if (O.clipDistance) {
-                    O.distance = e.readFloat(0, 1024, 16);
+            for (let count = s.readUint8(), i = 0; i < count; i++) {
+                const bullet = {};
+                bullet.playerId = s.readUint16();
+                bullet.pos = s.readVec(0, 0, 1024, 1024, 16);
+                bullet.dir = s.readUnitVec(8);
+                bullet.bulletType = s.readGameType();
+                bullet.layer = s.readBits(2);
+                bullet.varianceT = s.readFloat(0, 1, 4);
+                bullet.distAdjIdx = s.readBits(4);
+                bullet.clipDistance = s.readBoolean();
+                if (bullet.clipDistance) {
+                    bullet.distance = s.readFloat(0, 1024, 16);
                 }
-                O.shotFx = e.readBoolean();
-                if (O.shotFx) {
-                    O.shotSourceType = e.readGameType();
-                    O.shotOffhand = e.readBoolean();
-                    O.lastShot = e.readBoolean();
+                bullet.shotFx = s.readBoolean();
+                if (bullet.shotFx) {
+                    bullet.shotSourceType = s.readGameType();
+                    bullet.shotOffhand = s.readBoolean();
+                    bullet.lastShot = s.readBoolean();
                 }
-                O.reflectCount = 0;
-                O.reflectObjId = 0;
-                if (e.readBoolean()) {
-                    O.reflectCount = e.readBits(2);
-                    O.reflectObjId = e.readUint16();
+                bullet.reflectCount = 0;
+                bullet.reflectObjId = 0;
+                if (s.readBoolean()) {
+                    bullet.reflectCount = s.readBits(2);
+                    bullet.reflectObjId = s.readUint16();
                 }
-                O.hasSpecialFx = e.readBoolean();
-                if (O.hasSpecialFx) {
-                    O.shotAlt = e.readBoolean();
-                    O.splinter = e.readBoolean();
-                    O.trailSaturated = e.readBoolean();
-                    O.trailSmall = e.readBoolean();
-                    O.trailThick = e.readBoolean();
+                bullet.hasSpecialFx = s.readBoolean();
+                if (bullet.hasSpecialFx) {
+                    bullet.shotAlt = s.readBoolean();
+                    bullet.splinter = s.readBoolean();
+                    bullet.trailSaturated = s.readBoolean();
+                    bullet.trailSmall = s.readBoolean();
+                    bullet.trailThick = s.readBoolean();
                 }
-                this.bullets.push(O);
+                this.bullets.push(bullet);
             }
-            e.readAlignToNextByte();
+            s.readAlignToNextByte();
         }
+
         if ((flags & UpdateExtFlags.Explosions) != 0) {
-            const D = e.readUint8();
-            for (let i = 0; i < D; i++) {
-                const B = {};
-                B.pos = e.readVec(0, 0, 1024, 1024, 16);
-                B.type = e.readGameType();
-                B.layer = e.readBits(2);
-                e.readAlignToNextByte();
-                this.explosions.push(B);
+            const count = s.readUint8();
+            for (let i = 0; i < count; i++) {
+                const explosion = {};
+                explosion.pos = s.readVec(0, 0, 1024, 1024, 16);
+                explosion.type = s.readGameType();
+                explosion.layer = s.readBits(2);
+                s.readAlignToNextByte();
+                this.explosions.push(explosion);
             }
         }
 
         if ((flags & UpdateExtFlags.Emotes) != 0) {
-            for (let R = e.readUint8(), L = 0; L < R; L++) {
-                const q = {};
-                q.playerId = e.readUint16();
-                q.type = e.readGameType();
-                q.itemType = e.readGameType();
-                q.isPing = e.readBoolean();
-                if (q.isPing) {
-                    q.pos = e.readVec(0, 0, 1024, 1024, 16);
+            for (let count = s.readUint8(), i = 0; i < count; i++) {
+                const emote = {};
+                emote.playerId = s.readUint16();
+                emote.type = s.readGameType();
+                emote.itemType = s.readGameType();
+                emote.isPing = s.readBoolean();
+                if (emote.isPing) {
+                    emote.pos = s.readVec(0, 0, 1024, 1024, 16);
                 }
-                e.readBits(3);
-                this.emotes.push(q);
+                s.readBits(3);
+                this.emotes.push(emote);
             }
         }
+
         if ((flags & UpdateExtFlags.Planes) != 0) {
-            for (let F = e.readUint8(), j = 0; j < F; j++) {
-                const H = {};
-                H.id = e.readUint8();
-                const V = e.readVec(0, 0, 2048, 2048, 10);
-                H.pos = v2.create(V.x - 512, V.y - 512);
-                H.planeDir = e.readUnitVec(8);
-                H.actionComplete = e.readBoolean();
-                H.action = e.readBits(3);
-                this.planes.push(H);
+            for (let count = s.readUint8(), i = 0; i < count; i++) {
+                const plane = {};
+                plane.id = s.readUint8();
+                const V = s.readVec(0, 0, 2048, 2048, 10);
+                plane.pos = v2.create(V.x - 512, V.y - 512);
+                plane.planeDir = s.readUnitVec(8);
+                plane.actionComplete = s.readBoolean();
+                plane.action = s.readBits(3);
+                this.planes.push(plane);
             }
         }
+
         if ((flags & UpdateExtFlags.AirstrikeZones) != 0) {
-            for (let U = e.readUint8(), W = 0; W < U; W++) {
-                const G = {};
-                G.pos = e.readVec(0, 0, 1024, 1024, 12);
-                G.rad = e.readFloat(
+            for (let count = s.readUint8(), i = 0; i < count; i++) {
+                const airStrikeZone = {};
+                airStrikeZone.pos = s.readVec(0, 0, 1024, 1024, 12);
+                airStrikeZone.rad = s.readFloat(
                     0,
                     Constants.AirstrikeZoneMaxRad,
                     8
                 );
-                G.duration = e.readFloat(
+                airStrikeZone.duration = s.readFloat(
                     0,
                     Constants.AirstrikeZoneMaxDuration,
                     8
                 );
-                this.airstrikeZones.push(G);
+                this.airstrikeZones.push(airStrikeZone);
             }
         }
+
         if ((flags & UpdateExtFlags.MapIndicators) != 0) {
-            for (let X = e.readUint8(), K = 0; K < X; K++) {
-                const Z = {};
-                Z.id = e.readBits(4);
-                Z.dead = e.readBoolean();
-                Z.equipped = e.readBoolean();
-                Z.type = e.readGameType();
-                Z.pos = e.readVec(0, 0, 1024, 1024, 16);
-                this.mapIndicators.push(Z);
+            for (let count = s.readUint8(), i = 0; i < count; i++) {
+                const mapIndicator = {};
+                mapIndicator.id = s.readBits(4);
+                mapIndicator.dead = s.readBoolean();
+                mapIndicator.equipped = s.readBoolean();
+                mapIndicator.type = s.readGameType();
+                mapIndicator.pos = s.readVec(0, 0, 1024, 1024, 16);
+                this.mapIndicators.push(mapIndicator);
             }
-            e.readAlignToNextByte();
+            s.readAlignToNextByte();
         }
+
         if ((flags & UpdateExtFlags.KillLeader) != 0) {
-            this.killLeaderId = e.readUint16();
-            this.killLeaderKills = e.readUint8();
+            this.killLeaderId = s.readUint16();
+            this.killLeaderKills = s.readUint8();
             this.killLeaderDirty = true;
         }
-        this.ack = e.readUint8();
+        this.ack = s.readUint8();
     }
 }
 
@@ -1241,6 +1259,7 @@ const PickupMsgType = {
     Success: 4,
     GunCannotFire: 5
 };
+
 class PickupMsg {
     constructor() {
         this.type = 0;

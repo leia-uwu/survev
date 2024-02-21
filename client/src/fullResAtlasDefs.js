@@ -29411,4 +29411,4 @@ export default {
             }
         }
     ]
-}
+};

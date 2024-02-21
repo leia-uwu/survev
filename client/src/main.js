@@ -9,7 +9,7 @@ import { math } from "../../shared/utils/math";
 
 import net from "../../shared/net";
 import Account from "./account";
-import Api from "./api"
+import Api from "./api";
 import Ambiance from "./ambiance";
 import AudioManager from "./audioManager";
 import Device from "./device";
@@ -64,7 +64,7 @@ class Application {
         this.account = new Account(this.config);
         this.loadoutMenu = new LoadoutMenu(
             this.account,
-            this.localization,
+            this.localization
         );
         this.pass = new Pass(
             this.account,
@@ -163,6 +163,7 @@ class Application {
             }
         })(document, "script", "cordova-js");
     }
+
     Qr() {
         const e = this;
         if (
@@ -409,9 +410,11 @@ class Application {
             Ui2.loadStaticDomImages();
         }
     }
+
     onUnload() {
         this.teamMenu.leave();
     }
+
     onResize() {
         Device.onResize();
         Menu.onResize();
@@ -425,6 +428,7 @@ class Application {
         }
         this.refreshUi();
     }
+
     onPause() {
         if (Device.webview) {
             this.pauseTime = Date.now();
@@ -437,6 +441,7 @@ class Application {
             }
         }
     }
+
     onResume() {
         if (Device.webview) {
             if (
@@ -458,12 +463,14 @@ class Application {
             }
         }
     }
+
     startPingTest() {
         const e = this.config.get("regionSelected")
             ? [this.config.get("region")]
             : this.pingTest.getRegionList();
         this.pingTest.start(e);
     }
+
     setAppActive(e) {
         this.active = e;
         this.quickPlayPendingModeIdx = -1;
@@ -472,6 +479,7 @@ class Application {
             this.errorModal.hide();
         }
     }
+
     setPlayLockout(e) {
         const t = this;
         const r = e ? 0 : 1000;
@@ -501,12 +509,14 @@ class Application {
                 }
             );
     }
+
     onTeamMenuJoinGame(e) {
         const t = this;
         this.waitOnAccount(() => {
             t.joinGame(e);
         });
     }
+
     onTeamMenuLeave(e) {
         if (e && e != "" && window.history) {
             window.history.replaceState("", "", "/");
@@ -515,12 +525,14 @@ class Application {
         this.setDOMFromConfig();
         this.refreshUi();
     }
+
     setConfigFromDOM() {
         const e = helpers.sanitizeNameInput(this.nameInput.val());
         this.config.set("playerName", e);
         const t = this.serverSelect.find(":selected").val();
         this.config.set("region", t);
     }
+
     setDOMFromConfig() {
         const e = this;
         this.nameInput.val(this.config.get("playerName"));
@@ -529,6 +541,7 @@ class Application {
         });
         this.languageSelect.val(this.config.get("language"));
     }
+
     onConfigModified(e) {
         const t = this.config.get("muteAudio");
         if (t != this.audioManager.mute) {
@@ -561,6 +574,7 @@ class Application {
             location.reload();
         }
     }
+
     refreshUi() {
         const e = this;
         this.startMenuWrapper.css(
@@ -608,6 +622,7 @@ class Application {
         r(this.playMode1Btn, 1);
         r(this.playMode2Btn, 2);
     }
+
     waitOnAccount(e) {
         const t = this;
         if (this.account.requestsInFlight == 0) {
@@ -629,6 +644,7 @@ class Application {
             this.account.addEventListener("requestsComplete", a);
         }
     }
+
     tryJoinTeam(e, t) {
         if (this.active && this.quickPlayPendingModeIdx === -1) {
             const r = t || window.location.hash.slice(1);
@@ -639,6 +655,7 @@ class Application {
             }
         }
     }
+
     tryQuickStartGame(e) {
         const t = this;
         if (this.quickPlayPendingModeIdx === -1) {
@@ -699,6 +716,7 @@ class Application {
             }
         }
     }
+
     findGame(e, t) {
         (function r(a, i) {
             if (a >= i) {
@@ -734,6 +752,7 @@ class Application {
             });
         })(0, 2);
     }
+
     joinGame(e) {
         const t = this;
         if (!this.game) {
@@ -771,6 +790,7 @@ class Application {
             );
         })(a, e);
     }
+
     onJoinGameError(e) {
         const t = {
             full: this.localization.translate(
@@ -791,9 +811,11 @@ class Application {
         this.teamMenu.leave("join_game_failed");
         this.refreshUi();
     }
+
     showInvalidProtocolModal() {
         this.refreshModal.show(true);
     }
+
     update() {
         const e = math.clamp(
             this.pixi.ticker.elapsedMS / 1000,
@@ -847,7 +869,7 @@ class Application {
         }
         this.input.flush();
     }
-};
+}
 
 const App = new Application();
 document.addEventListener("DOMContentLoaded", i);
@@ -926,4 +948,3 @@ window.onerror = function(e, t, r, a, i) {
         }
     }
 };
-

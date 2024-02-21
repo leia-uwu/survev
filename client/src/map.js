@@ -189,9 +189,9 @@ s.prototype = {
         }
         if (++this.ea % 180 == 0) {
             this._r = true;
-            var T = 0;
-            var M = mapHelpers.ct;
-            for (var P = 0; P < l.length; P++) {
+            let T = 0;
+            const M = mapHelpers.ct;
+            for (let P = 0; P < l.length; P++) {
                 const C = l[P];
                 if (C.active && !C.fade && M(C, mapHelpers.nt)) {
                     T++;
@@ -399,16 +399,16 @@ s.prototype = {
             h.position.y = this.height;
             h.scale.y = -1;
             r.addChild(h);
-            var b = [];
-            for (var x = 0; x < l.length; x++) {
+            const b = [];
+            for (let x = 0; x < l.length; x++) {
                 const S = l[x];
                 b.push(this.getMinimapRender(S));
             }
             b.sort((e, t) => {
                 return e.zIdx - t.zIdx;
             });
-            var v = new PIXI.Graphics();
-            for (var k = 0; k < b.length; k++) {
+            const v = new PIXI.Graphics();
+            for (let k = 0; k < b.length; k++) {
                 for (
                     let z = b[k], I = z.obj, T = 0;
                     T < z.shapes.length;
@@ -424,30 +424,30 @@ s.prototype = {
                     const C = M.scale !== undefined ? M.scale : 1;
                     v.beginFill(M.color, 1);
                     switch (P.type) {
-                        case collider.Type.Circle:
-                            v.drawCircle(
-                                P.pos.x,
-                                this.height - P.pos.y,
-                                P.rad * C
-                            );
-                            break;
-                        case collider.Type.Aabb:
-                            var A = v2.mul(v2.sub(P.max, P.min), 0.5);
-                            var O = v2.add(P.min, A);
-                            A = v2.mul(A, C);
-                            v.drawRect(
-                                O.x - A.x,
-                                this.height - O.y - A.y,
-                                A.x * 2,
-                                A.y * 2
-                            );
+                    case collider.Type.Circle:
+                        v.drawCircle(
+                            P.pos.x,
+                            this.height - P.pos.y,
+                            P.rad * C
+                        );
+                        break;
+                    case collider.Type.Aabb:
+                        var A = v2.mul(v2.sub(P.max, P.min), 0.5);
+                        var O = v2.add(P.min, A);
+                        A = v2.mul(A, C);
+                        v.drawRect(
+                            O.x - A.x,
+                            this.height - O.y - A.y,
+                            A.x * 2,
+                            A.y * 2
+                        );
                     }
                     v.endFill();
                 }
             }
             r.addChild(v);
-            var D = new PIXI.Container();
-            for (var E = 0; E < s.length; E++) {
+            const D = new PIXI.Container();
+            for (let E = 0; E < s.length; E++) {
                 const B = s[E];
                 const R = new PIXI.TextStyle({
                     fontFamily: "Arial",
@@ -498,8 +498,8 @@ s.prototype = {
         }
     },
     getGroundSurface: function(e, t) {
-        var r = this;
-        var a = function(e, t) {
+        const r = this;
+        const a = function(e, t) {
             t = t || {};
             if (e == "water") {
                 const a = r.getMapDef().biome.colors;
@@ -518,7 +518,7 @@ s.prototype = {
             };
         };
         for (
-            var i = this.decalBarn._.p(), o = 0;
+            let i = this.decalBarn._.p(), o = 0;
             o < i.length;
             o++
         ) {
@@ -532,10 +532,10 @@ s.prototype = {
                 return a(s.surface.type, s.surface.data);
             }
         }
-        var n = null;
-        var m = 0;
-        var p = t & 2;
-        for (var d = this.nr.p(), u = 0; u < d.length; u++) {
+        let n = null;
+        let m = 0;
+        const p = t & 2;
+        for (let d = this.nr.p(), u = 0; u < d.length; u++) {
             const g = d[u];
             if (
                 g.active &&
@@ -578,7 +578,7 @@ s.prototype = {
                     coldet.testPointAabb(e, k.aabb.min, k.aabb.max) &&
                     math.pointInsidePolygon(e, k.shorePoly) &&
                     ((x = true),
-                        math.pointInsidePolygon(e, k.waterPoly))
+                    math.pointInsidePolygon(e, k.waterPoly))
                 ) {
                     return a("water", {
                         river: k

@@ -1,4 +1,4 @@
-import $ from "jquery"
+import $ from "jquery";
 import BitBuffer from "bit-buffer";
 import { GameConfig } from "../../shared/gameConfig";
 import input from "./input";
@@ -6,17 +6,12 @@ import crc from "./crc";
 import base64 from "base64-js";
 
 const y = GameConfig.Input;
-var f = input.InputType;
-var _ = input.InputValue;
+const f = input.InputType;
+const _ = input.InputValue;
 const b = input.Key;
 const x = input.MouseButton;
 const S = input.MouseWheel;
 
-function a(e, t) {
-    if (!(e instanceof t)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
 function i(e, t, r) {
     if (t in e) {
         Object.defineProperty(e, t, {
@@ -45,31 +40,8 @@ function n(e) {
 function l(e) {
     return new _(f.MouseWheel, e);
 }
-let c;
-const m = (function() {
-    function e(e, t) {
-        for (let r = 0; r < t.length; r++) {
-            const a = t[r];
-            a.enumerable = a.enumerable || false;
-            a.configurable = true;
-            if ("value" in a) {
-                a.writable = true;
-            }
-            Object.defineProperty(e, a.key, a);
-        }
-    }
-    return function(t, r, a) {
-        if (r) {
-            e(t.prototype, r);
-        }
-        if (a) {
-            e(t, a);
-        }
-        return t;
-    };
-})();
 
-c = {};
+const c = {};
 i(c, y.MoveLeft, o("Move Left", s(b.A)));
 i(c, y.MoveRight, o("Move Right", s(b.D)));
 i(c, y.MoveUp, o("Move Up", s(b.W)));
@@ -115,6 +87,7 @@ class InputBinds {
         this.menuHovered = false;
         this.loadBinds();
     }
+
     toArray() {
         const e = new ArrayBuffer(
             this.binds.length * 2 + 1
@@ -136,6 +109,7 @@ class InputBinds {
         l[l.length - 1] = n & 255;
         return l;
     }
+
     fromArray(e) {
         let t = new Uint8Array(e);
         if (!t || t.length < 3) {
@@ -146,9 +120,9 @@ class InputBinds {
         if (crc.crc16(t) != r) {
             return false;
         }
-        var a = new ArrayBuffer(t.length);
-        var i = new Uint8Array(a);
-        for (var o = 0; o < t.length; o++) {
+        const a = new ArrayBuffer(t.length);
+        const i = new Uint8Array(a);
+        for (let o = 0; o < t.length; o++) {
             i[o] = t[o];
         }
         const s = new BitBuffer.BitStream(a);
@@ -175,6 +149,7 @@ class InputBinds {
     toBase64() {
         return base64.fromByteArray(this.toArray());
     }
+
     fromBase64(e) {
         let t = false;
         try {
@@ -184,9 +159,11 @@ class InputBinds {
         }
         return t;
     }
+
     saveBinds() {
         this.config.set("binds", this.toBase64());
     }
+
     loadBinds() {
         if (
             !this.fromBase64(this.config.get("binds") || "")
@@ -195,12 +172,13 @@ class InputBinds {
             this.saveBinds();
         }
     }
+
     upgradeBinds(e) {
         for (let t = [], r = 0; r < t.length; r++) {
-            var a = t[r];
-            var i = v[a].defaultValue;
-            var o = false;
-            for (var s = 0; s < this.binds.length; s++) {
+            const a = t[r];
+            const i = v[a].defaultValue;
+            let o = false;
+            for (let s = 0; s < this.binds.length; s++) {
                 if (this.binds[s]?.equals(i)) {
                     o = true;
                     break;
@@ -211,12 +189,14 @@ class InputBinds {
             }
         }
     }
+
     clearAllBinds() {
         for (let e = 0; e < y.Count; e++) {
             this.binds[e] = null;
         }
         this.boundKeys = {};
     }
+
     setBind(e, t) {
         if (t) {
             for (let r = 0; r < this.binds.length; r++) {
@@ -234,9 +214,11 @@ class InputBinds {
             this.boundKeys[t.code] = true;
         }
     }
+
     getBind(e) {
         return this.binds[e];
     }
+
     preventMenuBind(e) {
         return (
             e &&
@@ -244,9 +226,11 @@ class InputBinds {
             (e.type == 2 || e.type == 3)
         );
     }
+
     isKeyBound(e) {
         return this.boundKeys[e];
     }
+
     isBindPressed(e) {
         const t = this.binds[e];
         return (
@@ -255,6 +239,7 @@ class InputBinds {
             this.input.isInputValuePressed(t)
         );
     }
+
     isBindReleased(e) {
         const t = this.binds[e];
         return (
@@ -263,6 +248,7 @@ class InputBinds {
             this.input.isInputValueReleased(t)
         );
     }
+
     isBindDown(e) {
         const t = this.binds[e];
         return (
@@ -271,6 +257,7 @@ class InputBinds {
             this.input.isInputValueDown(t)
         );
     }
+
     loadDefaultBinds() {
         this.clearAllBinds();
         for (
@@ -296,9 +283,11 @@ class InputBindUi {
             i.refresh();
         });
     }
+
     cancelBind() {
         this.input.captureNextInput(null);
     }
+
     refresh() {
         const e = this;
         const t = Object.keys(v);
@@ -381,6 +370,6 @@ class InputBindUi {
 }
 
 export default {
-    InputBinds: InputBinds,
-    InputBindUi: InputBindUi
+    InputBinds,
+    InputBindUi
 };

@@ -17,10 +17,10 @@ import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import animData from "../animData";
 import shot from "./shot";
 
-var Action = GameConfig.Action;
-var Anim = GameConfig.Anim;
-var Input = GameConfig.Input;
-var HasteType = GameConfig.HasteType;
+const Action = GameConfig.Action;
+const Anim = GameConfig.Anim;
+const Input = GameConfig.Input;
+const HasteType = GameConfig.HasteType;
 
 function a(e, t, r) {
     if (t in e) {
@@ -229,7 +229,7 @@ function c() {
     this.playerStatus = {};
     this.anonPlayerNames = false;
 }
-var m = (function() {
+const m = (function() {
     function e(e, t) {
         for (let r = 0; r < t.length; r++) {
             const a = t[r];
@@ -254,10 +254,10 @@ var m = (function() {
 
 var O = animData.Pose;
 var D = animData.Bones;
-var E = [];
-var B = [];
+const E = [];
+const B = [];
 for (
-    var R = Object.keys(GameConfig.scopeZoomRadius.mobile), L = 0;
+    let R = Object.keys(GameConfig.scopeZoomRadius.mobile), L = 0;
     L < R.length;
     L++
 ) {
@@ -556,8 +556,8 @@ l.prototype = {
         return !this.Le.he && (!e.perkMode || this.Le.Te);
     },
     Gr: function(e, t, r) {
-        var a = this;
-        for (var i = 0; i < this.perks.length; i++) {
+        const a = this;
+        for (let i = 0; i < this.perks.length; i++) {
             this.perks[i].isNew = false;
         }
         if (this.perksDirty) {
@@ -587,8 +587,8 @@ l.prototype = {
                     })(s);
                 }
             }
-            var n = [];
-            for (var l = 0; l < this.Le.Me.length; l++) {
+            const n = [];
+            for (let l = 0; l < this.Le.Me.length; l++) {
                 (function(e) {
                     const t = a.Le.Me[e];
                     const r =
@@ -649,9 +649,9 @@ l.prototype = {
         const L = R.groupId == B;
         this.nameText.text = R.name;
         this.nameText.visible = !z && L;
-        var q = null;
-        var F = null;
-        for (var j = r.Ve.p(), N = 0; N < j.length; N++) {
+        let q = null;
+        let F = null;
+        for (let j = r.Ve.p(), N = 0; N < j.length; N++) {
             const H = j[N];
             if (H.active && !H.dead && H.layer == this.Le.pe) {
                 if (H.isBush) {
@@ -701,12 +701,12 @@ l.prototype = {
             });
             for (
                 let Y = v2.normalizeSafe(
-                    v2.sub(this.posOld, this.pos),
-                    v2.create(1, 0)
-                ),
-                J = K ? 1 : -1,
-                Q = Math.floor(util.random(3, 5)),
-                $ = 0;
+                        v2.sub(this.posOld, this.pos),
+                        v2.create(1, 0)
+                    ),
+                    J = K ? 1 : -1,
+                    Q = Math.floor(util.random(3, 5)),
+                    $ = 0;
                 $ < Q;
                 $++
             ) {
@@ -1012,8 +1012,8 @@ l.prototype = {
         }
         for (
             let Se = this.selectIdlePose(),
-            ve = animData.IdlePoses[Se],
-            ke = 0;
+                ve = animData.IdlePoses[Se],
+                ke = 0;
             ke < this.bones.length;
             ke++
         ) {
@@ -1066,11 +1066,11 @@ l.prototype = {
         this.auraContainer.scale.set(a, a);
     },
     Yr: function(e, t, r) {
-        var a = collider.createCircle(this.pos, GameConfig.player.maxVisualRadius);
-        var i = false;
-        var o = false;
-        var s = false;
-        for (var n = r.lr.p(), l = 0; l < n.length; l++) {
+        const a = collider.createCircle(this.pos, GameConfig.player.maxVisualRadius);
+        let i = false;
+        let o = false;
+        let s = false;
+        for (let n = r.lr.p(), l = 0; l < n.length; l++) {
             const c = n[l];
             if (c.active) {
                 for (let m = 0; m < c.stairs.length; m++) {
@@ -1557,27 +1557,27 @@ l.prototype = {
     playActionStartEffect: function(e, t, r) {
         let a = null;
         switch (this.action.type) {
-            case Action.Reload:
-            case Action.ReloadAlt:
-                var i = GameObjectDefs[this.action.item];
-                if (i) {
-                    a = {
-                        sound:
+        case Action.Reload:
+        case Action.ReloadAlt:
+            var i = GameObjectDefs[this.action.item];
+            if (i) {
+                a = {
+                    sound:
                             this.action.type == Action.ReloadAlt
                                 ? i.sound.reloadAlt
                                 : i.sound.reload,
-                        channel: e ? "activePlayer" : "otherPlayers"
-                    };
-                }
-                break;
-            case Action.UseItem:
-                var o = GameObjectDefs[this.action.item];
-                if (o) {
-                    a = {
-                        sound: o.sound.use,
-                        channel: e ? "activePlayer" : "otherPlayers"
-                    };
-                }
+                    channel: e ? "activePlayer" : "otherPlayers"
+                };
+            }
+            break;
+        case Action.UseItem:
+            var o = GameObjectDefs[this.action.item];
+            if (o) {
+                a = {
+                    sound: o.sound.use,
+                    channel: e ? "activePlayer" : "otherPlayers"
+                };
+            }
         }
         r.stopSound(this.actionSoundInstance);
         if (a && this.playActionStartSfx) {
@@ -1620,24 +1620,24 @@ l.prototype = {
         let i = "";
         const o = {};
         switch (this.action.type) {
-            case Action.UseItem:
-                var s = GameObjectDefs[this.action.item];
-                var n = t.loadout;
-                if (s.type == "heal") {
-                    i = GameObjectDefs[n.heal].emitter;
-                } else if (s.type == "boost") {
-                    i = GameObjectDefs[n.boost].emitter;
-                }
-                if (this.hasPerk("aoe_heal")) {
-                    o.scale = 1.5;
-                    o.radius = GameConfig.player.medicHealRange / o.scale;
-                    o.rateMult = 0.25;
-                }
-                break;
-            case Action.Revive:
-                if (this.Le.ue) {
-                    i = "revive_basic";
-                }
+        case Action.UseItem:
+            var s = GameObjectDefs[this.action.item];
+            var n = t.loadout;
+            if (s.type == "heal") {
+                i = GameObjectDefs[n.heal].emitter;
+            } else if (s.type == "boost") {
+                i = GameObjectDefs[n.boost].emitter;
+            }
+            if (this.hasPerk("aoe_heal")) {
+                o.scale = 1.5;
+                o.radius = GameConfig.player.medicHealRange / o.scale;
+                o.rateMult = 0.25;
+            }
+            break;
+        case Action.Revive:
+            if (this.Le.ue) {
+                i = "revive_basic";
+            }
         }
         if (
             !!i &&
@@ -1723,29 +1723,29 @@ l.prototype = {
             };
         };
         switch (e) {
-            case Anim.None:
-                return t("none", false);
-            case Anim.Cook:
-                return t("cook", false);
-            case Anim.Throw:
-                return t("throw", false);
-            case Anim.Revive:
-                return t("revive", false);
-            case Anim.CrawlForward:
-                return t("crawl_forward", true);
-            case Anim.CrawlBackward:
-                return t("crawl_backward", true);
-            case Anim.Melee:
-                var r = GameObjectDefs[this.Le.me];
-                if (!r.anim?.attackAnims) {
-                    return t("fists", true);
-                }
-                var a = r.anim.attackAnims;
-                var i = Math.floor(Math.random() * a.length);
-                var o = a[i];
-                return t(o, o == "fists" && a.length == 1);
-            default:
-                return t("none", false);
+        case Anim.None:
+            return t("none", false);
+        case Anim.Cook:
+            return t("cook", false);
+        case Anim.Throw:
+            return t("throw", false);
+        case Anim.Revive:
+            return t("revive", false);
+        case Anim.CrawlForward:
+            return t("crawl_forward", true);
+        case Anim.CrawlBackward:
+            return t("crawl_backward", true);
+        case Anim.Melee:
+            var r = GameObjectDefs[this.Le.me];
+            if (!r.anim?.attackAnims) {
+                return t("fists", true);
+            }
+            var a = r.anim.attackAnims;
+            var i = Math.floor(Math.random() * a.length);
+            var o = a[i];
+            return t(o, o == "fists" && a.length == 1);
+        default:
+            return t("none", false);
         }
     },
     currentAnim: function() {
@@ -1769,7 +1769,7 @@ l.prototype = {
         if (this.currentAnim() != Anim.None) {
             const r = this.anim.ticker;
             this.anim.ticker += e * 1;
-            var a = animData.Animations[this.anim.data.type];
+            const a = animData.Animations[this.anim.data.type];
             for (
                 var i = a.keyframes, o = -1, s = 0;
                 this.anim.ticker >= i[s].time && s < i.length - 1;
@@ -1779,13 +1779,13 @@ l.prototype = {
                 s++;
             }
             o = math.max(o, 0);
-            var n = i[o].time;
-            var l = i[s].time;
-            var c = math.min((this.anim.ticker - n) / (l - n), 1);
-            var m = i[o].bones;
-            var p = i[s].bones;
-            var h = this.anim.data.mirror;
-            for (var d = 0; d < this.anim.bones.length; d++) {
+            const n = i[o].time;
+            const l = i[s].time;
+            const c = math.min((this.anim.ticker - n) / (l - n), 1);
+            const m = i[o].bones;
+            const p = i[s].bones;
+            const h = this.anim.data.mirror;
+            for (let d = 0; d < this.anim.bones.length; d++) {
                 const g = this.anim.bones[d];
                 let y = d;
                 if (h) {
@@ -1868,10 +1868,10 @@ l.prototype = {
     animMeleeCollision: function(e, t) {
         const r = GameObjectDefs[this.Le.me];
         if (r && r.type == "melee") {
-            var a = this.getMeleeCollider();
-            var i = a.rad + v2.length(v2.sub(this.pos, a.pos));
-            var o = [];
-            for (var s = e.map.Ve.p(), n = 0; n < s.length; n++) {
+            const a = this.getMeleeCollider();
+            const i = a.rad + v2.length(v2.sub(this.pos, a.pos));
+            const o = [];
+            for (let s = e.map.Ve.p(), n = 0; n < s.length; n++) {
                 const l = s[n];
                 if (
                     !!l.active &&
@@ -1929,8 +1929,8 @@ l.prototype = {
             }
             for (
                 let y = e.playerBarn.qe(this.__id).teamId,
-                w = e.playerBarn.$e.p(),
-                v = 0;
+                    w = e.playerBarn.$e.p(),
+                    v = 0;
                 v < w.length;
                 v++
             ) {
@@ -2067,12 +2067,12 @@ l.prototype = {
         }
         for (
             let p = [
-                this.handLSubmergeSprite,
-                this.handRSubmergeSprite,
-                this.footLSubmergeSprite,
-                this.footRSubmergeSprite
-            ],
-            h = 0;
+                    this.handLSubmergeSprite,
+                    this.handRSubmergeSprite,
+                    this.footLSubmergeSprite,
+                    this.footRSubmergeSprite
+                ],
+                h = 0;
             h < p.length;
             h++
         ) {
@@ -2148,8 +2148,8 @@ c.prototype = {
         });
         for (
             let x = net.getPlayerStatusUpdateRate(s.factionMode),
-            S = Object.keys(this.playerStatus),
-            v = 0;
+                S = Object.keys(this.playerStatus),
+                v = 0;
             v < S.length;
             v++
         ) {
@@ -2449,4 +2449,3 @@ c.prototype = {
 export default {
     Lt: c
 };
-

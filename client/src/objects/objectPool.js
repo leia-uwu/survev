@@ -17,14 +17,15 @@ function Creator(e) {
 
 Pool.prototype = {
     alloc: function() {
-        var e = null;
-        for (var t = 0; t < this.mt.length; t++) {
+        let e = null;
+        for (let t = 0; t < this.mt.length; t++) {
             if (!this.mt[t].active) {
                 e = this.mt[t];
                 break;
             }
         }
         if (!e) {
+            // eslint-disable new-cap
             e = new this.creator.type();
             this.mt.push(e);
         }
@@ -41,8 +42,8 @@ Pool.prototype = {
             this.mt.length > 128 &&
             this.activeCount < this.mt.length / 2
         ) {
-            var t = [];
-            for (var r = 0; r < this.mt.length; r++) {
+            const t = [];
+            for (let r = 0; r < this.mt.length; r++) {
                 if (this.mt[r].active) {
                     t.push(this.mt[r]);
                 }
@@ -107,11 +108,12 @@ Creator.prototype = {
             firebaseManager.storeGeneric("objectPoolErr", "deleteObj");
         } else {
             this.types[t.__type].free(t);
+            // eslint-disable @typescript-eslint/no-dynamic-delete
             delete this.idToObj[e];
         }
     }
 };
 export default {
-    Pool: Pool,
-    Creator: Creator
+    Pool,
+    Creator
 };

@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js"
+import * as PIXI from "pixi.js";
 import { v2 } from "../../shared/utils/v2";
 import firebaseManager from "./firebaseManager";
 
@@ -53,10 +53,12 @@ class RenderGroup extends PIXI.Container {
         this.dirty = true;
         this.debugName = e || "";
     }
+
     addSortedChild(child) {
-        this.addChild(child)
+        this.addChild(child);
         this.dirty = true;
     }
+
     checkSort() {
         return (
             !!this.dirty &&
@@ -67,8 +69,8 @@ class RenderGroup extends PIXI.Container {
                     return e.__zOrd - t.__zOrd;
                 }
             }),
-                (this.dirty = false),
-                true)
+            (this.dirty = false),
+            true)
         );
     }
 }
@@ -80,23 +82,23 @@ c.prototype = {
     },
     addPIXIObj: function(e, t, r, a) {
         if (!e.transform) {
-            const i = new Error();
-            const o = JSON.stringify({
-                type: "addChild",
-                stack: i.stack,
-                id: firebaseManager.instanceId,
-                browser: navigator.userAgent,
-                playing: this.game.playing,
-                gameOver: this.game.gameOver,
-                spectating: this.game.spectating,
-                time: this.game.playingTicker,
-                mode: this.game.teamMode,
-                video: this.game.adManager.isPlayingVideo,
-                layer: t,
-                zOrd: r,
-                zIdx: a
-            });
-            firebaseManager.logError(o);
+            // const i = new Error();
+            // const o = JSON.stringify({
+            //     type: "addChild",
+            //     stack: i.stack,
+            //     id: firebaseManager.instanceId,
+            //     browser: navigator.userAgent,
+            //     playing: this.game.playing,
+            //     gameOver: this.game.gameOver,
+            //     spectating: this.game.spectating,
+            //     time: this.game.playingTicker,
+            //     mode: this.game.teamMode,
+            //     video: this.game.adManager.isPlayingVideo,
+            //     layer: t,
+            //     zOrd: r,
+            //     zIdx: a
+            // });
+            // firebaseManager.logError(o);
         }
         if (e.__layerIdx === undefined) {
             e.__layerIdx = -1;
@@ -258,6 +260,6 @@ c.prototype = {
     }
 };
 export default {
-    RenderGroup: RenderGroup,
+    RenderGroup,
     At: c
 };

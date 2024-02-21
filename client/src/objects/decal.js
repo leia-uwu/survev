@@ -24,11 +24,10 @@ function o() {
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.visible = false;
 }
-function s() {
+function DecalBarn() {
     this._ = new objectPool.Pool(i);
     this.decalRenders = [];
 }
-
 
 i.prototype = {
     o: function() {
@@ -199,10 +198,10 @@ o.prototype = {
         r.addPIXIObj(this.sprite, this.layer, this.zIdx, this.zOrd);
     }
 };
-s.prototype = {
+DecalBarn.prototype = {
     allocDecalRender: function() {
-        var e = null;
-        for (var t = 0; t < this.decalRenders.length; t++) {
+        let e = null;
+        for (let t = 0; t < this.decalRenders.length; t++) {
             const r = this.decalRenders[t];
             if (!r.active) {
                 e = r;
@@ -232,5 +231,5 @@ s.prototype = {
     render: function(e, t, r) { }
 };
 export default {
-    k: s
+    DecalBarn
 };

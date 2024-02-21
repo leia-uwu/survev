@@ -146,7 +146,7 @@ const g = (function() {
                 let t = null;
                 let r = null;
                 let a = false;
-                let i = undefined;
+                let i;
                 this.moveDetected = false;
                 for (
                     let o = 0;
@@ -201,12 +201,12 @@ const g = (function() {
         {
             key: "getAim",
             value: function(e, t) {
-                var r = false;
-                var a = null;
-                var i = null;
-                var o = undefined;
+                let r = false;
+                let a = null;
+                let i = null;
+                let o;
                 for (
-                    var s = 0;
+                    let s = 0;
                     s < this.input.touches.length;
                     s++
                 ) {
@@ -746,10 +746,10 @@ var y = (function() {
                     const f = t.yr();
                     const _ = Math.sqrt(f * 1.414 * f);
                     y = math.min(y, _);
-                    var b = v2.copy(t.pos);
-                    var x = v2.add(b, v2.mul(t.dir, y));
+                    const b = v2.copy(t.pos);
+                    let x = v2.add(b, v2.mul(t.dir, y));
                     for (
-                        var S = r.Ve.p(), v = 0;
+                        let S = r.Ve.p(), v = 0;
                         v < S.length;
                         v++
                     ) {
@@ -780,7 +780,7 @@ var y = (function() {
                             }
                         }
                     }
-                    var T = v2.length(v2.sub(x, b));
+                    const T = v2.length(v2.sub(x, b));
                     for (
                         var M = Math.max(
                             Math.ceil((T - 3.5) / 1.5),

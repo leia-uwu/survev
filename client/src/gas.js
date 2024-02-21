@@ -47,9 +47,11 @@ class GasRenderer {
         }
         this.display.visible = false;
     }
+
     free() {
         this.display.destroy(true);
     }
+
     resize() {
         if (this.canvas != null) {
             this.canvas.width = window.innerWidth;
@@ -57,6 +59,7 @@ class GasRenderer {
             this.display.texture.update();
         }
     }
+
     render(e, t, r) {
         if (this.canvas != null) {
             const a = this.canvas;
@@ -95,6 +98,7 @@ class GasSafeZoneRenderer {
         this.safeRad = 0;
         this.playerPos = v2.create(0, 0);
     }
+
     render(e, t, r, a, i) {
         this.circleGfx.visible = a;
         this.lineGfx.visible = i;
@@ -136,7 +140,7 @@ class GasSafeZoneRenderer {
     }
 }
 
-class g {
+class Gas {
     constructor(t) {
         const r = (Math.sqrt(2) + 0.01) * 1024;
         this.mode = gasMode.Inactive;
@@ -152,15 +156,19 @@ class g {
         };
         this.gasRenderer = new GasRenderer(t, 16711680);
     }
+
     free() {
         this.gasRenderer.free();
     }
+
     resize() {
         this.gasRenderer.resize();
     }
+
     isActive() {
         return this.mode != gasMode.Inactive;
     }
+
     getCircle() {
         const e = this.mode == gasMode.Moving ? this.circleT : 0;
         return {
@@ -176,9 +184,11 @@ class g {
             )
         };
     }
+
     setProgress(e) {
         this.circleT = e;
     }
+
     setFullState(e, t, r, a) {
         if (t.mode != this.mode) {
             const i = Math.ceil(t.duration * (1 - e));
@@ -193,6 +203,7 @@ class g {
         this.circleNew.pos = v2.copy(t.posNew);
         this.circleNew.rad = t.radNew;
     }
+
     render(e) {
         const t = this.getCircle();
         const r = e.pointToScreen(t.pos);
@@ -201,9 +212,8 @@ class g {
     }
 }
 
-
 export default {
-    GasRenderer: GasRenderer,
-    GasSafeZoneRenderer: GasSafeZoneRenderer,
-    $t: g
+    GasRenderer,
+    GasSafeZoneRenderer,
+    Gas
 };

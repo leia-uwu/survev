@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js"
+import * as PIXI from "pixi.js";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 
@@ -62,8 +62,8 @@ MapSpriteBarn.prototype = {
         }
     },
     addSprite: function() {
-        var e = null;
-        for (var t = 0; t < this.mapSprites.length; t++) {
+        let e = null;
+        for (let t = 0; t < this.mapSprites.length; t++) {
             if (!this.mapSprites[t].active) {
                 e = this.mapSprites[t];
                 break;
@@ -78,8 +78,8 @@ MapSpriteBarn.prototype = {
         return e;
     },
     update: function(e, t, r) {
-        var a = false;
-        for (var i = 0; i < this.mapSprites.length; i++) {
+        let a = false;
+        for (let i = 0; i < this.mapSprites.length; i++) {
             const o = this.mapSprites[i];
             if (o.active) {
                 if (o.zOrder != o.sprite.__zOrder) {
@@ -118,5 +118,5 @@ MapSpriteBarn.prototype = {
     }
 };
 export default {
-    MapSpriteBarn: MapSpriteBarn
+    MapSpriteBarn
 };

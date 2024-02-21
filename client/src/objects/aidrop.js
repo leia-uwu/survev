@@ -158,4 +158,3 @@ AirDropPool.prototype = {
         }
     }
 };
-

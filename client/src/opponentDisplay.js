@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { collider } from "../../shared/utils/collider";
 import { GameConfig } from "../../shared/gameConfig";
 import gameObject from "../../shared/utils/gameObject";
@@ -49,11 +48,11 @@ LoadoutDisplay.prototype = {
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.De = new camera();
         this.Ct = new renderer.At(this, this.canvasMode);
-        this.Ot = new particles.f(this.Ct);
-        this.Dt = new decal.k();
+        this.Ot = new particles.ParticleBarn(this.Ct);
+        this.Dt = new decal.DecalBarn();
         this.Et = new map.Bt(this.Dt);
         this.Rt = new Player.Lt();
-        this.Kt = new Smoke.d();
+        this.Kt = new Smoke.SmokeBarn();
         e = {};
         a(e, gameObject.Type.Player, this.Rt.$e);
         a(e, gameObject.Type.Obstacle, this.Et.Ve);
@@ -71,15 +70,15 @@ LoadoutDisplay.prototype = {
         this.debugDisplay = new PIXI.Graphics();
         for (
             let s = [
-                this.Et.display.ground,
-                this.Ct.layers[0],
-                this.Ct.ground,
-                this.Ct.layers[1],
-                this.Ct.layers[2],
-                this.Ct.layers[3],
-                this.debugDisplay
-            ],
-            n = 0;
+                    this.Et.display.ground,
+                    this.Ct.layers[0],
+                    this.Ct.ground,
+                    this.Ct.layers[1],
+                    this.Ct.layers[2],
+                    this.Ct.layers[3],
+                    this.debugDisplay
+                ],
+                n = 0;
             n < s.length;
             n++
         ) {
@@ -307,9 +306,9 @@ LoadoutDisplay.prototype = {
             (this.view == this.viewOld ||
                 (this.view != "heal" && this.view != "boost") ||
                 (this.animIdleTicker = 0),
-                (this.viewOld = this.view),
-                (this.animIdleTicker -= e),
-                this.animIdleTicker < 0)
+            (this.viewOld = this.view),
+            (this.animIdleTicker -= e),
+            this.animIdleTicker < 0)
         ) {
             if (this.view == "heal") {
                 this.actionSeq = (this.actionSeq + 1) % 8;
@@ -394,5 +393,5 @@ LoadoutDisplay.prototype = {
     }
 };
 export default {
-    LoadoutDisplay: LoadoutDisplay
+    LoadoutDisplay
 };

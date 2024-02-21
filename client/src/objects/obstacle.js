@@ -302,28 +302,28 @@ Obstacle.prototype = {
             this.dead &&
             !this.exploded &&
             (t.deadObstacleIds.push(this.__id),
-                (this.exploded = true),
-                this.smokeEmitter &&
+            (this.exploded = true),
+            this.smokeEmitter &&
                 (this.smokeEmitter.stop(),
-                    (this.smokeEmitter = null)),
-                !this.isNew)
+                (this.smokeEmitter = null)),
+            !this.isNew)
         ) {
-            var O = MapObjectDefs[this.type];
-            var D = collider.toAabb(this.collider);
-            var E = v2.mul(v2.sub(D.max, D.min), 0.5);
-            var B = v2.add(D.min, E);
+            const O = MapObjectDefs[this.type];
+            const D = collider.toAabb(this.collider);
+            const E = v2.mul(v2.sub(D.max, D.min), 0.5);
+            const B = v2.add(D.min, E);
             for (
-                var R = Math.floor(util.random(5, 11)), L = 0;
+                let R = Math.floor(util.random(5, 11)), L = 0;
                 L < R;
                 L++
             ) {
                 const q = v2.mul(v2.randomUnit(), util.random(5, 15));
                 const F = Array.isArray(this.explodeParticle)
                     ? this.explodeParticle[
-                    Math.floor(
-                        Math.random() *
+                        Math.floor(
+                            Math.random() *
                         this.explodeParticle.length
-                    )
+                        )
                     ]
                     : this.explodeParticle;
                 a.addParticle(F, this.layer, B, q);

@@ -27,8 +27,8 @@ function createBullet(e, t, r, a, i) {
 function playHitFx(e, t, r, a, i, o, s) {
     for (
         let n = Math.floor(util.random(1, 2)),
-        l = v2.mul(a, 9.5),
-        c = 0;
+            l = v2.mul(a, 9.5),
+            c = 0;
         c < n;
         c++
     ) {
@@ -56,8 +56,8 @@ s.prototype = {
         );
     },
     addBullet: function(e, t, r) {
-        var a = null;
-        for (var i = 0; i < this.bullets.length; i++) {
+        let a = null;
+        for (let i = 0; i < this.bullets.length; i++) {
             if (
                 !this.bullets[i].alive &&
                 !this.bullets[i].collided
@@ -177,8 +177,8 @@ s.prototype = {
                         b.bulletTrail.alpha * k
                     );
                 }
-                var z = [];
-                for (var I = r.Ve.p(), T = 0; T < I.length; T++) {
+                const z = [];
+                for (let I = r.Ve.p(), T = 0; T < I.length; T++) {
                     const M = I[T];
                     if (
                         !!M.active &&
@@ -309,8 +309,8 @@ s.prototype = {
                 if (W && (W.Le.he || W.Le.ue)) {
                     U = true;
                 }
-                var G = false;
-                for (var X = 0; X < z.length; X++) {
+                let G = false;
+                for (let X = 0; X < z.length; X++) {
                     const K = z[X];
                     if (K.type == "obstacle") {
                         const Z = MapObjectDefs[K.obstacleType];
@@ -386,10 +386,10 @@ s.prototype = {
                     ) {
                         const re = $[te];
                         if (re.active) {
-                            var ae = false;
-                            var ie = false;
+                            let ae = false;
+                            let ie = false;
                             for (
-                                var oe = 0;
+                                let oe = 0;
                                 oe < re.stairs.length;
                                 oe++
                             ) {
@@ -468,6 +468,6 @@ s.prototype = {
 };
 export default {
     Ft: s,
-    createBullet: createBullet,
-    playHitFx: playHitFx
+    createBullet,
+    playHitFx
 };

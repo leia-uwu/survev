@@ -6,7 +6,6 @@ import { PassDefs } from "../../shared/defs/gameObjects/passDefs";
 import { QuestDefs } from "../../shared/defs/gameObjects/questDefs";
 import passUtil from "./passUtil";
 
-
 function i(e, t) {
     for (let r = PassDefs[e], a = 0; a < r.items.length; a++) {
         if (r.items[a].level == t + 1) {
@@ -69,11 +68,12 @@ class Pass {
             }
         );
     }
+
     onPass(e, t, r) {
-        var a = this;
-        var s = [];
-        var l = 0;
-        for (var p = 0; p < t.length; p++) {
+        const a = this;
+        const s = [];
+        let l = 0;
+        for (let p = 0; p < t.length; p++) {
             (function(e) {
                 const i = t[e];
                 const m = {
@@ -264,16 +264,19 @@ class Pass {
         });
         this.loaded = true;
     }
+
     onRequest(e) {
         $("#pass-loading").css(
             "display",
             e.loggingIn ? "block" : "none"
         );
     }
+
     scheduleUpdatePass(e) {
         this.updatePass = true;
         this.updatePassTicker = e;
     }
+
     setQuestRefreshEnabled(e) {
         const t = this;
         const r =
@@ -318,6 +321,7 @@ class Pass {
             }
         }
     }
+
     setPassUnlockImage(e) {
         const t = GameObjectDefs[e];
         const r = t
@@ -358,6 +362,7 @@ class Pass {
             display: t ? "block" : "none"
         });
     }
+
     animatePassLevelUp() {
         const e = this;
         const t = $("#pass-progress-bar-fill");
@@ -409,6 +414,7 @@ class Pass {
                 $(t).dequeue();
             });
     }
+
     animateQuestComplete(e) {
         e.elems.barFill
             .queue((t) => {
@@ -449,6 +455,7 @@ class Pass {
                 $(t).dequeue();
             });
     }
+
     update(e) {
         this.updatePassTicker -= e;
         if (this.updatePass && this.updatePassTicker < 0) {
@@ -585,6 +592,7 @@ class Pass {
             this.lockDisplayed = true;
         }
     }
+
     onResize() { }
     loadPlaceholders() {
         const e = PassDefs.pass_survivr1;

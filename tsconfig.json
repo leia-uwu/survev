@@ -15,7 +15,6 @@
   },
   "exclude": [
     "node_modules",
-    "dist",
-    "client"
+    "dist"
   ]
 }

@@ -13,8 +13,8 @@ function a() {
 
 a.prototype = {
     addFlare: function(e, t, r) {
-        var a = null;
-        for (var s = 0; s < this.bullets.length; s++) {
+        let a = null;
+        for (let s = 0; s < this.bullets.length; s++) {
             if (
                 !this.bullets[s].alive &&
                 !this.bullets[s].collided

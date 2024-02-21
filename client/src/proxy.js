@@ -1,4 +1,3 @@
-
 function a() {
     for (let e = Object.keys(i), t = 0; t < e.length; t++) {
         const r = e[t];

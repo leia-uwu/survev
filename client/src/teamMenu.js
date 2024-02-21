@@ -148,11 +148,13 @@ class TeamMenu {
             });
         }
     }
+
     getPlayerById(e) {
         return this.players.find((t) => {
             return t.playerId == e;
         });
     }
+
     update(e) {
         if (this.joined) {
             this.keepAliveTimeout -= e;
@@ -162,6 +164,7 @@ class TeamMenu {
             }
         }
     }
+
     connect(e, t) {
         const r = this;
         if (!this.active || t !== this.roomData.roomUrl) {
@@ -234,6 +237,7 @@ class TeamMenu {
             }
         }
     }
+
     leave(e) {
         if (this.active) {
             this.ws?.close();
@@ -263,42 +267,45 @@ class TeamMenu {
             this.leaveCb(t);
         }
     }
+
     onGameComplete() {
         if (this.active) {
             this.joiningGame = false;
             this.sendMessage("gameComplete");
         }
     }
+
     onMessage(e, t) {
         switch (e) {
-            case "state":
-                this.joined = true;
-                var r = this.roomData;
-                this.roomData = t.room;
-                this.players = t.players;
-                this.localPlayerId = t.localPlayerId;
-                this.isLeader = this.getPlayerById(
-                    this.localPlayerId
-                ).isLeader;
-                if (this.isLeader) {
-                    this.roomData.region = r.region;
-                    this.roomData.autoFill = r.autoFill;
-                }
-                this.refreshUi();
-                break;
-            case "joinGame":
-                this.joiningGame = true;
-                this.joinGameCb(t);
-                break;
-            case "keepAlive":
-                break;
-            case "kicked":
-                this.leave("kicked");
-                break;
-            case "error":
-                this.leave(t.type);
+        case "state":
+            this.joined = true;
+            var r = this.roomData;
+            this.roomData = t.room;
+            this.players = t.players;
+            this.localPlayerId = t.localPlayerId;
+            this.isLeader = this.getPlayerById(
+                this.localPlayerId
+            ).isLeader;
+            if (this.isLeader) {
+                this.roomData.region = r.region;
+                this.roomData.autoFill = r.autoFill;
+            }
+            this.refreshUi();
+            break;
+        case "joinGame":
+            this.joiningGame = true;
+            this.joinGameCb(t);
+            break;
+        case "keepAlive":
+            break;
+        case "kicked":
+            this.leave("kicked");
+            break;
+        case "error":
+            this.leave(t.type);
         }
     }
+
     sendMessage(e, t) {
         if (this.ws) {
             if (this.ws.readyState === this.ws.OPEN) {
@@ -312,12 +319,14 @@ class TeamMenu {
             }
         }
     }
+
     setRoomProperty(e, t) {
         if (this.isLeader && this.roomData[e] != t) {
             this.roomData[e] = t;
             this.sendMessage("setRoomProps", this.roomData);
         }
     }
+
     tryStartGame() {
         if (this.isLeader && !this.roomData.findingGame) {
             const e = GameConfig.protocolVersion;
@@ -341,6 +350,7 @@ class TeamMenu {
             this.refreshUi();
         }
     }
+
     refreshUi() {
         const e = this;
         const t = function(e, t, r) {
@@ -416,8 +426,8 @@ class TeamMenu {
         if (this.joined) {
             for (
                 let o = this.siteInfo.info.pops || {},
-                n = Object.keys(o),
-                c = 0;
+                    n = Object.keys(o),
+                    c = 0;
                 c < n.length;
                 c++
             ) {
@@ -490,7 +500,7 @@ class TeamMenu {
             );
             for (
                 var w = this.siteInfo.getGameModeStyles(),
-                f = 0;
+                    f = 0;
                 f < w.length;
                 f++
             ) {
@@ -510,8 +520,8 @@ class TeamMenu {
                     "background-image": ""
                 });
             }
-            var b = false;
-            for (var x = 0; x < this.players.length; x++) {
+            let b = false;
+            for (let x = 0; x < this.players.length; x++) {
                 b |= this.players[x].inGame;
             }
             const S = $("#msg-wait-reason");
@@ -670,7 +680,7 @@ class TeamMenu {
                                 class: `icon ${r.inGame
                                     ? "icon-in-game"
                                     : ""
-                                    }`
+                                }`
                             })
                         );
                     }
