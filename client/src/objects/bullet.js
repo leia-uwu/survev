@@ -42,12 +42,12 @@ function playHitFx(e, t, r, a, i, o, s) {
         filter: "muffled"
     });
 }
-function s() {
+function BulletBarn() {
     this.bullets = [];
     this.tracerColors = {};
 }
 
-s.prototype = {
+BulletBarn.prototype = {
     onMapLoad: function(e) {
         this.tracerColors = util.mergeDeep(
             {},
@@ -379,11 +379,9 @@ s.prototype = {
                     }
                 }
                 if (!(b.layer & 2)) {
-                    for (
-                        var $ = r.lr.p(), ee = b.layer, te = 0;
-                        te < $.length;
-                        te++
-                    ) {
+                    const $ = r.lr.p();
+                    let ee = b.layer;
+                    for (let te = 0; te < $.length; te++) {
                         const re = $[te];
                         if (re.active) {
                             let ae = false;
@@ -467,7 +465,7 @@ s.prototype = {
     }
 };
 export default {
-    Ft: s,
+    Ft: BulletBarn,
     createBullet,
     playHitFx
 };

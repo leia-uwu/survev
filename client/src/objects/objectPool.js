@@ -25,7 +25,7 @@ Pool.prototype = {
             }
         }
         if (!e) {
-            // eslint-disable new-cap
+            /* eslint-disable new-cap */
             e = new this.creator.type();
             this.mt.push(e);
         }
@@ -108,7 +108,6 @@ Creator.prototype = {
             firebaseManager.storeGeneric("objectPoolErr", "deleteObj");
         } else {
             this.types[t.__type].free(t);
-            // eslint-disable @typescript-eslint/no-dynamic-delete
             delete this.idToObj[e];
         }
     }

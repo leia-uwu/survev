@@ -195,7 +195,6 @@ class Pass {
             })(p);
         }
         this.quests = s;
-        PassDefs[e.type];
         this.pass.data = e;
         this.pass.animSteps = [];
         this.pass.currentXp = Math.round(

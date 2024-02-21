@@ -7,11 +7,11 @@ import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 
-function a() {
+function FlareBarn() {
     this.bullets = [];
 }
 
-a.prototype = {
+FlareBarn.prototype = {
     addFlare: function(e, t, r) {
         let a = null;
         for (let s = 0; s < this.bullets.length; s++) {
@@ -108,8 +108,6 @@ a.prototype = {
             }
             if (d.alive) {
                 if (d.tracerAlphaRate) {
-                    i.__id;
-                    d.playerId;
                     const u =
                         i.__id == d.playerId
                             ? d.tracerAlphaRate
@@ -175,5 +173,5 @@ a.prototype = {
     }
 };
 export default {
-    Nt: a
+    Nt: FlareBarn
 };

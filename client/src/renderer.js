@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
 import { v2 } from "../../shared/utils/v2";
-import firebaseManager from "./firebaseManager";
 
 function s(e, t, r) {
     const a = t - e;
@@ -27,7 +26,7 @@ function l(e, t, r, a, i) {
     e.lineTo(t, r);
     e.closePath();
 }
-function c(e, t) {
+function Renderer(e, t) {
     this.game = e;
     this.canvasMode = t;
     this.zIdx = 0;
@@ -75,7 +74,7 @@ class RenderGroup extends PIXI.Container {
     }
 }
 
-c.prototype = {
+Renderer.prototype = {
     n: function() {
         this.layerMask.parent?.removeChild(this.layerMark);
         this.layerMask.destroy(true);
@@ -252,14 +251,12 @@ c.prototype = {
             this.layers[2].removeChild(this.layerMask);
             this.layerMaskActive = false;
         }
-        for (let l = 0, c = 0; c < this.layers.length; c++) {
-            if (this.layers[c].checkSort()) {
-                l++;
-            }
+        for (let i = 0; i < this.layers.length; i++) {
+            this.layers[i].checkSort();
         }
     }
 };
 export default {
     RenderGroup,
-    At: c
+    At: Renderer
 };

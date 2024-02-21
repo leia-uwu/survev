@@ -16,22 +16,18 @@ function a(e, t, r) {
     }
     return e;
 }
-function i(e, t) {
-    if (!(e instanceof t)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
-function o(e, t) {
+
+function frame(time, bones) {
     return {
-        time: e,
-        bones: t
+        time,
+        bones
     };
 }
-function s(e, t, r) {
+function effect(time, fn, args) {
     return {
-        time: e,
-        fn: t,
-        args: r
+        time,
+        fn,
+        args
     };
 }
 let n;
@@ -86,62 +82,31 @@ let te;
 let re;
 let ae;
 let ie;
-const oe = (function() {
-    function e(e, t) {
-        for (let r = 0; r < t.length; r++) {
-            const a = t[r];
-            a.enumerable = a.enumerable || false;
-            a.configurable = true;
-            if ("value" in a) {
-                a.writable = true;
-            }
-            Object.defineProperty(e, a.key, a);
-        }
-    }
-    return function(t, r, a) {
-        if (r) {
-            e(t.prototype, r);
-        }
-        if (a) {
-            e(t, a);
-        }
-        return t;
-    };
-})();
 
-const Pose = (function() {
-    function e(t, r, a) {
-        i(this, e);
+class Pose {
+    constructor(t, r, a) {
         this.pivot = v2.copy(t || v2.create(0, 0));
         this.rot = 0;
         this.pos = v2.copy(a || v2.create(0, 0));
     }
-    oe(e, [
-        {
-            key: "copy",
-            value: function(e) {
-                v2.set(this.pivot, e.pivot);
-                this.rot = e.rot;
-                v2.set(this.pos, e.pos);
-            }
-        },
-        {
-            key: "rotate",
-            value: function(e) {
-                this.rot = e;
-                return this;
-            }
-        },
-        {
-            key: "offset",
-            value: function(e) {
-                this.pos = v2.copy(e);
-                return this;
-            }
-        }
-    ]);
-    return e;
-})();
+
+    copy(e) {
+        v2.set(this.pivot, e.pivot);
+        this.rot = e.rot;
+        v2.set(this.pos, e.pos);
+    }
+
+    rotate(e) {
+        this.rot = e;
+        return this;
+    }
+
+    offset(e) {
+        this.pos = v2.copy(e);
+        return this;
+    }
+}
+
 Pose.identity = new Pose(v2.create(0, 0));
 Pose.lerp = function(e, t, r) {
     const a = new Pose();
@@ -246,27 +211,27 @@ const Animations = {
     },
     fists: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
+            frame(
                 ue.damageTimes[0],
                 a({}, Bones.HandR, new Pose(v2.create(29.75, 1.75)))
             ),
-            o(
+            frame(
                 ue.cooldownTime,
                 a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ue.damageTimes[0], "animMeleeCollision", {})
+            effect(ue.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     cut: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
+            frame(
                 ue.damageTimes[0] * 0.25,
                 a(
                     {},
@@ -276,7 +241,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ue.damageTimes[0] * 1.25,
                 a(
                     {},
@@ -286,22 +251,22 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ue.cooldownTime,
                 a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ue.damageTimes[0], "animMeleeCollision", {})
+            effect(ue.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     cutReverse: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))),
+            frame(
                 ue.damageTimes[0] * 0.4,
                 a(
                     {},
@@ -311,7 +276,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ue.damageTimes[0] * 1.4,
                 a(
                     {},
@@ -321,22 +286,22 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ue.cooldownTime,
                 a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ue.damageTimes[0], "animMeleeCollision", {})
+            effect(ue.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     thrust: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
+            frame(
                 ue.damageTimes[0] * 0.4,
                 a(
                     {},
@@ -346,7 +311,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ue.damageTimes[0] * 1.4,
                 a(
                     {},
@@ -354,28 +319,28 @@ const Animations = {
                     new Pose(v2.create(25, 6.25)).rotate(-Math.PI * 0)
                 )
             ),
-            o(
+            frame(
                 ue.cooldownTime,
                 a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ue.damageTimes[0], "animMeleeCollision", {})
+            effect(ue.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     slash: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((x = {}),
                 a(x, Bones.HandL, new Pose(v2.create(18, -8.25))),
                 a(x, Bones.HandR, new Pose(v2.create(6, 20.25))),
                 x)
             ),
-            o(
+            frame(
                 ue.damageTimes[0],
                 ((S = {}),
                 a(S, Bones.HandL, new Pose(v2.create(6, -22.25))),
@@ -388,7 +353,7 @@ const Animations = {
                 ),
                 S)
             ),
-            o(
+            frame(
                 ue.cooldownTime,
                 ((v = {}),
                 a(v, Bones.HandL, new Pose(v2.create(18, -8.25))),
@@ -401,16 +366,16 @@ const Animations = {
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ue.damageTimes[0], "animMeleeCollision", {})
+            effect(ue.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     hook: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
+            frame(
                 ge.damageTimes[0] * 0.25,
                 a(
                     {},
@@ -420,11 +385,11 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ge.damageTimes[0],
                 a({}, Bones.HandR, new Pose(v2.create(24, 1.75)))
             ),
-            o(
+            frame(
                 ge.damageTimes[0] + 0.05,
                 a(
                     {},
@@ -434,22 +399,22 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ge.damageTimes[0] + 0.1,
                 a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ge.damageTimes[0], "animMeleeCollision", {})
+            effect(ge.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     pan: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(14, 12.25)))),
+            frame(
                 0.15,
                 a(
                     {},
@@ -459,7 +424,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 0.25,
                 a(
                     {},
@@ -469,25 +434,25 @@ const Animations = {
                     )
                 )
             ),
-            o(0.55, a({}, Bones.HandR, new Pose(v2.create(14, 12.25))))
+            frame(0.55, a({}, Bones.HandR, new Pose(v2.create(14, 12.25))))
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(be.damageTimes[0], "animMeleeCollision", {})
+            effect(be.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     axeSwing: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((k = {}),
                 a(k, Bones.HandL, new Pose(v2.create(10.5, -14.25))),
                 a(k, Bones.HandR, new Pose(v2.create(18, 6.25))),
                 k)
             ),
-            o(
+            frame(
                 ye.damageTimes[0] * 0.4,
                 ((z = {}),
                 a(
@@ -506,7 +471,7 @@ const Animations = {
                 ),
                 z)
             ),
-            o(
+            frame(
                 ye.damageTimes[0],
                 ((I = {}),
                 a(
@@ -525,7 +490,7 @@ const Animations = {
                 ),
                 I)
             ),
-            o(
+            frame(
                 ye.cooldownTime,
                 ((T = {}),
                 a(T, Bones.HandL, new Pose(v2.create(10.5, -14.25))),
@@ -534,22 +499,22 @@ const Animations = {
             )
         ],
         effects: [
-            s(ye.damageTimes[0], "animPlaySound", {
+            effect(ye.damageTimes[0], "animPlaySound", {
                 sound: "swing"
             }),
-            s(ye.damageTimes[0], "animMeleeCollision", {})
+            effect(ye.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     hammerSwing: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((M = {}),
                 a(M, Bones.HandL, new Pose(v2.create(10.5, -14.25))),
                 a(M, Bones.HandR, new Pose(v2.create(18, 6.25))),
                 M)
             ),
-            o(
+            frame(
                 we.damageTimes[0] * 0.4,
                 ((P = {}),
                 a(
@@ -568,7 +533,7 @@ const Animations = {
                 ),
                 P)
             ),
-            o(
+            frame(
                 we.damageTimes[0],
                 ((C = {}),
                 a(
@@ -587,7 +552,7 @@ const Animations = {
                 ),
                 C)
             ),
-            o(
+            frame(
                 we.cooldownTime,
                 ((A = {}),
                 a(A, Bones.HandL, new Pose(v2.create(10.5, -14.25))),
@@ -596,22 +561,22 @@ const Animations = {
             )
         ],
         effects: [
-            s(we.damageTimes[0], "animPlaySound", {
+            effect(we.damageTimes[0], "animPlaySound", {
                 sound: "swing"
             }),
-            s(we.damageTimes[0], "animMeleeCollision", {})
+            effect(we.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     katanaSwing: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((O = {}),
                 a(O, Bones.HandL, new Pose(v2.create(8.5, 13.25))),
                 a(O, Bones.HandR, new Pose(v2.create(-3, 17.75))),
                 O)
             ),
-            o(
+            frame(
                 fe.damageTimes[0] * 0.3,
                 ((D = {}),
                 a(
@@ -630,7 +595,7 @@ const Animations = {
                 ),
                 D)
             ),
-            o(
+            frame(
                 fe.damageTimes[0] * 0.9,
                 ((E = {}),
                 a(
@@ -649,7 +614,7 @@ const Animations = {
                 ),
                 E)
             ),
-            o(
+            frame(
                 fe.cooldownTime,
                 ((B = {}),
                 a(B, Bones.HandL, new Pose(v2.create(8.5, 13.25))),
@@ -658,22 +623,22 @@ const Animations = {
             )
         ],
         effects: [
-            s(fe.damageTimes[0], "animPlaySound", {
+            effect(fe.damageTimes[0], "animPlaySound", {
                 sound: "swing"
             }),
-            s(fe.damageTimes[0], "animMeleeCollision", {})
+            effect(fe.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     naginataSwing: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((R = {}),
                 a(R, Bones.HandL, new Pose(v2.create(19, -7.25))),
                 a(R, Bones.HandR, new Pose(v2.create(8.5, 24.25))),
                 R)
             ),
-            o(
+            frame(
                 _e.damageTimes[0] * 0.3,
                 ((L = {}),
                 a(
@@ -692,7 +657,7 @@ const Animations = {
                 ),
                 L)
             ),
-            o(
+            frame(
                 _e.damageTimes[0] * 0.9,
                 ((q = {}),
                 a(
@@ -711,7 +676,7 @@ const Animations = {
                 ),
                 q)
             ),
-            o(
+            frame(
                 _e.cooldownTime,
                 ((F = {}),
                 a(F, Bones.HandL, new Pose(v2.create(19, -7.25))),
@@ -720,16 +685,16 @@ const Animations = {
             )
         ],
         effects: [
-            s(ye.damageTimes[0], "animPlaySound", {
+            effect(ye.damageTimes[0], "animPlaySound", {
                 sound: "swing"
             }),
-            s(ye.damageTimes[0], "animMeleeCollision", {})
+            effect(ye.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     sawSwing: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))),
+            frame(
                 xe.damageTimes[0] * 0.4,
                 a(
                     {},
@@ -739,7 +704,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 xe.damageTimes[0],
                 a(
                     {},
@@ -749,7 +714,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 xe.damageTimes[1] - 0.1,
                 a(
                     {},
@@ -759,7 +724,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 xe.damageTimes[1] * 0.6,
                 a(
                     {},
@@ -769,28 +734,28 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 xe.damageTimes[1] + 0.2,
                 a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(0.4, "animPlaySound", {
+            effect(0.4, "animPlaySound", {
                 sound: "swing"
             }),
-            s(xe.damageTimes[0], "animMeleeCollision", {}),
-            s(xe.damageTimes[1], "animMeleeCollision", {
+            effect(xe.damageTimes[0], "animMeleeCollision", {}),
+            effect(xe.damageTimes[1], "animMeleeCollision", {
                 playerHit: "playerHit2"
             })
         ]
     },
     cutReverseShort: {
         keyframes: [
-            o(0, a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))),
-            o(
+            frame(0, a({}, Bones.HandR, new Pose(v2.create(1, 17.75)))),
+            frame(
                 xe.damageTimes[0] * 0.4,
                 a(
                     {},
@@ -800,7 +765,7 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 xe.damageTimes[0],
                 a(
                     {},
@@ -810,49 +775,49 @@ const Animations = {
                     )
                 )
             ),
-            o(
+            frame(
                 ue.cooldownTime,
                 a({}, Bones.HandR, new Pose(v2.create(14, 17.75)))
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "swing"
             }),
-            s(ue.damageTimes[0], "animMeleeCollision", {})
+            effect(ue.damageTimes[0], "animMeleeCollision", {})
         ]
     },
     cook: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((j = {}),
                 a(j, Bones.HandL, new Pose(v2.create(15.75, -9.625))),
                 a(j, Bones.HandR, new Pose(v2.create(15.75, 9.625))),
                 j)
             ),
-            o(
+            frame(
                 0.1,
                 ((N = {}),
                 a(N, Bones.HandL, new Pose(v2.create(14, -1.75))),
                 a(N, Bones.HandR, new Pose(v2.create(14, 1.75))),
                 N)
             ),
-            o(
+            frame(
                 0.3,
                 ((H = {}),
                 a(H, Bones.HandL, new Pose(v2.create(14, -1.75))),
                 a(H, Bones.HandR, new Pose(v2.create(14, 1.75))),
                 H)
             ),
-            o(
+            frame(
                 0.4,
                 ((V = {}),
                 a(V, Bones.HandL, new Pose(v2.create(22.75, -1.75))),
                 a(V, Bones.HandR, new Pose(v2.create(1.75, 14))),
                 V)
             ),
-            o(
+            frame(
                 99999,
                 ((U = {}),
                 a(U, Bones.HandL, new Pose(v2.create(22.75, -1.75))),
@@ -861,31 +826,31 @@ const Animations = {
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "pullPin"
             }),
-            s(0.1, "animSetThrowableState", {
+            effect(0.1, "animSetThrowableState", {
                 state: "cook"
             })
         ]
     },
     throw: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((W = {}),
                 a(W, Bones.HandL, new Pose(v2.create(22.75, -1.75))),
                 a(W, Bones.HandR, new Pose(v2.create(1.75, 14.175))),
                 W)
             ),
-            o(
+            frame(
                 0.15,
                 ((G = {}),
                 a(G, Bones.HandL, new Pose(v2.create(5.25, -15.75))),
                 a(G, Bones.HandR, new Pose(v2.create(29.75, 1.75))),
                 G)
             ),
-            o(
+            frame(
                 0.15 + GameConfig.player.throwTime,
                 ((X = {}),
                 a(X, Bones.HandL, new Pose(v2.create(15.75, -9.625))),
@@ -894,39 +859,39 @@ const Animations = {
             )
         ],
         effects: [
-            s(0, "animPlaySound", {
+            effect(0, "animPlaySound", {
                 sound: "throwing"
             }),
-            s(0, "animSetThrowableState", {
+            effect(0, "animSetThrowableState", {
                 state: "throwing"
             }),
-            s(0, "animThrowableParticles", {})
+            effect(0, "animThrowableParticles", {})
         ]
     },
     crawl_forward: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((K = {}),
                 a(K, Bones.HandL, new Pose(v2.create(14, -12.25))),
                 a(K, Bones.FootL, new Pose(v2.create(-15.75, -9))),
                 K)
             ),
-            o(
+            frame(
                 GameConfig.player.crawlTime * 0.33,
                 ((Z = {}),
                 a(Z, Bones.HandL, new Pose(v2.create(19.25, -10.5))),
                 a(Z, Bones.FootL, new Pose(v2.create(-20.25, -9))),
                 Z)
             ),
-            o(
+            frame(
                 GameConfig.player.crawlTime * 0.66,
                 ((Y = {}),
                 a(Y, Bones.HandL, new Pose(v2.create(5.25, -15.75))),
                 a(Y, Bones.FootL, new Pose(v2.create(-11.25, -9))),
                 Y)
             ),
-            o(
+            frame(
                 GameConfig.player.crawlTime * 1,
                 ((J = {}),
                 a(J, Bones.HandL, new Pose(v2.create(14, -12.25))),
@@ -938,28 +903,28 @@ const Animations = {
     },
     crawl_backward: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((Q = {}),
                 a(Q, Bones.HandL, new Pose(v2.create(14, -12.25))),
                 a(Q, Bones.FootL, new Pose(v2.create(-15.75, -9))),
                 Q)
             ),
-            o(
+            frame(
                 GameConfig.player.crawlTime * 0.33,
                 (($ = {}),
                 a($, Bones.HandL, new Pose(v2.create(5.25, -15.75))),
                 a($, Bones.FootL, new Pose(v2.create(-11.25, -9))),
                 $)
             ),
-            o(
+            frame(
                 GameConfig.player.crawlTime * 0.66,
                 ((ee = {}),
                 a(ee, Bones.HandL, new Pose(v2.create(19.25, -10.5))),
                 a(ee, Bones.FootL, new Pose(v2.create(-20.25, -9))),
                 ee)
             ),
-            o(
+            frame(
                 GameConfig.player.crawlTime * 1,
                 ((te = {}),
                 a(te, Bones.HandL, new Pose(v2.create(14, -12.25))),
@@ -971,21 +936,21 @@ const Animations = {
     },
     revive: {
         keyframes: [
-            o(
+            frame(
                 0,
                 ((re = {}),
                 a(re, Bones.HandL, new Pose(v2.create(14, -12.25))),
                 a(re, Bones.HandR, new Pose(v2.create(14, 12.25))),
                 re)
             ),
-            o(
+            frame(
                 0.2,
                 ((ae = {}),
                 a(ae, Bones.HandL, new Pose(v2.create(24.5, -8.75))),
                 a(ae, Bones.HandR, new Pose(v2.create(5.25, 21))),
                 ae)
             ),
-            o(
+            frame(
                 0.2 + GameConfig.player.reviveDuration,
                 ((ie = {}),
                 a(ie, Bones.HandL, new Pose(v2.create(24.5, -8.75))),

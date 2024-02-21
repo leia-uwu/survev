@@ -132,20 +132,16 @@ Building.prototype = {
             this.zIdx = p.zIdx || 0;
             this.surfaces = [];
             for (let u = 0; u < p.floor.surfaces.length; u++) {
-                for (
-                    var g = p.floor.surfaces[u],
-                        y = {
-                            type: g.type,
-                            data: g.data || {},
-                            colliders: []
-                        },
-                        w = 0;
-                    w < g.collision.length;
-                    w++
-                ) {
+                const surface = p.floor.surfaces[u];
+                const y = {
+                    type: surface.type,
+                    data: surface.data || {},
+                    colliders: []
+                };
+                for (let i = 0; i < surface.collision.length; i++) {
                     y.colliders.push(
                         collider.transform(
-                            g.collision[w],
+                            surface.collision[i],
                             this.pos,
                             this.rot,
                             this.scale
@@ -481,6 +477,7 @@ Building.prototype = {
     },
     destroyCeilingFx: function(e, t) {
         const r = MapObjectDefs[this.type].ceiling.destroy;
+        /* eslint-disable no-unreachable-loop */
         for (
             let a = this.surfaces[0], i = 0;
             i < a.colliders.length;

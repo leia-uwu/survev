@@ -1005,7 +1005,6 @@ export class Game {
             if (!r.started) {
                 this.zt.setWaitingForPlayers(true);
             }
-            this.zt.removeAds();
             if (this.victoryMusic) {
                 this.victoryMusic.stop();
                 this.victoryMusic = null;

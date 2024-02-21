@@ -22,24 +22,6 @@ const Anim = GameConfig.Anim;
 const Input = GameConfig.Input;
 const HasteType = GameConfig.HasteType;
 
-function a(e, t, r) {
-    if (t in e) {
-        Object.defineProperty(e, t, {
-            value: r,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        e[t] = r;
-    }
-    return e;
-}
-function i(e, t) {
-    if (!(e instanceof t)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
 function o(e, t) {
     if (e.length != t.length) {
         return false;
@@ -73,7 +55,7 @@ function s() {
     t.visible = false;
     return t;
 }
-function n() {
+function createSprite() {
     const e = new PIXI.Sprite();
     e.texture = PIXI.Texture.EMPTY;
     e.anchor.set(0.5, 0.5);
@@ -82,31 +64,32 @@ function n() {
     e.visible = false;
     return e;
 }
-function l() {
-    this.bodySprite = n();
-    this.chestSprite = n();
-    this.flakSprite = n();
-    this.steelskinSprite = n();
-    this.helmetSprite = n();
-    this.visorSprite = n();
-    this.backpackSprite = n();
-    this.handLSprite = n();
-    this.handRSprite = n();
-    this.footLSprite = n();
-    this.footRSprite = n();
-    this.hipSprite = n();
-    this.gunLSprites = new F();
-    this.gunRSprites = new F();
-    this.objectLSprite = n();
-    this.objectRSprite = n();
-    this.meleeSprite = n();
-    this.bodySubmergeSprite = n();
-    this.handLSubmergeSprite = n();
-    this.handRSubmergeSprite = n();
-    this.footLSubmergeSprite = n();
-    this.footRSubmergeSprite = n();
-    this.bodyEffectSprite = n();
-    this.patchSprite = n();
+
+function Player() {
+    this.bodySprite = createSprite();
+    this.chestSprite = createSprite();
+    this.flakSprite = createSprite();
+    this.steelskinSprite = createSprite();
+    this.helmetSprite = createSprite();
+    this.visorSprite = createSprite();
+    this.backpackSprite = createSprite();
+    this.handLSprite = createSprite();
+    this.handRSprite = createSprite();
+    this.footLSprite = createSprite();
+    this.footRSprite = createSprite();
+    this.hipSprite = createSprite();
+    this.gunLSprites = new Gun();
+    this.gunRSprites = new Gun();
+    this.objectLSprite = createSprite();
+    this.objectRSprite = createSprite();
+    this.meleeSprite = createSprite();
+    this.bodySubmergeSprite = createSprite();
+    this.handLSubmergeSprite = createSprite();
+    this.handRSubmergeSprite = createSprite();
+    this.footLSubmergeSprite = createSprite();
+    this.footRSubmergeSprite = createSprite();
+    this.bodyEffectSprite = createSprite();
+    this.patchSprite = createSprite();
     this.bodySprite.addChild(this.bodySubmergeSprite);
     this.handLSprite.addChild(this.handLSubmergeSprite);
     this.handRSprite.addChild(this.handRSubmergeSprite);
@@ -145,7 +128,7 @@ function l() {
     this.nameText = s();
     this.container.addChild(this.nameText);
     this.auraContainer = new PIXI.Container();
-    this.auraCircle = n();
+    this.auraCircle = createSprite();
     this.auraContainer.addChild(this.auraCircle);
     this.initSubmergeSprites();
     this.bones = [];
@@ -156,11 +139,11 @@ function l() {
         ticker: 0,
         bones: []
     };
-    for (let e = Object.keys(D).length, t = 0; t < e; t++) {
-        this.bones.push(new O());
+    for (let e = Object.keys(Bones).length, t = 0; t < e; t++) {
+        this.bones.push(new Pose());
         this.anim.bones.push({
             weight: 0,
-            pose: new O()
+            pose: new Pose()
         });
     }
     this.perks = [];
@@ -220,8 +203,8 @@ function l() {
     this.isLoadoutAvatar = false;
     this.playActionStartSfx = true;
 }
-function c() {
-    this.$e = new objectPool.Pool(l);
+function PlayerBarn() {
+    this.$e = new objectPool.Pool(Player);
     this.Rr = {};
     this.playerIds = [];
     this.teamInfo = {};
@@ -229,47 +212,24 @@ function c() {
     this.playerStatus = {};
     this.anonPlayerNames = false;
 }
-const m = (function() {
-    function e(e, t) {
-        for (let r = 0; r < t.length; r++) {
-            const a = t[r];
-            a.enumerable = a.enumerable || false;
-            a.configurable = true;
-            if ("value" in a) {
-                a.writable = true;
-            }
-            Object.defineProperty(e, a.key, a);
-        }
-    }
-    return function(t, r, a) {
-        if (r) {
-            e(t.prototype, r);
-        }
-        if (a) {
-            e(t, a);
-        }
-        return t;
-    };
-})();
 
-var O = animData.Pose;
-var D = animData.Bones;
-const E = [];
-const B = [];
+const Pose = animData.Pose;
+const Bones = animData.Bones;
+const desktopZoomRads = [];
+const mobileZoomRads = [];
 for (
     let R = Object.keys(GameConfig.scopeZoomRadius.mobile), L = 0;
     L < R.length;
     L++
 ) {
     const q = R[L];
-    E.push(GameConfig.scopeZoomRadius.desktop[q]);
-    B.push(GameConfig.scopeZoomRadius.mobile[q]);
+    desktopZoomRads.push(GameConfig.scopeZoomRadius.desktop[q]);
+    mobileZoomRads.push(GameConfig.scopeZoomRadius.mobile[q]);
 }
-var F = (function() {
-    function e() {
-        i(this, e);
-        this.gunBarrel = n();
-        this.gunMag = n();
+class Gun {
+    constructor() {
+        this.gunBarrel = createSprite();
+        this.gunMag = createSprite();
         this.container = new PIXI.Container();
         this.container.addChild(this.gunBarrel);
         this.container.addChild(this.gunMag);
@@ -277,65 +237,59 @@ var F = (function() {
         this.container.visible = false;
         this.magTop = false;
     }
-    m(e, [
-        {
-            key: "setVisible",
-            value: function(e) {
-                this.container.visible = e;
+
+    setVisible(e) {
+        this.container.visible = e;
+    }
+
+    setType(e, t) {
+        const r = GameObjectDefs[e];
+        const a = r.worldImg;
+        this.gunBarrel.texture = PIXI.Texture.from(
+            a.sprite
+        );
+        this.gunBarrel.anchor.set(0.5, 1);
+        this.gunBarrel.position.set(0, 0);
+        this.gunBarrel.scale.set(
+            (a.scale.x * 0.5) / t,
+            (a.scale.y * 0.5) / t
+        );
+        this.gunBarrel.tint = a.tint;
+        this.gunBarrel.visible = true;
+        if (a.magImg) {
+            const i = a.magImg;
+            this.gunMag.texture = PIXI.Texture.from(
+                i.sprite
+            );
+            this.gunMag.anchor.set(0.5, 0.5);
+            this.gunMag.position.set(
+                i.pos.x / t,
+                i.pos.y / t
+            );
+            this.gunMag.scale.set(0.25 / t, 0.25 / t);
+            this.gunMag.tint = 16777215;
+            this.gunMag.visible = true;
+            if (i.top) {
+                this.container.addChild(this.gunMag);
+            } else {
+                this.container.addChildAt(this.gunMag, 0);
             }
-        },
-        {
-            key: "setType",
-            value: function(e, t) {
-                const r = GameObjectDefs[e];
-                const a = r.worldImg;
-                this.gunBarrel.texture = PIXI.Texture.from(
-                    a.sprite
-                );
-                this.gunBarrel.anchor.set(0.5, 1);
-                this.gunBarrel.position.set(0, 0);
-                this.gunBarrel.scale.set(
-                    (a.scale.x * 0.5) / t,
-                    (a.scale.y * 0.5) / t
-                );
-                this.gunBarrel.tint = a.tint;
-                this.gunBarrel.visible = true;
-                if (a.magImg) {
-                    const i = a.magImg;
-                    this.gunMag.texture = PIXI.Texture.from(
-                        i.sprite
-                    );
-                    this.gunMag.anchor.set(0.5, 0.5);
-                    this.gunMag.position.set(
-                        i.pos.x / t,
-                        i.pos.y / t
-                    );
-                    this.gunMag.scale.set(0.25 / t, 0.25 / t);
-                    this.gunMag.tint = 16777215;
-                    this.gunMag.visible = true;
-                    if (i.top) {
-                        this.container.addChild(this.gunMag);
-                    } else {
-                        this.container.addChildAt(this.gunMag, 0);
-                    }
-                } else {
-                    this.gunMag.visible = false;
-                }
-                this.magTop = a.magImg?.top;
-                const o = r.isDual
-                    ? v2.create(-5.95, 0)
-                    : v2.create(-4.25, -1.75);
-                if (a.gunOffset) {
-                    o.x += a.gunOffset.x;
-                    o.y += a.gunOffset.y;
-                }
-                this.container.position.set(o.x, o.y);
-            }
+        } else {
+            this.gunMag.visible = false;
         }
-    ]);
-    return e;
-})();
-l.prototype = {
+        this.magTop = a.magImg?.top;
+        const o = r.isDual
+            ? v2.create(-5.95, 0)
+            : v2.create(-4.25, -1.75);
+        if (a.gunOffset) {
+            o.x += a.gunOffset.x;
+            o.y += a.gunOffset.y;
+        }
+        this.container.position.set(o.x, o.y);
+    }
+}
+
+Player.prototype = {
     o: function() {
         this.isNew = false;
         this.wasInsideObstacle = false;
@@ -501,9 +455,9 @@ l.prototype = {
     yr: function() {
         let e = this.Re.O;
         if (device.mobile) {
-            const t = E.indexOf(e);
+            const t = desktopZoomRads.indexOf(e);
             if (t !== -1) {
-                e = B[t];
+                e = mobileZoomRads[t];
             }
         }
         return e;
@@ -896,26 +850,25 @@ l.prototype = {
             this.action.throttleTicker = 0.25;
         }
         if (this.Le.ve && this.Le.ke != this.hasteSeq) {
-            let de;
-            de = {};
-            a(de, HasteType.None, {
-                particle: "",
-                sound: ""
-            });
-            a(de, HasteType.Windwalk, {
-                particle: "windwalk",
-                sound: "ability_stim_01"
-            });
-            a(de, HasteType.Takedown, {
-                particle: "takedown",
-                sound: "ability_stim_01"
-            });
-            a(de, HasteType.Inspire, {
-                particle: "inspire",
-                sound: "ability_stim_01"
-            });
-            const ue = de;
-            const ge = ue[this.Le.ve];
+            const hasteEffects = {
+                [HasteType.None]: {
+                    particle: "",
+                    sound: ""
+                },
+                [HasteType.Windwalk]: {
+                    particle: "windwalk",
+                    sound: "ability_stim_01"
+                },
+                [HasteType.Takedown]: {
+                    particle: "takedown",
+                    sound: "ability_stim_01"
+                },
+                [HasteType.Inspire]: {
+                    particle: "inspire",
+                    sound: "ability_stim_01"
+                }
+            };
+            const ge = hasteEffects[this.Le.ve];
             if (!this.isNew) {
                 i.playSound(ge.sound, {
                     channel: "sfx",
@@ -1018,10 +971,10 @@ l.prototype = {
             ke++
         ) {
             const ze = ke;
-            const Ie = ve[ze] || O.identity;
+            const Ie = ve[ze] || Pose.identity;
             const Te = this.anim.bones[ze];
             if (Te.weight > 0) {
-                this.bones[ke].copy(O.lerp(Te.weight, Ie, Te.pose));
+                this.bones[ke].copy(Pose.lerp(Te.weight, Ie, Te.pose));
             } else {
                 this.bones[ke].copy(Ie);
             }
@@ -1272,7 +1225,6 @@ l.prototype = {
             this.helmetSprite.visible = true;
         }
         if (this.Vr() > 0 && !r.ghillie && !this.downed) {
-            GameObjectDefs[this.Le.ne];
             const A = [10.25, 11.5, 12.75];
             const O = this.Vr();
             const D = A[math.min(O - 1, A.length - 1)];
@@ -1530,10 +1482,10 @@ l.prototype = {
             e.pivot.set(-t.pivot.x, -t.pivot.y);
             e.rotation = t.rot;
         };
-        e(this.handLContainer, this.bones[D.HandL]);
-        e(this.handRContainer, this.bones[D.HandR]);
-        e(this.footLContainer, this.bones[D.FootL]);
-        e(this.footRContainer, this.bones[D.FootR]);
+        e(this.handLContainer, this.bones[Bones.HandL]);
+        e(this.handRContainer, this.bones[Bones.HandR]);
+        e(this.footLContainer, this.bones[Bones.FootL]);
+        e(this.footRContainer, this.bones[Bones.FootR]);
         const t = GameObjectDefs[this.Le.me];
         if (
             !this.downed &&
@@ -1558,8 +1510,8 @@ l.prototype = {
         let a = null;
         switch (this.action.type) {
         case Action.Reload:
-        case Action.ReloadAlt:
-            var i = GameObjectDefs[this.action.item];
+        case Action.ReloadAlt: {
+            const i = GameObjectDefs[this.action.item];
             if (i) {
                 a = {
                     sound:
@@ -1569,15 +1521,17 @@ l.prototype = {
                     channel: e ? "activePlayer" : "otherPlayers"
                 };
             }
+        }
             break;
-        case Action.UseItem:
-            var o = GameObjectDefs[this.action.item];
+        case Action.UseItem: {
+            const o = GameObjectDefs[this.action.item];
             if (o) {
                 a = {
                     sound: o.sound.use,
                     channel: e ? "activePlayer" : "otherPlayers"
                 };
             }
+        }
         }
         r.stopSound(this.actionSoundInstance);
         if (a && this.playActionStartSfx) {
@@ -1620,9 +1574,9 @@ l.prototype = {
         let i = "";
         const o = {};
         switch (this.action.type) {
-        case Action.UseItem:
-            var s = GameObjectDefs[this.action.item];
-            var n = t.loadout;
+        case Action.UseItem: {
+            const s = GameObjectDefs[this.action.item];
+            const n = t.loadout;
             if (s.type == "heal") {
                 i = GameObjectDefs[n.heal].emitter;
             } else if (s.type == "boost") {
@@ -1634,6 +1588,7 @@ l.prototype = {
                 o.rateMult = 0.25;
             }
             break;
+        }
         case Action.Revive:
             if (this.Le.ue) {
                 i = "revive_basic";
@@ -1735,15 +1690,16 @@ l.prototype = {
             return t("crawl_forward", true);
         case Anim.CrawlBackward:
             return t("crawl_backward", true);
-        case Anim.Melee:
-            var r = GameObjectDefs[this.Le.me];
+        case Anim.Melee: {
+            const r = GameObjectDefs[this.Le.me];
             if (!r.anim?.attackAnims) {
                 return t("fists", true);
             }
-            var a = r.anim.attackAnims;
-            var i = Math.floor(Math.random() * a.length);
-            var o = a[i];
+            const a = r.anim.attackAnims;
+            const i = Math.floor(Math.random() * a.length);
+            const o = a[i];
             return t(o, o == "fists" && a.length == 1);
+        }
         default:
             return t("none", false);
         }
@@ -1770,11 +1726,11 @@ l.prototype = {
             const r = this.anim.ticker;
             this.anim.ticker += e * 1;
             const a = animData.Animations[this.anim.data.type];
-            for (
-                var i = a.keyframes, o = -1, s = 0;
-                this.anim.ticker >= i[s].time && s < i.length - 1;
 
-            ) {
+            const i = a.keyframes;
+            let o = -1;
+            let s = 0;
+            for (;this.anim.ticker >= i[s].time && s < i.length - 1;) {
                 o++;
                 s++;
             }
@@ -1793,7 +1749,7 @@ l.prototype = {
                 }
                 if (m[y] !== undefined && p[y] !== undefined) {
                     g.weight = o == s ? c : 1;
-                    g.pose.copy(O.lerp(c, m[y], p[y]));
+                    g.pose.copy(Pose.lerp(c, m[y], p[y]));
                     if (h) {
                         g.pose.pos.y *= -1;
                         g.pose.pivot.y *= -1;
@@ -1809,6 +1765,7 @@ l.prototype = {
             for (let _ = 0; _ < a.effects.length; _++) {
                 const x = a.effects[_];
                 if (x.time >= r && x.time < f) {
+                    /* eslint-disable-next-line no-useless-call */
                     this[x.fn].apply(this, [t, x.args]);
                 }
             }
@@ -2126,7 +2083,7 @@ l.prototype = {
         return true;
     }
 };
-c.prototype = {
+PlayerBarn.prototype = {
     onMapLoad: function(e) { },
     m: function(e, t, r, a, i, o, s, n, l, c, m, p, h) {
         for (let d = this.$e.p(), u = 0; u < d.length; u++) {
@@ -2335,7 +2292,6 @@ c.prototype = {
             minimapAlpha: 0,
             minimapVisible: false
         };
-        r.visible;
         if (!r.minimapVisible) {
             r.pos = v2.copy(t.pos);
             if (!r.visible && t.visible) {
@@ -2447,5 +2403,5 @@ c.prototype = {
     }
 };
 export default {
-    Lt: c
+    Lt: PlayerBarn
 };

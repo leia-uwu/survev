@@ -4,12 +4,10 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 
-"use strict";
-
-function a() {
+function PhysicsParticle() {
     this.active = false;
 }
-function i(e) {
+function Explosion(e) {
     this.active = false;
 }
 function ExplosionBarn() {
@@ -311,7 +309,7 @@ const p = {
         lifetime: 2
     }
 };
-a.prototype = {
+PhysicsParticle.prototype = {
     init: function(e, t, r, a) {
         this.pos = v2.copy(e);
         this.vel = v2.copy(t);
@@ -381,7 +379,7 @@ a.prototype = {
         }
     }
 };
-i.prototype = {
+Explosion.prototype = {
     o: function(e, t, r) {
         const a = ExplosionDefs[e].explosionEffectType;
         const i = p[a];
@@ -516,7 +514,7 @@ ExplosionBarn.prototype = {
             }
         }
         if (!a) {
-            a = new i(this);
+            a = new Explosion(this);
             this.explosions.push(a);
         }
         a.o(e, t, r);
@@ -531,7 +529,7 @@ ExplosionBarn.prototype = {
             }
         }
         if (!e) {
-            e = new a();
+            e = new PhysicsParticle();
             this.physicsParticles.push(e);
         }
         return e;

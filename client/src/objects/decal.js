@@ -19,7 +19,7 @@ function a(e, t, r) {
 function i() {
     this.decalRender = null;
 }
-function o() {
+function Decal() {
     this.sprite = new PIXI.Sprite();
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.visible = false;
@@ -107,7 +107,7 @@ i.prototype = {
         this.isNew = false;
     }
 };
-o.prototype = {
+Decal.prototype = {
     o: function(e, t, r) {
         const a = MapObjectDefs[e.type];
         this.pos = v2.copy(e.pos);
@@ -209,7 +209,7 @@ DecalBarn.prototype = {
             }
         }
         if (!e) {
-            e = new o();
+            e = new Decal();
             this.decalRenders.push(e);
         }
         return e;

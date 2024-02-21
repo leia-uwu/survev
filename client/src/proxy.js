@@ -1,13 +1,13 @@
 function a() {
-    for (let e = Object.keys(i), t = 0; t < e.length; t++) {
+    for (let e = Object.keys(Proxies), t = 0; t < e.length; t++) {
         const r = e[t];
         if (window.location.hostname.includes(r)) {
-            return i[r];
+            return Proxies[r];
         }
     }
     return null;
 }
-var i = {
+const Proxies = {
     "surviv.io": {
         all: true
     },

@@ -92,9 +92,9 @@ SmokeBarn.prototype = {
         return e;
     },
     m: function(e, t, r, a, i) {
-        for (let o = this.e.p(), s = 0; s < o.length; s++) {
-            o[s].active;
-        }
+        // for (let o = this.e.p(), s = 0; s < o.length; s++) {
+        // o[s].active;
+        // }
         for (let m = 0; m < this.particles.length; m++) {
             const p = this.particles[m];
             if (p.active) {

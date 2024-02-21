@@ -633,7 +633,7 @@ class Application {
                 a();
                 FirebaseManager.storeGeneric("account", "wait_timeout");
             }, 2500);
-            var a = function a() {
+            const a = function a() {
                 e();
                 clearTimeout(r);
                 t.account.removeEventListener(
@@ -761,11 +761,9 @@ class Application {
             }, 250);
             return;
         }
-        for (
-            var r = e.hosts || [], a = [], i = 0;
-            i < r.length;
-            i++
-        ) {
+        const r = e.hosts || [];
+        const a = [];
+        for (let i = 0; i < r.length; i++) {
             a.push(
                 `ws${e.useHttps ? "s" : ""}://${r[i]}/play?gameId=${e.gameId
                 }`

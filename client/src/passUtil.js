@@ -15,7 +15,8 @@ const passUtil = {
     },
     getPassLevelAndXp: function(e, t) {
         let r = t;
-        for (var a = 1; a < 99;) {
+        let a = 1;
+        for (;a < 99;) {
             const o = passUtil.getPassLevelXp(e, a);
             if (r < o) {
                 break;

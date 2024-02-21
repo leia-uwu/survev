@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-expressions, no-sequences, prefer-const, no-return-assign, @typescript-eslint/no-dynamic-delete, no-inner-declarations, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-expressions, no-sequences, prefer-const, no-return-assign, no-inner-declarations, @typescript-eslint/no-unused-vars */
 
 /*!
  * ==========================================================

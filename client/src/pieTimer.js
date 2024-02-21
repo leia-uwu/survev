@@ -3,6 +3,8 @@ import * as PIXI from "pixi.js"
 import { math } from "../../shared/utils/math";
 import device from "./device";
 
+const fontWidth = 24;
+
 function PieTimer() {
     this.container = new PIXI.Container();
     this.container.visible = false;
@@ -19,7 +21,7 @@ function PieTimer() {
     this.counterText.style = {
         fontFamily: "Roboto Condensed, Arial, sans-serif",
         fontWeight: "bold",
-        fontSize: n,
+        fontSize: fontWidth,
         align: "center",
         fill: 16777215,
         stroke: 0,
@@ -31,7 +33,7 @@ function PieTimer() {
     this.labelText.style = {
         fontFamily: "Roboto Condensed, Arial, sans-serif",
         fontWeight: "100",
-        fontSize: n,
+        fontSize: fontWidth,
         align: "center",
         fill: 16777215
     };
@@ -44,7 +46,6 @@ function PieTimer() {
     this.duration = 0;
 }
 
-var n = 24;
 PieTimer.prototype = {
     destroy: function() {
         this.container.removeChild(this.timerBackground);
@@ -85,8 +86,8 @@ PieTimer.prototype = {
             return;
         }
         this.elapsed = math.min(this.elapsed + e, this.duration);
-        const r = 56 + this.label.length * n * 0.45;
-        const a = n * 1.5;
+        const r = 56 + this.label.length * fontWidth * 0.45;
+        const a = fontWidth * 1.5;
         const i = 0 - r / 2;
         const s = 87.5 - a / 2;
         const l =

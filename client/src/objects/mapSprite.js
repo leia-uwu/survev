@@ -2,10 +2,10 @@ import * as PIXI from "pixi.js";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 
-function s() {
+function MapSprite() {
     this.active = false;
     this.retained = true;
-    this.sprite = new p();
+    this.sprite = new SortableSprite();
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.scale.set(1, 1);
     this.sprite.visible = false;
@@ -23,14 +23,14 @@ function MapSpriteBarn() {
     this.mapSprites = [];
 }
 
-class p extends PIXI.Sprite {
+class SortableSprite extends PIXI.Sprite {
     constructor() {
         super();
         this.__zOrder = -1;
     }
 }
 
-s.prototype = {
+MapSprite.prototype = {
     init: function() {
         this.active = true;
         this.retained = true;
@@ -70,7 +70,7 @@ MapSpriteBarn.prototype = {
             }
         }
         if (!e) {
-            e = new s();
+            e = new MapSprite();
             this.mapSprites.push(e);
             this.container.addChild(e.sprite);
         }

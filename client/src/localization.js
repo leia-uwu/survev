@@ -23,7 +23,7 @@ function Localization() {
     this.locale = "en";
 }
 
-var c = {
+const c = {
     da: "Dansk",
     de: "Deutsch",
     en: "English",

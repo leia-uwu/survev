@@ -6,7 +6,7 @@ import loadouts from "./loadouts";
 import { math } from "../../shared/utils/math";
 import { v2 } from "../../shared/utils/v2";
 import device from "./device";
-import camera from "./camera";
+import Camera from "./camera";
 import debugLines from "./debugLines";
 import decal from "./objects/decal";
 import map from "./map";
@@ -42,18 +42,17 @@ function LoadoutDisplay(e, t, r, a, i) {
 
 LoadoutDisplay.prototype = {
     o: function() {
-        let e;
         const t = this;
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
-        this.De = new camera();
+        this.De = new Camera();
         this.Ct = new renderer.At(this, this.canvasMode);
         this.Ot = new particles.ParticleBarn(this.Ct);
         this.Dt = new decal.DecalBarn();
         this.Et = new map.Bt(this.Dt);
         this.Rt = new Player.Lt();
         this.Kt = new Smoke.SmokeBarn();
-        e = {};
+        const e = {};
         a(e, gameObject.Type.Player, this.Rt.$e);
         a(e, gameObject.Type.Obstacle, this.Et.Ve);
         a(e, gameObject.Type.Building, this.Et.nr);

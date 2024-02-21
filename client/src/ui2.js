@@ -14,19 +14,6 @@ const Action = GameConfig.Action;
 const DamageType = GameConfig.DamageType;
 const PickupMsgType = net.PickupMsgType;
 
-function a(e, t, r) {
-    if (t in e) {
-        Object.defineProperty(e, t, {
-            value: r,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        e[t] = r;
-    }
-    return e;
-}
 function i(e) {
     return document.getElementById(e);
 }
@@ -84,7 +71,9 @@ function c() {
     return t;
 }
 function m() {
-    for (var e = Object.keys(GameObjectDefs), t = [], r = 0; r < e.length; r++) {
+    const e = Object.keys(GameObjectDefs);
+    const t = [];
+    for (let r = 0; r < e.length; r++) {
         const a = e[r];
         const i = GameObjectDefs[a];
         if (
@@ -101,7 +90,7 @@ function m() {
 function p() {
     return ["chest", "helmet", "backpack"];
 }
-function h() {
+function UiState() {
     this.mobile = false;
     this.touch = false;
     this.rareLootMessage = {
@@ -209,8 +198,8 @@ function Ui2(e, t) {
     const r = this;
     this.localization = e;
     this.inputBinds = t;
-    this.oldState = new h();
-    this.newState = new h();
+    this.oldState = new UiState();
+    this.newState = new UiState();
     this.frameCount = 0;
     this.dom = {
         debugButton: i("ui-debug-button"),
@@ -475,8 +464,6 @@ function loadStaticDomImages() {
     i("mag-glass-white").src = "img/gui/mag-glass.svg";
     i("ui-minimize-img").src = "img/gui/minimize.svg";
 }
-let g;
-
 const C = 6;
 const A = 750;
 const O = 3;
@@ -487,12 +474,14 @@ const D = {
     Revive: 3,
     Object: 4
 };
-g = {};
-a(g, GameConfig.WeaponSlot.Primary, Input.EquipPrimary);
-a(g, GameConfig.WeaponSlot.Secondary, Input.EquipSecondary);
-a(g, GameConfig.WeaponSlot.Melee, Input.EquipMelee);
-a(g, GameConfig.WeaponSlot.Throwable, Input.EquipThrowable);
-const E = g;
+
+const E = {
+    [GameConfig.WeaponSlot.Primary]: Input.EquipPrimary,
+    [GameConfig.WeaponSlot.Secondary]: Input.EquipSecondary,
+    [GameConfig.WeaponSlot.Melee]: Input.EquipMelee,
+    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable
+};
+
 Ui2.prototype = {
     n: function() {
         for (let e = 0; e < this.eventListeners.length; e++) {
@@ -843,7 +832,6 @@ Ui2.prototype = {
     },
     render: function(e, t) {
         const r = this.dom;
-        e.mobile;
         if (e.touch) {
             r.interaction.key.style.backgroundImage = t.touch
                 ? "url('img/gui/tap.svg')"
@@ -935,42 +923,39 @@ Ui2.prototype = {
             }
         }
         if (e.health || e.downed) {
-            for (
-                var u = [
-                        {
-                            health: 100,
-                            color: [179, 179, 179]
-                        },
-                        {
-                            health: 100,
-                            color: [255, 255, 255]
-                        },
-                        {
-                            health: 75,
-                            color: [255, 255, 255]
-                        },
-                        {
-                            health: 75,
-                            color: [255, 158, 158]
-                        },
-                        {
-                            health: 25,
-                            color: [255, 82, 82]
-                        },
-                        {
-                            health: 25,
-                            color: [255, 0, 0]
-                        },
-                        {
-                            health: 0,
-                            color: [255, 0, 0]
-                        }
-                    ],
-                    g = 0,
-                    y = Math.ceil(t.health);
-                u[g].health > y && g < u.length - 1;
-
-            ) {
+            const u = [
+                {
+                    health: 100,
+                    color: [179, 179, 179]
+                },
+                {
+                    health: 100,
+                    color: [255, 255, 255]
+                },
+                {
+                    health: 75,
+                    color: [255, 255, 255]
+                },
+                {
+                    health: 75,
+                    color: [255, 158, 158]
+                },
+                {
+                    health: 25,
+                    color: [255, 82, 82]
+                },
+                {
+                    health: 25,
+                    color: [255, 0, 0]
+                },
+                {
+                    health: 0,
+                    color: [255, 0, 0]
+                }
+            ];
+            let g = 0;
+            const y = Math.ceil(t.health);
+            for (; u[g].health > y && g < u.length - 1;) {
                 g++;
             }
             const f = u[math.max(g - 1, 0)];
@@ -996,11 +981,9 @@ Ui2.prototype = {
             }
         }
         if (e.boost) {
-            for (
-                var v = GameConfig.player.boostBreakpoints, I = 0, T = 0;
-                T < v.length;
-                T++
-            ) {
+            const v = GameConfig.player.boostBreakpoints;
+            let I = 0;
+            for (let T = 0; T < v.length; T++) {
                 I += v[T];
             }
             for (
@@ -1052,7 +1035,6 @@ Ui2.prototype = {
                         this.localization.translate(
                             `game-${L.type}`
                         );
-                    j.lootImg.sprite;
                     F = helpers.getCssTransformFromGameType(L.type);
                 }
                 R.type.innerHTML = q;
@@ -1204,7 +1186,6 @@ Ui2.prototype = {
             const pe = r.perks[ce];
             const he = t.perks[ce];
             if (me.type) {
-                GameObjectDefs[he.type];
                 pe.perkType = he.type;
                 pe.divTitle.innerHTML = this.localization.translate(
                     `game-${he.type}`
@@ -1295,70 +1276,69 @@ Ui2.prototype = {
             return e.ticker - t.ticker;
         });
     },
-    getKillFeedText: function(e, t, r, a, i) {
-        switch (a) {
+    getKillFeedText: function(targetName, killerName, sourceType, damageType, downed) {
+        switch (damageType) {
         case DamageType.Player:
-            return `${t} ${this.localization.translate(
-                i ? "game-knocked-out" : "game-killed"
-            )} ${e} ${this.localization.translate(
+            return `${killerName} ${this.localization.translate(
+                downed ? "game-knocked-out" : "game-killed"
+            )} ${targetName} ${this.localization.translate(
                 "game-with"
-            )} ${this.localization.translate(`game-${r}`)}`;
-        case DamageType.Bleeding:
-            var o = this.localization.translate(
-                t
+            )} ${this.localization.translate(`game-${sourceType}`)}`;
+        case DamageType.Bleeding: {
+            const o = this.localization.translate(
+                killerName
                     ? "game-finally-killed"
                     : "game-finally-bled-out"
             );
-            if (t) {
-                return `${t} ${o} ${e}`;
+            if (killerName) {
+                return `${killerName} ${o} ${targetName}`;
             } else {
-                return `${e} ${o}`;
+                return `${targetName} ${o}`;
             }
-        case DamageType.Gas:
-            var s = undefined;
-            var n = undefined;
-            if (i) {
-                s =
-                        this.localization.translate(
-                            "game-the-red-zone"
-                        );
-                n =
-                        this.localization.translate(
-                            "game-knocked-out"
-                        );
+        }
+        case DamageType.Gas: {
+            let s;
+            let n;
+            if (downed) {
+                s = this.localization.translate(
+                    "game-the-red-zone"
+                );
+                n = this.localization.translate(
+                    "game-knocked-out"
+                );
             } else {
                 n = this.localization.translate(
-                    t
+                    killerName
                         ? "game-finally-killed"
                         : "game-died-outside"
                 );
             }
             if (s) {
-                return `${s} ${n} ${e}`;
+                return `${s} ${n} ${targetName}`;
             } else {
-                return `${e} ${n}`;
+                return `${targetName} ${n}`;
             }
-        case DamageType.Airdrop:
-            var l = MapObjectDefs[r];
-            var c =
-                    this.localization.translate(
-                        "game-the-air-drop"
-                    );
-            var m = undefined;
-            m = i
+        }
+        case DamageType.Airdrop: {
+            const l = MapObjectDefs[sourceType];
+            const c = this.localization.translate(
+                "game-the-air-drop"
+            );
+            const m = downed
                 ? this.localization.translate(
                     "game-knocked-out"
                 )
                 : l && !l.airdropCrate
                     ? this.localization.translate("game-killed")
                     : this.localization.translate("game-crushed");
-            return `${c} ${m} ${e}`;
-        case DamageType.Airstrike:
-            var p = this.localization.translate(
-                i ? "game-knocked-out" : "game-killed"
+            return `${c} ${m} ${targetName}`;
+        }
+        case DamageType.Airstrike: {
+            const p = this.localization.translate(
+                downed ? "game-knocked-out" : "game-killed"
             );
-            if (t) {
-                return `${t} ${p} ${e} ${this.localization.translate(
+            if (killerName) {
+                return `${killerName} ${p} ${targetName} ${this.localization.translate(
                     "game-with"
                 )} ${this.localization.translate(
                     "game-an-air-strike"
@@ -1366,8 +1346,9 @@ Ui2.prototype = {
             } else {
                 return `${this.localization.translate(
                     "game-the-air-strike"
-                )} ${p} ${e}`;
+                )} ${p} ${targetName}`;
             }
+        }
         default:
             return "";
         }
@@ -1490,14 +1471,13 @@ Ui2.prototype = {
         }
     },
     getPickupMessageText: function(e) {
-        let t;
-        t = {};
-        a(t, PickupMsgType.Full, "game-not-enough-space");
-        a(t, PickupMsgType.AlreadyOwned, "game-item-already-owned");
-        a(t, PickupMsgType.AlreadyEquipped, "game-item-already-equipped");
-        a(t, PickupMsgType.BetterItemEquipped, "game-better-item-equipped");
-        a(t, PickupMsgType.GunCannotFire, "game-gun-cannot-fire");
-        const r = t;
+        const r = {
+            [PickupMsgType.Full]: "game-not-enough-space",
+            [PickupMsgType.AlreadyOwned]: "game-item-already-owned",
+            [PickupMsgType.AlreadyEquipped]: "game-item-already-equipped",
+            [PickupMsgType.BetterItemEquipped]: "game-better-item-equipped",
+            [PickupMsgType.GunCannotFire]: "game-gun-cannot-fire"
+        };
         const i = r[e] || r[PickupMsgType.Full];
         return this.localization.translate(i);
     },
@@ -1517,19 +1497,17 @@ Ui2.prototype = {
                     "game-revive-teammate"
                 );
             }
-        case D.Object:
-            var a = t.getInteraction();
-            return `${this.localization.translate(
-                a.action
-            )} ${this.localization.translate(a.object)}`;
-        case D.Loot:
-            var i =
-                    this.localization.translate(`game-${t.type}`) ||
-                    t.type;
+        case D.Object: {
+            const a = t.getInteraction();
+            return `${this.localization.translate(a.action)} ${this.localization.translate(a.object)}`;
+        }
+        case D.Loot: {
+            let i = this.localization.translate(`game-${t.type}`) || t.type;
             if (t.count > 1) {
                 i += ` (${t.count})`;
             }
             return i;
+        }
         default:
             return "";
         }

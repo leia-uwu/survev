@@ -12,7 +12,6 @@ import { math } from "../../shared/utils/math";
 import { GameConfig } from "../../shared/gameConfig";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
-import particles from "./objects/particles";
 import Building from "./objects/building";
 import Obstacle from "./objects/obstacle";
 import Structure from "./objects/structure";
@@ -150,7 +149,8 @@ s.prototype = {
     m: function(e, t, r, a, i, o, s, n, l, c) {
         this.I = true;
         this.Br = true;
-        for (var p = this.Ve.p(), h = 0; h < p.length; h++) {
+        const p = this.Ve.p();
+        for (let h = 0; h < p.length; h++) {
             const u = p[h];
             if (u.active) {
                 u.m(e, this, r, a, i, t, s);
@@ -176,7 +176,6 @@ s.prototype = {
             this.cameraEmitter.enabled = true;
             const v = t.yr() * 2.5;
             this.cameraEmitter.radius = math.min(v, 120);
-            particles.EmitterDefs.falling_leaf;
             const k = this.cameraEmitter.radius;
             const z = (k * k) / 14400;
             this.cameraEmitter.rateMult = 1 / z;
@@ -431,9 +430,9 @@ s.prototype = {
                             P.rad * C
                         );
                         break;
-                    case collider.Type.Aabb:
-                        var A = v2.mul(v2.sub(P.max, P.min), 0.5);
-                        var O = v2.add(P.min, A);
+                    case collider.Type.Aabb: {
+                        let A = v2.mul(v2.sub(P.max, P.min), 0.5);
+                        const O = v2.add(P.min, A);
                         A = v2.mul(A, C);
                         v.drawRect(
                             O.x - A.x,
@@ -441,8 +440,9 @@ s.prototype = {
                             A.x * 2,
                             A.y * 2
                         );
+                        v.endFill();
                     }
-                    v.endFill();
+                    }
                 }
             }
             r.addChild(v);

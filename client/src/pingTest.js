@@ -120,57 +120,55 @@ class PingTest {
                 }
             }
         };
-        for (var i = 0; i < this.tests.length; i++) {
-            (function(i) {
-                const o = t.tests[i];
-                if (!o.active) {
-                    return "continue";
-                }
-                if (!o.ws) {
-                    const s = new WebSocket(
-                        `wss://${o.url}/ptc`
-                    );
-                    s.binaryType = "arraybuffer";
-                    s.onopen = function() { };
-                    s.onmessage = function(e) {
-                        const t =
-                            (Date.now() - o.sendTime) /
-                            1000;
-                        o.ping = Math.min(o.ping, t);
-                        o.recvCount++;
-                        o.sendDelay = 0.125;
-                    };
-                    s.onerror = function(e) {
-                        a(o);
-                    };
-                    s.onclose = function() {
-                        a(o);
-                    };
-                    o.ws = s;
-                    o.sendDelay = 0;
-                    o.sendCount = 0;
-                    o.recvCount = 0;
-                }
-                if (o.ws.readyState == o.ws.OPEN) {
-                    o.sendDelay -= e;
-                    if (
-                        o.sendCount == o.recvCount &&
-                        o.sendDelay < 0
-                    ) {
-                        o.sendTime = Date.now();
-                        o.sendCount++;
-                        try {
-                            o.ws.send(t.ptcDataBuf);
-                        } catch (e) {
-                            o.ws.close();
-                        }
-                    }
-                    if (o.recvCount >= o.recvCountMax) {
-                        r(o);
+        for (let i = 0; i < this.tests.length; i++) {
+            const o = t.tests[i];
+            if (!o.active) {
+                return "continue";
+            }
+            if (!o.ws) {
+                const s = new WebSocket(
+                    `wss://${o.url}/ptc`
+                );
+                s.binaryType = "arraybuffer";
+                s.onopen = function() { };
+                s.onmessage = function(e) {
+                    const t =
+                        (Date.now() - o.sendTime) /
+                        1000;
+                    o.ping = Math.min(o.ping, t);
+                    o.recvCount++;
+                    o.sendDelay = 0.125;
+                };
+                s.onerror = function(e) {
+                    a(o);
+                };
+                s.onclose = function() {
+                    a(o);
+                };
+                o.ws = s;
+                o.sendDelay = 0;
+                o.sendCount = 0;
+                o.recvCount = 0;
+            }
+            if (o.ws.readyState == o.ws.OPEN) {
+                o.sendDelay -= e;
+                if (
+                    o.sendCount == o.recvCount &&
+                    o.sendDelay < 0
+                ) {
+                    o.sendTime = Date.now();
+                    o.sendCount++;
+                    try {
+                        o.ws.send(t.ptcDataBuf);
+                    } catch (e) {
                         o.ws.close();
                     }
                 }
-            })(i);
+                if (o.recvCount >= o.recvCountMax) {
+                    r(o);
+                    o.ws.close();
+                }
+            }
         }
         if (this.printSummary && this.isComplete()) {
             const o = this.tests.sort((e, t) => {
@@ -180,7 +178,7 @@ class PingTest {
             console.log(
                 "----------------------------------------"
             );
-            for (var i = 0; i < o.length; i++) {
+            for (let i = 0; i < o.length; i++) {
                 const s = o[i];
                 console.log(
                     "region",
@@ -220,22 +218,16 @@ class PingTest {
         return this.tests[0].region;
     }
 
-    getZones(e) {
-        for (
-            var t = this.tests.sort((e, t) => {
-                    return e.ping - t.ping;
-                }),
-                r = [],
-                a = 0;
-            a < t.length;
-            a++
-        ) {
-            const i = t[a];
-            if (i.region == e) {
-                r.push(i.zone);
+    getZones(region) {
+        const sorted = this.tests.sort((a, b) => a.ping - b.ping);
+        const zones = [];
+        for (let i = 0; i < sorted.length; i++) {
+            const s = sorted[i];
+            if (s.region == region) {
+                zones.push(s.zone);
             }
         }
-        return r;
+        return zones;
     }
 }
 export default PingTest;

@@ -5,11 +5,6 @@ import api from "./api";
 import device from "./device";
 import helpers from "./helpers";
 
-function a(e, t) {
-    if (!(e instanceof t)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
 function i(e, t) {
     const r = {
         join_full: t.translate("index-team-is-full"),
@@ -27,28 +22,6 @@ function i(e, t) {
     };
     return r[e] || r.lost_conn;
 }
-const o = (function() {
-    function e(e, t) {
-        for (let r = 0; r < t.length; r++) {
-            const a = t[r];
-            a.enumerable = a.enumerable || false;
-            a.configurable = true;
-            if ("value" in a) {
-                a.writable = true;
-            }
-            Object.defineProperty(e, a.key, a);
-        }
-    }
-    return function(t, r, a) {
-        if (r) {
-            e(t.prototype, r);
-        }
-        if (a) {
-            e(t, a);
-        }
-        return t;
-    };
-})();
 
 class TeamMenu {
     constructor(t, r, i, o, n, l, c) {
@@ -277,9 +250,9 @@ class TeamMenu {
 
     onMessage(e, t) {
         switch (e) {
-        case "state":
+        case "state": {
             this.joined = true;
-            var r = this.roomData;
+            const r = this.roomData;
             this.roomData = t.room;
             this.players = t.players;
             this.localPlayerId = t.localPlayerId;
@@ -291,6 +264,7 @@ class TeamMenu {
                 this.roomData.autoFill = r.autoFill;
             }
             this.refreshUi();
+        }
             break;
         case "joinGame":
             this.joiningGame = true;
@@ -498,22 +472,18 @@ class TeamMenu {
                     ? '<div class="ui-spinner"></div>'
                     : this.playBtn.attr("data-label")
             );
-            for (
-                var w = this.siteInfo.getGameModeStyles(),
-                    f = 0;
-                f < w.length;
-                f++
-            ) {
-                this.playBtn.removeClass(w[f].buttonCss);
+            const gameModeStyles = this.siteInfo.getGameModeStyles();
+            for (let i = 0; i < gameModeStyles.length; i++) {
+                this.playBtn.removeClass(gameModeStyles[i].buttonCss);
             }
-            const _ = w[this.roomData.gameModeIdx];
-            if (_) {
+            const style = gameModeStyles[this.roomData.gameModeIdx];
+            if (style) {
                 this.playBtn.addClass(
                     "btn-custom-mode-no-indent"
                 );
-                this.playBtn.addClass(_.buttonCss);
+                this.playBtn.addClass(style.buttonCss);
                 this.playBtn.css({
-                    "background-image": `url(${_.icon})`
+                    "background-image": `url(${style.icon})`
                 });
             } else {
                 this.playBtn.css({

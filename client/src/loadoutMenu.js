@@ -1094,8 +1094,6 @@ class LoadoutMenu {
                         i.type == t.loadout[l.loadoutType]
                     ) {
                         k = i.outerDiv;
-                    } else {
-                        l.loadoutType;
                     }
                 }
             })(I);

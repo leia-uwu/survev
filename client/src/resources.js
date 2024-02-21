@@ -139,15 +139,12 @@ class ResourceManager {
     unloadAtlas(e) {
         if (this.isAtlasLoaded(e)) {
             console.log("Unload atlas", e);
-            for (
-                var t = this.atlases[e], r = 0;
-                r < t.spritesheets.length;
-                r++
-            ) {
-                t.spritesheets[r].destroy(true);
+            const atlas = this.atlases[e];
+            for (let i = 0; i < atlas.spritesheets.length; i++) {
+                atlas.spritesheets[i].destroy(true);
             }
-            t.loaded = false;
-            t.spritesheets = [];
+            atlas.loaded = false;
+            atlas.spritesheets = [];
         }
     }
 

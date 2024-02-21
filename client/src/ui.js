@@ -3,7 +3,6 @@ import * as PIXI from "pixi.js"
 ;
 import { coldet } from "../../shared/utils/coldet";
 import { GameConfig } from "../../shared/gameConfig";
-import net from "../../shared/net";
 import { math } from "../../shared/utils/math";
 import device from "./device";
 import firebaseManager from "./firebaseManager";
@@ -253,11 +252,11 @@ function i(e, t, r, a, i, o, c, m, p) {
     });
     this.flairElems = $(".ui-health-flair");
     this.flairId = 0;
-    this.healthRed = new s(255, 0, 0);
-    this.healthDarkpink = new s(255, 45, 45);
-    this.healthLightpink = new s(255, 112, 112);
-    this.healthWhite = new s(255, 255, 255);
-    this.healthGrey = new s(179, 179, 179);
+    this.healthRed = new Color(255, 0, 0);
+    this.healthDarkpink = new Color(255, 45, 45);
+    this.healthLightpink = new Color(255, 112, 112);
+    this.healthWhite = new Color(255, 255, 255);
+    this.healthGrey = new Color(179, 179, 179);
     this.minimapDisplayed = true;
     this.visibilityMode = 0;
     this.hudVisible = true;
@@ -453,7 +452,7 @@ function o(e, t, r, a) {
     const s = i + ((o - i) / r) * a;
     return Math.floor(s);
 }
-function s(e, t, r) {
+function Color(e, t, r) {
     let a;
     let i;
     let o;
@@ -622,13 +621,14 @@ i.prototype = {
                     );
                 }
                 break;
-            case Action.Revive:
-                var P = o.qe(t.action.targetId).name;
+            case Action.Revive: {
+                const P = o.qe(t.action.targetId).name;
                 T =
                         this.localization.translate(
                             "game-reviving"
                         );
                 M = d.downed ? "" : P;
+            }
             }
             if (T != "" || M != "") {
                 if (
@@ -678,7 +678,8 @@ i.prototype = {
             firebaseManager.logError(`badTeamInfo_1: ${JSON.stringify(E)}`);
         }
         const B = device.uiLayout == device.UiLayout.Sm;
-        for (var R = D.playerIds.length, L = 0; L < R; L++) {
+        const R = D.playerIds.length;
+        for (let L = 0; L < R; L++) {
             const q = this.teamSelectors[L];
             const F = D.playerIds[L];
             const j = o.qe(F);
@@ -1009,11 +1010,8 @@ i.prototype = {
                                 : i.getTeamColor(d.teamId);
                 }
                 this.playerPingSprites[r] ||= [];
-                for (
-                    var w = this.playerPingSprites[r], f = 0;
-                    f < w.length;
-                    f++
-                ) {
+                const w = this.playerPingSprites[r];
+                for (let f = 0; f < w.length; f++) {
                     w[f].free();
                 }
                 const _ = device.uiLayout == device.UiLayout.Sm ? 0.15 : 0.2;
@@ -1060,7 +1058,6 @@ i.prototype = {
     },
     getWorldPosFromMapPos: function(e, t, r) {
         let a = false;
-        device.screenWidth;
         if (this.bigmapDisplayed) {
             const i = (r.screenWidth - this.mapSprite.width) / 2;
             let o = (r.screenHeight - this.mapSprite.height) / 2;
@@ -1101,34 +1098,6 @@ i.prototype = {
     },
     showAll: function() {
         this.gameElem.css("display", "block");
-    },
-    removeAds: function() {
-        if (device.webview && device.version >= "1.0.8") {
-        } else if (window.aiptag) {
-            let e = [];
-            e = device.mobile
-                ? [
-                    "surviv-io_300x250",
-                    "surviv-io_728x90",
-                    "surviv-io_300x250_mobile_2"
-                ]
-                : [
-                    "surviv-io_300x250",
-                    "surviv-io_728x90",
-                    "surviv-io_300x250_2"
-                ];
-            if (!device.mobile) {
-                e.push("surviv-io_300x600");
-            }
-            for (let t = 0; t < e.length; t++) {
-                (function(t) {
-                    const r = e[t];
-                    window.aiptag.cmd.display.push(() => {
-                        window.aipDisplayTag.destroy(r);
-                    });
-                })(t);
-            }
-        }
     },
     setLocalKills: function(e) {
         this.playerKills.html(e);
@@ -1227,7 +1196,6 @@ i.prototype = {
             this.displayMapLarge(true);
             this.clearStatsElems();
             this.setSpectating(false, l);
-            this.removeAds();
             this.statsMain.css("display", "block");
             this.statsLogo.css("display", "block");
             this.statsContentsContainer.css({
@@ -1238,7 +1206,6 @@ i.prototype = {
             });
             const w = s == i;
             const f = w ? 1750 : 2500;
-            this.setBannerAd(f, d, true);
             const _ = s == i || (c && i == t);
             const b = c && s != t;
             const S = _
@@ -1355,8 +1322,8 @@ i.prototype = {
                             })
                         );
                         break;
-                    case 3:
-                        var R =
+                    case 3: {
+                        const R =
                                 O.teamId == 1
                                     ? "ui-stats-info-player-red-ribbon"
                                     : "ui-stats-info-player-blue-ribbon";
@@ -1365,6 +1332,7 @@ i.prototype = {
                                 class: `ui-stats-info-player-badge ${R}`
                             })
                         );
+                    }
                     }
                 }
                 this.statsInfoBox.append(B);
@@ -1535,7 +1503,6 @@ i.prototype = {
         });
         i.on("click", this.beginSpectating.bind(this));
         this.statsOptions.append(i);
-        this.setBannerAd(2500, t, false);
         let o = 0;
         this.statsOptions.children().each((e, t) => {
             const r = $(t);
@@ -1560,55 +1527,6 @@ i.prototype = {
             },
             1000
         );
-    },
-    setBannerAd: function(e, t, r) {
-        const a = this;
-        let i = Math.max(e - 150, 0);
-        if (window.adsBlocked) {
-            i += 500;
-        }
-        setTimeout(() => {
-            if (device.webview && device.version >= "1.0.8") {
-            } else if (window.adsBlocked) {
-                const e = $(
-                    device.mobile
-                        ? "#ui-stats-ad-container-mobile"
-                        : "#ui-stats-ad-container-desktop"
-                );
-                e.css("display", "inline-block");
-                let r = "";
-                if (
-                    (r = $(
-                        device.mobile
-                            ? "#surviv-io_300x250_mobile_2"
-                            : "#surviv-io_300x250_2"
-                    ))
-                ) {
-                    r.html("");
-                    const i = $(".ui-stats-adblock").clone();
-                    i.css("display", "block");
-                    r.html(i);
-                }
-            } else if (window.aiptag) {
-                const o = $(
-                    device.mobile
-                        ? "#ui-stats-ad-container-mobile"
-                        : "#ui-stats-ad-container-desktop"
-                );
-                o.css("display", "inline-block");
-                let s = "";
-                if (
-                    (s = device.mobile
-                        ? "surviv-io_300x250_mobile_2"
-                        : "surviv-io_300x250_2")
-                ) {
-                    window.aiptag.cmd.display.push(() => {
-                        window.aipDisplayTag.display(s);
-                    });
-                }
-            }
-            t.hideKillMessage();
-        }, i);
     },
     setSpectateTarget: function(e, t, r, a) {
         if (e != this.spectatedPlayerId) {
@@ -1827,12 +1745,12 @@ i.prototype = {
     displayGasAnnouncement: function(e, t) {
         let r = "";
         switch (e) {
-        case GasMode.Waiting:
+        case GasMode.Waiting: {
             r = this.localization.translate(
                 "game-red-zone-advances"
             );
-            var a = Math.floor(t / 60);
-            var i = t - a * 60;
+            const a = Math.floor(t / 60);
+            const i = t - a * 60;
             r +=
                     a > 1
                         ? ` ${a} ${this.localization.translate(
@@ -1854,6 +1772,7 @@ i.prototype = {
                         )}`
                         : "";
             break;
+        }
         case GasMode.Moving:
             r = this.localization.translate(
                 "game-red-zone-advancing"
@@ -1939,7 +1858,6 @@ i.prototype = {
             a.downed != m.downed ||
             a.role != m.role;
         if (this.teamSelectors[e].playerId != i || r != c || p) {
-            this.teamSelectors[e].teamIcon;
             const h = this.teamSelectors[e].teamStatus;
             const d = this.teamSelectors[e].teamHealthInner;
             this.teamSelectors[e].playerId = i;

@@ -35,7 +35,6 @@ function setupModals(e, t) {
     $("#btn-help").click(() => {
         const e = $("#start-help");
         r.addClass("display-help");
-        e.position().top;
         const t = r.css("height");
         e.css("display", "block");
         r.animate(
