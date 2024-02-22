@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { collider } from "../../../shared/utils/collider";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
@@ -12,7 +11,7 @@ function AirDrop() {
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.visible = false;
 }
-export function AirDropPool() {
+function AirdropBarn() {
     this.re = new ObjectPool.Pool(AirDrop);
 }
 
@@ -45,8 +44,8 @@ AirDrop.prototype = {
         this.landed = e.landed;
     }
 };
-AirDropPool.prototype = {
-    n: function() {
+AirdropBarn.prototype = {
+    free: function() {
         for (let e = this.re.p(), t = 0; t < e.length; t++) {
             e[t].n();
         }
@@ -157,4 +156,7 @@ AirDropPool.prototype = {
             }
         }
     }
+};
+export default {
+    AirdropBarn
 };

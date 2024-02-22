@@ -1,7 +1,6 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type DecalDef } from "../../../shared/defs/mapObjectsTyping";
 import { type Game } from "../game";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type Circle, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
@@ -9,10 +8,7 @@ import { math } from "../../../shared/utils/math";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject, ObjectType } from "./gameObject";
 
-type FullDecal = ObjectsFullData[ObjectType.Decal];
-type PartialDecal = ObjectsPartialData[ObjectType.Decal];
-
-export class Decal extends BaseGameObject implements FullDecal, PartialDecal {
+export class Decal extends BaseGameObject {
     bounds: Collider;
 
     override readonly __type = ObjectType.Decal;

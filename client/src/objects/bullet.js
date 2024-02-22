@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { GameConfig } from "../../../shared/gameConfig";
@@ -158,7 +157,7 @@ BulletBarn.prototype = {
                 const v = v2.copy(b.pos);
                 b.pos = v2.add(b.pos, v2.mul(b.dir, S));
                 if (
-                    !s.Le.he &&
+                    !s.netData.he &&
                     util.sameAudioLayer(s.layer, b.layer) &&
                     v2.length(v2.sub(i.pos, b.pos)) < 7.5 &&
                     !b.whizHeard &&
@@ -208,9 +207,9 @@ BulletBarn.prototype = {
                     const A = f[C];
                     if (
                         A.active &&
-                        !A.Le.he &&
-                        (util.sameLayer(A.Le.pe, b.layer) ||
-                            A.Le.pe & 2) &&
+                        !A.netData.he &&
+                        (util.sameLayer(A.netData.pe, b.layer) ||
+                            A.netData.pe & 2) &&
                         (A.__id != b.playerId || b.damageSelf)
                     ) {
                         let O = null;
@@ -306,7 +305,7 @@ BulletBarn.prototype = {
                 });
                 let U = false;
                 const W = t.u(b.playerId);
-                if (W && (W.Le.he || W.Le.ue)) {
+                if (W && (W.netData.he || W.netData.ue)) {
                     U = true;
                 }
                 let G = false;
@@ -465,7 +464,7 @@ BulletBarn.prototype = {
     }
 };
 export default {
-    Ft: BulletBarn,
+    BulletBarn,
     createBullet,
     playHitFx
 };

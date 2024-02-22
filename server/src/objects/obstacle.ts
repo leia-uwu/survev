@@ -2,8 +2,6 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { type Game } from "../game";
-import { NetConstants } from "../net/net";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
@@ -14,11 +12,9 @@ import { type Building } from "./building";
 import { BaseGameObject, ObjectType } from "./gameObject";
 import { getLootTable } from "./loot";
 import { type Player } from "./player";
+import net from "../../../shared/net";
 
-type FullObstacle = ObjectsFullData[ObjectType.Obstacle];
-type PartialObstacle = ObjectsPartialData[ObjectType.Obstacle];
-
-export class Obstacle extends BaseGameObject implements FullObstacle, PartialObstacle {
+export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
 
     bounds: Collider;
@@ -114,7 +110,7 @@ export class Obstacle extends BaseGameObject implements FullObstacle, PartialObs
             mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
             this.rot,
-            NetConstants.MapObjectMaxScale
+            net.Constants.MapObjectMaxScale
         );
 
         if (def === undefined || def.type !== "obstacle") {

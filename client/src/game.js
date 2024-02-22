@@ -11,19 +11,19 @@ import proxy from "./proxy";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import firebaseManager from "./firebaseManager";
-import { AirDropPool } from "./objects/aidrop";
+import Aidrop from "./objects/aidrop";
 import Bullet from "./objects/bullet";
 import Camera from "./camera";
 import DeadBody from "./objects/deadBody";
 import debugLines from "./debugLines";
 import Decal from "./objects/decal";
 import emote from "./emote";
-import explosion from "./objects/explosion";
-import flare from "./objects/flare";
-import gas from "./gas";
+import Explosion from "./objects/explosion";
+import Flare from "./objects/flare";
+import Gas from "./gas";
 import input from "./input";
-import loot from "./objects/loot";
-import map from "./map";
+import Loot from "./objects/loot";
+import Map from "./map";
 import ObjectPool from "./objects/objectPool";
 import Particles from "./objects/particles";
 import Plane from "./objects/plane";
@@ -36,21 +36,8 @@ import Touch from "./touch";
 import Ui from "./ui";
 import Ui2 from "./ui2";
 
-const n = GameConfig.Input;
+const Input = GameConfig.Input;
 
-function a(e, t, r) {
-    if (t in e) {
-        Object.defineProperty(e, t, {
-            value: r,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        e[t] = r;
-    }
-    return e;
-}
 export class Game {
     constructor(pixi, ft, localization, config, i, o, s, l, resourceManager, onJoin, onQuit) {
         this.initialized = false;
@@ -72,7 +59,7 @@ export class Game {
         this.connected = false;
     }
 
-    vt(e, t, r, a, i) {
+    tryJoinGame(e, t, r, a, i) {
         const o = this;
         if (
             !this.connecting &&
@@ -120,11 +107,11 @@ export class Game {
                         if (r == net.Msg.None) {
                             break;
                         }
-                        o.kt(r, t.getStream());
+                        o.onMsg(r, t.getStream());
                     }
                 };
                 this.ws.onclose = function() {
-                    const e = o.zt?.displayingStats;
+                    const e = o.uiManager?.displayingStats;
                     const t = o.connecting;
                     const r = o.connected;
                     o.connecting = false;
@@ -146,84 +133,83 @@ export class Game {
         }
     }
 
-    o() {
-        this.canvasMode =
-            this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
+    init() {
+        this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.I = false;
         this.It = 0;
         this.U = false;
         this.Tt = false;
-        this.Mt = new Touch.Pt(this.bt, this.config);
-        this.De = new Camera();
-        this.Ct = new Renderer.At(this, this.canvasMode);
-        this.Ot = new Particles.ParticleBarn(this.Ct);
-        this.Dt = new Decal.DecalBarn();
-        this.Et = new map.Bt(this.Dt);
-        this.Rt = new Player.Lt();
-        this.qt = new Bullet.Ft();
-        this.jt = new flare.Nt();
-        this.Ht = new Projectile.Vt();
-        this.Ut = new explosion.ExplosionBarn();
-        this.Wt = new Plane.Gt(this.ft);
-        this.Xt = new AirDropPool();
-        this.Kt = new Smoke.SmokeBarn();
-        this.Zt = new DeadBody.DeadBodyBarn();
-        this.Yt = new loot.Jt();
-        this.Qt = new gas.Gas(this.canvasMode);
-        this.zt = new Ui.He(
+        this.touch = new Touch.Touch(this.bt, this.config);
+        this.camera = new Camera();
+        this.renderer = new Renderer.Renderer(this, this.canvasMode);
+        this.particleBarn = new Particles.ParticleBarn(this.renderer);
+        this.decalBarn = new Decal.DecalBarn();
+        this.map = new Map.Map(this.decalBarn);
+        this.playerBarn = new Player.PlayerBarn();
+        this.bulletBarn = new Bullet.BulletBarn();
+        this.flareBarn = new Flare.FlareBarn();
+        this.projectileBarn = new Projectile.ProjectileBarn();
+        this.explosionBarn = new Explosion.ExplosionBarn();
+        this.planeBarn = new Plane.PlaneBarn(this.ft);
+        this.airdropBarn = new Aidrop.AirdropBarn();
+        this.smokeBarn = new Smoke.SmokeBarn();
+        this.deadBodyBarn = new DeadBody.DeadBodyBarn();
+        this.lootBarn = new Loot.LootBarn();
+        this.gas = new Gas.Gas(this.canvasMode);
+        this.uiManager = new Ui.He(
             this,
             this.ft,
-            this.Ot,
-            this.Wt,
+            this.particleBarn,
+            this.planeBarn,
             this.localization,
             this.canvasMode,
-            this.Mt,
+            this.touch,
             this.xt,
             this.St
         );
-        this.er = new Ui2.Ui2(this.localization, this.xt);
-        this.ar = new emote.EmoteBarn(
+        this.ui2Manager = new Ui2.Ui2(this.localization, this.xt);
+        this.emoteBarn = new emote.EmoteBarn(
             this.ft,
-            this.zt,
-            this.Rt,
-            this.De,
-            this.Et
+            this.uiManager,
+            this.playerBarn,
+            this.camera,
+            this.map
         );
-        this.or = new Shot.ShotBarn(this.Ot, this.ft, this.zt);
-        const e = {};
-        a(e, GameObject.Type.Player, this.Rt.$e);
-        a(e, GameObject.Type.Obstacle, this.Et.Ve);
-        a(e, GameObject.Type.Loot, this.Yt.sr);
-        a(e, GameObject.Type.DeadBody, this.Zt.ot);
-        a(e, GameObject.Type.Building, this.Et.nr);
-        a(e, GameObject.Type.Structure, this.Et.lr);
-        a(e, GameObject.Type.Decal, this.Dt._);
-        a(e, GameObject.Type.Projectile, this.Ht.cr);
-        a(e, GameObject.Type.Smoke, this.Kt.e);
-        a(e, GameObject.Type.Airdrop, this.Xt.re);
-        const t = e;
-        this.mr = new ObjectPool.Creator();
+        this.shotBarn = new Shot.ShotBarn(this.particleBarn, this.ft, this.uiManager);
+        const t = {
+            [GameObject.Type.Player]: this.playerBarn.$e,
+            [GameObject.Type.Obstacle]: this.map.Ve,
+            [GameObject.Type.Loot]: this.lootBarn.sr,
+            [GameObject.Type.DeadBody]: this.deadBodyBarn.ot,
+            [GameObject.Type.Building]: this.map.nr,
+            [GameObject.Type.Structure]: this.map.lr,
+            [GameObject.Type.Decal]: this.decalBarn._,
+            [GameObject.Type.Projectile]: this.projectileBarn.cr,
+            [GameObject.Type.Smoke]: this.smokeBarn.e,
+            [GameObject.Type.Airdrop]: this.airdropBarn.re
+        };
+        this.objectCreator = new ObjectPool.Creator();
         for (const r in t) {
             if (t.hasOwnProperty(r)) {
-                this.mr.registerType(r, t[r]);
+                this.objectCreator.registerType(r, t[r]);
             }
         }
         this.debugDisplay = new PIXI.Graphics();
         for (
             let i = [
-                    this.Et.display.ground,
-                    this.Ct.layers[0],
-                    this.Ct.ground,
-                    this.Ct.layers[1],
-                    this.Ct.layers[2],
-                    this.Ct.layers[3],
+                    this.map.display.ground,
+                    this.renderer.layers[0],
+                    this.renderer.ground,
+                    this.renderer.layers[1],
+                    this.renderer.layers[2],
+                    this.renderer.layers[3],
                     this.debugDisplay,
-                    this.Qt.gasRenderer.display,
-                    this.Mt.container,
-                    this.ar.container,
-                    this.zt.container,
-                    this.zt.Pe.container,
-                    this.ar.indContainer
+                    this.gas.gasRenderer.display,
+                    this.touch.container,
+                    this.emoteBarn.container,
+                    this.uiManager.container,
+                    this.uiManager.Pe.container,
+                    this.emoteBarn.indContainer
                 ],
                 s = 0;
             s < i.length;
@@ -257,13 +243,13 @@ export class Game {
         this.seqSendTime = 0;
         this.pings = [];
         this.debugPingTime = 0;
-        this.De.setShakeEnabled(this.config.get("screenShake"));
-        this.Rt.anonPlayerNames =
+        this.camera.setShakeEnabled(this.config.get("screenShake"));
+        this.playerBarn.anonPlayerNames =
             this.config.get("anonPlayerNames");
         this.initialized = true;
     }
 
-    n() {
+    free() {
         if (this.ws) {
             this.ws.onmessage = function() { };
             this.ws.close();
@@ -275,15 +261,15 @@ export class Game {
             this.initialized = false;
             this.updatePass = false;
             this.updatePassDelay = 0;
-            this.ar.n();
-            this.er.n();
-            this.zt.n();
-            this.Qt.free();
-            this.Xt.n();
-            this.Wt.n();
-            this.Et.n();
-            this.Ot.n();
-            this.Ct.n();
+            this.emoteBarn.free();
+            this.ui2Manager.free();
+            this.uiManager.free();
+            this.gas.free();
+            this.airdropBarn.free();
+            this.planeBarn.free();
+            this.map.free();
+            this.particleBarn.free();
+            this.renderer.free();
             this.bt.n();
             this.ft.stopAll();
             while (this.pixi.stage.children.length > 0) {
@@ -296,18 +282,18 @@ export class Game {
         }
     }
 
-    gr() {
+    warnPageReload() {
         return (
             this.initialized &&
             this.playing &&
             !this.spectating &&
-            !this.zt.displayingStats
+            !this.uiManager.displayingStats
         );
     }
 
-    m(e) {
-        const t = this.Kt.particles;
-        const r = this.Et.Ve.p();
+    update(e) {
+        const t = this.smokeBarn.particles;
+        const r = this.map.Ve.p();
         let a = 0;
         this.I = true;
         const i = {};
@@ -315,58 +301,58 @@ export class Game {
         if (this.playing) {
             this.playingTicker += e;
         }
-        this.Rt.m(
+        this.playerBarn.m(
             e,
             this.hr,
             this.teamMode,
-            this.Ct,
-            this.Ot,
-            this.De,
-            this.Et,
+            this.renderer,
+            this.particleBarn,
+            this.camera,
+            this.map,
             this.xt,
             this.ft,
-            this.er,
-            this.ar.wheelKeyTriggered,
-            this.zt.displayingStats,
+            this.ui2Manager,
+            this.emoteBarn.wheelKeyTriggered,
+            this.uiManager.displayingStats,
             this.spectating
         );
         this.updateAmbience();
-        this.De.pos = v2.copy(this.dr.pos);
-        this.De.applyShake();
+        this.camera.pos = v2.copy(this.dr.pos);
+        this.camera.applyShake();
         const o = this.dr.yr();
-        const l = math.min(this.De.screenWidth, this.De.screenHeight);
-        const g = math.max(this.De.screenWidth, this.De.screenHeight);
+        const l = math.min(this.camera.screenWidth, this.camera.screenHeight);
+        const g = math.max(this.camera.screenWidth, this.camera.screenHeight);
         const y = math.max(l * (16 / 9), g);
-        this.De.q = (y * 0.5) / (o * this.De.ppu);
+        this.camera.q = (y * 0.5) / (o * this.camera.ppu);
         const w = this.dr.zoomFast ? 3 : 2;
         const f = this.dr.zoomFast ? 3 : 1.4;
-        const _ = this.De.q > this.De.O ? w : f;
-        this.De.O = math.lerp(e * _, this.De.O, this.De.q);
-        this.ft.cameraPos = v2.copy(this.De.pos);
+        const _ = this.camera.q > this.camera.O ? w : f;
+        this.camera.O = math.lerp(e * _, this.camera.O, this.camera.q);
+        this.ft.cameraPos = v2.copy(this.camera.pos);
         if (this.bt.We(input.Key.Escape)) {
-            this.zt.toggleEscMenu();
+            this.uiManager.toggleEscMenu();
         }
         if (
-            this.xt.isBindPressed(n.ToggleMap) ||
+            this.xt.isBindPressed(Input.ToggleMap) ||
             (this.bt.We(input.Key.G) && !this.xt.isKeyBound(input.Key.G))
         ) {
-            this.zt.displayMapLarge(false);
+            this.uiManager.displayMapLarge(false);
         }
-        if (this.xt.isBindPressed(n.CycleUIMode)) {
-            this.zt.cycleVisibilityMode();
+        if (this.xt.isBindPressed(Input.CycleUIMode)) {
+            this.uiManager.cycleVisibilityMode();
         }
         if (
-            this.xt.isBindPressed(n.HideUI) ||
-            (this.bt.We(input.Key.Escape) && !this.zt.hudVisible)
+            this.xt.isBindPressed(Input.HideUI) ||
+            (this.bt.We(input.Key.Escape) && !this.uiManager.hudVisible)
         ) {
-            this.zt.cycleHud();
+            this.uiManager.cycleHud();
         }
         const b = this.dr.pos;
-        const x = this.De.j(this.bt.Ue);
+        const x = this.camera.j(this.bt.Ue);
         const S = v2.sub(x, b);
         let v = v2.length(S);
         let k = v > 0.00001 ? v2.div(S, v) : v2.create(1, 0);
-        if (this.ar.wheelDisplayed) {
+        if (this.emoteBarn.wheelDisplayed) {
             v = this.prevInputMsg.toMouseLen;
             k = this.prevInputMsg.toMouseDir;
         }
@@ -374,26 +360,26 @@ export class Game {
         z.seq = this.seq;
         if (!this.spectating) {
             if (device.touch) {
-                const I = this.Mt.getTouchMovement(this.De);
-                const M = this.Mt.getAimMovement(this.dr, this.De);
+                const I = this.touch.getTouchMovement(this.camera);
+                const M = this.touch.getAimMovement(this.dr, this.camera);
                 let P = v2.copy(M.aimMovement.toAimDir);
-                this.Mt.turnDirTicker -= e;
-                if (this.Mt.moveDetected && !M.touched) {
+                this.touch.turnDirTicker -= e;
+                if (this.touch.moveDetected && !M.touched) {
                     const C = v2.normalizeSafe(
                         I.toMoveDir,
                         v2.create(1, 0)
                     );
                     const A =
-                        this.Mt.turnDirTicker < 0
+                        this.touch.turnDirTicker < 0
                             ? C
                             : M.aimMovement.toAimDir;
-                    this.Mt.setAimDir(A);
+                    this.touch.setAimDir(A);
                     P = A;
                 }
                 if (M.touched) {
-                    this.Mt.turnDirTicker = this.Mt.turnDirCooldown;
+                    this.touch.turnDirTicker = this.touch.turnDirCooldown;
                 }
-                if (this.Mt.moveDetected) {
+                if (this.touch.moveDetected) {
                     z.touchMoveDir = v2.normalizeSafe(
                         I.toMoveDir,
                         v2.create(1, 0)
@@ -407,25 +393,25 @@ export class Game {
                 z.touchMoveActive = true;
                 const O = M.aimMovement.toAimLen;
                 const D =
-                    math.clamp(O / this.Mt.padPosRange, 0, 1) *
+                    math.clamp(O / this.touch.padPosRange, 0, 1) *
                     GameConfig.player.throwableMaxMouseDist;
                 z.toMouseLen = D;
                 z.toMouseDir = P;
             } else {
                 z.moveLeft =
-                    this.xt.isBindDown(n.MoveLeft) ||
+                    this.xt.isBindDown(Input.MoveLeft) ||
                     (this.bt.Ye(input.Key.Left) &&
                         !this.xt.isKeyBound(input.Key.Left));
                 z.moveRight =
-                    this.xt.isBindDown(n.MoveRight) ||
+                    this.xt.isBindDown(Input.MoveRight) ||
                     (this.bt.Ye(input.Key.Right) &&
                         !this.xt.isKeyBound(input.Key.Right));
                 z.moveUp =
-                    this.xt.isBindDown(n.MoveUp) ||
+                    this.xt.isBindDown(Input.MoveUp) ||
                     (this.bt.Ye(input.Key.Up) &&
                         !this.xt.isKeyBound(input.Key.Up));
                 z.moveDown =
-                    this.xt.isBindDown(n.MoveDown) ||
+                    this.xt.isBindDown(Input.MoveDown) ||
                     (this.bt.Ye(input.Key.Down) &&
                         !this.xt.isKeyBound(input.Key.Down));
                 z.toMouseDir = v2.copy(k);
@@ -446,27 +432,27 @@ export class Game {
                 net.Constants.MouseMaxDist
             );
             z.shootStart =
-                this.xt.isBindPressed(n.Fire) || this.Mt.wr;
-            z.shootHold = this.xt.isBindDown(n.Fire) || this.Mt.wr;
-            z.portrait = this.De.screenWidth < this.De.screenHeight;
+                this.xt.isBindPressed(Input.Fire) || this.touch.wr;
+            z.shootHold = this.xt.isBindDown(Input.Fire) || this.touch.wr;
+            z.portrait = this.camera.screenWidth < this.camera.screenHeight;
             for (
                 let E = [
-                        n.Reload,
-                        n.Revive,
-                        n.Use,
-                        n.Loot,
-                        n.Cancel,
-                        n.EquipPrimary,
-                        n.EquipSecondary,
-                        n.EquipThrowable,
-                        n.EquipMelee,
-                        n.EquipNextWeap,
-                        n.EquipPrevWeap,
-                        n.EquipLastWeap,
-                        n.EquipOtherGun,
-                        n.EquipPrevScope,
-                        n.EquipNextScope,
-                        n.StowWeapons
+                        Input.Reload,
+                        Input.Revive,
+                        Input.Use,
+                        Input.Loot,
+                        Input.Cancel,
+                        Input.EquipPrimary,
+                        Input.EquipSecondary,
+                        Input.EquipThrowable,
+                        Input.EquipMelee,
+                        Input.EquipNextWeap,
+                        Input.EquipPrevWeap,
+                        Input.EquipLastWeap,
+                        Input.EquipOtherGun,
+                        Input.EquipPrevScope,
+                        Input.EquipNextScope,
+                        Input.StowWeapons
                     ],
                     B = 0;
                 B < E.length;
@@ -477,9 +463,9 @@ export class Game {
                     z.addInput(R);
                 }
             }
-            if (this.xt.isBindPressed(n.Interact)) {
+            if (this.xt.isBindPressed(Input.Interact)) {
                 const q = [];
-                const L = [n.Revive, n.Use, n.Loot];
+                const L = [Input.Revive, Input.Use, Input.Loot];
                 for (let F = 0; F < L.length; F++) {
                     const j = L[F];
                     if (!this.xt.getBind(j)) {
@@ -487,7 +473,7 @@ export class Game {
                     }
                 }
                 if (q.length == L.length) {
-                    z.addInput(n.Interact);
+                    z.addInput(Input.Interact);
                 } else {
                     for (let N = 0; N < q.length; N++) {
                         z.addInput(q[N]);
@@ -495,28 +481,28 @@ export class Game {
                 }
             }
             if (
-                this.xt.isBindPressed(n.SwapWeapSlots) ||
-                this.zt.swapWeapSlots
+                this.xt.isBindPressed(Input.SwapWeapSlots) ||
+                this.uiManager.swapWeapSlots
             ) {
-                z.addInput(n.SwapWeapSlots);
+                z.addInput(Input.SwapWeapSlots);
                 this.dr.gunSwitchCooldown = 0;
             }
-            if (this.zt.reloadTouched) {
-                z.addInput(n.Reload);
+            if (this.uiManager.reloadTouched) {
+                z.addInput(Input.Reload);
             }
-            if (this.zt.interactionTouched) {
-                z.addInput(n.Interact);
-                z.addInput(n.Cancel);
+            if (this.uiManager.interactionTouched) {
+                z.addInput(Input.Interact);
+                z.addInput(Input.Cancel);
             }
-            for (let H = 0; H < this.er.uiEvents.length; H++) {
-                const V = this.er.uiEvents[H];
+            for (let H = 0; H < this.ui2Manager.uiEvents.length; H++) {
+                const V = this.ui2Manager.uiEvents[H];
                 if (V.action == "use") {
                     if (V.type == "weapon") {
                         const U = {
-                            0: n.EquipPrimary,
-                            1: n.EquipSecondary,
-                            2: n.EquipMelee,
-                            3: n.EquipThrowable
+                            0: Input.EquipPrimary,
+                            1: Input.EquipSecondary,
+                            2: Input.EquipMelee,
+                            3: Input.EquipThrowable
                         };
                         const W = U[V.data];
                         if (W) {
@@ -527,18 +513,18 @@ export class Game {
                     }
                 }
             }
-            if (this.xt.isBindPressed(n.UseBandage)) {
+            if (this.xt.isBindPressed(Input.UseBandage)) {
                 z.useItem = "bandage";
-            } else if (this.xt.isBindPressed(n.UseHealthKit)) {
+            } else if (this.xt.isBindPressed(Input.UseHealthKit)) {
                 z.useItem = "healthkit";
-            } else if (this.xt.isBindPressed(n.UseSoda)) {
+            } else if (this.xt.isBindPressed(Input.UseSoda)) {
                 z.useItem = "soda";
-            } else if (this.xt.isBindPressed(n.UsePainkiller)) {
+            } else if (this.xt.isBindPressed(Input.UsePainkiller)) {
                 z.useItem = "painkiller";
             }
             let G = false;
-            for (let X = 0; X < this.er.uiEvents.length; X++) {
-                const K = this.er.uiEvents[X];
+            for (let X = 0; X < this.ui2Manager.uiEvents.length; X++) {
+                const K = this.ui2Manager.uiEvents[X];
                 if (K.action == "drop") {
                     const Z = new net.DropItemMsg();
                     if (K.type == "weapon") {
@@ -546,7 +532,7 @@ export class Game {
                         Z.item = Y[K.data].type;
                         Z.weapIdx = K.data;
                     } else if (K.type == "perk") {
-                        const J = this.dr.Le.Me;
+                        const J = this.dr.netData.Me;
                         const Q =
                             J.length > K.data ? J[K.data] : null;
                         if (Q?.droppable) {
@@ -556,9 +542,9 @@ export class Game {
                         let $ = "";
                         $ =
                             K.data == "helmet"
-                                ? this.dr.Le.le
+                                ? this.dr.netData.le
                                 : K.data == "chest"
-                                    ? this.dr.Le.ce
+                                    ? this.dr.netData.ce
                                     : K.data;
                         Z.item = $;
                     }
@@ -575,19 +561,19 @@ export class Game {
                     channel: "ui"
                 });
             }
-            if (this.zt.roleSelected) {
+            if (this.uiManager.roleSelected) {
                 const ee = new net.PerkModeRoleSelectMsg();
-                ee.role = this.zt.roleSelected;
+                ee.role = this.uiManager.roleSelected;
                 this.$(net.Msg.PerkModeRoleSelect, ee, 128);
                 this.config.set("perkModeRole", ee.role);
             }
         }
-        const te = this.zt.specBegin;
+        const te = this.uiManager.specBegin;
         const re =
-            this.zt.specNext ||
+            this.uiManager.specNext ||
             (this.spectating && this.bt.We(input.Key.Right));
         const ae =
-            this.zt.specPrev ||
+            this.uiManager.specPrev ||
             (this.spectating && this.bt.We(input.Key.Left));
         const ie =
             this.bt.We(input.Key.Right) || this.bt.We(input.Key.Left);
@@ -599,13 +585,13 @@ export class Game {
             oe.specForce = ie;
             this.$(net.Msg.Spectate, oe, 128);
         }
-        this.zt.specBegin = false;
-        this.zt.specNext = false;
-        this.zt.specPrev = false;
-        this.zt.reloadTouched = false;
-        this.zt.interactionTouched = false;
-        this.zt.swapWeapSlots = false;
-        this.zt.roleSelected = "";
+        this.uiManager.specBegin = false;
+        this.uiManager.specNext = false;
+        this.uiManager.specPrev = false;
+        this.uiManager.reloadTouched = false;
+        this.uiManager.interactionTouched = false;
+        this.uiManager.swapWeapSlots = false;
+        this.uiManager.roleSelected = "";
         let se = false;
         for (const ne in z) {
             if (z.hasOwnProperty(ne)) {
@@ -648,139 +634,139 @@ export class Game {
             this.inputMsgTimeout = 1;
             this.prevInputMsg = z;
         }
-        this.er.flushInput();
-        this.Et.m(
+        this.ui2Manager.flushInput();
+        this.map.m(
             e,
             this.dr,
-            this.Rt,
-            this.Ot,
+            this.playerBarn,
+            this.particleBarn,
             this.ft,
             this._t,
-            this.Ct,
-            this.De,
+            this.renderer,
+            this.camera,
             t,
             i
         );
-        this.Yt.m(e, this.dr, this.Et, this.ft, this.De, i);
-        this.qt.m(
+        this.lootBarn.m(e, this.dr, this.map, this.ft, this.camera, i);
+        this.bulletBarn.m(
             e,
-            this.Rt,
-            this.Et,
-            this.De,
+            this.playerBarn,
+            this.map,
+            this.camera,
             this.dr,
-            this.Ct,
-            this.Ot,
+            this.renderer,
+            this.particleBarn,
             this.ft
         );
-        this.jt.m(
+        this.flareBarn.m(
             e,
-            this.Rt,
-            this.Et,
-            this.De,
+            this.playerBarn,
+            this.map,
+            this.camera,
             this.dr,
-            this.Ct,
-            this.Ot,
+            this.renderer,
+            this.particleBarn,
             this.ft
         );
-        this.Ht.m(
+        this.projectileBarn.m(
             e,
-            this.Ot,
+            this.particleBarn,
             this.ft,
             this.dr,
-            this.Et,
-            this.Ct,
-            this.De
+            this.map,
+            this.renderer,
+            this.camera
         );
-        this.Ut.m(
+        this.explosionBarn.m(
             e,
-            this.Et,
-            this.Rt,
-            this.De,
-            this.Ot,
+            this.map,
+            this.playerBarn,
+            this.camera,
+            this.particleBarn,
             this.ft,
             i
         );
-        this.Xt.m(
+        this.airdropBarn.m(
             e,
             this.dr,
-            this.De,
-            this.Et,
-            this.Ot,
-            this.Ct,
+            this.camera,
+            this.map,
+            this.particleBarn,
+            this.renderer,
             this.ft
         );
-        this.Wt.m(e, this.De, this.dr, this.Et, this.Ct);
-        this.Kt.m(e, this.De, this.dr, this.Et, this.Ct);
-        this.or.m(e, this.hr, this.Rt, this.Ot, this.ft);
-        this.Ot.m(e, this.De, i);
-        this.Zt.m(e, this.Rt, this.dr, this.Et, this.De, this.Ct);
-        this.Dt.m(e, this.De, this.Ct, i);
-        this.zt.m(
+        this.planeBarn.m(e, this.camera, this.dr, this.map, this.renderer);
+        this.smokeBarn.m(e, this.camera, this.dr, this.map, this.renderer);
+        this.shotBarn.m(e, this.hr, this.playerBarn, this.particleBarn, this.ft);
+        this.particleBarn.m(e, this.camera, i);
+        this.deadBodyBarn.m(e, this.playerBarn, this.dr, this.map, this.camera, this.renderer);
+        this.decalBarn.m(e, this.camera, this.renderer, i);
+        this.uiManager.m(
             e,
             this.dr,
-            this.Et,
-            this.Qt,
-            this.Yt,
-            this.Rt,
-            this.De,
+            this.map,
+            this.gas,
+            this.lootBarn,
+            this.playerBarn,
+            this.camera,
             this.teamMode,
-            this.Et.factionMode
+            this.map.factionMode
         );
-        this.er.m(
+        this.ui2Manager.m(
             e,
             this.dr,
             this.spectating,
-            this.Rt,
-            this.Yt,
-            this.Et,
+            this.playerBarn,
+            this.lootBarn,
+            this.map,
             this.xt
         );
-        this.ar.m(
+        this.emoteBarn.m(
             e,
             this.pr,
             this.dr,
             this.teamMode,
-            this.Zt,
-            this.Et,
-            this.Ct,
+            this.deadBodyBarn,
+            this.map,
+            this.renderer,
             this.bt,
             this.xt,
             this.spectating
         );
-        this.Mt.update(e, this.dr, this.Et, this.De, this.Ct);
-        this.Ct.m(e, this.De, this.Et, i);
-        if (!this.Tt && this.Et._r && this.Et.U) {
+        this.touch.update(e, this.dr, this.map, this.camera, this.renderer);
+        this.renderer.m(e, this.camera, this.map, i);
+        if (!this.Tt && this.map._r && this.map.U) {
             this.Tt = true;
             const me = new net.LoadoutMsg();
             me.emotes = [];
             for (
                 let pe = 0;
-                pe < this.ar.emoteLoadout.length;
+                pe < this.emoteBarn.emoteLoadout.length;
                 pe++
             ) {
-                me.emotes.push(this.ar.emoteLoadout[pe]);
+                me.emotes.push(this.emoteBarn.emoteLoadout[pe]);
             }
-            me.custom = this.ar.hasCustomEmotes();
+            me.custom = this.emoteBarn.hasCustomEmotes();
             this.$(net.Msg.Loadout, me, 128);
         }
-        for (let he = 0; he < this.ar.newPings.length; he++) {
-            const de = this.ar.newPings[he];
+        for (let he = 0; he < this.emoteBarn.newPings.length; he++) {
+            const de = this.emoteBarn.newPings[he];
             const ue = new net.EmoteMsg();
             ue.type = de.type;
             ue.pos = de.pos;
             ue.isPing = true;
             this.$(net.Msg.Emote, ue, 128);
         }
-        this.ar.newPings = [];
-        for (let ge = 0; ge < this.ar.newEmotes.length; ge++) {
-            const ye = this.ar.newEmotes[ge];
+        this.emoteBarn.newPings = [];
+        for (let ge = 0; ge < this.emoteBarn.newEmotes.length; ge++) {
+            const ye = this.emoteBarn.newEmotes[ge];
             const we = new net.EmoteMsg();
             we.type = ye.type;
             we.pos = ye.pos;
             we.isPing = false;
             this.$(net.Msg.Emote, we, 128);
         }
-        this.ar.newEmotes = [];
+        this.emoteBarn.newEmotes = [];
         this.br(e, i);
         if (++this.It % 30 == 0) {
             const fe = mapHelpers.ct;
@@ -806,25 +792,25 @@ export class Game {
     }
 
     br(e, t) {
-        const r = this.Et.mapLoaded
-            ? this.Et.getMapDef().biome.colors.grass
+        const r = this.map.mapLoaded
+            ? this.map.getMapDef().biome.colors.grass
             : 8433481;
         this.pixi.renderer.backgroundColor = r;
-        this.Rt.render(this.De, t);
-        this.qt.render(this.De, t);
-        this.jt.render(this.De);
-        this.Dt.render(this.De, t, this.dr.layer);
-        this.Et.render(this.De);
-        this.Qt.render(this.De);
-        this.zt.render(
+        this.playerBarn.render(this.camera, t);
+        this.bulletBarn.render(this.camera, t);
+        this.flareBarn.render(this.camera);
+        this.decalBarn.render(this.camera, t, this.dr.layer);
+        this.map.render(this.camera);
+        this.gas.render(this.camera);
+        this.uiManager.render(
             this.dr.pos,
-            this.Qt,
-            this.De,
-            this.Et,
-            this.Wt,
+            this.gas,
+            this.camera,
+            this.map,
+            this.planeBarn,
             t
         );
-        this.ar.render(this.De);
+        this.emoteBarn.render(this.camera);
         debugLines.flush();
     }
 
@@ -833,20 +819,20 @@ export class Game {
         let t = 0;
         let r = 0;
         let a = 1;
-        if (this.Et.isInOcean(e)) {
+        if (this.map.isInOcean(e)) {
             t = 1;
             r = 0;
             a = 0;
         } else {
-            const i = this.Et.distanceToShore(e);
+            const i = this.map.distanceToShore(e);
             t = math.delerp(i, 50, 0);
             r = 0;
             for (
                 let o = 0;
-                o < this.Et.terrain.rivers.length;
+                o < this.map.terrain.rivers.length;
                 o++
             ) {
-                const s = this.Et.terrain.rivers[o];
+                const s = this.map.terrain.rivers[o];
                 const n = s.spline.getClosestTtoPoint(e);
                 const l = s.spline.getPos(n);
                 const c = v2.length(v2.sub(l, e));
@@ -865,125 +851,125 @@ export class Game {
         this._t.getTrack("waves").weight = t;
     }
 
-    xr() {
-        this.De.screenWidth = device.screenWidth;
-        this.De.screenHeight = device.screenHeight;
-        this.Et.resize(this.pixi.renderer, this.canvasMode);
-        this.Qt.resize();
-        this.zt.resize(this.Et, this.De);
-        this.Mt.resize();
-        this.Ct.resize(this.Et, this.De);
+    resize() {
+        this.camera.screenWidth = device.screenWidth;
+        this.camera.screenHeight = device.screenHeight;
+        this.map.resize(this.pixi.renderer, this.canvasMode);
+        this.gas.resize();
+        this.uiManager.resize(this.map, this.camera);
+        this.touch.resize();
+        this.renderer.resize(this.map, this.camera);
     }
 
-    Sr(e) {
+    processGameUpdate(e) {
         const t = {
             audioManager: this.ft,
-            renderer: this.Ct,
-            particleBarn: this.Ot,
-            map: this.Et,
-            smokeBarn: this.Kt,
-            decalBarn: this.Dt
+            renderer: this.renderer,
+            particleBarn: this.particleBarn,
+            map: this.map,
+            smokeBarn: this.smokeBarn,
+            decalBarn: this.decalBarn
         };
         if (e.activePlayerIdDirty) {
             this.hr = e.activePlayerId;
         }
         for (let r = 0; r < e.playerInfos.length; r++) {
-            this.Rt.vr(e.playerInfos[r]);
+            this.playerBarn.vr(e.playerInfos[r]);
         }
         for (let a = 0; a < e.deletedPlayerIds.length; a++) {
             const i = e.deletedPlayerIds[a];
-            this.Rt.kr(i);
+            this.playerBarn.kr(i);
         }
         if (
             e.playerInfos.length > 0 ||
             e.deletedPlayerIds.length > 0
         ) {
-            this.Rt.zr();
+            this.playerBarn.zr();
         }
         if (e.playerStatusDirty) {
-            const o = this.Rt.qe(this.hr).teamId;
-            this.Rt.Ir(o, e.playerStatus, this.Et.factionMode);
+            const o = this.playerBarn.qe(this.hr).teamId;
+            this.playerBarn.Ir(o, e.playerStatus, this.map.factionMode);
         }
         if (e.groupStatusDirty) {
-            const s = this.Rt.qe(this.hr).groupId;
-            this.Rt.Tr(s, e.groupStatus);
+            const s = this.playerBarn.qe(this.hr).groupId;
+            this.playerBarn.Tr(s, e.groupStatus);
         }
         for (let n = 0; n < e.delObjIds.length; n++) {
-            this.mr.deleteObj(e.delObjIds[n]);
+            this.objectCreator.deleteObj(e.delObjIds[n]);
         }
         for (let l = 0; l < e.fullObjects.length; l++) {
             const c = e.fullObjects[l];
-            this.mr.updateObjFull(c.__type, c.__id, c, t);
+            this.objectCreator.updateObjFull(c.__type, c.__id, c, t);
         }
         for (let m = 0; m < e.partObjects.length; m++) {
             const p = e.partObjects[m];
-            this.mr.updateObjPart(p.__id, p, t);
+            this.objectCreator.updateObjPart(p.__id, p, t);
         }
         this.spectating = this.hr != this.pr;
-        this.dr = this.Rt.u(this.hr);
-        this.dr.Mr(e.activePlayerData, this.Rt);
+        this.dr = this.playerBarn.u(this.hr);
+        this.dr.Mr(e.activePlayerData, this.playerBarn);
         if (e.activePlayerData.weapsDirty) {
-            this.zt.weapsDirty = true;
+            this.uiManager.weapsDirty = true;
         }
         if (this.spectating) {
-            this.zt.setSpectateTarget(
+            this.uiManager.setSpectateTarget(
                 this.hr,
                 this.pr,
                 this.teamMode,
-                this.Rt
+                this.playerBarn
             );
-            this.Mt.hideAll();
+            this.touch.hideAll();
         }
-        this.dr.layer = this.dr.Le.pe;
-        this.Ct.setActiveLayer(this.dr.layer);
+        this.dr.layer = this.dr.netData.pe;
+        this.renderer.setActiveLayer(this.dr.layer);
         this.ft.activeLayer = this.dr.layer;
-        const h = this.dr.isUnderground(this.Et);
-        this.Ct.setUnderground(h);
+        const h = this.dr.isUnderground(this.map);
+        this.renderer.setUnderground(h);
         this.ft.underground = h;
         if (e.gasDirty) {
-            this.Qt.setFullState(
+            this.gas.setFullState(
                 e.gasT,
                 e.gasData,
-                this.Et,
-                this.zt
+                this.map,
+                this.uiManager
             );
         }
         if (e.gasTDirty) {
-            this.Qt.setProgress(e.gasT);
+            this.gas.setProgress(e.gasT);
         }
         for (let d = 0; d < e.bullets.length; d++) {
             const g = e.bullets[d];
-            Bullet.createBullet(g, this.qt, this.jt, this.Rt, this.Ct);
+            Bullet.createBullet(g, this.bulletBarn, this.flareBarn, this.playerBarn, this.renderer);
             if (g.shotFx) {
-                this.or.addShot(g);
+                this.shotBarn.addShot(g);
             }
         }
         for (let y = 0; y < e.explosions.length; y++) {
             const f = e.explosions[y];
-            this.Ut.addExplosion(f.type, f.pos, f.layer);
+            this.explosionBarn.addExplosion(f.type, f.pos, f.layer);
         }
         for (let _ = 0; _ < e.emotes.length; _++) {
             const b = e.emotes[_];
             if (b.isPing) {
-                this.ar.addPing(b, this.Et.factionMode);
+                this.emoteBarn.addPing(b, this.map.factionMode);
             } else {
-                this.ar.addEmote(b);
+                this.emoteBarn.addEmote(b);
             }
         }
-        this.Wt.Pr(e.planes, this.Et);
+        this.planeBarn.Pr(e.planes, this.map);
         for (let x = 0; x < e.airstrikeZones.length; x++) {
-            this.Wt.Cr(e.airstrikeZones[x]);
+            this.planeBarn.Cr(e.airstrikeZones[x]);
         }
-        this.zt.je(e.mapIndicators);
+        this.uiManager.je(e.mapIndicators);
         if (e.killLeaderDirty) {
             const S = helpers.htmlEscape(
-                this.Rt.getPlayerName(e.killLeaderId, this.hr, true)
+                this.playerBarn.getPlayerName(e.killLeaderId, this.hr, true)
             );
-            this.zt.updateKillLeader(
+            this.uiManager.updateKillLeader(
                 e.killLeaderId,
                 S,
                 e.killLeaderKills,
-                this.Et.getMapDef().gameMode
+                this.map.getMapDef().gameMode
             );
         }
         this.updateRecvCount++;
@@ -992,7 +978,7 @@ export class Game {
         }
     }
 
-    kt(e, t) {
+    onMsg(e, t) {
         switch (e) {
         case net.Msg.Joined: {
             const r = new net.JoinedMsg();
@@ -1001,9 +987,9 @@ export class Game {
             this.teamMode = r.teamMode;
             this.pr = r.playerId;
             this.ur = true;
-            this.ar.updateEmoteWheel(r.emotes);
+            this.emoteBarn.updateEmoteWheel(r.emotes);
             if (!r.started) {
-                this.zt.setWaitingForPlayers(true);
+                this.uiManager.setWaitingForPlayers(true);
             }
             if (this.victoryMusic) {
                 this.victoryMusic.stop();
@@ -1022,67 +1008,67 @@ export class Game {
         case net.Msg.Map: {
             const a = new net.MapMsg();
             a.deserialize(t);
-            this.Et.loadMap(
+            this.map.loadMap(
                 a,
-                this.De,
+                this.camera,
                 this.canvasMode,
-                this.Ot
+                this.particleBarn
             );
-            this.resourceManager.loadMapAssets(this.Et.mapName);
-            this.Et.renderMap(
+            this.resourceManager.loadMapAssets(this.map.mapName);
+            this.map.renderMap(
                 this.pixi.renderer,
                 this.canvasMode
             );
-            this.Rt.onMapLoad(this.Et);
-            this.qt.onMapLoad(this.Et);
-            this.Ot.onMapLoad(this.Et);
-            this.zt.onMapLoad(this.Et, this.De);
-            if (this.Et.perkMode) {
+            this.playerBarn.onMapLoad(this.map);
+            this.bulletBarn.onMapLoad(this.map);
+            this.particleBarn.onMapLoad(this.map);
+            this.uiManager.onMapLoad(this.map, this.camera);
+            if (this.map.perkMode) {
                 const i = this.config.get("perkModeRole");
-                this.zt.setRoleMenuOptions(
+                this.uiManager.setRoleMenuOptions(
                     i,
-                    this.Et.getMapDef().gameMode.perkModeRoles
+                    this.map.getMapDef().gameMode.perkModeRoles
                 );
-                this.zt.setRoleMenuActive(true);
+                this.uiManager.setRoleMenuActive(true);
             } else {
-                this.zt.setRoleMenuActive(false);
+                this.uiManager.setRoleMenuActive(false);
             }
             break;
         }
         case net.Msg.Update: {
             const o = new net.UpdateMsg();
-            o.deserialize(t, this.mr);
+            o.deserialize(t, this.objectCreator);
             /* if (o.partObjects.length) {
-                console.log(o)
-            } */
+                    console.log(o)
+                } */
             this.playing = true;
-            this.Sr(o);
+            this.processGameUpdate(o);
             break;
         }
-        case net.Msg.Kill:{
+        case net.Msg.Kill: {
             const n = new net.KillMsg();
             n.deserialize(t);
             const l = n.itemSourceType || n.mapSourceType;
-            const c = this.Rt.qe(this.hr).teamId;
+            const c = this.playerBarn.qe(this.hr).teamId;
             const m =
                     (n.downed && !n.killed) ||
                     n.damageType == GameConfig.DamageType.Gas ||
                     n.damageType == GameConfig.DamageType.Bleeding ||
                     n.damageType == GameConfig.DamageType.Airdrop;
-            const h = this.Rt.qe(n.targetId);
-            const d = this.Rt.qe(n.killCreditId);
-            const g = m ? d : this.Rt.qe(n.killerId);
-            let y = this.Rt.getPlayerName(
+            const h = this.playerBarn.qe(n.targetId);
+            const d = this.playerBarn.qe(n.killCreditId);
+            const g = m ? d : this.playerBarn.qe(n.killerId);
+            let y = this.playerBarn.getPlayerName(
                 h.playerId,
                 this.hr,
                 true
             );
-            let w = this.Rt.getPlayerName(
+            let w = this.playerBarn.getPlayerName(
                 d.playerId,
                 this.hr,
                 true
             );
-            let f = this.Rt.getPlayerName(
+            let f = this.playerBarn.getPlayerName(
                 g.playerId,
                 this.hr,
                 true
@@ -1095,7 +1081,7 @@ export class Game {
                 const b =
                         n.killerId == n.targetId ||
                         n.killCreditId == n.targetId;
-                const x = this.er.getKillText(
+                const x = this.ui2Manager.getKillText(
                     w,
                     y,
                     _,
@@ -1108,54 +1094,54 @@ export class Game {
                 );
                 const S =
                         n.killed && !b
-                            ? this.er.getKillCountText(
+                            ? this.ui2Manager.getKillCountText(
                                 n.killerKills
                             )
                             : "";
-                this.er.displayKillMessage(x, S);
+                this.ui2Manager.displayKillMessage(x, S);
             } else if (
                 n.targetId == this.hr &&
                     n.downed &&
                     !n.killed
             ) {
-                const v = this.er.getDownedText(
+                const v = this.ui2Manager.getDownedText(
                     w,
                     y,
                     l,
                     n.damageType,
                     this.spectating
                 );
-                this.er.displayKillMessage(v, "");
+                this.ui2Manager.displayKillMessage(v, "");
             }
             if (n.killCreditId == this.pr && n.killed) {
-                this.zt.setLocalKills(n.killerKills);
+                this.uiManager.setLocalKills(n.killerKills);
             }
-            const k = this.er.getKillFeedText(
+            const k = this.ui2Manager.getKillFeedText(
                 y,
                 g.teamId ? f : "",
                 l,
                 n.damageType,
                 n.downed && !n.killed
             );
-            const z = this.er.getKillFeedColor(
+            const z = this.ui2Manager.getKillFeedColor(
                 c,
                 h.teamId,
                 d.teamId,
-                this.Et.factionMode
+                this.map.factionMode
             );
-            this.er.addKillFeedMessage(k, z);
+            this.ui2Manager.addKillFeedMessage(k, z);
             if (n.killed) {
-                this.Rt.addDeathEffect(
+                this.playerBarn.addDeathEffect(
                     n.targetId,
                     n.killerId,
                     l,
                     this.ft,
-                    this.Ot
+                    this.particleBarn
                 );
             }
             if (n.type == GameConfig.DamageType.Player) {
-                this.qt.createBulletHit(
-                    this.Rt,
+                this.bulletBarn.createBulletHit(
+                    this.playerBarn,
                     n.targetId,
                     this.ft
                 );
@@ -1169,15 +1155,15 @@ export class Game {
             if (!T) {
                 break;
             }
-            const M = this.Rt.qe(I.playerId);
+            const M = this.playerBarn.qe(I.playerId);
             const P = helpers.htmlEscape(
-                this.Rt.getPlayerName(I.playerId, this.hr, true)
+                this.playerBarn.getPlayerName(I.playerId, this.hr, true)
             );
             if (I.assigned) {
                 if (T.sound?.assign) {
                     if (
                         I.role == "kill_leader" &&
-                            this.Et.getMapDef().gameMode
+                            this.map.getMapDef().gameMode
                                 .spookyKillSounds
                     ) {
                         this.ft.playGroup(
@@ -1188,7 +1174,7 @@ export class Game {
                         );
                     } else if (
                         I.role == "kill_leader" ||
-                            !this.Et.perkMode ||
+                            !this.map.perkMode ||
                             this.pr == I.playerId
                     ) {
                         this.ft.playSound(T.sound.assign, {
@@ -1196,36 +1182,36 @@ export class Game {
                         });
                     }
                 }
-                if (this.Et.perkMode && this.pr == I.playerId) {
-                    this.zt.setRoleMenuActive(false);
+                if (this.map.perkMode && this.pr == I.playerId) {
+                    this.uiManager.setRoleMenuActive(false);
                 }
                 if (T.killFeed?.assign) {
                     const C =
-                            this.er.getRoleAssignedKillFeedText(
+                            this.ui2Manager.getRoleAssignedKillFeedText(
                                 I.role,
                                 M.teamId,
                                 P
                             );
-                    const A = this.er.getRoleKillFeedColor(
+                    const A = this.ui2Manager.getRoleKillFeedColor(
                         I.role,
                         M.teamId,
-                        this.Rt
+                        this.playerBarn
                     );
-                    this.er.addKillFeedMessage(C, A);
+                    this.ui2Manager.addKillFeedMessage(C, A);
                 }
                 if (T.announce && this.pr == I.playerId) {
-                    const O = this.er.getRoleAnnouncementText(
+                    const O = this.ui2Manager.getRoleAnnouncementText(
                         I.role,
                         M.teamId
                     );
-                    this.zt.displayAnnouncement(
+                    this.uiManager.displayAnnouncement(
                         O.toUpperCase()
                     );
                 }
             } else if (I.killed) {
                 if (T.killFeed?.dead) {
                     let D = helpers.htmlEscape(
-                        this.Rt.getPlayerName(
+                        this.playerBarn.getPlayerName(
                             I.killerId,
                             this.hr,
                             true
@@ -1234,21 +1220,21 @@ export class Game {
                     if (I.playerId == I.killerId) {
                         D = "";
                     }
-                    const E = this.er.getRoleKilledKillFeedText(
+                    const E = this.ui2Manager.getRoleKilledKillFeedText(
                         I.role,
                         M.teamId,
                         D
                     );
-                    const B = this.er.getRoleKillFeedColor(
+                    const B = this.ui2Manager.getRoleKillFeedColor(
                         I.role,
                         M.teamId,
-                        this.Rt
+                        this.playerBarn
                     );
-                    this.er.addKillFeedMessage(E, B);
+                    this.ui2Manager.addKillFeedMessage(E, B);
                 }
                 if (T.sound?.dead) {
                     if (
-                        this.Et.getMapDef().gameMode
+                        this.map.getMapDef().gameMode
                             .spookyKillSounds
                     ) {
                         this.ft.playGroup("kill_leader_dead", {
@@ -1266,8 +1252,8 @@ export class Game {
         case net.Msg.PlayerStats: {
             const R = new net.PlayerStatsMsg();
             R.deserialize(t);
-            this.zt.setLocalStats(R.playerStats);
-            this.zt.showTeamAd(R.playerStats, this.er);
+            this.uiManager.setLocalStats(R.playerStats);
+            this.uiManager.showTeamAd(R.playerStats, this.ui2Manager);
             break;
         }
         case net.Msg.Stats: {
@@ -1280,15 +1266,15 @@ export class Game {
             const q = new net.GameOverMsg();
             q.deserialize(t);
             this.gameOver = q.gameOver;
-            const F = this.Rt.qe(this.pr).teamId;
+            const F = this.playerBarn.qe(this.pr).teamId;
             for (let j = 0; j < q.playerStats.length; j++) {
                 const V = q.playerStats[j];
                 if (V.playerId == this.pr) {
-                    this.zt.setLocalStats(V);
+                    this.uiManager.setLocalStats(V);
                     break;
                 }
             }
-            this.zt.showStats(
+            this.uiManager.showStats(
                 q.playerStats,
                 q.teamId,
                 q.teamRank,
@@ -1297,10 +1283,10 @@ export class Game {
                 F,
                 this.teamMode,
                 this.spectating,
-                this.Rt,
+                this.playerBarn,
                 this.ft,
-                this.Et,
-                this.er
+                this.map,
+                this.ui2Manager
             );
             if (F == q.winningTeamId) {
                 this.victoryMusic = this.ft.playSound(
@@ -1312,7 +1298,7 @@ export class Game {
                     }
                 );
             }
-            this.Mt.hideAll();
+            this.touch.hideAll();
             break;
         }
         case net.Msg.Pickup: {
@@ -1322,10 +1308,10 @@ export class Game {
                 this.dr.playItemPickupSound(U.item, this.ft);
                 const W = GameObjectDefs[U.item];
                 if (W && W.type == "xp") {
-                    this.er.addRareLootMessage(U.item, true);
+                    this.ui2Manager.addRareLootMessage(U.item, true);
                 }
             } else {
-                this.er.displayPickupMessage(U.type);
+                this.ui2Manager.displayPickupMessage(U.type);
             }
             break;
         }
@@ -1339,14 +1325,14 @@ export class Game {
             const G = new net.AliveCountsMsg();
             G.deserialize(t);
             if (G.teamAliveCounts.length == 1) {
-                this.zt.updatePlayersAlive(
+                this.uiManager.updatePlayersAlive(
                     G.teamAliveCounts[0]
                 );
             } else if (G.teamAliveCounts.length >= 2) {
-                this.zt.updatePlayersAliveRed(
+                this.uiManager.updatePlayersAliveRed(
                     G.teamAliveCounts[0]
                 );
-                this.zt.updatePlayersAliveBlue(
+                this.uiManager.updatePlayersAliveBlue(
                     G.teamAliveCounts[1]
                 );
             }

@@ -1,21 +1,17 @@
 import { type WebSocket } from "uWebSockets.js";
 import { type PlayerContainer } from "./server";
-import { type Msg, MsgStream, MsgType } from "./net/net";
 import { Player } from "./objects/player";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import { InputMsg } from "./net/inputMsg";
 import { Grid } from "./utils/grid";
-import { JoinMsg } from "./net/joinMsg";
 import { ObjectType, type BaseGameObject } from "./objects/gameObject";
 import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
-import { type ExplosionData } from "./net/updateMsg";
 import { Logger } from "./utils/logger";
 import { Loot } from "./objects/loot";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
-import { DisconnectMsg } from "./net/disconnectMsg";
+import net from "../../shared/net";
 
 export class Game {
     stopped = false;
@@ -37,14 +33,14 @@ export class Game {
 
     aliveCountDirty = false;
 
-    msgsToSend: Msg[] = [];
+    msgsToSend: Array<{ type: number, msg: any }> = [];
 
     partialObjs = new Set<BaseGameObject>();
     fullObjs = new Set<BaseGameObject>();
 
     newPlayers: Player[] = [];
 
-    explosions: ExplosionData[] = [];
+    explosions = [];
 
     id: number;
 
@@ -186,23 +182,24 @@ export class Game {
     }
 
     handleMsg(buff: ArrayBuffer, player: Player): void {
-        const msgStream = new MsgStream(buff);
+        const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
+        const stream = msgStream.stream!;
         switch (type) {
-        case MsgType.Input: {
-            const inputMsg = new InputMsg();
-            inputMsg.deserialize(msgStream.stream);
+        case net.Msg.Input: {
+            const inputMsg = new net.InputMsg();
+            inputMsg.deserialize(stream);
             player.handleInput(inputMsg);
             break;
         }
-        case MsgType.Join: {
-            const joinMsg = new JoinMsg();
-            joinMsg.deserialize(msgStream.stream);
+        case net.Msg.Join: {
+            const joinMsg = new net.JoinMsg();
+            joinMsg.deserialize(stream);
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
-                const disconnectMsg = new DisconnectMsg();
+                const disconnectMsg = new net.DisconnectMsg();
                 disconnectMsg.reason = "index-invalid-protocol";
-                player.sendMsg(disconnectMsg);
+                player.sendMsg(net.Msg.Disconnect, disconnectMsg);
                 setTimeout(() => {
                     player.socket.close();
                 }, 1);

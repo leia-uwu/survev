@@ -4,7 +4,6 @@ import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { type GunDef, type BulletDef } from "../../../shared/defs/objectsTypings";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
-import { type BulletData } from "../net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -112,7 +111,7 @@ export class BulletManager {
     }
 }
 
-export class Bullet implements BulletData {
+export class Bullet {
     collided = false;
     alive = true;
     distanceTraveled = 0;

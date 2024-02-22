@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import { v2 } from "../../shared/utils/v2";

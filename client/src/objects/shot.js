@@ -148,16 +148,16 @@ ShotBarn.prototype = {
                     const f = r.u(l.playerId);
                     if (
                         f &&
-                        !f.Le.he &&
-                        f.Le.me == l.weaponType &&
+                        !f.netData.he &&
+                        f.netData.me == l.weaponType &&
                         c.caseTiming == "shoot"
                     ) {
                         createCasingParticle(
                             l.weaponType,
                             (Math.PI / 2) * -1,
                             1,
-                            f.Le.ie,
-                            f.Le.oe,
+                            f.netData.ie,
+                            f.netData.oe,
                             f.renderLayer,
                             f.renderZOrd + 1,
                             i

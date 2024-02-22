@@ -3,8 +3,6 @@ import { type StructureDef, type BuildingDef, type ObstacleDef } from "../../sha
 import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
-import { MapMsg, type MapRiver } from "./net/mapMsg";
-import { MsgStream } from "./net/net";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
 import { ObjectType } from "./objects/gameObject";
@@ -16,9 +14,10 @@ import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import { type River } from "../../shared/utils/river";
-import { generateTerrain } from "../../shared/utils/terrainGen";
+import { type MapRiverData, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
+import net from "../../shared/net";
 
 export class GameMap {
     game: Game;
@@ -26,8 +25,8 @@ export class GameMap {
     width: number;
     height: number;
 
-    msg = new MapMsg();
-    mapStream = new MsgStream(new ArrayBuffer(1 << 14));
+    msg = new net.MapMsg();
+    mapStream = new net.MsgStream(new ArrayBuffer(1 << 14));
     seed = util.randomInt(0, 2 ** 31);
 
     bounds: AABB;
@@ -41,7 +40,7 @@ export class GameMap {
 
     mapDef: MapDef;
 
-    riverDescs: MapRiver[] = [];
+    riverDescs: MapRiverData[] = [];
 
     constructor(game: Game) {
         this.game = game;
@@ -85,7 +84,7 @@ export class GameMap {
 
         this.generateObjects();
 
-        this.mapStream.serializeMsg(this.msg);
+        this.mapStream.serializeMsg(net.Msg.Map, this.msg);
     }
 
     generateTerrain(): void {

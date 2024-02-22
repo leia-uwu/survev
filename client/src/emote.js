@@ -400,7 +400,7 @@ v([109, 101, 110, 117]);
 v([105, 110, 105, 116]);
 v([99, 104, 101, 97, 116]);
 EmoteBarn.prototype = {
-    n: function() {
+    free: function() {
         if (device.touch) {
             $(document).off("touchstart", this.onTouchStart);
             this.emoteButtonElem.off("touchstart");
@@ -689,11 +689,11 @@ EmoteBarn.prototype = {
             }
         }
         this.dr = r;
-        if ((t != r.__id || !!r.Le.he) && !this.disable) {
-            this.n();
+        if ((t != r.__id || !!r.netData.he) && !this.disable) {
+            this.free();
             this.disable = true;
         }
-        const z = m.perkMode && !r.Le.Te;
+        const z = m.perkMode && !r.netData.Te;
         if (
             !this.disable &&
             !z &&
@@ -853,7 +853,7 @@ EmoteBarn.prototype = {
                 let G = v2.create(0, 0);
                 let X = 0;
                 const K = S.u(U.playerId);
-                if (K && !K.Le.he) {
+                if (K && !K.netData.he) {
                     G = v2.copy(K.pos);
                     X = K.layer;
                     W = true;

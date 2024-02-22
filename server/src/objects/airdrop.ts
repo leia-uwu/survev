@@ -1,13 +1,9 @@
 import { type Game } from "../game";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { collider } from "../../../shared/utils/collider";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject, ObjectType } from "./gameObject";
 
-type FullAirdrop = ObjectsFullData[ObjectType.Airdrop];
-type PartialAirdrop = ObjectsPartialData[ObjectType.Airdrop];
-
-export class Airdrop extends BaseGameObject implements FullAirdrop, PartialAirdrop {
+export class Airdrop extends BaseGameObject {
     bounds = collider.createAabbExtents(v2.create(0, 0), v2.create(5, 5));
 
     override readonly __type = ObjectType.Airdrop;

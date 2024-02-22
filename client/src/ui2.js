@@ -483,7 +483,7 @@ const E = {
 };
 
 Ui2.prototype = {
-    n: function() {
+    free: function() {
         for (let e = 0; e < this.eventListeners.length; e++) {
             const t = this.eventListeners[e];
             t.elem.removeEventListener(t.event, t.fn);
@@ -568,9 +568,9 @@ Ui2.prototype = {
                 O.opacity = E < 6.5 ? 1 : 0;
             }
         }
-        c.health = t.Le.he ? 0 : math.max(t.Re.Lr, 1);
+        c.health = t.netData.he ? 0 : math.max(t.Re.Lr, 1);
         c.boost = t.Re.qr;
-        c.downed = t.Le.ue;
+        c.downed = t.netData.ue;
         let B = D.None;
         let R = null;
         let L = true;
@@ -588,7 +588,7 @@ Ui2.prototype = {
                     if (V) {
                         const U = collider.intersectCircle(
                             H.collider,
-                            t.Le.ie,
+                            t.netData.ie,
                             V.rad + t.rad
                         );
                         if (U && U.pen >= F) {
@@ -604,7 +604,7 @@ Ui2.prototype = {
                 L = true;
             }
             const W = i.Er();
-            if (W && !t.Le.ue) {
+            if (W && !t.netData.ue) {
                 const G = GameObjectDefs[W.type];
                 const X = t.Wr(GameConfig.WeaponSlot.Primary);
                 const K = t.Wr(GameConfig.WeaponSlot.Secondary);
@@ -615,10 +615,10 @@ Ui2.prototype = {
                     (c.touch &&
                         G.type == "helmet" &&
                         t.Nr() == G.level &&
-                        W.type != t.Le.le) ||
+                        W.type != t.netData.le) ||
                     (G.type == "chest" &&
                         t.Hr() == G.level &&
-                        W.type != t.Le.ce)
+                        W.type != t.netData.ce)
                 ) {
                     J = true;
                 }
@@ -636,7 +636,7 @@ Ui2.prototype = {
                         J);
             }
             const Q = t.hasPerk("self_revive");
-            if (t.action.type == Action.None && (!t.Le.ue || Q)) {
+            if (t.action.type == Action.None && (!t.netData.ue || Q)) {
                 for (
                     let $ = a.qe(t.__id).teamId,
                         ee = a.$e.p(),
@@ -650,12 +650,12 @@ Ui2.prototype = {
                         if (
                             (re.__id != t.__id || Q) &&
                             $ == ae &&
-                            re.Le.ue &&
-                            !re.Le.he &&
+                            re.netData.ue &&
+                            !re.netData.he &&
                             re.action.type != Action.Revive
                         ) {
                             const ie = v2.length(
-                                v2.sub(re.Le.ie, t.Le.ie)
+                                v2.sub(re.netData.ie, t.netData.ie)
                             );
                             if (
                                 ie < GameConfig.player.reviveRange &&
@@ -669,7 +669,7 @@ Ui2.prototype = {
                     }
                 }
             }
-            if (t.action.type == Action.Revive && t.Le.ue && !Q) {
+            if (t.action.type == Action.Revive && t.netData.ue && !Q) {
                 B = D.None;
                 R = null;
                 L = false;
@@ -677,7 +677,7 @@ Ui2.prototype = {
             if (
                 (t.action.type == Action.UseItem ||
                     (t.action.type == Action.Revive &&
-                        (!t.Le.ue || !!Q))) &&
+                        (!t.netData.ue || !!Q))) &&
                 !r
             ) {
                 B = D.Cancel;
@@ -772,12 +772,12 @@ Ui2.prototype = {
             const Me = c.gear[Te];
             let Pe = "";
             if (Me.type == "chest") {
-                Pe = t.Le.ce;
+                Pe = t.netData.ce;
             } else if (Me.type == "helmet") {
-                Pe = t.Le.le;
+                Pe = t.netData.le;
             } else if (
                 Me.type == "backpack" &&
-                (Pe = t.Le.ne) == "backpack00"
+                (Pe = t.netData.ne) == "backpack00"
             ) {
                 Pe = "";
             }

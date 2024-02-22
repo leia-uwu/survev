@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { collider } from "../../../shared/utils/collider";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
@@ -134,7 +133,7 @@ AirstrikeZone.prototype = {
     }
 };
 PlaneBarn.prototype = {
-    n: function() {
+    free: function() {
         for (let e = 0; e < this.ia.length; e++) {
             this.ia[e].n(this.audioManager);
         }
@@ -322,5 +321,5 @@ PlaneBarn.prototype = {
     }
 };
 export default {
-    Gt: PlaneBarn
+    PlaneBarn
 };

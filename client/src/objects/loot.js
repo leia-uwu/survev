@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
@@ -121,7 +120,7 @@ i.prototype = {
             if (g.active) {
                 if (
                     util.sameLayer(g.layer, t.layer) &&
-                    !t.Le.he &&
+                    !t.netData.he &&
                     (g.ownerId == 0 || g.ownerId == t.__id)
                 ) {
                     const y = g.pos;
@@ -165,5 +164,5 @@ i.prototype = {
     }
 };
 export default {
-    Jt: i
+    LootBarn: i
 };

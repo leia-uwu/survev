@@ -1,6 +1,5 @@
 import $ from "jquery";
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { collider } from "../../shared/utils/collider";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
@@ -661,7 +660,7 @@ class LineSprites {
         const o =
             device.touch && e.touchingAim && e.touchAimLine;
         if (o) {
-            const s = t.Le.me;
+            const s = t.netData.me;
             const g = GameObjectDefs[s];
             let y = 30;
             if (g.type == "gun") {
@@ -736,5 +735,5 @@ class LineSprites {
 }
 
 export default {
-    Pt: Touch
+    Touch
 };

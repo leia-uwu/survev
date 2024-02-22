@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
@@ -3149,7 +3148,7 @@ ParticleBarn.prototype = {
     onMapLoad: function(e) {
         this.valueAdjust = e.getMapDef().biome.valueAdjust;
     },
-    n: function() {
+    free: function() {
         for (let e = 0; e < this.particles.length; e++) {
             const t = this.particles[e].sprite;
             t.parent?.removeChild(t);

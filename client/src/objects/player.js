@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { GameConfig } from "../../../shared/gameConfig";
 import net from "../../../shared/net";
 import { util } from "../../../shared/utils/util";
@@ -191,7 +190,7 @@ function Player() {
     this.I = 0;
     this.Br = 0;
     this.action = {};
-    this.Le = {};
+    this.netData = {};
     this.Re = {};
     this.rad = GameConfig.player.radius;
     this.bodyRad = this.rad;
@@ -311,7 +310,7 @@ Player.prototype = {
             throttleTicker: 0
         };
         this.playAnim(Anim.None, -1);
-        this.Le = {
+        this.netData = {
             ie: v2.create(0, 0),
             oe: v2.create(1, 0),
             se: "",
@@ -365,45 +364,45 @@ Player.prototype = {
         }
     },
     c: function(e, t, r, a) {
-        this.Le.ie = v2.copy(e.ie);
-        this.Le.oe = v2.copy(e.oe);
+        this.netData.ie = v2.copy(e.pos);
+        this.netData.oe = v2.copy(e.dir);
         if (t) {
-            this.Le.se = e.se;
-            this.Le.ne = e.ne;
-            this.Le.le = e.le;
-            this.Le.ce = e.ce;
-            this.Le.me = e.me;
-            this.Le.pe = e.pe;
-            this.Le.he = e.he;
-            this.Le.ue = e.ue;
-            this.Le.ge = e.ge;
-            this.Le.ye = e.ye;
-            this.Le.we = e.we;
-            this.Le.fe = e.fe;
-            this.Le._e = e._e;
-            this.Le.be = e.be;
-            this.Le.xe = e.xe;
-            this.Le.Se = e.Se;
-            this.Le.ve = e.ve;
-            this.Le.ke = e.ke;
-            this.Le.ze = e.ze;
-            this.Le.Ie = e.Ie;
-            this.Le.Te = e.Te;
-            if (!!r || !o(this.Le.Me, e.Me)) {
+            this.netData.se = e.outfit;
+            this.netData.ne = e.pack;
+            this.netData.le = e.helmet;
+            this.netData.ce = e.chest;
+            this.netData.me = e.activeWeapon;
+            this.netData.pe = e.layer;
+            this.netData.he = e.dead;
+            this.netData.ue = e.downed;
+            this.netData.ge = e.animType;
+            this.netData.ye = e.animSeq;
+            this.netData.we = e.actionType;
+            this.netData.fe = e.actionSeq;
+            this.netData._e = e.wearingPan;
+            this.netData.be = e.healEffect;
+            this.netData.xe = e.frozen;
+            this.netData.Se = e.frozenOri;
+            this.netData.ve = e.hasteType;
+            this.netData.ke = e.hasteSeq;
+            this.netData.ze = e.actionItem;
+            this.netData.Ie = e.scale;
+            this.netData.Te = e.role;
+            if (!!r || !o(this.netData.Me, e.perks)) {
                 this.perksDirty = true;
             }
-            this.Le.Me = e.Me;
+            this.netData.Me = e.perks;
             if (e.ye != this.anim.seq) {
-                this.playAnim(e.ge, e.ye);
+                this.playAnim(e.animType, e.animSeq);
             }
-            this.action.type = e.we;
-            this.action.seq = e.fe;
-            this.action.item = e.ze;
+            this.action.type = e.actionType;
+            this.action.seq = e.actionSeq;
+            this.action.item = e.actionItem;
             this.visualsDirty = true;
         }
         if (r) {
             this.isNew = true;
-            this.renderLayer = this.Le.pe;
+            this.renderLayer = this.netData.pe;
             this.renderZOrd = 18;
             this.renderZIdx = this.__id;
         }
@@ -463,34 +462,34 @@ Player.prototype = {
         return e;
     },
     Nr: function() {
-        if (this.Le.le) {
-            return GameObjectDefs[this.Le.le].level;
+        if (this.netData.le) {
+            return GameObjectDefs[this.netData.le].level;
         } else {
             return 0;
         }
     },
     Hr: function() {
-        if (this.Le.ce) {
-            return GameObjectDefs[this.Le.ce].level;
+        if (this.netData.ce) {
+            return GameObjectDefs[this.netData.ce].level;
         } else {
             return 0;
         }
     },
     Vr: function() {
-        return GameObjectDefs[this.Le.ne].level;
+        return GameObjectDefs[this.netData.ne].level;
     },
     Ur: function() {
-        return GameObjectDefs[this.Le.me].type;
+        return GameObjectDefs[this.netData.me].type;
     },
     Wr: function(e) {
         return this.Re.tt[e].type !== "";
     },
     getMeleeCollider: function() {
-        const e = GameObjectDefs[this.Le.me];
+        const e = GameObjectDefs[this.netData.me];
         const t = Math.atan2(this.dir.y, this.dir.x);
         const r = v2.add(
             e.attack.offset,
-            v2.mul(v2.create(1, 0), this.Le.Ie - 1)
+            v2.mul(v2.create(1, 0), this.netData.Ie - 1)
         );
         const a = v2.add(this.pos, v2.rotate(r, t));
         const i = e.attack.rad;
@@ -498,16 +497,16 @@ Player.prototype = {
     },
     hasActivePan: function() {
         return (
-            this.Le._e ||
-            (this.Le.me == "pan" && this.currentAnim() != Anim.Melee)
+            this.netData._e ||
+            (this.netData.me == "pan" && this.currentAnim() != Anim.Melee)
         );
     },
     getPanSegment: function() {
-        const e = this.Le._e ? "unequipped" : "equipped";
+        const e = this.netData._e ? "unequipped" : "equipped";
         return GameObjectDefs.pan.reflectSurface[e];
     },
     canInteract: function(e) {
-        return !this.Le.he && (!e.perkMode || this.Le.Te);
+        return !this.netData.he && (!e.perkMode || this.netData.Te);
     },
     Gr: function(e, t, r) {
         const a = this;
@@ -516,9 +515,9 @@ Player.prototype = {
         }
         if (this.perksDirty) {
             if (e && !t) {
-                for (let o = 0; o < this.Le.Me.length; o++) {
+                for (let o = 0; o < this.netData.Me.length; o++) {
                     (function(e) {
-                        const t = a.Le.Me[e];
+                        const t = a.netData.Me[e];
                         if (
                             a.perks.findIndex((e) => {
                                 return e.type == t.type;
@@ -532,7 +531,7 @@ Player.prototype = {
                     (function(e) {
                         const t = a.perks[e];
                         if (
-                            a.Le.Me.findIndex((e) => {
+                            a.netData.Me.findIndex((e) => {
                                 return e.type == t.type;
                             }) === -1
                         ) {
@@ -542,9 +541,9 @@ Player.prototype = {
                 }
             }
             const n = [];
-            for (let l = 0; l < this.Le.Me.length; l++) {
+            for (let l = 0; l < this.netData.Me.length; l++) {
                 (function(e) {
-                    const t = a.Le.Me[e];
+                    const t = a.netData.Me[e];
                     const r =
                         a.perks.findIndex((e) => {
                             return e.type == t.type;
@@ -558,8 +557,8 @@ Player.prototype = {
             }
             this.perks = n;
             this.perkTypes = [];
-            for (let c = 0; c < this.Le.Me.length; c++) {
-                this.perkTypes.push(this.Le.Me[c].type);
+            for (let c = 0; c < this.netData.Me.length; c++) {
+                this.perkTypes.push(this.netData.Me[c].type);
             }
             this.perksDirty = false;
         }
@@ -568,16 +567,16 @@ Player.prototype = {
         return this.perkTypes.includes(e);
     },
     m: function(e, t, r, i, o, s, n, l, c, m, p, w, x) {
-        const k = GameObjectDefs[this.Le.me];
+        const k = GameObjectDefs[this.netData.me];
         const z = this.__id == m;
         const I = t.u(m);
         this.posOld = v2.copy(this.pos);
         this.dirOld = v2.copy(this.dir);
-        this.pos = v2.copy(this.Le.ie);
-        this.dir = v2.copy(this.Le.oe);
-        this.layer = this.Le.pe;
-        this.downed = this.Le.ue;
-        this.rad = this.Le.Ie * GameConfig.player.radius;
+        this.pos = v2.copy(this.netData.ie);
+        this.dir = v2.copy(this.netData.oe);
+        this.layer = this.netData.pe;
+        this.downed = this.netData.ue;
+        this.rad = this.netData.Ie * GameConfig.player.radius;
         if (!math.eqAbs(this.rad, this.bodyRad)) {
             const T = this.rad - this.bodyRad;
             let M = Math.abs(T) > 0.0001 ? T * e * 6 : T;
@@ -594,8 +593,8 @@ Player.prototype = {
             this.viewAabb.max = v2.add(n.pos, D);
         }
         this.Gr(z, x, c);
-        const E = this.weapTypeOld != this.Le.me;
-        this.weapTypeOld = this.Le.me;
+        const E = this.weapTypeOld != this.netData.me;
+        this.weapTypeOld = this.netData.me;
         this.lastThrowablePickupSfxTicker -= e;
         this.noCeilingRevealTicker -= e;
         const B = t.qe(m).groupId;
@@ -607,7 +606,7 @@ Player.prototype = {
         let F = null;
         for (let j = r.Ve.p(), N = 0; N < j.length; N++) {
             const H = j[N];
-            if (H.active && !H.dead && H.layer == this.Le.pe) {
+            if (H.active && !H.dead && H.layer == this.netData.pe) {
                 if (H.isBush) {
                     const V = this.rad * 0.25;
                     if (
@@ -703,7 +702,7 @@ Player.prototype = {
         const ie = this.surface.type == "water";
         this.updateSubmersion(e, r);
         this.updateFrozenState(e);
-        if (!this.Le.he) {
+        if (!this.netData.he) {
             this.stepDistance += v2.length(
                 v2.sub(this.posOld, this.pos)
             );
@@ -736,8 +735,8 @@ Player.prototype = {
         }
         this.bleedTicker -= e;
         if (
-            !this.Le.he &&
-            ((this.Le.ue && this.action.type == Action.None) ||
+            !this.netData.he &&
+            ((this.netData.ue && this.action.type == Action.None) ||
                 this.hasPerk("trick_drain")) &&
             this.bleedTicker < 0
         ) {
@@ -774,7 +773,7 @@ Player.prototype = {
         if (z && (E || this.lastSwapIdx != this.Re.rt)) {
             const se = this.lastSwapIdx;
             this.lastSwapIdx = this.Re.rt;
-            const ne = GameObjectDefs[this.Le.me];
+            const ne = GameObjectDefs[this.netData.me];
             if (ne.type == "melee" || ne.type == "throwable") {
                 if (
                     ne.type != "throwable" ||
@@ -849,7 +848,7 @@ Player.prototype = {
             this.action.throttleCount--;
             this.action.throttleTicker = 0.25;
         }
-        if (this.Le.ve && this.Le.ke != this.hasteSeq) {
+        if (this.netData.ve && this.netData.ke != this.hasteSeq) {
             const hasteEffects = {
                 [HasteType.None]: {
                     particle: "",
@@ -868,7 +867,7 @@ Player.prototype = {
                     sound: "ability_stim_01"
                 }
             };
-            const ge = hasteEffects[this.Le.ve];
+            const ge = hasteEffects[this.netData.ve];
             if (!this.isNew) {
                 i.playSound(ge.sound, {
                     channel: "sfx",
@@ -883,8 +882,8 @@ Player.prototype = {
                 pos: this.pos,
                 layer: this.layer
             });
-            this.hasteSeq = this.Le.ke;
-        } else if (!this.Le.ve && this.hasteEmitter) {
+            this.hasteSeq = this.netData.ke;
+        } else if (!this.netData.ve && this.hasteEmitter) {
             this.hasteEmitter.stop();
             this.hasteEmitter = null;
         }
@@ -896,12 +895,12 @@ Player.prototype = {
             this.hasteEmitter.layer = this.renderLayer;
             this.hasteEmitter.zOrd = this.renderZOrd + 1;
         }
-        if (this.Le.be && !this.passiveHealEmitter) {
+        if (this.netData.be && !this.passiveHealEmitter) {
             this.passiveHealEmitter = o.addEmitter("heal_basic", {
                 pos: this.pos,
                 layer: this.layer
             });
-        } else if (!this.Le.be && this.passiveHealEmitter) {
+        } else if (!this.netData.be && this.passiveHealEmitter) {
             this.passiveHealEmitter.stop();
             this.passiveHealEmitter = null;
         }
@@ -1000,7 +999,7 @@ Player.prototype = {
             I.layer & 2 ||
             (I.layer & 1) == 1 ||
             (this.layer & 1) == 0;
-        this.auraContainer.visible = !this.Le.he && Me;
+        this.auraContainer.visible = !this.netData.he && Me;
         l.addPIXIObj(
             this.container,
             this.renderLayer,
@@ -1014,7 +1013,7 @@ Player.prototype = {
         const a = e.pixels(1);
         this.container.position.set(r.x, r.y);
         this.container.scale.set(a, a);
-        this.container.visible = !this.Le.he;
+        this.container.visible = !this.netData.he;
         this.auraContainer.position.set(r.x, r.y);
         this.auraContainer.scale.set(a, a);
     },
@@ -1087,7 +1086,7 @@ Player.prototype = {
         }
         const x =
             this.__id +
-            (this.Le.ue ? 0 : 262144) +
+            (this.netData.ue ? 0 : 262144) +
             (e ? 65536 : 0) +
             (this.rad > 1 ? 131072 : 0);
         this.renderLayer = f;
@@ -1095,7 +1094,7 @@ Player.prototype = {
         this.renderZIdx = x;
     },
     Xr: function(e, t) {
-        const r = GameObjectDefs[this.Le.se];
+        const r = GameObjectDefs[this.netData.se];
         const a = r.skinImg;
         const i = this.bodyRad / GameConfig.player.radius;
         this.bodySprite.texture = PIXI.Texture.from(a.baseSprite);
@@ -1104,12 +1103,12 @@ Player.prototype = {
             : a.baseTint;
         this.bodySprite.scale.set(0.25, 0.25);
         this.bodySprite.visible = true;
-        if (this.Le.xe && this.updateFrozenImage) {
+        if (this.netData.xe && this.updateFrozenImage) {
             const o = t.getMapDef().biome.frozenSprites || [];
             if (o.length > 0) {
                 const s = o[Math.floor(Math.random() * o.length)];
                 const n =
-                    math.oriToRad(this.Le.Se) +
+                    math.oriToRad(this.netData.Se) +
                     Math.PI * 0.5 +
                     (Math.random() - 0.5) * Math.PI * 0.25;
                 this.bodyEffectSprite.texture =
@@ -1173,10 +1172,10 @@ Player.prototype = {
         } else {
             this.flakSprite.visible = false;
         }
-        if (this.Le.ce == "" || r.ghillie) {
+        if (this.netData.ce == "" || r.ghillie) {
             this.chestSprite.visible = false;
         } else {
-            const k = GameObjectDefs[this.Le.ce];
+            const k = GameObjectDefs[this.netData.ce];
             const z = k.skinImg;
             this.chestSprite.texture = PIXI.Texture.from(
                 z.baseSprite
@@ -1196,10 +1195,10 @@ Player.prototype = {
         } else {
             this.steelskinSprite.visible = false;
         }
-        if (this.Le.le == "" || r.ghillie) {
+        if (this.netData.le == "" || r.ghillie) {
             this.helmetSprite.visible = false;
         } else {
-            const I = GameObjectDefs[this.Le.le];
+            const I = GameObjectDefs[this.netData.le];
             const T = I.skinImg;
             const M = (this.downed ? 1 : -1) * 3.33;
             this.helmetSprite.texture = PIXI.Texture.from(
@@ -1247,7 +1246,7 @@ Player.prototype = {
         } else {
             this.backpackSprite.visible = false;
         }
-        if (this.Le._e) {
+        if (this.netData._e) {
             const B = GameObjectDefs.pan.hipImg;
             this.hipSprite.texture = PIXI.Texture.from(B.sprite);
             this.hipSprite.position.set(B.pos.x, B.pos.y);
@@ -1258,12 +1257,12 @@ Player.prototype = {
         } else {
             this.hipSprite.visible = false;
         }
-        const R = GameObjectDefs[this.Le.me];
+        const R = GameObjectDefs[this.netData.me];
         if (R.type == "gun") {
-            this.gunRSprites.setType(this.Le.me, i);
+            this.gunRSprites.setType(this.netData.me, i);
             this.gunRSprites.setVisible(true);
             if (R.isDual) {
-                this.gunLSprites.setType(this.Le.me, i);
+                this.gunLSprites.setType(this.netData.me, i);
                 this.gunLSprites.setVisible(true);
             } else {
                 this.gunLSprites.setVisible(false);
@@ -1320,7 +1319,7 @@ Player.prototype = {
                 this.bodyContainer.addChild(this.handRContainer);
             }
         }
-        if (R.type == "melee" && this.Le.me != "fists") {
+        if (R.type == "melee" && this.netData.me != "fists") {
             const V = R.worldImg;
             this.meleeSprite.texture = PIXI.Texture.from(
                 V.sprite
@@ -1393,8 +1392,8 @@ Player.prototype = {
         if (
             (this.action.type != Action.UseItem &&
                 this.action.type != Action.Revive) ||
-            this.Le.he ||
-            (this.Le.ue && !this.hasPerk("self_revive")) ||
+            this.netData.he ||
+            (this.netData.ue && !this.hasPerk("self_revive")) ||
             !this.hasPerk("aoe_heal")
         ) {
             this.auraPulseTicker = 0;
@@ -1417,11 +1416,11 @@ Player.prototype = {
         }
         if (
             t.perkMode &&
-            this.Le.Te != "" &&
-            this.Le.le != "" &&
+            this.netData.Te != "" &&
+            this.netData.le != "" &&
             !r.ghillie
         ) {
-            const ee = GameObjectDefs[this.Le.Te];
+            const ee = GameObjectDefs[this.netData.Te];
             const te = ee.visorImg;
             if (te) {
                 const re = (this.downed ? 1 : -1) * 3.33;
@@ -1486,7 +1485,7 @@ Player.prototype = {
         e(this.handRContainer, this.bones[Bones.HandR]);
         e(this.footLContainer, this.bones[Bones.FootL]);
         e(this.footRContainer, this.bones[Bones.FootR]);
-        const t = GameObjectDefs[this.Le.me];
+        const t = GameObjectDefs[this.netData.me];
         if (
             !this.downed &&
             this.currentAnim() != Anim.Revive &&
@@ -1590,7 +1589,7 @@ Player.prototype = {
             break;
         }
         case Action.Revive:
-            if (this.Le.ue) {
+            if (this.netData.ue) {
                 i = "revive_basic";
             }
         }
@@ -1643,7 +1642,7 @@ Player.prototype = {
         }
     },
     selectIdlePose: function() {
-        const e = GameObjectDefs[this.Le.me];
+        const e = GameObjectDefs[this.netData.me];
         let t = "fists";
         t = this.downed
             ? "downed"
@@ -1691,7 +1690,7 @@ Player.prototype = {
         case Anim.CrawlBackward:
             return t("crawl_backward", true);
         case Anim.Melee: {
-            const r = GameObjectDefs[this.Le.me];
+            const r = GameObjectDefs[this.netData.me];
             if (!r.anim?.attackAnims) {
                 return t("fists", true);
             }
@@ -1775,7 +1774,7 @@ Player.prototype = {
         }
     },
     animPlaySound: function(e, t) {
-        const r = GameObjectDefs[this.Le.me];
+        const r = GameObjectDefs[this.netData.me];
         const a = r.sound[t.sound];
         if (a) {
             e.audioManager.playSound(a, {
@@ -1791,7 +1790,7 @@ Player.prototype = {
         this.throwableState = t.state;
     },
     animThrowableParticles: function(e, t) {
-        if (GameObjectDefs[this.Le.me].useThrowParticles) {
+        if (GameObjectDefs[this.netData.me].useThrowParticles) {
             const r = v2.rotate(
                 v2.create(0.75, 0.75),
                 Math.atan2(this.dir.y, this.dir.x)
@@ -1823,7 +1822,7 @@ Player.prototype = {
         }
     },
     animMeleeCollision: function(e, t) {
-        const r = GameObjectDefs[this.Le.me];
+        const r = GameObjectDefs[this.netData.me];
         if (r && r.type == "melee") {
             const a = this.getMeleeCollider();
             const i = a.rad + v2.length(v2.sub(this.pos, a.pos));
@@ -1895,7 +1894,7 @@ Player.prototype = {
                 if (
                     z.active &&
                     z.__id != this.__id &&
-                    !z.Le.he &&
+                    !z.netData.he &&
                     util.sameLayer(z.layer, this.layer)
                 ) {
                     const I = v2.normalizeSafe(
@@ -2042,13 +2041,13 @@ Player.prototype = {
         }
     },
     updateFrozenState: function(e) {
-        if (this.Le.xe) {
+        if (this.netData.xe) {
             this.frozenTicker = 0.25;
         } else {
             this.frozenTicker -= e;
             this.updateFrozenImage = true;
         }
-        this.bodyEffectSprite.alpha = this.Le.xe
+        this.bodyEffectSprite.alpha = this.netData.xe
             ? 1
             : math.remap(this.frozenTicker, 0, 0.25, 0, 1);
         this.bodyEffectSprite.visible = this.frozenTicker > 0;
@@ -2095,12 +2094,12 @@ PlayerBarn.prototype = {
         const y = this.qe(t);
         const f = this.u(t);
         this.Jr(t, {
-            pos: v2.copy(f.Le.ie),
+            pos: v2.copy(f.netData.ie),
             health: f.Re.Lr,
             disconnected: false,
-            dead: f.Le.he,
-            downed: f.Le.ue,
-            role: f.Le.Te,
+            dead: f.netData.he,
+            downed: f.netData.ue,
+            role: f.netData.Te,
             visible: true
         });
         for (
@@ -2115,15 +2114,15 @@ PlayerBarn.prototype = {
             const I = this.qe(z);
             const T = this.u(z);
             if (T) {
-                k.posDelta = v2.length(v2.sub(T.Le.ie, k.pos));
-                k.posTarget = v2.copy(T.Le.ie);
+                k.posDelta = v2.length(v2.sub(T.netData.ie, k.pos));
+                k.posTarget = v2.copy(T.netData.ie);
                 k.posInterp = math.clamp(
                     k.posInterp + e * 0.2,
                     e / x,
                     1
                 );
-                k.dead = T.Le.he;
-                k.downed = T.Le.ue;
+                k.dead = T.netData.he;
+                k.downed = T.netData.ue;
             } else {
                 k.posInterp = e / x;
             }
@@ -2403,5 +2402,5 @@ PlayerBarn.prototype = {
     }
 };
 export default {
-    Lt: PlayerBarn
+    PlayerBarn
 };

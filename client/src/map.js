@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { coldet } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
@@ -39,7 +38,7 @@ function o(e, t, r) {
     const m = util.seededRand(r);
     i(e, terrainGen.generateJaggedAabbPoints(t, l, c, s, m));
 }
-function s(e) {
+function Map(e) {
     this.decalBarn = e;
     this.I = false;
     this.Br = false;
@@ -76,8 +75,8 @@ function s(e) {
     this.U = false;
 }
 
-s.prototype = {
-    n: function() {
+Map.prototype = {
+    free: function() {
         for (let e = this.nr.p(), t = 0; t < e.length; t++) {
             e[t].n();
         }
@@ -647,5 +646,5 @@ s.prototype = {
 };
 
 export default {
-    Bt: s
+    Map
 };

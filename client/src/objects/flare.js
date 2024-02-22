@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -173,5 +172,5 @@ FlareBarn.prototype = {
     }
 };
 export default {
-    Nt: FlareBarn
+    FlareBarn
 };

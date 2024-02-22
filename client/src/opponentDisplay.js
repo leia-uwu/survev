@@ -46,11 +46,11 @@ LoadoutDisplay.prototype = {
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.De = new Camera();
-        this.Ct = new renderer.At(this, this.canvasMode);
+        this.Ct = new renderer.Renderer(this, this.canvasMode);
         this.Ot = new particles.ParticleBarn(this.Ct);
         this.Dt = new decal.DecalBarn();
-        this.Et = new map.Bt(this.Dt);
-        this.Rt = new Player.Lt();
+        this.Et = new map.Map(this.Dt);
+        this.Rt = new Player.PlayerBarn();
         this.Kt = new Smoke.SmokeBarn();
         const e = {};
         a(e, gameObject.Type.Player, this.Rt.$e);
@@ -147,7 +147,7 @@ LoadoutDisplay.prototype = {
             },
             this.Rt
         );
-        this.dr.layer = this.dr.Le.pe;
+        this.dr.layer = this.dr.netData.pe;
         this.dr.isLoadoutAvatar = true;
         this.Ct.setActiveLayer(this.dr.layer);
         this.ft.activeLayer = this.dr.layer;
@@ -207,32 +207,32 @@ LoadoutDisplay.prototype = {
             this.animIdleTicker = 0;
         }
         const r = {
-            se: this.loadout.outfit,
-            ne: "backpack02",
-            le: "helmet01",
-            ce: "chest03",
-            me: this.loadout.melee,
-            pe: 0,
-            he: false,
-            ue: false,
-            ge: e.animType || 0,
-            ye: e.animSeq || 0,
-            fe: e.actionSeq || 0,
-            we: e.actionType || 0,
-            ze: e.actionItem || "",
-            _e: false,
-            be: false,
-            xe: false,
-            Se: 0,
-            ve: 0,
-            ke: 0,
-            Ie: 1,
-            Te: "",
-            Me: [],
+            outfit: this.loadout.outfit,
+            pack: "backpack02",
+            helmet: "helmet01",
+            chest: "chest03",
+            activeWeapon: this.loadout.melee,
+            layer: 0,
+            dead: false,
+            downed: false,
+            animType: e.animType || 0,
+            animSeq: e.animSeq || 0,
+            actionSeq: e.actionSeq || 0,
+            actionType: e.actionType || 0,
+            actionItem: e.actionItem || "",
+            wearingPan: false,
+            healEffect: false,
+            frozen: false,
+            frozenOri: 0,
+            hasteType: 0,
+            hasteSeq: 0,
+            scale: 1,
+            role: "",
+            perks: [],
             $r: false
         };
-        r.ie = v2.create(50, 50);
-        r.oe = v2.create(0, -1);
+        r.pos = v2.create(50, 50);
+        r.dir = v2.create(0, -1);
         this.mr.updateObjFull(1, 98, r, t);
         this.Rt.vr({
             playerId: 98,

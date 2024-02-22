@@ -1,16 +1,12 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type StructureDef } from "../../../shared/defs/mapObjectsTyping";
 import { type Game } from "../game";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type AABB, type Circle, coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject, ObjectType } from "./gameObject";
-
-type FullStructure = ObjectsFullData[ObjectType.Structure];
-type PartialStructure = ObjectsPartialData[ObjectType.Structure];
 
 interface Stair {
     collision: AABB
@@ -24,7 +20,7 @@ interface Stair {
     lootOnly: boolean
 }
 
-export class Structure extends BaseGameObject implements FullStructure, PartialStructure {
+export class Structure extends BaseGameObject {
     bounds: Collider;
 
     override readonly __type = ObjectType.Structure;

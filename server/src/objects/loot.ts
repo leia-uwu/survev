@@ -2,7 +2,6 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapDefs } from "../../../shared/defs/mapDefs";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
@@ -11,10 +10,7 @@ import { BaseGameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Structure } from "./structure";
 
-type FullLoot = ObjectsFullData[ObjectType.Loot];
-type PartialLoot = ObjectsPartialData[ObjectType.Loot];
-
-export class Loot extends BaseGameObject implements FullLoot, PartialLoot {
+export class Loot extends BaseGameObject {
     bounds = collider.createCircle(v2.create(0.0, 0.0), 3.0);
 
     override readonly __type = ObjectType.Loot;

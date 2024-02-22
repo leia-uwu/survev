@@ -1,16 +1,12 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type ThrowableDef } from "../../../shared/defs/objectsTypings";
 import { type Game } from "../game";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject, ObjectType } from "./gameObject";
 
-type FullProjectile = ObjectsFullData[ObjectType.Projectile];
-type PartialProjectile = ObjectsPartialData[ObjectType.Projectile];
-
-export class Projectile extends BaseGameObject implements FullProjectile, PartialProjectile {
+export class Projectile extends BaseGameObject {
     bounds: Collider;
 
     override readonly __type = ObjectType.Projectile;

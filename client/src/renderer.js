@@ -75,7 +75,7 @@ class RenderGroup extends PIXI.Container {
 }
 
 Renderer.prototype = {
-    n: function() {
+    free: function() {
         this.layerMask.parent?.removeChild(this.layerMark);
         this.layerMask.destroy(true);
     },
@@ -258,5 +258,5 @@ Renderer.prototype = {
 };
 export default {
     RenderGroup,
-    At: Renderer
+    Renderer
 };

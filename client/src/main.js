@@ -286,7 +286,7 @@ class Application {
                 if (window.history) {
                     window.history.replaceState("", "", "/");
                 }
-                e.game?.n();
+                e.game?.free();
                 e.teamMenu.leave();
             });
             const r = $("#news-current").data("date");
@@ -357,7 +357,7 @@ class Application {
             );
             const onJoin = function() {
                 e.loadoutDisplay.n();
-                e.game.o();
+                e.game.init();
                 e.onResize();
                 e.findGameAttempts = 0;
                 e.ambience.onGameStart();
@@ -368,7 +368,7 @@ class Application {
                         e.game.updatePassDelay
                     );
                 }
-                e.game.n();
+                e.game.free();
                 e.errorMessage = e.localization.translate(t || "");
                 e.teamMenu.onGameComplete();
                 e.ambience.onGameComplete(e.audioManager);
@@ -421,7 +421,7 @@ class Application {
         this.loadoutMenu.onResize();
         this.pixi?.renderer.resize(Device.screenWidth, Device.screenHeight);
         if (this.game?.initialized) {
-            this.game.xr();
+            this.game.resize();
         }
         if (this.loadoutDisplay?.initialized) {
             this.loadoutDisplay.xr();
@@ -779,7 +779,7 @@ class Application {
             const o = function() {
                 e(r, a);
             };
-            t.game.vt(
+            t.game.tryJoinGame(
                 i,
                 a.data,
                 t.account.loadoutPriv,
@@ -841,7 +841,7 @@ class Application {
                 this.setAppActive(false);
                 this.setPlayLockout(true);
             }
-            this.game.m(e);
+            this.game.update(e);
         }
         if (
             this.active &&
@@ -889,7 +889,7 @@ window.addEventListener("hashchange", () => {
     App.tryJoinTeam(false);
 });
 window.addEventListener("beforeunload", (e) => {
-    if (App.game?.gr() && !Device.webview) {
+    if (App.game?.warnPageReload() && !Device.webview) {
         const t = "Do you want to reload the game?";
         e.returnValue = t;
         return t;

@@ -2,7 +2,6 @@ import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type StructureDef, type BuildingDef } from "../../../shared/defs/mapObjectsTyping";
 import { Puzzles } from "../../../shared/defs/puzzles";
 import { type Game } from "../game";
-import { type ObjectsFullData, type ObjectsPartialData } from "../net/objectSerialization";
 import { type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
@@ -13,10 +12,7 @@ import { BaseGameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { type Structure } from "./structure";
 
-type FullBuilding = ObjectsFullData[ObjectType.Building];
-type PartialBuilding = ObjectsPartialData[ObjectType.Building];
-
-export class Building extends BaseGameObject implements FullBuilding, PartialBuilding {
+export class Building extends BaseGameObject {
     bounds: Collider;
 
     mapObstacleBounds: Collider[] = [];

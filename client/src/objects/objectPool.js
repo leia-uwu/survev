@@ -1,22 +1,14 @@
-import firebaseManager from "../firebaseManager";
+class Pool {
+    constructor(e) {
+        // assert(e !== undefined);
+        this.creator = {
+            type: e
+        };
+        this.mt = [];
+        this.activeCount = 0;
+    }
 
-function Pool(e) {
-    // assert(e !== undefined);
-    this.creator = {
-        type: e
-    };
-    this.mt = [];
-    this.activeCount = 0;
-}
-
-function Creator(e) {
-    this.idToObj = {};
-    this.types = {};
-    this.seenCount = 0;
-}
-
-Pool.prototype = {
-    alloc: function() {
+    alloc() {
         let e = null;
         for (let t = 0; t < this.mt.length; t++) {
             if (!this.mt[t].active) {
@@ -33,8 +25,9 @@ Pool.prototype = {
         e.o();
         this.activeCount++;
         return e;
-    },
-    free: function(e) {
+    }
+
+    free(e) {
         e.n();
         e.active = false;
         this.activeCount--;
@@ -50,35 +43,45 @@ Pool.prototype = {
             }
             this.mt = t;
         }
-    },
-    p: function() {
+    }
+
+    p() {
         return this.mt;
     }
-};
+}
 
-Creator.prototype = {
-    registerType: function(e, t) {
+class Creator {
+    constructor() {
+        this.idToObj = {};
+        this.types = {};
+        this.seenCount = 0;
+    }
+
+    registerType(e, t) {
         this.types[e] = t;
-    },
-    getObjById: function(e) {
+    }
+
+    getObjById(e) {
         return this.idToObj[e];
-    },
-    getTypeById: function(e, t) {
+    }
+
+    getTypeById(e, t) {
         const r = this.getObjById(e);
         if (!r) {
-            const a = {
+            /* const a = {
                 instId: firebaseManager.instanceId,
                 id: e,
                 ids: Object.keys(this.idToObj),
                 stream: t._view._view
             };
             firebaseManager.logError(`getTypeById${JSON.stringify(a)}`);
-            firebaseManager.storeGeneric("objectPoolErr", "getTypeById");
+            firebaseManager.storeGeneric("objectPoolErr", "getTypeById"); */
             return 0;
         }
         return r.__type;
-    },
-    updateObjFull: function(e, t, r, a) {
+    }
+
+    updateObjFull(e, t, r, a) {
         let i = this.getObjById(t);
         let o = false;
         if (i === undefined) {
@@ -91,27 +94,30 @@ Creator.prototype = {
         }
         i.c(r, true, o, a);
         return i;
-    },
-    updateObjPart: function(e, t, r) {
+    }
+
+    updateObjPart(e, t, r) {
         const a = this.getObjById(e);
         if (a) {
             a.c(t, false, false, r);
         } else {
             console.log("updateObjPart, missing object", e);
-            firebaseManager.storeGeneric("objectPoolErr", "updateObjPart");
+            // firebaseManager.storeGeneric("objectPoolErr", "updateObjPart");
         }
-    },
-    deleteObj: function(e) {
+    }
+
+    deleteObj(e) {
         const t = this.getObjById(e);
         if (t === undefined) {
             console.log("deleteObj, missing object", e);
-            firebaseManager.storeGeneric("objectPoolErr", "deleteObj");
+            // firebaseManager.storeGeneric("objectPoolErr", "deleteObj");
         } else {
             this.types[t.__type].free(t);
             delete this.idToObj[e];
         }
     }
-};
+}
+
 export default {
     Pool,
     Creator

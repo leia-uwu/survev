@@ -1,6 +1,5 @@
 import $ from "jquery";
-import * as PIXI from "pixi.js"
-;
+import * as PIXI from "pixi.js";
 import { coldet } from "../../shared/utils/coldet";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
@@ -370,7 +369,7 @@ function i(e, t, r, a, i, o, c, m, p) {
     const z = this.getMinimapSize();
     this.minimapPos = v2.create(
         f + z / 2,
-        e.De.screenHeight - z / 2 - f
+        e.camera.screenHeight - z / 2 - f
     );
     this.dead = false;
     this.audioManager = t;
@@ -471,7 +470,7 @@ function Color(e, t, r) {
 }
 
 i.prototype = {
-    n: function() {
+    free: function() {
         this.gasRenderer.free();
         this.clearUI();
         this.roleMenuConfirm.off("click");
@@ -584,7 +583,7 @@ i.prototype = {
         }
         this.spectatorCount = t.Re.Be;
         this.updateSpectatorCountDisplay(false);
-        if (t.Le.he && !this.dead) {
+        if (t.netData.he && !this.dead) {
             this.dead = true;
             this.Pe.stop();
         }
@@ -1655,7 +1654,7 @@ i.prototype = {
             this.bigmapDisplayed ? "block" : "none"
         );
         this.updateSpectatorCountDisplay(true);
-        this.redraw(this.game.De);
+        this.redraw(this.game.camera);
     },
     updateSpectatorCountDisplay: function(e) {
         const t = !this.bigmapDisplayed && this.spectatorCount > 0;

@@ -1,10 +1,15 @@
 import { GameConfig } from "../gameConfig";
-import { type MapRiver } from "../../server/src/net/mapMsg";
 import { type AABB } from "./coldet";
 import { collider } from "./collider";
 import { River } from "./river";
 import { util } from "./util";
 import { type Vec2, v2 } from "./v2";
+
+export interface MapRiverData {
+    width: number
+    looped: boolean
+    points: Vec2[]
+}
 
 export function generateJaggedAabbPoints(
     aabb: AABB,
@@ -54,7 +59,7 @@ export function generateTerrain(
     height: number,
     shoreInset: number,
     grassInset: number,
-    riverDescs: MapRiver[],
+    riverDescs: MapRiverData[],
     seed: number) {
     // Subdivisions along one edge of the shore
     const shoreDivisions = 64.0;
