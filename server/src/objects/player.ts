@@ -307,7 +307,6 @@ export class Player extends BaseGameObject {
 
         let onStair = false;
         const originalLayer = this.layer;
-        const coll = collider.createCircle(this.pos, this.rad);
 
         const rot = Math.atan2(this.dir.y, this.dir.x);
         const ori = math.radToOri(rot);
@@ -316,7 +315,7 @@ export class Player extends BaseGameObject {
             if (obj.__type === ObjectType.Structure) {
                 for (const stair of obj.stairs) {
                     if (stair.lootOnly) continue;
-                    if (Structure.checkStairs(coll, stair, this)) {
+                    if (Structure.checkStairs(this.pos, stair, this)) {
                         onStair = true;
 
                         if (ori === stair.downOri) this.aimLayer = 3;

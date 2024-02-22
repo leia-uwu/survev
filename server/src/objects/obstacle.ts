@@ -175,8 +175,8 @@ export class Obstacle extends BaseGameObject {
                     this.door.openAltOri = 2;
                     break;
                 }
+                this.checkLayer();
             }
-            this.checkLayer();
         }
 
         if (def.button) {

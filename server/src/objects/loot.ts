@@ -139,7 +139,7 @@ export class Loot extends BaseGameObject {
         for (const obj of objs) {
             if (obj instanceof Structure) {
                 for (const stair of obj.stairs) {
-                    if (Structure.checkStairs(this.collider, stair, this)) {
+                    if (Structure.checkStairs(this.pos, stair, this)) {
                         onStair = true;
                         break;
                     }

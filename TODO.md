@@ -18,7 +18,7 @@
 
 ### Guns
  - [x] Firing logic (should be 1/1 to surviv firing logic)
- - [ ] fix bullet spawn layer when on stairs
+ - [x] fix bullet spawn layer when on stairs
  - [ ] Switch delays
  - [ ] Firing delays
  - [ ] Ammo
@@ -42,7 +42,7 @@
  - [x] Doors
  - [x] Sliding doors
  - [ ] Auto opening doors
- - [ ] Door layer on stairs
+ - [x] Door layer on stairs
  - [x] Buttons
  - [x] Loot
 
@@ -68,8 +68,9 @@
  - [x] Loot tables
  - [x] Physics
  - [ ] Picking up loot
- - [ ] Switching layers
- - [ ] River flow
+ - [x] Switching layers
+ - [ ] Fix loot on bridges
+ - [x] River flow
 
 ### Modes defs
 Some modes server definitions were leaked in an old stats page app.js
@@ -118,30 +119,8 @@ won't list all that need to be competently done because lazy
  - [ ] Gas
 
 ### Server and core stuff
- - [x] Port all definitions from the client
- - [x] Port all game objects serializations
- - [ ] Port all msgs serializations
- 	- [x] Join
- 	- [x] Disconnect
- 	- [x] Input
- 	- [ ] Edit (empty class on client, idk what it was for, probably debugging stuff)
- 	- [x] Joined
- 	- [x] Update (deserialization still needs to be done, but its not used for now)
- 	- [x] Kill
- 	- [x] GameOver
- 	- [x] Pickup
- 	- [x] Map
- 	- [x] Spectate
- 	- [x] DropItem
- 	- [x] Emote
- 	- [x] PlayerStats
- 	- [ ] AdStatus
- 	- [x] Loadout
- 	- [x] RoleAnnouncement
- 	- [x] Stats
- 	- [ ] UpdatePass (also an empty class on client)
- 	- [x] AliveCounts
- 	- [ ] PerkModeRoleSelect
+ - [x] Port all definitions from the clients
+ - [x] Debundle client and share code and definitions
  - [ ] Connections limit per ip
  - [ ] Banning Ips
  - [ ] Matchmaking algorithm

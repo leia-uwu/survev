@@ -85,18 +85,17 @@ export class Structure extends BaseGameObject {
         });
     }
 
-    static checkStairs(circle: Circle, stair: Stair, object: BaseGameObject): boolean {
-        const collides = coldet.testCircleAabb(circle.pos, circle.rad, stair.collision.min, stair.collision.max);
+    static checkStairs(pos: Vec2, stair: Stair, object: BaseGameObject): boolean {
+        const collides = coldet.testPointAabb(pos, stair.collision.min, stair.collision.max);
 
         if (collides) {
-            const collidesUp = coldet.testCircleAabb(circle.pos, circle.rad, stair.upAabb.min, stair.upAabb.max);
+            const collidesUp = coldet.testPointAabb(pos, stair.upAabb.min, stair.upAabb.max);
 
-            const collidesDown = coldet.testCircleAabb(circle.pos, circle.rad, stair.downAabb.min, stair.downAabb.max);
+            const collidesDown = coldet.testPointAabb(pos, stair.downAabb.min, stair.downAabb.max);
 
             if (collidesUp) {
                 object.layer = 2;
-            }
-            if (collidesDown) {
+            } else if (collidesDown) {
                 object.layer = 3;
             }
         }
