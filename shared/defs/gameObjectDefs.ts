@@ -17,7 +17,6 @@ import { UnlockDefs } from "./gameObjects/unlockDefs";
 import { XPDefs } from "./gameObjects/xpDefs";
 import { type GameObjectDef } from "./objectsTypings";
 
-// !!! DON'T REORDER THIS OR ANY OTHER DEFINITION OR IT WILL DESYNC WITH THE CLIENT
 const ObjectDefsList: Array<Record<string, unknown>> = [
     BulletDefs,
     CrosshairDefs,
