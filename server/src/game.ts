@@ -11,7 +11,12 @@ import { Logger } from "./utils/logger";
 import { Loot } from "./objects/loot";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
-import net from "../../shared/net";
+import net, { type BitStream } from "../../shared/net";
+
+export interface Msg {
+    serialize: (s: BitStream) => void
+    deserialize: (s: BitStream) => void
+}
 
 export class Game {
     stopped = false;
@@ -33,7 +38,7 @@ export class Game {
 
     aliveCountDirty = false;
 
-    msgsToSend: Array<{ type: number, msg: any }> = [];
+    msgsToSend: Array<{ type: number, msg: Msg }> = [];
 
     partialObjs = new Set<BaseGameObject>();
     fullObjs = new Set<BaseGameObject>();

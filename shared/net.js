@@ -72,7 +72,7 @@ function createTypeSerialization(type, typeList, bitsPerType) {
 const gameTypeSerialization = createTypeSerialization("Game", GameObjectDefs, 10);
 const mapTypeSerialization = createTypeSerialization("Map", MapObjectDefs, 12);
 
-class BitStream extends bb.BitStream {
+export class BitStream extends bb.BitStream {
     writeString(str, len) { this.writeASCIIString(str, len); }
     readString(len) { return this.readASCIIString(len); }
 

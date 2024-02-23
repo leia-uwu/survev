@@ -1,7 +1,7 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type StructureDef } from "../../../shared/defs/mapObjectsTyping";
 import { type Game } from "../game";
-import { type AABB, type Circle, coldet, type Collider } from "../../../shared/utils/coldet";
+import { type AABB, coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";

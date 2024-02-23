@@ -175,8 +175,8 @@ export class Obstacle extends BaseGameObject {
                     this.door.openAltOri = 2;
                     break;
                 }
-                this.checkLayer();
             }
+            this.checkLayer();
         }
 
         if (def.button) {
@@ -194,6 +194,8 @@ export class Obstacle extends BaseGameObject {
     }
 
     checkLayer(): void {
+        // @hack this door shouldn't switch layers
+        if (this.type === "saloon_door_secret") return;
         let newLayer = this.originalLayer;
         const def = MapObjectDefs[this.type] as ObstacleDef;
         const coll = collider.createCircle(this.pos, def.door!.interactionRad + 1);

@@ -1,5 +1,5 @@
 import { type WebSocket } from "uWebSockets.js";
-import { type Game } from "../game";
+import { type Msg, type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -214,7 +214,7 @@ export class Player extends BaseGameObject {
 
     socket: WebSocket<PlayerContainer>;
 
-    msgsToSend: Array<{ type: number, msg: any }> = [];
+    msgsToSend: Array<{ type: number, msg: Msg }> = [];
 
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
@@ -448,7 +448,7 @@ export class Player extends BaseGameObject {
         this.msgsToSend.length = 0;
 
         for (const msg of this.game.msgsToSend) {
-            msgStream.serializeMsg(msg.type, msg);
+            msgStream.serializeMsg(msg.type, msg.msg);
         }
 
         this.sendData(msgStream.getBuffer());

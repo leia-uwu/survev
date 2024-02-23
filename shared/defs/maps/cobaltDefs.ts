@@ -1,4 +1,5 @@
 import { util } from "../../utils/util";
+import { v2 } from "../../utils/v2";
 import { Main } from "./baseDefs";
 
 const mapDef = {
@@ -30,6 +31,18 @@ const mapDef = {
             playerGhillie: 4937830
         },
         particles: {}
+    },
+    mapGen: {
+        customSpawnRules: {
+            locationSpawns: [
+                {
+                    type: "bunker_structure_09",
+                    pos: v2.create(0.5, 0.5),
+                    rad: 100,
+                    retryOnFailure: true
+                }
+            ]
+        }
     },
     gameMode: {
         maxPlayers: 80,
