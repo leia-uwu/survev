@@ -374,7 +374,6 @@ class Application {
                 e.ambience.onGameComplete(e.audioManager);
                 e.setAppActive(true);
                 e.setPlayLockout(false);
-                e.loadoutMenu.resetAdRefresh();
                 if (t == "index-invalid-protocol") {
                     e.showInvalidProtocolModal();
                 }

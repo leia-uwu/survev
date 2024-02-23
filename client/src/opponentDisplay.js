@@ -17,31 +17,18 @@ import renderer from "./renderer";
 import Smoke from "./objects/Smoke";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 
-function a(e, t, r) {
-    if (t in e) {
-        Object.defineProperty(e, t, {
-            value: r,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        e[t] = r;
+class LoadoutDisplay {
+    constructor(e, t, r, a, i) {
+        this.active = false;
+        this.initialized = false;
+        this.pixi = e;
+        this.ft = t;
+        this.config = r;
+        this.xt = a;
+        this.account = i;
     }
-    return e;
-}
-function LoadoutDisplay(e, t, r, a, i) {
-    this.active = false;
-    this.initialized = false;
-    this.pixi = e;
-    this.ft = t;
-    this.config = r;
-    this.xt = a;
-    this.account = i;
-}
 
-LoadoutDisplay.prototype = {
-    o: function() {
+    o() {
         const t = this;
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
@@ -52,14 +39,14 @@ LoadoutDisplay.prototype = {
         this.Et = new map.Map(this.Dt);
         this.Rt = new Player.PlayerBarn();
         this.Kt = new Smoke.SmokeBarn();
-        const e = {};
-        a(e, gameObject.Type.Player, this.Rt.$e);
-        a(e, gameObject.Type.Obstacle, this.Et.Ve);
-        a(e, gameObject.Type.Building, this.Et.nr);
-        a(e, gameObject.Type.Structure, this.Et.lr);
-        a(e, gameObject.Type.Decal, this.Dt._);
-        a(e, gameObject.Type.Smoke, this.Kt.e);
-        const r = e;
+        const r = {
+            [gameObject.Type.Player]: this.Rt.$e,
+            [gameObject.Type.Obstacle]: this.Et.Ve,
+            [gameObject.Type.Building]: this.Et.nr,
+            [gameObject.Type.Structure]: this.Et.lr,
+            [gameObject.Type.Decal]: this.Dt._,
+            [gameObject.Type.Smoke]: this.Kt.e
+        };
         this.mr = new objectPool.Creator();
         for (const i in r) {
             if (r.hasOwnProperty(i)) {
@@ -161,12 +148,13 @@ LoadoutDisplay.prototype = {
         this.setLoadout(this.account.loadout, true);
         this.initialized = true;
         this.xr();
-    },
-    n: function() {
+    }
+
+    n() {
         if (this.initialized) {
-            this.Et.n();
-            this.Ot.n();
-            this.Ct.n();
+            this.Et.free();
+            this.Ot.free();
+            this.Ct.free();
             while (this.pixi.stage.children.length > 0) {
                 const e = this.pixi.stage.children[0];
                 this.pixi.stage.removeChild(e);
@@ -176,8 +164,9 @@ LoadoutDisplay.prototype = {
             }
         }
         this.initialized = false;
-    },
-    setLoadout: function(e, t) {
+    }
+
+    setLoadout(e, t) {
         this.loadout = loadouts.validate(e);
         this.updateCharDisplay();
         if (t) {
@@ -187,12 +176,14 @@ LoadoutDisplay.prototype = {
             this.dr.playActionStartSfx = true;
         }
         this.animIdleTicker = 0;
-    },
-    setView: function(e) {
+    }
+
+    setView(e) {
         this.viewOld = this.view;
         this.view = e;
-    },
-    updateCharDisplay: function(e = {}) {
+    }
+
+    updateCharDisplay(e = {}) {
         const t = {
             audioManager: this.ft,
             renderer: this.Ct,
@@ -244,8 +235,9 @@ LoadoutDisplay.prototype = {
                 boost: this.loadout.boost
             }
         });
-    },
-    getCameraTargetZoom: function() {
+    }
+
+    getCameraTargetZoom() {
         return (
             ((document
                 .getElementById("modal-content-left")
@@ -256,8 +248,9 @@ LoadoutDisplay.prototype = {
                 0.5) /
             this.De.ppu
         );
-    },
-    getCameraLoadoutOffset: function() {
+    }
+
+    getCameraLoadoutOffset() {
         const e = this.De.O;
         const t = this.getCameraTargetZoom();
         this.De.O = t;
@@ -281,20 +274,23 @@ LoadoutDisplay.prototype = {
         const y = v2.create(d.x + o.x + g, d.y + 0.33);
         this.De.O = e;
         return y;
-    },
-    show: function() {
+    }
+
+    show() {
         if (!this.active) {
             this.active = true;
             this.xr();
         }
-    },
-    hide: function() {
+    }
+
+    hide() {
         if (this.active) {
             this.active = false;
             this.De.O = 2;
         }
-    },
-    m: function(e, t) {
+    }
+
+    m(e, t) {
         const r = {};
         r.render = r.render || {};
         this.De.pos = v2.sub(this.dr.pos, this.cameraOffset);
@@ -370,8 +366,9 @@ LoadoutDisplay.prototype = {
         this.Ct.m(e, this.De, this.Et, r);
         this.dr.playActionStartSfx = false;
         this.br(e, r);
-    },
-    br: function(e, t) {
+    }
+
+    br(e, t) {
         const r = this.Et.mapLoaded
             ? this.Et.getMapDef().biome.colors.grass
             : 8433481;
@@ -379,8 +376,9 @@ LoadoutDisplay.prototype = {
         this.Rt.render(this.De, t);
         this.Et.render(this.De);
         debugLines.flush();
-    },
-    xr: function() {
+    }
+
+    xr() {
         if (this.initialized) {
             this.De.screenWidth = device.screenWidth;
             this.De.screenHeight = device.screenHeight;
@@ -390,7 +388,7 @@ LoadoutDisplay.prototype = {
             this.cameraOffset = this.getCameraLoadoutOffset();
         }
     }
-};
+}
 export default {
     LoadoutDisplay
 };

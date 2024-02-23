@@ -1,8 +1,9 @@
 import { util } from "../../shared/utils/util";
 import device from "./device";
+import loadout from "./loadouts";
 import webview from "./webview";
 
-const l = {
+const defaultConfig = {
     muteAudio: false,
     masterVolume: 1,
     soundVolume: 1,
@@ -25,7 +26,8 @@ const l = {
     cookiesConsented: true,
     regionSelected: false,
     lastNewsTimestamp: 0,
-    perkModeRole: ""
+    perkModeRole: "",
+    loadout: loadout.defaultLoadout()
 };
 export default class ConfigManager {
     constructor() {
@@ -42,7 +44,7 @@ export default class ConfigManager {
             try {
                 a = JSON.parse(r);
             } catch (e) { }
-            t.config = util.mergeDeep({}, l, a);
+            t.config = util.mergeDeep({}, defaultConfig, a);
             t.checkUpgradeConfig();
             t.onModified();
             t.loaded = true;

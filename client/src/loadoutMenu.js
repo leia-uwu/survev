@@ -103,7 +103,6 @@ class LoadoutMenu {
         this.loadoutDisplay = null;
         this.active = false;
         this.initialized = false;
-        this.lastAdRefresh = 0;
         this.loadout = loadout.defaultLoadout();
         this.items = [];
         this.localPendingConfirm = [];
@@ -320,19 +319,6 @@ class LoadoutMenu {
         this.tryBeginConfirmingItems();
         $("#start-bottom-right, #start-main").fadeOut(200);
         $("#background").hide();
-        if (
-            Date.now() - 60000 > this.lastAdRefresh &&
-            !device.mobile &&
-            !device.webview &&
-            window.aiptag
-        ) {
-            window.aiptag.cmd.display.push(() => {
-                window.aipDisplayTag.display(
-                    "surviv-io_300x600"
-                );
-            });
-            this.lastAdRefresh = Date.now();
-        }
     }
 
     onHide() {
@@ -1221,10 +1207,6 @@ class LoadoutMenu {
             $("#customize-crosshair-selected"),
             e
         );
-    }
-
-    resetAdRefresh() {
-        this.lastAdRefresh = 0;
     }
 }
 

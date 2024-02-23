@@ -3,6 +3,7 @@ import api from "./api";
 import helpers from "./helpers";
 import firebaseManager from "./firebaseManager";
 import loadouts from "./loadouts";
+import { util } from "../../shared/utils/util";
 
 function i(e, t, r) {
     if (typeof t === "function") {
@@ -192,42 +193,42 @@ class Account {
     }
 
     loadProfile() {
-        const e = this;
         this.loggingIn = !this.loggedIn;
         this.ajaxRequest("/api/user/profile", (t, r) => {
-            const a = e.loggingIn;
-            e.loggingIn = false;
-            e.loggedIn = false;
-            e.profile = {};
-            e.loadout = loadouts.defaultLoadout();
-            e.loadoutPriv = "";
-            e.items = [];
+            const a = this.loggingIn;
+            this.loggingIn = false;
+            this.loggedIn = false;
+            this.profile = {};
+            this.loadoutPriv = "";
+            this.items = [];
             if (t) {
                 firebaseManager.storeGeneric(
                     "account",
                     "load_profile_error"
                 );
             } else if (r.banned) {
-                e.emit("error", "account_banned", r.reason);
+                this.emit("error", "account_banned", r.reason);
             } else if (r.success) {
-                e.loggedIn = true;
-                e.profile = r.profile;
-                e.loadout = r.loadout;
-                e.loadoutPriv = r.loadoutPriv;
-                e.items = r.items;
-                const i = e.config.get("profile") || {};
+                this.loggedIn = true;
+                this.profile = r.profile;
+                this.loadoutPriv = r.loadoutPriv;
+                this.items = r.items;
+                const i = this.config.get("profile") || {};
                 i.slug = r.profile.slug;
-                e.config.set("profile", i);
+                this.config.set("profile", i);
             }
-            if (!e.loggedIn) {
-                e.config.set("sessionCookie", null);
+            if (!this.loggedIn) {
+                this.config.set("sessionCookie", null);
             }
-            if (a && e.loggedIn) {
-                e.emit("login", e);
+            if (a && this.loggedIn) {
+                this.emit("login", this);
             }
-            e.emit("loadout", e.loadout);
-            e.emit("items", e.items);
+            this.emit("items", this.items);
         });
+
+        const storedLoadout = this.config.get("loadout");
+        this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
+        this.emit("loadout", this.loadout);
     }
 
     resetStats() {
@@ -287,11 +288,12 @@ class Account {
     }
 
     setLoadout(e) {
-        const t = this;
-        const r = this.loadout;
+        // const t = this;
+        // const r = this.loadout;
         this.loadout = e;
         this.emit("loadout", this.loadout);
-        this.ajaxRequest(
+        this.config.set("loadout", e);
+        /* this.ajaxRequest(
             "/api/user/loadout",
             {
                 loadout: e
@@ -312,7 +314,7 @@ class Account {
                 }
                 t.emit("loadout", t.loadout);
             }
-        );
+        ); */
     }
 
     setItemStatus(e, t) {
