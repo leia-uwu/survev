@@ -48,7 +48,7 @@ Localization.prototype = {
         let detectedLocale = (
             navigator.language || navigator.userLanguage
         ).toLowerCase();
-        let languageWildcards = ["pt", "de", "es", "fr", "ko", "ru", "en"];
+        const languageWildcards = ["pt", "de", "es", "fr", "ko", "ru", "en"];
         for (
             let i = 0;
             i < languageWildcards.length;
@@ -123,8 +123,8 @@ Localization.prototype = {
     populateLanguageSelect: function() {
         const el = $(".language-select");
         el.empty();
-        let locales = Object.keys(Locales);
-        for ( let i = 0; i < locales.length; i++) {
+        const locales = Object.keys(Locales);
+        for (let i = 0; i < locales.length; i++) {
             const locale = locales[i];
             const name = Locales[locale];
             el.append(
