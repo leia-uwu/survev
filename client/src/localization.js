@@ -3,27 +3,27 @@ import api from "./api";
 import device from "./device";
 import english from "./english";
 
-function a(e, t) {
-    const r = {
-        url: api.resolveUrl(e),
+function downloadFile(file, onComplete) {
+    const opts = {
+        url: api.resolveUrl(file),
         type: "GET"
     };
-    $.ajax(r)
-        .done((e) => {
-            t(null, e);
+    $.ajax(opts)
+        .done((data) => {
+            onComplete(null, data);
         })
-        .fail((e) => {
-            t(e);
+        .fail((err) => {
+            onComplete(err);
         });
 }
 function Localization() {
-    this.acceptedLocales = Object.keys(c);
+    this.acceptedLocales = Object.keys(Locales);
     this.translations = {};
     this.translations.en = english;
     this.locale = "en";
 }
 
-const c = {
+const Locales = {
     da: "Dansk",
     de: "Deutsch",
     en: "English",
@@ -45,44 +45,44 @@ const c = {
 };
 Localization.prototype = {
     detectLocale: function() {
-        let e = (
+        let detectedLocale = (
             navigator.language || navigator.userLanguage
         ).toLowerCase();
+        const languageWildcards = ["pt", "de", "es", "fr", "ko", "ru", "en"];
         for (
-            let t = ["pt", "de", "es", "fr", "ko", "ru", "en"],
-                r = 0;
-            r < t.length;
-            r++
+            let i = 0;
+            i < languageWildcards.length;
+            i++
         ) {
-            if (e.indexOf(t[r]) != -1) {
-                e = t[r];
+            if (detectedLocale.indexOf(languageWildcards[i]) != -1) {
+                detectedLocale = languageWildcards[i];
                 break;
             }
         }
-        for (let a = 0; a < this.acceptedLocales.length; a++) {
-            if (e.indexOf(this.acceptedLocales[a]) != -1) {
-                return this.acceptedLocales[a];
+        for (let i = 0; i < this.acceptedLocales.length; i++) {
+            if (detectedLocale.indexOf(this.acceptedLocales[i]) != -1) {
+                return this.acceptedLocales[i];
             }
         }
         return "en";
     },
-    setLocale: function(e) {
-        const t = this;
-        const r = this.acceptedLocales.includes(e) ? e : "en";
-        if (r != this.locale) {
-            if (this.translations[e] === undefined) {
-                a(`/l10n/${e}.json`, (r, a) => {
-                    if (r) {
+    setLocale: function(locale) {
+        const _this = this;
+        const newLocale = this.acceptedLocales.includes(locale) ? locale : "en";
+        if (newLocale != this.locale) {
+            if (this.translations[locale] === undefined) {
+                downloadFile(`/l10n/${locale}.json`, (err, data) => {
+                    if (err) {
                         console.error(
-                            `Failed loading translation data for locale ${e}`
+                            `Failed loading translation data for locale ${locale}`
                         );
                         return;
                     }
-                    t.translations[e] = a;
-                    t.setLocale(e);
+                    _this.translations[locale] = data;
+                    _this.setLocale(locale);
                 });
             } else {
-                this.locale = r;
+                this.locale = newLocale;
                 this.localizeIndex();
             }
         }
@@ -90,44 +90,47 @@ Localization.prototype = {
     getLocale: function() {
         return this.locale;
     },
-    translate: function(e) {
+
+    translate: function(key) {
         return (
-            this.translations[this.locale][e] ||
-            this.translations.en[e] ||
+            this.translations[this.locale][key] ||
+            this.translations.en[key] ||
             ""
         );
     },
     localizeIndex: function() {
-        const e = this;
-        $("*[data-l10n]").each((t, r) => {
-            const a = $(r);
-            let i = a.attr("data-l10n");
-            if (a.hasClass("help-control") && device.touch) {
-                i += "-touch";
+        const _this = this;
+        const localizedElements = $("*[data-l10n]");
+        localizedElements.each((idx, el) => {
+            const el$ = $(el);
+            let datal10n = el$.attr("data-l10n");
+            if (el$.hasClass("help-control") && device.touch) {
+                datal10n += "-touch";
             }
-            const s = e.translate(i);
-            if (s) {
-                if (a.attr("label")) {
-                    a.attr("label", s);
+            const localizedText = _this.translate(datal10n);
+            if (localizedText) {
+                if (el$.attr("label")) {
+                    el$.attr("label", localizedText);
                 } else {
-                    a.html(s);
-                    if (a.attr("data-label")) {
-                        a.attr("data-label", s);
+                    el$.html(localizedText);
+                    if (el$.attr("data-label")) {
+                        el$.attr("data-label", localizedText);
                     }
                 }
             }
         });
     },
     populateLanguageSelect: function() {
-        const e = $(".language-select");
-        e.empty();
-        for (let t = Object.keys(c), r = 0; r < t.length; r++) {
-            const a = t[r];
-            const i = c[a];
-            e.append(
+        const el = $(".language-select");
+        el.empty();
+        const locales = Object.keys(Locales);
+        for (let i = 0; i < locales.length; i++) {
+            const locale = locales[i];
+            const name = Locales[locale];
+            el.append(
                 $("<option>", {
-                    value: a,
-                    text: i
+                    value: locale,
+                    text: name
                 })
             );
         }
