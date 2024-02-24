@@ -90,10 +90,7 @@ Localization.prototype = {
     getLocale: function() {
         return this.locale;
     },
-    /**
-         * @param {string} key
-         * @returns {string}
-     */
+
     translate: function(key) {
         return (
             this.translations[this.locale][key] ||
