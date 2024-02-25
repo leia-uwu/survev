@@ -265,13 +265,11 @@ export default class AudioManager {
             const distNormal = math.clamp(Math.abs(dist / range), 0, 1);
             const scaledVolume = Math.pow(1 - distNormal, 1 + options.fallOff * 2);
             let clipVolume = a.volume * scaledVolume * baseVolume;
+            const diffLayer = options.layer === undefined ||
+            util.sameAudioLayer(options.layer, this.activeLayer);
+            clipVolume = diffLayer ? clipVolume : clipVolume * 0.5;
             if (
-                (clipVolume =
-                    options.layer === undefined ||
-                        util.sameAudioLayer(options.layer, this.activeLayer)
-                        ? clipVolume
-                        : clipVolume * 0.5) > 0.003 ||
-                options.ignoreMinAllowable
+                clipVolume > 0.003 || options.ignoreMinAllowable
             ) {
                 const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
                 instance.volume = clipVolume;
