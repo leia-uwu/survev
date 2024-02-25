@@ -322,9 +322,9 @@ export default class AudioManager {
         return this.setMute(!this.mute);
     }
 
-    setDelayn(e, t) {
-        if (e) {
-            e.delay = t;
+    setDelay(instance, duration) {
+        if (instance) {
+            instance.delay = duration;
         }
     }
 
