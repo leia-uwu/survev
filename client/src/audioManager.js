@@ -5,7 +5,7 @@ import createJS from "./createJS";
 import soundDefs from "./soundDefs";
 
 export default class AudioManager {
-    constructor(e) {
+    constructor(options) {
         this.mute = false;
         this.masterVolume = 1;
         this.soundVolume = 1;
@@ -24,296 +24,310 @@ export default class AudioManager {
 
     preloadSounds() {
         if (!this.preloadedSounds) {
+            
+            // Ideally sounds should only be defined once
             this.preloadedSounds = true;
+            
+            const preloadedSounds = {};
+            const soundGroups = Object.keys(soundDefs.Sounds);
             for (
-                let e = {}, t = Object.keys(soundDefs.Sounds), r = 0;
-                r < t.length;
-                r++
+                let i = 0;
+                i < soundGroups.length;
+                i++
             ) {
+                const soundGroup = soundGroups[i];
+                const soundList = soundDefs.Sounds[soundGroup];
+                const soundListKeys = Object.keys(soundList);
+
                 for (
-                    let a = t[r],
-                        o = soundDefs.Sounds[a],
-                        s = Object.keys(o),
-                        n = 0;
-                    n < s.length;
-                    n++
+                    let j = 0;
+                    j < soundListKeys.length;
+                    j++
                 ) {
-                    const c = s[n];
-                    if (e[c] !== undefined) {
+                    const soundName = soundListKeys[j];
+                    if (preloadedSounds[soundName] !== undefined) {
                         console.log(
-                            `Sound ${c} defined multiple times!`
+                            `Sound ${soundName} defined multiple times!`
                         );
                     }
-                    e[c] = true;
+                    preloadedSounds[soundName] = true;
                 }
             }
-            const m = [];
+            const loadList = [];
+            const channelKeys = Object.keys(soundDefs.Channels);
             for (
-                let p = Object.keys(soundDefs.Channels), h = 0;
-                h < p.length;
-                h++
+                let i = 0;
+                i < channelKeys.length;
+                i++
             ) {
+                const channelKey = channelKeys[i];
+                const channel = soundDefs.Channels[channelKey];
+                const sounds = soundDefs.Sounds[channel.list];
+                const soundKeys = Object.keys(sounds);
                 for (
-                    let d = p[h],
-                        u = soundDefs.Channels[d],
-                        g = soundDefs.Sounds[u.list],
-                        y = Object.keys(g),
-                        w = 0;
-                    w < y.length;
-                    w++
+                    let j = 0;
+                    j < soundKeys.length;
+                    j++
                 ) {
-                    const f = y[w];
-                    const _ = g[f];
-                    if (_.preload === undefined || _.preload) {
-                        const b = {
-                            canCoalesce: _.canCoalesce,
-                            channels: _.maxInstances,
-                            volume: _.volume
+                    const key = soundKeys[j];
+                    const sound = sounds[key];
+                    if (sound.preload === undefined || sound.preload) {
+                        const options = {
+                            canCoalesce: sound.canCoalesce,
+                            channels: sound.maxInstances,
+                            volume: sound.volume
                         };
-                        m.push({
-                            name: f,
-                            channel: d,
-                            path: _.path,
-                            options: b,
-                            priority: _.loadPriority || 0
+                        loadList.push({
+                            name: key,
+                            channel: channelKey,
+                            path: sound.path,
+                            options: options,
+                            priority: sound.loadPriority || 0
                         });
                     }
                 }
             }
-            m.sort((e, t) => {
-                return t.priority - e.priority;
+            loadList.sort((a, b) => {
+                return b.priority - a.priority;
             });
-            for (let x = 0; x < m.length; x++) {
-                const S = m[x];
-                this.loadSound(S);
+            for (let i = 0; i < loadList.length; i++) {
+                const sound = loadList[i];
+                this.loadSound(sound);
             }
+            const reverbs = soundDefs.Reverbs;
+            const reverbKeys = Object.keys(reverbs);
+
             for (
-                let v = soundDefs.Reverbs, k = Object.keys(v), z = 0;
-                z < k.length;
-                z++
+                let i = 0;
+                i < reverbKeys.length;
+                i++
             ) {
-                const I = k[z];
-                const T = v[I];
-                createJS.Sound.registerReverb(T.path, I, T);
+                const key = reverbKeys[i];
+                const reverb = reverbs[key];
+                createJS.Sound.registerReverb(reverb.path, key, reverb);
             }
         }
     }
 
-    loadSound(e) {
-        const t = e.name + e.channel;
-        if (!this.sounds[t]) {
-            createJS.Sound.registerSound(e.path, t, e.options || {});
-            this.sounds[t] = {
-                path: e.path,
-                name: e.name,
-                channel: e.channel
+    loadSound(sound) {
+        const name = sound.name + sound.channel;
+        if (!this.sounds[name]) {
+            createJS.Sound.registerSound(sound.path, name, sound.options || {});
+            this.sounds[name] = {
+                path: sound.path,
+                name: sound.name,
+                channel: sound.channel
             };
         }
     }
 
-    loadHandler(e) {
-        this.loadedFiles[e] = true;
+    loadHandler(path) {
+        this.loadedFiles[path] = true;
     }
 
-    m(e) {
-        for (let t = this.soundInstances.length - 1; t >= 0; t--) {
-            const r = this.soundInstances[t];
+    m(dt) {
+        // Clear out finished sounds from stored instances
+        for (let i = this.soundInstances.length - 1; i >= 0; i--) {
+            const inst = this.soundInstances[i];
             if (
-                r.instance.playState == "playFinished" ||
-                r.instance.playState == "playInterrupted" ||
-                r.instance.playState == "playFailed"
+                inst.instance.playState == "playFinished" ||
+                inst.instance.playState == "playInterrupted" ||
+                inst.instance.playState == "playFailed"
             ) {
-                this.soundInstances.splice(t, 1);
+                this.soundInstances.splice(i, 1);
             }
         }
-        const a = [0, 1, 1 / 3, 2 / 3];
-        const o = this.underground ? a[this.activeLayer] : 0;
+
+        // Update reverb, simply based on the current terrain layer
+        const layerVolumeMap = [0, 1, 1 / 3, 2 / 3];
+        const reverbVolume = this.underground ? layerVolumeMap[this.activeLayer] : 0;
         createJS.Sound.setReverbs({
-            cathedral: o
+            cathedral: reverbVolume
         });
-        createJS.Sound.update(e);
+        // Update the audio backend
+        createJS.Sound.update(dt);
     }
 
-    playSound(e, t = {}) {
-        if (!e || e == "none") {
+    playSound(sound, options = {}) {
+        if (!sound || sound == "none") {
             return null;
         }
-        t.channel = t.channel || "activePlayer";
-        t.startSilent = t.startSilent || false;
-        t.forceStart = t.forceStart || false;
-        t.loop = t.loop || false;
-        t.soundPos = t.soundPos || null;
-        t.fallOff = t.fallOff || 0;
-        t.filter = t.filter || "";
-        t.delay = t.delay || 0;
-        t.ignoreMinAllowable = t.ignoreMinAllowable || false;
-        t.rangeMult = t.rangeMult || 1;
-        t.offset = t.offset || 0;
-        t.ambient = t.channel == "ambient" || t.channel == "music";
-        t.detune = t.detune || 0;
-        t.volumeScale = t.volumeScale || 1;
-        let r = null;
-        const a = soundDefs.Channels[t.channel];
-        if (a && (!this.mute || t.forceStart)) {
-            const c =
+        options.channel = options.channel || "activePlayer";
+        options.startSilent = options.startSilent || false;
+        options.forceStart = options.forceStart || false;
+        options.loop = options.loop || false;
+        options.soundPos = options.soundPos || null;
+        options.fallOff = options.fallOff || 0;
+        options.filter = options.filter || "";
+        options.delay = options.delay || 0;
+        options.ignoreMinAllowable = options.ignoreMinAllowable || false;
+        options.rangeMult = options.rangeMult || 1;
+        options.offset = options.offset || 0;
+        options.ambient = options.channel == "ambient" || options.channel == "music";
+        options.detune = options.detune || 0;
+        options.volumeScale = options.volumeScale || 1;
+        let instance = null;
+        const a = soundDefs.Channels[options.channel];
+        if (a && (!this.mute || options.forceStart)) {
+            const baseVolume =
                 this.baseVolume *
                 1 *
                 this.getTypeVolume(a.type) *
-                t.volumeScale;
-            const m =
-                t.layer !== undefined &&
-                !util.sameAudioLayer(t.layer, this.activeLayer);
-            const p = t.filter
-                ? m || t.forceFilter
-                    ? t.filter
+                options.volumeScale;
+            const diffLayer =
+                options.layer !== undefined &&
+                !util.sameAudioLayer(options.layer, this.activeLayer);
+            const filter = options.filter
+                ? diffLayer || options.forceFilter
+                    ? options.filter
                     : "reverb"
                 : "none";
-            if (t.channel != "activePlayer" && t.soundPos) {
-                const h = v2.sub(this.cameraPos, t.soundPos);
-                const d = v2.length(h);
-                let u = a.maxRange * t.rangeMult;
-                if (math.eqAbs(u, 0)) {
-                    u = 1;
+            if (options.channel != "activePlayer" && options.soundPos) {
+                const diff = v2.sub(this.cameraPos, options.soundPos);
+                const dist = v2.length(diff);
+                let range = a.maxRange * options.rangeMult;
+                if (math.eqAbs(range, 0)) {
+                    range = 1;
                 }
-                const g = math.clamp(Math.abs(d / u), 0, 1);
-                const y = Math.pow(1 - g, 1 + t.fallOff * 2);
-                let w = a.volume * y * c;
+                const distNormal = math.clamp(Math.abs(dist / range), 0, 1);
+                const scaledVolume = Math.pow(1 - distNormal, 1 + options.fallOff * 2);
+                let clipVolume = a.volume * scaledVolume * baseVolume;
                 if (
-                    (w = m ? w * 0.5 : w) > 0.003 ||
-                    t.ignoreMinAllowable
+                    (clipVolume = diffLayer ? clipVolume * 0.5 : clipVolume) > 0.003 ||
+                    options.ignoreMinAllowable
                 ) {
-                    const f = math.clamp((h.x / u) * -1, -1, 1);
-                    r = createJS.Sound.play(e + t.channel, {
-                        filter: p,
-                        loop: t.loop ? -1 : 0,
-                        volume: t.startSilent ? 0 : w,
-                        pan: f,
-                        delay: t.delay,
-                        offset: t.offset,
-                        ambient: t.ambient,
-                        detune: t.detune
+                    const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
+                    instance = createJS.Sound.play(sound + options.channel, {
+                        filter: filter,
+                        loop: options.loop ? -1 : 0,
+                        volume: options.startSilent ? 0 : clipVolume,
+                        pan: stereoNorm,
+                        delay: options.delay,
+                        offset: options.offset,
+                        ambient: options.ambient,
+                        detune: options.detune
                     });
                 }
             } else {
-                let _ = a.volume * c;
-                _ = m ? _ * 0.5 : _;
-                r = createJS.Sound.play(e + t.channel, {
-                    filter: p,
-                    loop: t.loop ? -1 : 0,
-                    volume: t.startSilent ? 0 : _,
-                    delay: t.delay,
-                    offset: t.offset,
-                    ambient: t.ambient,
-                    detune: t.detune
+                let clipVolume = a.volume * baseVolume;
+                clipVolume = diffLayer ? clipVolume * 0.5 : clipVolume;
+                instance = createJS.Sound.play(sound + options.channel, {
+                    filter: filter,
+                    loop: options.loop ? -1 : 0,
+                    volume: options.startSilent ? 0 : clipVolume,
+                    delay: options.delay,
+                    offset: options.offset,
+                    ambient: options.ambient,
+                    detune: options.detune
                 });
             }
-            if (r && (t.loop || t.channel == "music")) {
-                const b = t.channel == "music" ? "music" : "sound";
+            // Add looped sounds and music to stored sounds
+            if (instance && (options.loop || options.channel == "music")) {
+                const type = options.channel == "music" ? "music" : "sound";
                 this.soundInstances.push({
-                    instance: r,
-                    type: b
+                    instance: instance,
+                    type: type
                 });
             }
         }
-        return r;
+        return instance;
     }
 
-    playGroup(e, t = {}) {
-        const r = soundDefs.Groups[e];
-        if (r) {
-            const a = r.sounds;
+    playGroup(group, option = {}) {
+        const _group = soundDefs.Groups[group];
+        if (_group) {
+            const a = _group.sounds;
             const i = Math.floor(util.random(0, a.length));
-            t.channel = r.channel;
-            return this.playSound(a[i], t);
+            option.channel = _group.channel;
+            return this.playSound(a[i], option);
         }
         return null;
     }
 
-    updateSound(e, t, r, a = {}) {
-        a.fallOff = a.fallOff || 0;
-        a.rangeMult = a.rangeMult || 1;
-        a.ignoreMinAllowable = a.ignoreMinAllowable || false;
-        a.volumeScale = a.volumeScale || 1;
-        const i = soundDefs.Channels[t];
-        if (e && i) {
-            const c =
+    updateSound(instance, channel, soundPos, options = {}) {
+        options.fallOff = options.fallOff || 0;
+        options.rangeMult = options.rangeMult || 1;
+        options.ignoreMinAllowable = options.ignoreMinAllowable || false;
+        options.volumeScale = options.volumeScale || 1;
+        const a = soundDefs.Channels[channel];
+        if (instance && a) {
+            const baseVolume =
                 this.baseVolume *
                 1 *
-                this.getTypeVolume(i.type) *
-                a.volumeScale;
-            const m = v2.sub(this.cameraPos, r);
-            const p = v2.length(m);
-            let h = i.maxRange * a.rangeMult;
-            if (math.eqAbs(h, 0)) {
-                h = 1;
+                this.getTypeVolume(a.type) *
+                options.volumeScale;
+            const diff = v2.sub(this.cameraPos, soundPos);
+            const dist = v2.length(diff);
+            let range = a.maxRange * options.rangeMult;
+            if (math.eqAbs(range, 0)) {
+                range = 1;
             }
-            const d = math.clamp(Math.abs(p / h), 0, 1);
-            const u = Math.pow(1 - d, 1 + a.fallOff * 2);
-            let g = i.volume * u * c;
+            const distNormal = math.clamp(Math.abs(dist / range), 0, 1);
+            const scaledVolume = Math.pow(1 - distNormal, 1 + options.fallOff * 2);
+            let clipVolume = a.volume * scaledVolume * baseVolume;
             if (
-                (g =
-                    a.layer === undefined ||
-                        util.sameAudioLayer(a.layer, this.activeLayer)
-                        ? g
-                        : g * 0.5) > 0.003 ||
-                a.ignoreMinAllowable
+                (clipVolume =
+                    options.layer === undefined ||
+                        util.sameAudioLayer(options.layer, this.activeLayer)
+                        ? clipVolume
+                        : clipVolume * 0.5) > 0.003 ||
+                options.ignoreMinAllowable
             ) {
-                const y = math.clamp((m.x / h) * -1, -1, 1);
-                e.volume = g;
-                e.pan = y;
+                const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
+                instance.volume = clipVolume;
+                instance.pan = stereoNorm;
             }
         }
     }
 
-    setMasterVolume(e) {
-        e = math.clamp(e, 0, 1);
-        createJS.Sound.volume = e;
+    setMasterVolume(volume) {
+        volume = math.clamp(volume, 0, 1);
+        createJS.Sound.volume = volume;
     }
 
-    _setInstanceTypeVolume(e, t) {
-        t = math.clamp(t, 0, 1);
+    _setInstanceTypeVolume(type, volume) {
+        volume = math.clamp(volume, 0, 1);
+        const typeVolume = this.getTypeVolume(type);
+        const scaledVolume = typeVolume > 0.0001 ? volume / typeVolume : 0;
         for (
-            let r = this.getTypeVolume(e),
-                a = r > 0.0001 ? t / r : 0,
-                i = 0;
+            let i = 0;
             i < this.soundInstances.length;
             i++
         ) {
-            const o = this.soundInstances[i];
-            if (o.type == e) {
-                o.instance.volume *= a;
+            const inst = this.soundInstances[i];
+            if (inst.type == type) {
+                inst.instance.volume *= scaledVolume;
             }
         }
     }
 
-    setSoundVolume(e) {
-        this._setInstanceTypeVolume("sound", e);
-        this.soundVolume = e;
+    setSoundVolume(volume) {
+        this._setInstanceTypeVolume("sound", volume);
+        this.soundVolume = volume;
     }
 
-    setMusicVolume(e) {
-        this._setInstanceTypeVolume("music", e);
-        this.musicVolume = e;
+    setMusicVolume(volume) {
+        this._setInstanceTypeVolume("music", volume);
+        this.musicVolume = volume;
     }
 
-    setVolume(e, t, r) {
-        if (e) {
-            r = r || "sound";
-            const a = this.getTypeVolume(r);
-            e.volume = t * a;
+    setVolume(instance, volume, type) {
+        if (instance) {
+            type = type || "sound";
+            const typeVolume = this.getTypeVolume(type);
+            instance.volume = volume * typeVolume;
         }
     }
 
-    getVolume(e) {
-        if (e) {
-            return e.volume;
-        } else {
-            return 0;
+    getVolume(instance) {
+        if (instance) {
+            return instance.volume;
         }
+        return 0;
     }
 
-    setMute(e) {
-        this.mute = e;
+    setMute(mute) {
+        this.mute = mute;
         createJS.Sound.setMute(this.mute);
         return this.mute;
     }
@@ -328,8 +342,8 @@ export default class AudioManager {
         }
     }
 
-    stopSound(e) {
-        e?.stop();
+    stopSound(instance) {
+        instance?.stop();
     }
 
     stopAll() {
@@ -337,43 +351,44 @@ export default class AudioManager {
     }
 
     allLoaded() {
+        const keys = Object.keys(this.sounds);
         for (
-            let e = Object.keys(this.sounds), t = 0;
-            t < e.length;
-            t++
+            let i = 0;
+            i < keys.length;
+            i++
         ) {
-            const r = this.sounds[e[t]];
-            if (!this.isSoundLoaded(r.name, r.channel)) {
+            const sound = this.sounds[keys[i]];
+            if (!this.isSoundLoaded(sound.name, sound.channel)) {
                 return false;
             }
         }
         return true;
     }
 
-    isSoundLoaded(e, t) {
-        const r = this.sounds[e + t];
-        return r && this.loadedFiles[r.path];
+    isSoundLoaded(soundName, key) {
+        const sound = this.sounds[soundName + key];
+        return sound && this.loadedFiles[sound.path];
     }
 
-    isSoundPlaying(e) {
-        return !!e && e.playState == createJS.Sound.PLAY_SUCCEEDED;
+    isSoundPlaying(inst) {
+        return !!inst && inst.playState == createJS.Sound.PLAY_SUCCEEDED;
     }
 
-    getSoundDefVolume(e, t) {
-        const r = soundDefs.Sounds[t][e];
-        const a = soundDefs.Channels[t];
-        if (r && a) {
-            return r.volume * a.volume;
-        } else {
-            return 1;
+    getSoundDefVolume(sound, channel) {
+        const soundDef = soundDefs.Sounds[channel][sound];
+        const channelDef = soundDefs.Channels[channel];
+        if (soundDef && channelDef) {
+            return soundDef.volume * channelDef.volume;
         }
+        return 1;
     }
 
-    getTypeVolume(e) {
-        switch (e) {
+    getTypeVolume(type) {
+        switch (type) {
         case "music":
             return this.musicVolume;
         case "sound":
+            /* Fall-through */
         default:
             return this.soundVolume;
         }
