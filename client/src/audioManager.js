@@ -4,6 +4,9 @@ import { v2 } from "../../shared/utils/v2";
 import createJS from "./createJS";
 import soundDefs from "./soundDefs";
 
+const AudioManagerMinAllowedVolume = 0.003;
+const DiffLayerMult = 0.5;
+
 export default class AudioManager {
     constructor(options) {
         this.mute = false;
@@ -192,8 +195,11 @@ export default class AudioManager {
                 const distNormal = math.clamp(Math.abs(dist / range), 0, 1);
                 const scaledVolume = Math.pow(1 - distNormal, 1 + options.fallOff * 2);
                 let clipVolume = a.volume * scaledVolume * baseVolume;
+                clipVolume = diffLayer ? clipVolume * DiffLayerMult : clipVolume
+
+                // Play if this sound is above the accepted vol threshold
                 if (
-                    (clipVolume = diffLayer ? clipVolume * 0.5 : clipVolume) > 0.003 ||
+                    clipVolume > AudioManagerMinAllowedVolume ||
                     options.ignoreMinAllowable
                 ) {
                     const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
@@ -210,7 +216,7 @@ export default class AudioManager {
                 }
             } else {
                 let clipVolume = a.volume * baseVolume;
-                clipVolume = diffLayer ? clipVolume * 0.5 : clipVolume;
+                clipVolume = diffLayer ? clipVolume * DiffLayerMult : clipVolume;
                 instance = createJS.Sound.play(sound + options.channel, {
                     filter: filter,
                     loop: options.loop ? -1 : 0,
@@ -267,9 +273,9 @@ export default class AudioManager {
             let clipVolume = a.volume * scaledVolume * baseVolume;
             const diffLayer = options.layer === undefined ||
             util.sameAudioLayer(options.layer, this.activeLayer);
-            clipVolume = diffLayer ? clipVolume : clipVolume * 0.5;
+            clipVolume = diffLayer ? clipVolume : clipVolume * DiffLayerMult;
             if (
-                clipVolume > 0.003 || options.ignoreMinAllowable
+                clipVolume > AudioManagerMinAllowedVolume || options.ignoreMinAllowable
             ) {
                 const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
                 instance.volume = clipVolume;
