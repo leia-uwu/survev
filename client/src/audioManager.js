@@ -27,10 +27,9 @@ export default class AudioManager {
 
     preloadSounds() {
         if (!this.preloadedSounds) {
-            
             // Ideally sounds should only be defined once
             this.preloadedSounds = true;
-            
+
             const preloadedSounds = {};
             const soundGroups = Object.keys(soundDefs.Sounds);
             for (
@@ -84,7 +83,7 @@ export default class AudioManager {
                             name: key,
                             channel: channelKey,
                             path: sound.path,
-                            options: options,
+                            options,
                             priority: sound.loadPriority || 0
                         });
                     }
@@ -195,7 +194,7 @@ export default class AudioManager {
                 const distNormal = math.clamp(Math.abs(dist / range), 0, 1);
                 const scaledVolume = Math.pow(1 - distNormal, 1 + options.fallOff * 2);
                 let clipVolume = a.volume * scaledVolume * baseVolume;
-                clipVolume = diffLayer ? clipVolume * DiffLayerMult : clipVolume
+                clipVolume = diffLayer ? clipVolume * DiffLayerMult : clipVolume;
 
                 // Play if this sound is above the accepted vol threshold
                 if (
@@ -204,7 +203,7 @@ export default class AudioManager {
                 ) {
                     const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
                     instance = createJS.Sound.play(sound + options.channel, {
-                        filter: filter,
+                        filter,
                         loop: options.loop ? -1 : 0,
                         volume: options.startSilent ? 0 : clipVolume,
                         pan: stereoNorm,
@@ -218,7 +217,7 @@ export default class AudioManager {
                 let clipVolume = a.volume * baseVolume;
                 clipVolume = diffLayer ? clipVolume * DiffLayerMult : clipVolume;
                 instance = createJS.Sound.play(sound + options.channel, {
-                    filter: filter,
+                    filter,
                     loop: options.loop ? -1 : 0,
                     volume: options.startSilent ? 0 : clipVolume,
                     delay: options.delay,
@@ -231,8 +230,8 @@ export default class AudioManager {
             if (instance && (options.loop || options.channel == "music")) {
                 const type = options.channel == "music" ? "music" : "sound";
                 this.soundInstances.push({
-                    instance: instance,
-                    type: type
+                    instance,
+                    type
                 });
             }
         }
@@ -392,7 +391,7 @@ export default class AudioManager {
         case "music":
             return this.musicVolume;
         case "sound":
-            /* Fall-through */
+            return this.soundVolume;
         default:
             return this.soundVolume;
         }
