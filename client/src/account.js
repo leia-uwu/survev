@@ -1,6 +1,5 @@
 import $ from "jquery";
 import api from "./api";
-import helpers from "./helpers";
 import firebaseManager from "./firebaseManager";
 import loadouts from "./loadouts";
 import { util } from "../../shared/utils/util";
@@ -133,9 +132,9 @@ class Account {
         if (this.config.get("sessionCookie")) {
             this.setSessionCookies();
         }
-        if (helpers.getCookie("app-data")) {
-            this.login();
-        }
+        // if (helpers.getCookie("app-data")) {
+        this.login();
+        // }
     }
 
     setSessionCookies() {
@@ -178,10 +177,10 @@ class Account {
     }
 
     login() {
-        if (helpers.getCookie("app-data")) {
-            this.loadProfile();
-            this.getPass(true);
-        }
+        // if (helpers.getCookie("app-data")) {
+        this.loadProfile();
+        this.getPass(true);
+        // }
     }
 
     logout() {
