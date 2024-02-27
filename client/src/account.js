@@ -1,6 +1,5 @@
 import $ from "jquery";
 import api from "./api";
-import firebaseManager from "./firebaseManager";
 import loadouts from "./loadouts";
 import { util } from "../../shared/utils/util";
 
@@ -201,7 +200,7 @@ class Account {
             this.loadoutPriv = "";
             this.items = [];
             if (t) {
-                firebaseManager.storeGeneric(
+                console.error(
                     "account",
                     "load_profile_error"
                 );
@@ -236,7 +235,7 @@ class Account {
             "/api/user/reset_stats",
             (t, r) => {
                 if (t) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "reset_stats_error"
                     );
@@ -250,7 +249,7 @@ class Account {
         const e = this;
         this.ajaxRequest("/api/user/delete", (t, r) => {
             if (t) {
-                firebaseManager.storeGeneric("account", "delete_error");
+                console.error("account", "delete_error");
                 e.emit("error", "server_error");
                 return;
             }
@@ -269,7 +268,7 @@ class Account {
             },
             (e, a) => {
                 if (e) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "set_username_error"
                     );
@@ -299,7 +298,7 @@ class Account {
             },
             (e, a) => {
                 if (e) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "set_loadout_error"
                     );
@@ -338,7 +337,7 @@ class Account {
                 },
                 (e, t) => {
                     if (e) {
-                        firebaseManager.storeGeneric(
+                        console.error(
                             "account",
                             "set_item_status_error"
                         );
@@ -357,7 +356,7 @@ class Account {
             },
             (e, r) => {
                 if (e || !r.success) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "unlock_error"
                     );
@@ -382,7 +381,7 @@ class Account {
                 t.quests = [];
                 t.questPriv = "";
                 if (e || !r.success) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "get_pass_error"
                     );
@@ -411,7 +410,7 @@ class Account {
             },
             (e, r) => {
                 if (e || !r.success) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "set_pass_unlock_error"
                     );
@@ -431,7 +430,7 @@ class Account {
             },
             (e, r) => {
                 if (e) {
-                    firebaseManager.storeGeneric(
+                    console.error(
                         "account",
                         "refresh_quest_error"
                     );

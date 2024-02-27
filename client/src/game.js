@@ -10,7 +10,6 @@ import helpers from "./helpers";
 import proxy from "./proxy";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import firebaseManager from "./firebaseManager";
 import Aidrop from "./objects/aidrop";
 import Bullet from "./objects/bullet";
 import Camera from "./camera";
@@ -1358,7 +1357,7 @@ export class Game {
             try {
                 this.ws.send(e.getBuffer());
             } catch (e) {
-                firebaseManager.storeGeneric("error", "sendMessageException");
+                console.error("sendMessageException", e);
                 this.ws.close();
             }
         }

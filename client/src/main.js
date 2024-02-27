@@ -16,7 +16,6 @@ import Device from "./device";
 import ConfigManager from "./config";
 import "./webview";
 // import "./emote";
-import FirebaseManager from "./firebaseManager";
 import { Game } from "./game";
 import Input from "./input";
 import InputBinds from "./inputBinds";
@@ -628,7 +627,6 @@ class Application {
             Date.now();
             const r = setTimeout(() => {
                 a();
-                FirebaseManager.storeGeneric("account", "wait_timeout");
             }, 2500);
             const a = function a() {
                 e();
@@ -939,12 +937,12 @@ window.onerror = function(e, t, r, a, i) {
                         "TypeError: null is not an object (evaluating 'e.transform._parentID=-1')"
                     ) !== -1
                 ) {
-                    FirebaseManager.logError(c);
+                    console.error(c);
                 } else {
-                    FirebaseManager.logWindowOnAppError(c);
+                    console.error("windowOnAppError", c);
                 }
             } else {
-                FirebaseManager.logWindowOnError(c);
+                console.error("windowOnError", c);
             }
         }
     }
