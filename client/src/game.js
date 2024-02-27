@@ -97,7 +97,7 @@ export class Game {
                     i.proxy = !/.*surviv\.io$/.test(
                         window.location.hostname
                     );
-                    i.otherProxy = !proxy.Y();
+                    i.otherProxy = !proxy.authLocation();
                     i.bot = false;
                     o.$(net.Msg.Join, i, 8192);
                 };
