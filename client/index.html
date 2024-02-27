@@ -793,11 +793,6 @@
                 </div>
                 <div class='ad-block-med-rect' id='surviv-io_300x250'>
                 </div>
-                <!-- <script>
-                 if (!window.webviewDetected) {
-                   aiptag.cmd.display.push(function() { aipDisplayTag.display('surviv-io_300x250'); });
-                 }
-                </script> -->
               </div>
               <!-- <div id='social-share-block-wrapper'>
                 <div id='social-share-block' class='menu-block'>
@@ -1066,12 +1061,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class='ad-block-leaderboard-bottom' id='surviv-io_728x90'></div>
-          <script>
-           if (!window.webviewDetected) {
-             aiptag.cmd.display.push(function() { aipDisplayTag.display('surviv-io_728x90'); });
-           }
-          </script> -->
         </div>
         <div id='start-bottom-left'>
           <!-- <div class='hide-on-mobile'>
@@ -1422,22 +1411,5 @@
         </div>
       </div>
     </div>
-    <script>
-
-      // this is to make pixi v4 work with vite
-      window.global = window;
-
-      // make loadouts work
-      function setCookie(cname, cvalue, exdays) {
-          const d = new Date();
-          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-          let expires = "expires="+d.toUTCString();
-          document.cookie = cname + "=" + cvalue + ";" + expires + `;path=/;domain=${location.hostname}`;
-      }
-      setCookie("app-data", "1", 3650);
-    </script>
-<!--     <script type="text/javascript" src="js/manifest.7619645b.js"></script> -->
-<!--     <script type="text/javascript" src="js/vendor.bd0cb293.js"></script> -->
-<!--     <script type="text/javascript" src="js/app.js"></script></body> -->
     <script type="module" src="src/main.js"></script>
 </html>

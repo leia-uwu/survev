@@ -33,11 +33,6 @@ import Resources from "./resources";
 import SiteInfo from "./siteInfo";
 import TeamMenu from "./teamMenu";
 
-function i() {
-    App.domContentLoaded = true;
-    App.Qr();
-}
-
 class Application {
     constructor() {
         const e = this;
@@ -117,7 +112,7 @@ class Application {
         const t = function() {
             e.config.load(() => {
                 e.configLoaded = true;
-                e.Qr();
+                e.m_tryLoad();
             });
         };
         if (Device.webview && Device.version > "1.0.0") {
@@ -164,8 +159,8 @@ class Application {
         })(document, "script", "cordova-js");
     }
 
-    Qr() {
-        const e = this;
+    m_tryLoad() {
+        const This = this;
         if (
             this.domContentLoaded &&
             this.configLoaded &&
@@ -191,25 +186,25 @@ class Application {
 
             this.nameInput.maxLength = net.Constants.PlayerNameMaxLen;
             this.playMode0Btn.on("click", () => {
-                e.tryQuickStartGame(0);
+                This.tryQuickStartGame(0);
             });
             this.playMode1Btn.on("click", () => {
-                e.tryQuickStartGame(1);
+                This.tryQuickStartGame(1);
             });
             this.playMode2Btn.on("click", () => {
-                e.tryQuickStartGame(2);
+                This.tryQuickStartGame(2);
             });
             this.serverSelect.change(() => {
-                const t = e.serverSelect.find(":selected").val();
-                e.config.set("region", t);
+                const t = This.serverSelect.find(":selected").val();
+                This.config.set("region", t);
             });
             this.nameInput.on("blur", (t) => {
-                e.setConfigFromDOM();
+                This.setConfigFromDOM();
             });
             this.muteBtns.on("click", (t) => {
-                e.config.set(
+                This.config.set(
                     "muteAudio",
-                    !e.config.get("muteAudio")
+                    !This.config.get("muteAudio")
                 );
             });
             this.muteBtns.on("mousedown", (e) => {
@@ -226,29 +221,29 @@ class Application {
             });
             this.masterSliders.on("input", (t) => {
                 const r = $(t.target).val() / 100;
-                e.audioManager.setMasterVolume(r);
-                e.config.set("masterVolume", r);
+                This.audioManager.setMasterVolume(r);
+                This.config.set("masterVolume", r);
             });
             this.soundSliders.on("input", (t) => {
                 const r = $(t.target).val() / 100;
-                e.audioManager.setSoundVolume(r);
-                e.config.set("soundVolume", r);
+                This.audioManager.setSoundVolume(r);
+                This.config.set("soundVolume", r);
             });
             this.musicSliders.on("input", (t) => {
                 const r = $(t.target).val() / 100;
-                e.audioManager.setMusicVolume(r);
-                e.config.set("musicVolume", r);
+                This.audioManager.setMusicVolume(r);
+                This.config.set("musicVolume", r);
             });
             $(".modal-settings-item")
                 .children("input")
                 .each((t, r) => {
                     const a = $(r);
-                    a.prop("checked", e.config.get(a.prop("id")));
+                    a.prop("checked", This.config.get(a.prop("id")));
                 });
             $(".modal-settings-item > input:checkbox").change(
                 (t) => {
                     const r = $(t.target);
-                    e.config.set(r.prop("id"), r.is(":checked"));
+                    This.config.set(r.prop("id"), r.is(":checked"));
                 }
             );
             $(".btn-fullscreen-toggle").on("click", () => {
@@ -257,11 +252,11 @@ class Application {
             this.languageSelect.on("change", (t) => {
                 const r = t.target.value;
                 if (r) {
-                    e.config.set("language", r);
+                    This.config.set("language", r);
                 }
             });
             $("#btn-create-team").on("click", () => {
-                e.tryJoinTeam(true);
+                This.tryJoinTeam(true);
             });
             $("#btn-team-mobile-link-join").on("click", () => {
                 let t = $("#team-link-input").val().trim();
@@ -271,7 +266,7 @@ class Application {
                 }
                 if (t.length > 0) {
                     $("#team-mobile-link").css("display", "none");
-                    e.tryJoinTeam(false, t);
+                    This.tryJoinTeam(false, t);
                 } else {
                     $("#team-mobile-link-desc").css(
                         "display",
@@ -286,24 +281,24 @@ class Application {
                 if (window.history) {
                     window.history.replaceState("", "", "/");
                 }
-                e.game?.free();
-                e.teamMenu.leave();
+                This.game?.free();
+                This.teamMenu.leave();
             });
             const r = $("#news-current").data("date");
             const a = new Date(r).getTime();
             $(".right-column-toggle").on("click", () => {
-                if (e.newsDisplayed) {
+                if (This.newsDisplayed) {
                     $("#news-wrapper").fadeOut(250);
                     $("#pass-wrapper").fadeIn(250);
                 } else {
-                    e.config.set("lastNewsTimestamp", a);
+                    This.config.set("lastNewsTimestamp", a);
                     $(".news-toggle")
                         .find(".account-alert")
                         .css("display", "none");
                     $("#news-wrapper").fadeIn(250);
                     $("#pass-wrapper").fadeOut(250);
                 }
-                e.newsDisplayed = !e.newsDisplayed;
+                This.newsDisplayed = !This.newsDisplayed;
             });
             const i = this.config.get("lastNewsTimestamp");
             if (a > i) {
@@ -313,28 +308,31 @@ class Application {
             }
             this.setDOMFromConfig();
             this.setAppActive(true);
-            const l = document.getElementById("cvs");
-            const c = window.devicePixelRatio > 1 ? 2 : 1;
+            const domCanvas = document.getElementById("cvs");
+
+            const rendererRes = window.devicePixelRatio > 1 ? 2 : 1;
+
             if (Device.os == "ios") {
                 PIXI.settings.PRECISION_FRAGMENT = "highp";
             }
-            const p = function(e) {
+
+            function createPixiApplication(forceCanvas) {
                 return new PIXI.Application({
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    view: l,
-                    antialias: false,
-                    resolution: c,
-                    forceCanvas: e
+                    view: domCanvas,
+                    antialias: true,
+                    resolution: rendererRes,
+                    forceCanvas
                 });
             };
-            let h = null;
+            let pixi = null;
             try {
-                h = p(false);
+                pixi = createPixiApplication(false);
             } catch (e) {
-                h = p(true);
+                pixi = createPixiApplication(true);
             }
-            this.pixi = h;
+            this.pixi = pixi;
             this.pixi.renderer.plugins.interaction.destroy();
             this.pixi.ticker.add(this.update, this);
             this.pixi.renderer.backgroundColor = 7378501;
@@ -356,26 +354,26 @@ class Application {
                 this.inputBinds
             );
             const onJoin = function() {
-                e.loadoutDisplay.n();
-                e.game.init();
-                e.onResize();
-                e.findGameAttempts = 0;
-                e.ambience.onGameStart();
+                This.loadoutDisplay.n();
+                This.game.init();
+                This.onResize();
+                This.findGameAttempts = 0;
+                This.ambience.onGameStart();
             };
             const onQuit = function(t) {
-                if (e.game.updatePass) {
-                    e.pass.scheduleUpdatePass(
-                        e.game.updatePassDelay
+                if (This.game.updatePass) {
+                    This.pass.scheduleUpdatePass(
+                        This.game.updatePassDelay
                     );
                 }
-                e.game.free();
-                e.errorMessage = e.localization.translate(t || "");
-                e.teamMenu.onGameComplete();
-                e.ambience.onGameComplete(e.audioManager);
-                e.setAppActive(true);
-                e.setPlayLockout(false);
+                This.game.free();
+                This.errorMessage = This.localization.translate(t || "");
+                This.teamMenu.onGameComplete();
+                This.ambience.onGameComplete(This.audioManager);
+                This.setAppActive(true);
+                This.setPlayLockout(false);
                 if (t == "index-invalid-protocol") {
-                    e.showInvalidProtocolModal();
+                    This.showInvalidProtocolModal();
                 }
             };
             this.game = new Game(
@@ -869,8 +867,14 @@ class Application {
 }
 
 const App = new Application();
-document.addEventListener("DOMContentLoaded", i);
-window.addEventListener("load", i);
+
+function onPageLoad() {
+    App.domContentLoaded = true;
+    App.m_tryLoad();
+}
+
+document.addEventListener("DOMContentLoaded", onPageLoad);
+window.addEventListener("load", onPageLoad);
 window.addEventListener("unload", (e) => {
     App.onUnload();
 });

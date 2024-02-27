@@ -133,9 +133,9 @@ class Account {
         if (this.config.get("sessionCookie")) {
             this.setSessionCookies();
         }
-        if (helpers.getCookie("app-data")) {
-            this.login();
-        }
+        // if (helpers.getCookie("app-data")) {
+        this.login();
+        // }
     }
 
     setSessionCookies() {
@@ -178,10 +178,10 @@ class Account {
     }
 
     login() {
-        if (helpers.getCookie("app-data")) {
-            this.loadProfile();
-            this.getPass(true);
-        }
+        // if (helpers.getCookie("app-data")) {
+        this.loadProfile();
+        this.getPass(true);
+        // }
     }
 
     logout() {
