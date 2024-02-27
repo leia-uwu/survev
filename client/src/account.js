@@ -1,6 +1,5 @@
 import $ from "jquery";
 import api from "./api";
-import helpers from "./helpers";
 import firebaseManager from "./firebaseManager";
 import loadouts from "./loadouts";
 import { util } from "../../shared/utils/util";

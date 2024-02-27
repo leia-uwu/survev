@@ -316,7 +316,7 @@ class Application {
                 PIXI.settings.PRECISION_FRAGMENT = "highp";
             }
 
-            function createPixiApplication(forceCanvas) {
+            const createPixiApplication = (forceCanvas) => {
                 return new PIXI.Application({
                     width: window.innerWidth,
                     height: window.innerHeight,
