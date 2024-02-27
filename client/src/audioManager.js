@@ -30,7 +30,6 @@ export default class AudioManager {
             // Ideally sounds should only be defined once
             this.preloadedSounds = true;
 
-
             const preloadedSounds = {};
             const soundGroups = Object.keys(soundDefs.Sounds);
             for (

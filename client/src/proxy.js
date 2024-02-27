@@ -1,15 +1,15 @@
 function getProxyDef() {
-    var proxies = Object.keys(proxyDefs);
+    const proxies = Object.keys(proxyDefs);
 
-    for (var i = 0; i < proxies.length; i++) {
-      var proxy = proxies[i];
+    for (let i = 0; i < proxies.length; i++) {
+        const proxy = proxies[i];
 
-      if (window.location.hostname.indexOf(proxy) !== -1) {
-        return {
-          proxy,
-          def: proxyDefs[proxy]
-        };
-      }
+        if (window.location.hostname.includes(proxy)) {
+            return {
+                proxy,
+                def: proxyDefs[proxy]
+            };
+        }
     }
     return null;
 }
