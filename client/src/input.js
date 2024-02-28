@@ -18,10 +18,16 @@ function Touch() {
     this.lastUpdateTime = 0;
     this.isNew = true;
     this.isDead = false;
+    // For internal use
     this.osId = 0;
 }
-function o(e) {
-    this.touchElem = e;
+
+/**
+ *
+ * @param {HTMLElement} touchElem
+ */
+function InputHandler(touchElem) {
+    this.touchElem = touchElem;
     this.keys = {};
     this.keysOld = {};
     this.Ue = v2.create(0, 0);
@@ -177,7 +183,7 @@ const InputType = {
     MouseButton: 2,
     MouseWheel: 3
 };
-const h = [
+const KeyNames = [
     "",
     "",
     "",
@@ -435,48 +441,48 @@ const h = [
     "WIN_OEM_CLEAR",
     ""
 ];
-const d = [
+const MouseButtonNames = [
     "Left Mouse",
     "Middle Mouse",
     "Right Mouse",
     "Thumb Mouse 1",
     "Thumb Mouse 2"
 ];
-const u = ["", "Mouse Wheel Up", "Mouse Wheel Down"];
+const MouseWheelNames = ["", "Mouse Wheel Up", "Mouse Wheel Down"];
 
 class InputValue {
-    constructor(t, r) {
-        this.type = t;
-        this.code = r;
+    constructor(type, code) {
+        this.type = type;
+        this.code = code;
     }
 
-    equals(e) {
-        return this.type == e.type && this.code == e.code;
+    equals(inputValue) {
+        return this.type == inputValue.type && this.code == inputValue.code;
     }
 
     toString() {
         if (this.type == InputType.None) {
             return "";
         } else if (this.type == InputType.Key) {
-            return h[this.code] || `Key ${this.code}`;
+            return KeyNames[this.code] || `Key ${this.code}`;
         } else if (this.type == InputType.MouseButton) {
-            return d[this.code] || `Mouse ${this.code}`;
+            return MouseButtonNames[this.code] || `Mouse ${this.code}`;
         } else {
             return (
-                u[this.code] || `Mouse Wheel ${this.code}`
+                MouseWheelNames[this.code] || `Mouse Wheel ${this.code}`
             );
         }
     }
 }
 
-const y = Object.freeze({
+const TouchEvent = Object.freeze({
     Move: 0,
     Start: 1,
     End: 2,
     Cancel: 3
 });
 
-o.prototype = {
+InputHandler.prototype = {
     n: function() {
         this.touches = [];
         this.touchIdCounter = 0;
@@ -490,74 +496,85 @@ o.prototype = {
         this.touches.length = 0;
         this.lostFocus = true;
     },
+    // Call at the end of every frame
     flush: function() {
         this.keysOld = Object.assign({}, this.keys);
         this.mouseButtonsOld = Object.assign({}, this.mouseButtons);
         this.mouseWheelState = 0;
-        for (let e = 0; e < this.touches.length; e++) {
-            this.touches[e].posOld.x = this.touches[e].pos.x;
-            this.touches[e].posOld.y = this.touches[e].pos.y;
-            this.touches[e].isNew = false;
-            if (this.touches[e].isDead) {
-                this.touches.splice(e, 1);
-                --e;
+
+        // Update the isNew flags and clear out dead touches
+        for (let i = 0; i < this.touches.length; i++) {
+            this.touches[i].posOld.x = this.touches[i].pos.x;
+            this.touches[i].posOld.y = this.touches[i].pos.y;
+            this.touches[i].isNew = false;
+            if (this.touches[i].isDead) {
+                this.touches.splice(i, 1);
+                --i;
             }
         }
         this.lostFocus = false;
     },
-    captureNextInput: function(e) {
-        this.captureNextInputCb = e;
+    captureNextInput: function(cb) {
+        this.captureNextInputCb = cb;
     },
-    checkCaptureInput: function(e, t, r) {
+    checkCaptureInput: function(event, inputType, inputCode) {
         return (
-            !!this.captureNextInputCb?.(e, new InputValue(t, r)) &&
+            !!this.captureNextInputCb?.(event, new InputValue(inputType, inputCode)) &&
             !((this.captureNextInputCb = null), 0)
         );
     },
-    isInputValuePressed: function(e) {
-        switch (e.type) {
+    // InputValue
+    isInputValuePressed: function(inputValue) {
+        switch (inputValue.type) {
         case InputType.Key:
-            return this.We(e.code);
+            return this.We(inputValue.code);
         case InputType.MouseButton:
-            return this.Ge(e.code);
+            return this.Ge(inputValue.code);
         case InputType.MouseWheel:
-            return this.Xe() == e.code;
+            return this.Xe() == inputValue.code;
         default:
             return false;
         }
     },
-    isInputValueReleased: function(e) {
-        switch (e.type) {
+    /* used by editor.js */
+    m_keyPressed: function(key) {
+        return !this.keysOld[key] && !!this.keys[key];
+    },
+    isInputValueReleased: function(inputValue) {
+        switch (inputValue.type) {
         case InputType.Key:
-            return this.Ke(e.code);
+            return this.Ke(inputValue.code);
         case InputType.MouseButton:
-            return this.Ze(e.code);
+            return this.Ze(inputValue.code);
         case InputType.MouseWheel:
-            return this.Xe() == e.code;
+            return this.Xe() == inputValue.code;
         default:
             return false;
         }
     },
-    isInputValueDown: function(e) {
-        switch (e.type) {
+    isInputValueDown: function(inputValue) {
+        switch (inputValue.type) {
         case InputType.Key:
-            return this.Ye(e.code);
+            return this.Ye(inputValue.code);
         case InputType.MouseButton:
-            return this.Je(e.code);
+            return this.Je(inputValue.code);
         case InputType.MouseWheel:
-            return this.Xe() == e.code;
+            return this.Xe() == inputValue.code;
         default:
             return false;
         }
     },
-    onKeyDown: function(e) {
-        const t = e.keyCode;
-        if (t == 9) {
-            e.preventDefault();
+    // Keyboard
+    onKeyDown: function(event) {
+        const keyCode = event.keyCode;
+        // Prevent tab behavior
+        if (keyCode == 9) {
+            event.preventDefault();
         }
-        if (!this.checkCaptureInput(e, InputType.Key, t)) {
-            this.keys[t] = true;
+        if (this.checkCaptureInput(event, InputType.Key, keyCode)) {
+            return;
         }
+        this.keys[keyCode] = true;
     },
     onKeyUp: function(e) {
         this.keys[e.keyCode] = false;
@@ -571,30 +588,38 @@ o.prototype = {
     Ke: function(e) {
         return !!this.keysOld[e] && !this.keys[e];
     },
-    onMouseMove: function(e) {
-        this.Ue.x = e.clientX;
-        this.Ue.y = e.clientY;
+    // Mouse
+    onMouseMove: function(event) {
+        this.Ue.x = event.clientX;
+        this.Ue.y = event.clientY;
     },
-    onMouseDown: function(e) {
-        let t = 0;
-        t = "which" in e ? e.which - 1 : e.button;
-        if (!this.checkCaptureInput(e, InputType.MouseButton, t)) {
-            this.mouseButtons[t] = true;
+    onMouseDown: function(event) {
+        let button = 0;
+        button = "which" in event ? event.which - 1 : event.button;
+        if (this.checkCaptureInput(event, InputType.MouseButton, button)) {
+            return;
+        }
+        this.mouseButtons[button] = true;
+    },
+    onMouseUp: function(event) {
+        let button = 0;
+        button = "which" in event ? event.which - 1 : event.button;
+
+        this.mouseButtons[button] = false;
+
+        // Disable the default action for these buttons;
+        // most mice have them bound to "back" / "forward" page navigation
+        if (button == 3 || button == 4) {
+            event.preventDefault();
         }
     },
-    onMouseUp: function(e) {
-        let t = 0;
-        t = "which" in e ? e.which - 1 : e.button;
-        this.mouseButtons[t] = false;
-        if (t == 3 || t == 4) {
-            e.preventDefault();
+    onMouseWheel: function(event) {
+        const wheel = event.deltaY < 0 ? MouseWheel.Up : MouseWheel.Down;
+
+        if (this.checkCaptureInput(event, InputType.MouseWheel, wheel)) {
+            return;
         }
-    },
-    onMouseWheel: function(e) {
-        const t = e.deltaY < 0 ? MouseWheel.Up : MouseWheel.Down;
-        if (!this.checkCaptureInput(e, InputType.MouseWheel, t)) {
-            this.mouseWheelState = t;
-        }
+        this.mouseWheelState = wheel;
     },
     Je: function(e) {
         return !!this.mouseButtons[e];
@@ -608,82 +633,88 @@ o.prototype = {
     Xe: function() {
         return this.mouseWheelState;
     },
-    onTouchShared: function(e, t) {
-        if (e.target == this.touchElem || t != y.Start) {
+    // Touch
+    onTouchShared: function(event, type) {
+        if (event.target == this.touchElem || type != TouchEvent.Start) {
             if (
-                e.target == this.touchElem &&
-                e.cancelable &&
-                t != y.Cancel
+                event.target == this.touchElem &&
+                event.cancelable &&
+                type != TouchEvent.Cancel
             ) {
-                e.preventDefault();
+                event.preventDefault();
             }
+            const time = event.timeStamp || performance.now();
             for (
-                let r = e.timeStamp || performance.now(), a = 0;
-                a < e.changedTouches.length;
-                a++
+                let i = 0;
+                i < event.changedTouches.length;
+                i++
             ) {
-                const o = e.changedTouches[a];
-                const s = o.identifier;
-                const n = o.clientX;
-                const l = o.clientY;
-                let c = null;
-                for (let m = 0; m < this.touches.length; m++) {
+                const osTouch = event.changedTouches[i];
+                const osId = osTouch.identifier;
+                const x = osTouch.clientX;
+                const y = osTouch.clientY;
+
+                // See if we're already tracking this touch
+                let t = null;
+                for (let j = 0; j < this.touches.length; j++) {
                     if (
-                        this.touches[m].osId == s &&
-                        !this.touches[m].isDead
+                        this.touches[j].osId == osId &&
+                        !this.touches[j].isDead
                     ) {
-                        c = this.touches[m];
+                        t = this.touches[j];
                         break;
                     }
                 }
-                if (t == y.Start && !c) {
-                    c = new Touch();
-                    this.touches.push(c);
+                if (type == TouchEvent.Start && !t) {
+                    t = new Touch();
+                    this.touches.push(t);
                     ++this.touchIdCounter;
-                    c.id = this.touchIdCounter;
-                    c.osId = s;
-                    c.posOld.x = n;
-                    c.posOld.y = l;
-                    c.posDown.x = n;
-                    c.posDown.y = l;
-                    c.startTime = r;
-                    c.isNew = true;
-                    c.isDead = false;
+                    t.id = this.touchIdCounter;
+                    t.osId = osId;
+                    t.posOld.x = x;
+                    t.posOld.y = y;
+                    t.posDown.x = x;
+                    t.posDown.y = y;
+                    t.startTime = time;
+                    t.isNew = true;
+                    t.isDead = false;
                 }
-                if ((t == y.End || t == y.Cancel) && !!c) {
-                    c.isDead = true;
+                if ((type == TouchEvent.End || type == TouchEvent.Cancel) && !!t) {
+                    t.isDead = true;
                 }
-                if (c) {
-                    c.pos.x = n;
-                    c.pos.y = l;
-                    c.lastUpdateTime = r;
+
+                // Do general state update
+                if (t) {
+                    t.pos.x = x;
+                    t.pos.y = y;
+                    t.lastUpdateTime = time;
                 }
             }
         }
     },
-    onTouchMove: function(e) {
-        this.onTouchShared(e, y.Move);
+    onTouchMove: function(event) {
+        this.onTouchShared(event, TouchEvent.Move);
     },
-    onTouchStart: function(e) {
-        this.onTouchShared(e, y.Start);
+    onTouchStart: function(event) {
+        this.onTouchShared(event, TouchEvent.Start);
     },
-    onTouchEnd: function(e) {
-        this.onTouchShared(e, y.End);
+    onTouchEnd: function(event) {
+        this.onTouchShared(event, TouchEvent.End);
     },
-    onTouchCancel: function(e) {
-        this.onTouchShared(e, y.Cancel);
+    onTouchCancel: function(event) {
+        this.onTouchShared(event, TouchEvent.Cancel);
     },
-    getTouchById: function(e) {
-        for (let t = 0; t < this.touches.length; t++) {
-            if (this.touches[t].id == e) {
-                return this.touches[t];
+    getTouchById: function(id) {
+        for (let i = 0; i < this.touches.length; i++) {
+            if (this.touches[i].id == id) {
+                return this.touches[i];
             }
         }
         return null;
     }
 };
 export default {
-    Qe: o,
+    InputHandler,
     InputType,
     InputValue,
     Key,

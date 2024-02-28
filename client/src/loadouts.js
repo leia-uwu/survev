@@ -8,128 +8,108 @@ const loadout = {
         Confirmed: 1,
         Ackd: 2
     },
-    validate: function(e) {
-        const t = function(e, t, r) {
-            const a = GameObjectDefs[t];
-            if (a && a.type == e) {
-                return t;
-            } else {
-                return r;
+    validate: function(userLoadout) {
+        const getGameType = function(type, gameType, defaultValue) {
+            const def = GameObjectDefs[gameType];
+            if (def && def.type == type) {
+                return gameType;
             }
+            return defaultValue;
         };
-        const r = function(e, t) {
-            const r = parseFloat(e);
-            if (Number.isNaN(r)) {
-                return t;
-            } else {
-                return r;
+        const getFloat = function(flt, defaultValue) {
+            const val = parseFloat(flt);
+            if (Number.isNaN(val)) {
+                return defaultValue;
             }
+            return val;
         };
-        const i = Object.assign(
-            {},
-            {
-                crosshair: {
-                    type: "",
-                    color: 16777215,
-                    size: 1,
-                    stroke: 0
-                },
-                emotes: []
+        const mergedLoadout = {
+            crosshair: {
+                type: "",
+                color: 16777215,
+                size: 1,
+                stroke: 0
             },
-            e
-        );
-        const s = {};
-        s.outfit = t("outfit", i.outfit, "outfitBase");
-        s.melee = t("melee", i.melee, "fists");
-        s.heal = t("heal_effect", i.heal, "heal_basic");
-        s.boost = t("boost_effect", i.boost, "boost_basic");
-        s.player_icon = t("emote", i.player_icon, "");
-        s.crosshair = {
-            type: t(
-                "crosshair",
-                i.crosshair.type,
-                "crosshair_default"
-            ),
-            color: (function(e, t) {
-                const r = parseInt(e);
-                if (Number.isNaN(r)) {
-                    return 16777215;
-                } else {
-                    return r;
-                }
-            })(i.crosshair.color),
-            size: r(i.crosshair.size, 1).toFixed(2),
-            stroke: r(i.crosshair.stroke, 0).toFixed(2)
+            emotes: [],
+            ...userLoadout
         };
-        s.emotes = [];
-        for (
-            let n = GameConfig.defaultEmoteLoadout.slice(), l = 0;
-            l < GameConfig.EmoteSlot.Count;
-            l++
-        ) {
-            const c = l < i.emotes.length ? i.emotes[l] : "";
-            const m = t("emote", c, n[l]);
-            s.emotes.push(m);
-        }
-        return s;
+        const validatedLoadout = {
+            outfit: getGameType("outfit", mergedLoadout.outfit, "outfitBase"),
+            melee: getGameType("melee", mergedLoadout.melee, "fists"),
+            heal: getGameType("heal_effect", mergedLoadout.heal, "heal_basic"),
+            boost: getGameType("boost_effect", mergedLoadout.boost, "boost_basic"),
+            player_icon: getGameType("emote", mergedLoadout.player_icon, ""),
+            crosshair: {
+                type: getGameType("crosshair", mergedLoadout.crosshair.type, "crosshair_default"),
+                color: (parseInt(mergedLoadout.crosshair.color) || 16777215),
+                size: getFloat(mergedLoadout.crosshair.size, 1).toFixed(2),
+                stroke: getFloat(mergedLoadout.crosshair.stroke, 0).toFixed(2)
+            }
+        };
+
+        const defaultEmotes = GameConfig.defaultEmoteLoadout.slice();
+        validatedLoadout.emotes = Array.from({ length: GameConfig.EmoteSlot.Count }, (_, index) => {
+            const inputEmote = index < mergedLoadout.emotes.length ? mergedLoadout.emotes[index] : "";
+            return getGameType("emote", inputEmote, defaultEmotes[index]);
+        });
+        return validatedLoadout;
     },
-    validateWithAvailableItems: function(e, t) {
-        const r = function(e, t) {
+    validateWithAvailableItems: function(userLoadout, userItems) {
+        const checkTypeExists = function(type, items) {
             if (
-                e &&
-                t.findIndex((t) => {
-                    return t.type == e;
+                type &&
+                items.findIndex((x) => {
+                    return x.type == type;
                 }) !== -1
             ) {
-                return e;
-            } else {
-                return "";
+                return type;
             }
+            return "";
         };
-        const a = Object.assign(
-            {},
-            {
-                crosshair: {},
-                emotes: []
-            },
-            e
-        );
-        a.outfit = r(a.outfit, t);
-        a.melee = r(a.melee, t);
-        a.heal = r(a.heal, t);
-        a.boost = r(a.boost, t);
-        a.player_icon = r(a.player_icon, t);
-        a.crosshair.type = r(a.crosshair.type, t);
-        for (let i = 0; i < a.emotes.length; i++) {
-            a.emotes[i] = r(a.emotes[i], t);
-        }
-        return loadout.validate(a);
+        const loadout = {
+            crosshair: {},
+            emotes: [],
+            ...userLoadout
+        };
+        const itemsToCheck = ["outfit", "melee", "heal", "boost", "player_icon"];
+
+        itemsToCheck.forEach(item => {
+            loadout[item] = checkTypeExists(loadout[item], userItems);
+        });
+
+        loadout.crosshair.type = checkTypeExists(loadout.crosshair.type, userItems);
+
+        loadout.emotes = loadout.emotes.map(emote => checkTypeExists(loadout.emotes[emote], userItems));
+
+        return loadout.validate(loadout);
     },
     defaultLoadout: function() {
         return loadout.validate({});
     },
-    modified: function(e, t) {
-        return !deepEqual(e, t);
+    modified: function(a, b) {
+        return !deepEqual(a, b);
     },
-    getUserAvailableItems: function(e) {
-        const t = [];
+    getUserAvailableItems: function(heroItems) {
+        const items = [];
+        // Add default items
+        const unlockDefaultDef = GameObjectDefs.unlock_default;
         for (
-            let r = GameObjectDefs.unlock_default, a = 0;
-            a < r.unlocks.length;
+            let a = 0;
+            a < unlockDefaultDef.unlocks.length;
             a++
         ) {
-            const i = r.unlocks[a];
-            t.push({
-                type: i,
+            const unlock = unlockDefaultDef.unlocks[a];
+            items.push({
+                type: unlock,
                 source: "unlock_default",
                 timeAcquired: 0,
                 ackd: loadout.ItemStatus.Ackd
             });
         }
-        for (let n = 0; n < e.length; n++) {
-            t.push(e[n]);
+        for (let i = 0; i < heroItems.length; i++) {
+            items.push(heroItems[i]);
         }
-        return t;
+        return items;
     }
 };
 export default loadout;
