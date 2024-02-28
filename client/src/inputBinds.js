@@ -5,12 +5,12 @@ import input from "./input";
 import crc from "./crc";
 import base64 from "base64-js";
 
-const y = GameConfig.Input;
-const f = input.InputType;
-const _ = input.InputValue;
-const b = input.Key;
-const x = input.MouseButton;
-const S = input.MouseWheel;
+const GameInput = GameConfig.Input;
+const InputType = input.InputType;
+const InputValue = input.InputValue;
+const Key = input.Key;
+const MouseButton = input.MouseButton;
+const MouseWheel = input.MouseWheel;
 
 function i(e, t, r) {
     if (t in e) {
@@ -25,59 +25,58 @@ function i(e, t, r) {
     }
     return e;
 }
-function o(e, t) {
+function def(name, defaultValue) {
     return {
-        name: e,
-        defaultValue: t
+        name,
+        defaultValue
     };
 }
-function s(e) {
-    return new _(f.Key, e);
+function inputKey(key) {
+    return new InputValue(InputType.Key, key);
 }
-function n(e) {
-    return new _(f.MouseButton, e);
+function mouseButton(button) {
+    return new InputValue(InputType.MouseButton, button);
 }
-function l(e) {
-    return new _(f.MouseWheel, e);
+function mouseWheel(wheel) {
+    return new InputValue(InputType.MouseWheel, wheel);
 }
 
-const c = {};
-i(c, y.MoveLeft, o("Move Left", s(b.A)));
-i(c, y.MoveRight, o("Move Right", s(b.D)));
-i(c, y.MoveUp, o("Move Up", s(b.W)));
-i(c, y.MoveDown, o("Move Down", s(b.S)));
-i(c, y.Fire, o("Fire", n(x.Left)));
-i(c, y.Reload, o("Reload", s(b.R)));
-i(c, y.Cancel, o("Cancel", s(b.X)));
-i(c, y.Interact, o("Interact", s(b.F)));
-i(c, y.Revive, o("Revive", null));
-i(c, y.Use, o("Open/Use", null));
-i(c, y.Loot, o("Loot", null));
-i(c, y.EquipPrimary, o("Equip Primary", s(b.One)));
-i(c, y.EquipSecondary, o("Equip Secondary", s(b.Two)));
-i(c, y.EquipMelee, o("Equip Melee", s(b.Three)));
-i(c, y.EquipThrowable, o("Equip Throwable", s(b.Four)));
-i(c, y.EquipNextWeap, o("Equip Next Weapon", l(S.Down)));
-i(c, y.EquipPrevWeap, o("Equip Previous Weapon", l(S.Up)));
-i(c, y.EquipLastWeap, o("Equip Last Weapon", s(b.Q)));
-i(c, y.StowWeapons, o("Stow Weapons", s(b.E)));
-i(c, y.EquipPrevScope, o("Equip Previous Scope", null));
-i(c, y.EquipNextScope, o("Equip Next Scope", null));
-i(c, y.UseBandage, o("Use Bandage", s(b.Seven)));
-i(c, y.UseHealthKit, o("Use Med Kit", s(b.Eight)));
-i(c, y.UseSoda, o("Use Soda", s(b.Nine)));
-i(c, y.UsePainkiller, o("Use Pills", s(b.Zero)));
-i(c, y.SwapWeapSlots, o("Switch Gun Slots", s(b.T)));
-i(c, y.ToggleMap, o("Toggle Map", s(b.M)));
-i(c, y.CycleUIMode, o("Toggle Minimap", s(b.V)));
-i(c, y.EmoteMenu, o("Emote Menu", n(x.Right)));
-i(c, y.TeamPingMenu, o("Team Ping Hold", s(b.C)));
-i(c, y.EquipOtherGun, o("Equip Other Gun", null));
-i(c, y.Fullscreen, o("Full Screen", s(b.L)));
-i(c, y.HideUI, o("Hide UI", null));
-i(c, y.TeamPingSingle, o("Team Ping Menu", null));
-const v = c;
-
+const BindDefs = {
+    [GameInput.MoveLeft]: def("Move Left", inputKey(Key.A)),
+    [GameInput.MoveRight]: def("Move Right", inputKey(Key.D)),
+    [GameInput.MoveUp]: def("Move Up", inputKey(Key.W)),
+    [GameInput.MoveDown]: def("Move Down", inputKey(Key.S)),
+    [GameInput.Fire]: def("Fire", mouseButton(MouseButton.Left)),
+    [GameInput.Reload]: def("Reload", inputKey(Key.R)),
+    [GameInput.Cancel]: def("Cancel", inputKey(Key.X)),
+    [GameInput.Interact]: def("Interact", inputKey(Key.F)),
+    [GameInput.Revive]: def("Revive", null),
+    [GameInput.Use]: def("Open/Use", null),
+    [GameInput.Loot]: def("Loot", null),
+    [GameInput.EquipPrimary]: def("Equip Primary", inputKey(Key.One)),
+    [GameInput.EquipSecondary]: def("Equip Secondary", inputKey(Key.Two)),
+    [GameInput.EquipMelee]: def("Equip Melee", inputKey(Key.Three)),
+    [GameInput.EquipThrowable]: def("Equip Throwable", inputKey(Key.Four)),
+    [GameInput.EquipNextWeap]: def("Equip Next Weapon", mouseWheel(MouseWheel.Down)),
+    [GameInput.EquipPrevWeap]: def("Equip Previous Weapon", mouseWheel(MouseWheel.Up)),
+    [GameInput.EquipLastWeap]: def("Equip Last Weapon", inputKey(Key.Q)),
+    [GameInput.StowWeapons]: def("Stow Weapons", inputKey(Key.E)),
+    [GameInput.EquipPrevScope]: def("Equip Previous Scope", null),
+    [GameInput.EquipNextScope]: def("Equip Next Scope", null),
+    [GameInput.UseBandage]: def("Use Bandage", inputKey(Key.Seven)),
+    [GameInput.UseHealthKit]: def("Use Med Kit", inputKey(Key.Eight)),
+    [GameInput.UseSoda]: def("Use Soda", inputKey(Key.Nine)),
+    [GameInput.UsePainkiller]: def("Use Pills", inputKey(Key.Zero)),
+    [GameInput.SwapWeapSlots]: def("Switch Gun Slots", inputKey(Key.T)),
+    [GameInput.ToggleMap]: def("Toggle Map", inputKey(Key.M)),
+    [GameInput.CycleUIMode]: def("Toggle Minimap", inputKey(Key.V)),
+    [GameInput.EmoteMenu]: def("Emote Menu", mouseButton(MouseButton.Right)),
+    [GameInput.TeamPingMenu]: def("Team Ping Hold", inputKey(Key.C)),
+    [GameInput.EquipOtherGun]: def("Equip Other Gun", null),
+    [GameInput.Fullscreen]: def("Full Screen", inputKey(Key.L)),
+    [GameInput.HideUI]: def("Hide UI", null),
+    [GameInput.TeamPingSingle]: def("Team Ping Menu", null)
+}
 class InputBinds {
     constructor(t, r) {
         this.input = t;
@@ -89,58 +88,60 @@ class InputBinds {
     }
 
     toArray() {
-        const e = new ArrayBuffer(
+        const buf = new ArrayBuffer(
             this.binds.length * 2 + 1
         );
-        const t = new BitBuffer.BitStream(e);
-        t.writeUint8(1);
-        for (let r = 0; r < this.binds.length; r++) {
-            const a = this.binds[r];
-            const i = a ? a.type : 0;
-            const o = a ? a.code : 0;
-            t.writeBits(i & 3, 2);
-            t.writeUint8(o & 255);
+        const stream = new BitBuffer.BitStream(buf);
+        stream.writeUint8(1);
+        for (let i = 0; i < this.binds.length; i++) {
+            const bind = this.binds[i];
+            const type = bind ? bind.type : 0;
+            const code = bind ? bind.code : 0;
+            stream.writeBits(type & 3, 2);
+            stream.writeUint8(code & 255);
         }
-        const s = new Uint8Array(e, 0, t.byteIndex);
-        const n = crc.crc16(s);
-        const l = new Uint8Array(s.length + 2);
-        l.set(s);
-        l[l.length - 2] = (n >> 8) & 255;
-        l[l.length - 1] = n & 255;
-        return l;
+        // Append crc
+        const data = new Uint8Array(buf, 0, stream.byteIndex);
+        const checksum = crc.crc16(data);
+        const ret = new Uint8Array(data.length + 2);
+        ret.set(data);
+        ret[ret.length - 2] = (checksum >> 8) & 255;
+        ret[ret.length - 1] = checksum & 255;
+        return ret;
     }
 
-    fromArray(e) {
-        let t = new Uint8Array(e);
-        if (!t || t.length < 3) {
+    fromArray(buf) {
+        let data = new Uint8Array(buf);
+        if (!data || data.length < 3) {
             return false;
         }
-        const r = (t[t.length - 2] << 8) | t[t.length - 1];
-        t = t.slice(0, t.length - 2);
-        if (crc.crc16(t) != r) {
+        // Check crc
+        const dataCrc = (data[data.length - 2] << 8) | data[data.length - 1];
+        data = data.slice(0, data.length - 2);
+        if (crc.crc16(data) != dataCrc) {
             return false;
         }
-        const a = new ArrayBuffer(t.length);
-        const i = new Uint8Array(a);
-        for (let o = 0; o < t.length; o++) {
-            i[o] = t[o];
+        const arrayBuf = new ArrayBuffer(data.length);
+        const view = new Uint8Array(arrayBuf);
+        for (let i = 0; i < data.length; i++) {
+            view[i] = data[i];
         }
-        const s = new BitBuffer.BitStream(a);
-        const n = s.readUint8();
+        const stream = new BitBuffer.BitStream(arrayBuf);
+        const version = stream.readUint8();
         this.clearAllBinds();
-        for (let l = 0; s.length - s.index >= 10;) {
-            const c = l++;
-            const m = s.readBits(2);
-            const p = s.readUint8();
-            if (c >= 0 && c < y.Count && m != f.None) {
+        for (let idx = 0; stream.length - stream.index >= 10;) {
+            const bind = idx++;
+            const type = stream.readBits(2);
+            const code = stream.readUint8();
+            if (bind >= 0 && bind < GameInput.Count && type != InputType.None) {
                 this.setBind(
-                    c,
-                    m != 0 ? new _(m, p) : null
+                    bind,
+                    type != 0 ? new InputValue(type, code) : null
                 );
             }
         }
-        if (n < 1) {
-            this.upgradeBinds(n);
+        if (version < 1) {
+            this.upgradeBinds(version);
             this.saveBinds();
         }
         return true;
@@ -150,14 +151,14 @@ class InputBinds {
         return base64.fromByteArray(this.toArray());
     }
 
-    fromBase64(e) {
-        let t = false;
+    fromBase64(str) {
+        let loaded = false;
         try {
-            t = this.fromArray(base64.toByteArray(e));
-        } catch (e) {
-            console.log("Error", e);
+            loaded = this.fromArray(base64.toByteArray(str));
+        } catch (err) {
+            console.error("Error", err);
         }
-        return t;
+        return loaded;
     }
 
     saveBinds() {
@@ -173,114 +174,119 @@ class InputBinds {
         }
     }
 
-    upgradeBinds(e) {
-        for (let t = [], r = 0; r < t.length; r++) {
-            const a = t[r];
-            const i = v[a].defaultValue;
-            let o = false;
-            for (let s = 0; s < this.binds.length; s++) {
-                if (this.binds[s]?.equals(i)) {
-                    o = true;
+    upgradeBinds(version) {
+        const newBinds = [];
+
+        // Set default inputs for the new binds, as long as those
+        // defaults haven't already been used.
+
+        for (let i = 0; i < newBinds.length; i++) {
+            const bind = newBinds[i];
+            const input = BindDefs[bind].defaultValue;
+            let alreadyBound = false;
+            for (let j = 0; j < this.binds.length; j++) {
+                if (this.binds[j]?.equals(input)) {
+                    alreadyBound = true;
                     break;
                 }
             }
-            if (!o) {
-                this.setBind(a, i);
+            if (!alreadyBound) {
+                this.setBind(bind, input);
             }
         }
     }
 
     clearAllBinds() {
-        for (let e = 0; e < y.Count; e++) {
-            this.binds[e] = null;
+        for (let i = 0; i < GameInput.Count; i++) {
+            this.binds[i] = null;
         }
         this.boundKeys = {};
     }
 
-    setBind(e, t) {
-        if (t) {
+    setBind(bind, inputValue) {
+        if (inputValue) {
             for (let r = 0; r < this.binds.length; r++) {
-                if (this.binds[r]?.equals(t)) {
+                if (this.binds[r]?.equals(inputValue)) {
                     this.binds[r] = null;
                 }
             }
         }
-        const a = this.binds[e];
-        if (a && a.type == f.Key) {
-            this.boundKeys[a.code] = null;
+        const curBind = this.binds[bind];
+        if (curBind && curBind.type == InputType.Key) {
+            this.boundKeys[curBind.code] = null;
         }
-        this.binds[e] = t;
-        if (t && t.type == f.Key) {
-            this.boundKeys[t.code] = true;
+        this.binds[bind] = inputValue;
+        if (inputValue && inputValue.type == InputType.Key) {
+            this.boundKeys[inputValue.code] = true;
         }
     }
 
-    getBind(e) {
-        return this.binds[e];
+    getBind(bind) {
+        return this.binds[bind];
     }
 
-    preventMenuBind(e) {
+    preventMenuBind(b) {
         return (
-            e &&
+            b &&
             this.menuHovered &&
-            (e.type == 2 || e.type == 3)
+            (b.type == 2 || b.type == 3)
         );
     }
 
-    isKeyBound(e) {
-        return this.boundKeys[e];
+    isKeyBound(key) {
+        return this.boundKeys[key];
     }
 
-    isBindPressed(e) {
-        const t = this.binds[e];
+    isBindPressed(bind) {
+        const b = this.binds[bind];
         return (
-            !this.preventMenuBind(t) &&
-            t &&
-            this.input.isInputValuePressed(t)
+            !this.preventMenuBind(b) &&
+            b &&
+            this.input.isInputValuePressed(b)
         );
     }
 
-    isBindReleased(e) {
-        const t = this.binds[e];
+    isBindReleased(bind) {
+        const b = this.binds[bind];
         return (
-            !this.preventMenuBind(t) &&
-            t &&
-            this.input.isInputValueReleased(t)
+            !this.preventMenuBind(b) &&
+            b &&
+            this.input.isInputValueReleased(b)
         );
     }
 
-    isBindDown(e) {
-        const t = this.binds[e];
+    isBindDown(bind) {
+        const b = this.binds[bind];
         return (
-            !this.preventMenuBind(t) &&
-            t &&
-            this.input.isInputValueDown(t)
+            !this.preventMenuBind(b) &&
+            b &&
+            this.input.isInputValueDown(b)
         );
     }
 
     loadDefaultBinds() {
         this.clearAllBinds();
+        const defKeys = Object.keys(BindDefs);
         for (
-            let e = Object.keys(v), t = 0;
-            t < e.length;
-            t++
+            let i = 0;
+            i < defKeys.length;
+            i++
         ) {
-            const r = e[t];
-            const a = v[r];
-            this.setBind(parseInt(r), a.defaultValue);
+            const key = defKeys[i];
+            const def = BindDefs[key];
+            this.setBind(parseInt(key), def.defaultValue);
         }
     }
 }
 
 class InputBindUi {
-    constructor(t, r) {
-        const i = this;
-        this.input = t;
-        this.inputBinds = r;
+    constructor(input, inputBinds) {
+        this.input = input;
+        this.inputBinds = inputBinds;
         $(".js-btn-keybind-restore").on("click", () => {
-            i.inputBinds.loadDefaultBinds();
-            i.inputBinds.saveBinds();
-            i.refresh();
+            this.inputBinds.loadDefaultBinds();
+            this.inputBinds.saveBinds();
+            this.refresh();
         });
     }
 
@@ -289,79 +295,79 @@ class InputBindUi {
     }
 
     refresh() {
-        const e = this;
-        const t = Object.keys(v);
-        const r = this.inputBinds.binds;
-        const a = $(".js-keybind-list");
-        a.empty();
-        for (let i = 0; i < t.length; i++) {
+        const _this = this;
+        const defKeys = Object.keys(BindDefs);
+        const binds = this.inputBinds.binds;
+        const container = $(".js-keybind-list");
+        container.empty();
+        for (let i = 0; i < defKeys.length; i++) {
             (function(i) {
-                const o = t[i];
-                const n = v[o];
-                const l = r[o];
-                const c = $("<a/>", {
+                const key = defKeys[i];
+                const bindDef = BindDefs[key];
+                const bind = binds[key];
+                const btn = $("<a/>", {
                     class: "btn-game-menu btn-darken btn-keybind-desc",
-                    text: n.name
+                    text: bindDef.name
                 });
-                const m = $("<div/>", {
+                const val = $("<div/>", {
                     class: "btn-keybind-display",
-                    text: l ? l.toString() : ""
+                    text: bind ? bind.toString() : ""
                 });
-                c.on("click", (t) => {
-                    const r = $(t.target);
-                    r.addClass("btn-keybind-desc-selected");
-                    e.input.captureNextInput((t, a) => {
-                        t.preventDefault();
-                        t.stopPropagation();
-                        const i = [
-                            b.Control,
-                            b.Shift,
-                            b.Alt,
-                            b.Windows,
-                            b.ContextMenu,
-                            b.F1,
-                            b.F2,
-                            b.F3,
-                            b.F4,
-                            b.F5,
-                            b.F6,
-                            b.F7,
-                            b.F8,
-                            b.F9,
-                            b.F10,
-                            b.F11,
-                            b.F12
+                btn.on("click", (event) => {
+                    const targetElem = $(event.target);
+                    targetElem.addClass("btn-keybind-desc-selected");
+                    _this.input.captureNextInput((event, inputValue) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const disallowKeys = [
+                            Key.Control,
+                            Key.Shift,
+                            Key.Alt,
+                            Key.Windows,
+                            Key.ContextMenu,
+                            Key.F1,
+                            Key.F2,
+                            Key.F3,
+                            Key.F4,
+                            Key.F5,
+                            Key.F6,
+                            Key.F7,
+                            Key.F8,
+                            Key.F9,
+                            Key.F10,
+                            Key.F11,
+                            Key.F12
                         ];
                         if (
-                            a.type == f.Key &&
-                            i.includes(a.code)
+                            inputValue.type == InputType.Key &&
+                            disallowKeys.includes(inputValue.code)
                         ) {
                             return false;
                         }
-                        r.removeClass(
+                        targetElem.removeClass(
                             "btn-keybind-desc-selected"
                         );
-                        if (!a.equals(s(b.Escape))) {
-                            let n = a;
-                            if (a.equals(s(b.Backspace))) {
-                                n = null;
+                        if (!inputValue.equals(inputKey(Key.Escape))) {
+                            let bindValue = inputValue;
+                            if (inputValue.equals(inputKey(Key.Backspace))) {
+                                bindValue = null;
                             }
-                            e.inputBinds.setBind(
-                                parseInt(o),
-                                n
+                            _this.inputBinds.setBind(
+                                parseInt(key),
+                                bindValue
                             );
-                            e.inputBinds.saveBinds();
-                            e.refresh();
+                            _this.inputBinds.saveBinds();
+                            _this.refresh();
                         }
                         return true;
                     });
                 });
-                a.append(
+                container.append(
                     $("<div/>", {
                         class: "ui-keybind-container"
                     })
-                        .append(c)
-                        .append(m)
+                        .append(btn)
+                        .append(val)
                 );
             })(i);
         }
