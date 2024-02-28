@@ -2,7 +2,7 @@ import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import deepEqual from "../../shared/utils/deepEqual";
 
-const loadout = { 
+const loadout = {
     ItemStatus: {
         New: 0,
         Confirmed: 1,
@@ -63,8 +63,8 @@ const loadout = {
                 }) !== -1
             ) {
                 return type;
-            } 
-            return ""
+            }
+            return "";
         };
         const loadout = {
             crosshair: {},
@@ -72,10 +72,10 @@ const loadout = {
             ...userLoadout
         };
         const itemsToCheck = ["outfit", "melee", "heal", "boost", "player_icon"];
-        
+
         itemsToCheck.forEach(item => {
             loadout[item] = checkTypeExists(loadout[item], userItems);
-        })
+        });
 
         loadout.crosshair.type = checkTypeExists(loadout.crosshair.type, userItems);
 

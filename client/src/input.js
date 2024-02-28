@@ -23,7 +23,7 @@ function Touch() {
 }
 
 /**
- * 
+ *
  * @param {HTMLElement} touchElem
  */
 function InputHandler(touchElem) {
@@ -502,7 +502,7 @@ InputHandler.prototype = {
         this.mouseButtonsOld = Object.assign({}, this.mouseButtons);
         this.mouseWheelState = 0;
 
-         // Update the isNew flags and clear out dead touches
+        // Update the isNew flags and clear out dead touches
         for (let i = 0; i < this.touches.length; i++) {
             this.touches[i].posOld.x = this.touches[i].pos.x;
             this.touches[i].posOld.y = this.touches[i].pos.y;
@@ -604,7 +604,7 @@ InputHandler.prototype = {
     onMouseUp: function(event) {
         let button = 0;
         button = "which" in event ? event.which - 1 : event.button;
-        
+
         this.mouseButtons[button] = false;
 
         // Disable the default action for these buttons;
@@ -615,7 +615,7 @@ InputHandler.prototype = {
     },
     onMouseWheel: function(event) {
         const wheel = event.deltaY < 0 ? MouseWheel.Up : MouseWheel.Down;
-        
+
         if (this.checkCaptureInput(event, InputType.MouseWheel, wheel)) {
             return;
         }

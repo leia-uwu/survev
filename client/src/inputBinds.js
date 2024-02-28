@@ -12,19 +12,6 @@ const Key = input.Key;
 const MouseButton = input.MouseButton;
 const MouseWheel = input.MouseWheel;
 
-function i(e, t, r) {
-    if (t in e) {
-        Object.defineProperty(e, t, {
-            value: r,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        e[t] = r;
-    }
-    return e;
-}
 function def(name, defaultValue) {
     return {
         name,
@@ -76,7 +63,7 @@ const BindDefs = {
     [GameInput.Fullscreen]: def("Full Screen", inputKey(Key.L)),
     [GameInput.HideUI]: def("Hide UI", null),
     [GameInput.TeamPingSingle]: def("Team Ping Menu", null)
-}
+};
 class InputBinds {
     constructor(t, r) {
         this.input = t;

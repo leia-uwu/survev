@@ -11,19 +11,18 @@ function detectMobile() {
 
 function detectTablet() {
     // https://github.com/PoeHaH/devicedetector/blob/master/devicedetector-production.js
-    var isTablet = false;
-    var ua = navigator.userAgent.toLowerCase();
+    let isTablet = false;
+    const ua = navigator.userAgent.toLowerCase();
 
-    (function (a) {
+    (function(a) {
         if (/(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(ua)) isTablet = true;
     })(navigator.userAgent || navigator.vendor || window.opera); // Workaround for iOS 12 not returning iPad
 
-
     if (!isTablet) {
-        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         if (isIOS && window.innerWidth >= 1023 && window.innerHeight >= 747) {
-        isTablet = true;
+            isTablet = true;
         }
     }
 
@@ -43,7 +42,7 @@ function detectiOS() {
     );
 }
 function detectAndroid() {
-    return isMobile.android.device
+    return isMobile.android.device;
 }
 
 function detectIE() {
@@ -66,15 +65,15 @@ function detectiPhoneX() {
 }
 
 function getOs() {
-    if ( detectiOS() ) return "ios"
-    if ( detectAndroid() ) return "android"
-    return "pc"
+    if (detectiOS()) return "ios";
+    if (detectAndroid()) return "android";
+    return "pc";
 }
 
 function getBrowser() {
-    if (detectIE())  return "ie";
+    if (detectIE()) return "ie";
     if (detectEdge()) return "edge";
-    return "unknown"
+    return "unknown";
 }
 
 function setItem(key, value) {
@@ -92,8 +91,8 @@ function getItem(key) {
 
 class Device {
     constructor() {
-        this.os = getOs()
-        this.browser = getBrowser()
+        this.os = getOs();
+        this.browser = getBrowser();
         const webviewParam = getParameterByName("webview") == "true";
         if (webviewParam) {
             setItem("surviv_webview", "true");
@@ -142,4 +141,4 @@ class Device {
     }
 }
 
-export default new Device()
+export default new Device();
