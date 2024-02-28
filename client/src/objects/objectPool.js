@@ -65,17 +65,15 @@ class Creator {
         return this.idToObj[e];
     }
 
-    getTypeById(e, t) {
-        const r = this.getObjById(e);
+    getTypeById(id, s) {
+        const r = this.getObjById(id);
         if (!r) {
-            /* const a = {
-                instId: firebaseManager.instanceId,
-                id: e,
+            const err = {
+                id,
                 ids: Object.keys(this.idToObj),
-                stream: t._view._view
+                stream: s._view._view
             };
-            firebaseManager.logError(`getTypeById${JSON.stringify(a)}`);
-            firebaseManager.storeGeneric("objectPoolErr", "getTypeById"); */
+            console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
             return 0;
         }
         return r.__type;
@@ -101,16 +99,14 @@ class Creator {
         if (a) {
             a.c(t, false, false, r);
         } else {
-            console.log("updateObjPart, missing object", e);
-            // firebaseManager.storeGeneric("objectPoolErr", "updateObjPart");
+            console.error("updateObjPart, missing object", e);
         }
     }
 
     deleteObj(e) {
         const t = this.getObjById(e);
         if (t === undefined) {
-            console.log("deleteObj, missing object", e);
-            // firebaseManager.storeGeneric("objectPoolErr", "deleteObj");
+            console.error("deleteObj, missing object", e);
         } else {
             this.types[t.__type].free(t);
             delete this.idToObj[e];

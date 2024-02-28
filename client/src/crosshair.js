@@ -2,57 +2,60 @@ import $ from "jquery";
 import { util } from "../../shared/utils/util";
 import { CrosshairDefs } from "../../shared/defs/gameObjects/crosshairDefs";
 
-function a(e) {
-    const t = {
+function getCrosshairDims(crosshairDef) {
+    const crosshairBase = {
         width: 64,
         height: 64
     };
     return {
-        width: Math.round((t.width * e.size) / 4) * 4,
-        height: Math.round((t.height * e.size) / 4) * 4
+        width: Math.round((crosshairBase.width * crosshairDef.size) / 4) * 4,
+        height: Math.round((crosshairBase.height * crosshairDef.size) / 4) * 4
     };
 }
-function i(e) {
-    const t = CrosshairDefs[e.type];
-    const r = a(e);
-    const i = util.rgbToHex(util.intToRgb(e.color));
-    const o = e.stroke;
-    let s = t.code.replace(/white/g, i);
-    s = s.replace(/stroke-width=".5"/g, `stroke-width="${o}"`);
-    s = s.replace(/width="64"/g, `width="${r.width}"`);
-    s = s.replace(/height="64"/g, `height="${r.height}"`);
-    return `url('data:image/svg+xml;utf8,${(s = s.replace(
+function getBaseURL(crosshairDef) {
+    const objDef = CrosshairDefs[crosshairDef.type];
+    const dims = getCrosshairDims(crosshairDef);
+    const color = util.rgbToHex(util.intToRgb(crosshairDef.color));
+    const strokeWidth = crosshairDef.stroke;
+    let svgCode = objDef.code.replace(/white/g, color);
+    svgCode = svgCode.replace(/stroke-width=".5"/g, `stroke-width="${strokeWidth}"`);
+    svgCode = svgCode.replace(/width="64"/g, `width="${dims.width}"`);
+    svgCode = svgCode.replace(/height="64"/g, `height="${dims.height}"`);
+    return `url('data:image/svg+xml;utf8,${(svgCode = svgCode.replace(
         /#/g,
         "%23"
     ))}')`;
 }
-function o(e) {
-    const t = a(e);
-    return `${i(e)} ${t.width / 2} ${t.height / 2}, crosshair`;
+function getCursorCSS(crosshairDef) {
+    const dims = getCrosshairDims(crosshairDef);
+    return `${getBaseURL(crosshairDef)} ${dims.width / 2} ${dims.height / 2}, crosshair`;
 }
 
 const crosshair = {
-    getCursorURL: function(e) {
-        return i(e);
+    getCursorURL: function(crosshairDef) {
+        return getBaseURL(crosshairDef);
     },
-    setElemCrosshair: function(e, t) {
-        let r = "crosshair";
-        const a = CrosshairDefs[t.type];
-        if (a) {
-            r = a.cursor ? a.cursor : o(t);
+    setElemCrosshair: function(elem, crosshairDef) {
+        let cursor = "crosshair";
+        const objDef = CrosshairDefs[crosshairDef.type];
+        if (objDef) {
+            cursor = objDef.cursor ? objDef.cursor : getCursorCSS(crosshairDef);
         }
-        e.css({
-            cursor: r
+        elem.css({
+            cursor
         });
     },
-    setGameCrosshair: function(e) {
-        crosshair.setElemCrosshair($("#game-area-wrapper"), e);
-        const t = CrosshairDefs[e.type];
-        const r = !t || t.cursor ? "pointer" : "inherit";
+    setGameCrosshair: function(crosshairDef) {
+        // Set game pointer
+        crosshair.setElemCrosshair($("#game-area-wrapper"), crosshairDef);
+
+        // Adjust UI elements to use the custom crosshair as well
+        const objDef = CrosshairDefs[crosshairDef.type];
+        const style = !objDef || objDef.cursor ? "pointer" : "inherit";
         $(
             ".ui-zoom, .ui-medical, .ui-settings-button, .ui-weapon-switch"
         ).css({
-            cursor: r
+            cursor: style
         });
     }
 };

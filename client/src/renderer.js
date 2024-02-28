@@ -85,7 +85,6 @@ Renderer.prototype = {
             // const o = JSON.stringify({
             //     type: "addChild",
             //     stack: i.stack,
-            //     id: firebaseManager.instanceId,
             //     browser: navigator.userAgent,
             //     playing: this.game.playing,
             //     gameOver: this.game.gameOver,
@@ -97,7 +96,7 @@ Renderer.prototype = {
             //     zOrd: r,
             //     zIdx: a
             // });
-            // firebaseManager.logError(o);
+            // console.error(o);
         }
         if (e.__layerIdx === undefined) {
             e.__layerIdx = -1;

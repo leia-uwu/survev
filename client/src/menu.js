@@ -1,7 +1,6 @@
 import $ from "jquery";
 import device from "./device";
 import helpers from "./helpers";
-import firebaseManager from "./firebaseManager";
 import MenuModal from "./menuModal";
 
 function a(e, t, r, a) {
@@ -43,7 +42,6 @@ function setupModals(e, t) {
             },
             1000
         );
-        firebaseManager.storeGeneric("info", "help");
         return false;
     });
     const i = $("#team-mobile-link");

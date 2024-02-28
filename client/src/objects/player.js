@@ -8,7 +8,6 @@ import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import device from "../device";
-import firebaseManager from "../firebaseManager";
 import helpers from "../helpers";
 import objectPool from "./objectPool";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
@@ -2260,7 +2259,7 @@ PlayerBarn.prototype = {
         const a = this.getTeamInfo(e);
         const i = r ? this.playerIds : a.playerIds;
         if (i.length != t.players.length) {
-            firebaseManager.logError(
+            console.error(
                 `PlayerIds and playerStatus.players out of sync. OurLen: ${i.length} MsgLen: ${t.players.length} FactionMode: ${r}`
             );
             return;
@@ -2320,7 +2319,7 @@ PlayerBarn.prototype = {
     Tr: function(e, t) {
         const r = this.getGroupInfo(e);
         if (r.playerIds.length != t.players.length) {
-            firebaseManager.logError(
+            console.error(
                 "PlayerIds and groupStatus.players out of sync"
             );
             return;

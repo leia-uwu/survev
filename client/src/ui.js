@@ -4,7 +4,6 @@ import { coldet } from "../../shared/utils/coldet";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import device from "./device";
-import firebaseManager from "./firebaseManager";
 import gas from "./gas";
 import helpers from "./helpers";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
@@ -667,14 +666,14 @@ i.prototype = {
         const O = o.qe(t.__id).groupId;
         const D = o.getGroupInfo(O);
         if (!D) {
-            const E = {
+            const err = {
                 playerId: t.__id,
                 groupId: O,
                 spectating: this.spectating,
                 playing: this.game.playingTicker,
                 groupInfo: o.groupInfo
             };
-            firebaseManager.logError(`badTeamInfo_1: ${JSON.stringify(E)}`);
+            console.error(`badTeamInfo_1: ${JSON.stringify(err)}`);
         }
         const B = device.uiLayout == device.UiLayout.Sm;
         const R = D.playerIds.length;

@@ -37,50 +37,52 @@ export default class ConfigManager {
         this.onModifiedListeners = [];
     }
 
-    load(e) {
-        const t = this;
-        const r = function(r) {
-            let a = {};
+    load(onLoadCompleteCb) {
+        const onLoaded = (strConfig) => {
+            let data = {};
             try {
-                a = JSON.parse(r);
+                data = JSON.parse(strConfig);
             } catch (e) { }
-            t.config = util.mergeDeep({}, defaultConfig, a);
-            t.checkUpgradeConfig();
-            t.onModified();
-            t.loaded = true;
-            e();
+            this.config = util.mergeDeep({}, defaultConfig, data);
+            this.checkUpgradeConfig();
+            this.onModified();
+            this.loaded = true;
+            onLoadCompleteCb();
         };
         if (device.webview && webview.hasNativeStorage()) {
-            webview.storageGetItem("surviv_config", (e, t) => {
-                if (e) {
+            webview.storageGetItem("surviv_config", (err, data) => {
+                if (err) {
                     console.log("Failed loading config");
-                    r({});
+                    onLoaded({});
                 } else {
-                    r(t);
+                    onLoaded(data);
                 }
             });
         } else {
-            let a = {};
+            let storedConfig = {};
             try {
-                a = localStorage.getItem("surviv_config");
-            } catch (e) {
+                storedConfig = localStorage.getItem("surviv_config");
+            } catch (err) {
                 this.localStorageAvailable = false;
             }
-            r(a);
+            onLoaded(storedConfig);
         }
     }
 
     store() {
-        const e = JSON.stringify(this.config);
+        const strData = JSON.stringify(this.config);
         if (device.webview && webview.hasNativeStorage()) {
-            webview.storageSetItem("surviv_config", e, (e, t) => {
-                if (e) {
+            webview.storageSetItem("surviv_config", strData, (err, t) => {
+                if (err) {
                     console.log("Failed storing config");
                 }
             });
         } else if (this.localStorageAvailable) {
+            // In browsers, like Safari, localStorage setItem is
+            // disabled in private browsing mode.
+            // This try/catch is here to handle that situation.
             try {
-                localStorage.setItem("surviv_config", e);
+                localStorage.setItem("surviv_config", strData);
             } catch (e) { }
         }
     }
@@ -117,13 +119,13 @@ export default class ConfigManager {
         this.onModifiedListeners.push(e);
     }
 
-    onModified(e) {
+    onModified(key) {
         for (
-            let t = 0;
-            t < this.onModifiedListeners.length;
-            t++
+            let i = 0;
+            i < this.onModifiedListeners.length;
+            i++
         ) {
-            this.onModifiedListeners[t](e);
+            this.onModifiedListeners[i](key);
         }
     }
 

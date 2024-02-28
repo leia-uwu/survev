@@ -1,77 +1,35 @@
-function a() {
-    for (let e = Object.keys(Proxies), t = 0; t < e.length; t++) {
-        const r = e[t];
-        if (window.location.hostname.includes(r)) {
-            return Proxies[r];
+function getProxyDef() {
+    const proxies = Object.keys(proxyDefs);
+
+    for (let i = 0; i < proxies.length; i++) {
+        const proxy = proxies[i];
+
+        if (window.location.hostname.includes(proxy)) {
+            return {
+                proxy,
+                def: proxyDefs[proxy]
+            };
         }
     }
     return null;
 }
-const Proxies = {
-    "surviv.io": {
+
+const proxyDefs = {
+    "example1.io": {
         all: true
     },
-    "surviv2.io": {
+    "example2.io": {
         google: true,
-        discord: true
-    },
-    "2dbattleroyale.com": {
-        google: true,
-        discord: true
-    },
-    "2dbattleroyale.org": {
-        google: true,
-        discord: true
-    },
-    "piearesquared.info": {
-        google: true,
-        discord: true
-    },
-    "thecircleisclosing.com": {
-        google: true,
-        discord: true
-    },
-    "secantsecant.com": {
-        google: true,
-        discord: true
-    },
-    "parmainitiative.com": {
-        google: true,
-        discord: true
-    },
-    "ot38.club": {
-        google: true,
-        discord: true
-    },
-    "drchandlertallow.com": {
-        google: true,
-        discord: true
-    },
-    "rarepotato.com": {
-        discord: true
-    },
-    "archimedesofsyracuse.info": {
-        discord: true
-    },
-    "nevelskoygroup.com": {
-        discord: true
-    },
-    "kugahi.com": {
-        discord: true
-    },
-    "kugaheavyindustry.com": {
-        discord: true
-    },
-    "chandlertallowmd.com": {
         discord: true
     }
 };
+
 export default {
-    Y: function() {
-        return !!a();
+    authLocation: function() {
+        return !!getProxyDef();
     },
-    loginSupported: function(e) {
-        const t = a();
-        return !!t && (!!t[e] || !!t.all);
+    loginSupported: function(loginType) {
+        const proxyDef = getProxyDef();
+        return !!proxyDef && (!!proxyDef[loginType] || !!proxyDef.all);
     }
 };
