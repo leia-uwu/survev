@@ -341,7 +341,7 @@ class Application {
                 this.config
             );
             this.resourceManager.loadMapAssets("main");
-            this.input = new Input.Qe(
+            this.input = new Input.InputHandler(
                 document.getElementById("game-touch-area")
             );
             this.inputBinds = new InputBinds.InputBinds(
