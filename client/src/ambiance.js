@@ -2,134 +2,149 @@ import { math } from "../../shared/utils/math";
 
 export default class Ambiance {
     constructor() {
-        const t = this;
+        const _this = this;
         this.introMusic = true;
         this.soundUpdateThrottle = 0;
         this.tracks = [];
         this.trackToIdx = {};
-        const r = function(e, r, a, i) {
-            t.tracks.push({
-                name: e,
-                sound: r,
-                channel: a,
-                immediateMode: i,
+        const addTrack = function(name, sound, channel, immediateMode) {
+            _this.tracks.push({
+                name,
+                sound,
+                channel,
+                immediateMode,
                 inst: null,
                 instSound: "",
                 fitler: "",
                 weight: 0,
                 volume: 0
             });
-            t.trackToIdx[e] = t.tracks.length - 1;
+            _this.trackToIdx[name] = _this.tracks.length - 1;
         };
-        r("music", "menu_music", "music", false);
-        r("wind", "ambient_wind_01", "ambient", false);
-        r("river", "ambient_stream_01", "ambient", false);
-        r("waves", "ambient_waves_01", "ambient", false);
-        r("interior_0", "", "ambient", true);
-        r("interior_1", "", "ambient", true);
+        // Added in order of weight from least to greatest
+        addTrack("music", "menu_music", "music", false);
+        addTrack("wind", "ambient_wind_01", "ambient", false);
+        addTrack("river", "ambient_stream_01", "ambient", false);
+        addTrack("waves", "ambient_waves_01", "ambient", false);
+        addTrack("interior_0", "", "ambient", true);
+        addTrack("interior_1", "", "ambient", true);
         this.initTime = Date.now();
     }
 
-    getTrack(e) {
-        return this.tracks[this.trackToIdx[e]];
+    getTrack(name) {
+        return this.tracks[this.trackToIdx[name]];
     }
 
     onGameStart() {
         this.introMusic = false;
-        for (let e = 0; e < this.tracks.length; e++) {
-            this.tracks[e].weight = 0;
+        for (let i = 0; i < this.tracks.length; i++) {
+            this.tracks[i].weight = 0;
         }
         this.getTrack("wind").weight = 1;
         this.soundUpdateThrottle = 0;
     }
 
-    onGameComplete(e) {
-        for (let t = 0; t < this.tracks.length; t++) {
-            const r = this.tracks[t];
-            if (r.immediateMode) {
-                r.weight = 0;
+    onGameComplete(audioManager) {
+        for (let i = 0; i < this.tracks.length; i++) {
+            const track = this.tracks[i];
+            if (track.immediateMode) {
+                track.weight = 0;
             }
         }
         this.getTrack("river").weight = 0;
     }
 
-    update(e, t, r) {
-        let a = false;
-        this.soundUpdateThrottle -= e;
+    update(dt, audioManager, inGame) {
+        let updateVolume = false;
+        this.soundUpdateThrottle -= dt;
         if (this.soundUpdateThrottle <= 0) {
             this.soundUpdateThrottle = 0.2;
-            a = true;
+            updateVolume = true;
         }
+        let totalVolume = 0;
         for (
-            let i = 0, s = this.tracks.length - 1;
-            s >= 0;
-            s--
+            let i = this.tracks.length - 1;
+            i >= 0;
+            i--
         ) {
-            const n = this.tracks[s];
+            const track = this.tracks[i];
+            // Start sound if it's loaded
+
             if (
-                !n.inst &&
-                n.sound &&
-                t.isSoundLoaded(n.sound, n.channel)
+                !track.inst &&
+                track.sound &&
+                audioManager.isSoundLoaded(track.sound, track.channel)
             ) {
                 console.log(
                     "Start track",
-                    n.sound,
-                    n.channel
+                    track.sound,
+                    track.channel
                 );
-                n.inst = t.playSound(n.sound, {
-                    channel: n.channel,
+                track.inst = audioManager.playSound(track.sound, {
+                    channel: track.channel,
                     startSilent: true,
-                    loop: n.channel == "ambient",
+                    loop: track.channel == "ambient",
                     forceStart: true,
-                    filter: n.filter,
+                    filter: track.filter,
                     forceFilter: true
                 });
-                n.instSound = n.sound;
-                if (s == 0) {
+                track.instSound = track.sound;
+                if (i == 0) {
                     console.log(
                         "Play delay",
                         Date.now() - this.initTime
                     );
                 }
             }
-            if (n.inst && a) {
-                const l = n.weight * (1 - i);
-                i += l;
-                n.volume = l;
-                const c = t.getSoundDefVolume(
-                    n.sound,
-                    n.channel
+
+            // Update sound volume
+            if (track.inst && updateVolume) {
+                // Compute volume based on weight
+                const volume = track.weight * (1 - totalVolume);
+                totalVolume += volume;
+                track.volume = volume;
+                const defVolume = audioManager.getSoundDefVolume(
+                    track.sound,
+                    track.channel
                 );
-                t.setVolume(n.inst, l * c, n.channel);
+                audioManager.setVolume(track.inst, volume * defVolume, track.channel);
             }
+
+            // Stop sound if it's no longer set and audible, or
+            // of the track name has changed
             if (
-                n.inst &&
-                ((!n.sound &&
-                    math.eqAbs(t.getVolume(n.inst), 0)) ||
-                    (n.sound && n.sound != n.instSound))
+                track.inst &&
+                ((!track.sound &&
+                    math.eqAbs(audioManager.getVolume(track.inst), 0)) ||
+                    (track.sound && track.sound != track.instSound))
             ) {
                 console.log(
                     "Stop track",
-                    n.name,
-                    n.channel
+                    track.name,
+                    track.channel
                 );
-                t.stopSound(n.inst);
-                n.inst = null;
-                n.instSound = "";
+                audioManager.stopSound(track.inst);
+                track.inst = null;
+                track.instSound = "";
             }
-            if (n.immediateMode) {
-                n.sound = "";
-                n.weight = 0;
+
+            // Reset immediate-mode sounds
+            if (track.immediateMode) {
+                track.sound = "";
+                track.weight = 0;
             }
         }
         if (this.introMusic) {
-            const m = this.getTrack("music");
-            if (m.inst) {
-                m.weight = math.min(m.weight + e, 1);
+            // Fade in the music track
+            const music = this.getTrack("music");
+            if (music.inst) {
+                music.weight = math.min(music.weight + dt, 1);
             }
-            const p = this.getTrack("wind");
-            if (m.inst && !t.isSoundPlaying(m.inst)) {
-                p.weight = math.min(p.weight + e, 1);
+
+            // Fade in wind after the music finishes playing
+            const wind = this.getTrack("wind");
+            if (music.inst && !audioManager.isSoundPlaying(music.inst)) {
+                wind.weight = math.min(wind.weight + dt, 1);
             }
         }
     }
