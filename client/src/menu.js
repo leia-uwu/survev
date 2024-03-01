@@ -3,17 +3,17 @@ import device from "./device";
 import helpers from "./helpers";
 import MenuModal from "./menuModal";
 
-function a(e, t, r, a) {
-    const i = $("<div/>", {
+function createToast(text, container, parent, event) {
+    const copyToast = $("<div/>", {
         class: "copy-toast",
-        html: e
+        html: text
     });
-    t.append(i);
-    i.css({
-        left: a.pageX - parseInt(i.css("width")) / 2,
-        top: r.offset().top
+    container.append(copyToast);
+    copyToast.css({
+        left: event.pageX - parseInt(copyToast.css("width")) / 2,
+        top: parent.offset().top
     });
-    i.animate(
+    copyToast.animate(
         {
             top: "-=25",
             opacity: 1
@@ -29,7 +29,7 @@ function a(e, t, r, a) {
         }
     );
 }
-function setupModals(e, t) {
+function setupModals(inputBinds, inputBindUi) {
     const r = $("#start-menu");
     $("#btn-help").click(() => {
         const e = $("#start-help");
@@ -44,18 +44,20 @@ function setupModals(e, t) {
         );
         return false;
     });
-    const i = $("#team-mobile-link");
-    const o = $("#team-mobile-link-desc");
-    const s = $("#team-mobile-link-warning");
-    const n = $("#team-link-input");
+    const teamMobileLink = $("#team-mobile-link");
+    const teamMobileLinkDesc = $("#team-mobile-link-desc");
+    const teamMobileLinkWarning = $("#team-mobile-link-warning");
+    const teamMobileLinkInput = $("#team-link-input");
     const u = $("#social-share-block");
     const g = $("#news-block");
+
+    // Team mobile link
     $("#btn-join-team").click(() => {
         $("#server-warning").css("display", "none");
-        n.val("");
-        i.css("display", "block");
-        o.css("display", "block");
-        s.css("display", "none");
+        teamMobileLinkInput.val("");
+        teamMobileLink.css("display", "block");
+        teamMobileLinkDesc.css("display", "block");
+        teamMobileLinkWarning.css("display", "none");
         r.css("display", "none");
         g.css("display", "none");
         u.css("display", "none");
@@ -63,60 +65,75 @@ function setupModals(e, t) {
         return false;
     });
     $("#btn-team-mobile-link-leave").click(() => {
-        i.css("display", "none");
-        n.val("");
+        teamMobileLink.css("display", "none");
+        teamMobileLinkInput.val("");
         r.css("display", "block");
         g.css("display", "block");
         u.css("display", "block");
         $("#right-column").css("display", "block");
         return false;
     });
+
+    // Auto submit link or code on enter
     $("#team-link-input").on("keypress", function(e) {
         if ((e.which || e.keyCode) === 13) {
             $("#btn-team-mobile-link-join").trigger("click");
             $(this).blur();
         }
     });
+
+    // Blur name input on enter
     $("#player-name-input-solo").on("keypress", function(e) {
         if ((e.which || e.keyCode) === 13) {
             $(this).blur();
         }
     });
+
+    // Scroll to name input on mobile
     if (device.mobile && device.os != "ios") {
         $("#player-name-input-solo").on("focus", function() {
             if (device.isLandscape) {
-                const e = device.screenHeight;
-                const t = e <= 282 ? 18 : 36;
-                document.body.scrollTop = $(this).offset().top - t;
+                const height = device.screenHeight;
+                const offset = height <= 282 ? 18 : 36;
+                document.body.scrollTop = $(this).offset().top - offset;
             }
         });
         $("#player-name-input-solo").on("blur", () => {
             document.body.scrollTop = 0;
         });
     }
-    const y = $("#start-bottom-right");
-    const w = $("#start-top-left");
-    const f = $("#start-top-right");
-    const _ = new MenuModal($("#ui-modal-keybind"));
-    _.onShow(() => {
-        y.fadeOut(200);
-        f.fadeOut(200);
+
+    // Modals
+    const startBottomRight = $("#start-bottom-right");
+    const startTopLeft = $("#start-top-left");
+    const startTopRight = $("#start-top-right");
+
+    // Keybind Modal
+    const modalKeybind = new MenuModal($("#ui-modal-keybind"));
+    modalKeybind.onShow(() => {
+        startBottomRight.fadeOut(200);
+        startTopRight.fadeOut(200);
+
+        // Reset the share section
         $("#ui-modal-keybind-share").css("display", "none");
         $("#keybind-warning").css("display", "none");
         $("#ui-modal-keybind-list").css("height", "420px");
         $("#keybind-code-input").html("");
-        t.refresh();
+        inputBindUi.refresh();
     });
-    _.onHide(() => {
-        y.fadeIn(200);
-        f.fadeIn(200);
-        t.cancelBind();
+    modalKeybind.onHide(() => {
+        startBottomRight.fadeIn(200);
+        startTopRight.fadeIn(200);
+        inputBindUi.cancelBind();
     });
     $(".btn-keybind").click(() => {
-        _.show();
+        modalKeybind.show();
         return false;
     });
+
+    // Share button
     $(".js-btn-keybind-share").click(() => {
+        // Toggle the share screen
         if (
             $("#ui-modal-keybind-share").css("display") == "block"
         ) {
@@ -127,60 +144,68 @@ function setupModals(e, t) {
             $("#ui-modal-keybind-list").css("height", "275px");
         }
     });
+
+    // Copy keybind code
     $("#keybind-link, #keybind-copy").click((e) => {
-        a("Copied!", _.selector, $("#keybind-link"), e);
+        createToast("Copied!", modalKeybind.selector, $("#keybind-link"), e);
         const t = $("#keybind-link").html();
         helpers.copyTextToClipboard(t);
     });
-    $("#btn-keybind-code-load").on("click", (r) => {
-        const i = $("#keybind-code-input").val();
+
+    // Apply keybind code
+    $("#btn-keybind-code-load").on("click", (e) => {
+        const code = $("#keybind-code-input").val();
         $("#keybind-code-input").val("");
-        const o = e.fromBase64(i);
-        $("#keybind-warning").css("display", o ? "none" : "block");
-        if (o) {
-            a(
+        const success = inputBinds.fromBase64(code);
+        $("#keybind-warning").css("display", success ? "none" : "block");
+        if (success) {
+            createToast(
                 "Loaded!",
-                _.selector,
+                modalKeybind.selector,
                 $("#btn-keybind-code-load"),
-                r
+                e
             );
-            e.saveBinds();
+            inputBinds.saveBinds();
         }
-        t.refresh();
+        inputBindUi.refresh();
     });
-    const b = new MenuModal($("#modal-settings"));
-    b.onShow(() => {
-        y.fadeOut(200);
-        f.fadeOut(200);
+
+    // Settings Modal
+    const modalSettings = new MenuModal($("#modal-settings"));
+    modalSettings.onShow(() => {
+        startBottomRight.fadeOut(200);
+        startTopRight.fadeOut(200);
     });
-    b.onHide(() => {
-        y.fadeIn(200);
-        f.fadeIn(200);
+    modalSettings.onHide(() => {
+        startBottomRight.fadeIn(200);
+        startTopRight.fadeIn(200);
     });
     $(".btn-settings").click(() => {
-        b.show();
+        modalSettings.show();
         return false;
     });
     $(".modal-settings-text").click(function(e) {
-        const t = $(this).siblings("input:checkbox");
-        t.prop("checked", !t.is(":checked"));
-        t.trigger("change");
+        const checkbox = $(this).siblings("input:checkbox");
+        checkbox.prop("checked", !checkbox.is(":checked"));
+        checkbox.trigger("change");
     });
-    const x = new MenuModal($("#modal-hamburger"));
-    x.onShow(() => {
-        w.fadeOut(200);
+
+    // Hamburger Modal
+    const modalHamburger = new MenuModal($("#modal-hamburger"));
+    modalHamburger.onShow(() => {
+        startTopLeft.fadeOut(200);
     });
-    x.onHide(() => {
-        w.fadeIn(200);
+    modalHamburger.onHide(() => {
+        startTopLeft.fadeIn(200);
     });
     $("#btn-hamburger").click(() => {
-        x.show();
+        modalHamburger.show();
         return false;
     });
     $(".modal-body-text").click(function() {
-        const e = $(this).siblings("input:checkbox");
-        e.prop("checked", !e.is(":checked"));
-        e.trigger("change");
+        const checkbox = $(this).siblings("input:checkbox");
+        checkbox.prop("checked", !checkbox.is(":checked"));
+        checkbox.trigger("change");
     });
     $("#force-refresh").click(() => {
         window.location.href = `/?t=${Date.now()}`;
@@ -218,7 +243,9 @@ window.aiptag &&
   (window.aiptag.consented = window.cookiesConsented)); */
 }
 function onResize() {
+    // Add styling specific to safari in browser
     if (device.os == "ios") {
+        // iPhone X+ specific
         if (device.model == "iphonex") {
             if (device.isLandscape) {
                 $(".main-volume-slider").css("width", "90%");
@@ -241,23 +268,28 @@ function onResize() {
         }
     }
     if (device.tablet) {
+        // Temporarily remove the youtube links
         $("#featured-youtuber").remove();
         $(".btn-youtube").remove();
     }
     if (device.touch) {
+        // Remove full screen option from main menu
         $(".btn-start-fullscreen").css("display", "none");
     } else {
         $(".btn-start-fullscreen").css("display", "block");
     }
+    // Set keybind button styling
     $(".btn-keybind").css(
         "display",
         device.mobile ? "none" : "inline-block"
     );
 }
-function applyWebviewStyling(e) {
-    const t = $("#modal-hamburger-bottom");
-    t.children().slice(-3).remove();
-    t.children().last().removeClass("footer-after");
+function applyWebviewStyling(isTablet) {
+    // For webviews, we only want to display the team code, not the url.
+    // We'll reuse the copy-url element to display the code.
+    const hamburgerMenu = $("#modal-hamburger-bottom");
+    hamburgerMenu.children().slice(-3).remove();
+    hamburgerMenu.children().last().removeClass("footer-after");
     $("#invite-link-text").attr("data-l10n", "index-invite-code");
     $("#team-code-text").css("display", "none");
     $("#invite-code-text").css("display", "none");
@@ -266,7 +298,7 @@ function applyWebviewStyling(e) {
     $(".btn-download-android").css("display", "none");
     $("#mobile-download-app").css("display", "none");
     $("#start-bottom-middle").css("display", "none");
-    if (!e) {
+    if (!isTablet) {
         $("#btn-help").css("display", "none");
         $("#news-block, #start-menu").css({
             height: 186
@@ -277,9 +309,9 @@ function applyWebviewStyling(e) {
         });
     }
 }
-function applyMobileBrowserStyling(e) {
+function applyMobileBrowserStyling(isTablet) {
     $("#team-hide-url").css("display", "none");
-    if (e) {
+    if (isTablet) {
         $("#start-bottom-middle").addClass(
             "start-bottom-middle-tablet"
         );
