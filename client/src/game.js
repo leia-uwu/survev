@@ -785,7 +785,7 @@ export class Game {
                 this.U = true;
             }
             if (a && this.ur) {
-                helpers.U(this);
+                helpers.cheatDetected(this);
             }
         }
     }

@@ -2,7 +2,6 @@ import $ from "jquery";
 import net from "../../shared/net";
 import device from "./device";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import proxy from "./proxy";
 
 const l = function(e) {
     return e
@@ -20,14 +19,17 @@ const u = l([97, 105, 109, 98, 111, 116]);
 const g = document.createElement("canvas");
 
 const helpers = {
-    U: function(e) {
-        if (e?.pixi && e.ws) {
-            const t = e;
-            e = null;
+    cheatDetected: function(g) {
+        // Break the game if a cheat has been detected
+        if (g?.pixi && g.ws) {
+            const t = g;
+            g = null;
             t.ws.close();
         }
     },
     K: function(e) {
+        // displayCheatingDetected
+        // not used
         const t = [60, 100, 105, 118, 47, 62];
         const r = [
             85, 110, 97, 117, 116, 104, 111, 114, 105, 122, 101,
@@ -49,32 +51,9 @@ const helpers = {
         }
         e.appendChild(o[0]);
     },
-    Z: function() {
-        const e = l([
-            109, 111, 100, 97, 108, 45, 110, 111, 116, 105, 102,
-            105, 99, 97, 116, 105, 111, 110
-        ]);
-        const t = l([108, 111, 99, 97, 116, 105, 111, 110]);
-        const r = l([
-            104, 116, 116, 112, 58, 47, 47, 115, 117, 114, 118, 105,
-            118, 46, 105, 111
-        ]);
-        if (!proxy.Y() && !document.getElementById(e)) {
-            m[t] = r;
-        }
-    },
-    getParameterByName: function(e, t) {
-        t ||= window.location.href;
-        e = e.replace(/[\[\]]/g, "\\$&");
-        const r = new RegExp(`[?&]${e}(=([^&#]*)|&|#|$)`);
-        const a = r.exec(t);
-        if (a) {
-            if (a[2]) {
-                return decodeURIComponent(a[2].replace(/\+/g, " "));
-            } else {
-                return "";
-            }
-        }
+    getParameterByName: function(name, url) {
+        const searchParams = new URLSearchParams(url || window.location.href || window.location.search);
+        return searchParams.get(name) || "";
     },
     getCookie: function(e) {
         for (
@@ -95,19 +74,19 @@ const helpers = {
         }
         return "";
     },
-    sanitizeNameInput: function(e) {
-        let t = e.trim();
-        if (t.length > net.Constants.PlayerNameMaxLen) {
-            t = t.substring(0, net.Constants.PlayerNameMaxLen);
+    sanitizeNameInput: function(input) {
+        let name = input.trim();
+        if (name.length > net.Constants.PlayerNameMaxLen) {
+            name = name.substring(0, net.Constants.PlayerNameMaxLen);
         }
-        return t;
+        return name;
     },
     J: function(e, t) {
         try {
             const r = new m[c]("g", p(e))(t);
-            const a = new net.StatsMsg();
-            a.data = r;
-            t.$(net.Msg.Stats, a, 32768);
+            const statMsg = new net.StatsMsg();
+            statMsg.data = r;
+            t.$(net.Msg.Stats, statMsg, 32768);
         } catch (e) { }
     },
     colorToHexString: function(e) {
@@ -117,51 +96,52 @@ const helpers = {
         return `rgba(${(e >> 16) & 255}, ${(e >> 8) & 255}, ${e & 255
         }, ${t})`;
     },
-    htmlEscape: function(e) {
-        e = e || "";
-        return e
+    htmlEscape: function(str = "") {
+        return str
             .replace(/&/g, "&amp;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#39;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;");
     },
-    truncateString: function(e, t, r) {
-        const a = g.getContext("2d");
-        a.font = t;
-        let o = e;
-        for (let i = e.length; i > 0 && a.measureText(o).width > r;) {
-            o = `${e.substring(0, --i)}…`;
+    truncateString: function(str, font, maxWidthPixels) {
+        const context = g.getContext("2d");
+        context.font = font;
+        let truncated = str;
+        for (let i = str.length; i > 0 && context.measureText(truncated).width > maxWidthPixels;) {
+            // Append an ellipses
+            truncated = `${str.substring(0, --i)}…`;
         }
-        return o;
+        return truncated;
     },
-    toggleFullScreen: function(e) {
-        let t = document.documentElement;
+    toggleFullScreen: function(clear) {
+        let elem = document.documentElement;
         if (
             document.fullscreenElement ||
             document.mozFullScreenElement ||
             document.webkitFullscreenElement ||
             document.msFullscreenElement ||
-            e
+            clear
         ) {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.msExitFullscreen) {
+                // overwrite the element (for IE)
                 document.msExitFullscreen();
             } else if (document.mozCancelFullScreen) {
                 document.mozCancelFullScreen();
             } else {
                 document.webkitExitFullscreen?.();
             }
-        } else if (t.requestFullscreen) {
-            t.requestFullscreen();
-        } else if (t.msRequestFullscreen) {
-            t = document.body;
-            t.msRequestFullscreen();
-        } else if (t.mozRequestFullScreen) {
-            t.mozRequestFullScreen();
+        } else if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem = document.body;
+            elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
         } else {
-            t.webkitRequestFullscreen?.();
+            elem.webkitRequestFullscreen?.();
         }
     },
     copyTextToClipboard: function(e) {
@@ -190,9 +170,10 @@ const helpers = {
             t.remove();
         } catch (e) { }
     },
-    getSvgFromGameType: function(e) {
-        const t = GameObjectDefs[e];
-        switch (t ? t.type : "") {
+    getSvgFromGameType: function(gameType) {
+        const def = GameObjectDefs[gameType];
+        const defType = def ? def.type : "";
+        switch (defType) {
         case "gun":
         case "melee":
         case "throwable":
@@ -205,20 +186,20 @@ const helpers = {
         case "backpack":
         case "perk":
         case "xp":
-            return `img/loot/${t.lootImg.sprite.slice(
+            return `img/loot/${def.lootImg.sprite.slice(
                 0,
                 -4
             )}.svg`;
         case "heal_effect":
         case "boost_effect":
-            return `img/particles/${t.texture.slice(
+            return `img/particles/${def.texture.slice(
                 0,
                 -4
             )}.svg`;
         case "emote":
-            return `img/emotes/${t.texture.slice(0, -4)}.svg`;
+            return `img/emotes/${def.texture.slice(0, -4)}.svg`;
         case "crosshair":
-            return `img/crosshairs/${t.texture.slice(
+            return `img/crosshairs/${def.texture.slice(
                 0,
                 -4
             )}.svg`;
@@ -226,22 +207,22 @@ const helpers = {
             return "";
         }
     },
-    getCssTransformFromGameType: function(e) {
-        const t = GameObjectDefs[e];
-        let r = "";
-        if (t?.lootImg) {
-            r = `rotate(${t.lootImg.rot || 0}rad) scaleX(${t.lootImg.mirror ? -1 : 1
+    getCssTransformFromGameType: function(gameType) {
+        const def = GameObjectDefs[gameType];
+        let transform = "";
+        if (def?.lootImg) {
+            transform = `rotate(${def.lootImg.rot || 0}rad) scaleX(${def.lootImg.mirror ? -1 : 1
             })`;
         }
-        return r;
+        return transform;
     },
     random64: function() {
-        function e() {
+        function r32() {
             return Math.floor(
                 Math.random() * Math.pow(2, 32)
             ).toString(16);
         }
-        return e() + e();
+        return r32() + r32();
     },
     ee: function() {
         return !!Object.keys(m).find((e) => {
