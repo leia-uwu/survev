@@ -6,8 +6,8 @@ import helpers from "./helpers";
 
 const gasMode = GameConfig.GasMode;
 
-const p = 100000;
-const h = 512;
+const overdraw = 100 * 1000;
+const segments = 512;
 
 class GasRenderer {
     constructor(t, r) {
@@ -27,15 +27,15 @@ class GasRenderer {
             const i = this.display;
             i.clear();
             i.beginFill(r, 0.6);
-            i.moveTo(-p, -p);
-            i.lineTo(p, -p);
-            i.lineTo(p, p);
-            i.lineTo(-p, p);
+            i.moveTo(-overdraw, -overdraw);
+            i.lineTo(overdraw, -overdraw);
+            i.lineTo(overdraw, overdraw);
+            i.lineTo(-overdraw, overdraw);
             i.closePath();
             i.beginHole();
             i.moveTo(0, 1);
-            for (let s = 1; s < h; s++) {
-                const n = s / h;
+            for (let s = 1; s < segments; s++) {
+                const n = s / segments;
                 const l = Math.sin(Math.PI * 2 * n);
                 const c = Math.cos(Math.PI * 2 * n);
                 i.lineTo(l, c);
@@ -59,28 +59,30 @@ class GasRenderer {
         }
     }
 
-    render(e, t, r) {
+    render(gasPos, gasRad, active) {
         if (this.canvas != null) {
-            const a = this.canvas;
-            const i = a.getContext("2d");
-            i.clearRect(0, 0, a.width, a.height);
-            i.beginPath();
-            i.fillStyle = this.gasColorDOMString;
-            i.rect(0, 0, a.width, a.height);
-            i.arc(e.x, e.y, t, 0, Math.PI * 2, true);
-            i.fill();
+            const canvas = this.canvas;
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.fillStyle = this.gasColorDOMString;
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.arc(gasPos.x, gasPos.y, gasRad, 0, Math.PI * 2, true);
+            ctx.fill();
         } else {
-            const o = v2.copy(e);
-            let s = t;
-            if (s < 0.1) {
-                s = 1;
-                o.x += p * 0.5;
+            const center = v2.copy(gasPos);
+            // Once the hole gets small enough, just fill the entire
+            // screen with some random part of the geometry
+            let rad = gasRad;
+            if (rad < 0.1) {
+                rad = 1;
+                center.x += overdraw * 0.5;
             }
-            const n = this.display;
-            n.position.set(o.x, o.y);
-            n.scale.set(s, s);
+            const ctx = this.display;
+            ctx.position.set(center.x, center.y);
+            ctx.scale.set(rad, rad);
         }
-        this.display.visible = r;
+        this.display.visible = active;
     }
 }
 
@@ -98,42 +100,49 @@ class GasSafeZoneRenderer {
         this.playerPos = v2.create(0, 0);
     }
 
-    render(e, t, r, a, i) {
-        this.circleGfx.visible = a;
-        this.lineGfx.visible = i;
-        if (a || i) {
-            const o = !v2.eq(this.safePos, e, 0.0001);
-            const s = Math.abs(this.safeRad - t) > 0.0001;
-            const n = !v2.eq(this.playerPos, r, 0.0001);
-            if (o) {
-                this.safePos.x = e.x;
-                this.safePos.y = e.y;
+    render(safePos, safeRad, playerPos, drawCircle, drawLine) {
+        // Render a circle showing the safe zone, and a line pointing from
+        // the player to the center. Only update geometry if relevant data
+        // has changed.
+        this.circleGfx.visible = drawCircle;
+        this.lineGfx.visible = drawLine;
+        if (drawCircle || drawLine) {
+            const safePosChanged = !v2.eq(this.safePos, safePos, 0.0001);
+            const safeRadChanged = Math.abs(this.safeRad - safeRad) > 0.0001;
+            const playerPosChanged = !v2.eq(this.playerPos, playerPos, 0.0001);
+
+            if (safePosChanged) {
+                this.safePos.x = safePos.x;
+                this.safePos.y = safePos.y;
             }
-            if (s) {
-                this.safeRad = t;
+            if (safeRadChanged) {
+                this.safeRad = safeRad;
             }
-            if (n) {
-                this.playerPos.x = r.x;
-                this.playerPos.y = r.y;
+            if (playerPosChanged) {
+                this.playerPos.x = playerPos.x;
+                this.playerPos.y = playerPos.y;
             }
-            if (o) {
+
+            // Update circle?
+            if (safePosChanged) {
                 this.circleGfx.position.set(
                     this.safePos.x,
                     this.safePos.y
                 );
             }
-            if (s) {
+            if (safeRadChanged) {
                 this.circleGfx.clear();
                 this.circleGfx.lineStyle(1.5, 16777215);
-                this.circleGfx.drawCircle(0, 0, t);
+                is.circleGfx.drawCircle(0, 0, safeRad);
             }
-            if (o || s || n) {
-                const l = v2.length(v2.sub(r, e)) < t;
-                const m = l ? 0.5 : 1;
+            // Update line?
+            if (safePosChanged || safeRadChanged || playerPosChanged) {
+                const isSafe = v2.length(v2.sub(playerPos, safePos)) < safeRad;
+                const alpha = isSafe ? 0.5 : 1;
                 this.lineGfx.clear();
-                this.lineGfx.lineStyle(2, 65280, m);
-                this.lineGfx.moveTo(r.x, r.y);
-                this.lineGfx.lineTo(e.x, e.y);
+                this.lineGfx.lineStyle(2, 65280, alpha);
+                this.lineGfx.moveTo(playerPos.x, playerPos.y);
+                this.lineGfx.lineTo(safePos.x, safePos.y);
             }
         }
     }
@@ -141,17 +150,17 @@ class GasSafeZoneRenderer {
 
 class Gas {
     constructor(t) {
-        const r = (Math.sqrt(2) + 0.01) * 1024;
+        const startRad = (Math.sqrt(2) + 0.01) * 1024;
         this.mode = gasMode.Inactive;
         this.circleT = 0;
         this.duration = 0;
         this.circleOld = {
             pos: v2.create(0, 0),
-            rad: r
+            rad: startRad
         };
         this.circleNew = {
             pos: v2.create(0, 0),
-            rad: r
+            rad: startRad
         };
         this.gasRenderer = new GasRenderer(t, 16711680);
     }
@@ -169,38 +178,43 @@ class Gas {
     }
 
     getCircle() {
-        const e = this.mode == gasMode.Moving ? this.circleT : 0;
+        const t = this.mode == gasMode.Moving ? this.circleT : 0;
         return {
             pos: v2.lerp(
-                e,
+                t,
                 this.circleOld.pos,
                 this.circleNew.pos
             ),
             rad: math.lerp(
-                e,
+                t,
                 this.circleOld.rad,
                 this.circleNew.rad
             )
         };
     }
 
-    setProgress(e) {
-        this.circleT = e;
+    setProgress(circleT) {
+        this.circleT = circleT;
     }
 
-    setFullState(e, t, r, a) {
-        if (t.mode != this.mode) {
-            const i = Math.ceil(t.duration * (1 - e));
-            a.setWaitingForPlayers(false);
-            a.displayGasAnnouncement(t.mode, i);
+    setFullState(circleT, data, map, ui) {
+        // Update Ui
+        if (data.mode != this.mode) {
+            const timeLeft = Math.ceil(data.duration * (1 - circleT));
+            ui.setWaitingForPlayers(false);
+            ui.displayGasAnnouncement(data.mode, timeLeft);
         }
-        this.mode = t.mode;
-        this.duration = t.duration;
-        this.circleT = e;
-        this.circleOld.pos = v2.copy(t.posOld);
-        this.circleOld.rad = t.radOld;
-        this.circleNew.pos = v2.copy(t.posNew);
-        this.circleNew.rad = t.radNew;
+
+        // Update state
+        this.mode = data.mode;
+        this.duration = data.duration;
+        this.circleT = circleT;
+
+        // Update circles
+        this.circleOld.pos = v2.copy(data.posOld);
+        this.circleOld.rad = data.radOld;
+        this.circleNew.pos = v2.copy(data.posNew);
+        this.circleNew.rad = data.radNew;
     }
 
     render(e) {
