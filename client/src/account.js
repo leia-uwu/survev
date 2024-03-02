@@ -3,29 +3,33 @@ import api from "./api";
 import loadouts from "./loadouts";
 import { util } from "../../shared/utils/util";
 
-function i(e, t, r) {
-    if (typeof t === "function") {
-        r = t;
-        t = null;
+function ajaxRequest(url, data, cb) {
+    if (typeof data === "function") {
+        cb = data;
+        data = null;
     }
-    const a = {
-        url: api.resolveUrl(e),
+    const opts = {
+        url: api.resolveUrl(url),
         type: "POST",
-        timeout: 10000,
+        timeout: 10 * 1000,
         headers: {
+            // Set a header to guard against CSRF attacks.
+            //
+            // JQuery does this automatically, however we'll add it here explicitly
+            // so the intent is clear incase of refactoring in the future.
             "X-Requested-With": "XMLHttpRequest"
         }
     };
-    if (t) {
-        a.contentType = "application/json; charset=utf-8";
-        a.data = JSON.stringify(t);
+    if (data) {
+        opts.contentType = "application/json; charset=utf-8";
+        opts.data = JSON.stringify(data);
     }
-    $.ajax(a)
-        .done((e, t) => {
-            r(null, e);
+    $.ajax(opts)
+        .done((res) => {
+            cb(null, res);
         })
         .fail((e) => {
-            r(e);
+            cb(e);
         });
 }
 
@@ -80,50 +84,50 @@ class Account {
         };
     }
 
-    ajaxRequest(e, t, r) {
-        const a = this;
-        if (typeof t === "function") {
-            r = t;
-            t = null;
+    ajaxRequest(url, data, cb) {
+        if (typeof data === "function") {
+            cb = data;
+            data = null;
         }
         this.requestsInFlight++;
         this.emit("request", this);
-        i(e, t, (e, t) => {
-            r(e, t);
-            a.requestsInFlight--;
-            a.emit("request", a);
-            if (a.requestsInFlight == 0) {
-                a.emit("requestsComplete");
+        ajaxRequest(url, data, (err, res) => {
+            cb(err, res);
+            this.requestsInFlight--;
+            this.emit("request", this);
+            if (this.requestsInFlight == 0) {
+                this.emit("requestsComplete");
             }
         });
     }
 
-    addEventListener(e, t) {
-        this.events[e] = this.events[e] || [];
-        this.events[e].push(t);
+    addEventListener(event, callback) {
+        this.events[event] = this.events[event] || [];
+        this.events[event].push(callback);
     }
 
-    removeEventListener(e, t) {
+    removeEventListener(event, callback) {
+        const listeners = this.events[event] || [];
         for (
-            let r = this.events[e] || [], a = r.length - 1;
-            a >= 0;
-            a--
+            let i = listeners.length - 1;
+            i >= 0;
+            i--
         ) {
-            if (r[a] == t) {
-                r.splice(a, 1);
+            if (listeners[i] == callback) {
+                listeners.splice(i, 1);
             }
         }
     }
 
-    emit(e) {
-        const t = (this.events[e] || []).slice(0);
-        const r = arguments.length;
-        const a = Array(r > 1 ? r - 1 : 0);
-        for (let i = 1; i < r; i++) {
-            a[i - 1] = arguments[i];
+    emit(event) {
+        const listenersCopy = (this.events[event] || []).slice(0);
+        const len = arguments.length;
+        const data = Array(len > 1 ? len - 1 : 0);
+        for (let i = 1; i < len; i++) {
+            data[i - 1] = arguments[i];
         }
-        for (let o = 0; o < t.length; o++) {
-            t[o].apply(t, a);
+        for (let i = 0; i < listenersCopy.length; i++) {
+            listenersCopy[i].apply(listenersCopy, data);
         }
     }
 
@@ -149,26 +153,26 @@ class Account {
             "app-data=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     }
 
-    loginWithAccessToken(e, t, r) {
-        const a = this;
-        t((t, i) => {
-            if (t) {
-                a.emit("error", "login_failed");
+    loginWithAccessToken(authUrl, requestTokenFn, extractTokenFn) {
+        const _this = this;
+        requestTokenFn((err, data) => {
+            if (err) {
+                _this.emit("error", "login_failed");
                 return;
             }
-            const o = r(i);
-            a.ajaxRequest(
-                `${e}?access_token=${o}`,
-                (e, t) => {
-                    if (e) {
-                        a.emit("error", "login_failed");
+            const token = extractTokenFn(data);
+            _this.ajaxRequest(
+                `${authUrl}?access_token=${token}`,
+                (err, res) => {
+                    if (err) {
+                        _this.emit("error", "login_failed");
                     } else {
-                        a.config.set(
+                        _this.config.set(
                             "sessionCookie",
-                            t.cookie
+                            res.cookie
                         );
-                        a.setSessionCookies();
-                        a.login();
+                        _this.setSessionCookies();
+                        _this.login();
                     }
                 }
             );
@@ -246,51 +250,51 @@ class Account {
     }
 
     deleteAccount() {
-        const e = this;
-        this.ajaxRequest("/api/user/delete", (t, r) => {
-            if (t) {
+        const _this = this;
+        this.ajaxRequest("/api/user/delete", (err, res) => {
+            if (err) {
                 console.error("account", "delete_error");
-                e.emit("error", "server_error");
+                _this.emit("error", "server_error");
                 return;
             }
-            e.config.set("profile", null);
-            e.config.set("sessionCookie", null);
+            _this.config.set("profile", null);
+            _this.config.set("sessionCookie", null);
             window.location.reload();
         });
     }
 
-    setUsername(e, t) {
+    setUsername(username, callback) {
         const r = this;
         this.ajaxRequest(
             "/api/user/username",
             {
-                username: e
+                username
             },
-            (e, a) => {
-                if (e) {
+            (err, res) => {
+                if (err) {
                     console.error(
                         "account",
                         "set_username_error"
                     );
-                    t(e);
+                    callback(err);
                     return;
                 }
-                if (a.result == "success") {
+                if (res.result == "success") {
                     r.loadProfile();
-                    t();
+                    callback();
                 } else {
-                    t(a.result);
+                    callback(res.result);
                 }
             }
         );
     }
 
-    setLoadout(e) {
+    setLoadout(loadout) {
         // const t = this;
         // const r = this.loadout;
-        this.loadout = e;
+        this.loadout = loadout;
         this.emit("loadout", this.loadout);
-        this.config.set("loadout", e);
+        this.config.set("loadout", loadout);
         /* this.ajaxRequest(
             "/api/user/loadout",
             {
@@ -315,28 +319,29 @@ class Account {
         ); */
     }
 
-    setItemStatus(e, t) {
-        const r = this;
-        if (t.length != 0) {
-            for (let a = 0; a < t.length; a++) {
+    setItemStatus(status, itemTypes) {
+        const _this = this;
+        if (itemTypes.length != 0) {
+            // Preemptively mark the item status as modified on our local copy
+            for (let i = 0; i < itemTypes.length; i++) {
                 (function(a) {
-                    const i = r.items.find((e) => {
-                        return e.type == t[a];
+                    const item = _this.items.find((e) => {
+                        return e.type == itemTypes[a];
                     });
-                    if (i) {
-                        i.status = Math.max(i.status, e);
+                    if (item) {
+                        item.status = Math.max(item.status, status);
                     }
-                })(a);
+                })(i);
             }
             this.emit("items", this.items);
             this.ajaxRequest(
                 "/api/user/set_item_status",
                 {
-                    status: e,
-                    itemTypes: t
+                    status,
+                    itemTypes
                 },
-                (e, t) => {
-                    if (e) {
+                (err, res) => {
+                    if (err) {
                         console.error(
                             "account",
                             "set_item_status_error"
@@ -369,53 +374,53 @@ class Account {
         );
     }
 
-    getPass(e) {
-        const t = this;
+    getPass(tryRefreshQuests) {
+        const _this = this;
         this.ajaxRequest(
             "/api/user/get_pass",
             {
-                tryRefreshQuests: e
+                tryRefreshQuests
             },
-            (e, r) => {
-                t.pass = {};
-                t.quests = [];
-                t.questPriv = "";
-                if (e || !r.success) {
+            (err, res) => {
+                _this.pass = {};
+                _this.quests = [];
+                _this.questPriv = "";
+                if (err || !res.success) {
                     console.error(
                         "account",
                         "get_pass_error"
                     );
                 } else {
-                    t.pass = r.pass || {};
-                    t.quests = r.quests || [];
-                    t.questPriv = r.questPriv || "";
-                    t.quests.sort((e, t) => {
-                        return e.idx - t.idx;
+                    _this.pass = res.pass || {};
+                    _this.quests = res.quests || [];
+                    _this.questPriv = res.questPriv || "";
+                    _this.quests.sort((a, b) => {
+                        return a.idx - b.idx;
                     });
-                    t.emit("pass", t.pass, t.quests, true);
-                    if (t.pass.newItems) {
-                        t.loadProfile();
+                    _this.emit("pass", _this.pass, _this.quests, true);
+                    if (_this.pass.newItems) {
+                        _this.loadProfile();
                     }
                 }
             }
         );
     }
 
-    setPassUnlock(e) {
-        const t = this;
+    setPassUnlock(unlockType) {
+        const _this = this;
         this.ajaxRequest(
             "/api/user/set_pass_unlock",
             {
-                unlockType: e
+                unlockType
             },
-            (e, r) => {
-                if (e || !r.success) {
+            (err, res) => {
+                if (err || !res.success) {
                     console.error(
                         "account",
                         "set_pass_unlock_error"
                     );
                 } else {
-                    t.getPass(false);
+                    _this.getPass(false);
                 }
             }
         );

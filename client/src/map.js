@@ -15,28 +15,33 @@ import Building from "./objects/building";
 import Obstacle from "./objects/obstacle";
 import Structure from "./objects/structure";
 
-function a(e, t, r) {
-    e.moveTo(t.x, t.y);
-    e.lineTo(r.x, r.y);
+// Drawing
+
+function drawLine(canvas, pt0, pt1) {
+    canvas.moveTo(pt0.x, pt0.y);
+    canvas.lineTo(pt1.x, pt1.y);
 }
-function i(e, t) {
-    let r = t[0];
-    e.moveTo(r.x, r.y);
-    for (let a = 1; a < t.length; ++a) {
-        r = t[a];
-        e.lineTo(r.x, r.y);
+function tracePath(canvas, path) {
+    let point = path[0];
+    canvas.moveTo(point.x, point.y);
+    for (let i = 1; i < path.length; ++i) {
+        point = path[i];
+        canvas.lineTo(point.x, point.y);
     }
-    e.closePath();
+    canvas.closePath();
 }
-function o(e, t, r) {
-    const a = t.max.x - t.min.x;
-    const o = t.max.y - t.min.y;
-    const s = math.max(t.offsetDist, 0.001);
-    const n = t.roughness;
-    const l = Math.round((a * n) / s);
-    const c = Math.round((o * n) / s);
-    const m = util.seededRand(r);
-    i(e, terrainGen.generateJaggedAabbPoints(t, l, c, s, m));
+function traceGroundPatch(canvas, patch, seed) {
+    const width = patch.max.x - patch.min.x;
+    const height = patch.max.y - patch.min.y;
+
+    const offset = math.max(patch.offsetDist, 0.001);
+    const roughness = patch.roughness;
+
+    const divisionsX = Math.round((width * roughness) / offset);
+    const divisionsY = Math.round((height * roughness) / offset);
+
+    const seededRand = util.seededRand(seed);
+    tracePath(canvas, terrainGen.generateJaggedAabbPoints(patch, divisionsX, divisionsY, offset, seededRand));
 }
 function Map(e) {
     this.decalBarn = e;
@@ -70,6 +75,8 @@ function Map(e) {
     this.lootDropSfxIds = [];
     this.terrain = null;
     this.cameraEmitter = null;
+
+    // Anti-cheat
     this.ea = 0;
     this._r = false;
     this.U = false;
@@ -77,8 +84,11 @@ function Map(e) {
 
 Map.prototype = {
     free: function() {
-        for (let e = this.nr.p(), t = 0; t < e.length; t++) {
-            e[t].n();
+        // Buildings need to stop sound emitters
+        const buildings = this.nr.p();
+        for (
+            let i = 0; i < buildings.length; i++) {
+            buildings[i].n();
         }
         this.mapTexture?.destroy(true);
         this.display.ground.destroy({
@@ -87,52 +97,53 @@ Map.prototype = {
         this.cameraEmitter?.stop();
         this.cameraEmitter = null;
     },
-    resize: function(e, t) {
-        this.renderMap(e, t);
+    resize: function(pixiRenderer, canvasMode) {
+        this.renderMap(pixiRenderer, canvasMode);
     },
-    loadMap: function(e, t, r, a) {
-        this.mapName = e.mapName;
-        const i = MapDefs[this.mapName];
-        if (!i) {
+    loadMap: function(mapMsg, camera, canvasMode, particleBarn) {
+        this.mapName = mapMsg.mapName;
+        // Clone the source mapDef
+        const mapDef = MapDefs[this.mapName];
+        if (!mapDef) {
             throw new Error(
                 `Failed loading mapDef ${this.mapName}`
             );
         }
-        this.mapDef = util.cloneDeep(i);
+        this.mapDef = util.cloneDeep(mapDef);
         this.factionMode = !!this.mapDef.gameMode.factionMode;
         this.perkMode = !!this.mapDef.gameMode.perkMode;
         this.turkeyMode = !!this.mapDef.gameMode.turkeyMode;
-        this.seed = e.seed;
-        this.width = e.width;
-        this.height = e.height;
+        this.seed = mapMsg.seed;
+        this.width = mapMsg.width;
+        this.height = mapMsg.height;
         this.terrain = terrainGen.generateTerrain(
             this.width,
             this.height,
-            e.shoreInset,
-            e.grassInset,
-            e.rivers,
+            mapMsg.shoreInset,
+            mapMsg.grassInset,
+            mapMsg.rivers,
             this.seed
         );
         this.mapData = {
-            places: e.places,
-            objects: e.objects,
-            groundPatches: e.groundPatches
+            places: mapMsg.places,
+            objects: mapMsg.objects,
+            groundPatches: mapMsg.groundPatches
         };
         this.mapLoaded = true;
-        const o = this.mapDef.biome.particles.camera;
-        if (o) {
-            const s = v2.normalize(v2.create(1, -1));
-            this.cameraEmitter = a.addEmitter(o, {
+        const cameraEmitterType = this.mapDef.biome.particles.camera;
+        if (cameraEmitterType) {
+            const dir = v2.normalize(v2.create(1, -1));
+            this.cameraEmitter = particleBarn.addEmitter(cameraEmitterType, {
                 pos: v2.create(0, 0),
-                dir: s,
+                dir,
                 layer: 99999
             });
         }
         this.display.ground.clear();
         this.renderTerrain(
             this.display.ground,
-            2 / t.ppu,
-            r,
+            2 / camera.ppu,
+            canvasMode,
             false
         );
     },
@@ -145,310 +156,352 @@ Map.prototype = {
     getMapTexture: function() {
         return this.mapTexture;
     },
-    m: function(e, t, r, a, i, o, s, n, l, c) {
+    m: function(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
-        const p = this.Ve.p();
-        for (let h = 0; h < p.length; h++) {
-            const u = p[h];
+        const obstacles = this.Ve.p();
+        for (let h = 0; h < obstacles.length; h++) {
+            const u = obstacles[h];
             if (u.active) {
-                u.m(e, this, r, a, i, t, s);
-                u.render(n, c, t.layer);
+                u.m(dt, this, r, a, i, activePlayer, s);
+                u.render(camera, c, activePlayer.layer);
             }
         }
         for (let y = this.nr.p(), f = 0; f < y.length; f++) {
             const _ = y[f];
             if (_.active) {
-                _.m(e, this, a, i, o, t, s, n);
-                _.render(n, c, t.layer);
+                _.m(dt, this, a, i, o, activePlayer, s, camera);
+                _.render(camera, c, activePlayer.layer);
             }
         }
         for (let b = this.lr.p(), x = 0; x < b.length; x++) {
             const S = b[x];
             if (S.active) {
-                S.update(e, this, t, o);
-                S.render(n, c, t.layer);
+                S.update(dt, this, activePlayer, o);
+                S.render(camera, c, activePlayer.layer);
             }
         }
         if (this.cameraEmitter) {
-            this.cameraEmitter.pos = v2.copy(n.pos);
+            this.cameraEmitter.pos = v2.copy(camera.pos);
             this.cameraEmitter.enabled = true;
-            const v = t.yr() * 2.5;
-            this.cameraEmitter.radius = math.min(v, 120);
-            const k = this.cameraEmitter.radius;
-            const z = (k * k) / 14400;
-            this.cameraEmitter.rateMult = 1 / z;
-            const I = t.layer == 0 ? 1 : 0;
+
+            // Adjust radius and spawn rate based on zoom
+            const maxRadius = 120;
+            const camRadius = activePlayer.yr() * 2.5;
+            this.cameraEmitter.radius = math.min(camRadius, maxRadius);
+            const radius = this.cameraEmitter.radius;
+            const ratio = (radius * radius) / (maxRadius * maxRadius);
+            this.cameraEmitter.rateMult = 1 / ratio;
+            const alphaTarget = activePlayer.layer == 0 ? 1 : 0;
             this.cameraEmitter.alpha = math.lerp(
-                e * 6,
+                dt * 6,
                 this.cameraEmitter.alpha,
-                I
+                alphaTarget
             );
         }
-        if (++this.ea % 180 == 0) {
+        this.ea++;
+        if (this.ea % 180 == 0) {
             this._r = true;
-            let T = 0;
-            const M = mapHelpers.ct;
-            for (let P = 0; P < l.length; P++) {
-                const C = l[P];
-                if (C.active && !C.fade && M(C, mapHelpers.nt)) {
-                    T++;
+            let cheatDetected = 0;
+            const detectCheatAlphaFn = mapHelpers.ct;
+
+            // Verify smoke particle alpha integrity
+            for (let i = 0; i < smokeParticles.length; i++) {
+                const p = smokeParticles[i];
+                if (p.active && !p.fade && detectCheatAlphaFn(p, mapHelpers.nt)) {
+                    cheatDetected++;
                 }
             }
-            for (let A = 0; A < p.length; A++) {
-                const O = p[A];
-                if (O.active && !O.dead && M(O, mapHelpers.lt)) {
-                    T++;
+
+            // Verify obstacle alpha integrity
+            for (let i = 0; i < obstacles.length; i++) {
+                const p = obstacles[i];
+                if (p.active && !p.dead && detectCheatAlphaFn(p, mapHelpers.lt)) {
+                    cheatDetected++;
                 }
             }
-            if (T) {
+            if (cheatDetected) {
                 this.U = true;
             }
         }
     },
-    renderTerrain: function(e, t, r, s) {
-        const n = this.width;
-        const l = this.height;
-        const c = this.terrain;
-        const m = {
+    renderTerrain: function(groundGfx, gridThickness, canvasMode, mapRender) {
+        const width = this.width;
+        const height = this.height;
+        const terrain = this.terrain;
+        const ll = {
             x: 0,
             y: 0
         };
-        const p = {
-            x: n,
+        const lr = {
+            x: width,
             y: 0
         };
-        const h = {
+        const ul = {
             x: 0,
-            y: l
+            y: height
         };
-        const d = {
-            x: n,
-            y: l
+        const ur = {
+            x: width,
+            y: height
         };
-        const u = this.mapDef.biome.colors;
-        const g = this.mapData.groundPatches;
-        e.beginFill(u.background);
-        e.drawRect(-120, -120, n + 240, 120);
-        e.drawRect(-120, l, n + 240, 120);
-        e.drawRect(-120, -120, 120, l + 240);
-        e.drawRect(n, -120, 120, l + 240);
-        e.endFill();
-        e.beginFill(u.beach);
-        i(e, c.shore);
-        e.beginHole();
-        i(e, c.grass);
-        // e.addHole();
-        e.endHole();
-        e.endFill();
-        if (r) {
-            e.beginFill(u.grass);
-            i(e, c.grass);
-            e.endFill();
+        const mapColors = this.mapDef.biome.colors;
+        const groundPatches = this.mapData.groundPatches;
+        groundGfx.beginFill(mapColors.background);
+        groundGfx.drawRect(-120, -120, width + 240, 120);
+        groundGfx.drawRect(-120, height, width + 240, 120);
+        groundGfx.drawRect(-120, -120, 120, height + 240);
+        groundGfx.drawRect(width, -120, 120, height + 240);
+        groundGfx.endFill();
+        groundGfx.beginFill(mapColors.beach);
+        tracePath(groundGfx, terrain.shore);
+        groundGfx.beginHole();
+        tracePath(groundGfx, terrain.grass);
+        // groundGfx.addHole();
+        groundGfx.endHole();
+        groundGfx.endFill();
+
+        // As mentioned above, don't explicitly render a grass polygon;
+        // there's a hole left where the grass should be, with the background
+        // clear color set to the grass color.
+        //
+        // ... except we have to for canvas mode!
+        if (canvasMode) {
+            groundGfx.beginFill(mapColors.grass);
+            tracePath(groundGfx, terrain.grass);
+            groundGfx.endFill();
         }
-        for (let y = 0; y < g.length; y++) {
-            const w = g[y];
-            if (w.order == 0 && (!s || !!w.useAsMapShape)) {
-                e.beginFill(w.color);
-                o(e, w, this.seed);
-                e.endFill();
+
+        // Order 0 ground patches
+        for (let i = 0; i < groundPatches.length; i++) {
+            const patch = groundPatches[i];
+            if (patch.order == 0 && (!mapRender || !!patch.useAsMapShape)) {
+                groundGfx.beginFill(patch.color);
+                traceGroundPatch(groundGfx, patch, this.seed);
+                groundGfx.endFill();
             }
         }
-        e.beginFill(u.riverbank);
-        for (let _ = 0; _ < c.rivers.length; _++) {
-            i(e, c.rivers[_].shorePoly);
+
+        // River shore
+        groundGfx.beginFill(mapColors.riverbank);
+
+        // groundGfx.lineStyle(2, 0xff0000);
+
+        for (let i = 0; i < terrain.rivers.length; i++) {
+            tracePath(groundGfx, terrain.rivers[i].shorePoly);
         }
-        e.endFill();
-        e.beginFill(u.water);
-        for (let b = 0; b < c.rivers.length; b++) {
-            i(e, c.rivers[b].waterPoly);
+        groundGfx.endFill();
+        groundGfx.beginFill(mapColors.water);
+        for (let b = 0; b < terrain.rivers.length; b++) {
+            tracePath(groundGfx, terrain.rivers[b].waterPoly);
         }
-        e.endFill();
-        e.beginFill(u.water);
-        e.moveTo(h.x, h.y);
-        e.lineTo(d.x, d.y);
-        e.lineTo(p.x, p.y);
-        e.lineTo(m.x, m.y);
-        e.beginHole();
-        i(e, c.shore);
+        groundGfx.endFill();
+
+        // Water
+        groundGfx.beginFill(mapColors.water);
+        groundGfx.moveTo(ul.x, ul.y);
+        groundGfx.lineTo(ur.x, ur.y);
+        groundGfx.lineTo(lr.x, lr.y);
+        groundGfx.lineTo(ll.x, ll.y);
+        groundGfx.beginHole();
+        tracePath(groundGfx, terrain.shore);
         // e.addHole();
-        e.endHole();
-        e.closePath();
-        e.endFill();
-        const x = e;
-        x.lineStyle(t, 0, 0.15);
-        for (let S = 0; S <= n; S += GameConfig.map.gridSize) {
-            a(
-                x,
+        groundGfx.endHole();
+        groundGfx.closePath();
+        groundGfx.endFill();
+
+        // Grid
+        const gridGfx = groundGfx;
+        gridGfx.lineStyle(gridThickness, 0, 0.15);
+        for (let x = 0; x <= width; x += GameConfig.map.gridSize) {
+            drawLine(
+                gridGfx,
                 {
-                    x: S,
+                    x,
                     y: 0
                 },
                 {
-                    x: S,
-                    y: l
+                    x,
+                    y: height
                 }
             );
         }
-        for (let v = 0; v <= l; v += GameConfig.map.gridSize) {
-            a(
-                x,
+        for (let y = 0; y <= height; y += GameConfig.map.gridSize) {
+            drawLine(
+                gridGfx,
                 {
                     x: 0,
-                    y: v
+                    y
                 },
                 {
-                    x: n,
-                    y: v
+                    x: width,
+                    y
                 }
             );
         }
-        x.lineStyle(t, 0, 0);
-        for (let k = 0; k < g.length; k++) {
-            const z = g[k];
-            if (z.order == 1 && (!s || !!z.useAsMapShape)) {
-                e.beginFill(z.color);
-                o(e, z, this.seed);
-                e.endFill();
+        gridGfx.lineStyle(gridThickness, 0, 0);
+
+        // Order 1 ground patches
+        for (let i = 0; i < groundPatches.length; i++) {
+            const patch = groundPatches[i];
+            if (patch.order == 1 && (!mapRender || !!patch.useAsMapShape)) {
+                groundGfx.beginFill(patch.color);
+                traceGroundPatch(groundGfx, patch, this.seed);
+                groundGfx.endFill();
             }
         }
     },
-    render: function(e) {
-        const t = e.pointToScreen(v2.create(0, 0));
-        const r = e.pointToScreen(v2.create(1, 1));
-        const a = v2.sub(r, t);
-        this.display.ground.position.set(t.x, t.y);
-        this.display.ground.scale.set(a.x, a.y);
+    render: function(camera) {
+        // Terrain
+        // Fairly robust way to get translation and scale from the camera ...
+        const p0 = camera.pointToScreen(v2.create(0, 0));
+        const p1 = camera.pointToScreen(v2.create(1, 1));
+        const s = v2.sub(p1, p0);
+        // Translate and scale the map polygons to move the with camera
+        this.display.ground.position.set(p0.x, p0.y);
+        this.display.ground.scale.set(s.x, s.y);
     },
-    getMinimapRender: function(e) {
-        const t = MapObjectDefs[e.type];
-        const r =
-            t.type == "building"
-                ? 750 + (t.zIdx || 0)
-                : t.img.zIdx || 0;
-        let a = [];
-        if (t.map.shapes !== undefined) {
-            a = t.map.shapes;
+    getMinimapRender: function(obj) {
+        const def = MapObjectDefs[obj.type];
+        const zIdx =
+            def.type == "building"
+                ? 750 + (def.zIdx || 0)
+                : def.img.zIdx || 0;
+        let shapes = [];
+        if (def.map.shapes !== undefined) {
+            shapes = def.map.shapes;
         } else {
-            let i = null;
+            let col = null;
             if (
-                (i =
-                    t.type == "obstacle"
-                        ? t.collision
-                        : t.ceiling.zoomRegions.length > 0 &&
-                            t.ceiling.zoomRegions[0].zoomIn
-                            ? t.ceiling.zoomRegions[0].zoomIn
-                            : mapHelpers.getBoundingCollider(e.type))
+                (col =
+                    def.type == "obstacle"
+                        ? def.collision
+                        : def.ceiling.zoomRegions.length > 0 &&
+                            def.ceiling.zoomRegions[0].zoomIn
+                            ? def.ceiling.zoomRegions[0].zoomIn
+                            : mapHelpers.getBoundingCollider(obj.type))
             ) {
-                a.push({
-                    collider: collider.copy(i),
-                    scale: t.map.scale || 1,
-                    color: t.map.color
+                shapes.push({
+                    collider: collider.copy(col),
+                    scale: def.map.scale || 1,
+                    color: def.map.color
                 });
             }
         }
         return {
-            obj: e,
-            zIdx: r,
-            shapes: a
+            obj,
+            zIdx,
+            shapes
         };
     },
-    renderMap: function(e, t) {
+    renderMap: function(renderer, canvasMode) {
         if (this.mapLoaded) {
-            const r = new PIXI.Container();
-            const i = new PIXI.Container();
-            const o = this.mapDef.biome.colors;
-            const s = this.mapData.places;
-            const l = this.mapData.objects;
-            let m = device.screenHeight;
+            const mapRender = new PIXI.Container();
+            const txtRender = new PIXI.Container();
+            const mapColors = this.mapDef.biome.colors;
+            const places = this.mapData.places;
+            const objects = this.mapData.objects;
+            let screenScale = device.screenHeight;
             if (device.mobile) {
                 if (!device.isLandscape) {
-                    m = device.screenWidth;
+                    screenScale = device.screenWidth;
                 }
-                m *= math.min(device.pixelRatio, 2);
+                screenScale *= math.min(device.pixelRatio, 2);
             }
-            const p = this.height / m;
-            const h = new PIXI.Graphics();
-            h.beginFill(o.grass);
-            h.drawRect(0, 0, this.width, this.height);
-            h.endFill();
-            this.renderTerrain(h, p, t, true);
-            const u = {
+            const scale = this.height / screenScale;
+
+            // Background
+            const background = new PIXI.Graphics();
+            background.beginFill(mapColors.grass);
+            background.drawRect(0, 0, this.width, this.height);
+            background.endFill();
+            this.renderTerrain(background, scale, canvasMode, true);
+
+            // Border for extra spiffiness
+            const ll = {
                 x: 0,
                 y: 0
             };
-            const g = {
+            const lr = {
                 x: this.width,
                 y: 0
             };
-            const f = {
+            const ul = {
                 x: 0,
                 y: this.height
             };
-            const _ = {
+            const ur = {
                 x: this.width,
                 y: this.height
             };
-            h.lineStyle(p * 2, 0, 1);
-            a(h, u, f);
-            a(h, f, _);
-            a(h, _, g);
-            a(h, g, u);
-            h.position.y = this.height;
-            h.scale.y = -1;
-            r.addChild(h);
-            const b = [];
-            for (let x = 0; x < l.length; x++) {
-                const S = l[x];
-                b.push(this.getMinimapRender(S));
+            background.lineStyle(scale * 2, 0, 1);
+            drawLine(background, ll, ul);
+            drawLine(background, ul, ur);
+            drawLine(background, ur, lr);
+            drawLine(background, lr, ll);
+            background.position.y = this.height;
+            background.scale.y = -1;
+
+            mapRender.addChild(background);
+
+            // Render minimap objects, sorted by zIdx
+            const minimapRenders = [];
+            for (let i = 0; i < objects.length; i++) {
+                const obj = objects[i];
+                minimapRenders.push(this.getMinimapRender(obj));
             }
-            b.sort((e, t) => {
-                return e.zIdx - t.zIdx;
+            minimapRenders.sort((a, b) => {
+                return a.zIdx - b.zIdx;
             });
-            const v = new PIXI.Graphics();
-            for (let k = 0; k < b.length; k++) {
+
+            const gfx = new PIXI.Graphics();
+            for (let i = 0; i < minimapRenders.length; i++) {
+                const render = minimapRenders[i];
+                const obj = render.obj;
                 for (
-                    let z = b[k], I = z.obj, T = 0;
-                    T < z.shapes.length;
-                    T++
+                    let j = 0;
+                    j < render.shapes.length;
+                    j++
                 ) {
-                    const M = z.shapes[T];
-                    const P = collider.transform(
-                        M.collider,
-                        I.pos,
-                        math.oriToRad(I.ori),
-                        I.scale
+                    const shape = render.shapes[j];
+                    const col = collider.transform(
+                        shape.collider,
+                        obj.pos,
+                        math.oriToRad(obj.ori),
+                        obj.scale
                     );
-                    const C = M.scale !== undefined ? M.scale : 1;
-                    v.beginFill(M.color, 1);
-                    switch (P.type) {
+                    const scale = shape.scale !== undefined ? shape.scale : 1;
+                    gfx.beginFill(shape.color, 1);
+                    switch (col.type) {
                     case collider.Type.Circle:
-                        v.drawCircle(
-                            P.pos.x,
-                            this.height - P.pos.y,
-                            P.rad * C
+                        gfx.drawCircle(
+                            col.pos.x,
+                            this.height - col.pos.y,
+                            col.rad * scale
                         );
                         break;
                     case collider.Type.Aabb: {
-                        let A = v2.mul(v2.sub(P.max, P.min), 0.5);
-                        const O = v2.add(P.min, A);
-                        A = v2.mul(A, C);
-                        v.drawRect(
+                        let A = v2.mul(v2.sub(col.max, col.min), 0.5);
+                        const O = v2.add(col.min, A);
+                        A = v2.mul(A, scale);
+                        gfx.drawRect(
                             O.x - A.x,
                             this.height - O.y - A.y,
                             A.x * 2,
                             A.y * 2
                         );
-                        v.endFill();
+                        gfx.endFill();
                     }
                     }
                 }
             }
-            r.addChild(v);
-            const D = new PIXI.Container();
-            for (let E = 0; E < s.length; E++) {
-                const B = s[E];
-                const R = new PIXI.TextStyle({
+            mapRender.addChild(gfx);
+
+            // Place names
+            const nameContainer = new PIXI.Container();
+            for (let E = 0; E < places.length; E++) {
+                const place = places[E];
+                const style = new PIXI.TextStyle({
                     fontFamily: "Arial",
                     fontSize: device.mobile ? 20 : 22,
                     fontWeight: "bold",
@@ -463,180 +516,198 @@ Map.prototype = {
                     wordWrap: false,
                     align: "center"
                 });
-                const L = new PIXI.Text(B.name, R);
-                L.anchor.set(0.5, 0.5);
-                L.x = (B.pos.x * this.height) / p;
-                L.y = (B.pos.y * this.height) / p;
-                L.alpha = 0.75;
-                D.addChild(L);
+                const richText = new PIXI.Text(place.name, style);
+                richText.anchor.set(0.5, 0.5);
+                richText.x = (place.pos.x * this.height) / scale;
+                richText.y = (place.pos.y * this.height) / scale;
+                richText.alpha = 0.75;
+                nameContainer.addChild(richText);
             }
-            i.addChild(D);
+            txtRender.addChild(nameContainer);
+
+            // Generate and/or update the texture
             if (this.mapTexture) {
-                this.mapTexture.resize(m, m);
+                this.mapTexture.resize(screenScale, screenScale);
             } else {
                 this.mapTexture = PIXI.RenderTexture.create(
-                    m,
-                    m,
+                    screenScale,
+                    screenScale,
                     PIXI.SCALE_MODES.LINEAR,
                     1
                 );
             }
-            r.scale = new PIXI.Point(m / this.height, m / this.height);
-            e.render(r, this.mapTexture, true);
-            e.render(i, this.mapTexture, false);
-            r.destroy({
+            mapRender.scale = new PIXI.Point(screenScale / this.height, screenScale / this.height);
+            renderer.render(mapRender, this.mapTexture, true);
+            renderer.render(txtRender, this.mapTexture, false);
+            mapRender.destroy({
                 children: true,
                 texture: true,
                 baseTexture: true
             });
-            i.destroy({
+            txtRender.destroy({
                 children: true,
                 texture: true,
                 baseTexture: true
             });
         }
     },
-    getGroundSurface: function(e, t) {
+    getGroundSurface: function(pos, layer) {
         const r = this;
-        const a = function(e, t) {
-            t = t || {};
-            if (e == "water") {
-                const a = r.getMapDef().biome.colors;
-                t.waterColor =
-                    t.waterColor !== undefined
-                        ? t.waterColor
-                        : a.water;
-                t.rippleColor =
-                    t.rippleColor !== undefined
-                        ? t.rippleColor
-                        : a.waterRipple;
+        const groundSurface = (type, data = {}) => {
+            if (type == "water") {
+                const mapColors = r.getMapDef().biome.colors;
+                data.waterColor =
+                    data.waterColor !== undefined
+                        ? data.waterColor
+                        : mapColors.water;
+                data.rippleColor =
+                    data.rippleColor !== undefined
+                        ? data.rippleColor
+                        : mapColors.waterRipple;
             }
             return {
-                type: e,
-                data: t
+                type,
+                data
             };
         };
+
+        // Check decals
+        const decals = this.decalBarn._.p();
         for (
-            let i = this.decalBarn._.p(), o = 0;
-            o < i.length;
-            o++
+            let i = 0;
+            i < decals.length;
+            i++
         ) {
-            const s = i[o];
+            const decal = decals[i];
             if (
-                s.active &&
-                s.surface &&
-                util.sameLayer(s.layer, t) &&
-                collider.intersectCircle(s.collider, e, 0.0001)
+                decal.active &&
+                decal.surface &&
+                util.sameLayer(decal.layer, layer) &&
+                collider.intersectCircle(decal.collider, pos, 0.0001)
             ) {
-                return a(s.surface.type, s.surface.data);
+                return groundSurface(decal.surface.type, decal.surface.data);
             }
         }
-        let n = null;
-        let m = 0;
-        const p = t & 2;
-        for (let d = this.nr.p(), u = 0; u < d.length; u++) {
-            const g = d[u];
+
+        // Check buildings
+        let surface = null;
+        let zIdx = 0;
+        const onStairs = layer & 2;
+        const buildings = this.nr.p();
+        for (let i = 0; i < buildings.length; i++) {
+            const building = buildings[i];
             if (
-                g.active &&
-                g.zIdx >= m &&
-                (g.layer == t || !!p) &&
-                (g.layer != 1 || !p)
+                building.active &&
+                building.zIdx >= zIdx &&
+                // Prioritize layer0 building surfaces when on stairs
+                (building.layer == layer || !!onStairs) &&
+                (building.layer != 1 || !onStairs)
             ) {
-                for (let y = 0; y < g.surfaces.length; y++) {
+                for (let i = 0; i < building.surfaces.length; i++) {
+                    const s = building.surfaces[i];
                     for (
-                        let f = g.surfaces[y], _ = 0;
-                        _ < f.colliders.length;
-                        _++
+                        let j = 0;
+                        j < s.colliders.length;
+                        j++
                     ) {
-                        const b = collider.intersectCircle(
-                            f.colliders[_],
-                            e,
+                        const res = collider.intersectCircle(
+                            s.colliders[j],
+                            pos,
                             0.0001
                         );
-                        if (b) {
-                            m = g.zIdx;
-                            n = f;
+                        if (res) {
+                            zIdx = building.zIdx;
+                            surface = s;
                             break;
                         }
                     }
                 }
             }
         }
-        if (n) {
-            return a(n.type, n.data);
+        if (surface) {
+            return groundSurface(surface.type, surface.data);
         }
-        let x = false;
-        if (t != 1) {
+
+        // Check rivers
+        let onRiverShore = false;
+        if (layer != 1) {
+            const rivers = this.terrain.rivers;
             for (
-                let S = this.terrain.rivers, v = 0;
-                v < S.length;
+                let v = 0;
+                v < rivers.length;
                 v++
             ) {
-                const k = S[v];
+                const river = rivers[v];
                 if (
-                    coldet.testPointAabb(e, k.aabb.min, k.aabb.max) &&
-                    math.pointInsidePolygon(e, k.shorePoly) &&
-                    ((x = true),
-                    math.pointInsidePolygon(e, k.waterPoly))
+                    coldet.testPointAabb(pos, river.aabb.min, river.aabb.max) &&
+                    math.pointInsidePolygon(pos, river.shorePoly) &&
+                    ((onRiverShore = true),
+                    math.pointInsidePolygon(pos, river.waterPoly))
                 ) {
-                    return a("water", {
-                        river: k
+                    return groundSurface("water", {
+                        river
                     });
                 }
             }
         }
-        return a(
-            math.pointInsidePolygon(e, this.terrain.grass)
-                ? x
+        // Check terrain
+        return groundSurface(
+            math.pointInsidePolygon(pos, this.terrain.grass)
+                ? onRiverShore
+                    // Use a stone step sound if we're in the main-spring def
                     ? this.mapDef.biome.sound.riverShore
                     : "grass"
-                : math.pointInsidePolygon(e, this.terrain.shore)
+                : math.pointInsidePolygon(pos, this.terrain.shore)
                     ? "sand"
                     : "water"
         );
     },
-    isInOcean: function(e) {
-        return !math.pointInsidePolygon(e, this.terrain.shore);
+    isInOcean: function(pos) {
+        return !math.pointInsidePolygon(pos, this.terrain.shore);
     },
-    distanceToShore: function(e) {
-        return math.distToPolygon(e, this.terrain.shore);
+    distanceToShore: function(pos) {
+        return math.distToPolygon(pos, this.terrain.shore);
     },
-    insideStructureStairs: function(e) {
-        for (let t = this.lr.p(), r = 0; r < t.length; r++) {
-            const a = t[r];
-            if (a.active && a.insideStairs(e)) {
+    insideStructureStairs: function(collision) {
+        const structures = this.lr.p();
+        for (let i = 0; i < structures.length; i++) {
+            const structure = structures[i];
+            if (structure.active && structure.insideStairs(collision)) {
                 return true;
             }
         }
         return false;
     },
-    getBuildingById: function(e) {
-        for (let t = this.nr.p(), r = 0; r < t.length; r++) {
-            const a = t[r];
-            if (a.active && a.__id == e) {
-                return a;
+    getBuildingById: function(objId) {
+        const buildings = this.nr.p();
+        for (let r = 0; r < buildings.length; r++) {
+            const building = buildings[r];
+            if (building.active && building.__id == objId) {
+                return building;
             }
         }
         return null;
     },
-    insideStructureMask: function(e) {
-        for (let t = this.lr.p(), r = 0; r < t.length; r++) {
-            const a = t[r];
-            if (a.active && a.insideMask(e)) {
+    insideStructureMask: function(collision) {
+        const structures = this.lr.p();
+        for (let i = 0; i < structures.length; i++) {
+            const structure = structures[i];
+            if (structure.active && structure.insideMask(collision)) {
                 return true;
             }
         }
         return false;
     },
-    insideBuildingCeiling: function(e, t) {
-        for (let r = this.nr.p(), a = 0; a < r.length; a++) {
-            const i = r[a];
+    insideBuildingCeiling: function(collision, checkVisible) {
+        const buildings = this.nr.p();
+        for (let i = 0; i < buildings.length; i++) {
+            const building = buildings[i];
             if (
-                i.active &&
-                (!t ||
-                    (i.ceiling.visionTicker > 0 &&
-                        !i.ceilingDead)) &&
-                i.isInsideCeiling(e)
+                building.active &&
+                (!checkVisible ||
+                    (building.ceiling.visionTicker > 0 &&
+                        !building.ceilingDead)) &&
+                building.isInsideCeiling(collision)
             ) {
                 return true;
             }

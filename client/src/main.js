@@ -911,7 +911,7 @@ window.onerror = function(e, t, r, a, i) {
         s.includes("cdn.rawgit.com") ||
         s.includes("chrome-extension://")
     ) {
-        helpers.U();
+        helpers.cheatDetected();
         return;
     }
     const n = {
