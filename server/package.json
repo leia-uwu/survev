@@ -9,11 +9,11 @@
     "lint:ci": "eslint . --ext .ts,.js"
   },
   "dependencies": {
+    "@types/node": "^20.11.24",
     "bit-buffer": "^0.2.5",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.34.0",
-    "@types/node": "^20.11.17",
-    "nodemon": "^3.0.3",
+    "nodemon": "^3.1.0",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.34.0"
   }
 }
