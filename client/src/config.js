@@ -25,6 +25,7 @@ const defaultConfig = {
     promptAppRate: true,
     cookiesConsented: true,
     regionSelected: false,
+    lastNewsTimestamp: 0,
     perkModeRole: "",
     loadout: loadout.defaultLoadout()
 };

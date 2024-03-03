@@ -283,7 +283,28 @@ class Application {
                 This.game?.free();
                 This.teamMenu.leave();
             });
-
+            const r = $("#news-current").data("date");
+            const a = new Date(r).getTime();
+            $(".right-column-toggle").on("click", () => {
+                if (This.newsDisplayed) {
+                    $("#news-wrapper").fadeOut(250);
+                    $("#pass-wrapper").fadeIn(250);
+                } else {
+                    This.config.set("lastNewsTimestamp", a);
+                    $(".news-toggle")
+                        .find(".account-alert")
+                        .css("display", "none");
+                    $("#news-wrapper").fadeIn(250);
+                    $("#pass-wrapper").fadeOut(250);
+                }
+                This.newsDisplayed = !This.newsDisplayed;
+            });
+            const i = this.config.get("lastNewsTimestamp");
+            if (a > i) {
+                $(".news-toggle")
+                    .find(".account-alert")
+                    .css("display", "block");
+            }
             this.setDOMFromConfig();
             this.setAppActive(true);
             const domCanvas = document.getElementById("cvs");
