@@ -1,4 +1,4 @@
-import { type DeadBody } from "../objects/DeadBody";
+import { type DeadBody } from "../objects/deadBody";
 import { type Airdrop } from "../objects/airdrop";
 import { type Building } from "../objects/building";
 import { type Decal } from "../objects/decal";

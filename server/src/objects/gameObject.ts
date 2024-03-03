@@ -1,7 +1,7 @@
 import { type Game } from "../game";
 import { type Collider } from "../../../shared/utils/coldet";
 import { type Vec2 } from "../../../shared/utils/v2";
-import { type DeadBody } from "./DeadBody";
+import { type DeadBody } from "./deadBody";
 import { type Airdrop } from "./airdrop";
 import { type Building } from "./building";
 import { type Decal } from "./decal";

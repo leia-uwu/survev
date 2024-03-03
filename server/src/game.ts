@@ -11,13 +11,9 @@ import { Logger } from "./utils/logger";
 import { Loot } from "./objects/loot";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
-import net, { type BitStream } from "../../shared/net";
+import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
-
-export interface Msg {
-    serialize: (s: BitStream) => void
-    deserialize: (s: BitStream) => void
-}
+import { Msg } from "../../shared/netTypings";
 
 export class Game {
     stopped = false;

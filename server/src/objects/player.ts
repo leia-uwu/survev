@@ -1,5 +1,5 @@
 import { type WebSocket } from "uWebSockets.js";
-import { type Msg, type Game } from "../game";
+import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -16,6 +16,7 @@ import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type Hel
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
+import { Msg } from "../../../shared/netTypings";
 
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
@@ -369,7 +370,7 @@ export class Player extends BaseGameObject {
 
             const mapStream = this.game.map.mapStream.stream;
 
-            msgStream.stream!.writeBytes(mapStream, 0, mapStream!.byteIndex);
+            msgStream.stream!.writeBytes(mapStream!, 0, mapStream!.byteIndex);
         }
 
         if (this.game.aliveCountDirty) {
