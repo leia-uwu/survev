@@ -4,7 +4,7 @@ import { Config } from "../server/src/config";
 export default defineConfig(() => {
     return {
         plugins: [
-            splitVendorChunkPlugin(),
+            splitVendorChunkPlugin()
         ],
         server: {
             port: 3000,

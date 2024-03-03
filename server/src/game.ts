@@ -196,20 +196,20 @@ export class Game {
         const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream!;
         switch (type) {
-        case net.Msg.Input: {
+        case net.MsgType.Input: {
             const inputMsg = new net.InputMsg();
             inputMsg.deserialize(stream);
             player.handleInput(inputMsg);
             break;
         }
-        case net.Msg.Join: {
+        case net.MsgType.Join: {
             const joinMsg = new net.JoinMsg();
             joinMsg.deserialize(stream);
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
                 const disconnectMsg = new net.DisconnectMsg();
                 disconnectMsg.reason = "index-invalid-protocol";
-                player.sendMsg(net.Msg.Disconnect, disconnectMsg);
+                player.sendMsg(net.MsgType.Disconnect, disconnectMsg);
                 setTimeout(() => {
                     player.socket.close();
                 }, 1);

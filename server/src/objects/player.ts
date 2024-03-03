@@ -11,7 +11,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
-import { DeadBody } from "./DeadBody";
+import { DeadBody } from "./deadBody";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
@@ -365,7 +365,7 @@ export class Player extends BaseGameObject {
             joinedMsg.teamMode = 1;
             joinedMsg.playerId = this.id;
             joinedMsg.emotes = this.loadout.emotes;
-            this.sendMsg(net.Msg.Joined, joinedMsg);
+            this.sendMsg(net.MsgType.Joined, joinedMsg);
 
             const mapStream = this.game.map.mapStream.stream;
 
@@ -375,7 +375,7 @@ export class Player extends BaseGameObject {
         if (this.game.aliveCountDirty) {
             const aliveMsg = new net.AliveCountsMsg();
             aliveMsg.teamAliveCounts.push(this.game.aliveCount);
-            msgStream.serializeMsg(net.Msg.AliveCounts, aliveMsg);
+            msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
         }
 
         const updateMsg = new net.UpdateMsg();
@@ -439,7 +439,7 @@ export class Player extends BaseGameObject {
         updateMsg.bullets = newBullets;
         updateMsg.explosions = this.game.explosions;
 
-        msgStream.serializeMsg(net.Msg.Update, updateMsg);
+        msgStream.serializeMsg(net.MsgType.Update, updateMsg);
 
         for (const msg of this.msgsToSend) {
             msgStream.serializeMsg(msg.type, msg.msg);
@@ -507,7 +507,7 @@ export class Player extends BaseGameObject {
             killMsg.killerKills = source.kills;
         }
 
-        this.game.msgsToSend.push({ type: net.Msg.Kill, msg: killMsg });
+        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: killMsg });
 
         const gameOverMsg = new net.GameOverMsg();
 
@@ -518,7 +518,7 @@ export class Player extends BaseGameObject {
         }];
         gameOverMsg.teamId = this.teamId;
         gameOverMsg.winningTeamId = -1;
-        this.msgsToSend.push({ type: net.Msg.GameOver, msg: gameOverMsg });
+        this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });
 
         const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
         this.game.grid.addObject(deadBody);

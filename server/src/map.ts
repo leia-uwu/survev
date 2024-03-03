@@ -84,7 +84,7 @@ export class GameMap {
 
         this.generateObjects();
 
-        this.mapStream.serializeMsg(net.Msg.Map, this.msg);
+        this.mapStream.serializeMsg(net.MsgType.Map, this.msg);
     }
 
     generateTerrain(): void {

@@ -73,9 +73,28 @@ const gameTypeSerialization = createTypeSerialization("Game", GameObjectDefs, 10
 const mapTypeSerialization = createTypeSerialization("Map", MapObjectDefs, 12);
 
 export class BitStream extends bb.BitStream {
-    writeString(str, len) { this.writeASCIIString(str, len); }
-    readString(len) { return this.readASCIIString(len); }
+    /**
+     * @param {string} str
+     * @param {number?} len
+     */
+    writeString(str, len) {
+        this.writeASCIIString(str, len);
+    }
 
+    /**
+     * @param {number?} len
+     */
+    readString(len) {
+        return this.readASCIIString(len);
+    }
+
+    /**
+     * @param {number} f
+     * @param {number} min
+     * @param {number} min
+     * @param {number} max
+     * @param {number} bits
+     */
     writeFloat(f, min, max, bits) {
         // assert(bits > 0 && bits < 31);
         // assert(f >= min && f <= max);
@@ -86,6 +105,11 @@ export class BitStream extends bb.BitStream {
         this.writeBits(v, bits);
     }
 
+    /**
+     * @param {number} min
+     * @param {number} max
+     * @param {number} bits
+     */
     readFloat(min, max, bits) {
         // assert(bits > 0 && bits < 31);
         const range = (1 << bits) - 1;
@@ -95,11 +119,26 @@ export class BitStream extends bb.BitStream {
         return v;
     }
 
+    /**
+     * @param {import("./utils/v2").Vec2} vec
+     * @param {number} minX
+     * @param {number} minY
+     * @param {number} maxX
+     * @param {number} maxY
+     * @param {number} bitCount
+     */
     writeVec(vec, minX, minY, maxX, maxY, bitCount) {
         this.writeFloat(vec.x, minX, maxX, bitCount);
         this.writeFloat(vec.y, minY, maxY, bitCount);
     }
 
+    /**
+     * @param {number} minX
+     * @param {number} minY
+     * @param {number} maxX
+     * @param {number} maxY
+     * @param {number} bitCount
+     */
     readVec(minX, minY, maxX, maxY, bitCount) {
         return {
             x: this.readFloat(minX, maxX, bitCount),
@@ -107,14 +146,24 @@ export class BitStream extends bb.BitStream {
         };
     }
 
+    /**
+     * @param {import("./utils/v2").Vec2} vec
+     * @param {number} bitCount
+     */
     writeUnitVec(vec, bitCount) {
         this.writeVec(vec, -1.0001, -1.0001, 1.0001, 1.0001, bitCount);
     }
 
+    /**
+     * @param {number} bitCount
+     */
     readUnitVec(bitCount) {
         return this.readVec(-1.0001, -1.0001, 1.0001, 1.0001, bitCount);
     }
 
+    /**
+     * @param {import("./utils/v2").Vec2} vec
+     */
     writeVec32(vec) {
         this.writeFloat32(vec.x);
         this.writeFloat32(vec.y);
@@ -127,6 +176,11 @@ export class BitStream extends bb.BitStream {
         };
     }
 
+    /**
+     * @param {BitStream} src
+     * @param {number} offset
+     * @param {number} length
+     */
     writeBytes(src, offset, length) {
         // assert(this._index % 8 == 0);
         const data = new Uint8Array(src._view._view.buffer, offset, length);
@@ -144,18 +198,30 @@ export class BitStream extends bb.BitStream {
         if (offset < 8) this.readBits(offset);
     }
 
+    /**
+     * @param {string} type
+     */
     writeGameType(type) {
         this.writeBits(gameTypeSerialization.typeToId(type), 10);
     }
 
+    /**
+     * @return {string}
+     */
     readGameType() {
         return gameTypeSerialization.idToType(this.readBits(10));
     }
 
+    /**
+     * @param {string} type
+     */
     writeMapType(type) {
         this.writeBits(mapTypeSerialization.typeToId(type), 12);
     }
 
+    /**
+     * @return {string}
+     */
     readMapType() {
         return mapTypeSerialization.idToType(this.readBits(12));
     }
@@ -192,7 +258,8 @@ class MsgStream {
     }
 
     /**
-     * @param {Msg} type
+     * @param {MsgType} type
+     * @param {import("../server/src/game").Msg} msg
     **/
     serializeMsg(type, msg) {
         // assert(this.stream.index % 8 == 0);
@@ -211,7 +278,7 @@ class MsgStream {
         if (this.stream.length - this.stream.byteIndex * 8 >= 1) {
             return this.stream.readUint8();
         }
-        return Msg.None;
+        return MsgType.None;
     }
 }
 
@@ -564,9 +631,17 @@ setSerializeFns(
 setSerializeFns(
     GameObject.Type.Loot,
     5,
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/loot").Loot} data
+    **/
     (s, data) => {
         s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
     },
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/loot").Loot} data
+    **/
     (s, data) => {
         s.writeGameType(data.type);
         s.writeUint8(data.count);
@@ -598,9 +673,17 @@ setSerializeFns(
 setSerializeFns(
     GameObject.Type.DeadBody,
     0,
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/deadBody").DeadBody} data
+    **/
     (s, data) => {
         s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
     },
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/deadBody").DeadBody} data
+    **/
     (s, data) => {
         s.writeUint8(data.layer);
         s.writeUint16(data.playerId);
@@ -617,6 +700,10 @@ setSerializeFns(
     GameObject.Type.Decal,
     0,
     (_s, _data) => { },
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/decal").Decal} data
+    **/
     (s, data) => {
         s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
         s.writeFloat(
@@ -647,11 +734,19 @@ setSerializeFns(
 setSerializeFns(
     GameObject.Type.Projectile,
     0,
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/projectile").Projectile} data
+    **/
     (s, data) => {
         s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
         s.writeFloat(data.posZ, 0, GameConfig.projectile.maxHeight, 10);
         s.writeUnitVec(data.dir, 7);
     },
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/projectile").Projectile} data
+    **/
     (s, data) => {
         s.writeGameType(data.type);
         s.writeBits(data.layer, 2);
@@ -671,10 +766,18 @@ setSerializeFns(
 setSerializeFns(
     GameObject.Type.Smoke,
     0,
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/smoke").Smoke} data
+    **/
     (s, data) => {
         s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
         s.writeFloat(data.rad, 0, Constants.SmokeMaxRad, 8);
     },
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/smoke").Smoke} data
+    **/
     (s, data) => {
         s.writeBits(data.layer, 2);
         s.writeBits(data.interior, 6);
@@ -691,10 +794,18 @@ setSerializeFns(
 setSerializeFns(
     GameObject.Type.Airdrop,
     0,
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/airdrop").Airdrop} data
+    **/
     (s, data) => {
         s.writeFloat(data.fallT, 0, 1, 7);
         s.writeBoolean(data.landed);
     },
+    /**
+     * @param {BitStream} s
+     * @param {import("../server/src/objects/airdrop").Airdrop} data
+    **/
     (s, data) => {
         s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
     },
@@ -708,9 +819,9 @@ setSerializeFns(
 );
 
 /**
- * @enum
+ * @enum {number}
  */
-const Msg = {
+const MsgType = {
     None: 0,
     Join: 1,
     Disconnect: 2,
@@ -737,15 +848,45 @@ const Msg = {
 
 class JoinMsg {
     constructor() {
+        /**
+         * @type {number}
+         */
         this.protocol = 0;
+        /**
+         * @type {string}
+         */
         this.matchPriv = "";
+        /**
+         * @type {string}
+         */
         this.loadoutPriv = "";
+        /**
+         * @type {string}
+         */
         this.questPriv = "";
+        /**
+         * @type {string}
+         */
         this.name = "";
+        /**
+         * @type {boolean}
+         */
         this.useTouch = false;
+        /**
+         * @type {boolean}
+         */
         this.isMobile = false;
+        /**
+         * @type {boolean}
+         */
         this.proxy = false;
+        /**
+         * @type {boolean}
+         */
         this.otherProxy = false;
+        /**
+         * @type {boolean}
+         */
         this.bot = false;
     }
 
@@ -786,6 +927,9 @@ class JoinMsg {
 
 class DisconnectMsg {
     constructor() {
+        /**
+         * @type {string}
+         */
         this.reason = "";
     }
 
@@ -807,19 +951,33 @@ class DisconnectMsg {
 export class InputMsg {
     constructor() {
         this.seq = 0;
+        /** @type {boolean} */
         this.moveLeft = false;
+        /** @type {boolean} */
         this.moveRight = false;
+        /** @type {boolean} */
         this.moveUp = false;
+        /** @type {boolean} */
         this.moveDown = false;
+        /** @type {boolean} */
         this.shootStart = false;
+        /** @type {boolean} */
         this.shootHold = false;
+        /** @type {boolean} */
         this.portrait = false;
+        /** @type {boolean} */
         this.touchMoveActive = false;
+        /** @type {import("./utils/v2").Vec2} */
         this.touchMoveDir = v2.create(1, 0);
+        /** @type {number} */
         this.touchMoveLen = 255;
+        /** @type {import("./utils/v2").Vec2} */
         this.toMouseDir = v2.create(1, 0);
+        /** @type {number} */
         this.toMouseLen = 0;
+        /** @type {number[]} */
         this.inputs = [];
+        /** @type {string} */
         this.useItem = "";
     }
 
@@ -899,7 +1057,13 @@ export class InputMsg {
 
 class DropItemMsg {
     constructor() {
+        /**
+         * @type {string}
+         */
         this.item = "";
+        /**
+         * @type {number}
+         */
         this.weapIdx = 0;
     }
 
@@ -924,6 +1088,9 @@ class DropItemMsg {
 
 class PerkModeRoleSelectMsg {
     constructor() {
+        /**
+         * @type {string}
+         */
         this.role = "";
     }
 
@@ -946,8 +1113,13 @@ class PerkModeRoleSelectMsg {
 
 class EmoteMsg {
     constructor() {
+        /**
+         * @type {import("./utils/v2").Vec2}
+         */
         this.pos = v2.create(0, 0);
+        /** @type {string} */
         this.type = "";
+        /** @type {boolean} */
         this.isPing = false;
     }
 
@@ -974,9 +1146,13 @@ class EmoteMsg {
 
 class JoinedMsg {
     constructor() {
+        /** @type {number} */
         this.teamMode = 0;
+        /** @type {number} */
         this.playerId = 0;
+        /** @type {boolean} */
         this.started = false;
+        /** @type {string[]} */
         this.emotes = [];
     }
 
@@ -1009,6 +1185,10 @@ class JoinedMsg {
     }
 }
 
+/**
+ * @param {BitStream} s
+ * @param {import("./utils/terrainGen").MapRiverData} data
+ */
 function serializeMapRiver(s, data) {
     s.writeFloat32(data.width);
     s.writeUint8(data.looped);
@@ -1019,6 +1199,10 @@ function serializeMapRiver(s, data) {
     }
 }
 
+/**
+ * @param {BitStream} s
+ * @param {import("./utils/terrainGen").MapRiverData} data
+ */
 function deserializeMapRiver(s, data) {
     data.width = s.readFloat32();
     data.looped = s.readUint8();
@@ -1029,16 +1213,25 @@ function deserializeMapRiver(s, data) {
     }
 }
 
+/**
+ * @param {BitStream} s
+ */
 function serializeMapPlace(s, place) {
     s.writeString(place.name);
     s.writeVec(place.pos, 0, 0, 1024, 1024, 16);
 }
 
+/**
+ * @param {BitStream} s
+ */
 function deserializeMapPlaces(s, place) {
     place.name = s.readString();
     place.pos = s.readVec(0, 0, 1024, 1024, 16);
 }
 
+/**
+ * @param {BitStream} s
+ */
 function serializeMapGroundPatch(s, patch) {
     s.writeVec(patch.min, 0, 0, 1024, 1024, 16);
     s.writeVec(patch.max, 0, 0, 1024, 1024, 16);
@@ -1049,6 +1242,9 @@ function serializeMapGroundPatch(s, patch) {
     s.writeBoolean(patch.useAsMapShape);
 }
 
+/**
+ * @param {BitStream} s
+ */
 function deserializeMapGroundPatch(s, patch) {
     patch.min = s.readVec(0, 0, 1024, 1024, 16);
     patch.max = s.readVec(0, 0, 1024, 1024, 16);
@@ -1059,6 +1255,9 @@ function deserializeMapGroundPatch(s, patch) {
     patch.useAsMapShape = s.readBoolean();
 }
 
+/**
+ * @param {BitStream} s
+ */
 function serializeMapObj(s, obj) {
     s.writeVec(obj.pos, 0, 0, 1024, 1024, 16);
     s.writeFloat(obj.scale, Constants.MapObjectMinScale, Constants.MapObjectMaxScale, 8);
@@ -1067,6 +1266,9 @@ function serializeMapObj(s, obj) {
     s.writeBits(0, 2); // Padding
 }
 
+/**
+ * @param {BitStream} s
+ */
 function deserializeMapObj(s, data) {
     data.pos = s.readVec(0, 0, 1024, 1024, 16);
     data.scale = s.readFloat(Constants.MapObjectMinScale, Constants.MapObjectMaxScale, 8);
@@ -2134,7 +2336,7 @@ export default {
     Constants,
     getPlayerStatusUpdateRate,
     MsgStream,
-    Msg,
+    MsgType,
     JoinMsg,
     DisconnectMsg,
     InputMsg,
