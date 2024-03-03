@@ -9,7 +9,7 @@
     "base64-js": "^1.5.1",
     "bit-buffer": "^0.2.5",
     "jquery": "^3.7.1",
-    "pixi.js": "6.5.10"
+    "pixi.js": "7.4.0"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.29",

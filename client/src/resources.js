@@ -17,7 +17,7 @@ function i(e, t) {
     if (!a.hasLoaded) {
         a.on("loaded", (r) => {
             console.log("Loaded texture", t);
-            e.plugins.prepare.upload(r);
+            e.prepare.upload(r);
         });
         a.on("error", (e) => {
             console.log("BaseTex load error, retrying", t);
@@ -76,22 +76,15 @@ function s(e, t) {
 }
 
 class ResourceManager {
-    constructor(t, r, i) {
-        this.renderer = t;
-        this.audioManager = r;
-        this.config = i;
+    constructor(renderer, audioManager, config) {
+        this.renderer = renderer;
+        this.audioManager = audioManager;
+        this.config = config;
         this.textureRes = s(this.renderer, this.config);
         this.atlases = {};
         this.loadTicker = 0;
         this.loaded = false;
-        t.plugins.prepare.limiter.maxItemsPerFrame = 1;
-        /* let atlases = ""
-         for (const atlas of Object.values(h.low)) {
-            for (const sheet of atlas) {
-                atlases += ` ${sheet.meta.image}`
-            }
-        }
-        console.log(atlases) */
+        renderer.prepare.limiter.maxItemsPerFrame = 1;
     }
 
     isAtlasLoaded(e) {

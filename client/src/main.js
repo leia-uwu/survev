@@ -320,7 +320,7 @@ class Application {
                     width: window.innerWidth,
                     height: window.innerHeight,
                     view: domCanvas,
-                    antialias: true,
+                    antialias: false,
                     resolution: rendererRes,
                     forceCanvas
                 });
@@ -332,9 +332,9 @@ class Application {
                 pixi = createPixiApplication(true);
             }
             this.pixi = pixi;
-            this.pixi.renderer.plugins.interaction.destroy();
+            this.pixi.renderer.events.destroy();
             this.pixi.ticker.add(this.update, this);
-            this.pixi.renderer.backgroundColor = 7378501;
+            this.pixi.renderer.background.color = 7378501;
             this.resourceManager = new Resources.ResourceManager(
                 this.pixi.renderer,
                 this.audioManager,
