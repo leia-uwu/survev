@@ -9,21 +9,23 @@ import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 
-function a(e, t, r, a) {
-    const i = Math.atan2(a.y, a.x);
+function transformSegment(p0, p1, pos, dir) {
+    const ang = Math.atan2(dir.y, dir.x);
     return {
-        p0: v2.add(r, v2.rotate(e, i)),
-        p1: v2.add(r, v2.rotate(t, i))
+        p0: v2.add(pos, v2.rotate(p0, ang)),
+        p1: v2.add(pos, v2.rotate(p1, ang))
     };
 }
-function createBullet(e, t, r, a, i) {
+
+export function createBullet(e, t, r, a, i) {
     if (BulletDefs[e.bulletType].addFlare) {
         r.addFlare(e, a, i);
     } else {
         t.addBullet(e, a, i);
     }
 }
-function playHitFx(e, t, r, a, i, o, s) {
+
+export function playHitFx(e, t, r, a, i, o, s) {
     for (
         let n = Math.floor(util.random(1, 2)),
             l = v2.mul(a, 9.5),
@@ -41,20 +43,21 @@ function playHitFx(e, t, r, a, i, o, s) {
         filter: "muffled"
     });
 }
-function BulletBarn() {
-    this.bullets = [];
-    this.tracerColors = {};
-}
+export class BulletBarn {
+    constructor() {
+        this.bullets = [];
+        this.tracerColors = {};
+    }
 
-BulletBarn.prototype = {
-    onMapLoad: function(e) {
+    onMapLoad(e) {
         this.tracerColors = util.mergeDeep(
             {},
             GameConfig.tracerColors,
             e.getMapDef().biome.tracerColors
         );
-    },
-    addBullet: function(e, t, r) {
+    }
+
+    addBullet(e, t, r) {
         let a = null;
         for (let i = 0; i < this.bullets.length; i++) {
             if (
@@ -135,8 +138,9 @@ BulletBarn.prototype = {
         }
         a.container.visible = true;
         r.addPIXIObj(a.container, a.layer, 20);
-    },
-    m: function(e, t, r, i, s, n, u, w) {
+    }
+
+    m(e, t, r, i, s, n, u, w) {
         for (
             let f = t.$e.p(), _ = 0;
             _ < this.bullets.length;
@@ -216,13 +220,13 @@ BulletBarn.prototype = {
                         if (A.hasActivePan()) {
                             const D = A;
                             const E = D.getPanSegment();
-                            const B = a(
+                            const B = transformSegment(
                                 E.p0,
                                 E.p1,
                                 D.posOld,
                                 D.dirOld
                             );
-                            const R = a(E.p0, E.p1, D.pos, D.dir);
+                            const R = transformSegment(E.p0, E.p1, D.pos, D.dir);
                             const L = coldet.intersectSegmentSegment(
                                 v,
                                 b.pos,
@@ -436,8 +440,9 @@ BulletBarn.prototype = {
                 b.isNew = false;
             }
         }
-    },
-    createBulletHit: function(e, t, r) {
+    }
+
+    createBulletHit(e, t, r) {
         const a = e.u(t);
         if (a) {
             r.playGroup("player_bullet_hit", {
@@ -447,8 +452,9 @@ BulletBarn.prototype = {
                 filter: "muffled"
             });
         }
-    },
-    render: function(e, t) {
+    }
+
+    render(e, t) {
         e.pixels(1);
         for (let r = 0; r < this.bullets.length; r++) {
             const a = this.bullets[r];
@@ -462,9 +468,4 @@ BulletBarn.prototype = {
             }
         }
     }
-};
-export default {
-    BulletBarn,
-    createBullet,
-    playHitFx
-};
+}

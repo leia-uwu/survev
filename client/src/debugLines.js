@@ -69,5 +69,4 @@ class DebugLines {
     }
 }
 
-const debugLines = new DebugLines();
-export default debugLines;
+export const debugLines = new DebugLines();

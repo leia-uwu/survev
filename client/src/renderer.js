@@ -26,60 +26,33 @@ function l(e, t, r, a, i) {
     e.lineTo(t, r);
     e.closePath();
 }
-function Renderer(e, t) {
-    this.game = e;
-    this.canvasMode = t;
-    this.zIdx = 0;
-    this.layer = 0;
-    this.layerAlpha = 0;
-    this.groundAlpha = 0;
-    this.underground = false;
-    this.layers = [];
-    for (let r = 0; r < 4; r++) {
-        this.layers.push(new RenderGroup(`layer_${r}`));
-    }
-    this.ground = new PIXI.Graphics();
-    this.ground.alpha = 0;
-    this.layerMask = n();
-    this.debugLayerMask = null;
-    this.layerMaskDirty = true;
-    this.layerMaskActive = false;
-}
-
-class RenderGroup extends PIXI.Container {
-    constructor(e) {
-        super();
-        this.dirty = true;
-        this.debugName = e || "";
+export class Renderer {
+    constructor(e, t) {
+        this.game = e;
+        this.canvasMode = t;
+        this.zIdx = 0;
+        this.layer = 0;
+        this.layerAlpha = 0;
+        this.groundAlpha = 0;
+        this.underground = false;
+        this.layers = [];
+        for (let r = 0; r < 4; r++) {
+            this.layers.push(new RenderGroup(`layer_${r}`));
+        }
+        this.ground = new PIXI.Graphics();
+        this.ground.alpha = 0;
+        this.layerMask = n();
+        this.debugLayerMask = null;
+        this.layerMaskDirty = true;
+        this.layerMaskActive = false;
     }
 
-    addSortedChild(child) {
-        this.addChild(child);
-        this.dirty = true;
-    }
-
-    checkSort() {
-        return (
-            !!this.dirty &&
-            (this.children.sort((e, t) => {
-                if (e.__zOrd == t.__zOrd) {
-                    return e.__zIdx - t.__zIdx;
-                } else {
-                    return e.__zOrd - t.__zOrd;
-                }
-            }),
-            (this.dirty = false),
-            true)
-        );
-    }
-}
-
-Renderer.prototype = {
-    free: function() {
+    free() {
         this.layerMask.parent?.removeChild(this.layerMark);
         this.layerMask.destroy(true);
-    },
-    addPIXIObj: function(e, t, r, a) {
+    }
+
+    addPIXIObj(e, t, r, a) {
         if (!e.transform) {
             // const i = new Error();
             // const o = JSON.stringify({
@@ -117,14 +90,17 @@ Renderer.prototype = {
             e.__zIdx = a !== undefined ? a : this.zIdx++;
             this.layers[s].addSortedChild(e);
         }
-    },
-    setActiveLayer: function(e) {
+    }
+
+    setActiveLayer(e) {
         this.layer = e;
-    },
-    setUnderground: function(e) {
+    }
+
+    setUnderground(e) {
         this.underground = e;
-    },
-    resize: function(e, t) {
+    }
+
+    resize(e, t) {
         const r = e.mapLoaded
             ? e.getMapDef().biome.colors.underground
             : 1772803;
@@ -133,8 +109,9 @@ Renderer.prototype = {
         this.ground.drawRect(0, 0, t.screenWidth, t.screenHeight);
         this.ground.endFill();
         this.layerMaskDirty = true;
-    },
-    redrawLayerMask: function(e, t) {
+    }
+
+    redrawLayerMask(e, t) {
         const r = this.layerMask;
         if (this.canvasMode) {
             r.clear();
@@ -199,8 +176,9 @@ Renderer.prototype = {
             r.position.set(z.x, z.y);
             r.scale.set(I, -I);
         }
-    },
-    redrawDebugLayerMask: function(e, t) {
+    }
+
+    redrawDebugLayerMask(e, t) {
         const r = this.debugLayerMask;
         r.clear();
         r.beginFill(16711935, 1);
@@ -225,8 +203,9 @@ Renderer.prototype = {
         const w = e.scaleToScreen(1);
         r.position.set(y.x, y.y);
         r.scale.set(w, -w);
-    },
-    m: function(e, t, r, a) {
+    }
+
+    m(e, t, r, a) {
         const i = this.layer > 0 ? 1 : 0;
         this.layerAlpha += s(this.layerAlpha, i, e * 12);
         const o = this.layer == 1 && this.underground ? 1 : 0;
@@ -254,8 +233,32 @@ Renderer.prototype = {
             this.layers[i].checkSort();
         }
     }
-};
-export default {
-    RenderGroup,
-    Renderer
-};
+}
+
+class RenderGroup extends PIXI.Container {
+    constructor(e) {
+        super();
+        this.dirty = true;
+        this.debugName = e || "";
+    }
+
+    addSortedChild(child) {
+        this.addChild(child);
+        this.dirty = true;
+    }
+
+    checkSort() {
+        return (
+            !!this.dirty &&
+            (this.children.sort((e, t) => {
+                if (e.__zOrd == t.__zOrd) {
+                    return e.__zIdx - t.__zIdx;
+                } else {
+                    return e.__zOrd - t.__zOrd;
+                }
+            }),
+            (this.dirty = false),
+            true)
+        );
+    }
+}

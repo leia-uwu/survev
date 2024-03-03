@@ -1,13 +1,13 @@
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
-import createJS from "./createJS";
+import { CreateJS } from "./createJS";
 import soundDefs from "./soundDefs";
 
 const AudioManagerMinAllowedVolume = 0.003;
 const DiffLayerMult = 0.5;
 
-export default class AudioManager {
+export class AudioManager {
     constructor(options) {
         this.mute = false;
         this.masterVolume = 1;
@@ -21,8 +21,8 @@ export default class AudioManager {
         this.activeLayer = 0;
         this.underground = false;
         this.soundInstances = [];
-        createJS.Sound.volume = 0.5;
-        createJS.Sound.on("fileload", this.loadHandler, this);
+        CreateJS.Sound.volume = 0.5;
+        CreateJS.Sound.on("fileload", this.loadHandler, this);
     }
 
     preloadSounds() {
@@ -106,7 +106,7 @@ export default class AudioManager {
             ) {
                 const key = reverbKeys[i];
                 const reverb = reverbs[key];
-                createJS.Sound.registerReverb(reverb.path, key, reverb);
+                CreateJS.Sound.registerReverb(reverb.path, key, reverb);
             }
         }
     }
@@ -114,7 +114,7 @@ export default class AudioManager {
     loadSound(sound) {
         const name = sound.name + sound.channel;
         if (!this.sounds[name]) {
-            createJS.Sound.registerSound(sound.path, name, sound.options || {});
+            CreateJS.Sound.registerSound(sound.path, name, sound.options || {});
             this.sounds[name] = {
                 path: sound.path,
                 name: sound.name,
@@ -143,11 +143,11 @@ export default class AudioManager {
         // Update reverb, simply based on the current terrain layer
         const layerVolumeMap = [0, 1, 1 / 3, 2 / 3];
         const reverbVolume = this.underground ? layerVolumeMap[this.activeLayer] : 0;
-        createJS.Sound.setReverbs({
+        CreateJS.Sound.setReverbs({
             cathedral: reverbVolume
         });
         // Update the audio backend
-        createJS.Sound.update(dt);
+        CreateJS.Sound.update(dt);
     }
 
     playSound(sound, options = {}) {
@@ -202,7 +202,7 @@ export default class AudioManager {
                     options.ignoreMinAllowable
                 ) {
                     const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
-                    instance = createJS.Sound.play(sound + options.channel, {
+                    instance = CreateJS.Sound.play(sound + options.channel, {
                         filter,
                         loop: options.loop ? -1 : 0,
                         volume: options.startSilent ? 0 : clipVolume,
@@ -216,7 +216,7 @@ export default class AudioManager {
             } else {
                 let clipVolume = a.volume * baseVolume;
                 clipVolume = diffLayer ? clipVolume * DiffLayerMult : clipVolume;
-                instance = createJS.Sound.play(sound + options.channel, {
+                instance = CreateJS.Sound.play(sound + options.channel, {
                     filter,
                     loop: options.loop ? -1 : 0,
                     volume: options.startSilent ? 0 : clipVolume,
@@ -285,7 +285,7 @@ export default class AudioManager {
 
     setMasterVolume(volume) {
         volume = math.clamp(volume, 0, 1);
-        createJS.Sound.volume = volume;
+        CreateJS.Sound.volume = volume;
     }
 
     _setInstanceTypeVolume(type, volume) {
@@ -331,7 +331,7 @@ export default class AudioManager {
 
     setMute(mute) {
         this.mute = mute;
-        createJS.Sound.setMute(this.mute);
+        CreateJS.Sound.setMute(this.mute);
         return this.mute;
     }
 
@@ -350,7 +350,7 @@ export default class AudioManager {
     }
 
     stopAll() {
-        createJS.Sound.stop();
+        CreateJS.Sound.stop();
     }
 
     allLoaded() {
@@ -374,7 +374,7 @@ export default class AudioManager {
     }
 
     isSoundPlaying(inst) {
-        return !!inst && inst.playState == createJS.Sound.PLAY_SUCCEEDED;
+        return !!inst && inst.playState == CreateJS.Sound.PLAY_SUCCEEDED;
     }
 
     getSoundDefVolume(sound, channel) {

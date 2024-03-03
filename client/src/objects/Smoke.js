@@ -3,32 +3,16 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
-import objectPool from "./objectPool";
+import { Pool } from "./objectPool";
 
-function a() { }
-function Smoke() {
-    const e = ["part-smoke-02.img", "part-smoke-03.img"];
-    this.active = false;
-    this.zIdx = 0;
-    this.sprite = PIXI.Sprite.from(
-        e[Math.floor(Math.random() * e.length)]
-    );
-    this.sprite.anchor = new PIXI.Point(0.5, 0.5);
-    this.sprite.visible = false;
-}
-function SmokeBarn() {
-    this.e = new objectPool.Pool(a);
-    this.particles = [];
-    this.zIdx = 2147483647;
-}
-
-a.prototype = {
-    o: function() { },
-    n: function() {
+class Smoke {
+    o() { }
+    n() {
         this.particle.fadeOut();
         this.particle = null;
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         this.type = e.type;
         this.pos = v2.copy(e.pos);
         this.rad = e.rad;
@@ -48,9 +32,21 @@ a.prototype = {
         this.particle.posTarget = v2.copy(this.pos);
         this.particle.radTarget = this.rad;
     }
-};
-Smoke.prototype = {
-    o: function(e, t, r, a) {
+}
+
+class SmokeParticle {
+    constructor() {
+        const e = ["part-smoke-02.img", "part-smoke-03.img"];
+        this.active = false;
+        this.zIdx = 0;
+        this.sprite = PIXI.Sprite.from(
+            e[Math.floor(Math.random() * e.length)]
+        );
+        this.sprite.anchor = new PIXI.Point(0.5, 0.5);
+        this.sprite.visible = false;
+    }
+
+    o(e, t, r, a) {
         this.pos = v2.copy(e);
         this.posTarget = v2.copy(this.pos);
         this.rad = t;
@@ -68,13 +64,20 @@ Smoke.prototype = {
         );
         this.layer = r;
         this.interior = a;
-    },
-    fadeOut: function() {
+    }
+
+    fadeOut() {
         this.fade = true;
     }
-};
-SmokeBarn.prototype = {
-    allocParticle: function() {
+}
+export class SmokeBarn {
+    constructor() {
+        this.e = new Pool(Smoke);
+        this.particles = [];
+        this.zIdx = 2147483647;
+    }
+
+    allocParticle() {
         let e = null;
         for (let t = 0; t < this.particles.length; t++) {
             if (!this.particles[t].active) {
@@ -83,14 +86,15 @@ SmokeBarn.prototype = {
             }
         }
         if (!e) {
-            e = new Smoke();
+            e = new SmokeParticle();
             this.particles.push(e);
         }
         e.active = true;
         e.zIdx = this.zIdx--;
         return e;
-    },
-    m: function(e, t, r, a, i) {
+    }
+
+    m(e, t, r, a, i) {
         // for (let o = this.e.p(), s = 0; s < o.length; s++) {
         // o[s].active;
         // }
@@ -134,7 +138,4 @@ SmokeBarn.prototype = {
             }
         }
     }
-};
-export default {
-    SmokeBarn
-};
+}

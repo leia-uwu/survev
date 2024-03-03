@@ -5,20 +5,21 @@ import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 
-function Obstacle() {
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.visible = false;
-}
+export class Obstacle {
+    constructor() {
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.visible = false;
+    }
 
-Obstacle.prototype = {
-    o: function() {
+    o() {
         this.isNew = false;
         this.smokeEmitter = null;
         this.sprite.visible = false;
         this.img = "";
-    },
-    n: function() {
+    }
+
+    n() {
         this.sprite.visible = false;
         this.sprite.parent?.removeChild(this.sprite);
         if (this.door?.casingSprite) {
@@ -29,8 +30,9 @@ Obstacle.prototype = {
             this.smokeEmitter.stop();
             this.smokeEmitter = null;
         }
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         if (t) {
             this.type = e.type;
             this.layer = e.layer;
@@ -194,8 +196,9 @@ Obstacle.prototype = {
         if (y && b < 1) {
             this.sprite.tint = util.adjustValue(this.sprite.tint, b);
         }
-    },
-    getInteraction: function() {
+    }
+
+    getInteraction() {
         if (this.isButton && this.button.canUse) {
             return {
                 rad: this.button.interactionRad,
@@ -217,8 +220,9 @@ Obstacle.prototype = {
         } else {
             return null;
         }
-    },
-    m: function(e, t, r, a, i, m, p) {
+    }
+
+    m(e, t, r, a, i, m, p) {
         if (this.isButton) {
             const h = this.button;
             if (h.seq != h.seqOld) {
@@ -370,8 +374,9 @@ Obstacle.prototype = {
             }
         }
         this.isNew = false;
-    },
-    render: function(e, t, r) {
+    }
+
+    render(e, t, r) {
         const a = this.isDoor ? this.door.interpPos : this.pos;
         const i = this.isDoor ? this.door.interpRot : this.rot;
         const o = this.scale;
@@ -400,5 +405,4 @@ Obstacle.prototype = {
             this.door.casingSprite.visible = !this.dead;
         }
     }
-};
-export default Obstacle;
+}

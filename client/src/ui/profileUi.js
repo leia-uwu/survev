@@ -1,9 +1,9 @@
 import $ from "jquery";
-import api from "./api";
-import device from "./device";
-import helpers from "./helpers";
-import MenuModal from "./menuModal";
-import proxy from "./proxy";
+import { api } from "../api";
+import { device } from "../device";
+import { helpers } from "../helpers";
+import { MenuModal } from "./menuModal";
+import { proxy } from "../proxy";
 import webview from "./webview";
 import loadout from "./loadouts";
 

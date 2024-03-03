@@ -31,7 +31,7 @@ function getCursorCSS(crosshairDef) {
     return `${getBaseURL(crosshairDef)} ${dims.width / 2} ${dims.height / 2}, crosshair`;
 }
 
-const crosshair = {
+export const crosshair = {
     getCursorURL: function(crosshairDef) {
         return getBaseURL(crosshairDef);
     },
@@ -59,4 +59,3 @@ const crosshair = {
         });
     }
 };
-export default crosshair;

@@ -1,52 +1,52 @@
 import * as PIXI from "pixi.js";
-import { math } from "../../shared/utils/math";
-import device from "./device";
+import { math } from "../../../shared/utils/math";
+import { device } from "../device";
 
 const fontWidth = 24;
 
-function PieTimer() {
-    this.container = new PIXI.Container();
-    this.container.visible = false;
-    this.timerBackground = PIXI.Sprite.from(
-        "timer-background.img"
-    );
-    this.timerBackground.anchor.set(0.5, 0.5);
-    this.timerBackground.scale.set(1, 1);
-    this.container.addChild(this.timerBackground);
-    this.gfx = new PIXI.Graphics();
-    this.container.addChild(this.gfx);
-    this.counterText = new PIXI.Text();
-    this.counterText.anchor.set(0.5, 0.5);
-    this.counterText.style = {
-        fontFamily: "Roboto Condensed, Arial, sans-serif",
-        fontWeight: "bold",
-        fontSize: fontWidth,
-        align: "center",
-        fill: 16777215,
-        stroke: 0,
-        strokeThickness: 3
-    };
-    this.container.addChild(this.counterText);
-    this.labelText = new PIXI.Text();
-    this.labelText.anchor.set(0.5, 0.5);
-    this.labelText.style = {
-        fontFamily: "Roboto Condensed, Arial, sans-serif",
-        fontWeight: "100",
-        fontSize: fontWidth,
-        align: "center",
-        fill: 16777215
-    };
-    this.container.addChild(this.labelText);
-    this.screenScaleFactor = 1;
-    this.mobileOffset = 0;
-    this.active = false;
-    this.label = "";
-    this.elapsed = 0;
-    this.duration = 0;
-}
+export class PieTimer {
+    constructor() {
+        this.container = new PIXI.Container();
+        this.container.visible = false;
+        this.timerBackground = PIXI.Sprite.from(
+            "timer-background.img"
+        );
+        this.timerBackground.anchor.set(0.5, 0.5);
+        this.timerBackground.scale.set(1, 1);
+        this.container.addChild(this.timerBackground);
+        this.gfx = new PIXI.Graphics();
+        this.container.addChild(this.gfx);
+        this.counterText = new PIXI.Text();
+        this.counterText.anchor.set(0.5, 0.5);
+        this.counterText.style = {
+            fontFamily: "Roboto Condensed, Arial, sans-serif",
+            fontWeight: "bold",
+            fontSize: fontWidth,
+            align: "center",
+            fill: 16777215,
+            stroke: 0,
+            strokeThickness: 3
+        };
+        this.container.addChild(this.counterText);
+        this.labelText = new PIXI.Text();
+        this.labelText.anchor.set(0.5, 0.5);
+        this.labelText.style = {
+            fontFamily: "Roboto Condensed, Arial, sans-serif",
+            fontWeight: "100",
+            fontSize: fontWidth,
+            align: "center",
+            fill: 16777215
+        };
+        this.container.addChild(this.labelText);
+        this.screenScaleFactor = 1;
+        this.mobileOffset = 0;
+        this.active = false;
+        this.label = "";
+        this.elapsed = 0;
+        this.duration = 0;
+    }
 
-PieTimer.prototype = {
-    destroy: function() {
+    destroy() {
         this.container.removeChild(this.timerBackground);
         this.timerBackground.destroy({
             children: true
@@ -55,17 +55,20 @@ PieTimer.prototype = {
             children: true,
             texture: true
         });
-    },
-    start: function(e, t, r) {
+    }
+
+    start(e, t, r) {
         this.active = true;
         this.label = e;
         this.elapsed = t;
         this.duration = r;
-    },
-    stop: function() {
+    }
+
+    stop() {
         this.active = false;
-    },
-    resize: function(e, t) {
+    }
+
+    resize(e, t) {
         this.screenScaleFactor = t;
         if (device.uiLayout == device.UiLayout.Sm) {
             if (!device.tablet) {
@@ -78,8 +81,9 @@ PieTimer.prototype = {
             this.container.scale.set(1, 1);
             this.mobileOffset = 0;
         }
-    },
-    update: function(e, t) {
+    }
+
+    update(e, t) {
         if (!this.active) {
             this.container.visible = false;
             return;
@@ -110,7 +114,4 @@ PieTimer.prototype = {
         );
         this.container.visible = true;
     }
-};
-export default {
-    Ce: PieTimer
-};
+}

@@ -1,4 +1,4 @@
-function a(e) {
+function facebookLogin(e) {
     facebookConnectPlugin.login(
         ["public_profile"],
         (t) => {
@@ -9,7 +9,7 @@ function a(e) {
         }
     );
 }
-function i(e) {
+function googleLogin(e) {
     window.plugins.googleplus.login(
         {},
         (t) => {
@@ -20,10 +20,10 @@ function i(e) {
         }
     );
 }
-function o(e) {
+function getSystemMemoryInfo(e) {
     window.chrome.system.memory.getInfo(e);
 }
-function s(e) {
+function promptAppRate(e) {
     AppRate.preferences = {
         useLanguage: "en",
         displayAppName: "surviv.io",
@@ -56,10 +56,10 @@ function s(e) {
     AppRate.preferences.simpleMode = true;
     AppRate.promptForRating();
 }
-function n() {
+function hasNativeStorage() {
     return window.NativeStorage !== undefined;
 }
-function l(e, t) {
+function storageGetItem(e, t) {
     NativeStorage.getItem(
         e,
         (e) => {
@@ -70,7 +70,7 @@ function l(e, t) {
         }
     );
 }
-function c(e, t, r) {
+function storageSetItem(e, t, r) {
     NativeStorage.setItem(
         e,
         t,
@@ -83,11 +83,11 @@ function c(e, t, r) {
     );
 }
 export default {
-    facebookLogin: a,
-    getSystemMemoryInfo: o,
-    googleLogin: i,
-    promptAppRate: s,
-    hasNativeStorage: n,
-    storageGetItem: l,
-    storageSetItem: c
+    facebookLogin,
+    getSystemMemoryInfo,
+    googleLogin,
+    promptAppRate,
+    hasNativeStorage,
+    storageGetItem,
+    storageSetItem
 };

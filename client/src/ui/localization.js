@@ -1,7 +1,7 @@
 import $ from "jquery";
-import api from "./api";
-import device from "./device";
-import english from "./english";
+import { api } from "../api";
+import { device } from "../device";
+import english from "../english";
 
 function downloadFile(file, onComplete) {
     const opts = {
@@ -15,12 +15,6 @@ function downloadFile(file, onComplete) {
         .fail((err) => {
             onComplete(err);
         });
-}
-function Localization() {
-    this.acceptedLocales = Object.keys(Locales);
-    this.translations = {};
-    this.translations.en = english;
-    this.locale = "en";
 }
 
 const Locales = {
@@ -43,8 +37,16 @@ const Locales = {
     "zh-cn": "中文简体",
     "zh-tw": "中文繁體"
 };
-Localization.prototype = {
-    detectLocale: function() {
+
+export class Localization {
+    constructor() {
+        this.acceptedLocales = Object.keys(Locales);
+        this.translations = {};
+        this.translations.en = english;
+        this.locale = "en";
+    }
+
+    detectLocale() {
         let detectedLocale = (
             navigator.language || navigator.userLanguage
         ).toLowerCase();
@@ -65,8 +67,9 @@ Localization.prototype = {
             }
         }
         return "en";
-    },
-    setLocale: function(locale) {
+    }
+
+    setLocale(locale) {
         const _this = this;
         const newLocale = this.acceptedLocales.includes(locale) ? locale : "en";
         if (newLocale != this.locale) {
@@ -86,19 +89,21 @@ Localization.prototype = {
                 this.localizeIndex();
             }
         }
-    },
-    getLocale: function() {
-        return this.locale;
-    },
+    }
 
-    translate: function(key) {
+    getLocale() {
+        return this.locale;
+    }
+
+    translate(key) {
         return (
             this.translations[this.locale][key] ||
             this.translations.en[key] ||
             ""
         );
-    },
-    localizeIndex: function() {
+    }
+
+    localizeIndex() {
         const _this = this;
         const localizedElements = $("*[data-l10n]");
         localizedElements.each((idx, el) => {
@@ -119,8 +124,9 @@ Localization.prototype = {
                 }
             }
         });
-    },
-    populateLanguageSelect: function() {
+    }
+
+    populateLanguageSelect() {
         const el = $(".language-select");
         el.empty();
         const locales = Object.keys(Locales);
@@ -135,5 +141,4 @@ Localization.prototype = {
             );
         }
     }
-};
-export default Localization;
+}

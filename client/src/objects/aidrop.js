@@ -4,19 +4,16 @@ import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
-import ObjectPool from "./objectPool";
+import { Pool } from "./objectPool";
 
-function AirDrop() {
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.visible = false;
-}
-function AirdropBarn() {
-    this.re = new ObjectPool.Pool(AirDrop);
-}
+class AirDrop {
+    constructor() {
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.visible = false;
+    }
 
-AirDrop.prototype = {
-    o: function() {
+    o() {
         this.playedLandFx = false;
         this.landed = false;
         this.fallInstance = null;
@@ -25,13 +22,15 @@ AirDrop.prototype = {
         this.pos = v2.create(0, 0);
         this.isNew = false;
         this.fallTicker = 0;
-    },
-    n: function() {
+    }
+
+    n() {
         this.fallInstance?.stop();
         this.fallInstance = null;
         this.sprite.visible = false;
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         if (r) {
             this.isNew = true;
             this.fallTicker = e.fallT * GameConfig.airdrop.fallTime;
@@ -43,14 +42,19 @@ AirDrop.prototype = {
         }
         this.landed = e.landed;
     }
-};
-AirdropBarn.prototype = {
-    free: function() {
+}
+export class AirdropBarn {
+    constructor() {
+        this.re = new Pool(AirDrop);
+    }
+
+    free() {
         for (let e = this.re.p(), t = 0; t < e.length; t++) {
             e[t].n();
         }
-    },
-    m: function(e, t, r, a, i, o, p) {
+    }
+
+    m(e, t, r, a, i, o, p) {
         for (let h = this.re.p(), d = 0; d < h.length; d++) {
             const u = h[d];
             if (u.active) {
@@ -156,7 +160,4 @@ AirdropBarn.prototype = {
             }
         }
     }
-};
-export default {
-    AirdropBarn
-};
+}

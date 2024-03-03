@@ -1,5 +1,5 @@
-import helpers from "./helpers";
-// o.getParameterByName("debug") || (console.log = function () {});
+import { helpers } from "./helpers";
+// helpers.getParameterByName("debug") || (console.log = function () {});
 import $ from "jquery";
 import * as PIXI from "pixi.js";
 
@@ -8,29 +8,29 @@ import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 
 import net from "../../shared/net";
-import Account from "./account";
-import Api from "./api";
-import Ambiance from "./ambiance";
-import AudioManager from "./audioManager";
-import Device from "./device";
-import ConfigManager from "./config";
-import "./webview";
+import { Account } from "./account";
+import { api } from "./api";
+import { Ambiance } from "./ambiance";
+import { AudioManager } from "./audioManager";
+import { device } from "./device";
+import { ConfigManager } from "./config";
+import "./ui/webview";
 // import "./emote";
 import { Game } from "./game";
 import Input from "./input";
 import InputBinds from "./inputBinds";
-import Ui2 from "./ui2";
-import OpponentDisplay from "./opponentDisplay";
-import LoadoutMenu from "./loadoutMenu";
-import Localization from "./localization";
-import Menu from "./menu";
-import MenuModal from "./menuModal";
-import Pass from "./pass";
+import { loadStaticDomImages } from "./ui/ui2";
+import OpponentDisplay from "./ui/opponentDisplay";
+import LoadoutMenu from "./ui/loadoutMenu";
+import { Localization } from "./ui/localization";
+import Menu from "./ui/menu";
+import { MenuModal } from "./ui/menuModal";
+import Pass from "./ui/pass";
 import PingTest from "./pingTest";
-import ProfileUi from "./ProfileUi";
+import ProfileUi from "./ui/profileUi";
 import Resources from "./resources";
-import SiteInfo from "./siteInfo";
-import TeamMenu from "./teamMenu";
+import { SiteInfo } from "./siteInfo";
+import TeamMenu from "./ui/teamMenu";
 
 class Application {
     constructor() {
@@ -114,7 +114,7 @@ class Application {
                 e.m_tryLoad();
             });
         };
-        if (Device.webview && Device.version > "1.0.0") {
+        if (device.webview && device.version > "1.0.0") {
             this.loadWebviewDeps(t);
         } else {
             this.loadBrowserDeps(t);
@@ -143,10 +143,10 @@ class Application {
         (function(e, t, r) {
             let a;
             const i =
-                Device.version >= "1.0.8"
-                    ? `cordova/${Device.version}`
+                device.version >= "1.0.8"
+                    ? `cordova/${device.version}`
                     : "cordova";
-            const o = `${i}/${Device.os}/cordova.js`;
+            const o = `${i}/${device.os}/cordova.js`;
             const s = e.getElementsByTagName(t)[0];
             if (!e.getElementById(r)) {
                 a = e.createElement(t);
@@ -167,10 +167,10 @@ class Application {
         ) {
             this.initialized = true;
             this.config.teamAutoFill = true;
-            if (Device.webview) {
-                Menu.applyWebviewStyling(Device.tablet);
-            } else if (Device.mobile) {
-                Menu.applyMobileBrowserStyling(Device.tablet);
+            if (device.webview) {
+                Menu.applyWebviewStyling(device.tablet);
+            } else if (device.mobile) {
+                Menu.applyMobileBrowserStyling(device.tablet);
             }
             const t =
                 this.config.get("language") ||
@@ -311,7 +311,7 @@ class Application {
 
             const rendererRes = window.devicePixelRatio > 1 ? 2 : 1;
 
-            if (Device.os == "ios") {
+            if (device.os == "ios") {
                 PIXI.settings.PRECISION_FRAGMENT = "highp";
             }
 
@@ -403,7 +403,7 @@ class Application {
             this.config.addModifiedListener(
                 this.onConfigModified.bind(this)
             );
-            Ui2.loadStaticDomImages();
+            loadStaticDomImages();
         }
     }
 
@@ -412,10 +412,10 @@ class Application {
     }
 
     onResize() {
-        Device.onResize();
+        device.onResize();
         Menu.onResize();
         this.loadoutMenu.onResize();
-        this.pixi?.renderer.resize(Device.screenWidth, Device.screenHeight);
+        this.pixi?.renderer.resize(device.screenWidth, device.screenHeight);
         if (this.game?.initialized) {
             this.game.resize();
         }
@@ -426,10 +426,10 @@ class Application {
     }
 
     onPause() {
-        if (Device.webview) {
+        if (device.webview) {
             this.pauseTime = Date.now();
             this.audioManager.setMute(true);
-            if (Device.os == "ios") {
+            if (device.os == "ios") {
                 this.pixi?.ticker.remove(
                     this.pixi.render,
                     this.pixi
@@ -439,7 +439,7 @@ class Application {
     }
 
     onResume() {
-        if (Device.webview) {
+        if (device.webview) {
             if (
                 this.game?.playing &&
                 Date.now() - this.pauseTime > 30000
@@ -450,7 +450,7 @@ class Application {
                     this.config.get("muteAudio")
                 );
             }
-            if (Device.os == "ios") {
+            if (device.os == "ios") {
                 this.pixi?.ticker.add(
                     this.pixi.render,
                     this.pixi,
@@ -597,7 +597,7 @@ class Application {
         }
         $("#ad-block-left").css(
             "display",
-            !Device.isLandscape && this.teamMenu.active
+            !device.isLandscape && this.teamMenu.active
                 ? "none"
                 : "block"
         );
@@ -725,7 +725,7 @@ class Application {
             };
             $.ajax({
                 type: "POST",
-                url: Api.resolveUrl("/api/find_game"),
+                url: api.resolveUrl("/api/find_game"),
                 data: JSON.stringify(e),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10000,
@@ -890,7 +890,7 @@ window.addEventListener("hashchange", () => {
     App.tryJoinTeam(false);
 });
 window.addEventListener("beforeunload", (e) => {
-    if (App.game?.warnPageReload() && !Device.webview) {
+    if (App.game?.warnPageReload() && !device.webview) {
         const t = "Do you want to reload the game?";
         e.returnValue = t;
         return t;

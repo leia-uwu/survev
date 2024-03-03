@@ -1,17 +1,17 @@
 import * as PIXI from "pixi.js";
 import { v2 } from "../../../shared/utils/v2";
-import device from "../device";
+import { device } from "../device";
 import { math } from "../../../shared/utils/math";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 
-function a(e) {
-    this.ht = e;
-    this.dt = [];
-    this.ut = {};
-}
+export class MapIndicatorBarn {
+    constructor(e) {
+        this.ht = e;
+        this.dt = [];
+        this.ut = {};
+    }
 
-a.prototype = {
-    Ne: function(e) {
+    Ne(e) {
         for (let t = 0; t < e.length; t++) {
             const r = e[t];
             if (r.dead) {
@@ -20,8 +20,9 @@ a.prototype = {
                 this.yt(r);
             }
         }
-    },
-    wt: function(e) {
+    }
+
+    wt(e) {
         const t = {
             id: e.id,
             type: e.type,
@@ -39,8 +40,9 @@ a.prototype = {
         this.dt.push(t);
         this.ut[e.id] = t;
         return t;
-    },
-    gt: function(e) {
+    }
+
+    gt(e) {
         for (let t = 0; t < this.dt.length; t++) {
             const r = this.dt[t];
             if (r.id == e) {
@@ -51,8 +53,9 @@ a.prototype = {
                 break;
             }
         }
-    },
-    yt: function(e) {
+    }
+
+    yt(e) {
         let t = this.ut[e.id];
         t ||= this.wt(e);
         t.pos = v2.copy(e.pos);
@@ -80,8 +83,9 @@ a.prototype = {
                 PIXI.Texture.from("part-pulse-01.img");
             m.sprite.tint = r.mapIndicator.pulseTint;
         }
-    },
-    Ee: function(e) {
+    }
+
+    Ee(e) {
         for (let t = 0; t < this.dt.length; t++) {
             const r = this.dt[t];
             r.pulseTicker = math.clamp(
@@ -100,7 +104,4 @@ a.prototype = {
             r.pulseSprite.visible = r.equipped;
         }
     }
-};
-export default {
-    Oe: a
-};
+}

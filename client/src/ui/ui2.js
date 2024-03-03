@@ -1,64 +1,72 @@
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
-import { GameConfig } from "../../shared/gameConfig";
-import net from "../../shared/net";
-import { collider } from "../../shared/utils/collider";
-import { math } from "../../shared/utils/math";
-import { util } from "../../shared/utils/util";
-import { v2 } from "../../shared/utils/v2";
-import device from "./device";
-import helpers from "./helpers";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
+import { GameConfig } from "../../../shared/gameConfig";
+import net from "../../../shared/net";
+import { collider } from "../../../shared/utils/collider";
+import { math } from "../../../shared/utils/math";
+import { util } from "../../../shared/utils/util";
+import { v2 } from "../../../shared/utils/v2";
+import { device } from "../device";
+import { helpers } from "../helpers";
 
 const Input = GameConfig.Input;
 const Action = GameConfig.Action;
 const DamageType = GameConfig.DamageType;
 const PickupMsgType = net.PickupMsgType;
 
-function i(e) {
-    return document.getElementById(e);
+function domElemById(id) {
+    return document.getElementById(id);
 }
-function o(e) {
+function isLmb(e) {
     return e.button == 0;
 }
-function s(e) {
+function isRmb(e) {
     if ("which" in e) {
         return e.which == 3;
     } else {
         return e.button == 2;
     }
 }
-function n(e, t, r) {
-    if (e instanceof Array) {
-        for (let a = 0; a < e.length; a++) {
-            n(e[a], r !== undefined ? t[r] : t, a);
+// These functions, copy and diff, only work if both
+// arguments have the same internal structure
+function copy(src, dst, path) {
+    if (src instanceof Array) {
+        for (let i = 0; i < src.length; i++) {
+            copy(src[i], path !== undefined ? dst[path] : dst, i);
         }
-    } else if (e instanceof Object) {
-        for (let i = Object.keys(e), o = 0; o < i.length; o++) {
-            const s = i[o];
-            n(e[s], r !== undefined ? t[r] : t, s);
+    } else if (src instanceof Object) {
+        const keys = Object.keys(src);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            copy(src[key], path !== undefined ? dst[path] : dst, key);
         }
     } else {
-        t[r] = e;
+        dst[path] = src;
     }
 }
-function l(e, t, r) {
-    if (t instanceof Array) {
-        const a = [];
-        for (let i = 0; i < t.length; i++) {
-            a[i] = l(e[i], t[i], r);
+
+// 'all' could be removed if clone() were used instead of copy();
+// with clone, oldState would begin with no properties and would
+// thus automatically diff properly.
+function diff(a, b, all) {
+    if (b instanceof Array) {
+        const patch = [];
+        for (let i = 0; i < b.length; i++) {
+            patch[i] = diff(a[i], b[i], all);
         }
-        return a;
-    }
-    if (t instanceof Object) {
-        const o = {};
-        for (let s = Object.keys(t), n = 0; n < s.length; n++) {
-            const c = s[n];
-            o[c] = l(e[c], t[c], r);
+        return patch;
+    } if (b instanceof Object) {
+        const patch = {};
+        const keys = Object.keys(b);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            patch[key] = diff(a[key], b[key], all);
         }
-        return o;
+        return patch;
     }
-    return e != t || r;
+    return a != b || all;
 }
+
 function c() {
     const e = Object.keys(GameObjectDefs);
     const t = [];
@@ -70,6 +78,7 @@ function c() {
     }
     return t;
 }
+
 function m() {
     const e = Object.keys(GameObjectDefs);
     const t = [];
@@ -87,403 +96,371 @@ function m() {
     }
     return t;
 }
+
 function p() {
     return ["chest", "helmet", "backpack"];
 }
-function UiState() {
-    this.mobile = false;
-    this.touch = false;
-    this.rareLootMessage = {
-        lootType: "",
-        ticker: 0,
-        duration: 0,
-        opacity: 0
-    };
-    this.pickupMessage = {
-        message: "",
-        ticker: 0,
-        duration: 0,
-        opacity: 0
-    };
-    this.killMessage = {
-        text: "",
-        count: "",
-        ticker: 0,
-        duration: 0,
-        opacity: 0
-    };
-    this.killFeed = [];
-    for (let e = 0; e < C; e++) {
-        this.killFeed.push({
+
+class UiState {
+    constructor() {
+        this.mobile = false;
+        this.touch = false;
+        this.rareLootMessage = {
+            lootType: "",
+            ticker: 0,
+            duration: 0,
+            opacity: 0
+        };
+        this.pickupMessage = {
+            message: "",
+            ticker: 0,
+            duration: 0,
+            opacity: 0
+        };
+        this.killMessage = {
             text: "",
-            color: "#000000",
-            offset: 0,
-            opacity: 0,
-            ticker: Number.MAX_VALUE
-        });
-    }
-    this.weapons = [];
-    for (let t = 0; t < GameConfig.WeaponSlot.Count; t++) {
-        this.weapons[t] = {
-            slot: t,
-            type: "",
-            ammo: 0,
-            equipped: false,
-            selectable: false,
-            opacity: 0,
-            width: 0,
+            count: "",
             ticker: 0,
-            bind: E[t],
-            bindStr: ""
+            duration: 0,
+            opacity: 0
         };
-    }
-    this.ammo = {
-        current: 0,
-        remaining: 0,
-        displayCurrent: false,
-        displayRemaining: false
-    };
-    this.interaction = {
-        type: D.None,
-        text: "",
-        key: "",
-        usable: false
-    };
-    this.scopes = [];
-    for (let r = c(), a = 0; a < r.length; a++) {
-        this.scopes.push({
-            type: r[a],
-            visible: false,
-            equipped: false,
-            selectable: false
-        });
-    }
-    this.loot = [];
-    for (let i = m(), o = 0; o < i.length; o++) {
-        this.loot.push({
-            type: i[o],
-            count: 0,
-            maximum: 0,
-            selectable: false,
-            width: 0,
-            ticker: 0
-        });
-    }
-    this.gear = [];
-    for (let s = p(), n = 0; n < s.length; n++) {
-        this.gear.push({
-            type: s[n],
-            item: "",
-            selectable: false,
-            width: 0,
-            ticker: 0,
-            rot: 0
-        });
-    }
-    this.perks = [];
-    for (let l = 0; l < O; l++) {
-        this.perks.push({
-            type: "",
-            droppable: false,
-            width: 0,
-            ticker: 0,
-            pulse: false
-        });
-    }
-    this.health = 100;
-    this.boost = 0;
-    this.downed = false;
-}
-function Ui2(e, t) {
-    const r = this;
-    this.localization = e;
-    this.inputBinds = t;
-    this.oldState = new UiState();
-    this.newState = new UiState();
-    this.frameCount = 0;
-    this.dom = {
-        debugButton: i("ui-debug-button"),
-        emoteButton: i("ui-emote-button"),
-        menu: {
-            touchStyles: i("btn-touch-styles"),
-            aimLine: i("btn-game-aim-line")
-        },
-        rareLootMessage: {
-            icon: i("ui-perk-message-image-icon"),
-            imageWrapper: i("ui-perk-message-image-wrapper"),
-            wrapper: i("ui-perk-message-wrapper"),
-            name: i("ui-perk-message-name"),
-            desc: i("ui-perk-message-acquired")
-        },
-        pickupMessage: i("ui-pickup-message"),
-        killMessage: {
-            div: i("ui-kills"),
-            text: i("ui-kill-text"),
-            count: i("ui-kill-count")
-        },
-        killFeed: {
-            div: i("ui-killfeed-contents"),
-            lines: []
-        },
-        weapons: [],
-        ammo: {
-            current: i("ui-current-clip"),
-            remaining: i("ui-remaining-ammo"),
-            reloadButton: i("ui-reload-button-container")
-        },
-        interaction: {
-            div: i("ui-interaction"),
-            key: i("ui-interaction-press"),
-            text: i("ui-interaction-description")
-        },
-        health: {
-            inner: i("ui-health-actual"),
-            depleted: i("ui-health-depleted")
-        },
-        boost: {
-            div: i("ui-boost-counter"),
-            bars: [
-                i("ui-boost-counter-0").firstElementChild,
-                i("ui-boost-counter-1").firstElementChild,
-                i("ui-boost-counter-2").firstElementChild,
-                i("ui-boost-counter-3").firstElementChild
-            ]
-        },
-        scopes: [],
-        loot: [],
-        gear: [],
-        perks: []
-    };
-    for (let a = 0; a < C; a++) {
-        const n = `ui-killfeed-${a}`;
-        let l = i(n);
-        if (!l) {
-            l = document.createElement("div");
-            l.id = n;
-            l.classList.add("killfeed-div");
-            const d = document.createElement("div");
-            d.classList.add("killfeed-text");
-            l.appendChild(d);
-            this.dom.killFeed.div.appendChild(l);
+        this.killFeed = [];
+        for (let e = 0; e < C; e++) {
+            this.killFeed.push({
+                text: "",
+                color: "#000000",
+                offset: 0,
+                opacity: 0,
+                ticker: Number.MAX_VALUE
+            });
         }
-        this.dom.killFeed.lines.push({
-            line: l,
-            text: l.firstElementChild
-        });
-    }
-    for (let u = 0; u < 4; u++) {
-        const g = i(`ui-weapon-id-${u + 1}`);
-        const y = {
-            div: g,
-            type: g.getElementsByClassName("ui-weapon-name")[0],
-            number: g.getElementsByClassName("ui-weapon-number")[0],
-            image: g.getElementsByClassName("ui-weapon-image")[0],
-            ammo: g.getElementsByClassName(
-                "ui-weapon-ammo-counter"
-            )[0]
-        };
-        this.dom.weapons.push(y);
-    }
-    for (let w = c(), _ = 0; _ < w.length; _++) {
-        const b = w[_];
-        const x = {
-            scopeType: b,
-            div: i(`ui-scope-${b}`)
-        };
-        this.dom.scopes.push(x);
-    }
-    for (let S = m(), v = 0; v < S.length; v++) {
-        const I = S[v];
-        const T = i(`ui-loot-${I}`);
-        if (T) {
-            const P = {
-                lootType: I,
-                div: T,
-                count: T.getElementsByClassName("ui-loot-count")[0],
-                image: T.getElementsByClassName("ui-loot-image")[0],
-                overlay:
-                    T.getElementsByClassName("ui-loot-overlay")[0]
+        this.weapons = [];
+        for (let t = 0; t < GameConfig.WeaponSlot.Count; t++) {
+            this.weapons[t] = {
+                slot: t,
+                type: "",
+                ammo: 0,
+                equipped: false,
+                selectable: false,
+                opacity: 0,
+                width: 0,
+                ticker: 0,
+                bind: E[t],
+                bindStr: ""
             };
-            this.dom.loot.push(P);
         }
-    }
-    for (let D = p(), E = 0; E < D.length; E++) {
-        const B = D[E];
-        const R = i(`ui-armor-${B}`);
-        const L = {
-            gearType: B,
-            div: R,
-            level: R.getElementsByClassName("ui-armor-level")[0],
-            image: R.getElementsByClassName("ui-armor-image")[0]
+        this.ammo = {
+            current: 0,
+            remaining: 0,
+            displayCurrent: false,
+            displayRemaining: false
         };
-        this.dom.gear.push(L);
-    }
-    for (let q = 0; q < O; q++) {
-        const F = i(`ui-perk-${q}`);
-        const j = {
-            perkType: "",
-            div: F,
-            divTitle: F.getElementsByClassName("tooltip-title")[0],
-            divDesc: F.getElementsByClassName("tooltip-desc")[0],
-            image: F.getElementsByClassName("ui-armor-image")[0]
+        this.interaction = {
+            type: D.None,
+            text: "",
+            key: "",
+            usable: false
         };
-        this.dom.perks.push(j);
-    }
-    this.rareLootMessageQueue = [];
-    this.uiEvents = [];
-    this.eventListeners = [];
-    const N = function(e, t, a) {
-        r.eventListeners.push({
-            event: e,
-            elem: t,
-            fn: a
-        });
-        t.addEventListener(e, a);
-    };
-    this.itemActions = [];
-    const H = function(e, t, a, i) {
-        r.itemActions.push({
-            action: e,
-            type: t,
-            data: a,
-            div: i,
-            actionQueued: false,
-            actionTime: 0
-        });
-    };
-    for (let V = 0; V < this.dom.weapons.length; V++) {
-        H("use", "weapon", V, this.dom.weapons[V].div);
-        H("drop", "weapon", V, this.dom.weapons[V].div);
-    }
-    for (let U = 0; U < this.dom.scopes.length; U++) {
-        const W = this.dom.scopes[U];
-        H("use", "scope", W.scopeType, W.div);
-        if (W.scopeType != "1xscope") {
-            H("drop", "loot", W.scopeType, W.div);
-        }
-    }
-    for (let G = 0; G < this.dom.loot.length; G++) {
-        const X = this.dom.loot[G];
-        const K = GameObjectDefs[X.lootType];
-        if (K.type == "heal" || K.type == "boost") {
-            H("use", "loot", X.lootType, X.div);
-        }
-        H("drop", "loot", X.lootType, X.div);
-    }
-    for (let Z = 0; Z < this.dom.gear.length; Z++) {
-        const Y = this.dom.gear[Z];
-        if (Y.gearType != "backpack") {
-            H("drop", "loot", Y.gearType, Y.div);
-        }
-    }
-    for (let J = 0; J < this.dom.perks.length; J++) {
-        H("drop", "perk", J, this.dom.perks[J].div);
-    }
-    for (let Q = 0; Q < this.itemActions.length; Q++) {
-        (function(e) {
-            const t = r.itemActions[e];
-            N("mousedown", t.div, (e) => {
-                if (
-                    (t.action == "use" && o(e)) ||
-                    (t.action == "drop" && s(e))
-                ) {
-                    e.stopPropagation();
-                    t.actionQueued = true;
-                }
+        this.scopes = [];
+        for (let r = c(), a = 0; a < r.length; a++) {
+            this.scopes.push({
+                type: r[a],
+                visible: false,
+                equipped: false,
+                selectable: false
             });
-            N("mouseup", t.div, (e) => {
-                if (
-                    t.actionQueued &&
-                    ((t.action == "use" && o(e)) ||
-                        (t.action == "drop" && s(e)))
-                ) {
-                    e.stopPropagation();
-                    r.pushAction(t);
+        }
+        this.loot = [];
+        for (let i = m(), o = 0; o < i.length; o++) {
+            this.loot.push({
+                type: i[o],
+                count: 0,
+                maximum: 0,
+                selectable: false,
+                width: 0,
+                ticker: 0
+            });
+        }
+        this.gear = [];
+        for (let s = p(), n = 0; n < s.length; n++) {
+            this.gear.push({
+                type: s[n],
+                item: "",
+                selectable: false,
+                width: 0,
+                ticker: 0,
+                rot: 0
+            });
+        }
+        this.perks = [];
+        for (let l = 0; l < O; l++) {
+            this.perks.push({
+                type: "",
+                droppable: false,
+                width: 0,
+                ticker: 0,
+                pulse: false
+            });
+        }
+        this.health = 100;
+        this.boost = 0;
+        this.downed = false;
+    }
+}
+export class UiManager2 {
+    constructor(e, t) {
+        const r = this;
+        this.localization = e;
+        this.inputBinds = t;
+        this.oldState = new UiState();
+        this.newState = new UiState();
+        this.frameCount = 0;
+        this.dom = {
+            debugButton: domElemById("ui-debug-button"),
+            emoteButton: domElemById("ui-emote-button"),
+            menu: {
+                touchStyles: domElemById("btn-touch-styles"),
+                aimLine: domElemById("btn-game-aim-line")
+            },
+            rareLootMessage: {
+                icon: domElemById("ui-perk-message-image-icon"),
+                imageWrapper: domElemById("ui-perk-message-image-wrapper"),
+                wrapper: domElemById("ui-perk-message-wrapper"),
+                name: domElemById("ui-perk-message-name"),
+                desc: domElemById("ui-perk-message-acquired")
+            },
+            pickupMessage: domElemById("ui-pickup-message"),
+            killMessage: {
+                div: domElemById("ui-kills"),
+                text: domElemById("ui-kill-text"),
+                count: domElemById("ui-kill-count")
+            },
+            killFeed: {
+                div: domElemById("ui-killfeed-contents"),
+                lines: []
+            },
+            weapons: [],
+            ammo: {
+                current: domElemById("ui-current-clip"),
+                remaining: domElemById("ui-remaining-ammo"),
+                reloadButton: domElemById("ui-reload-button-container")
+            },
+            interaction: {
+                div: domElemById("ui-interaction"),
+                key: domElemById("ui-interaction-press"),
+                text: domElemById("ui-interaction-description")
+            },
+            health: {
+                inner: domElemById("ui-health-actual"),
+                depleted: domElemById("ui-health-depleted")
+            },
+            boost: {
+                div: domElemById("ui-boost-counter"),
+                bars: [
+                    domElemById("ui-boost-counter-0").firstElementChild,
+                    domElemById("ui-boost-counter-1").firstElementChild,
+                    domElemById("ui-boost-counter-2").firstElementChild,
+                    domElemById("ui-boost-counter-3").firstElementChild
+                ]
+            },
+            scopes: [],
+            loot: [],
+            gear: [],
+            perks: []
+        };
+        for (let a = 0; a < C; a++) {
+            const n = `ui-killfeed-${a}`;
+            let l = domElemById(n);
+            if (!l) {
+                l = document.createElement("div");
+                l.id = n;
+                l.classList.add("killfeed-div");
+                const d = document.createElement("div");
+                d.classList.add("killfeed-text");
+                l.appendChild(d);
+                this.dom.killFeed.div.appendChild(l);
+            }
+            this.dom.killFeed.lines.push({
+                line: l,
+                text: l.firstElementChild
+            });
+        }
+        for (let u = 0; u < 4; u++) {
+            const g = domElemById(`ui-weapon-id-${u + 1}`);
+            const y = {
+                div: g,
+                type: g.getElementsByClassName("ui-weapon-name")[0],
+                number: g.getElementsByClassName("ui-weapon-number")[0],
+                image: g.getElementsByClassName("ui-weapon-image")[0],
+                ammo: g.getElementsByClassName(
+                    "ui-weapon-ammo-counter"
+                )[0]
+            };
+            this.dom.weapons.push(y);
+        }
+        for (let w = c(), _ = 0; _ < w.length; _++) {
+            const b = w[_];
+            const x = {
+                scopeType: b,
+                div: domElemById(`ui-scope-${b}`)
+            };
+            this.dom.scopes.push(x);
+        }
+        for (let S = m(), v = 0; v < S.length; v++) {
+            const I = S[v];
+            const T = domElemById(`ui-loot-${I}`);
+            if (T) {
+                const P = {
+                    lootType: I,
+                    div: T,
+                    count: T.getElementsByClassName("ui-loot-count")[0],
+                    image: T.getElementsByClassName("ui-loot-image")[0],
+                    overlay:
+                        T.getElementsByClassName("ui-loot-overlay")[0]
+                };
+                this.dom.loot.push(P);
+            }
+        }
+        for (let D = p(), E = 0; E < D.length; E++) {
+            const B = D[E];
+            const R = domElemById(`ui-armor-${B}`);
+            const L = {
+                gearType: B,
+                div: R,
+                level: R.getElementsByClassName("ui-armor-level")[0],
+                image: R.getElementsByClassName("ui-armor-image")[0]
+            };
+            this.dom.gear.push(L);
+        }
+        for (let q = 0; q < O; q++) {
+            const F = domElemById(`ui-perk-${q}`);
+            const j = {
+                perkType: "",
+                div: F,
+                divTitle: F.getElementsByClassName("tooltip-title")[0],
+                divDesc: F.getElementsByClassName("tooltip-desc")[0],
+                image: F.getElementsByClassName("ui-armor-image")[0]
+            };
+            this.dom.perks.push(j);
+        }
+        this.rareLootMessageQueue = [];
+        this.uiEvents = [];
+        this.eventListeners = [];
+        const N = function(e, t, a) {
+            r.eventListeners.push({
+                event: e,
+                elem: t,
+                fn: a
+            });
+            t.addEventListener(e, a);
+        };
+        this.itemActions = [];
+        const H = function(e, t, a, i) {
+            r.itemActions.push({
+                action: e,
+                type: t,
+                data: a,
+                div: i,
+                actionQueued: false,
+                actionTime: 0
+            });
+        };
+        for (let V = 0; V < this.dom.weapons.length; V++) {
+            H("use", "weapon", V, this.dom.weapons[V].div);
+            H("drop", "weapon", V, this.dom.weapons[V].div);
+        }
+        for (let U = 0; U < this.dom.scopes.length; U++) {
+            const W = this.dom.scopes[U];
+            H("use", "scope", W.scopeType, W.div);
+            if (W.scopeType != "1xscope") {
+                H("drop", "loot", W.scopeType, W.div);
+            }
+        }
+        for (let G = 0; G < this.dom.loot.length; G++) {
+            const X = this.dom.loot[G];
+            const K = GameObjectDefs[X.lootType];
+            if (K.type == "heal" || K.type == "boost") {
+                H("use", "loot", X.lootType, X.div);
+            }
+            H("drop", "loot", X.lootType, X.div);
+        }
+        for (let Z = 0; Z < this.dom.gear.length; Z++) {
+            const Y = this.dom.gear[Z];
+            if (Y.gearType != "backpack") {
+                H("drop", "loot", Y.gearType, Y.div);
+            }
+        }
+        for (let J = 0; J < this.dom.perks.length; J++) {
+            H("drop", "perk", J, this.dom.perks[J].div);
+        }
+        for (let Q = 0; Q < this.itemActions.length; Q++) {
+            (function(e) {
+                const t = r.itemActions[e];
+                N("mousedown", t.div, (e) => {
+                    if (
+                        (t.action == "use" && isLmb(e)) ||
+                        (t.action == "drop" && isRmb(e))
+                    ) {
+                        e.stopPropagation();
+                        t.actionQueued = true;
+                    }
+                });
+                N("mouseup", t.div, (e) => {
+                    if (
+                        t.actionQueued &&
+                        ((t.action == "use" && isLmb(e)) ||
+                            (t.action == "drop" && isRmb(e)))
+                    ) {
+                        e.stopPropagation();
+                        r.pushAction(t);
+                        t.actionQueued = false;
+                    }
+                });
+                N("touchstart", t.div, (e) => {
+                    if (e.changedTouches.length > 0) {
+                        e.stopPropagation();
+                        t.actionQueued = true;
+                        t.actionTime = new Date().getTime();
+                        t.touchOsId = e.changedTouches[0].identifier;
+                    }
+                });
+                N("touchend", t.div, (e) => {
+                    if (
+                        new Date().getTime() - t.actionTime < A &&
+                        t.actionQueued &&
+                        t.action == "use"
+                    ) {
+                        r.pushAction(t);
+                    }
                     t.actionQueued = false;
-                }
-            });
-            N("touchstart", t.div, (e) => {
-                if (e.changedTouches.length > 0) {
-                    e.stopPropagation();
-                    t.actionQueued = true;
-                    t.actionTime = new Date().getTime();
-                    t.touchOsId = e.changedTouches[0].identifier;
-                }
-            });
-            N("touchend", t.div, (e) => {
-                if (
-                    new Date().getTime() - t.actionTime < A &&
-                    t.actionQueued &&
-                    t.action == "use"
-                ) {
-                    r.pushAction(t);
-                }
-                t.actionQueued = false;
-            });
-            N("touchcancel", t.div, (e) => {
-                t.actionQueued = false;
-            });
-        })(Q);
+                });
+                N("touchcancel", t.div, (e) => {
+                    t.actionQueued = false;
+                });
+            })(Q);
+        }
+        const $ = document.getElementById("cvs");
+        this.clearQueuedItemActions = function() {
+            for (let e = 0; e < r.itemActions.length; e++) {
+                r.itemActions[e].actionQueued = false;
+            }
+            if (device.touch) {
+                $.focus();
+            }
+        };
+        window.addEventListener("mouseup", this.clearQueuedItemActions);
+        window.addEventListener("focus", this.clearQueuedItemActions);
+        this.onKeyUp = function(e) {
+            const t = e.which || e.keyCode;
+            const a = r.inputBinds.getBind(Input.Fullscreen);
+            if (a && t == a.code) {
+                helpers.toggleFullScreen();
+            }
+        };
+        window.addEventListener("keyup", this.onKeyUp);
     }
-    const $ = document.getElementById("cvs");
-    this.clearQueuedItemActions = function() {
-        for (let e = 0; e < r.itemActions.length; e++) {
-            r.itemActions[e].actionQueued = false;
-        }
-        if (device.touch) {
-            $.focus();
-        }
-    };
-    window.addEventListener("mouseup", this.clearQueuedItemActions);
-    window.addEventListener("focus", this.clearQueuedItemActions);
-    this.onKeyUp = function(e) {
-        const t = e.which || e.keyCode;
-        const a = r.inputBinds.getBind(Input.Fullscreen);
-        if (a && t == a.code) {
-            helpers.toggleFullScreen();
-        }
-    };
-    window.addEventListener("keyup", this.onKeyUp);
-}
-function loadStaticDomImages() {
-    const e = function(e, t) {
-        i(e).getElementsByClassName("ui-loot-image")[0].src = t;
-    };
-    e("ui-loot-bandage", "img/loot/loot-medical-bandage.svg");
-    e("ui-loot-healthkit", "img/loot/loot-medical-healthkit.svg");
-    e("ui-loot-soda", "img/loot/loot-medical-soda.svg");
-    e("ui-loot-painkiller", "img/loot/loot-medical-pill.svg");
-    e("ui-loot-9mm", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-12gauge", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-762mm", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-556mm", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-50AE", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-308sub", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-flare", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-45acp", "img/loot/loot-ammo-box.svg");
-    i("mag-glass-white").src = "img/gui/mag-glass.svg";
-    i("ui-minimize-img").src = "img/gui/minimize.svg";
-}
-const C = 6;
-const A = 750;
-const O = 3;
-const D = {
-    None: 0,
-    Cancel: 1,
-    Loot: 2,
-    Revive: 3,
-    Object: 4
-};
 
-const E = {
-    [GameConfig.WeaponSlot.Primary]: Input.EquipPrimary,
-    [GameConfig.WeaponSlot.Secondary]: Input.EquipSecondary,
-    [GameConfig.WeaponSlot.Melee]: Input.EquipMelee,
-    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable
-};
-
-Ui2.prototype = {
-    free: function() {
+    free() {
         for (let e = 0; e < this.eventListeners.length; e++) {
             const t = this.eventListeners[e];
             t.elem.removeEventListener(t.event, t.fn);
@@ -497,18 +474,21 @@ Ui2.prototype = {
             this.clearQueuedItemActions
         );
         window.removeEventListener("keyup", this.onKeyUp);
-    },
-    pushAction: function(e) {
+    }
+
+    pushAction(e) {
         this.uiEvents.push({
             action: e.action,
             type: e.type,
             data: e.data
         });
-    },
-    flushInput: function() {
+    }
+
+    flushInput() {
         this.uiEvents = [];
-    },
-    m: function(e, t, r, a, i, o, s) {
+    }
+
+    m(e, t, r, a, i, o, s) {
         const c = this.newState;
         c.mobile = device.mobile;
         c.touch = device.touch;
@@ -822,15 +802,16 @@ Ui2.prototype = {
                 Ee.type = "";
             }
         }
-        const qe = l(
+        const qe = diff(
             this.oldState,
             this.newState,
             this.frameCount++ == 0
         );
         this.render(qe, this.newState);
-        n(this.newState, this.oldState);
-    },
-    render: function(e, t) {
+        copy(this.newState, this.oldState);
+    }
+
+    render(e, t) {
         const r = this.dom;
         if (e.touch) {
             r.interaction.key.style.backgroundImage = t.touch
@@ -1219,35 +1200,40 @@ Ui2.prototype = {
                 pe.image.style.transform = `scale(${de}, ${de})`;
             }
         }
-    },
-    displayPickupMessage: function(e) {
+    }
+
+    displayPickupMessage(e) {
         const t = this.newState.pickupMessage;
         t.message = this.getPickupMessageText(e);
         t.ticker = 0;
         t.duration = 3;
-    },
-    displayKillMessage: function(e, t) {
+    }
+
+    displayKillMessage(e, t) {
         const r = this.newState.killMessage;
         r.text = e;
         r.count = t;
         r.ticker = 0;
         r.duration = 7;
-    },
-    hideKillMessage: function() {
+    }
+
+    hideKillMessage() {
         this.newState.killMessage.ticker = math.max(
             this.newState.killMessage.ticker,
             this.newState.killMessage.duration - 0.2
         );
-    },
-    addRareLootMessage: function(e, t) {
+    }
+
+    addRareLootMessage(e, t) {
         if (t) {
             this.newState.rareLootMessage.ticker =
                 this.newState.rareLootMessage.duration;
             this.rareLootMessageQueue = [];
         }
         this.rareLootMessageQueue.push(e);
-    },
-    removeRareLootMessage: function(e) {
+    }
+
+    removeRareLootMessage(e) {
         const t = this.rareLootMessageQueue.indexOf(e);
         if (t >= 0) {
             this.rareLootMessageQueue.splice(t, 1);
@@ -1256,8 +1242,9 @@ Ui2.prototype = {
             this.newState.rareLootMessage.ticker =
                 this.newState.rareLootMessage.duration;
         }
-    },
-    getRareLootMessageText: function(e) {
+    }
+
+    getRareLootMessageText(e) {
         if (GameObjectDefs[e]) {
             return `Acquired perk: ${this.localization.translate(
                 `game-${e}`
@@ -1265,8 +1252,9 @@ Ui2.prototype = {
         } else {
             return "";
         }
-    },
-    addKillFeedMessage: function(e, t) {
+    }
+
+    addKillFeedMessage(e, t) {
         const r = this.newState.killFeed;
         const a = r[r.length - 1];
         a.text = e;
@@ -1275,8 +1263,9 @@ Ui2.prototype = {
         r.sort((e, t) => {
             return e.ticker - t.ticker;
         });
-    },
-    getKillFeedText: function(targetName, killerName, sourceType, damageType, downed) {
+    }
+
+    getKillFeedText(targetName, killerName, sourceType, damageType, downed) {
         switch (damageType) {
         case DamageType.Player:
             return `${killerName} ${this.localization.translate(
@@ -1352,8 +1341,9 @@ Ui2.prototype = {
         default:
             return "";
         }
-    },
-    getKillFeedColor: function(e, t, r, a) {
+    }
+
+    getKillFeedColor(e, t, r, a) {
         if (a) {
             return "#efeeee";
         } else if (e == t) {
@@ -1363,34 +1353,39 @@ Ui2.prototype = {
         } else {
             return "#efeeee";
         }
-    },
-    getRoleKillFeedColor: function(e, t, r) {
+    }
+
+    getRoleKillFeedColor(e, t, r) {
         const a = GameObjectDefs[e];
         if (a?.killFeed?.color) {
             return a.killFeed.color;
         } else {
             return helpers.colorToHexString(r.getTeamColor(t));
         }
-    },
-    getRoleTranslation: function(e, t) {
+    }
+
+    getRoleTranslation(e, t) {
         let r = `game-${e}`;
         if (e == "leader") {
             r = t == 1 ? "game-red-leader" : "game-blue-leader";
         }
         return this.localization.translate(r);
-    },
-    getRoleAnnouncementText: function(e, t) {
+    }
+
+    getRoleAnnouncementText(e, t) {
         return `${this.localization.translate(
             "game-youve-been-promoted-to"
         )} ${this.getRoleTranslation(e, t)}!`;
-    },
-    getRoleAssignedKillFeedText: function(e, t, r) {
+    }
+
+    getRoleAssignedKillFeedText(e, t, r) {
         const a = this.getRoleTranslation(e, t);
         return `${r} ${this.localization.translate(
             "game-promoted-to"
         )} ${a}!`;
-    },
-    getRoleKilledKillFeedText: function(e, t, r) {
+    }
+
+    getRoleKilledKillFeedText(e, t, r) {
         const a = this.getRoleTranslation(e, t);
         if (r) {
             return `${r} ${this.localization.translate(
@@ -1401,8 +1396,9 @@ Ui2.prototype = {
                 "game-is-dead"
             )}!`;
         }
-    },
-    getKillText: function(e, t, r, a, i, o, s, n, l) {
+    }
+
+    getKillText(e, t, r, a, i, o, s, n, l) {
         const c = a && !i;
         const m = l
             ? e
@@ -1431,13 +1427,15 @@ Ui2.prototype = {
         } else {
             return `${m} ${h} ${d}`;
         }
-    },
-    getKillCountText: function(e) {
+    }
+
+    getKillCountText(e) {
         return `${e} ${this.localization.translate(
             e != 1 ? "game-kills" : "game-kill"
         )}`;
-    },
-    getDownedText: function(e, t, r, a, i) {
+    }
+
+    getDownedText(e, t, r, a, i) {
         const o = i
             ? t
             : this.localization.translate("game-you").toUpperCase();
@@ -1469,8 +1467,9 @@ Ui2.prototype = {
         } else {
             return `${s} knocked ${o} out`;
         }
-    },
-    getPickupMessageText: function(e) {
+    }
+
+    getPickupMessageText(e) {
         const r = {
             [PickupMsgType.Full]: "game-not-enough-space",
             [PickupMsgType.AlreadyOwned]: "game-item-already-owned",
@@ -1480,8 +1479,9 @@ Ui2.prototype = {
         };
         const i = r[e] || r[PickupMsgType.Full];
         return this.localization.translate(i);
-    },
-    getInteractionText: function(e, t, r) {
+    }
+
+    getInteractionText(e, t, r) {
         switch (e) {
         case D.None:
             return "";
@@ -1511,8 +1511,9 @@ Ui2.prototype = {
         default:
             return "";
         }
-    },
-    getInteractionKey: function(e) {
+    }
+
+    getInteractionKey(e) {
         let t = null;
         switch (e) {
         case D.Cancel:
@@ -1543,8 +1544,41 @@ Ui2.prototype = {
             return "<Unbound>";
         }
     }
+}
+
+export function loadStaticDomImages() {
+    const e = function(e, t) {
+        domElemById(e).getElementsByClassName("ui-loot-image")[0].src = t;
+    };
+    e("ui-loot-bandage", "img/loot/loot-medical-bandage.svg");
+    e("ui-loot-healthkit", "img/loot/loot-medical-healthkit.svg");
+    e("ui-loot-soda", "img/loot/loot-medical-soda.svg");
+    e("ui-loot-painkiller", "img/loot/loot-medical-pill.svg");
+    e("ui-loot-9mm", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-12gauge", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-762mm", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-556mm", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-50AE", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-308sub", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-flare", "img/loot/loot-ammo-box.svg");
+    e("ui-loot-45acp", "img/loot/loot-ammo-box.svg");
+    domElemById("mag-glass-white").src = "img/gui/mag-glass.svg";
+    domElemById("ui-minimize-img").src = "img/gui/minimize.svg";
+}
+const C = 6;
+const A = 750;
+const O = 3;
+const D = {
+    None: 0,
+    Cancel: 1,
+    Loot: 2,
+    Revive: 3,
+    Object: 4
 };
-export default {
-    Ui2,
-    loadStaticDomImages
+
+const E = {
+    [GameConfig.WeaponSlot.Primary]: Input.EquipPrimary,
+    [GameConfig.WeaponSlot.Secondary]: Input.EquipSecondary,
+    [GameConfig.WeaponSlot.Melee]: Input.EquipMelee,
+    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable
 };

@@ -5,34 +5,34 @@ import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import net from "../../shared/net";
 import { v2 } from "../../shared/utils/v2";
-import device from "./device";
-import helpers from "./helpers";
+import { device } from "./device";
+import { helpers } from "./helpers";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import Aidrop from "./objects/aidrop";
-import Bullet from "./objects/bullet";
-import Camera from "./camera";
-import DeadBody from "./objects/deadBody";
-import debugLines from "./debugLines";
-import Decal from "./objects/decal";
-import emote from "./emote";
-import Explosion from "./objects/explosion";
-import Flare from "./objects/flare";
-import Gas from "./gas";
+import { AirdropBarn } from "./objects/aidrop";
+import { BulletBarn } from "./objects/bullet";
+import { Camera } from "./camera";
+import { DeadBodyBarn } from "./objects/deadBody";
+import { debugLines } from "./debugLines";
+import { DecalBarn } from "./objects/decal";
+import { EmoteBarn } from "./emote";
+import { ExplosionBarn } from "./objects/explosion";
+import { FlareBarn } from "./objects/flare";
+import { Gas } from "./gas";
 import input from "./input";
-import Loot from "./objects/loot";
-import Map from "./map";
-import ObjectPool from "./objects/objectPool";
-import Particles from "./objects/particles";
-import Plane from "./objects/plane";
-import Player from "./objects/player";
-import Shot from "./objects/shot";
-import Projectile from "./objects/projectile";
-import Smoke from "./objects/Smoke";
-import Renderer from "./renderer";
-import Touch from "./touch";
-import Ui from "./ui";
-import Ui2 from "./ui2";
+import { LootBarn } from "./objects/loot";
+import { Map } from "./map";
+import { Creator } from "./objects/objectPool";
+import { ParticleBarn } from "./objects/particles";
+import { PlaneBarn } from "./objects/plane";
+import { PlayerBarn } from "./objects/player";
+import { ShotBarn } from "./objects/shot";
+import { ProjectileBarn } from "./objects/projectile";
+import { SmokeBarn } from "./objects/Smoke";
+import { Renderer } from "./renderer";
+import { Touch } from "./ui/touch";
+import { UiManager } from "./ui/ui";
+import { UiManager2 } from "./ui/ui2";
 
 const Input = GameConfig.Input;
 
@@ -139,24 +139,24 @@ export class Game {
         this.m_cheatDetected = false;
         this.m_cheatSentLoadoutMsg = false;
         // Modules
-        this.touch = new Touch.Touch(this.m_input, this.config);
+        this.touch = new Touch(this.m_input, this.config);
         this.camera = new Camera();
-        this.renderer = new Renderer.Renderer(this, this.canvasMode);
-        this.particleBarn = new Particles.ParticleBarn(this.renderer);
-        this.decalBarn = new Decal.DecalBarn();
-        this.map = new Map.Map(this.decalBarn);
-        this.playerBarn = new Player.PlayerBarn();
-        this.bulletBarn = new Bullet.BulletBarn();
-        this.flareBarn = new Flare.FlareBarn();
-        this.projectileBarn = new Projectile.ProjectileBarn();
-        this.explosionBarn = new Explosion.ExplosionBarn();
-        this.planeBarn = new Plane.PlaneBarn(this.audioManager);
-        this.airdropBarn = new Aidrop.AirdropBarn();
-        this.smokeBarn = new Smoke.SmokeBarn();
-        this.deadBodyBarn = new DeadBody.DeadBodyBarn();
-        this.lootBarn = new Loot.LootBarn();
-        this.gas = new Gas.Gas(this.canvasMode);
-        this.uiManager = new Ui.He(
+        this.renderer = new Renderer(this, this.canvasMode);
+        this.particleBarn = new ParticleBarn(this.renderer);
+        this.decalBarn = new DecalBarn();
+        this.map = new Map(this.decalBarn);
+        this.playerBarn = new PlayerBarn();
+        this.bulletBarn = new BulletBarn();
+        this.flareBarn = new FlareBarn();
+        this.projectileBarn = new ProjectileBarn();
+        this.explosionBarn = new ExplosionBarn();
+        this.planeBarn = new PlaneBarn(this.audioManager);
+        this.airdropBarn = new AirdropBarn();
+        this.smokeBarn = new SmokeBarn();
+        this.deadBodyBarn = new DeadBodyBarn();
+        this.lootBarn = new LootBarn();
+        this.gas = new Gas(this.canvasMode);
+        this.uiManager = new UiManager(
             this,
             this.audioManager,
             this.particleBarn,
@@ -167,15 +167,15 @@ export class Game {
             this.m_inputBinds,
             this.m_inputBindUi
         );
-        this.ui2Manager = new Ui2.Ui2(this.localization, this.m_inputBinds);
-        this.emoteBarn = new emote.EmoteBarn(
+        this.ui2Manager = new UiManager2(this.localization, this.m_inputBinds);
+        this.emoteBarn = new EmoteBarn(
             this.audioManager,
             this.uiManager,
             this.playerBarn,
             this.camera,
             this.map
         );
-        this.shotBarn = new Shot.ShotBarn(this.particleBarn, this.audioManager, this.uiManager);
+        this.shotBarn = new ShotBarn(this.particleBarn, this.audioManager, this.uiManager);
 
         // Register types
         const TypeToPool = {
@@ -190,9 +190,8 @@ export class Game {
             [GameObject.Type.Smoke]: this.smokeBarn.e,
             [GameObject.Type.Airdrop]: this.airdropBarn.re
         };
-        this.objectCreator = new ObjectPool.Creator();
-        for (const type
-            in TypeToPool) {
+        this.objectCreator = new Creator();
+        for (const type in TypeToPool) {
             if (TypeToPool.hasOwnProperty(type)) {
                 this.objectCreator.registerType(type, TypeToPool[type]);
             }
@@ -1120,8 +1119,8 @@ export class Game {
             const msg = new net.UpdateMsg();
             msg.deserialize(stream, this.objectCreator);
             /* if (o.partObjects.length) {
-                    console.log(o)
-                } */
+                                console.log(o)
+                            } */
             this.playing = true;
             this.processGameUpdate(msg);
             break;
@@ -1262,7 +1261,7 @@ export class Game {
                             }
                         );
                     } else if (
-                        // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
+                    // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
                         msg.role == "kill_leader" ||
                             !this.map.perkMode ||
                             this.m_localId == msg.playerId

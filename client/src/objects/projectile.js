@@ -4,42 +4,35 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
-import bullet from "./bullet";
-import objectPool from "./objectPool";
+import { playHitFx } from "./bullet";
+import { Pool } from "./objectPool";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 
-function Projectile() {
-    this.container = new PIXI.Container();
-    this.container.visible = false;
-    this.trail = PIXI.Sprite.from("player-bullet-trail-02.img");
-    this.trail.anchor.set(1, 0.5);
-    this.trail.scale.set(1, 1);
-    this.trail.visible = false;
-    this.container.addChild(this.trail);
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.container.addChild(this.sprite);
-    this.strobeSprite = null;
-}
-function i() {
-    this.cr = new objectPool.Pool(Projectile);
-}
+class Projectile {
+    constructor() {
+        this.container = new PIXI.Container();
+        this.container.visible = false;
+        this.trail = PIXI.Sprite.from("player-bullet-trail-02.img");
+        this.trail.anchor.set(1, 0.5);
+        this.trail.scale.set(1, 1);
+        this.trail.visible = false;
+        this.container.addChild(this.trail);
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.container.addChild(this.sprite);
+        this.strobeSprite = null;
+    }
 
-const g = {
-    grass: "frag_grass",
-    sand: "frag_sand",
-    water: "frag_water"
-};
-Projectile.prototype = {
-    o: function() { },
-    n: function() {
+    o() { }
+    n() {
         this.container.visible = false;
         if (this.strobeSprite) {
             this.strobeSprite.visible = false;
         }
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         if (t) {
             const i = GameObjectDefs[e.type];
             this.layer = e.layer;
@@ -100,9 +93,19 @@ Projectile.prototype = {
             }
         }
     }
+}
+const g = {
+    grass: "frag_grass",
+    sand: "frag_sand",
+    water: "frag_water"
 };
-i.prototype = {
-    m: function(e, t, r, a, i, o, h) {
+
+export class ProjectileBarn {
+    constructor() {
+        this.cr = new Pool(Projectile);
+    }
+
+    m(e, t, r, a, i, o, h) {
         for (let y = this.cr.p(), w = 0; w < y.length; w++) {
             const f = y[w];
             if (f.active) {
@@ -155,7 +158,7 @@ i.prototype = {
                         -1
                     );
                     const O = MapObjectDefs[x.obj.type];
-                    bullet.playHitFx(
+                    playHitFx(
                         O.hitParticle,
                         O.sound.bullet,
                         f.pos,
@@ -302,7 +305,4 @@ i.prototype = {
             }
         }
     }
-};
-export default {
-    ProjectileBarn: i
-};
+}

@@ -1,13 +1,12 @@
 import $ from "jquery";
-import device from "./device";
-import { GameConfig } from "../../shared/gameConfig";
+import { device } from "../device";
+import { GameConfig } from "../../../shared/gameConfig";
 import loadout from "./loadouts";
-import "./emote";
-import helpers from "./helpers";
-import { util } from "../../shared/utils/util";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import crosshair from "./crosshair";
-import MenuModal from "./menuModal";
+import { helpers } from "../helpers";
+import { util } from "../../../shared/utils/util";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { crosshair } from "../crosshair";
+import { MenuModal } from "./menuModal";
 import "./colorPicker";
 
 const EmoteSlot = GameConfig.EmoteSlot;

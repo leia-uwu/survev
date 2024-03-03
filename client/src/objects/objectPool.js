@@ -1,4 +1,4 @@
-class Pool {
+export class Pool {
     constructor(e) {
         // assert(e !== undefined);
         this.creator = {
@@ -50,7 +50,7 @@ class Pool {
     }
 }
 
-class Creator {
+export class Creator {
     constructor() {
         this.idToObj = {};
         this.types = {};
@@ -113,8 +113,3 @@ class Creator {
         }
     }
 }
-
-export default {
-    Pool,
-    Creator
-};

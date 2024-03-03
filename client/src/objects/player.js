@@ -7,32 +7,32 @@ import { math } from "../../../shared/utils/math";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
-import device from "../device";
-import helpers from "../helpers";
-import objectPool from "./objectPool";
+import { device } from "../device";
+import { helpers } from "../helpers";
+import { Pool } from "./objectPool";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import animData from "../animData";
-import shot from "./shot";
+import { createCasingParticle } from "./shot";
 
 const Action = GameConfig.Action;
 const Anim = GameConfig.Anim;
 const Input = GameConfig.Input;
 const HasteType = GameConfig.HasteType;
 
-function o(e, t) {
-    if (e.length != t.length) {
+function perksEqual(a, b) {
+    if (a.length != b.length) {
         return false;
     }
-    for (let r = 0; r < e.length; r++) {
-        if (e[r].type != t[r].type) {
+    for (let i = 0; i < a.length; i++) {
+        if (a[i].type != b[i].type) {
             return false;
         }
     }
     return true;
 }
-function s() {
-    const e = {
+function createPlayerNameText() {
+    const nameStyle = {
         fontFamily: "Arial",
         fontWeight: "bold",
         fontSize: device.pixelRatio > 1 ? 30 : 22,
@@ -46,13 +46,14 @@ function s() {
         dropShadowAngle: Math.PI / 3,
         dropShadowDistance: 1
     };
-    const t = new PIXI.Text("", e);
-    t.anchor.set(0.5, 0.5);
-    t.scale.set(0.5, 0.5);
-    t.position.set(0, 30);
-    t.visible = false;
-    return t;
+    const nameText = new PIXI.Text("", nameStyle);
+    nameText.anchor.set(0.5, 0.5);
+    nameText.scale.set(0.5, 0.5);
+    nameText.position.set(0, 30);
+    nameText.visible = false;
+    return nameText;
 }
+
 function createSprite() {
     const e = new PIXI.Sprite();
     e.texture = PIXI.Texture.EMPTY;
@@ -61,154 +62,6 @@ function createSprite() {
     e.tint = 16777215;
     e.visible = false;
     return e;
-}
-
-function Player() {
-    this.bodySprite = createSprite();
-    this.chestSprite = createSprite();
-    this.flakSprite = createSprite();
-    this.steelskinSprite = createSprite();
-    this.helmetSprite = createSprite();
-    this.visorSprite = createSprite();
-    this.backpackSprite = createSprite();
-    this.handLSprite = createSprite();
-    this.handRSprite = createSprite();
-    this.footLSprite = createSprite();
-    this.footRSprite = createSprite();
-    this.hipSprite = createSprite();
-    this.gunLSprites = new Gun();
-    this.gunRSprites = new Gun();
-    this.objectLSprite = createSprite();
-    this.objectRSprite = createSprite();
-    this.meleeSprite = createSprite();
-    this.bodySubmergeSprite = createSprite();
-    this.handLSubmergeSprite = createSprite();
-    this.handRSubmergeSprite = createSprite();
-    this.footLSubmergeSprite = createSprite();
-    this.footRSubmergeSprite = createSprite();
-    this.bodyEffectSprite = createSprite();
-    this.patchSprite = createSprite();
-    this.bodySprite.addChild(this.bodySubmergeSprite);
-    this.handLSprite.addChild(this.handLSubmergeSprite);
-    this.handRSprite.addChild(this.handRSubmergeSprite);
-    this.footLSprite.addChild(this.footLSubmergeSprite);
-    this.footRSprite.addChild(this.footRSubmergeSprite);
-    this.handLContainer = new PIXI.Container();
-    this.handLContainer.addChild(this.gunLSprites.container);
-    this.handLContainer.addChild(this.handLSprite);
-    this.handLContainer.addChild(this.objectLSprite);
-    this.handRContainer = new PIXI.Container();
-    this.handRContainer.addChild(this.gunRSprites.container);
-    this.handRContainer.addChild(this.meleeSprite);
-    this.handRContainer.addChild(this.handRSprite);
-    this.handRContainer.addChild(this.objectRSprite);
-    this.footLContainer = new PIXI.Container();
-    this.footLContainer.addChild(this.footLSprite);
-    this.footRContainer = new PIXI.Container();
-    this.footRContainer.addChild(this.footRSprite);
-    this.bodyContainer = new PIXI.Container();
-    this.bodyContainer.addChild(this.footLContainer);
-    this.bodyContainer.addChild(this.footRContainer);
-    this.bodyContainer.addChild(this.backpackSprite);
-    this.bodyContainer.addChild(this.bodySprite);
-    this.bodyContainer.addChild(this.chestSprite);
-    this.bodyContainer.addChild(this.flakSprite);
-    this.bodyContainer.addChild(this.steelskinSprite);
-    this.bodyContainer.addChild(this.hipSprite);
-    this.bodyContainer.addChild(this.patchSprite);
-    this.bodyContainer.addChild(this.bodyEffectSprite);
-    this.bodyContainer.addChild(this.handLContainer);
-    this.bodyContainer.addChild(this.handRContainer);
-    this.bodyContainer.addChild(this.visorSprite);
-    this.bodyContainer.addChild(this.helmetSprite);
-    this.container = new PIXI.Container();
-    this.container.addChild(this.bodyContainer);
-    this.nameText = s();
-    this.container.addChild(this.nameText);
-    this.auraContainer = new PIXI.Container();
-    this.auraCircle = createSprite();
-    this.auraContainer.addChild(this.auraCircle);
-    this.initSubmergeSprites();
-    this.bones = [];
-    this.anim = {
-        type: Anim.None,
-        data: {},
-        seq: -1,
-        ticker: 0,
-        bones: []
-    };
-    for (let e = Object.keys(Bones).length, t = 0; t < e; t++) {
-        this.bones.push(new Pose());
-        this.anim.bones.push({
-            weight: 0,
-            pose: new Pose()
-        });
-    }
-    this.perks = [];
-    this.perkTypes = [];
-    this.perksDirty = false;
-    this.surface = null;
-    this.wasInWater = false;
-    this.weapTypeOld = "";
-    this.visualsDirty = false;
-    this.stepDistance = 0;
-    this.zoomFast = false;
-    this.playedDryFire = false;
-    this.lastSwapIdx = -1;
-    this.hasteSeq = -1;
-    this.cycleSoundInstance = null;
-    this.actionSoundInstance = null;
-    this.useItemEmitter = null;
-    this.hasteEmitter = null;
-    this.passiveHealEmitter = null;
-    this.downed = false;
-    this.wasDowned = false;
-    this.bleedTicker = 0;
-    this.submersion = 0;
-    this.gunRecoilL = 0;
-    this.gunRecoilR = 0;
-    this.fireDelay = 0;
-    this.throwableState = "equip";
-    this.throwableStatePrev = this.throwableState;
-    this.lastThrowablePickupSfxTicker = 0;
-    this.isNearDoorError = false;
-    this.doorErrorTicker = 0;
-    this.noCeilingRevealTicker = 0;
-    this.frozenTicker = 0;
-    this.updateFrozenImage = true;
-    this.viewAabb = {
-        min: v2.create(0, 0),
-        max: v2.create(0, 0)
-    };
-    this.auraViewFade = 0;
-    this.auraPulseTicker = 0;
-    this.auraPulseDir = 1;
-    this.renderLayer = 0;
-    this.renderZOrd = 18;
-    this.renderZIdx = 0;
-    this.I = 0;
-    this.Br = 0;
-    this.action = {};
-    this.netData = {};
-    this.Re = {};
-    this.rad = GameConfig.player.radius;
-    this.bodyRad = this.rad;
-    this.pos = v2.create(0, 0);
-    this.posOld = v2.create(0, 0);
-    this.dir = v2.create(1, 0);
-    this.dirOld = v2.create(1, 0);
-    this.layer = 0;
-    this.isLoadoutAvatar = false;
-    this.playActionStartSfx = true;
-}
-function PlayerBarn() {
-    this.$e = new objectPool.Pool(Player);
-    this.Rr = {};
-    this.playerIds = [];
-    this.teamInfo = {};
-    this.groupInfo = {};
-    this.playerStatus = {};
-    this.anonPlayerNames = false;
 }
 
 const Pose = animData.Pose;
@@ -224,6 +77,7 @@ for (
     desktopZoomRads.push(GameConfig.scopeZoomRadius.desktop[q]);
     mobileZoomRads.push(GameConfig.scopeZoomRadius.mobile[q]);
 }
+
 class Gun {
     constructor() {
         this.gunBarrel = createSprite();
@@ -287,8 +141,147 @@ class Gun {
     }
 }
 
-Player.prototype = {
-    o: function() {
+class Player {
+    constructor() {
+        this.bodySprite = createSprite();
+        this.chestSprite = createSprite();
+        this.flakSprite = createSprite();
+        this.steelskinSprite = createSprite();
+        this.helmetSprite = createSprite();
+        this.visorSprite = createSprite();
+        this.backpackSprite = createSprite();
+        this.handLSprite = createSprite();
+        this.handRSprite = createSprite();
+        this.footLSprite = createSprite();
+        this.footRSprite = createSprite();
+        this.hipSprite = createSprite();
+        this.gunLSprites = new Gun();
+        this.gunRSprites = new Gun();
+        this.objectLSprite = createSprite();
+        this.objectRSprite = createSprite();
+        this.meleeSprite = createSprite();
+        this.bodySubmergeSprite = createSprite();
+        this.handLSubmergeSprite = createSprite();
+        this.handRSubmergeSprite = createSprite();
+        this.footLSubmergeSprite = createSprite();
+        this.footRSubmergeSprite = createSprite();
+        this.bodyEffectSprite = createSprite();
+        this.patchSprite = createSprite();
+        this.bodySprite.addChild(this.bodySubmergeSprite);
+        this.handLSprite.addChild(this.handLSubmergeSprite);
+        this.handRSprite.addChild(this.handRSubmergeSprite);
+        this.footLSprite.addChild(this.footLSubmergeSprite);
+        this.footRSprite.addChild(this.footRSubmergeSprite);
+        this.handLContainer = new PIXI.Container();
+        this.handLContainer.addChild(this.gunLSprites.container);
+        this.handLContainer.addChild(this.handLSprite);
+        this.handLContainer.addChild(this.objectLSprite);
+        this.handRContainer = new PIXI.Container();
+        this.handRContainer.addChild(this.gunRSprites.container);
+        this.handRContainer.addChild(this.meleeSprite);
+        this.handRContainer.addChild(this.handRSprite);
+        this.handRContainer.addChild(this.objectRSprite);
+        this.footLContainer = new PIXI.Container();
+        this.footLContainer.addChild(this.footLSprite);
+        this.footRContainer = new PIXI.Container();
+        this.footRContainer.addChild(this.footRSprite);
+        this.bodyContainer = new PIXI.Container();
+        this.bodyContainer.addChild(this.footLContainer);
+        this.bodyContainer.addChild(this.footRContainer);
+        this.bodyContainer.addChild(this.backpackSprite);
+        this.bodyContainer.addChild(this.bodySprite);
+        this.bodyContainer.addChild(this.chestSprite);
+        this.bodyContainer.addChild(this.flakSprite);
+        this.bodyContainer.addChild(this.steelskinSprite);
+        this.bodyContainer.addChild(this.hipSprite);
+        this.bodyContainer.addChild(this.patchSprite);
+        this.bodyContainer.addChild(this.bodyEffectSprite);
+        this.bodyContainer.addChild(this.handLContainer);
+        this.bodyContainer.addChild(this.handRContainer);
+        this.bodyContainer.addChild(this.visorSprite);
+        this.bodyContainer.addChild(this.helmetSprite);
+        this.container = new PIXI.Container();
+        this.container.addChild(this.bodyContainer);
+        this.nameText = createPlayerNameText();
+        this.container.addChild(this.nameText);
+        this.auraContainer = new PIXI.Container();
+        this.auraCircle = createSprite();
+        this.auraContainer.addChild(this.auraCircle);
+        this.initSubmergeSprites();
+        this.bones = [];
+        this.anim = {
+            type: Anim.None,
+            data: {},
+            seq: -1,
+            ticker: 0,
+            bones: []
+        };
+        for (let e = Object.keys(Bones).length, t = 0; t < e; t++) {
+            this.bones.push(new Pose());
+            this.anim.bones.push({
+                weight: 0,
+                pose: new Pose()
+            });
+        }
+        this.perks = [];
+        this.perkTypes = [];
+        this.perksDirty = false;
+        this.surface = null;
+        this.wasInWater = false;
+        this.weapTypeOld = "";
+        this.visualsDirty = false;
+        this.stepDistance = 0;
+        this.zoomFast = false;
+        this.playedDryFire = false;
+        this.lastSwapIdx = -1;
+        this.hasteSeq = -1;
+        this.cycleSoundInstance = null;
+        this.actionSoundInstance = null;
+        this.useItemEmitter = null;
+        this.hasteEmitter = null;
+        this.passiveHealEmitter = null;
+        this.downed = false;
+        this.wasDowned = false;
+        this.bleedTicker = 0;
+        this.submersion = 0;
+        this.gunRecoilL = 0;
+        this.gunRecoilR = 0;
+        this.fireDelay = 0;
+        this.throwableState = "equip";
+        this.throwableStatePrev = this.throwableState;
+        this.lastThrowablePickupSfxTicker = 0;
+        this.isNearDoorError = false;
+        this.doorErrorTicker = 0;
+        this.noCeilingRevealTicker = 0;
+        this.frozenTicker = 0;
+        this.updateFrozenImage = true;
+        this.viewAabb = {
+            min: v2.create(0, 0),
+            max: v2.create(0, 0)
+        };
+        this.auraViewFade = 0;
+        this.auraPulseTicker = 0;
+        this.auraPulseDir = 1;
+        this.renderLayer = 0;
+        this.renderZOrd = 18;
+        this.renderZIdx = 0;
+        this.I = 0;
+        this.Br = 0;
+        this.action = {};
+        this.netData = {};
+        this.Re = {};
+        this.rad = GameConfig.player.radius;
+        this.bodyRad = this.rad;
+        this.pos = v2.create(0, 0);
+        this.posOld = v2.create(0, 0);
+        this.dir = v2.create(1, 0);
+        this.dirOld = v2.create(1, 0);
+        this.layer = 0;
+        this.isLoadoutAvatar = false;
+        this.playActionStartSfx = true;
+    }
+
+    o() {
         this.isNew = false;
         this.wasInsideObstacle = false;
         this.insideObstacleType = "";
@@ -345,8 +338,9 @@ Player.prototype = {
             tt: [],
             Be: 0
         };
-    },
-    n: function() {
+    }
+
+    n() {
         this.container.visible = false;
         this.auraContainer.visible = false;
         if (this.useItemEmitter) {
@@ -361,8 +355,9 @@ Player.prototype = {
             this.passiveHealEmitter.stop();
             this.passiveHealEmitter = null;
         }
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         this.netData.ie = v2.copy(e.pos);
         this.netData.oe = v2.copy(e.dir);
         if (t) {
@@ -387,7 +382,7 @@ Player.prototype = {
             this.netData.ze = e.actionItem;
             this.netData.Ie = e.scale;
             this.netData.Te = e.role;
-            if (!!r || !o(this.netData.Me, e.perks)) {
+            if (!!r || !perksEqual(this.netData.Me, e.perks)) {
                 this.perksDirty = true;
             }
             this.netData.Me = e.perks;
@@ -405,8 +400,9 @@ Player.prototype = {
             this.renderZOrd = 18;
             this.renderZIdx = this.__id;
         }
-    },
-    Mr: function(e, t) {
+    }
+
+    Mr(e, t) {
         const r = this.Re.Fr;
         if (e.healthDirty) {
             this.Re.Lr = e.health;
@@ -449,8 +445,9 @@ Player.prototype = {
         if (this.Re.Fr != r) {
             this.zoomFast = true;
         }
-    },
-    yr: function() {
+    }
+
+    yr() {
         let e = this.Re.O;
         if (device.mobile) {
             const t = desktopZoomRads.indexOf(e);
@@ -459,31 +456,37 @@ Player.prototype = {
             }
         }
         return e;
-    },
-    Nr: function() {
+    }
+
+    Nr() {
         if (this.netData.le) {
             return GameObjectDefs[this.netData.le].level;
         } else {
             return 0;
         }
-    },
-    Hr: function() {
+    }
+
+    Hr() {
         if (this.netData.ce) {
             return GameObjectDefs[this.netData.ce].level;
         } else {
             return 0;
         }
-    },
-    Vr: function() {
+    }
+
+    Vr() {
         return GameObjectDefs[this.netData.ne].level;
-    },
-    Ur: function() {
+    }
+
+    Ur() {
         return GameObjectDefs[this.netData.me].type;
-    },
-    Wr: function(e) {
+    }
+
+    Wr(e) {
         return this.Re.tt[e].type !== "";
-    },
-    getMeleeCollider: function() {
+    }
+
+    getMeleeCollider() {
         const e = GameObjectDefs[this.netData.me];
         const t = Math.atan2(this.dir.y, this.dir.x);
         const r = v2.add(
@@ -493,21 +496,25 @@ Player.prototype = {
         const a = v2.add(this.pos, v2.rotate(r, t));
         const i = e.attack.rad;
         return collider.createCircle(a, i, 0);
-    },
-    hasActivePan: function() {
+    }
+
+    hasActivePan() {
         return (
             this.netData._e ||
             (this.netData.me == "pan" && this.currentAnim() != Anim.Melee)
         );
-    },
-    getPanSegment: function() {
+    }
+
+    getPanSegment() {
         const e = this.netData._e ? "unequipped" : "equipped";
         return GameObjectDefs.pan.reflectSurface[e];
-    },
-    canInteract: function(e) {
+    }
+
+    canInteract(e) {
         return !this.netData.he && (!e.perkMode || this.netData.Te);
-    },
-    Gr: function(e, t, r) {
+    }
+
+    Gr(e, t, r) {
         const a = this;
         for (let i = 0; i < this.perks.length; i++) {
             this.perks[i].isNew = false;
@@ -561,11 +568,13 @@ Player.prototype = {
             }
             this.perksDirty = false;
         }
-    },
-    hasPerk: function(e) {
+    }
+
+    hasPerk(e) {
         return this.perkTypes.includes(e);
-    },
-    m: function(e, t, r, i, o, s, n, l, c, m, p, w, x) {
+    }
+
+    m(e, t, r, i, o, s, n, l, c, m, p, w, x) {
         const k = GameObjectDefs[this.netData.me];
         const z = this.__id == m;
         const I = t.u(m);
@@ -1006,8 +1015,9 @@ Player.prototype = {
             this.renderZIdx
         );
         this.isNew = false;
-    },
-    br: function(e, t) {
+    }
+
+    br(e, t) {
         const r = e.pointToScreen(this.pos);
         const a = e.pixels(1);
         this.container.position.set(r.x, r.y);
@@ -1015,8 +1025,9 @@ Player.prototype = {
         this.container.visible = !this.netData.he;
         this.auraContainer.position.set(r.x, r.y);
         this.auraContainer.scale.set(a, a);
-    },
-    Yr: function(e, t, r) {
+    }
+
+    Yr(e, t, r) {
         const a = collider.createCircle(this.pos, GameConfig.player.maxVisualRadius);
         let i = false;
         let o = false;
@@ -1091,8 +1102,9 @@ Player.prototype = {
         this.renderLayer = f;
         this.renderZOrd = b;
         this.renderZIdx = x;
-    },
-    Xr: function(e, t) {
+    }
+
+    Xr(e, t) {
         const r = GameObjectDefs[this.netData.se];
         const a = r.skinImg;
         const i = this.bodyRad / GameConfig.player.radius;
@@ -1441,8 +1453,9 @@ Player.prototype = {
             this.visorSprite.visible = false;
         }
         this.bodyContainer.scale.set(i, i);
-    },
-    Kr: function(e, t, r) {
+    }
+
+    Kr(e, t, r) {
         let a = true;
         if (!t) {
             a = coldet.testCircleAabb(
@@ -1473,8 +1486,9 @@ Player.prototype = {
             }
             this.auraCircle.alpha = i * this.auraViewFade;
         }
-    },
-    Zr: function() {
+    }
+
+    Zr() {
         const e = function(e, t) {
             e.position.set(t.pos.x, t.pos.y);
             e.pivot.set(-t.pivot.x, -t.pivot.y);
@@ -1503,8 +1517,9 @@ Player.prototype = {
             this.dir.y,
             this.dir.x
         );
-    },
-    playActionStartEffect: function(e, t, r) {
+    }
+
+    playActionStartEffect(e, t, r) {
         let a = null;
         switch (this.action.type) {
         case Action.Reload:
@@ -1554,7 +1569,7 @@ Player.prototype = {
                         s.maxReload <= 2
                             ? 1
                             : math.lerp(Math.random(), 0.8, 1.2);
-                    shot.createCasingParticle(
+                    createCasingParticle(
                         this.action.item,
                         c,
                         m,
@@ -1567,8 +1582,9 @@ Player.prototype = {
                 }
             }
         }
-    },
-    updateActionEffect: function(e, t, r, a) {
+    }
+
+    updateActionEffect(e, t, r, a) {
         let i = "";
         const o = {};
         switch (this.action.type) {
@@ -1628,8 +1644,9 @@ Player.prototype = {
                 }
             );
         }
-    },
-    playItemPickupSound: function(e, t) {
+    }
+
+    playItemPickupSound(e, t) {
         const r = GameObjectDefs[e];
         if (r) {
             t.playSound(r.sound.pickup, {
@@ -1639,8 +1656,9 @@ Player.prototype = {
                 this.lastThrowablePickupSfxTicker = 0.3;
             }
         }
-    },
-    selectIdlePose: function() {
+    }
+
+    selectIdlePose() {
         const e = GameObjectDefs[this.netData.me];
         let t = "fists";
         t = this.downed
@@ -1667,8 +1685,9 @@ Player.prototype = {
         } else {
             return "fists";
         }
-    },
-    selectAnim: function(e) {
+    }
+
+    selectAnim(e) {
         const t = function(e, t) {
             return {
                 type: e,
@@ -1701,11 +1720,13 @@ Player.prototype = {
         default:
             return t("none", false);
         }
-    },
-    currentAnim: function() {
+    }
+
+    currentAnim() {
         return this.anim.type;
-    },
-    playAnim: function(e, t) {
+    }
+
+    playAnim(e, t) {
         this.anim.type = e;
         this.anim.data = this.selectAnim(e);
         this.anim.seq = t;
@@ -1715,8 +1736,9 @@ Player.prototype = {
             a.weight = 0;
             a.pose.copy(this.bones[r]);
         }
-    },
-    updateAnim: function(e, t) {
+    }
+
+    updateAnim(e, t) {
         if (this.anim.data.type == "none") {
             this.playAnim(Anim.None, this.anim.seq);
         }
@@ -1728,7 +1750,7 @@ Player.prototype = {
             const i = a.keyframes;
             let o = -1;
             let s = 0;
-            for (;this.anim.ticker >= i[s].time && s < i.length - 1;) {
+            for (; this.anim.ticker >= i[s].time && s < i.length - 1;) {
                 o++;
                 s++;
             }
@@ -1771,8 +1793,9 @@ Player.prototype = {
                 this.playAnim(Anim.None, this.anim.seq);
             }
         }
-    },
-    animPlaySound: function(e, t) {
+    }
+
+    animPlaySound(e, t) {
         const r = GameObjectDefs[this.netData.me];
         const a = r.sound[t.sound];
         if (a) {
@@ -1784,11 +1807,13 @@ Player.prototype = {
                 filter: "muffled"
             });
         }
-    },
-    animSetThrowableState: function(e, t) {
+    }
+
+    animSetThrowableState(e, t) {
         this.throwableState = t.state;
-    },
-    animThrowableParticles: function(e, t) {
+    }
+
+    animThrowableParticles(e, t) {
         if (GameObjectDefs[this.netData.me].useThrowParticles) {
             const r = v2.rotate(
                 v2.create(0.75, 0.75),
@@ -1819,8 +1844,9 @@ Player.prototype = {
                 this.renderZOrd + 1
             );
         }
-    },
-    animMeleeCollision: function(e, t) {
+    }
+
+    animMeleeCollision(e, t) {
         const r = GameObjectDefs[this.netData.me];
         if (r && r.type == "melee") {
             const a = this.getMeleeCollider();
@@ -1974,8 +2000,9 @@ Player.prototype = {
                 });
             }
         }
-    },
-    initSubmergeSprites: function() {
+    }
+
+    initSubmergeSprites() {
         const e = function(e, t) {
             e.texture = PIXI.Texture.from(t);
             e.anchor.set(0.5, 0.5);
@@ -1995,8 +2022,9 @@ Player.prototype = {
         this.bodySubmergeSprite.addChild(t);
         this.bodySubmergeSprite.mask = t;
         this.bodySubmergeSprite.scale.set(0.5, 0.5);
-    },
-    updateSubmersion: function(e, t) {
+    }
+
+    updateSubmersion(e, t) {
         const r = this.surface.type == "water";
         let a = 0;
         if (r) {
@@ -2038,8 +2066,9 @@ Player.prototype = {
                 d.tint = this.surface.data.waterColor;
             }
         }
-    },
-    updateFrozenState: function(e) {
+    }
+
+    updateFrozenState(e) {
         if (this.netData.xe) {
             this.frozenTicker = 0.25;
         } else {
@@ -2050,16 +2079,18 @@ Player.prototype = {
             ? 1
             : math.remap(this.frozenTicker, 0, 0.25, 0, 1);
         this.bodyEffectSprite.visible = this.frozenTicker > 0;
-    },
-    addRecoil: function(e, t, r) {
+    }
+
+    addRecoil(e, t, r) {
         if (t) {
             this.gunRecoilL += e;
         }
         if (r) {
             this.gunRecoilR += e;
         }
-    },
-    isUnderground: function(e) {
+    }
+
+    isUnderground(e) {
         if (this.layer != 1) {
             return false;
         }
@@ -2080,10 +2111,21 @@ Player.prototype = {
         }
         return true;
     }
-};
-PlayerBarn.prototype = {
-    onMapLoad: function(e) { },
-    m: function(e, t, r, a, i, o, s, n, l, c, m, p, h) {
+}
+
+export class PlayerBarn {
+    constructor() {
+        this.$e = new Pool(Player);
+        this.Rr = {};
+        this.playerIds = [];
+        this.teamInfo = {};
+        this.groupInfo = {};
+        this.playerStatus = {};
+        this.anonPlayerNames = false;
+    }
+
+    onMapLoad(e) { }
+    m(e, t, r, a, i, o, s, n, l, c, m, p, h) {
         for (let d = this.$e.p(), u = 0; u < d.length; u++) {
             const g = d[u];
             if (g.active) {
@@ -2149,16 +2191,18 @@ PlayerBarn.prototype = {
             }
             k.minimapVisible = k.minimapAlpha > 0.01;
         }
-    },
-    render: function(e, t) {
+    }
+
+    render(e, t) {
         for (let r = this.$e.p(), a = 0; a < r.length; a++) {
             const i = r[a];
             if (i.active) {
                 i.br(e, t);
             }
         }
-    },
-    u: function(e) {
+    }
+
+    u(e) {
         for (let t = this.$e.p(), r = 0; r < t.length; r++) {
             const a = t[r];
             if (a.active && a.__id === e) {
@@ -2166,8 +2210,9 @@ PlayerBarn.prototype = {
             }
         }
         return null;
-    },
-    vr: function(e) {
+    }
+
+    vr(e) {
         this.Rr[e.playerId] = {
             playerId: e.playerId,
             teamId: e.teamId,
@@ -2185,16 +2230,18 @@ PlayerBarn.prototype = {
         this.playerIds.sort((e, t) => {
             return e - t;
         });
-    },
-    kr: function(e) {
+    }
+
+    kr(e) {
         const t = this.playerIds.indexOf(e);
         if (t !== -1) {
             this.playerIds.splice(t, 1);
         }
         delete this.Rr[e];
         delete this.playerStatus[e];
-    },
-    qe: function(e) {
+    }
+
+    qe(e) {
         return (
             this.Rr[e] || {
                 playerId: 0,
@@ -2206,8 +2253,9 @@ PlayerBarn.prototype = {
                 loadout: {}
             }
         );
-    },
-    zr: function() {
+    }
+
+    zr() {
         this.teamInfo = {};
         this.groupInfo = {};
         for (
@@ -2248,14 +2296,17 @@ PlayerBarn.prototype = {
                 return e - t;
             });
         }
-    },
-    getTeamInfo: function(e) {
+    }
+
+    getTeamInfo(e) {
         return this.teamInfo[e];
-    },
-    getGroupInfo: function(e) {
+    }
+
+    getGroupInfo(e) {
         return this.groupInfo[e];
-    },
-    Ir: function(e, t, r) {
+    }
+
+    Ir(e, t, r) {
         const a = this.getTeamInfo(e);
         const i = r ? this.playerIds : a.playerIds;
         if (i.length != t.players.length) {
@@ -2271,8 +2322,9 @@ PlayerBarn.prototype = {
                 this.Jr(s, n);
             }
         }
-    },
-    Jr: function(e, t) {
+    }
+
+    Jr(e, t) {
         const r = this.playerStatus[e] || {
             playerId: e,
             pos: v2.copy(t.pos),
@@ -2312,11 +2364,13 @@ PlayerBarn.prototype = {
             r.disconnected = t.disconnected;
         }
         this.playerStatus[e] = r;
-    },
-    Fe: function(e) {
+    }
+
+    Fe(e) {
         return this.playerStatus[e];
-    },
-    Tr: function(e, t) {
+    }
+
+    Tr(e, t) {
         const r = this.getGroupInfo(e);
         if (r.playerIds.length != t.players.length) {
             console.error(
@@ -2333,8 +2387,9 @@ PlayerBarn.prototype = {
                 s.disconnected = o.disconnected;
             }
         }
-    },
-    getGroupColor: function(e) {
+    }
+
+    getGroupColor(e) {
         const t = this.qe(e);
         const r = this.getGroupInfo(t.groupId);
         const a = r ? r.playerIds.indexOf(e) : 0;
@@ -2343,16 +2398,18 @@ PlayerBarn.prototype = {
         } else {
             return 16777215;
         }
-    },
-    getTeamColor: function(e) {
+    }
+
+    getTeamColor(e) {
         const t = e - 1;
         if (t >= 0 && t < GameConfig.teamColors.length) {
             return GameConfig.teamColors[t];
         } else {
             return 16777215;
         }
-    },
-    getPlayerName: function(e, t, r) {
+    }
+
+    getPlayerName(e, t, r) {
         const a = this.qe(e);
         if (!a) {
             return "";
@@ -2368,8 +2425,9 @@ PlayerBarn.prototype = {
             i = a.anonName;
         }
         return i;
-    },
-    addDeathEffect: function(e, t, r, a, i) {
+    }
+
+    addDeathEffect(e, t, r, a, i) {
         const o = this.u(e);
         const s = this.u(t);
         if (o && s?.hasPerk("turkey_shoot")) {
@@ -2399,7 +2457,4 @@ PlayerBarn.prototype = {
             }
         }
     }
-};
-export default {
-    PlayerBarn
-};
+}

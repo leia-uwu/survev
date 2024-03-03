@@ -1,6 +1,6 @@
 import $ from "jquery";
 import net from "../../shared/net";
-import device from "./device";
+import { device } from "./device";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 
 const l = function(e) {
@@ -18,7 +18,7 @@ const d = l([104, 97, 99, 107]);
 const u = l([97, 105, 109, 98, 111, 116]);
 const g = document.createElement("canvas");
 
-const helpers = {
+export const helpers = {
     cheatDetected: function(g) {
         // Break the game if a cheat has been detected
         if (g?.pixi && g.ws) {
@@ -252,5 +252,3 @@ const helpers = {
         return false;
     }
 };
-
-export default helpers;

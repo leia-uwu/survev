@@ -2,7 +2,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { v2 } from "../../../shared/utils/v2";
 
-function createCasingParticle(e, t, r, a, i, l, c, m) {
+export function createCasingParticle(e, t, r, a, i, l, c, m) {
     const p = GameObjectDefs[e];
     if (p) {
         let h = v2.rotate(i, t);
@@ -33,12 +33,12 @@ function createCasingParticle(e, t, r, a, i, l, c, m) {
         );
     }
 }
-function ShotBarn() {
-    this.shots = [];
-}
+export class ShotBarn {
+    constructor() {
+        this.shots = [];
+    }
 
-ShotBarn.prototype = {
-    addShot: function(e) {
+    addShot(e) {
         let t = null;
         for (let r = 0; r < this.shots.length; r++) {
             if (!this.shots[r].active) {
@@ -65,8 +65,9 @@ ShotBarn.prototype = {
             i.pullDelay !== undefined ? i.pullDelay * 0.45 : 0;
         t.splinter = e.splinter;
         t.trailSaturated = e.trailSaturated;
-    },
-    m: function(e, t, r, i, o) {
+    }
+
+    m(e, t, r, i, o) {
         for (let s = 0; s < this.shots.length; s++) {
             const l = this.shots[s];
             if (l.active) {
@@ -168,8 +169,4 @@ ShotBarn.prototype = {
             }
         }
     }
-};
-export default {
-    createCasingParticle,
-    ShotBarn
-};
+}

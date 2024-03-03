@@ -1,7 +1,7 @@
 import { util } from "../../shared/utils/util";
-import device from "./device";
-import loadout from "./loadouts";
-import webview from "./webview";
+import { device } from "./device";
+import loadout from "./ui/loadouts";
+import webview from "./ui/webview";
 
 const defaultConfig = {
     muteAudio: false,
@@ -29,7 +29,7 @@ const defaultConfig = {
     perkModeRole: "",
     loadout: loadout.defaultLoadout()
 };
-export default class ConfigManager {
+export class ConfigManager {
     constructor() {
         this.loaded = false;
         this.localStorageAvailable = true;

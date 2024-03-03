@@ -5,13 +5,13 @@ import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 
-function Structure() { }
-Structure.prototype = {
-    o: function() {
+export class Structure {
+    o() {
         this.soundTransitionT = 0;
-    },
-    n: function() { },
-    c: function(e, t, r, a) {
+    }
+
+    n() { }
+    c(e, t, r, a) {
         if (t) {
             this.type = e.type;
             this.layer = 0;
@@ -96,13 +96,15 @@ Structure.prototype = {
             }
             a.renderer.layerMaskDirty = true;
         }
-    },
-    update: function(e, t, r, a) {
+    }
+
+    update(e, t, r, a) {
         if (MapObjectDefs[this.type].interiorSound) {
             this.updateInteriorSounds(e, t, r, a);
         }
-    },
-    updateInteriorSounds: function(e, t, r, a) {
+    }
+
+    updateInteriorSounds(e, t, r, a) {
         const i = MapObjectDefs[this.type];
         collider.createCircle(r.pos, 0.001);
         t.nr.p();
@@ -174,17 +176,19 @@ Structure.prototype = {
         z.sound = v;
         z.filter = i.interiorSound.filter;
         z.weight = v ? u * S * this.soundEnabledT : 0;
-    },
-    render: function(e, t, r) { },
-    insideStairs: function(e) {
+    }
+
+    render(e, t, r) { }
+    insideStairs(e) {
         for (let t = 0; t < this.stairs.length; t++) {
             if (collider.intersect(this.stairs[t].collision, e)) {
                 return true;
             }
         }
         return false;
-    },
-    insideMask: function(e) {
+    }
+
+    insideMask(e) {
         for (let t = 0; t < this.mask.length; t++) {
             if (collider.intersect(this.mask[t], e)) {
                 return true;
@@ -192,5 +196,4 @@ Structure.prototype = {
         }
         return false;
     }
-};
-export default Structure;
+}

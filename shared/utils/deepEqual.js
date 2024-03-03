@@ -19,7 +19,7 @@ function unsupported(object) {
 }
 const isArguments = supportsArgumentsClass ? supported : unsupported;
 
-const deepEqual = function(actual, expected, opts) {
+export const deepEqual = function(actual, expected, opts) {
     if (!opts) opts = {};
     // 7.1. All identical values are equivalent, as determined by ===.
     if (actual === expected) {
@@ -108,5 +108,3 @@ function objEquiv(a, b, opts) {
     }
     return (typeof a === "undefined" ? "undefined" : _typeof(a)) === (typeof b === "undefined" ? "undefined" : _typeof(b));
 }
-
-export default deepEqual;

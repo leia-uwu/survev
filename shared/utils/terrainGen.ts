@@ -104,8 +104,3 @@ export function generateTerrain(
 
     return { shore, grass, rivers };
 }
-
-export default {
-    generateJaggedAabbPoints,
-    generateTerrain
-};

@@ -864,5 +864,4 @@ class WebAudioEngine {
 }
 
 // Use soundjs's API
-const createjs = { Sound: new WebAudioEngine() };
-export default createjs;
+export const CreateJS = { Sound: new WebAudioEngine() };

@@ -1,9 +1,9 @@
 import $ from "jquery";
-import { GameConfig } from "../../shared/gameConfig";
-import net from "../../shared/net";
-import api from "./api";
-import device from "./device";
-import helpers from "./helpers";
+import { GameConfig } from "../../../shared/gameConfig";
+import net from "../../../shared/net";
+import { api } from "../api";
+import { device } from "../device";
+import { helpers } from "../helpers";
 
 function i(e, t) {
     const r = {

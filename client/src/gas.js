@@ -2,14 +2,14 @@ import * as PIXI from "pixi.js";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import { v2 } from "../../shared/utils/v2";
-import helpers from "./helpers";
+import { helpers } from "./helpers";
 
 const gasMode = GameConfig.GasMode;
 
 const overdraw = 100 * 1000;
 const segments = 512;
 
-class GasRenderer {
+export class GasRenderer {
     constructor(t, r) {
         this.gasColorDOMString = "";
         this.display = null;
@@ -86,7 +86,7 @@ class GasRenderer {
     }
 }
 
-class GasSafeZoneRenderer {
+export class GasSafeZoneRenderer {
     constructor() {
         this.display = new PIXI.Container();
         this.circleGfx = new PIXI.Graphics();
@@ -148,7 +148,7 @@ class GasSafeZoneRenderer {
     }
 }
 
-class Gas {
+export class Gas {
     constructor(t) {
         const startRad = (Math.sqrt(2) + 0.01) * 1024;
         this.mode = gasMode.Inactive;
@@ -217,16 +217,10 @@ class Gas {
         this.circleNew.rad = data.radNew;
     }
 
-    render(e) {
-        const t = this.getCircle();
-        const r = e.pointToScreen(t.pos);
-        const a = e.scaleToScreen(t.rad);
-        this.gasRenderer.render(r, a, this.isActive());
+    render(camera) {
+        const circle = this.getCircle();
+        const pos = camera.pointToScreen(circle.pos);
+        const scale = camera.scaleToScreen(circle.rad);
+        this.gasRenderer.render(pos, scale, this.isActive());
     }
 }
-
-export default {
-    GasRenderer,
-    GasSafeZoneRenderer,
-    Gas
-};

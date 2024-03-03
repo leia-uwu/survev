@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import device from "./device";
+import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import SoundDefs from "./soundDefs";
 import lowResAtlasDefs from "./lowResAtlasDefs";

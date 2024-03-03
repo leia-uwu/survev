@@ -42,6 +42,7 @@
         "@typescript-eslint/prefer-nullish-coalescing": 0,
         "@typescript-eslint/no-this-alias": 0,
         "@typescript-eslint/no-floating-promises": 0,
-        "@typescript-eslint/no-dynamic-delete": 0
+        "@typescript-eslint/no-dynamic-delete": 0,
+        "@typescript-eslint/no-extraneous-class": 0
     }
 }

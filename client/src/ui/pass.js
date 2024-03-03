@@ -1,10 +1,10 @@
 import $ from "jquery";
-import helpers from "./helpers";
-import { math } from "../../shared/utils/math";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { PassDefs } from "../../shared/defs/gameObjects/passDefs";
-import { QuestDefs } from "../../shared/defs/gameObjects/questDefs";
-import passUtil from "./passUtil";
+import { helpers } from "../helpers";
+import { math } from "../../../shared/utils/math";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
+import { QuestDefs } from "../../../shared/defs/gameObjects/questDefs";
+import { passUtil } from "./passUtil";
 
 function i(e, t) {
     for (let r = PassDefs[e], a = 0; a < r.items.length; a++) {

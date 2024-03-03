@@ -1,26 +1,24 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js";
-import { coldet } from "../../shared/utils/coldet";
-import { GameConfig } from "../../shared/gameConfig";
-import { math } from "../../shared/utils/math";
-import device from "./device";
-import gas from "./gas";
-import helpers from "./helpers";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
-import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
-import "./objects/particles";
-import "./objects/shot";
-import "./inputBinds";
-import mapIndicator from "./objects/mapIndicator";
-import mapSprite from "./objects/mapSprite";
-import pieTimer from "./pieTimer";
-import { v2 } from "../../shared/utils/v2";
+import { coldet } from "../../../shared/utils/coldet";
+import { GameConfig } from "../../../shared/gameConfig";
+import { math } from "../../../shared/utils/math";
+import { device } from "../device";
+import { GasRenderer, GasSafeZoneRenderer } from "../gas";
+import { helpers } from "../helpers";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { PingDefs } from "../../../shared/defs/gameObjects/pingDefs";
+import { RoleDefs } from "../../../shared/defs/gameObjects/roleDefs";
+import "../objects/particles";
+import "../objects/shot";
+import "../inputBinds";
+import { MapIndicatorBarn } from "../objects/mapIndicator";
+import { MapSpriteBarn } from "../objects/mapSprite";
+import { PieTimer } from "./pieTimer";
+import { v2 } from "../../../shared/utils/v2";
 
 const Action = GameConfig.Action;
 const GasMode = GameConfig.GasMode;
-const GasRenderer = gas.GasRenderer;
-const GasSafeZoneRenderer = gas.GasSafeZoneRenderer;
 
 function a(e) {
     const t = Math.floor(e / 3600);
@@ -35,421 +33,14 @@ function a(e) {
     }
     return (i += `${a}s`);
 }
-function i(e, t, r, a, i, o, c, m, p) {
-    const d = this;
-    const g = this;
-    this.game = e;
-    this.particleBarn = r;
-    this.localization = i;
-    this.touch = c;
-    this.inputBinds = m;
-    this.inputBindUi = p;
-    this.Pe = new pieTimer.Ce();
-    this.gameElem = $("#ui-game");
-    this.statsMain = $("#ui-stats");
-    this.statsElem = $("#ui-stats-bg");
-    this.statsContentsContainer = $("#ui-stats-contents");
-    this.statsContents = $("#ui-stats-contents-inner");
-    this.statsHeader = $("#ui-stats-header");
-    this.statsInfoBox = $("#ui-stats-info-box");
-    this.statsOptions = $("#ui-stats-options");
-    this.statsAds = $(".ui-stats-ad-container");
-    this.statsLogo = $("#ui-stats-logo");
-    this.escMenuElem = $("#ui-game-menu");
-    this.escMenuDisplayed = false;
-    this.roleMenuElemWrapper = $("#ui-role-menu-wrapper");
-    this.roleMenuElem = $("#ui-role-menu");
-    this.roleMenuFooterEnterElem = $("#ui-role-footer-enter");
-    this.roleMenuFooterHtml = "";
-    this.roleMenuActive = false;
-    this.roleMenuDisplayed = false;
-    this.roleMenuTicker = 0;
-    this.roleDisplayed = "";
-    this.roleSelected = "";
-    this.roleMenuConfirm = $("#ui-role-footer-enter");
-    this.roleMenuConfirm.on("click", (e) => {
-        e.stopPropagation();
-        g.roleSelected = g.roleDisplayed;
-        g.setRoleMenuActive(false);
-    });
-    this.roleMenuInst = null;
-    this.topLeft = $("#ui-top-left");
-    this.waitingForPlayers = true;
-    this.waitingText = $("#ui-waiting-text");
-    this.spectating = false;
-    this.prevSpectatorCount = 0;
-    this.spectatorCount = 0;
-    this.spectatorCounterDisplayed = false;
-    this.spectatorCounterContainer = $("#ui-spec-counter");
-    this.spectatorCounter = $("#ui-spec-counter-number");
-    this.spectateMode = $(".ui-spectate-mode");
-    this.spectatedPlayerText = $("#ui-spectate-text");
-    this.spectatedPlayerName = "";
-    this.spectatedPlayerId = 0;
-    this.spectateModeStats = $("#ui-spectate-stats");
-    this.spectateModeStatsData = $("#ui-spectate-stats-data");
-    this.spectateOptionsWrapper = $("#ui-spectate-options-wrapper");
-    this.rightCenter = $("#ui-right-center");
-    this.leaderboardAlive = $("#ui-leaderboard-alive");
-    this.playersAlive = $(".js-ui-players-alive");
-    this.leaderboardAliveFaction = $(
-        "#ui-leaderboard-alive-faction"
-    );
-    this.playersAliveRed = $(".js-ui-players-alive-red");
-    this.playersAliveBlue = $(".js-ui-players-alive-blue");
-    this.playersAliveRedCounter = 0;
-    this.playersAliveBlueCounter = 0;
-    this.playerKills = $(".js-ui-player-kills");
-    this.announcement = $("#ui-announcement");
-    this.killLeaderName = $("#ui-kill-leader-name");
-    this.killLeaderCount = $("#ui-kill-leader-count");
-    this.mapContainer = $("#ui-map-container");
-    this.mapContainerBottom = 52;
-    this.mapInfo = $("#ui-map-info");
-    this.mapInfoBottom = 218;
-    this.gasState = {};
-    this.gasIcon = $("#ui-gas-icon");
-    this.gasTimer = $("#ui-gas-timer");
-    this.mapMinimizeButton = $("#ui-map-minimize");
-    this.menuDisplayButton = $("#ui-menu-display");
-    this.bottomCenterRight = $("#ui-bottom-center-right");
-    $("#ui-map-wrapper").css("display", "block");
-    $("#ui-team").css("display", "block");
-    this.actionSeq = -1;
-    this.displayMapDirty = false;
-    this.displayMapClear = false;
-    $(".ui-map-expand").on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    $(".ui-map-expand").on("click", (e) => {
-        if (device.touch) {
-            if (!d.bigmapDisplayed) {
-                d.displayMapLarge();
-            }
-        } else if (device.uiLayout == device.UiLayout.Lg) {
-            d.displayMapLarge(d.bigmapDisplayed);
-        }
-    });
-    $("#ui-map-minimize").on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    $("#ui-map-minimize").on("click", (e) => {
-        e.stopPropagation();
-        d.toggleMiniMap();
-    });
-    $("#ui-menu-display").on("click", (e) => {
-        e.stopPropagation();
-        d.toggleEscMenu();
-    });
-    this.bigmap = $("#big-map");
-    this.bigmapCollision = $("#big-map-collision");
-    this.moveStyleButton = $("#btn-game-move-style");
-    this.moveStyleButton.on("touchstart", () => {
-        c.toggleMoveStyle();
-    });
-    this.aimStyleButton = $("#btn-game-aim-style");
-    this.aimStyleButton.on("touchstart", () => {
-        c.toggleAimStyle();
-    });
-    this.aimLineButton = $("#btn-game-aim-line");
-    this.aimLineButton.on("touchstart", () => {
-        c.toggleAimLine();
-    });
-    this.onTouchScreen = function(e) {
-        if (e.target.id == "cvs") {
-            d.toggleEscMenu(true);
-        }
-    };
-    $(document).on("touchstart", this.onTouchScreen);
-    this.bigmapClose = $("#big-map-close");
-    this.bigmapClose.on("touchend", (e) => {
-        e.stopPropagation();
-        d.displayMapLarge(true);
-    });
-    this.bigmapClose.on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    this.bigmapClose.on("click", (e) => {
-        e.stopPropagation();
-        d.displayMapLarge(true);
-    });
-    this.gameTabs = $(".ui-game-tab");
-    this.gameTabBtns = $(".btn-game-tab-select");
-    this.gameKeybindBtns = $(".btn-keybind-desc");
-    this.currentGameTab = "settings";
-    this.gameTabBtns.on("click", (e) => {
-        d.setCurrentGameTab($(e.target).data("tab"));
-    });
-    this.setCurrentGameTab(this.currentGameTab);
-    this.fullScreenButton = $("#btn-game-fullscreen");
-    this.fullScreenButton.on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    this.fullScreenButton.on("click", () => {
-        helpers.toggleFullScreen();
-        d.toggleEscMenu();
-    });
-    let w = device.os == "ios" ? "none" : "block";
-    if (device.webview || device.touch) {
-        w = "none";
-    }
-    $("#btn-game-fullscreen").css("display", w);
-    this.resumeButton = $("#btn-game-resume");
-    this.resumeButton.on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    this.resumeButton.on("click", () => {
-        d.toggleEscMenu();
-    });
-    if (device.touch) {
-        this.resumeButton.css("display", "none");
-    }
-    $("#btn-spectate-quit").on("click", () => {
-        d.quitGame();
-    });
-    $("#btn-game-quit").on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    $("#btn-game-quit").on("click", () => {
-        d.game.updatePass = true;
-        d.game.updatePassDelay = 1;
-        d.quitGame();
-    });
-    this.specStatsButton = $("#btn-spectate-view-stats");
-    this.specStatsButton.on("click", () => {
-        d.toggleLocalStats();
-    });
-    this.specBegin = false;
-    this.specNext = false;
-    this.specPrev = false;
-    this.specNextButton = $("#btn-spectate-next-player");
-    this.specNextButton.on("click", () => {
-        d.specNext = true;
-    });
-    this.specPrevButton = $("#btn-spectate-prev-player");
-    this.specPrevButton.on("click", () => {
-        d.specPrev = true;
-    });
-    this.interactionElems = $(
-        "#ui-interaction-press, #ui-interaction"
-    );
-    this.interactionTouched = false;
-    this.interactionElems.css("pointer-events", "auto");
-    this.interactionElems.on("touchstart", (e) => {
-        e.stopPropagation();
-        d.interactionTouched = true;
-    });
-    this.reloadElems = $(
-        "#ui-current-clip, #ui-remaining-ammo, #ui-reload-button-container"
-    );
-    this.reloadTouched = false;
-    this.reloadElems.css("pointer-events", "auto");
-    this.reloadElems.on("touchstart", (e) => {
-        e.stopPropagation();
-        d.reloadTouched = true;
-    });
-    this.flairElems = $(".ui-health-flair");
-    this.flairId = 0;
-    this.healthRed = new Color(255, 0, 0);
-    this.healthDarkpink = new Color(255, 45, 45);
-    this.healthLightpink = new Color(255, 112, 112);
-    this.healthWhite = new Color(255, 255, 255);
-    this.healthGrey = new Color(179, 179, 179);
-    this.minimapDisplayed = true;
-    this.visibilityMode = 0;
-    this.hudVisible = true;
-    this.gasRenderer = new GasRenderer(o, 0);
-    this.gasSafeZoneRenderer = new GasSafeZoneRenderer();
-    this.sentAdStatus = false;
-    this.frame = 0;
-    this.weapsDirty = false;
-    this.weapSwitches = $("#ui-weapon-id-1, #ui-weapon-id-2");
-    this.weapNoSwitches = $("#ui-weapon-id-3, #ui-weapon-id-4");
-    this.weapDraggedId = 0;
-    this.swapWeapSlots = false;
-    this.weapDraggedDiv = null;
-    this.weapDragging = false;
-    this.weapDropped = false;
-    this.resetWeapSlotStyling = function() {
-        if (g.weapDraggedDiv) {
-            g.weapSwitches.css({
-                left: "",
-                top: ""
-            });
-            $("#ui-game").css({
-                "pointer-events": ""
-            });
-        }
-        g.weapDraggedDiv = null;
-        g.weapDragging = false;
-        g.weapDropped = false;
-        if (g.weapSwitches.hasClass("ui-weapon-dragged")) {
-            g.weapSwitches.removeClass("ui-weapon-dragged");
-        }
-        if (!g.weapNoSwitches.hasClass("ui-outline-hover")) {
-            g.weapNoSwitches.addClass("ui-outline-hover");
-        }
-    };
-    if (!device.touch) {
-        this.weapSwitches.on("mousedown", function(e) {
-            if (e.button == 0) {
-                g.weapDraggedDiv = $(this);
-                g.weapDraggedId = $(this).data("slot");
-            }
-        });
-        $("#ui-game").on("mousemove", (e) => {
-            if (g.weapDraggedDiv && !g.weapDropped) {
-                if (g.weapDragging) {
-                    g.weapDraggedDiv.css({
-                        left: e.pageX - 80,
-                        top: e.pageY - 30
-                    });
-                    g.weapDraggedDiv.addClass("ui-weapon-dragged");
-                } else {
-                    $("#ui-game").css({
-                        "pointer-events": "initial"
-                    });
-                    g.weapNoSwitches.removeClass(
-                        "ui-outline-hover"
-                    );
-                    g.weapDragging = true;
-                }
-            }
-        });
-        $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on(
-            "mouseup",
-            (e) => {
-                if (e.button == 0 && g.weapDraggedDiv != null) {
-                    g.weapSwitches.each(function() {
-                        const e = $(this).data("slot");
-                        if (
-                            $(this).is(":hover") &&
-                            g.weapDraggedId != e
-                        ) {
-                            g.swapWeapSlots = true;
-                            g.weapDropped = true;
-                        }
-                    });
-                    if (!g.swapWeapSlots) {
-                        g.resetWeapSlotStyling();
-                    }
-                }
-            }
-        );
-    }
-    this.mapSpriteBarn = new mapSprite.MapSpriteBarn();
-    this.Ae = new mapIndicator.Oe(this.mapSpriteBarn);
-    this.playerMapSprites = [];
-    this.playerPingSprites = {};
-    this.container = new PIXI.Container();
-    this.container.mask = new PIXI.Graphics();
-    this.display = {
-        gas: this.gasRenderer.display,
-        gasSafeZone: this.gasSafeZoneRenderer.display,
-        airstrikeZones: a.airstrikeZoneContainer,
-        mapSprites: this.mapSpriteBarn.container,
-        teammates: new PIXI.Container(),
-        player: new PIXI.Container(),
-        border: new PIXI.Graphics()
-    };
-    this.mapSprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
-    this.mapSprite.anchor = new PIXI.Point(0.5, 0.5);
-    this.container.addChild(this.mapSprite);
-    this.container.addChild(this.display.gas);
-    this.container.addChild(this.display.gasSafeZone);
-    this.container.addChild(this.display.airstrikeZones);
-    this.container.addChild(this.display.mapSprites);
-    this.container.addChild(this.display.teammates);
-    this.container.addChild(this.display.player);
-    this.container.addChild(this.display.border);
-    this.bigmapDisplayed = false;
-    this.screenScaleFactor = 1;
-    const f = this.getMinimapMargin();
-    const z = this.getMinimapSize();
-    this.minimapPos = v2.create(
-        f + z / 2,
-        e.camera.screenHeight - z / 2 - f
-    );
-    this.dead = false;
-    this.audioManager = t;
-    this.muteButton = $("#ui-mute-ingame");
-    this.muteButtonImage = this.muteButton.find("img");
-    this.muteOffImg = "audio-off.img";
-    this.muteOnImg = "audio-on.img";
-    const I = this.audioManager.mute;
-    this.muteButtonImage.attr(
-        "src",
-        I ? this.muteOffImg : this.muteOnImg
-    );
-    this.muteButton.on("mousedown", (e) => {
-        e.stopPropagation();
-    });
-    this.muteButton.on("click", (e) => {
-        let t = d.audioManager.muteToggle();
-        d.muteButtonImage.attr(
-            "src",
-            t ? d.muteOffImg : d.muteOnImg
-        );
-        t = null;
-    });
-    this.displayingStats = false;
-    this.teamMemberHealthBarWidth = parseInt(
-        $(".ui-team-member-health")
-            .find(".ui-bar-inner")
-            .css("width")
-    );
-    this.teamMemberHeight = 48;
-    this.groupPlayerCount = 0;
-    this.teamSelectors = [];
-    for (let T = 0; T < 4; T++) {
-        const M = this.topLeft;
-        const P = T;
-        this.teamSelectors.push({
-            teamNameHtml: "",
-            groupId: $(M).find(`[data-id=${P}]`),
-            groupIdDisplayed: false,
-            teamName: $(M)
-                .find(`[data-id=${P}]`)
-                .find(".ui-team-member-name"),
-            teamIcon: $(M)
-                .find(`[data-id=${P}]`)
-                .find(".ui-team-member-icon"),
-            teamStatus: $(M)
-                .find(`[data-id=${P}]`)
-                .find(".ui-team-member-status"),
-            teamHealthInner: $(M)
-                .find(`[data-id=${P}]`)
-                .find(".ui-health-actual"),
-            teamColor: $(M)
-                .find(`[data-id=${P}]`)
-                .find(".ui-team-member-color"),
-            playerId: 0,
-            prevHealth: 0,
-            prevStatus: {
-                disconnected: false,
-                dead: false,
-                downed: false,
-                role: ""
-            },
-            indicators: {
-                main: {
-                    elem: $("#ui-team-indicators").find(
-                        `.ui-indicator-main[data-id=${P}]`
-                    ),
-                    displayed: false
-                }
-            }
-        });
-    }
-    this.displayOldMapSprites = false;
-    this.o();
-}
+
 function o(e, t, r, a) {
     const i = e;
     const o = t;
     const s = i + ((o - i) / r) * a;
     return Math.floor(s);
 }
+
 function Color(e, t, r) {
     let a;
     let i;
@@ -468,8 +59,418 @@ function Color(e, t, r) {
     };
 }
 
-i.prototype = {
-    free: function() {
+export class UiManager {
+    constructor(e, t, r, a, i, o, c, m, p) {
+        const d = this;
+        const g = this;
+        this.game = e;
+        this.particleBarn = r;
+        this.localization = i;
+        this.touch = c;
+        this.inputBinds = m;
+        this.inputBindUi = p;
+        this.Pe = new PieTimer();
+        this.gameElem = $("#ui-game");
+        this.statsMain = $("#ui-stats");
+        this.statsElem = $("#ui-stats-bg");
+        this.statsContentsContainer = $("#ui-stats-contents");
+        this.statsContents = $("#ui-stats-contents-inner");
+        this.statsHeader = $("#ui-stats-header");
+        this.statsInfoBox = $("#ui-stats-info-box");
+        this.statsOptions = $("#ui-stats-options");
+        this.statsAds = $(".ui-stats-ad-container");
+        this.statsLogo = $("#ui-stats-logo");
+        this.escMenuElem = $("#ui-game-menu");
+        this.escMenuDisplayed = false;
+        this.roleMenuElemWrapper = $("#ui-role-menu-wrapper");
+        this.roleMenuElem = $("#ui-role-menu");
+        this.roleMenuFooterEnterElem = $("#ui-role-footer-enter");
+        this.roleMenuFooterHtml = "";
+        this.roleMenuActive = false;
+        this.roleMenuDisplayed = false;
+        this.roleMenuTicker = 0;
+        this.roleDisplayed = "";
+        this.roleSelected = "";
+        this.roleMenuConfirm = $("#ui-role-footer-enter");
+        this.roleMenuConfirm.on("click", (e) => {
+            e.stopPropagation();
+            g.roleSelected = g.roleDisplayed;
+            g.setRoleMenuActive(false);
+        });
+        this.roleMenuInst = null;
+        this.topLeft = $("#ui-top-left");
+        this.waitingForPlayers = true;
+        this.waitingText = $("#ui-waiting-text");
+        this.spectating = false;
+        this.prevSpectatorCount = 0;
+        this.spectatorCount = 0;
+        this.spectatorCounterDisplayed = false;
+        this.spectatorCounterContainer = $("#ui-spec-counter");
+        this.spectatorCounter = $("#ui-spec-counter-number");
+        this.spectateMode = $(".ui-spectate-mode");
+        this.spectatedPlayerText = $("#ui-spectate-text");
+        this.spectatedPlayerName = "";
+        this.spectatedPlayerId = 0;
+        this.spectateModeStats = $("#ui-spectate-stats");
+        this.spectateModeStatsData = $("#ui-spectate-stats-data");
+        this.spectateOptionsWrapper = $("#ui-spectate-options-wrapper");
+        this.rightCenter = $("#ui-right-center");
+        this.leaderboardAlive = $("#ui-leaderboard-alive");
+        this.playersAlive = $(".js-ui-players-alive");
+        this.leaderboardAliveFaction = $(
+            "#ui-leaderboard-alive-faction"
+        );
+        this.playersAliveRed = $(".js-ui-players-alive-red");
+        this.playersAliveBlue = $(".js-ui-players-alive-blue");
+        this.playersAliveRedCounter = 0;
+        this.playersAliveBlueCounter = 0;
+        this.playerKills = $(".js-ui-player-kills");
+        this.announcement = $("#ui-announcement");
+        this.killLeaderName = $("#ui-kill-leader-name");
+        this.killLeaderCount = $("#ui-kill-leader-count");
+        this.mapContainer = $("#ui-map-container");
+        this.mapContainerBottom = 52;
+        this.mapInfo = $("#ui-map-info");
+        this.mapInfoBottom = 218;
+        this.gasState = {};
+        this.gasIcon = $("#ui-gas-icon");
+        this.gasTimer = $("#ui-gas-timer");
+        this.mapMinimizeButton = $("#ui-map-minimize");
+        this.menuDisplayButton = $("#ui-menu-display");
+        this.bottomCenterRight = $("#ui-bottom-center-right");
+        $("#ui-map-wrapper").css("display", "block");
+        $("#ui-team").css("display", "block");
+        this.actionSeq = -1;
+        this.displayMapDirty = false;
+        this.displayMapClear = false;
+        $(".ui-map-expand").on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        $(".ui-map-expand").on("click", (e) => {
+            if (device.touch) {
+                if (!d.bigmapDisplayed) {
+                    d.displayMapLarge();
+                }
+            } else if (device.uiLayout == device.UiLayout.Lg) {
+                d.displayMapLarge(d.bigmapDisplayed);
+            }
+        });
+        $("#ui-map-minimize").on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        $("#ui-map-minimize").on("click", (e) => {
+            e.stopPropagation();
+            d.toggleMiniMap();
+        });
+        $("#ui-menu-display").on("click", (e) => {
+            e.stopPropagation();
+            d.toggleEscMenu();
+        });
+        this.bigmap = $("#big-map");
+        this.bigmapCollision = $("#big-map-collision");
+        this.moveStyleButton = $("#btn-game-move-style");
+        this.moveStyleButton.on("touchstart", () => {
+            c.toggleMoveStyle();
+        });
+        this.aimStyleButton = $("#btn-game-aim-style");
+        this.aimStyleButton.on("touchstart", () => {
+            c.toggleAimStyle();
+        });
+        this.aimLineButton = $("#btn-game-aim-line");
+        this.aimLineButton.on("touchstart", () => {
+            c.toggleAimLine();
+        });
+        this.onTouchScreen = function(e) {
+            if (e.target.id == "cvs") {
+                d.toggleEscMenu(true);
+            }
+        };
+        $(document).on("touchstart", this.onTouchScreen);
+        this.bigmapClose = $("#big-map-close");
+        this.bigmapClose.on("touchend", (e) => {
+            e.stopPropagation();
+            d.displayMapLarge(true);
+        });
+        this.bigmapClose.on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        this.bigmapClose.on("click", (e) => {
+            e.stopPropagation();
+            d.displayMapLarge(true);
+        });
+        this.gameTabs = $(".ui-game-tab");
+        this.gameTabBtns = $(".btn-game-tab-select");
+        this.gameKeybindBtns = $(".btn-keybind-desc");
+        this.currentGameTab = "settings";
+        this.gameTabBtns.on("click", (e) => {
+            d.setCurrentGameTab($(e.target).data("tab"));
+        });
+        this.setCurrentGameTab(this.currentGameTab);
+        this.fullScreenButton = $("#btn-game-fullscreen");
+        this.fullScreenButton.on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        this.fullScreenButton.on("click", () => {
+            helpers.toggleFullScreen();
+            d.toggleEscMenu();
+        });
+        let w = device.os == "ios" ? "none" : "block";
+        if (device.webview || device.touch) {
+            w = "none";
+        }
+        $("#btn-game-fullscreen").css("display", w);
+        this.resumeButton = $("#btn-game-resume");
+        this.resumeButton.on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        this.resumeButton.on("click", () => {
+            d.toggleEscMenu();
+        });
+        if (device.touch) {
+            this.resumeButton.css("display", "none");
+        }
+        $("#btn-spectate-quit").on("click", () => {
+            d.quitGame();
+        });
+        $("#btn-game-quit").on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        $("#btn-game-quit").on("click", () => {
+            d.game.updatePass = true;
+            d.game.updatePassDelay = 1;
+            d.quitGame();
+        });
+        this.specStatsButton = $("#btn-spectate-view-stats");
+        this.specStatsButton.on("click", () => {
+            d.toggleLocalStats();
+        });
+        this.specBegin = false;
+        this.specNext = false;
+        this.specPrev = false;
+        this.specNextButton = $("#btn-spectate-next-player");
+        this.specNextButton.on("click", () => {
+            d.specNext = true;
+        });
+        this.specPrevButton = $("#btn-spectate-prev-player");
+        this.specPrevButton.on("click", () => {
+            d.specPrev = true;
+        });
+        this.interactionElems = $(
+            "#ui-interaction-press, #ui-interaction"
+        );
+        this.interactionTouched = false;
+        this.interactionElems.css("pointer-events", "auto");
+        this.interactionElems.on("touchstart", (e) => {
+            e.stopPropagation();
+            d.interactionTouched = true;
+        });
+        this.reloadElems = $(
+            "#ui-current-clip, #ui-remaining-ammo, #ui-reload-button-container"
+        );
+        this.reloadTouched = false;
+        this.reloadElems.css("pointer-events", "auto");
+        this.reloadElems.on("touchstart", (e) => {
+            e.stopPropagation();
+            d.reloadTouched = true;
+        });
+        this.flairElems = $(".ui-health-flair");
+        this.flairId = 0;
+        this.healthRed = new Color(255, 0, 0);
+        this.healthDarkpink = new Color(255, 45, 45);
+        this.healthLightpink = new Color(255, 112, 112);
+        this.healthWhite = new Color(255, 255, 255);
+        this.healthGrey = new Color(179, 179, 179);
+        this.minimapDisplayed = true;
+        this.visibilityMode = 0;
+        this.hudVisible = true;
+        this.gasRenderer = new GasRenderer(o, 0);
+        this.gasSafeZoneRenderer = new GasSafeZoneRenderer();
+        this.sentAdStatus = false;
+        this.frame = 0;
+        this.weapsDirty = false;
+        this.weapSwitches = $("#ui-weapon-id-1, #ui-weapon-id-2");
+        this.weapNoSwitches = $("#ui-weapon-id-3, #ui-weapon-id-4");
+        this.weapDraggedId = 0;
+        this.swapWeapSlots = false;
+        this.weapDraggedDiv = null;
+        this.weapDragging = false;
+        this.weapDropped = false;
+        this.resetWeapSlotStyling = function() {
+            if (g.weapDraggedDiv) {
+                g.weapSwitches.css({
+                    left: "",
+                    top: ""
+                });
+                $("#ui-game").css({
+                    "pointer-events": ""
+                });
+            }
+            g.weapDraggedDiv = null;
+            g.weapDragging = false;
+            g.weapDropped = false;
+            if (g.weapSwitches.hasClass("ui-weapon-dragged")) {
+                g.weapSwitches.removeClass("ui-weapon-dragged");
+            }
+            if (!g.weapNoSwitches.hasClass("ui-outline-hover")) {
+                g.weapNoSwitches.addClass("ui-outline-hover");
+            }
+        };
+        if (!device.touch) {
+            this.weapSwitches.on("mousedown", function(e) {
+                if (e.button == 0) {
+                    g.weapDraggedDiv = $(this);
+                    g.weapDraggedId = $(this).data("slot");
+                }
+            });
+            $("#ui-game").on("mousemove", (e) => {
+                if (g.weapDraggedDiv && !g.weapDropped) {
+                    if (g.weapDragging) {
+                        g.weapDraggedDiv.css({
+                            left: e.pageX - 80,
+                            top: e.pageY - 30
+                        });
+                        g.weapDraggedDiv.addClass("ui-weapon-dragged");
+                    } else {
+                        $("#ui-game").css({
+                            "pointer-events": "initial"
+                        });
+                        g.weapNoSwitches.removeClass(
+                            "ui-outline-hover"
+                        );
+                        g.weapDragging = true;
+                    }
+                }
+            });
+            $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on(
+                "mouseup",
+                (e) => {
+                    if (e.button == 0 && g.weapDraggedDiv != null) {
+                        g.weapSwitches.each(function() {
+                            const e = $(this).data("slot");
+                            if (
+                                $(this).is(":hover") &&
+                                g.weapDraggedId != e
+                            ) {
+                                g.swapWeapSlots = true;
+                                g.weapDropped = true;
+                            }
+                        });
+                        if (!g.swapWeapSlots) {
+                            g.resetWeapSlotStyling();
+                        }
+                    }
+                }
+            );
+        }
+        this.mapSpriteBarn = new MapSpriteBarn();
+        this.Ae = new MapIndicatorBarn(this.mapSpriteBarn);
+        this.playerMapSprites = [];
+        this.playerPingSprites = {};
+        this.container = new PIXI.Container();
+        this.container.mask = new PIXI.Graphics();
+        this.display = {
+            gas: this.gasRenderer.display,
+            gasSafeZone: this.gasSafeZoneRenderer.display,
+            airstrikeZones: a.airstrikeZoneContainer,
+            mapSprites: this.mapSpriteBarn.container,
+            teammates: new PIXI.Container(),
+            player: new PIXI.Container(),
+            border: new PIXI.Graphics()
+        };
+        this.mapSprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
+        this.mapSprite.anchor = new PIXI.Point(0.5, 0.5);
+        this.container.addChild(this.mapSprite);
+        this.container.addChild(this.display.gas);
+        this.container.addChild(this.display.gasSafeZone);
+        this.container.addChild(this.display.airstrikeZones);
+        this.container.addChild(this.display.mapSprites);
+        this.container.addChild(this.display.teammates);
+        this.container.addChild(this.display.player);
+        this.container.addChild(this.display.border);
+        this.bigmapDisplayed = false;
+        this.screenScaleFactor = 1;
+        const f = this.getMinimapMargin();
+        const z = this.getMinimapSize();
+        this.minimapPos = v2.create(
+            f + z / 2,
+            e.camera.screenHeight - z / 2 - f
+        );
+        this.dead = false;
+        this.audioManager = t;
+        this.muteButton = $("#ui-mute-ingame");
+        this.muteButtonImage = this.muteButton.find("img");
+        this.muteOffImg = "audio-off.img";
+        this.muteOnImg = "audio-on.img";
+        const I = this.audioManager.mute;
+        this.muteButtonImage.attr(
+            "src",
+            I ? this.muteOffImg : this.muteOnImg
+        );
+        this.muteButton.on("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        this.muteButton.on("click", (e) => {
+            let t = d.audioManager.muteToggle();
+            d.muteButtonImage.attr(
+                "src",
+                t ? d.muteOffImg : d.muteOnImg
+            );
+            t = null;
+        });
+        this.displayingStats = false;
+        this.teamMemberHealthBarWidth = parseInt(
+            $(".ui-team-member-health")
+                .find(".ui-bar-inner")
+                .css("width")
+        );
+        this.teamMemberHeight = 48;
+        this.groupPlayerCount = 0;
+        this.teamSelectors = [];
+        for (let T = 0; T < 4; T++) {
+            const M = this.topLeft;
+            const P = T;
+            this.teamSelectors.push({
+                teamNameHtml: "",
+                groupId: $(M).find(`[data-id=${P}]`),
+                groupIdDisplayed: false,
+                teamName: $(M)
+                    .find(`[data-id=${P}]`)
+                    .find(".ui-team-member-name"),
+                teamIcon: $(M)
+                    .find(`[data-id=${P}]`)
+                    .find(".ui-team-member-icon"),
+                teamStatus: $(M)
+                    .find(`[data-id=${P}]`)
+                    .find(".ui-team-member-status"),
+                teamHealthInner: $(M)
+                    .find(`[data-id=${P}]`)
+                    .find(".ui-health-actual"),
+                teamColor: $(M)
+                    .find(`[data-id=${P}]`)
+                    .find(".ui-team-member-color"),
+                playerId: 0,
+                prevHealth: 0,
+                prevStatus: {
+                    disconnected: false,
+                    dead: false,
+                    downed: false,
+                    role: ""
+                },
+                indicators: {
+                    main: {
+                        elem: $("#ui-team-indicators").find(
+                            `.ui-indicator-main[data-id=${P}]`
+                        ),
+                        displayed: false
+                    }
+                }
+            });
+        }
+        this.displayOldMapSprites = false;
+        this.o();
+    }
+
+    free() {
         this.gasRenderer.free();
         this.clearUI();
         this.roleMenuConfirm.off("click");
@@ -518,8 +519,9 @@ i.prototype = {
         this.clearStatsElems();
         this.setRoleMenuActive(false);
         this.o();
-    },
-    o: function() {
+    }
+
+    o() {
         $(".js-ui-map-hidden").css("display", "block");
         $("#ui-map-counter-default").css("display", "inline-block");
         $("#ui-map-counter-faction").css("display", "none");
@@ -532,8 +534,9 @@ i.prototype = {
         for (let e = 0; e < this.teamSelectors.length; e++) {
             this.teamSelectors[e].teamColor.removeAttr("style");
         }
-    },
-    onMapLoad: function(e, t) {
+    }
+
+    onMapLoad(e, t) {
         this.resize(e, t);
         const r = e.getMapDef().gameMode.killLeaderEnabled;
         $("#ui-kill-leader-container").css(
@@ -546,8 +549,9 @@ i.prototype = {
                 r ? "60px" : "12px"
             );
         }
-    },
-    m: function(e, t, r, a, i, o, s, n, l) {
+    }
+
+    m(e, t, r, a, i, o, s, n, l) {
         const d = t;
         if (this.weapsDirty) {
             this.resetWeapSlotStyling();
@@ -844,8 +848,9 @@ i.prototype = {
                 this.setRoleMenuActive(false);
             }
         }
-    },
-    updatePlayerMapSprites: function(e, t, r, a) {
+    }
+
+    updatePlayerMapSprites(e, t, r, a) {
         const i = this;
         const o = r.qe(t.__id);
         r.getGroupInfo(o.groupId);
@@ -936,29 +941,33 @@ i.prototype = {
         ) {
             this.playerMapSprites[I].visible = false;
         }
-    },
-    getMinimapMargin: function() {
+    }
+
+    getMinimapMargin() {
         if (device.uiLayout == device.UiLayout.Sm) {
             return 4;
         } else {
             return 16;
         }
-    },
-    getMinimapSize: function() {
+    }
+
+    getMinimapSize() {
         if (device.uiLayout == device.UiLayout.Sm) {
             return 192;
         } else {
             return 256;
         }
-    },
-    getMinimapBorderWidth: function() {
+    }
+
+    getMinimapBorderWidth() {
         if (device.uiLayout == device.UiLayout.Sm) {
             return 1;
         } else {
             return 4;
         }
-    },
-    createPing: function(e, t, r, a, i, o) {
+    }
+
+    createPing(e, t, r, a, i, o) {
         const s = this;
         const n = PingDefs[e];
         if (n) {
@@ -1019,8 +1028,9 @@ i.prototype = {
                 w.push(x);
             }
         }
-    },
-    updateMapSprite: function(e, t, r, a) {
+    }
+
+    updateMapSprite(e, t, r, a) {
         if (e.displayed) {
             if (e.life != undefined) {
                 e.life -= a;
@@ -1039,11 +1049,13 @@ i.prototype = {
             }
             t.visible = r && t.alpha > 0;
         }
-    },
-    je: function(e) {
+    }
+
+    je(e) {
         this.Ae.Ne(e);
-    },
-    getMapPosFromWorldPos: function(e, t) {
+    }
+
+    getMapPosFromWorldPos(e, t) {
         const r =
             this.mapSprite.x -
             this.mapSprite.width / 2 +
@@ -1053,8 +1065,9 @@ i.prototype = {
             this.mapSprite.height / 2 -
             (e.y / t.height) * this.mapSprite.height;
         return v2.create(r, a);
-    },
-    getWorldPosFromMapPos: function(e, t, r) {
+    }
+
+    getWorldPosFromMapPos(e, t, r) {
         let a = false;
         if (this.bigmapDisplayed) {
             const i = (r.screenWidth - this.mapSprite.width) / 2;
@@ -1090,17 +1103,21 @@ i.prototype = {
             return v2.create(p, h);
         }
         return false;
-    },
-    hideAll: function() {
+    }
+
+    hideAll() {
         this.gameElem.css("display", "none");
-    },
-    showAll: function() {
+    }
+
+    showAll() {
         this.gameElem.css("display", "block");
-    },
-    setLocalKills: function(e) {
+    }
+
+    setLocalKills(e) {
         this.playerKills.html(e);
-    },
-    clearUI: function() {
+    }
+
+    clearUI() {
         this.Pe.stop();
         this.curAction = {
             type: Action.None
@@ -1114,11 +1131,13 @@ i.prototype = {
         this.visibilityMode = 0;
         this.spectatorCount = 0;
         this.setLocalKills(0);
-    },
-    beginSpectating: function() {
+    }
+
+    beginSpectating() {
         this.specBegin = true;
-    },
-    hideStats: function() {
+    }
+
+    hideStats() {
         this.displayingStats = false;
         this.statsMain.css("display", "none");
         this.statsElem.stop().css({
@@ -1126,8 +1145,9 @@ i.prototype = {
             opacity: 0
         });
         this.statsContents.stop().hide();
-    },
-    teamModeToString: function(e) {
+    }
+
+    teamModeToString(e) {
         const t = {
             unknown: "game-rank",
             1: "game-solo-rank",
@@ -1136,8 +1156,9 @@ i.prototype = {
         };
         const r = t[e] || t.unknown;
         return this.localization.translate(r);
-    },
-    getTitleVictoryText: function(e, t) {
+    }
+
+    getTitleVictoryText(e, t) {
         if (e) {
             return `${this.spectatedPlayerName
             } ${this.localization.translate("game-won-the-game")}`;
@@ -1147,8 +1168,9 @@ i.prototype = {
             r = "game-turkey";
         }
         return this.localization.translate(r);
-    },
-    getTitleDefeatText: function(e, t) {
+    }
+
+    getTitleDefeatText(e, t) {
         if (t) {
             return `${this.spectatedPlayerName
             } ${this.localization.translate("game-player-died")}.`;
@@ -1161,8 +1183,9 @@ i.prototype = {
                 "game-You"
             )} ${this.localization.translate("game-you-died")}.`;
         }
-    },
-    getOverviewElems: function(e, t, r, a) {
+    }
+
+    getOverviewElems(e, t, r, a) {
         if (a) {
             const i = this.localization.translate("game-red-team");
             const o = this.localization.translate("game-blue-team");
@@ -1179,13 +1202,15 @@ i.prototype = {
                 "game-team-kills"
             )} </span><span class="ui-stats-header-value">${r}</span></div>`;
         }
-    },
-    quitGame: function() {
+    }
+
+    quitGame() {
         const e = this;
         this.game.gameOver = true;
         e.game.onQuit();
-    },
-    showStats: function(e, t, r, i, o, s, l, c, m, p, h, d) {
+    }
+
+    showStats(e, t, r, i, o, s, l, c, m, p, h, d) {
         const u = this;
         if (!c || t == s || o) {
             this.toggleEscMenu(true);
@@ -1423,8 +1448,9 @@ i.prototype = {
                 1000
             );
         }
-    },
-    clearStatsElems: function() {
+    }
+
+    clearStatsElems() {
         this.statsHeader.empty();
         this.statsInfoBox.empty();
         this.statsOptions.empty();
@@ -1440,8 +1466,9 @@ i.prototype = {
             opacity: 0
         });
         this.statsMain.css("display", "none");
-    },
-    showTeamAd: function(e, t) {
+    }
+
+    showTeamAd(e, t) {
         const r = this;
         this.toggleEscMenu(true);
         this.displayMapLarge(true);
@@ -1525,8 +1552,9 @@ i.prototype = {
             },
             1000
         );
-    },
-    setSpectateTarget: function(e, t, r, a) {
+    }
+
+    setSpectateTarget(e, t, r, a) {
         if (e != this.spectatedPlayerId) {
             this.setSpectating(true, r);
             const i = a.getPlayerName(e, t, false);
@@ -1538,8 +1566,9 @@ i.prototype = {
             this.actionSeq = -1;
             this.Pe.stop();
         }
-    },
-    setSpectating: function(e, t) {
+    }
+
+    setSpectating(e, t) {
         if (this.spectating != e) {
             this.spectating = e;
             if (this.spectating) {
@@ -1560,8 +1589,9 @@ i.prototype = {
                 $(".ui-zoom").addClass("ui-zoom-hover");
             }
         }
-    },
-    setLocalStats: function(e) {
+    }
+
+    setLocalStats(e) {
         const t = {
             kills: this.localization.translate("game-kills"),
             damageDealt:
@@ -1579,8 +1609,9 @@ i.prototype = {
                 this.spectateModeStatsData.append(s);
             }
         }
-    },
-    toggleLocalStats: function() {
+    }
+
+    toggleLocalStats() {
         const e =
             arguments.length > 0 &&
             arguments[0] !== undefined &&
@@ -1600,29 +1631,33 @@ i.prototype = {
                     "game-view-match-stats"
                 )
         );
-    },
-    updatePlayersAlive: function(e) {
+    }
+
+    updatePlayersAlive(e) {
         this.playersAlive.html(e);
         this.leaderboardAlive.css("display", "block");
         this.leaderboardAliveFaction.css("display", "none");
-    },
-    updatePlayersAliveRed: function(e) {
+    }
+
+    updatePlayersAliveRed(e) {
         this.playersAliveRed.html(e);
         this.playersAliveRedCounter = e;
         this.leaderboardAlive.css("display", "none");
         this.leaderboardAliveFaction.css("display", "block");
         $("#ui-map-counter-default").css("display", "none");
         $("#ui-map-counter-faction").css("display", "inline-block");
-    },
-    updatePlayersAliveBlue: function(e) {
+    }
+
+    updatePlayersAliveBlue(e) {
         this.playersAliveBlue.html(e);
         this.playersAliveBlueCounter = e;
         this.leaderboardAlive.css("display", "none");
         this.leaderboardAliveFaction.css("display", "block");
         $("#ui-map-counter-default").css("display", "none");
         $("#ui-map-counter-faction").css("display", "inline-block");
-    },
-    updateKillLeader: function(e, t, r, a) {
+    }
+
+    updateKillLeader(e, t, r, a) {
         const i = e != 0;
         const o = a?.sniperMode
             ? this.localization.translate("game-waiting-for-hunted")
@@ -1631,8 +1666,9 @@ i.prototype = {
             );
         this.killLeaderName.html(i ? t : o);
         this.killLeaderCount.html(i ? r : 0);
-    },
-    displayMapLarge: function(e) {
+    }
+
+    displayMapLarge(e) {
         this.bigmapDisplayed = !e && !this.bigmapDisplayed;
         if (this.bigmapDisplayed) {
             this.container.alpha = 1;
@@ -1654,8 +1690,9 @@ i.prototype = {
         );
         this.updateSpectatorCountDisplay(true);
         this.redraw(this.game.camera);
-    },
-    updateSpectatorCountDisplay: function(e) {
+    }
+
+    updateSpectatorCountDisplay(e) {
         const t = !this.bigmapDisplayed && this.spectatorCount > 0;
         e =
             e ||
@@ -1674,15 +1711,17 @@ i.prototype = {
             );
             this.spectatorCounterDisplayed = t;
         }
-    },
-    toggleMiniMap: function() {
+    }
+
+    toggleMiniMap() {
         if (this.minimapDisplayed) {
             this.hideMiniMap();
         } else {
             this.displayMiniMap();
         }
-    },
-    cycleVisibilityMode: function() {
+    }
+
+    cycleVisibilityMode() {
         if (!this.bigmapDisplayed) {
             switch (this.visibilityMode) {
             case 0:
@@ -1694,8 +1733,9 @@ i.prototype = {
                 this.visibilityMode = 0;
             }
         }
-    },
-    cycleHud: function() {
+    }
+
+    cycleHud() {
         if (this.gameElem.css("display") == "none") {
             this.gameElem.css("display", "block");
             this.displayMiniMap();
@@ -1705,8 +1745,9 @@ i.prototype = {
             this.hideMiniMap();
             this.hudVisible = false;
         }
-    },
-    hideMiniMap: function() {
+    }
+
+    hideMiniMap() {
         if (!this.bigmapDisplayed) {
             this.minimapDisplayed = false;
             this.container.alpha = 0;
@@ -1716,8 +1757,9 @@ i.prototype = {
                 left: 98
             });
         }
-    },
-    displayMiniMap: function() {
+    }
+
+    displayMiniMap() {
         if (!this.bigmapDisplayed) {
             const e = device.uiLayout == device.UiLayout.Sm;
             this.minimapDisplayed = true;
@@ -1728,8 +1770,9 @@ i.prototype = {
                 left: e ? 0 : 6
             });
         }
-    },
-    displayAnnouncement: function(e) {
+    }
+
+    displayAnnouncement(e) {
         const t = this;
         if (e) {
             this.announcement.html(e);
@@ -1739,8 +1782,9 @@ i.prototype = {
                 }, 3000);
             });
         }
-    },
-    displayGasAnnouncement: function(e, t) {
+    }
+
+    displayGasAnnouncement(e, t) {
         let r = "";
         switch (e) {
         case GasMode.Waiting: {
@@ -1777,12 +1821,14 @@ i.prototype = {
             );
         }
         this.displayAnnouncement(r);
-    },
-    setWaitingForPlayers: function(e) {
+    }
+
+    setWaitingForPlayers(e) {
         this.waitingForPlayers = e;
         this.waitingText.css("display", e ? "block" : "none");
-    },
-    render: function(e, t, r, a, i, o) {
+    }
+
+    render(e, t, r, a, i, o) {
         const s = t.getCircle();
         const n = this.getMapPosFromWorldPos(s.pos, a);
         const l = this.getMapPosFromWorldPos(
@@ -1803,8 +1849,9 @@ i.prototype = {
         const w = t.isActive() && !this.bigmapDisplayed;
         this.gasSafeZoneRenderer.render(p, d, g, y, w);
         i.renderAirstrikeZones(this, a, o);
-    },
-    updateHealthBar: function(e, t, r, a) {
+    }
+
+    updateHealthBar(e, t, r, a) {
         const i = e;
         let s = a.health * 0.01 * i;
         s = a.dead ? 0 : math.max(s, 1);
@@ -1844,8 +1891,9 @@ i.prototype = {
         } else {
             t.addClass("ui-bar-danger");
         }
-    },
-    updateTeam: function(e, t, r, a, i, o, s) {
+    }
+
+    updateTeam(e, t, r, a, i, o, s) {
         const n = this.teamSelectors[e].groupId;
         const l = this.teamSelectors[e].teamName;
         const c = this.teamSelectors[e].prevHealth;
@@ -1893,8 +1941,9 @@ i.prototype = {
             this.teamSelectors[e].prevStatus = a;
             this.teamSelectors[e].prevHealth = r;
         }
-    },
-    clearTeamUI: function() {
+    }
+
+    clearTeamUI() {
         $(".ui-team-member").css("display", "none");
         $(".ui-team-indicator").css("display", "none");
         $(".ui-team-member-name").removeAttr("style");
@@ -1903,8 +1952,9 @@ i.prototype = {
             "ui-team-member-status-downed ui-team-member-status-dead ui-team-member-status-disconnected icon-pulse"
         );
         this.teamSelectors = [];
-    },
-    resize: function(e, t) {
+    }
+
+    resize(e, t) {
         this.screenScaleFactor =
             device.uiLayout == device.UiLayout.Sm
                 ? 0.5626
@@ -1925,8 +1975,9 @@ i.prototype = {
             `translateX(-50%) translateY(-50%) scale(${r})`
         );
         this.redraw(t);
-    },
-    redraw: function(e) {
+    }
+
+    redraw(e) {
         const t = e.screenWidth;
         const r = e.screenHeight;
         const a = this.getMinimapMargin();
@@ -2008,8 +2059,9 @@ i.prototype = {
             this.container.mask.drawRect(a + i, w - 0.5 + o, p, p);
             this.container.mask.endFill();
         }
-    },
-    toggleEscMenu: function() {
+    }
+
+    toggleEscMenu() {
         const e = this;
         const t =
             arguments.length > 0 &&
@@ -2047,8 +2099,9 @@ i.prototype = {
                 }
             }
         }
-    },
-    setCurrentGameTab: function(e) {
+    }
+
+    setCurrentGameTab(e) {
         this.currentGameTab = e;
         this.gameTabs.css("display", "none");
         this.gameTabBtns.removeClass("btn-game-menu-selected");
@@ -2064,8 +2117,9 @@ i.prototype = {
         } else {
             this.inputBindUi.cancelBind();
         }
-    },
-    setRoleMenuActive: function(e) {
+    }
+
+    setRoleMenuActive(e) {
         this.roleMenuActive = e;
         if (this.roleMenuActive) {
             this.roleMenuTicker = 20;
@@ -2077,14 +2131,17 @@ i.prototype = {
             }
             this.hideRoleMenu();
         }
-    },
-    displayRoleMenu: function() {
+    }
+
+    displayRoleMenu() {
         this.roleMenuElemWrapper.css("display", "block");
-    },
-    hideRoleMenu: function() {
+    }
+
+    hideRoleMenu() {
         this.roleMenuElemWrapper.css("display", "none");
-    },
-    setRoleMenuOptions: function(e, t) {
+    }
+
+    setRoleMenuOptions(e, t) {
         const r = this;
         $("#ui-role-header").html("");
         for (let a = 0; a < t.length; a++) {
@@ -2109,8 +2166,9 @@ i.prototype = {
             l = e;
         }
         this.setRoleMenuInfo(l);
-    },
-    setRoleMenuInfo: function(e) {
+    }
+
+    setRoleMenuInfo(e) {
         const t = GameObjectDefs[e];
         $(".ui-role-option").css({
             "background-size": 132,
@@ -2167,7 +2225,4 @@ i.prototype = {
         $("#ui-role-body").html("").append(r).append(l);
         this.roleDisplayed = e;
     }
-};
-export default {
-    He: i
-};
+}

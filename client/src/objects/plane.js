@@ -5,30 +5,15 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 
-function Plane() {
-    this.active = false;
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.visible = false;
-}
-function AirstrikeZone(e) {
-    this.active = false;
-    this.pos = v2.create(0, 0);
-    this.rad = 0;
-    this.duration = 0;
-    this.ticker = 0;
-    this.gfx = new PIXI.Graphics();
-    e.addChild(this.gfx);
-}
-function PlaneBarn(e) {
-    this.ia = [];
-    this.oa = [];
-    this.airstrikeZoneContainer = new PIXI.Container();
-    this.audioManager = e;
-}
+class Plane {
+    constructor() {
+        this.active = false;
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.visible = false;
+    }
 
-Plane.prototype = {
-    o: function(e, t) {
+    o(e, t) {
         this.id = e.id;
         this.pos = v2.copy(e.pos);
         this.planeDir = v2.copy(e.planeDir);
@@ -62,8 +47,9 @@ Plane.prototype = {
             this.planeDir.x,
             this.planeDir.y
         );
-    },
-    n: function(e) {
+    }
+
+    n(e) {
         if (this.spriteUpdateTime >= 2) {
             if (this.soundInstance) {
                 e.stopSound(this.soundInstance);
@@ -73,9 +59,20 @@ Plane.prototype = {
             this.active = false;
         }
     }
-};
-AirstrikeZone.prototype = {
-    o: function(e, t, r) {
+}
+
+class AirstrikeZone {
+    constructor(e) {
+        this.active = false;
+        this.pos = v2.create(0, 0);
+        this.rad = 0;
+        this.duration = 0;
+        this.ticker = 0;
+        this.gfx = new PIXI.Graphics();
+        e.addChild(this.gfx);
+    }
+
+    o(e, t, r) {
         this.active = true;
         this.pos = v2.copy(e);
         this.rad = t;
@@ -84,16 +81,18 @@ AirstrikeZone.prototype = {
         this.renderPos = v2.create(0, 0);
         this.renderRad = 0;
         this.gfx.visible = true;
-    },
-    m: function(e, t, r) {
+    }
+
+    m(e, t, r) {
         this.ticker += e;
         this.gfx.visible = true;
         if (this.ticker >= this.duration) {
             this.gfx.visible = false;
             this.active = false;
         }
-    },
-    br: function(e, t, r) {
+    }
+
+    br(e, t, r) {
         const a = e.getMapPosFromWorldPos(this.pos, t);
         const i = e.getMapPosFromWorldPos(
             v2.add(this.pos, v2.create(this.rad, 0)),
@@ -131,14 +130,23 @@ AirstrikeZone.prototype = {
                 ));
         this.gfx.alpha = l;
     }
-};
-PlaneBarn.prototype = {
-    free: function() {
+}
+
+export class PlaneBarn {
+    constructor(e) {
+        this.ia = [];
+        this.oa = [];
+        this.airstrikeZoneContainer = new PIXI.Container();
+        this.audioManager = e;
+    }
+
+    free() {
         for (let e = 0; e < this.ia.length; e++) {
             this.ia[e].n(this.audioManager);
         }
-    },
-    Pr: function(e, t) {
+    }
+
+    Pr(e, t) {
         for (let r = 0; r < this.ia.length; r++) {
             this.ia[r].dirty = true;
         }
@@ -162,8 +170,9 @@ PlaneBarn.prototype = {
                 c.n(this.audioManager);
             }
         }
-    },
-    sa: function(e, t) {
+    }
+
+    sa(e, t) {
         let r = null;
         for (let i = 0; i < this.ia.length; i++) {
             if (!this.ia[i].active) {
@@ -177,8 +186,9 @@ PlaneBarn.prototype = {
         }
         r.o(e, t);
         return r;
-    },
-    Cr: function(e) {
+    }
+
+    Cr(e) {
         let t = null;
         for (let r = 0; r < this.oa.length; r++) {
             if (!this.oa[r]) {
@@ -192,8 +202,9 @@ PlaneBarn.prototype = {
         }
         t.o(e.pos, e.rad, e.duration);
         return t;
-    },
-    m: function(e, t, r, a, i) {
+    }
+
+    m(e, t, r, a, i) {
         for (let o = 0; o < this.ia.length; o++) {
             const s = this.ia[o];
             if (s.active) {
@@ -310,8 +321,9 @@ PlaneBarn.prototype = {
                 S.m(e);
             }
         }
-    },
-    renderAirstrikeZones: function(e, t, r) {
+    }
+
+    renderAirstrikeZones(e, t, r) {
         for (let a = 0; a < this.oa.length; a++) {
             const i = this.oa[a];
             if (i.active) {
@@ -319,7 +331,4 @@ PlaneBarn.prototype = {
             }
         }
     }
-};
-export default {
-    PlaneBarn
-};
+}

@@ -1,6 +1,6 @@
 import $ from "jquery";
-import api from "./api";
-import loadouts from "./loadouts";
+import { api } from "./api";
+import loadouts from "./ui/loadouts";
 import { util } from "../../shared/utils/util";
 
 function ajaxRequest(url, data, cb) {
@@ -33,7 +33,7 @@ function ajaxRequest(url, data, cb) {
         });
 }
 
-class Account {
+export class Account {
     constructor(t) {
         const r = this;
         this.config = t;
@@ -450,5 +450,3 @@ class Account {
         );
     }
 }
-
-export default Account;

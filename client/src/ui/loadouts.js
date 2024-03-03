@@ -1,6 +1,6 @@
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { GameConfig } from "../../shared/gameConfig";
-import deepEqual from "../../shared/utils/deepEqual";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GameConfig } from "../../../shared/gameConfig";
+import { deepEqual } from "../../../shared/utils/deepEqual";
 
 const loadout = {
     ItemStatus: {

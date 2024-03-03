@@ -141,4 +141,4 @@ class Device {
     }
 }
 
-export default new Device();
+export const device = new Device();

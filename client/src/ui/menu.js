@@ -1,7 +1,7 @@
 import $ from "jquery";
-import device from "./device";
-import helpers from "./helpers";
-import MenuModal from "./menuModal";
+import { device } from "../device";
+import { helpers } from "../helpers";
+import { MenuModal } from "./menuModal";
 
 function createToast(text, container, parent, event) {
     const copyToast = $("<div/>", {

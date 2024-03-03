@@ -2,44 +2,33 @@ import * as PIXI from "pixi.js";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
-import objectPool from "./objectPool";
+import { Pool } from "./objectPool";
 import { util } from "../../../shared/utils/util";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 
-function a(e, t, r) {
-    if (e == 0) {
-        return t;
-    } else if (e == 1) {
-        return r;
-    } else {
-        return util.lerpColor(e, t, r);
-    }
-}
-function i() {
-    this.decalRender = null;
-}
-function Decal() {
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.visible = false;
-}
-function DecalBarn() {
-    this._ = new objectPool.Pool(i);
-    this.decalRenders = [];
+function lerpColor(t, a, b) {
+    // util.lerpColor is relatively expensive; avoid if it possible
+    return t == 0.0 ? a : t == 1.0 ? b : util.lerpColor(t, a, b);
 }
 
-i.prototype = {
-    o: function() {
+class Decal {
+    constructor() {
+        this.decalRender = null;
+    }
+
+    o() {
         this.isNew = false;
         this.goreT = 0;
-    },
-    n: function() {
+    }
+
+    n() {
         if (this.decalRender) {
             this.decalRender.n();
             this.decalRender = null;
         }
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         if (t) {
             const i = MapObjectDefs[e.type];
             this.type = e.type;
@@ -64,8 +53,9 @@ i.prototype = {
                 this.decalRender.o(this, a.map, a.renderer);
             }
         }
-    },
-    m: function(e, t) {
+    }
+
+    m(e, t) {
         if (this.hasGore) {
             const r = MapObjectDefs[this.type];
             let i = math.delerp(
@@ -78,7 +68,7 @@ i.prototype = {
                 ? i
                 : math.lerp(e * r.gore.fade.speed, this.goreT, i);
             if (r.gore.tint !== undefined) {
-                const o = a(this.goreT, r.img.tint, r.gore.tint);
+                const o = lerpColor(this.goreT, r.img.tint, r.gore.tint);
                 this.decalRender.setTint(o);
             }
             if (r.gore.alpha !== undefined) {
@@ -89,14 +79,14 @@ i.prototype = {
                 );
             }
             if (r.gore.waterColor !== undefined && this.surface) {
-                this.surface.data.waterColor = a(
+                this.surface.data.waterColor = lerpColor(
                     this.goreT,
                     r.surface.data.waterColor,
                     r.gore.waterColor
                 );
             }
             if (r.gore.rippleColor !== undefined && this.surface) {
-                this.surface.data.rippleColor = a(
+                this.surface.data.rippleColor = lerpColor(
                     this.goreT,
                     r.surface.data.rippleColor,
                     r.gore.rippleColor
@@ -105,9 +95,16 @@ i.prototype = {
         }
         this.isNew = false;
     }
-};
-Decal.prototype = {
-    o: function(e, t, r) {
+}
+
+class DecalRender {
+    constructor() {
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.visible = false;
+    }
+
+    o(e, t, r) {
         const a = MapObjectDefs[e.type];
         this.pos = v2.copy(e.pos);
         this.rot = e.rot;
@@ -142,17 +139,20 @@ Decal.prototype = {
         this.deactivated = false;
         this.fadeout = a.lifetime !== undefined;
         this.fadeAlpha = 1;
-    },
-    n: function() {
+    }
+
+    n() {
         this.deactivated = true;
-    },
-    setTint: function(e) {
+    }
+
+    setTint(e) {
         if (this.valueAdjust < 1) {
             e = util.adjustValue(e, this.valueAdjust);
         }
         this.sprite.tint = e;
-    },
-    m: function(e, t, r) {
+    }
+
+    m(e, t, r) {
         if (this.deactivated && this.fadeout) {
             this.fadeAlpha = math.lerp(e * 3, this.fadeAlpha, 0);
             if (this.fadeAlpha < 0.01) {
@@ -196,9 +196,14 @@ Decal.prototype = {
             this.fadeAlpha;
         r.addPIXIObj(this.sprite, this.layer, this.zIdx, this.zOrd);
     }
-};
-DecalBarn.prototype = {
-    allocDecalRender: function() {
+}
+export class DecalBarn {
+    constructor() {
+        this._ = new Pool(Decal);
+        this.decalRenders = [];
+    }
+
+    allocDecalRender() {
         let e = null;
         for (let t = 0; t < this.decalRenders.length; t++) {
             const r = this.decalRenders[t];
@@ -208,12 +213,13 @@ DecalBarn.prototype = {
             }
         }
         if (!e) {
-            e = new Decal();
+            e = new DecalRender();
             this.decalRenders.push(e);
         }
         return e;
-    },
-    m: function(e, t, r) {
+    }
+
+    m(e, t, r) {
         for (let a = this._.p(), i = 0; i < a.length; i++) {
             const o = a[i];
             if (o.active) {
@@ -226,9 +232,7 @@ DecalBarn.prototype = {
                 n.m(e, t, r);
             }
         }
-    },
-    render: function(e, t, r) { }
-};
-export default {
-    DecalBarn
-};
+    }
+
+    render(e, t, r) { }
+}

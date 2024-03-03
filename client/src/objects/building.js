@@ -7,23 +7,20 @@ import { v2 } from "../../../shared/utils/v2";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 
-function a(e, t, r) {
-    const a = t - e;
-    const i = a * r;
-    if (Math.abs(i) < 0.001) {
-        return a;
-    } else {
-        return i;
-    }
-}
-function Building() {
-    this.sprites = [];
-    this.particleEmitters = [];
-    this.soundEmitters = [];
+function step(cur, target, rate) {
+    const delta = target - cur;
+    const step = delta * rate;
+    return Math.abs(step) < 0.001 ? delta : step;
 }
 
-Building.prototype = {
-    o: function() {
+export class Building {
+    constructor() {
+        this.sprites = [];
+        this.particleEmitters = [];
+        this.soundEmitters = [];
+    }
+
+    o() {
         this.isNew = false;
         this.residue = null;
         this.ceilingDead = false;
@@ -35,8 +32,9 @@ Building.prototype = {
         this.puzzleErrSeq = 0;
         this.puzzleSolved = false;
         this.soundEmitterTicker = 0;
-    },
-    n: function() {
+    }
+
+    n() {
         for (let e = 0; e < this.sprites.length; e++) {
             const t = this.sprites[e];
             t.active = false;
@@ -52,8 +50,9 @@ Building.prototype = {
             this.soundEmitters[a].instance?.stop();
         }
         this.soundEmitters = [];
-    },
-    allocSprite: function() {
+    }
+
+    allocSprite() {
         for (let e = 0; e < this.sprites.length; e++) {
             const t = this.sprites[e];
             if (!t.active) {
@@ -68,8 +67,9 @@ Building.prototype = {
             sprite: r
         });
         return r;
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         const i = this;
         if (t) {
             this.type = e.type;
@@ -264,8 +264,9 @@ Building.prototype = {
                 });
             }
         }
-    },
-    m: function(e, t, r, i, s, l, d, u) {
+    }
+
+    m(e, t, r, i, s, l, d, u) {
         if (this.hasPuzzle) {
             const g = MapObjectDefs[this.type];
             if (
@@ -369,7 +370,7 @@ Building.prototype = {
             this.ceiling.visionTicker = 0;
         }
         const M = this.ceiling.visionTicker > 0;
-        const P = a(
+        const P = step(
             this.ceiling.fadeAlpha,
             M ? 0 : 1,
             e * (M ? 12 : k.fadeRate)
@@ -451,8 +452,9 @@ Building.prototype = {
             }
             d.addPIXIObj(j.sprite, H, j.zOrd, j.zIdx);
         }
-    },
-    isInsideCeiling: function(e) {
+    }
+
+    isInsideCeiling(e) {
         for (let t = 0; t < this.ceiling.zoomRegions.length; t++) {
             const r = this.ceiling.zoomRegions[t].zoomIn;
             if (r && collider.intersect(r, e)) {
@@ -460,8 +462,9 @@ Building.prototype = {
             }
         }
         return false;
-    },
-    getDistanceToBuilding: function(e, t) {
+    }
+
+    getDistanceToBuilding(e, t) {
         let r = t;
         for (let a = 0; a < this.ceiling.zoomRegions.length; a++) {
             const i = this.ceiling.zoomRegions[a].zoomIn;
@@ -473,8 +476,9 @@ Building.prototype = {
             }
         }
         return r;
-    },
-    destroyCeilingFx: function(e, t) {
+    }
+
+    destroyCeilingFx(e, t) {
         const r = MapObjectDefs[this.type].ceiling.destroy;
         /* eslint-disable no-unreachable-loop */
         for (
@@ -500,8 +504,9 @@ Building.prototype = {
             channel: "sfx",
             soundPos: this.pos
         });
-    },
-    positionSprite: function(e, t, r) {
+    }
+
+    positionSprite(e, t, r) {
         const a = r.pointToScreen(v2.add(this.pos, e.posOffset));
         const i = r.pixels(this.scale * e.defScale);
         e.position.set(a.x, a.y);
@@ -514,8 +519,7 @@ Building.prototype = {
         }
         e.rotation = -this.rot + e.rotOffset;
         e.alpha = e.imgAlpha * t;
-    },
-    render: function(e, t, r) { }
-};
+    }
 
-export default Building;
+    render(e, t, r) { }
+}

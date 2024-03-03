@@ -2,7 +2,7 @@ import $ from "jquery";
 import BitBuffer from "bit-buffer";
 import { GameConfig } from "../../shared/gameConfig";
 import input from "./input";
-import crc from "./crc";
+import { crc16 } from "./crc";
 import base64 from "base64-js";
 
 const GameInput = GameConfig.Input;
@@ -89,7 +89,7 @@ class InputBinds {
         }
         // Append crc
         const data = new Uint8Array(buf, 0, stream.byteIndex);
-        const checksum = crc.crc16(data);
+        const checksum = crc16(data);
         const ret = new Uint8Array(data.length + 2);
         ret.set(data);
         ret[ret.length - 2] = (checksum >> 8) & 255;
@@ -105,7 +105,7 @@ class InputBinds {
         // Check crc
         const dataCrc = (data[data.length - 2] << 8) | data[data.length - 1];
         data = data.slice(0, data.length - 2);
-        if (crc.crc16(data) != dataCrc) {
+        if (crc16(data) != dataCrc) {
             return false;
         }
         const arrayBuf = new ArrayBuffer(data.length);

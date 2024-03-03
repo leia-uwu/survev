@@ -13,44 +13,331 @@ class Range {
         return util.random(this.min, this.max);
     }
 }
-function i(e) {
-    if (e instanceof Range) {
-        return e.getRandom();
-    } else {
-        return e;
+
+function getRangeValue(val) {
+    if (val instanceof Range) {
+        return val.getRandom();
     }
-}
-function o(e) {
-    if (e instanceof Function) {
-        return e();
-    } else {
-        return e;
-    }
-}
-function Particle() {
-    this.active = false;
-    this.ticker = 0;
-    this.def = {};
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.scale.set(1, 1);
-    this.sprite.visible = false;
-    this.hasParent = false;
-}
-function Emitter() {
-    this.active = false;
-}
-function ParticleBarn(e) {
-    this.renderer = e;
-    this.particles = [];
-    this.emitters = [];
-    for (let t = 0; t < 256; t++) {
-        this.particles[t] = new Particle(this.display);
-    }
-    this.valueAdjust = 1;
+    return val;
 }
 
-const d = {
+function getColorValue(val) {
+    return val instanceof Function ? val() : val;
+}
+
+class Particle {
+    constructor() {
+        this.active = false;
+        this.ticker = 0;
+        this.def = {};
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.scale.set(1, 1);
+        this.sprite.visible = false;
+        this.hasParent = false;
+    }
+
+    o(e, t, r, a, s, n, l, m, p, u) {
+        const g = ParticleDefs[t];
+        this.active = true;
+        this.ticker = 0;
+        if (m) {
+            this.hasParent = true;
+            m.addChild(this.sprite);
+        } else {
+            this.hasParent = false;
+            e.addPIXIObj(this.sprite, r, p);
+        }
+        this.pos = v2.copy(a);
+        this.vel = v2.copy(s);
+        this.rot = l;
+        this.def = g;
+        this.delay = 0;
+        this.life = getRangeValue(g.life);
+        this.drag = getRangeValue(g.drag);
+        this.rotVel = getRangeValue(g.rotVel) * (Math.random() < 0.5 ? -1 : 1);
+        this.rotDrag = getRangeValue(g.drag) / 2;
+        this.scaleUseExp = g.scale.exp !== undefined;
+        this.scale = getRangeValue(g.scale.start) * n;
+        this.scaleEnd = this.scaleUseExp ? 0 : getRangeValue(g.scale.end) * n;
+        this.scaleExp = this.scaleUseExp ? g.scale.exp : 0;
+        this.alphaUseExp = g.alpha.exp !== undefined;
+        this.alpha = getRangeValue(g.alpha.start);
+        this.alphaEnd = this.alphaUseExp ? 0 : getRangeValue(g.alpha.end);
+        this.alphaExp = this.alphaUseExp ? g.alpha.exp : 0;
+        this.alphaIn = g.alphaIn !== undefined;
+        this.alphaInStart = this.alphaIn ? getRangeValue(g.alphaIn.start) : 0;
+        this.alphaInEnd = this.alphaIn ? getRangeValue(g.alphaIn.end) : 0;
+        this.emitterIdx = -1;
+        const y = Array.isArray(g.image)
+            ? g.image[Math.floor(Math.random() * g.image.length)]
+            : g.image;
+        this.sprite.texture = PIXI.Texture.from(y);
+        this.sprite.visible = false;
+        this.valueAdjust = g.ignoreValueAdjust ? 1 : u;
+        this.setColor(getColorValue(g.color));
+    }
+
+    n() {
+        this.active = false;
+        this.sprite.visible = false;
+    }
+
+    setDelay(e) {
+        this.delay = e;
+    }
+
+    setColor(e) {
+        if (this.valueAdjust < 1) {
+            e = util.adjustValue(e, this.valueAdjust);
+        }
+        this.sprite.tint = e;
+    }
+}
+
+class Emitter {
+    constructor() {
+        this.active = false;
+    }
+
+    o(e, t = {}) {
+        const r = EmitterDefs[e];
+        this.active = true;
+        this.enabled = true;
+        this.type = e;
+        this.pos = t.pos ? v2.copy(t.pos) : v2.create(0, 0);
+        this.dir = t.dir ? v2.copy(t.dir) : v2.create(0, 1);
+        this.scale = t.scale !== undefined ? t.scale : 1;
+        this.layer = t.layer || 0;
+        this.duration =
+            t.duration !== undefined
+                ? t.duration
+                : Number.MAX_VALUE;
+        this.radius = t.radius !== undefined ? t.radius : r.radius;
+        this.ticker = 0;
+        this.nextSpawn = 0;
+        this.spawnCount = 0;
+        this.parent = t.parent || null;
+        this.alpha = 1;
+        this.rateMult = t.rateMult !== undefined ? t.rateMult : 1;
+        const a = ParticleDefs[r.particle];
+        this.zOrd =
+            r.zOrd !== undefined
+                ? r.zOrd
+                : a.zOrd !== undefined
+                    ? a.zOrd
+                    : 20;
+    }
+
+    n() {
+        this.active = false;
+    }
+
+    stop() {
+        this.duration = this.ticker;
+    }
+}
+
+export class ParticleBarn {
+    constructor(renderer) {
+        this.renderer = renderer;
+        this.particles = [];
+        this.emitters = [];
+        for (let t = 0; t < 256; t++) {
+            this.particles[t] = new Particle(this.display);
+        }
+        this.valueAdjust = 1;
+    }
+
+    onMapLoad(e) {
+        this.valueAdjust = e.getMapDef().biome.valueAdjust;
+    }
+
+    free() {
+        for (let e = 0; e < this.particles.length; e++) {
+            const t = this.particles[e].sprite;
+            t.parent?.removeChild(t);
+            t.destroy({
+                children: true
+            });
+        }
+    }
+
+    addParticle(e, t, r, a, i, o, n, l) {
+        let c = null;
+        for (let m = 0; m < this.particles.length; m++) {
+            if (!this.particles[m].active) {
+                c = this.particles[m];
+                break;
+            }
+        }
+        if (!c) {
+            c = new Particle();
+            this.particles.push(c);
+        }
+        i = i !== undefined ? i : 1;
+        o = o !== undefined ? o : Math.random() * Math.PI * 2;
+        l = l !== undefined ? l : ParticleDefs[e].zOrd || 20;
+        c.o(
+            this.renderer,
+            e,
+            t,
+            r,
+            a,
+            i,
+            o,
+            n,
+            l,
+            this.valueAdjust
+        );
+        return c;
+    }
+
+    addRippleParticle(e, t, r) {
+        const a = this.addParticle(
+            "waterRipple",
+            t,
+            e,
+            v2.create(0, 0),
+            1,
+            0,
+            null
+        );
+        a.setColor(r);
+        return a;
+    }
+
+    addEmitter(e, t = {}) {
+        let r = null;
+        for (let a = 0; a < this.emitters.length; a++) {
+            if (!this.emitters[a].active) {
+                r = this.emitters[a];
+                break;
+            }
+        }
+        if (!r) {
+            r = new Emitter();
+            this.emitters.push(r);
+        }
+        r.o(e, t);
+        return r;
+    }
+
+    m(e, t, r) {
+        for (let a = 0; a < this.emitters.length; a++) {
+            const o = this.emitters[a];
+            if (o.active && o.enabled) {
+                o.ticker += e;
+                o.nextSpawn -= e;
+                for (
+                    let s = EmitterDefs[o.type];
+                    o.nextSpawn <= 0 && o.spawnCount < s.maxCount;
+
+                ) {
+                    const n = o.scale * o.radius;
+                    const l = v2.add(
+                        o.pos,
+                        util.randomPointInCircle(n)
+                    );
+                    const c = v2.rotate(
+                        o.dir,
+                        (Math.random() - 0.5) * s.angle
+                    );
+                    const d = v2.mul(c, getRangeValue(s.speed));
+                    const g = getRangeValue(s.rot);
+                    this.addParticle(
+                        s.particle,
+                        o.layer,
+                        l,
+                        d,
+                        o.scale,
+                        g,
+                        o.parent,
+                        o.zOrd
+                    ).emitterIdx = a;
+                    let y = getRangeValue(s.rate);
+                    if (s.maxRate) {
+                        const w = math.easeInExpo(
+                            math.min(1, o.ticker / s.maxElapsed)
+                        );
+                        const f = getRangeValue(s.maxRate);
+                        y = math.lerp(w, y, f);
+                    }
+                    o.nextSpawn += y * o.rateMult;
+                    o.spawnCount++;
+                }
+                if (o.ticker >= o.duration) {
+                    o.n();
+                }
+            }
+        }
+        for (let _ = 0; _ < this.particles.length; _++) {
+            const b = this.particles[_];
+            if (
+                b.active &&
+                ((b.ticker += e), b.ticker >= b.delay)
+            ) {
+                const x = math.min((b.ticker - b.delay) / b.life, 1);
+                b.vel = v2.mul(b.vel, 1 / (1 + e * b.drag));
+                b.pos = v2.add(b.pos, v2.mul(b.vel, e));
+                b.rotVel *= 1 / (1 + e * b.rotDrag);
+                b.rot += b.rotVel * e;
+                if (b.scaleUseExp) {
+                    b.scale += e * b.scaleExp;
+                }
+                if (b.alphaUseExp) {
+                    b.alpha = math.max(b.alpha + e * b.alphaExp, 0);
+                }
+                const S = b.hasParent
+                    ? b.pos
+                    : t.pointToScreen(b.pos);
+                let v = b.scaleUseExp
+                    ? b.scale
+                    : math.remap(
+                        x,
+                        b.def.scale.lerp.min,
+                        b.def.scale.lerp.max,
+                        b.scale,
+                        b.scaleEnd
+                    );
+                let k = b.alphaUseExp
+                    ? b.alpha
+                    : math.remap(
+                        x,
+                        b.def.alpha.lerp.min,
+                        b.def.alpha.lerp.max,
+                        b.alpha,
+                        b.alphaEnd
+                    );
+                if (b.alphaIn && x < b.def.alphaIn.lerp.max) {
+                    k = math.remap(
+                        x,
+                        b.def.alphaIn.lerp.min,
+                        b.def.alphaIn.lerp.max,
+                        b.alphaInStart,
+                        b.alphaInEnd
+                    );
+                }
+                if (b.emitterIdx >= 0) {
+                    k *= this.emitters[b.emitterIdx].alpha;
+                }
+                if (!b.hasParent) {
+                    v = t.pixels(v);
+                }
+                b.sprite.position.set(S.x, S.y);
+                b.sprite.scale.set(v, v);
+                b.sprite.rotation = b.rot;
+                b.sprite.alpha = k;
+                b.sprite.visible = true;
+                if (x >= 1) {
+                    b.n();
+                }
+            }
+        }
+    }
+}
+
+const ParticleDefs = {
     archwayBreak: {
         image: ["part-panel-01.img"],
         life: new Range(0.5, 1.5),
@@ -3052,282 +3339,4 @@ const EmitterDefs = {
         rot: 0,
         maxCount: Number.MAX_VALUE
     }
-};
-Particle.prototype = {
-    o: function(e, t, r, a, s, n, l, m, p, u) {
-        const g = d[t];
-        this.active = true;
-        this.ticker = 0;
-        if (m) {
-            this.hasParent = true;
-            m.addChild(this.sprite);
-        } else {
-            this.hasParent = false;
-            e.addPIXIObj(this.sprite, r, p);
-        }
-        this.pos = v2.copy(a);
-        this.vel = v2.copy(s);
-        this.rot = l;
-        this.def = g;
-        this.delay = 0;
-        this.life = i(g.life);
-        this.drag = i(g.drag);
-        this.rotVel = i(g.rotVel) * (Math.random() < 0.5 ? -1 : 1);
-        this.rotDrag = i(g.drag) / 2;
-        this.scaleUseExp = g.scale.exp !== undefined;
-        this.scale = i(g.scale.start) * n;
-        this.scaleEnd = this.scaleUseExp ? 0 : i(g.scale.end) * n;
-        this.scaleExp = this.scaleUseExp ? g.scale.exp : 0;
-        this.alphaUseExp = g.alpha.exp !== undefined;
-        this.alpha = i(g.alpha.start);
-        this.alphaEnd = this.alphaUseExp ? 0 : i(g.alpha.end);
-        this.alphaExp = this.alphaUseExp ? g.alpha.exp : 0;
-        this.alphaIn = g.alphaIn !== undefined;
-        this.alphaInStart = this.alphaIn ? i(g.alphaIn.start) : 0;
-        this.alphaInEnd = this.alphaIn ? i(g.alphaIn.end) : 0;
-        this.emitterIdx = -1;
-        const y = Array.isArray(g.image)
-            ? g.image[Math.floor(Math.random() * g.image.length)]
-            : g.image;
-        this.sprite.texture = PIXI.Texture.from(y);
-        this.sprite.visible = false;
-        this.valueAdjust = g.ignoreValueAdjust ? 1 : u;
-        this.setColor(o(g.color));
-    },
-    n: function() {
-        this.active = false;
-        this.sprite.visible = false;
-    },
-    setDelay: function(e) {
-        this.delay = e;
-    },
-    setColor: function(e) {
-        if (this.valueAdjust < 1) {
-            e = util.adjustValue(e, this.valueAdjust);
-        }
-        this.sprite.tint = e;
-    }
-};
-Emitter.prototype = {
-    o: function(e, t = {}) {
-        const r = EmitterDefs[e];
-        this.active = true;
-        this.enabled = true;
-        this.type = e;
-        this.pos = t.pos ? v2.copy(t.pos) : v2.create(0, 0);
-        this.dir = t.dir ? v2.copy(t.dir) : v2.create(0, 1);
-        this.scale = t.scale !== undefined ? t.scale : 1;
-        this.layer = t.layer || 0;
-        this.duration =
-            t.duration !== undefined
-                ? t.duration
-                : Number.MAX_VALUE;
-        this.radius = t.radius !== undefined ? t.radius : r.radius;
-        this.ticker = 0;
-        this.nextSpawn = 0;
-        this.spawnCount = 0;
-        this.parent = t.parent || null;
-        this.alpha = 1;
-        this.rateMult = t.rateMult !== undefined ? t.rateMult : 1;
-        const a = d[r.particle];
-        this.zOrd =
-            r.zOrd !== undefined
-                ? r.zOrd
-                : a.zOrd !== undefined
-                    ? a.zOrd
-                    : 20;
-    },
-    n: function() {
-        this.active = false;
-    },
-    stop: function() {
-        this.duration = this.ticker;
-    }
-};
-ParticleBarn.prototype = {
-    onMapLoad: function(e) {
-        this.valueAdjust = e.getMapDef().biome.valueAdjust;
-    },
-    free: function() {
-        for (let e = 0; e < this.particles.length; e++) {
-            const t = this.particles[e].sprite;
-            t.parent?.removeChild(t);
-            t.destroy({
-                children: true
-            });
-        }
-    },
-    addParticle: function(e, t, r, a, i, o, n, l) {
-        let c = null;
-        for (let m = 0; m < this.particles.length; m++) {
-            if (!this.particles[m].active) {
-                c = this.particles[m];
-                break;
-            }
-        }
-        if (!c) {
-            c = new Particle();
-            this.particles.push(c);
-        }
-        i = i !== undefined ? i : 1;
-        o = o !== undefined ? o : Math.random() * Math.PI * 2;
-        l = l !== undefined ? l : d[e].zOrd || 20;
-        c.o(
-            this.renderer,
-            e,
-            t,
-            r,
-            a,
-            i,
-            o,
-            n,
-            l,
-            this.valueAdjust
-        );
-        return c;
-    },
-    addRippleParticle: function(e, t, r) {
-        const a = this.addParticle(
-            "waterRipple",
-            t,
-            e,
-            v2.create(0, 0),
-            1,
-            0,
-            null
-        );
-        a.setColor(r);
-        return a;
-    },
-    addEmitter: function(e, t = {}) {
-        let r = null;
-        for (let a = 0; a < this.emitters.length; a++) {
-            if (!this.emitters[a].active) {
-                r = this.emitters[a];
-                break;
-            }
-        }
-        if (!r) {
-            r = new Emitter();
-            this.emitters.push(r);
-        }
-        r.o(e, t);
-        return r;
-    },
-    m: function(e, t, r) {
-        for (let a = 0; a < this.emitters.length; a++) {
-            const o = this.emitters[a];
-            if (o.active && o.enabled) {
-                o.ticker += e;
-                o.nextSpawn -= e;
-                for (
-                    let s = EmitterDefs[o.type];
-                    o.nextSpawn <= 0 && o.spawnCount < s.maxCount;
-
-                ) {
-                    const n = o.scale * o.radius;
-                    const l = v2.add(
-                        o.pos,
-                        util.randomPointInCircle(n)
-                    );
-                    const c = v2.rotate(
-                        o.dir,
-                        (Math.random() - 0.5) * s.angle
-                    );
-                    const d = v2.mul(c, i(s.speed));
-                    const g = i(s.rot);
-                    this.addParticle(
-                        s.particle,
-                        o.layer,
-                        l,
-                        d,
-                        o.scale,
-                        g,
-                        o.parent,
-                        o.zOrd
-                    ).emitterIdx = a;
-                    let y = i(s.rate);
-                    if (s.maxRate) {
-                        const w = math.easeInExpo(
-                            math.min(1, o.ticker / s.maxElapsed)
-                        );
-                        const f = i(s.maxRate);
-                        y = math.lerp(w, y, f);
-                    }
-                    o.nextSpawn += y * o.rateMult;
-                    o.spawnCount++;
-                }
-                if (o.ticker >= o.duration) {
-                    o.n();
-                }
-            }
-        }
-        for (let _ = 0; _ < this.particles.length; _++) {
-            const b = this.particles[_];
-            if (
-                b.active &&
-                ((b.ticker += e), b.ticker >= b.delay)
-            ) {
-                const x = math.min((b.ticker - b.delay) / b.life, 1);
-                b.vel = v2.mul(b.vel, 1 / (1 + e * b.drag));
-                b.pos = v2.add(b.pos, v2.mul(b.vel, e));
-                b.rotVel *= 1 / (1 + e * b.rotDrag);
-                b.rot += b.rotVel * e;
-                if (b.scaleUseExp) {
-                    b.scale += e * b.scaleExp;
-                }
-                if (b.alphaUseExp) {
-                    b.alpha = math.max(b.alpha + e * b.alphaExp, 0);
-                }
-                const S = b.hasParent
-                    ? b.pos
-                    : t.pointToScreen(b.pos);
-                let v = b.scaleUseExp
-                    ? b.scale
-                    : math.remap(
-                        x,
-                        b.def.scale.lerp.min,
-                        b.def.scale.lerp.max,
-                        b.scale,
-                        b.scaleEnd
-                    );
-                let k = b.alphaUseExp
-                    ? b.alpha
-                    : math.remap(
-                        x,
-                        b.def.alpha.lerp.min,
-                        b.def.alpha.lerp.max,
-                        b.alpha,
-                        b.alphaEnd
-                    );
-                if (b.alphaIn && x < b.def.alphaIn.lerp.max) {
-                    k = math.remap(
-                        x,
-                        b.def.alphaIn.lerp.min,
-                        b.def.alphaIn.lerp.max,
-                        b.alphaInStart,
-                        b.alphaInEnd
-                    );
-                }
-                if (b.emitterIdx >= 0) {
-                    k *= this.emitters[b.emitterIdx].alpha;
-                }
-                if (!b.hasParent) {
-                    v = t.pixels(v);
-                }
-                b.sprite.position.set(S.x, S.y);
-                b.sprite.scale.set(v, v);
-                b.sprite.rotation = b.rot;
-                b.sprite.alpha = k;
-                b.sprite.visible = true;
-                if (x >= 1) {
-                    b.n();
-                }
-            }
-        }
-    }
-};
-export default {
-    EmitterDefs,
-    ParticleBarn
 };

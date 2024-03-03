@@ -1,21 +1,21 @@
 import * as PIXI from "pixi.js";
-import { collider } from "../../shared/utils/collider";
-import { GameConfig } from "../../shared/gameConfig";
-import gameObject from "../../shared/utils/gameObject";
+import { collider } from "../../../shared/utils/collider";
+import { GameConfig } from "../../../shared/gameConfig";
+import gameObject from "../../../shared/utils/gameObject";
 import loadouts from "./loadouts";
-import { math } from "../../shared/utils/math";
-import { v2 } from "../../shared/utils/v2";
-import device from "./device";
-import Camera from "./camera";
-import debugLines from "./debugLines";
-import decal from "./objects/decal";
-import map from "./map";
-import objectPool from "./objects/objectPool";
-import particles from "./objects/particles";
-import Player from "./objects/player";
-import renderer from "./renderer";
-import Smoke from "./objects/Smoke";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { math } from "../../../shared/utils/math";
+import { v2 } from "../../../shared/utils/v2";
+import { device } from "../device";
+import { Camera } from "../camera";
+import { debugLines } from "../debugLines";
+import { DecalBarn } from "../objects/decal";
+import { Map } from "../map";
+import { ParticleBarn } from "../objects/particles";
+import { Renderer } from "../renderer";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { PlayerBarn } from "../objects/player";
+import { SmokeBarn } from "../objects/Smoke";
+import { Creator } from "../objects/objectPool";
 
 class LoadoutDisplay {
     constructor(e, t, r, a, i) {
@@ -33,12 +33,12 @@ class LoadoutDisplay {
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.De = new Camera();
-        this.Ct = new renderer.Renderer(this, this.canvasMode);
-        this.Ot = new particles.ParticleBarn(this.Ct);
-        this.Dt = new decal.DecalBarn();
-        this.Et = new map.Map(this.Dt);
-        this.Rt = new Player.PlayerBarn();
-        this.Kt = new Smoke.SmokeBarn();
+        this.Ct = new Renderer(this, this.canvasMode);
+        this.Ot = new ParticleBarn(this.Ct);
+        this.Dt = new DecalBarn();
+        this.Et = new Map(this.Dt);
+        this.Rt = new PlayerBarn();
+        this.Kt = new SmokeBarn();
         const r = {
             [gameObject.Type.Player]: this.Rt.$e,
             [gameObject.Type.Obstacle]: this.Et.Ve,
@@ -47,7 +47,7 @@ class LoadoutDisplay {
             [gameObject.Type.Decal]: this.Dt._,
             [gameObject.Type.Smoke]: this.Kt.e
         };
-        this.mr = new objectPool.Creator();
+        this.mr = new Creator();
         for (const i in r) {
             if (r.hasOwnProperty(i)) {
                 this.mr.registerType(i, r[i]);

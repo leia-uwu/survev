@@ -2,18 +2,18 @@ import * as PIXI from "pixi.js";
 import { coldet } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
-import terrainGen from "../../shared/utils/terrainGen";
+import { generateJaggedAabbPoints, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
-import objectPool from "./objects/objectPool";
-import device from "./device";
+import { Pool } from "./objects/objectPool";
+import { device } from "./device";
 import { math } from "../../shared/utils/math";
 import { GameConfig } from "../../shared/gameConfig";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
-import Building from "./objects/building";
-import Obstacle from "./objects/obstacle";
-import Structure from "./objects/structure";
+import { Building } from "./objects/building";
+import { Obstacle } from "./objects/obstacle";
+import { Structure } from "./objects/structure";
 
 // Drawing
 
@@ -41,49 +41,50 @@ function traceGroundPatch(canvas, patch, seed) {
     const divisionsY = Math.round((height * roughness) / offset);
 
     const seededRand = util.seededRand(seed);
-    tracePath(canvas, terrainGen.generateJaggedAabbPoints(patch, divisionsX, divisionsY, offset, seededRand));
-}
-function Map(e) {
-    this.decalBarn = e;
-    this.I = false;
-    this.Br = false;
-    this.display = {
-        ground: new PIXI.Graphics()
-    };
-    this.mapName = "";
-    this.mapDef = {};
-    this.factionMode = false;
-    this.perkMode = false;
-    this.turkeyMode = false;
-    this.seed = 0;
-    this.width = 0;
-    this.height = 0;
-    this.terrain = {};
-    this.mapData = {
-        places: [],
-        objects: [],
-        groundPatches: []
-    };
-    this.mapLoaded = false;
-    this.mapTexture = null;
-    this.Ve = new objectPool.Pool(Obstacle);
-    this.nr = new objectPool.Pool(Building);
-    this.lr = new objectPool.Pool(Structure);
-    this.deadObstacleIds = [];
-    this.deadCeilingIds = [];
-    this.solvedPuzzleIds = [];
-    this.lootDropSfxIds = [];
-    this.terrain = null;
-    this.cameraEmitter = null;
-
-    // Anti-cheat
-    this.ea = 0;
-    this._r = false;
-    this.U = false;
+    tracePath(canvas, generateJaggedAabbPoints(patch, divisionsX, divisionsY, offset, seededRand));
 }
 
-Map.prototype = {
-    free: function() {
+export class Map {
+    constructor(e) {
+        this.decalBarn = e;
+        this.I = false;
+        this.Br = false;
+        this.display = {
+            ground: new PIXI.Graphics()
+        };
+        this.mapName = "";
+        this.mapDef = {};
+        this.factionMode = false;
+        this.perkMode = false;
+        this.turkeyMode = false;
+        this.seed = 0;
+        this.width = 0;
+        this.height = 0;
+        this.terrain = {};
+        this.mapData = {
+            places: [],
+            objects: [],
+            groundPatches: []
+        };
+        this.mapLoaded = false;
+        this.mapTexture = null;
+        this.Ve = new Pool(Obstacle);
+        this.nr = new Pool(Building);
+        this.lr = new Pool(Structure);
+        this.deadObstacleIds = [];
+        this.deadCeilingIds = [];
+        this.solvedPuzzleIds = [];
+        this.lootDropSfxIds = [];
+        this.terrain = null;
+        this.cameraEmitter = null;
+
+        // Anti-cheat
+        this.ea = 0;
+        this._r = false;
+        this.U = false;
+    }
+
+    free() {
         // Buildings need to stop sound emitters
         const buildings = this.nr.p();
         for (
@@ -96,11 +97,13 @@ Map.prototype = {
         });
         this.cameraEmitter?.stop();
         this.cameraEmitter = null;
-    },
-    resize: function(pixiRenderer, canvasMode) {
+    }
+
+    resize(pixiRenderer, canvasMode) {
         this.renderMap(pixiRenderer, canvasMode);
-    },
-    loadMap: function(mapMsg, camera, canvasMode, particleBarn) {
+    }
+
+    loadMap(mapMsg, camera, canvasMode, particleBarn) {
         this.mapName = mapMsg.mapName;
         // Clone the source mapDef
         const mapDef = MapDefs[this.mapName];
@@ -116,7 +119,7 @@ Map.prototype = {
         this.seed = mapMsg.seed;
         this.width = mapMsg.width;
         this.height = mapMsg.height;
-        this.terrain = terrainGen.generateTerrain(
+        this.terrain = generateTerrain(
             this.width,
             this.height,
             mapMsg.shoreInset,
@@ -146,17 +149,20 @@ Map.prototype = {
             canvasMode,
             false
         );
-    },
-    getMapDef: function() {
+    }
+
+    getMapDef() {
         if (!this.mapLoaded) {
             throw new Error("Map not loaded!");
         }
         return this.mapDef;
-    },
-    getMapTexture: function() {
+    }
+
+    getMapTexture() {
         return this.mapTexture;
-    },
-    m: function(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
+    }
+
+    m(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
         const obstacles = this.Ve.p();
@@ -224,8 +230,9 @@ Map.prototype = {
                 this.U = true;
             }
         }
-    },
-    renderTerrain: function(groundGfx, gridThickness, canvasMode, mapRender) {
+    }
+
+    renderTerrain(groundGfx, gridThickness, canvasMode, mapRender) {
         const width = this.width;
         const height = this.height;
         const terrain = this.terrain;
@@ -350,8 +357,9 @@ Map.prototype = {
                 groundGfx.endFill();
             }
         }
-    },
-    render: function(camera) {
+    }
+
+    render(camera) {
         // Terrain
         // Fairly robust way to get translation and scale from the camera ...
         const p0 = camera.pointToScreen(v2.create(0, 0));
@@ -360,8 +368,9 @@ Map.prototype = {
         // Translate and scale the map polygons to move the with camera
         this.display.ground.position.set(p0.x, p0.y);
         this.display.ground.scale.set(s.x, s.y);
-    },
-    getMinimapRender: function(obj) {
+    }
+
+    getMinimapRender(obj) {
         const def = MapObjectDefs[obj.type];
         const zIdx =
             def.type == "building"
@@ -393,8 +402,9 @@ Map.prototype = {
             zIdx,
             shapes
         };
-    },
-    renderMap: function(renderer, canvasMode) {
+    }
+
+    renderMap(renderer, canvasMode) {
         if (this.mapLoaded) {
             const mapRender = new PIXI.Container();
             const txtRender = new PIXI.Container();
@@ -550,8 +560,9 @@ Map.prototype = {
                 baseTexture: true
             });
         }
-    },
-    getGroundSurface: function(pos, layer) {
+    }
+
+    getGroundSurface(pos, layer) {
         const r = this;
         const groundSurface = (type, data = {}) => {
             if (type == "water") {
@@ -661,14 +672,17 @@ Map.prototype = {
                     ? "sand"
                     : "water"
         );
-    },
-    isInOcean: function(pos) {
+    }
+
+    isInOcean(pos) {
         return !math.pointInsidePolygon(pos, this.terrain.shore);
-    },
-    distanceToShore: function(pos) {
+    }
+
+    distanceToShore(pos) {
         return math.distToPolygon(pos, this.terrain.shore);
-    },
-    insideStructureStairs: function(collision) {
+    }
+
+    insideStructureStairs(collision) {
         const structures = this.lr.p();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
@@ -677,8 +691,9 @@ Map.prototype = {
             }
         }
         return false;
-    },
-    getBuildingById: function(objId) {
+    }
+
+    getBuildingById(objId) {
         const buildings = this.nr.p();
         for (let r = 0; r < buildings.length; r++) {
             const building = buildings[r];
@@ -687,8 +702,9 @@ Map.prototype = {
             }
         }
         return null;
-    },
-    insideStructureMask: function(collision) {
+    }
+
+    insideStructureMask(collision) {
         const structures = this.lr.p();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
@@ -697,8 +713,9 @@ Map.prototype = {
             }
         }
         return false;
-    },
-    insideBuildingCeiling: function(collision, checkVisible) {
+    }
+
+    insideBuildingCeiling(collision, checkVisible) {
         const buildings = this.nr.p();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
@@ -714,8 +731,4 @@ Map.prototype = {
         }
         return false;
     }
-};
-
-export default {
-    Map
-};
+}

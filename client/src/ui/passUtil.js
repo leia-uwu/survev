@@ -1,6 +1,6 @@
-import { PassDefs } from "../../shared/defs/gameObjects/passDefs";
+import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
 
-const passUtil = {
+export const passUtil = {
     getPassMaxLevel: function() {
         return 99;
     },
@@ -39,5 +39,3 @@ const passUtil = {
         );
     }
 };
-
-export default passUtil;

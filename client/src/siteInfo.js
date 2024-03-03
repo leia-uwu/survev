@@ -1,19 +1,17 @@
 import $ from "jquery";
-import api from "./api";
-import device from "./device";
+import { api } from "./api";
+import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
 
-// const privacy = r("privacy.js");
+export class SiteInfo {
+    constructor(e, t) {
+        this.config = e;
+        this.localization = t;
+        this.info = {};
+        this.loaded = false;
+    }
 
-function SiteInfo(e, t) {
-    this.config = e;
-    this.localization = t;
-    this.info = {};
-    this.loaded = false;
-}
-
-SiteInfo.prototype = {
-    load: function() {
+    load() {
         const e = this;
         const t = this.localization.getLocale();
         const r = api.resolveUrl(`/api/site_info?language=${t}`);
@@ -22,8 +20,9 @@ SiteInfo.prototype = {
             e.loaded = true;
             e.updatePageFromInfo();
         });
-    },
-    getGameModeStyles: function() {
+    }
+
+    getGameModeStyles() {
         const e = {
             1: "solo",
             2: "duo",
@@ -45,8 +44,9 @@ SiteInfo.prototype = {
             });
         }
         return t;
-    },
-    updatePageFromInfo: function() {
+    }
+
+    updatePageFromInfo() {
         if (this.loaded) {
             for (
                 let e = this.getGameModeStyles(), t = 0;
@@ -181,5 +181,4 @@ SiteInfo.prototype = {
             }
         }
     }
-};
-export default SiteInfo;
+}

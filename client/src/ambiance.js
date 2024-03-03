@@ -1,6 +1,6 @@
 import { math } from "../../shared/utils/math";
 
-export default class Ambiance {
+export class Ambiance {
     constructor() {
         const _this = this;
         this.introMusic = true;

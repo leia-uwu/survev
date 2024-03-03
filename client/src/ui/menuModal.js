@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-class MenuModal {
+export class MenuModal {
     constructor(t) {
         const r = this;
         this.selector = t;
@@ -66,5 +66,3 @@ class MenuModal {
         }
     }
 }
-
-export default MenuModal;

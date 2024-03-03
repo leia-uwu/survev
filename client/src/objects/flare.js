@@ -6,12 +6,12 @@ import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 
-function FlareBarn() {
-    this.bullets = [];
-}
+export class FlareBarn {
+    constructor() {
+        this.bullets = [];
+    }
 
-FlareBarn.prototype = {
-    addFlare: function(e, t, r) {
+    addFlare(e, t, r) {
         let a = null;
         for (let s = 0; s < this.bullets.length; s++) {
             if (
@@ -85,8 +85,9 @@ FlareBarn.prototype = {
         a.smokeThrottle = 0;
         a.flareContainer.visible = true;
         a.trailContainer.visible = true;
-    },
-    m: function(e, t, r, a, i, o, m, p) {
+    }
+
+    m(e, t, r, a, i, o, m, p) {
         t.$e.p();
         for (let h = 0; h < this.bullets.length; h++) {
             const d = this.bullets[h];
@@ -150,8 +151,9 @@ FlareBarn.prototype = {
                 d.isNew = false;
             }
         }
-    },
-    render: function(e) {
+    }
+
+    render(e) {
         e.pixels(1);
         for (let t = 0; t < this.bullets.length; t++) {
             const r = this.bullets[t];
@@ -170,7 +172,4 @@ FlareBarn.prototype = {
             }
         }
     }
-};
-export default {
-    FlareBarn
-};
+}

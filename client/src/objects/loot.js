@@ -3,39 +3,37 @@ import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
-import device from "../device";
-import ObjectPool from "./objectPool";
+import { device } from "../device";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { Pool } from "./objectPool";
 
-function a() {
-    this.ticker = 0;
-    this.playDropSfx = false;
-    this.container = new PIXI.Sprite();
-    this.container.anchor.set(0.5, 0.5);
-    this.container.scale.set(1, 1);
-    this.sprite = new PIXI.Sprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.scale.set(0.8, 0.8);
-    this.container.addChild(this.sprite);
-    this.emitter = null;
-}
-function i() {
-    this.sr = new ObjectPool.Pool(a);
-    this.Dr = null;
-}
+class Loot {
+    constructor() {
+        this.ticker = 0;
+        this.playDropSfx = false;
+        this.container = new PIXI.Sprite();
+        this.container.anchor.set(0.5, 0.5);
+        this.container.scale.set(1, 1);
+        this.sprite = new PIXI.Sprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.scale.set(0.8, 0.8);
+        this.container.addChild(this.sprite);
+        this.emitter = null;
+    }
 
-a.prototype = {
-    o: function() {
+    o() {
         this.updatedData = false;
-    },
-    n: function() {
+    }
+
+    n() {
         this.container.visible = false;
         if (this.emitter) {
             this.emitter.stop();
             this.emitter = null;
         }
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         this.updatedData = true;
         this.pos = v2.copy(e.pos);
         if (t) {
@@ -107,9 +105,15 @@ a.prototype = {
             );
         }
     }
-};
-i.prototype = {
-    m: function(e, t, r, a, i, o) {
+}
+
+export class LootBarn {
+    constructor() {
+        this.sr = new Pool(Loot);
+        this.Dr = null;
+    }
+
+    m(e, t, r, a, i, o) {
         this.Dr = null;
         for (
             let p = Number.MAX_VALUE, d = this.sr.p(), u = 0;
@@ -158,11 +162,9 @@ i.prototype = {
                 g.container.scale.set(k, k);
             }
         }
-    },
-    Er: function() {
+    }
+
+    Er() {
         return this.Dr;
     }
-};
-export default {
-    LootBarn: i
-};
+}

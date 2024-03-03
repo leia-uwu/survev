@@ -24,11 +24,11 @@ const proxyDefs = {
     }
 };
 
-export default {
-    authLocation: function() {
+export const proxy = {
+    authLocation() {
         return !!getProxyDef();
     },
-    loginSupported: function(loginType) {
+    loginSupported(loginType) {
         const proxyDef = getProxyDef();
         return !!proxyDef && (!!proxyDef[loginType] || !!proxyDef.all);
     }

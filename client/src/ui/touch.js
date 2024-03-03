@@ -1,15 +1,15 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js";
-import { collider } from "../../shared/utils/collider";
-import { GameConfig } from "../../shared/gameConfig";
-import { math } from "../../shared/utils/math";
-import { util } from "../../shared/utils/util";
-import { v2 } from "../../shared/utils/v2";
-import device from "./device";
-import { BulletDefs } from "../../shared/defs/gameObjects/bulletDefs";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { collider } from "../../../shared/utils/collider";
+import { GameConfig } from "../../../shared/gameConfig";
+import { math } from "../../../shared/utils/math";
+import { util } from "../../../shared/utils/util";
+import { v2 } from "../../../shared/utils/v2";
+import { device } from "../device";
+import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 
-class Touch {
+export class Touch {
     constructor(t, r) {
         const i = this;
         this.input = t;
@@ -733,7 +733,3 @@ class LineSprites {
         this.container.visible = o;
     }
 }
-
-export default {
-    Touch
-};

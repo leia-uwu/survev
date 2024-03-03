@@ -2,27 +2,6 @@ import * as PIXI from "pixi.js";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 
-function MapSprite() {
-    this.active = false;
-    this.retained = true;
-    this.sprite = new SortableSprite();
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.scale.set(1, 1);
-    this.sprite.visible = false;
-    this.pos = v2.create(0, 0);
-    this.scale = 1;
-    this.alpha = 1;
-    this.visible = true;
-    this.pulse = false;
-    this.lifetime = 0;
-    this.ticker = 0;
-    this.zOrder = 0;
-}
-function MapSpriteBarn() {
-    this.container = new PIXI.Container();
-    this.mapSprites = [];
-}
-
 class SortableSprite extends PIXI.Sprite {
     constructor() {
         super();
@@ -30,8 +9,25 @@ class SortableSprite extends PIXI.Sprite {
     }
 }
 
-MapSprite.prototype = {
-    init: function() {
+class MapSprite {
+    constructor() {
+        this.active = false;
+        this.retained = true;
+        this.sprite = new SortableSprite();
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.scale.set(1, 1);
+        this.sprite.visible = false;
+        this.pos = v2.create(0, 0);
+        this.scale = 1;
+        this.alpha = 1;
+        this.visible = true;
+        this.pulse = false;
+        this.lifetime = 0;
+        this.ticker = 0;
+        this.zOrder = 0;
+    }
+
+    init() {
         this.active = true;
         this.retained = true;
         this.pos = v2.create(0, 0);
@@ -42,17 +38,25 @@ MapSprite.prototype = {
         this.lifetime = Number.MAX_VALUE;
         this.ticker = 0;
         this.zOrder = 0;
-    },
-    free: function() {
+    }
+
+    free() {
         this.active = false;
         this.sprite.visible = false;
-    },
-    release: function() {
+    }
+
+    release() {
         this.retained = false;
     }
-};
-MapSpriteBarn.prototype = {
-    n: function() {
+}
+
+export class MapSpriteBarn {
+    constructor() {
+        this.container = new PIXI.Container();
+        this.mapSprites = [];
+    }
+
+    n() {
         for (let e = 0; e < this.mapSprites.length; e++) {
             const t = this.mapSprites[e].sprite;
             t.parent?.removeChild(t);
@@ -60,8 +64,9 @@ MapSpriteBarn.prototype = {
                 children: true
             });
         }
-    },
-    addSprite: function() {
+    }
+
+    addSprite() {
         let e = null;
         for (let t = 0; t < this.mapSprites.length; t++) {
             if (!this.mapSprites[t].active) {
@@ -76,8 +81,9 @@ MapSpriteBarn.prototype = {
         }
         e.init();
         return e;
-    },
-    update: function(e, t, r) {
+    }
+
+    update(e, t, r) {
         let a = false;
         for (let i = 0; i < this.mapSprites.length; i++) {
             const o = this.mapSprites[i];
@@ -116,7 +122,4 @@ MapSpriteBarn.prototype = {
             });
         }
     }
-};
-export default {
-    MapSpriteBarn
-};
+}

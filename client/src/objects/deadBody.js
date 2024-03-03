@@ -2,11 +2,11 @@ import * as PIXI from "pixi.js";
 import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
-import device from "../device";
-import ObjectPool from "./objectPool";
+import { device } from "../device";
+import { Pool } from "./objectPool";
 
-function a() {
-    const e = {
+function createDeadBodyText() {
+    const nameStyle = {
         fontFamily: "Arial",
         fontWeight: "bold",
         fontSize: device.pixelRatio > 1 ? 30 : 24,
@@ -20,36 +20,35 @@ function a() {
         dropShadowAngle: Math.PI / 3,
         dropShadowDistance: 1
     };
-    const t = new PIXI.Text("", e);
-    t.anchor.set(0.5, 0.5);
-    t.scale.set(0.5, 0.5);
-    return t;
-}
-function i() {
-    this.active = false;
-    this.pos = v2.create(0, 0);
-    this.container = new PIXI.Container();
-    this.sprite = PIXI.Sprite.from("skull.img");
-    this.sprite.anchor.set(0.5, 0.5);
-    this.sprite.scale.set(0.4, 0.4);
-    this.sprite.tint = 5921370;
-    this.container.addChild(this.sprite);
-    this.nameText = a();
-    this.nameText.anchor.set(0.5, -1);
-    this.nameText.tint = util.rgbToInt(util.hsvToRgb(0, 0, 0.5));
-    this.container.addChild(this.nameText);
-    this.container.visible = this.sprite;
-}
-function DeadBodyBarn() {
-    this.ot = new ObjectPool.Pool(i);
+    const nameText = new PIXI.Text("", nameStyle);
+    nameText.anchor.set(0.5, 0.5);
+    nameText.scale.set(0.5, 0.5);
+    return nameText;
 }
 
-i.prototype = {
-    o: function() { },
-    n: function() {
+class DeadBody {
+    constructor() {
+        this.active = false;
+        this.pos = v2.create(0, 0);
+        this.container = new PIXI.Container();
+        this.sprite = PIXI.Sprite.from("skull.img");
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.scale.set(0.4, 0.4);
+        this.sprite.tint = 5921370;
+        this.container.addChild(this.sprite);
+        this.nameText = createDeadBodyText();
+        this.nameText.anchor.set(0.5, -1);
+        this.nameText.tint = util.rgbToInt(util.hsvToRgb(0, 0, 0.5));
+        this.container.addChild(this.nameText);
+        this.container.visible = this.sprite;
+    }
+
+    o() { }
+    n() {
         this.container.visible = false;
-    },
-    c: function(e, t, r, a) {
+    }
+
+    c(e, t, r, a) {
         this.pos = v2.copy(e.pos);
         if (t) {
             this.layer = e.layer;
@@ -60,9 +59,14 @@ i.prototype = {
             this.container.visible = true;
         }
     }
-};
-DeadBodyBarn.prototype = {
-    m: function(e, t, r, a, i, o) {
+}
+
+export class DeadBodyBarn {
+    constructor() {
+        this.ot = new Pool(DeadBody);
+    }
+
+    m(e, t, r, a, i, o) {
         for (let s = this.ot.p(), l = 0; l < s.length; l++) {
             const c = s[l];
             if (c.active) {
@@ -89,8 +93,9 @@ DeadBodyBarn.prototype = {
                 c.container.scale.set(g, g);
             }
         }
-    },
-    getDeadBodyById: function(e) {
+    }
+
+    getDeadBodyById(e) {
         for (let t = this.ot.p(), r = 0; r < t.length; r++) {
             const a = t[r];
             if (a.active && a.playerId == e) {
@@ -99,7 +104,4 @@ DeadBodyBarn.prototype = {
         }
         return null;
     }
-};
-export default {
-    DeadBodyBarn
-};
+}
