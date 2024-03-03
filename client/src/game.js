@@ -10,7 +10,7 @@ import { helpers } from "./helpers";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { AirdropBarn } from "./objects/aidrop";
-import { BulletBarn } from "./objects/bullet";
+import { BulletBarn, createBullet } from "./objects/bullet";
 import { Camera } from "./camera";
 import { DeadBodyBarn } from "./objects/deadBody";
 import { debugLines } from "./debugLines";
@@ -1001,7 +1001,7 @@ export class Game {
         // Create bullets
         for (let i = 0; i < msg.bullets.length; i++) {
             const b = msg.bullets[i];
-            Bullet.createBullet(b, this.bulletBarn, this.flareBarn, this.playerBarn, this.renderer);
+            createBullet(b, this.bulletBarn, this.flareBarn, this.playerBarn, this.renderer);
             if (b.shotFx) {
                 this.shotBarn.addShot(b);
             }
