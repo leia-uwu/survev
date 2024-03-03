@@ -310,13 +310,6 @@ export class Game {
         const debug = {};
         debug.render = debug.render || {};
 
-        /*
-        * DEBUG CODE
-            if (!this.m_map.mapTilesCreated && !this.m_map.mapTilesCreating && this.m_map.tilemapManager.initialized) {
-                this.m_map.renderMap(this.pixi.renderer, this.canvasMode);
-            }
-        */
-
         if (this.playing) {
             this.playingTicker += dt;
         }
