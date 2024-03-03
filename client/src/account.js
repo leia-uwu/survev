@@ -47,7 +47,6 @@ export class Account {
         this.items = [];
         this.quests = [];
         this.questPriv = "";
-        this.pass = {};
         window.login = function() {
             r.login();
         };
@@ -62,25 +61,6 @@ export class Account {
         window.unlock = function(e) {
             console.log(`Unlocking ${e}`);
             r.unlock(e);
-        };
-        window.setQuest = function(e, t) {
-            t = t || 0;
-            r.ajaxRequest(
-                "/api/user/set_quest",
-                {
-                    questType: e,
-                    idx: t
-                },
-                (e, t) => {
-                    r.getPass();
-                }
-            );
-        };
-        window.refreshQuest = function(e) {
-            r.refreshQuest(e);
-        };
-        window.setPassUnlock = function(e) {
-            r.setPassUnlock(e);
         };
     }
 
@@ -182,7 +162,6 @@ export class Account {
     login() {
         // if (helpers.getCookie("app-data")) {
         this.loadProfile();
-        this.getPass(true);
         // }
     }
 
@@ -370,82 +349,6 @@ export class Account {
                 }
                 t.items = r.items;
                 t.emit("items", t.items);
-            }
-        );
-    }
-
-    getPass(tryRefreshQuests) {
-        const _this = this;
-        this.ajaxRequest(
-            "/api/user/get_pass",
-            {
-                tryRefreshQuests
-            },
-            (err, res) => {
-                _this.pass = {};
-                _this.quests = [];
-                _this.questPriv = "";
-                if (err || !res.success) {
-                    console.error(
-                        "account",
-                        "get_pass_error"
-                    );
-                } else {
-                    _this.pass = res.pass || {};
-                    _this.quests = res.quests || [];
-                    _this.questPriv = res.questPriv || "";
-                    _this.quests.sort((a, b) => {
-                        return a.idx - b.idx;
-                    });
-                    _this.emit("pass", _this.pass, _this.quests, true);
-                    if (_this.pass.newItems) {
-                        _this.loadProfile();
-                    }
-                }
-            }
-        );
-    }
-
-    setPassUnlock(unlockType) {
-        const _this = this;
-        this.ajaxRequest(
-            "/api/user/set_pass_unlock",
-            {
-                unlockType
-            },
-            (err, res) => {
-                if (err || !res.success) {
-                    console.error(
-                        "account",
-                        "set_pass_unlock_error"
-                    );
-                } else {
-                    _this.getPass(false);
-                }
-            }
-        );
-    }
-
-    refreshQuest(e) {
-        const t = this;
-        this.ajaxRequest(
-            "/api/user/refresh_quest",
-            {
-                idx: e
-            },
-            (e, r) => {
-                if (e) {
-                    console.error(
-                        "account",
-                        "refresh_quest_error"
-                    );
-                    return;
-                }
-                if (r.success) {
-                    t.getPass(false);
-                } else {
-                    t.emit("pass", t.pass, t.quests, false);
-                }
             }
         );
     }

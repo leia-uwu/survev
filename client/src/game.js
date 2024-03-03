@@ -233,8 +233,6 @@ export class Game {
         this.prevInputMsg = new net.InputMsg();
         this.playingTicker = 0;
         this.updateRecvCount = 0;
-        this.updatePass = false;
-        this.updatePassDelay = 0;
         this.m_localId = 0;
         this.m_activeId = 0;
         this.m_activePlayer = null;
@@ -268,8 +266,6 @@ export class Game {
         this.connected = false;
         if (this.initialized) {
             this.initialized = false;
-            this.updatePass = false;
-            this.updatePassDelay = 0;
             this.emoteBarn.free();
             this.ui2Manager.free();
             this.uiManager.free();
@@ -1406,9 +1402,8 @@ export class Game {
             break;
         }
         case net.Msg.UpdatePass: {
+            // I'm useless
             new net.UpdatePassMsg().deserialize(stream);
-            this.updatePass = true;
-            this.updatePassDelay = 0;
             break;
         }
         case net.Msg.AliveCounts: {

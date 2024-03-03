@@ -25,7 +25,6 @@ import LoadoutMenu from "./ui/loadoutMenu";
 import { Localization } from "./ui/localization";
 import Menu from "./ui/menu";
 import { MenuModal } from "./ui/menuModal";
-import Pass from "./ui/pass";
 import PingTest from "./pingTest";
 import ProfileUi from "./ui/profileUi";
 import Resources from "./resources";
@@ -58,11 +57,6 @@ class Application {
         this.account = new Account(this.config);
         this.loadoutMenu = new LoadoutMenu(
             this.account,
-            this.localization
-        );
-        this.pass = new Pass(
-            this.account,
-            this.loadoutMenu,
             this.localization
         );
         this.profileUi = new ProfileUi(
@@ -283,28 +277,7 @@ class Application {
                 This.game?.free();
                 This.teamMenu.leave();
             });
-            const r = $("#news-current").data("date");
-            const a = new Date(r).getTime();
-            $(".right-column-toggle").on("click", () => {
-                if (This.newsDisplayed) {
-                    $("#news-wrapper").fadeOut(250);
-                    $("#pass-wrapper").fadeIn(250);
-                } else {
-                    This.config.set("lastNewsTimestamp", a);
-                    $(".news-toggle")
-                        .find(".account-alert")
-                        .css("display", "none");
-                    $("#news-wrapper").fadeIn(250);
-                    $("#pass-wrapper").fadeOut(250);
-                }
-                This.newsDisplayed = !This.newsDisplayed;
-            });
-            const i = this.config.get("lastNewsTimestamp");
-            if (a > i) {
-                $(".news-toggle")
-                    .find(".account-alert")
-                    .css("display", "block");
-            }
+
             this.setDOMFromConfig();
             this.setAppActive(true);
             const domCanvas = document.getElementById("cvs");
@@ -360,11 +333,6 @@ class Application {
                 This.ambience.onGameStart();
             };
             const onQuit = function(t) {
-                if (This.game.updatePass) {
-                    This.pass.scheduleUpdatePass(
-                        This.game.updatePassDelay
-                    );
-                }
                 This.game.free();
                 This.errorMessage = This.localization.translate(t || "");
                 This.teamMenu.onGameComplete();
@@ -856,9 +824,6 @@ class Application {
         }
         if (!this.active && this.loadoutMenu.active) {
             this.loadoutMenu.hide();
-        }
-        if (this.active) {
-            this.pass?.update(e);
         }
         this.input.flush();
     }
