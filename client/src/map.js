@@ -404,6 +404,10 @@ export class Map {
         };
     }
 
+    /**
+     * @param {PIXI.Renderer} renderer
+     * @param {boolean} canvasMode
+     */
     renderMap(renderer, canvasMode) {
         if (this.mapLoaded) {
             const mapRender = new PIXI.Container();
@@ -539,16 +543,22 @@ export class Map {
             if (this.mapTexture) {
                 this.mapTexture.resize(screenScale, screenScale);
             } else {
-                this.mapTexture = PIXI.RenderTexture.create(
-                    screenScale,
-                    screenScale,
-                    PIXI.SCALE_MODES.LINEAR,
-                    1
-                );
+                this.mapTexture = PIXI.RenderTexture.create({
+                    width: screenScale,
+                    height: screenScale,
+                    scaleMode: PIXI.SCALE_MODES.LINEAR,
+                    resolution: 1
+                });
             }
             mapRender.scale = new PIXI.Point(screenScale / this.height, screenScale / this.height);
-            renderer.render(mapRender, this.mapTexture, true);
-            renderer.render(txtRender, this.mapTexture, false);
+            renderer.render(mapRender, {
+                renderTexture: this.mapTexture,
+                clear: true
+            });
+            renderer.render(txtRender, {
+                renderTexture: this.mapTexture,
+                clear: false
+            });
             mapRender.destroy({
                 children: true,
                 texture: true,
