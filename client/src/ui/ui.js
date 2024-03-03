@@ -236,8 +236,6 @@ export class UiManager {
             e.stopPropagation();
         });
         $("#btn-game-quit").on("click", () => {
-            d.game.updatePass = true;
-            d.game.updatePassDelay = 1;
             d.quitGame();
         });
         this.specStatsButton = $("#btn-spectate-view-stats");

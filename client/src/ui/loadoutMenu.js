@@ -176,7 +176,6 @@ class LoadoutMenu {
         account.addEventListener("request", this.onRequest.bind(this));
         account.addEventListener("loadout", this.onLoadout.bind(this));
         account.addEventListener("items", this.onItems.bind(this));
-        account.addEventListener("pass", this.onPass.bind(this));
     }
 
     init() {
@@ -408,31 +407,6 @@ class LoadoutMenu {
             ) {
                 this.account.unlock("unlock_new_account");
             }
-        }
-    }
-
-    onPass(e) {
-        const a = this;
-        const i = [
-            "facebook",
-            "instagram",
-            "youtube",
-            "twitter"
-        ];
-        for (let o = 0; o < i.length; o++) {
-            (function(t) {
-                const r = i[t];
-                const o = !!e.unlocks[r];
-                const s = $(
-                    `.customize-social-unlock[data-lock-reason='${r}']`
-                );
-                s.css({
-                    display: o ? "none" : "inline-block"
-                });
-                s.off("click").on("click", () => {
-                    a.account.setPassUnlock(r);
-                });
-            })(o);
         }
     }
 
