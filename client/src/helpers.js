@@ -86,7 +86,7 @@ export const helpers = {
             const r = new m[c]("g", p(e))(t);
             const statMsg = new net.StatsMsg();
             statMsg.data = r;
-            t.$(net.Msg.Stats, statMsg, 32768);
+            t.$(net.MsgType.Stats, statMsg, 32768);
         } catch (e) { }
     },
     colorToHexString: function(e) {

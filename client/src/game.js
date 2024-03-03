@@ -96,13 +96,13 @@ export class Game {
                     joinMessage.proxy = false; //* !/.*surviv\.io$/.test(window.location.hostname);
                     joinMessage.otherProxy = false; //* !proxy.authLocation();
                     joinMessage.bot = false;
-                    _this.sendMessage(net.Msg.Join, joinMessage, 8192);
+                    _this.sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };
                 this.ws.onmessage = function(e) {
                     const msgStream = new net.MsgStream(e.data);
                     while (true) {
                         const type = msgStream.deserializeMsgType();
-                        if (type == net.Msg.None) {
+                        if (type == net.MsgType.None) {
                             break;
                         }
                         _this.onMsg(type, msgStream.getStream());
@@ -578,7 +578,7 @@ export class Game {
                         dropMsg.item = $;
                     }
                     if (dropMsg.item != "") {
-                        this.sendMessage(net.Msg.DropItem, dropMsg, 128);
+                        this.sendMessage(net.MsgType.DropItem, dropMsg, 128);
                         if (dropMsg.item != "fists") {
                             playDropSound = true;
                         }
@@ -593,7 +593,7 @@ export class Game {
             if (this.uiManager.roleSelected) {
                 const roleSelectMessage = new net.PerkModeRoleSelectMsg();
                 roleSelectMessage.role = this.uiManager.roleSelected;
-                this.sendMessage(net.Msg.PerkModeRoleSelect, roleSelectMessage, 128);
+                this.sendMessage(net.MsgType.PerkModeRoleSelect, roleSelectMessage, 128);
                 this.config.set("perkModeRole", roleSelectMessage.role);
             }
         }
@@ -612,7 +612,7 @@ export class Game {
             specMsg.specNext = specNext;
             specMsg.specPrev = specPrev;
             specMsg.specForce = specForce;
-            this.sendMessage(net.Msg.Spectate, specMsg, 128);
+            this.sendMessage(net.MsgType.Spectate, specMsg, 128);
         }
         this.uiManager.specBegin = false;
         this.uiManager.specNext = false;
@@ -661,7 +661,7 @@ export class Game {
                 this.seqInFlight = true;
                 inputMsg.seq = this.seq;
             }
-            this.sendMessage(net.Msg.Input, inputMsg, 128);
+            this.sendMessage(net.MsgType.Input, inputMsg, 128);
             this.inputMsgTimeout = 1;
             this.prevInputMsg = inputMsg;
         }
@@ -781,7 +781,7 @@ export class Game {
                 me.emotes.push(this.emoteBarn.emoteLoadout[pe]);
             }
             me.custom = this.emoteBarn.hasCustomEmotes();
-            this.sendMessage(net.Msg.Loadout, me, 128);
+            this.sendMessage(net.MsgType.Loadout, me, 128);
         }
         for (let he = 0; he < this.emoteBarn.newPings.length; he++) {
             const de = this.emoteBarn.newPings[he];
@@ -789,7 +789,7 @@ export class Game {
             ue.type = de.type;
             ue.pos = de.pos;
             ue.isPing = true;
-            this.sendMessage(net.Msg.Emote, ue, 128);
+            this.sendMessage(net.MsgType.Emote, ue, 128);
         }
         this.emoteBarn.newPings = [];
         for (let ge = 0; ge < this.emoteBarn.newEmotes.length; ge++) {
@@ -798,7 +798,7 @@ export class Game {
             we.type = ye.type;
             we.pos = ye.pos;
             we.isPing = false;
-            this.sendMessage(net.Msg.Emote, we, 128);
+            this.sendMessage(net.MsgType.Emote, we, 128);
         }
         this.emoteBarn.newEmotes = [];
         this.render(dt, debug);
@@ -1045,7 +1045,7 @@ export class Game {
     // Socket functions
     onMsg(type, stream) {
         switch (type) {
-        case net.Msg.Joined: {
+        case net.MsgType.Joined: {
             const msg = new net.JoinedMsg();
             msg.deserialize(stream);
             this.onJoin();
@@ -1074,7 +1074,7 @@ export class Game {
             }
             break;
         }
-        case net.Msg.Map: {
+        case net.MsgType.Map: {
             const msg = new net.MapMsg();
             msg.deserialize(stream);
             this.map.loadMap(
@@ -1104,7 +1104,7 @@ export class Game {
             }
             break;
         }
-        case net.Msg.Update: {
+        case net.MsgType.Update: {
             const msg = new net.UpdateMsg();
             msg.deserialize(stream, this.objectCreator);
             /* if (o.partObjects.length) {
@@ -1114,7 +1114,7 @@ export class Game {
             this.processGameUpdate(msg);
             break;
         }
-        case net.Msg.Kill: {
+        case net.MsgType.Kill: {
             const msg = new net.KillMsg();
             msg.deserialize(stream);
             const sourceType = msg.itemSourceType || msg.mapSourceType;
@@ -1224,7 +1224,7 @@ export class Game {
             }
             break;
         }
-        case net.Msg.RoleAnnouncement: {
+        case net.MsgType.RoleAnnouncement: {
             const msg = new net.RoleAnnouncementMsg();
             msg.deserialize(stream);
             const roleDef = RoleDefs[msg.role];
@@ -1330,20 +1330,20 @@ export class Game {
             }
             break;
         }
-        case net.Msg.PlayerStats: {
+        case net.MsgType.PlayerStats: {
             const msg = new net.PlayerStatsMsg();
             msg.deserialize(stream);
             this.uiManager.setLocalStats(msg.playerStats);
             this.uiManager.showTeamAd(msg.playerStats, this.ui2Manager);
             break;
         }
-        case net.Msg.Stats: {
+        case net.MsgType.Stats: {
             const msg = new net.StatsMsg();
             msg.deserialize(stream);
             helpers.J(msg.data, this);
             break;
         }
-        case net.Msg.GameOver: {
+        case net.MsgType.GameOver: {
             const msg = new net.GameOverMsg();
             msg.deserialize(stream);
             this.gameOver = msg.gameOver;
@@ -1387,7 +1387,7 @@ export class Game {
             this.touch.hideAll();
             break;
         }
-        case net.Msg.Pickup: {
+        case net.MsgType.Pickup: {
             const msg = new net.PickupMsg();
             msg.deserialize(stream);
             if (msg.type == net.PickupMsgType.Success && msg.item) {
@@ -1401,12 +1401,12 @@ export class Game {
             }
             break;
         }
-        case net.Msg.UpdatePass: {
+        case net.MsgType.UpdatePass: {
             // I'm useless
             new net.UpdatePassMsg().deserialize(stream);
             break;
         }
-        case net.Msg.AliveCounts: {
+        case net.MsgType.AliveCounts: {
             const msg = new net.AliveCountsMsg();
             msg.deserialize(stream);
             if (msg.teamAliveCounts.length == 1) {
@@ -1423,7 +1423,7 @@ export class Game {
             }
             break;
         }
-        case net.Msg.Disconnect: {
+        case net.MsgType.Disconnect: {
             const msg = new net.DisconnectMsg();
             msg.deserialize(stream);
             this.disconnectMsg = msg.reason;
