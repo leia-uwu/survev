@@ -60,6 +60,7 @@ export const ExplosionDefs = {
         decalType: "decal_frag_small_explosion"
     },
     explosion_rounds: {
+        type: "explosion",
         damage: 3,
         obstacleDamage: 15,
         rad: { min: 0.75, max: 1 },
@@ -69,6 +70,7 @@ export const ExplosionDefs = {
         decalType: "decal_rounds_explosion"
     },
     explosion_rounds_sg: {
+        type: "explosion",
         damage: 3,
         obstacleDamage: 15,
         rad: { min: 0.75, max: 1 },

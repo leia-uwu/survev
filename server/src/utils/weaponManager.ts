@@ -39,7 +39,7 @@ export class WeaponManager {
                 ammo: 0
             });
         }
-        this.weapons[0].type = "vector";
+        this.weapons[0].type = "usas";
         this.weapons[1].type = "mp220";
         this.weapons[0].ammo = 1;
         this.weapons[1].ammo = 1;
@@ -137,7 +137,7 @@ export class WeaponManager {
             }
         }
 
-        const hasExplosive = this.player.hasPerk("explosion_rounds");
+        const hasExplosive = this.player.hasPerk("explosive");
         const hasSplinter = this.player.hasPerk("splinter");
 
         // Movement spread

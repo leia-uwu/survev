@@ -12,6 +12,7 @@ import { Loot } from "./objects/loot";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import net, { type BitStream } from "../../shared/net";
+import { type Explosion } from "./objects/explosion";
 
 export interface Msg {
     serialize: (s: BitStream) => void
@@ -45,7 +46,7 @@ export class Game {
 
     newPlayers: Player[] = [];
 
-    explosions = [];
+    explosions: Explosion[] = [];
 
     id: number;
 
@@ -97,6 +98,10 @@ export class Game {
 
         for (const loot of this.grid.categories[ObjectType.Loot]) {
             loot.update();
+        }
+
+        for (const explosion of this.explosions) {
+            explosion.explode(this);
         }
 
         for (const player of this.players) {

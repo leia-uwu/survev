@@ -236,7 +236,7 @@ export class Player extends BaseGameObject {
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
         // this.addPerk("splinter");
-        // this.addPerk("")
+        // this.addPerk("explosive")
     }
 
     visibleObjects = new Set<GameObject>();

@@ -12,6 +12,7 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { ObjectType, type GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
+import { Explosion } from "./explosion";
 
 // NOTE: most of this code was copied from surviv client and bit heroes arena client
 // to get bullet collision the most accurate possible
@@ -79,6 +80,18 @@ export class BulletManager {
 
             if (!bullet.alive || bullet.skipCollision || (bullet.player?.dead ?? false)) {
                 this.bullets.splice(i, 1);
+
+                if (bullet.onHitFx) {
+                    const explosion = new Explosion(bullet.onHitFx,
+                        bullet.pos,
+                        bullet.layer,
+                        bullet.sourceType,
+                        bullet.damageType,
+                        bullet.player
+                    );
+                    this.game.explosions.push(explosion);
+                }
+
                 continue;
             }
 

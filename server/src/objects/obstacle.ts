@@ -9,10 +9,11 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Building } from "./building";
-import { BaseGameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
 import { getLootTable } from "./loot";
 import { type Player } from "./player";
 import net from "../../../shared/net";
+import { Explosion } from "./explosion";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
@@ -217,7 +218,7 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
-    damage(amount: number, sourceType: string, _damageType: number): void {
+    damage(amount: number, sourceType: string, damageType: number, source?: GameObject): void {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
@@ -232,34 +233,7 @@ export class Obstacle extends BaseGameObject {
         this.health -= amount;
 
         if (this.health <= 0) {
-            this.health = this.healthT = 0;
-            this.dead = true;
-            this.setDirty();
-
-            if (def.destroyType) {
-                this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
-            }
-
-            const lootPos = v2.copy(this.pos);
-            if (def.lootSpawn) {
-                v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
-            }
-
-            for (const lootTierOrItem of def.loot) {
-                if ("tier" in lootTierOrItem) {
-                    const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
-
-                    for (let i = 0; i < count; i++) {
-                        const items = getLootTable(this.game.config.map, lootTierOrItem.tier);
-
-                        for (const item of items) {
-                            this.game.addLoot(item.name, lootPos, this.layer, item.count);
-                        }
-                    }
-                } else {
-                    this.game.addLoot(lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
-                }
-            }
+            this.kill(sourceType, damageType, source);
         } else {
             this.healthT = this.health / this.maxHealth;
             if (this.minScale < 1) {
@@ -272,6 +246,49 @@ export class Obstacle extends BaseGameObject {
             // since they depend on healthT
             if (def.explosion) this.setDirty();
             else this.setPartDirty();
+        }
+    }
+
+    kill(sourceType: string, damageType: number, source?: GameObject) {
+        const def = MapObjectDefs[this.type] as ObstacleDef;
+        this.health = this.healthT = 0;
+        this.dead = true;
+        this.setDirty();
+
+        if (def.destroyType) {
+            this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
+        }
+
+        const lootPos = v2.copy(this.pos);
+        if (def.lootSpawn) {
+            v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
+        }
+
+        for (const lootTierOrItem of def.loot) {
+            if ("tier" in lootTierOrItem) {
+                const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
+
+                for (let i = 0; i < count; i++) {
+                    const items = getLootTable(this.game.config.map, lootTierOrItem.tier);
+
+                    for (const item of items) {
+                        this.game.addLoot(item.name, lootPos, this.layer, item.count);
+                    }
+                }
+            } else {
+                this.game.addLoot(lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
+            }
+        }
+
+        if (def.explosion) {
+            const explosion = new Explosion(def.explosion,
+                this.pos,
+                this.layer,
+                sourceType,
+                damageType,
+                source
+            );
+            this.game.explosions.push(explosion);
         }
     }
 
