@@ -833,7 +833,7 @@ export class Game {
         const grassColor = this.map.mapLoaded
             ? this.map.getMapDef().biome.colors.grass
             : 8433481;
-        this.pixi.renderer.backgroundColor = grassColor;
+        this.pixi.renderer.background.color = grassColor;
         // Module rendering
         this.playerBarn.render(this.camera, debug);
         this.bulletBarn.render(this.camera, debug);

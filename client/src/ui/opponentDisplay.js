@@ -372,7 +372,7 @@ class LoadoutDisplay {
         const r = this.Et.mapLoaded
             ? this.Et.getMapDef().biome.colors.grass
             : 8433481;
-        this.pixi.renderer.backgroundColor = r;
+        this.pixi.renderer.background.color = r;
         this.Rt.render(this.De, t);
         this.Et.render(this.De);
         debugLines.flush();
