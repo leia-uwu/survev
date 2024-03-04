@@ -375,7 +375,7 @@ export class Account {
     }
 
     getPass(tryRefreshQuests) {
-        /*const _this = this;
+        /* const _this = this;
         this.ajaxRequest(
             "/api/user/get_pass",
             {
@@ -403,7 +403,7 @@ export class Account {
                     }
                 }
             }
-        );*/
+        ); */
     }
 
     setPassUnlock(unlockType) {

@@ -43,6 +43,7 @@ export class Game {
         // Callbacks
         this.onJoin = onJoin;
         this.onQuit = onQuit;
+        /** @type {PIXI.Application} */
         this.pixi = pixi;
         this.audioManager = audioManager;
         this.ambience = l;

@@ -16,7 +16,7 @@ import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type Hel
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
-import { Msg } from "../../../shared/netTypings";
+import { type Msg } from "../../../shared/netTypings";
 
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
