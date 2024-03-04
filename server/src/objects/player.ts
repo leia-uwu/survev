@@ -62,7 +62,18 @@ export class Player extends BaseGameObject {
         this.dirty.health = true;
     }
 
-    boost = 0;
+    private _boost: number = 0;
+
+    get boost(): number {
+        return this._boost;
+    }
+
+    set boost(boost: number) {
+        if (this._boost === boost) return;
+        this._boost = boost;
+        this._boost = math.clamp(this._boost, 0, 100);
+        this.dirty.boost = true;
+    }
 
     zoomDirty = true;
     zoom: number;
@@ -233,6 +244,7 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+        this.inventory["12gauge"] = 15;
 
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
@@ -267,6 +279,14 @@ export class Player extends BaseGameObject {
                 movement.y *= Math.SQRT1_2;
             }
         }
+
+        if (this.boost > 0){
+            this.boost -= 0.01136;
+        }
+        if (this.boost > 0 && this.boost <= 25) this.health += 0.0050303;
+        else if (this.boost > 25 && this.boost <= 50) this.health += 0.012624;
+        else if (this.boost > 50 && this.boost <= 87.5) this.health += 0.01515;
+        else if (this.boost > 87.5 && this.boost <= 100) this.health += 0.01766;
 
         let speed = this.game.config.movementSpeed;
 
@@ -445,9 +465,9 @@ export class Player extends BaseGameObject {
         for (const msg of this.msgsToSend) {
             msgStream.serializeMsg(msg.type, msg.msg);
         }
-
+        
         this.msgsToSend.length = 0;
-
+        
         for (const msg of this.game.msgsToSend) {
             msgStream.serializeMsg(msg.type, msg.msg);
         }
@@ -619,6 +639,10 @@ export class Player extends BaseGameObject {
 
     cancelAction(_?: boolean): void {
 
+    }
+
+    recalculateSpeed(): void {
+        // let speed = this.game.config.movementSpeed;
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
