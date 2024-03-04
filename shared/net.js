@@ -259,7 +259,7 @@ class MsgStream {
 
     /**
      * @param {MsgType} type
-     * @param {import("../server/src/game").Msg} msg
+     * @param {import("./netTypings").Msg msg
     **/
     serializeMsg(type, msg) {
         // assert(this.stream.index % 8 == 0);

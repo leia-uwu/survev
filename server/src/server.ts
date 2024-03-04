@@ -110,12 +110,7 @@ export function newGame(id?: number): number {
 export function endGame(id: number, createNewGame: boolean): void {
     const game = games[id];
     if (game === undefined) return;
-    game.allowJoin = false;
-    game.stopped = true;
-    for (const player of game.connectedPlayers) {
-        player.socket.close();
-    }
-    game.logger.log(`Game ${id} | Ended`);
+    game.end();
     if (createNewGame) {
         games[id] = new Game(id, Config);
     } else {
@@ -156,11 +151,7 @@ app.get("/api/site_info", (res) => {
     }
 });
 
-app.post("/api/user/profile", (res, req) => {
-    res.writeHeader("Content-Type", "application/json");
-    res.end("{err: \"\"}");
-});
-app.post("/api/user/get_pass", (res, req) => {
+app.post("/api/user/profile", (res, _req) => {
     res.writeHeader("Content-Type", "application/json");
     res.end("{err: \"\"}");
 });

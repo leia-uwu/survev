@@ -13,7 +13,7 @@ import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
-import { Msg } from "../../shared/netTypings";
+import { type Msg } from "../../shared/netTypings";
 
 export class Game {
     stopped = false;
@@ -230,5 +230,15 @@ export class Game {
 
     removePlayer(player: Player): void {
         this.connectedPlayers.delete(player);
+    }
+
+    end(): void {
+        this.stopped = true;
+        this.allowJoin = false;
+        clearInterval(this.tickInterval);
+        for (const player of this.players) {
+            player.socket.close();
+        }
+        this.logger.log("Game Ended");
     }
 }
