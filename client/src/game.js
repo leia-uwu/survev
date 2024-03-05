@@ -28,7 +28,7 @@ import { PlaneBarn } from "./objects/plane";
 import { PlayerBarn } from "./objects/player";
 import { ShotBarn } from "./objects/shot";
 import { ProjectileBarn } from "./objects/projectile";
-import { SmokeBarn } from "./objects/Smoke";
+import { SmokeBarn } from "./objects/smoke";
 import { Renderer } from "./renderer";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
@@ -686,7 +686,7 @@ export class Game {
             smokeParticles,
             debug
         );
-        this.lootBarn.m(dt, this.m_activePlayer, this.map, this.audioManager, this.camera, debug);
+        this.lootBarn.update(dt, this.m_activePlayer, this.map, this.audioManager, this.camera, debug);
         this.bulletBarn.m(
             dt,
             this.playerBarn,

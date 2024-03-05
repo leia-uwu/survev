@@ -592,7 +592,7 @@ export class UiManager2 {
                 R = q;
                 L = true;
             }
-            const W = lootBarn.Er();
+            const W = lootBarn.getClosestLoot();
             if (W && !activePlayer.netData.ue) {
                 const G = GameObjectDefs[W.type];
                 const X = activePlayer.Wr(GameConfig.WeaponSlot.Primary);
