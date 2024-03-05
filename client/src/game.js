@@ -9,7 +9,7 @@ import { device } from "./device";
 import { helpers } from "./helpers";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { AirdropBarn } from "./objects/aidrop";
+import { AirdropBarn } from "./objects/airdrop";
 import { BulletBarn, createBullet } from "./objects/bullet";
 import { Camera } from "./camera";
 import { DeadBodyBarn } from "./objects/deadBody";
