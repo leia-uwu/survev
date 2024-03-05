@@ -47,7 +47,7 @@ export class Obstacle {
         this.pos = v2.copy(data.pos);
         this.rot = math.oriToRad(data.ori);
         this.scale = data.scale;
-        
+
         this.imgScale = def.img.scale;
         this.imgMirrorY = def.img.mirrorY;
         this.imgMirrorX = def.img.mirrorX;
@@ -328,7 +328,7 @@ export class Obstacle {
             const aabb = collider.toAabb(this.collider);
             const extent = v2.mul(v2.sub(aabb.max, aabb.min), 0.5);
             const center = v2.add(aabb.min, extent);
-            let numParticles = Math.floor(util.random(5, 11));
+            const numParticles = Math.floor(util.random(5, 11));
             for (
                 let i = 0;
                 i < numParticles;
@@ -378,7 +378,6 @@ export class Obstacle {
                 layer |= 2;
             }
 
-
             if (!this.dead && this.isSkin) {
                 const skinPlayer = playerBarn.u(this.skinPlayerId);
                 if (skinPlayer) {
@@ -392,7 +391,7 @@ export class Obstacle {
             }
 
             renderer.addPIXIObj(this.sprite, layer, zOrd, zIdx);
-            
+
             if (this.isDoor && this.door.casingSprite) {
                 renderer.addPIXIObj(this.door.casingSprite, layer, zOrd + 1, zIdx);
             }

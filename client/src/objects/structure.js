@@ -39,7 +39,7 @@ export class Structure {
             for (let p = 0; p < def.layers.length; p++) {
                 const layer = def.layers[p];
                 const objId = data.layerObjIds[p];
-                
+
                 const inheritOri =
                     layer.inheritOri === undefined || layer.inheritOri;
                 const underground =
@@ -55,9 +55,9 @@ export class Structure {
                     1
                 );
                 this.layers.push({
-                    objId: objId,
-                    collision: collision,
-                    underground: underground
+                    objId,
+                    collision,
+                    underground
                 });
             }
             this.stairs = [];
@@ -78,7 +78,7 @@ export class Structure {
                         stairsCol.min,
                         v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)
                     ),
-                    downDir: downDir,
+                    downDir,
                     downAabb: collider.createAabb(childAabbs[0].min, childAabbs[0].max),
                     upAabb: collider.createAabb(childAabbs[1].min, childAabbs[1].max),
                     noCeilingReveal: !!stairsDef.noCeilingReveal,

@@ -49,14 +49,14 @@ export class AirdropBarn {
     }
 
     free() {
-        let airdrops = this.re.p();
+        const airdrops = this.re.p();
         for (let i = 0; i < airdrops.length; i++) {
             airdrops[i].n();
         }
     }
 
     m(dt, activePlayer, camera, map, particleBarn, renderer, audioManager) {
-        let airdrops = this.re.p();
+        const airdrops = this.re.p();
         for (let i = 0; i < airdrops.length; i++) {
             const airdrop = airdrops[i];
             if (airdrop.active) {
@@ -66,7 +66,7 @@ export class AirdropBarn {
                     0,
                     1
                 );
-                let layer
+                let layer;
                 // Make some crate particles? = 0;
                 if (
                     (!!util.sameLayer(layer, activePlayer.layer) ||
@@ -117,19 +117,19 @@ export class AirdropBarn {
                     audioManager.playSound(crashSound, {
                         channel: "sfx",
                         soundPos: airdrop.pos,
-                        layer: layer,
+                        layer,
                         filter: "muffled"
                     });
                     audioManager.stopSound(airdrop.fallInstance);
                     airdrop.fallInstance = null;
                 }
 
-                 // Play airdrop chute and falling sounds once
+                // Play airdrop chute and falling sounds once
                 if (!airdrop.chuteDeployed && fallT <= 0.1) {
                     audioManager.playSound("airdrop_chute_01", {
                         channel: "sfx",
                         soundPos: airdrop.pos,
-                        layer: layer,
+                        layer,
                         rangeMult: 1.75
                     });
                     airdrop.chuteDeployed = true;
@@ -140,7 +140,7 @@ export class AirdropBarn {
                         {
                             channel: "sfx",
                             soundPos: airdrop.pos,
-                            layer: layer,
+                            layer,
                             rangeMult: 1.75,
                             ignoreMinAllowable: true,
                             offset: airdrop.fallTicker
@@ -151,7 +151,7 @@ export class AirdropBarn {
                 if (airdrop.fallInstance && airdrop.soundUpdateThrottle < 0) {
                     airdrop.soundUpdateThrottle = 0.1;
                     audioManager.updateSound(airdrop.fallInstance, "sfx", airdrop.pos, {
-                        layer: layer,
+                        layer,
                         rangeMult: 1.75,
                         ignoreMinAllowable: true
                     });

@@ -38,14 +38,14 @@ class LoadoutDisplay {
         this.decalBarn = new DecalBarn();
         this.Et = new Map(this.decalBarn);
         this.Rt = new PlayerBarn();
-        this.Kt = new SmokeBarn();
+        this.smokeBarn = new SmokeBarn();
         const r = {
             [gameObject.Type.Player]: this.Rt.$e,
             [gameObject.Type.Obstacle]: this.Et.Ve,
             [gameObject.Type.Building]: this.Et.nr,
             [gameObject.Type.Structure]: this.Et.lr,
             [gameObject.Type.Decal]: this.decalBarn._,
-            [gameObject.Type.Smoke]: this.Kt.e
+            [gameObject.Type.Smoke]: this.smokeBarn.e
         };
         this.mr = new Creator();
         for (const i in r) {
@@ -189,8 +189,8 @@ class LoadoutDisplay {
             renderer: this.Ct,
             particleBarn: this.Ot,
             map: this.Et,
-            smokeBarn: this.Kt,
-            decalBarn: this.Dt
+            smokeBarn: this.smokeBarn,
+            decalBarn: this.decalBarn
         };
         if (this.dr?.useItemEmitter) {
             this.dr.useItemEmitter.stop();
@@ -360,7 +360,7 @@ class LoadoutDisplay {
             false,
             false
         );
-        this.Kt.m(e, this.De, this.dr, this.Et, this.Ct);
+        this.smokeBarn.m(e, this.De, this.dr, this.Et, this.Ct);
         this.Ot.m(e, this.De, r);
         this.decalBarn.update(e, this.De, this.Ct, r);
         this.Ct.m(e, this.De, this.Et, r);
