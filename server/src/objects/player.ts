@@ -62,7 +62,7 @@ export class Player extends BaseGameObject {
         this.dirty.health = true;
     }
 
-    private _boost: number = 0;
+    private _boost: number = 100;
 
     get boost(): number {
         return this._boost;
@@ -74,6 +74,8 @@ export class Player extends BaseGameObject {
         this._boost = math.clamp(this._boost, 0, 100);
         this.dirty.boost = true;
     }
+
+    speed: number = this.game.config.movementSpeed;
 
     zoomDirty = true;
     zoom: number;
@@ -281,25 +283,16 @@ export class Player extends BaseGameObject {
         }
 
         if (this.boost > 0){
-            this.boost -= 0.01136;
+            this.boost -= 0.375/this.game.realDt;
         }
-        if (this.boost > 0 && this.boost <= 25) this.health += 0.0050303;
-        else if (this.boost > 25 && this.boost <= 50) this.health += 0.012624;
-        else if (this.boost > 50 && this.boost <= 87.5) this.health += 0.01515;
-        else if (this.boost > 87.5 && this.boost <= 100) this.health += 0.01766;
+        if (this.boost > 0 && this.boost <= 25) this.health += 1/this.game.realDt;
+        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75/this.game.realDt;
+        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75/this.game.realDt;
+        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5/this.game.realDt;
 
-        let speed = this.game.config.movementSpeed;
+        this.recalculateSpeed();
 
-        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-
-        if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
-            speed += weaponDef.speed.equip;
-        }
-
-        const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
-        if (isOnWater) speed -= 3;
-
-        this.pos = v2.add(this.pos, v2.mul(movement, speed * this.game.dt));
+        this.pos = v2.add(this.pos, v2.mul(movement, this.speed * this.game.dt));
 
         let collided = true;
         let step = 0;
@@ -642,7 +635,22 @@ export class Player extends BaseGameObject {
     }
 
     recalculateSpeed(): void {
-        // let speed = this.game.config.movementSpeed;
+        this.speed = this.game.config.movementSpeed;
+
+        //if melee is selected increase speed
+        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+        if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
+            this.speed += weaponDef.speed.equip;
+        }
+        
+        //if player is on water decrease speed
+        const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        if (isOnWater) this.speed -= 3;
+
+        //increase speed when adrenaline is above 50%
+        if (this.boost >= 50){
+            this.speed *= 1.15;
+        }
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
