@@ -141,7 +141,7 @@ class Gun {
     }
 }
 
-class Player {
+export class Player {
     constructor() {
         this.bodySprite = createSprite();
         this.chestSprite = createSprite();

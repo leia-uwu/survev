@@ -110,61 +110,67 @@ class Loot {
 export class LootBarn {
     constructor() {
         this.sr = new Pool(Loot);
-        this.Dr = null;
+        this.closestLoot = null;
     }
 
-    m(e, t, r, a, i, o) {
-        this.Dr = null;
-        for (
-            let p = Number.MAX_VALUE, d = this.sr.p(), u = 0;
-            u < d.length;
-            u++
-        ) {
-            const g = d[u];
-            if (g.active) {
+    /**
+     * @param {number} dt
+     * @param {import("./player").Player} activePlayer
+     * @param {import("../map").Map} map
+     * @param {import("../audioManager").AudioManager} audioManager
+     * @param {import("../camera").Camera} camera
+     */
+    update(dt, activePlayer, map, audioManager, camera, debug) {
+        this.closestLoot = null;
+        let closestDist = Number.MAX_VALUE;
+        const loots = this.sr.p();
+        for (let i = 0; i < loots.length; i++) {
+            /** @type {Loot} */
+            const loot = loots[i];
+            if (loot.active) {
                 if (
-                    util.sameLayer(g.layer, t.layer) &&
-                    !t.netData.he &&
-                    (g.ownerId == 0 || g.ownerId == t.__id)
+                    util.sameLayer(loot.layer, activePlayer.layer) &&
+                    !activePlayer.netData.he &&
+                    (loot.ownerId == 0 || loot.ownerId == activePlayer.__id)
                 ) {
-                    const y = g.pos;
-                    const w = device.touch
-                        ? t.rad + g.rad * GameConfig.player.touchLootRadMult
-                        : g.rad;
-                    const f = v2.sub(t.pos, y);
-                    const _ = v2.lengthSqr(f);
-                    if (_ < w * w && _ < p) {
-                        p = _;
-                        this.Dr = g;
+                    const pos = loot.pos;
+                    const rad = device.touch
+                        ? activePlayer.rad + loot.rad * GameConfig.player.touchLootRadMult
+                        : loot.rad;
+                    const toPlayer = v2.sub(activePlayer.pos, pos);
+                    const distSq = v2.lengthSqr(toPlayer);
+                    if (distSq < rad * rad && distSq < closestDist) {
+                        closestDist = distSq;
+                        this.closestLoot = loot;
                     }
                 }
-                g.ticker += e;
-                if (g.playDropSfx) {
-                    r.lootDropSfxIds.push(g.__id);
-                    g.playDropSfx = false;
-                    const b = GameObjectDefs[g.type];
-                    a.playSound(b.sound.drop, {
+                loot.ticker += dt;
+                if (loot.playDropSfx) {
+                    map.lootDropSfxIds.push(loot.__id);
+                    loot.playDropSfx = false;
+                    const b = GameObjectDefs[loot.type];
+                    audioManager.playSound(b.sound.drop, {
                         channel: "sfx",
-                        soundPos: g.pos,
-                        layer: g.layer,
+                        soundPos: loot.pos,
+                        layer: loot.layer,
                         filter: "muffled"
                     });
                 }
-                if (g.emitter) {
-                    g.emitter.pos = v2.add(g.pos, v2.create(0, 0.1));
-                    g.emitter.layer = g.layer;
+                if (loot.emitter) {
+                    loot.emitter.pos = v2.add(loot.pos, v2.create(0, 0.1));
+                    loot.emitter.layer = loot.layer;
                 }
-                const x = math.delerp(g.ticker, 0, 1);
+                const x = math.delerp(loot.ticker, 0, 1);
                 const S = math.easeOutElastic(x, 0.75);
-                const v = i.pointToScreen(g.pos);
-                const k = i.pixels(g.imgScale * S);
-                g.container.position.set(v.x, v.y);
-                g.container.scale.set(k, k);
+                const v = camera.pointToScreen(loot.pos);
+                const k = camera.pixels(loot.imgScale * S);
+                loot.container.position.set(v.x, v.y);
+                loot.container.scale.set(k, k);
             }
         }
     }
 
-    Er() {
-        return this.Dr;
+    getClosestLoot() {
+        return this.closestLoot;
     }
 }

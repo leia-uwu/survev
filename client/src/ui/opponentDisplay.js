@@ -14,7 +14,7 @@ import { ParticleBarn } from "../objects/particles";
 import { Renderer } from "../renderer";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { PlayerBarn } from "../objects/player";
-import { SmokeBarn } from "../objects/Smoke";
+import { SmokeBarn } from "../objects/smoke";
 import { Creator } from "../objects/objectPool";
 
 class LoadoutDisplay {
