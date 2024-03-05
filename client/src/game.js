@@ -736,7 +736,7 @@ export class Game {
         );
         this.planeBarn.m(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
         this.smokeBarn.m(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
-        this.shotBarn.m(dt, this.m_activeId, this.playerBarn, this.particleBarn, this.audioManager);
+        this.shotBarn.update(dt, this.m_activeId, this.playerBarn, this.particleBarn, this.audioManager);
         this.particleBarn.m(dt, this.camera, debug);
         this.deadBodyBarn.m(dt, this.playerBarn, this.m_activePlayer, this.map, this.camera, this.renderer);
         this.decalBarn.m(dt, this.camera, this.renderer, debug);

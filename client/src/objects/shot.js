@@ -2,34 +2,34 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { v2 } from "../../../shared/utils/v2";
 
-export function createCasingParticle(e, t, r, a, i, l, c, m) {
-    const p = GameObjectDefs[e];
-    if (p) {
-        let h = v2.rotate(i, t);
-        if (p.particle.shellForward) {
-            h = v2.mul(i, p.particle.shellForward);
+export function createCasingParticle(weapType, casingAngle, casingSpeedMult, pos, dir, layer, zOrd, particleBarn) {
+    const weapDef = GameObjectDefs[weapType];
+    if (weapDef) {
+        let shellDir = v2.rotate(dir, casingAngle);
+        if (weapDef.particle.shellForward) {
+            shellDir = v2.mul(dir, weapDef.particle.shellForward);
         }
-        let d = v2.mul(h, r * 9.5);
-        d = v2.rotate(d, ((Math.random() - 0.5) * Math.PI) / 3);
-        let u = v2.add(
-            a,
-            v2.mul(i, GameConfig.player.radius + p.particle.shellOffset)
+        let vel = v2.mul(shellDir, casingSpeedMult * 9.5);
+        vel = v2.rotate(vel, ((Math.random() - 0.5) * Math.PI) / 3);
+        let shellPos = v2.add(
+            pos,
+            v2.mul(dir, GameConfig.player.radius + weapDef.particle.shellOffset)
         );
-        if (p.particle.shellOffsetY) {
-            u = v2.add(u, v2.mul(h, p.particle.shellOffsetY));
+        if (weapDef.particle.shellOffsetY) {
+            shellPos = v2.add(shellPos, v2.mul(shellDir, weapDef.particle.shellOffsetY));
         }
-        if (p.particle.shellReverse) {
-            d = v2.mul(d, -1);
+        if (weapDef.particle.shellReverse) {
+            vel = v2.mul(vel, -1);
         }
-        m.addParticle(
-            p.ammo,
-            l,
-            u,
-            d,
-            p.particle.shellScale,
-            -Math.atan2(h.y, h.x),
+        particleBarn.addParticle(
+            weapDef.ammo,
+            layer,
+            shellPos,
+            vel,
+            weapDef.particle.shellScale,
+            -Math.atan2(shellDir.y, shellDir.x),
             null,
-            c
+            zOrd
         );
     }
 }
@@ -38,133 +38,150 @@ export class ShotBarn {
         this.shots = [];
     }
 
-    addShot(e) {
-        let t = null;
-        for (let r = 0; r < this.shots.length; r++) {
-            if (!this.shots[r].active) {
-                t = this.shots[r];
+    addShot(bullet) {
+        let shot = null;
+        for (let i = 0; i < this.shots.length; i++) {
+            if (!this.shots[i].active) {
+                shot = this.shots[i];
                 break;
             }
         }
-        if (!t) {
-            t = {};
-            this.shots.push(t);
+        if (!shot) {
+            shot = {};
+            this.shots.push(shot);
         }
-        const a = e.shotSourceType;
-        const i = GameObjectDefs[a];
-        t.active = true;
-        t.pos = v2.copy(e.pos);
-        t.layer = e.layer;
-        t.playerId = e.playerId;
-        t.weaponType = a;
-        t.offhand = e.shotOffhand;
-        t.lastShot = e.lastShot;
-        t.shotAlt = e.shotAlt;
-        t.ticker = 0;
-        t.pullDelay =
-            i.pullDelay !== undefined ? i.pullDelay * 0.45 : 0;
-        t.splinter = e.splinter;
-        t.trailSaturated = e.trailSaturated;
+
+        const weaponType = bullet.shotSourceType;
+        const weaponDef = GameObjectDefs[weaponType];
+
+        shot.active = true;
+        shot.pos = v2.copy(bullet.pos);
+        shot.layer = bullet.layer;
+        shot.playerId = bullet.playerId;
+        shot.weaponType = weaponType;
+        shot.offhand = bullet.shotOffhand;
+        shot.lastShot = bullet.lastShot;
+        shot.shotAlt = bullet.shotAlt;
+        shot.ticker = 0;
+        shot.pullDelay =
+            weaponDef.pullDelay !== undefined ? weaponDef.pullDelay * 0.45 : 0;
+        shot.splinter = bullet.splinter;
+        shot.trailSaturated = bullet.trailSaturated;
     }
 
-    m(e, t, r, i, o) {
-        for (let s = 0; s < this.shots.length; s++) {
-            const l = this.shots[s];
-            if (l.active) {
-                const c = GameObjectDefs[l.weaponType];
-                if (l.ticker == 0) {
-                    const m = r.u(l.playerId);
-                    let p = c.sound.shoot;
-                    if (c.sound.shootTeam) {
-                        const h = r.qe(l.playerId).teamId;
-                        if (c.sound.shootTeam[h]) {
-                            p = c.sound.shootTeam[h];
+    update(dt, activePlayerId, playerBarn, particleBarn, audioManager) {
+        for (let i = 0; i < this.shots.length; i++) {
+            const shot = this.shots[i];
+            if (shot.active) {
+                const weaponDef = GameObjectDefs[shot.weaponType];
+
+                // New shot
+                if (shot.ticker == 0) {
+                    const player = playerBarn.u(shot.playerId);
+
+                    // Play shot sound
+                    let shotSound = weaponDef.sound.shoot;
+                    if (weaponDef.sound.shootTeam) {
+                        const teamId = playerBarn.qe(shot.playerId).teamId;
+                        if (weaponDef.sound.shootTeam[teamId]) {
+                            shotSound = weaponDef.sound.shootTeam[teamId];
                         }
                     }
-                    if (l.lastShot && c.sound.shootLast) {
-                        p = c.sound.shootLast;
+                    if (shot.lastShot && weaponDef.sound.shootLast) {
+                        shotSound = weaponDef.sound.shootLast;
                     }
-                    if (l.shotAlt && c.sound.shootAlt) {
-                        p = c.sound.shootAlt;
+                    if (shot.shotAlt && weaponDef.sound.shootAlt) {
+                        shotSound = weaponDef.sound.shootAlt;
                     }
-                    let d = 0;
-                    if (l.trailSaturated && !c.ignoreDetune) {
-                        d = 300;
-                    } else if (l.splinter) {
-                        d = -300;
+
+                    // Prioritize bonus detune over splinter for main shot
+                    let detune = 0;
+                    if (shot.trailSaturated && !weaponDef.ignoreDetune) {
+                        detune = 300;
+                    } else if (shot.splinter) {
+                        detune = -300;
                     }
-                    o.playSound(p, {
+
+                    audioManager.playSound(shotSound, {
                         channel:
-                            l.playerId == t
+                            shot.playerId == activePlayerId
                                 ? "activePlayer"
                                 : "otherPlayers",
-                        soundPos: l.pos,
-                        layer: m ? m.layer : l.layer,
+                        soundPos: shot.pos,
+                        layer: player ? player.layer : shot.layer,
                         filter: "muffled",
-                        fallOff: c.sound.fallOff
-                            ? c.sound.fallOff
+                        fallOff: weaponDef.sound.fallOff
+                            ? weaponDef.sound.fallOff
                             : 0,
-                        detune: d,
-                        volumeScale: l.splinter ? 0.75 : 1
+                        detune,
+                        volumeScale: shot.splinter ? 0.75 : 1
                     });
-                    if (l.splinter) {
-                        o.playSound(p, {
+
+                    if (shot.splinter) {
+                        audioManager.playSound(shotSound, {
                             channel:
-                                l.playerId == t
+                                shot.playerId == activePlayerId
                                     ? "activePlayer"
                                     : "otherPlayers",
-                            soundPos: l.pos,
-                            layer: m ? m.layer : l.layer,
+                            soundPos: shot.pos,
+                            layer: player ? player.layer : shot.layer,
                             filter: "muffled",
-                            fallOff: c.sound.fallOff
-                                ? c.sound.fallOff
+                            fallOff: weaponDef.sound.fallOff
+                                ? weaponDef.sound.fallOff
                                 : 0,
                             detune: 1200,
                             delay: 30,
                             volumeScale: 0.75
                         });
                     }
-                    if (m) {
+
+                    if (player) {
+                        // If it's our shot, play a cycling or pull sound if needed
                         if (
-                            m.__id == t &&
-                            c.fireMode == "single" &&
-                            c.pullDelay
+                            player.__id == activePlayerId &&
+                            weaponDef.fireMode == "single" &&
+                            weaponDef.pullDelay
                         ) {
-                            const u = m.Re.tt[m.Re.rt].ammo;
-                            const g =
-                                u > 0
-                                    ? c.sound.cycle
-                                    : c.sound.pull;
-                            o.stopSound(m.cycleSoundInstance);
-                            m.cycleSoundInstance = o.playSound(g);
+                            const ammoLeft = player.Re.tt[player.Re.rt].ammo;
+                            const soundName =
+                                ammoLeft > 0
+                                    ? weaponDef.sound.cycle
+                                    : weaponDef.sound.pull;
+                            audioManager.stopSound(player.cycleSoundInstance);
+                            player.cycleSoundInstance = audioManager.playSound(soundName);
                         }
-                        const y = l.offhand || !c.isDual;
-                        const w = !l.offhand || !c.isDual;
-                        m.addRecoil(c.worldImg.recoil, y, w);
-                        m.fireDelay = c.fireDelay;
+
+                        // Hands and gun recoil
+                        const leftHand = shot.offhand || !weaponDef.isDual;
+                        const rightHand = !shot.offhand || !weaponDef.isDual;
+                        player.addRecoil(weaponDef.worldImg.recoil, leftHand, rightHand);
+
+                        // Add fireDelay
+                        player.fireDelay = weaponDef.fireDelay;
                     }
                 }
-                l.ticker += e;
-                if (l.ticker >= l.pullDelay) {
-                    const f = r.u(l.playerId);
+
+                shot.ticker += dt;
+                if (shot.ticker >= shot.pullDelay) {
+                    const player = playerBarn.u(shot.playerId);
                     if (
-                        f &&
-                        !f.netData.he &&
-                        f.netData.me == l.weaponType &&
-                        c.caseTiming == "shoot"
+                        player &&
+                        !player.netData.he &&
+                        player.netData.me == shot.weaponType &&
+                        weaponDef.caseTiming == "shoot"
                     ) {
                         createCasingParticle(
-                            l.weaponType,
+                            shot.weaponType,
                             (Math.PI / 2) * -1,
                             1,
-                            f.netData.ie,
-                            f.netData.oe,
-                            f.renderLayer,
-                            f.renderZOrd + 1,
-                            i
+                            player.netData.ie,
+                            player.netData.oe,
+                            player.renderLayer,
+                            player.renderZOrd + 1,
+                            particleBarn
                         );
                     }
-                    l.active = false;
+                    shot.active = false;
                 }
             }
         }
