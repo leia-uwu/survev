@@ -30,17 +30,17 @@ class AirDrop {
         this.sprite.visible = false;
     }
 
-    c(e, t, r, a) {
-        if (r) {
+    c(data, fullUpdate, isNew, ctx) {
+        if (isNew) {
             this.isNew = true;
-            this.fallTicker = e.fallT * GameConfig.airdrop.fallTime;
-            const i = a.map.getMapDef().biome.airdrop.airdropImg;
-            this.sprite.texture = PIXI.Texture.from(i);
+            this.fallTicker = data.fallT * GameConfig.airdrop.fallTime;
+            const img = ctx.map.getMapDef().biome.airdrop.airdropImg;
+            this.sprite.texture = PIXI.Texture.from(img);
         }
-        if (t) {
-            this.pos = v2.copy(e.pos);
+        if (fullUpdate) {
+            this.pos = v2.copy(data.pos);
         }
-        this.landed = e.landed;
+        this.landed = data.landed;
     }
 }
 export class AirdropBarn {
@@ -49,114 +49,127 @@ export class AirdropBarn {
     }
 
     free() {
-        for (let e = this.re.p(), t = 0; t < e.length; t++) {
-            e[t].n();
+        let airdrops = this.re.p();
+        for (let i = 0; i < airdrops.length; i++) {
+            airdrops[i].n();
         }
     }
 
-    m(e, t, r, a, i, o, p) {
-        for (let h = this.re.p(), d = 0; d < h.length; d++) {
-            const u = h[d];
-            if (u.active) {
-                u.fallTicker += e;
-                const g = math.clamp(
-                    u.fallTicker / GameConfig.airdrop.fallTime,
+    m(dt, activePlayer, camera, map, particleBarn, renderer, audioManager) {
+        let airdrops = this.re.p();
+        for (let i = 0; i < airdrops.length; i++) {
+            const airdrop = airdrops[i];
+            if (airdrop.active) {
+                airdrop.fallTicker += dt;
+                const fallT = math.clamp(
+                    airdrop.fallTicker / GameConfig.airdrop.fallTime,
                     0,
                     1
                 );
-                let y = 0;
+                let layer
+                // Make some crate particles? = 0;
                 if (
-                    (!!util.sameLayer(y, t.layer) ||
-                        !!(t.layer & 2)) &&
-                    (!(t.layer & 2) ||
-                        !a.insideStructureMask(
-                            collider.createCircle(u.pos, 1)
+                    (!!util.sameLayer(layer, activePlayer.layer) ||
+                        !!(activePlayer.layer & 2)) &&
+                    (!(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(
+                            collider.createCircle(airdrop.pos, 1)
                         ))
                 ) {
-                    y |= 2;
+                    layer |= 2;
                 }
                 if (
-                    u.landed &&
-                    !u.playedLandFx &&
-                    ((u.playedLandFx = true), !u.isNew)
+                    airdrop.landed &&
+                    !airdrop.playedLandFx &&
+                    ((airdrop.playedLandFx = true), !airdrop.isNew)
                 ) {
-                    for (let w = 0; w < 10; w++) {
-                        const f = v2.randomUnit();
-                        i.addParticle("airdropSmoke", y, u.pos, f);
+                    // Make some crate particles?
+                    for (let j = 0; j < 10; j++) {
+                        const vel = v2.randomUnit();
+                        particleBarn.addParticle("airdropSmoke", layer, airdrop.pos, vel);
                     }
-                    const _ = a.getGroundSurface(u.pos, y);
-                    if (_.type == "water") {
+
+                    // Water landing effects
+                    const surface = map.getGroundSurface(airdrop.pos, layer);
+                    if (surface.type == "water") {
                         for (let b = 0; b < 12; b++) {
-                            const x = v2.add(
-                                u.pos,
+                            const ripplePos = v2.add(
+                                airdrop.pos,
                                 v2.mul(
                                     v2.randomUnit(),
                                     util.random(4.5, 6)
                                 )
                             );
-                            const S = i.addRippleParticle(
-                                x,
-                                y,
-                                _.data.rippleColor
+                            const part = particleBarn.addRippleParticle(
+                                ripplePos,
+                                layer,
+                                surface.data.rippleColor
                             );
-                            S.setDelay(b * 0.075);
+                            part.setDelay(b * 0.075);
                         }
                     }
-                    const v =
-                        _.type == "water"
+
+                    // Play the crate hitting ground sound
+                    const crashSound =
+                        surface.type == "water"
                             ? "airdrop_crash_02"
                             : "airdrop_crash_01";
-                    p.playSound(v, {
+                    audioManager.playSound(crashSound, {
                         channel: "sfx",
-                        soundPos: u.pos,
-                        layer: y,
+                        soundPos: airdrop.pos,
+                        layer: layer,
                         filter: "muffled"
                     });
-                    p.stopSound(u.fallInstance);
-                    u.fallInstance = null;
+                    audioManager.stopSound(airdrop.fallInstance);
+                    airdrop.fallInstance = null;
                 }
-                if (!u.chuteDeployed && g <= 0.1) {
-                    p.playSound("airdrop_chute_01", {
+
+                 // Play airdrop chute and falling sounds once
+                if (!airdrop.chuteDeployed && fallT <= 0.1) {
+                    audioManager.playSound("airdrop_chute_01", {
                         channel: "sfx",
-                        soundPos: u.pos,
-                        layer: y,
+                        soundPos: airdrop.pos,
+                        layer: layer,
                         rangeMult: 1.75
                     });
-                    u.chuteDeployed = true;
+                    airdrop.chuteDeployed = true;
                 }
-                if (!u.landed && !u.fallInstance) {
-                    u.fallInstance = p.playSound(
+                if (!airdrop.landed && !airdrop.fallInstance) {
+                    airdrop.fallInstance = audioManager.playSound(
                         "airdrop_fall_01",
                         {
                             channel: "sfx",
-                            soundPos: u.pos,
-                            layer: y,
+                            soundPos: airdrop.pos,
+                            layer: layer,
                             rangeMult: 1.75,
                             ignoreMinAllowable: true,
-                            offset: u.fallTicker
+                            offset: airdrop.fallTicker
                         }
                     );
                 }
-                if (u.fallInstance && u.soundUpdateThrottle < 0) {
-                    u.soundUpdateThrottle = 0.1;
-                    p.updateSound(u.fallInstance, "sfx", u.pos, {
-                        layer: y,
+
+                if (airdrop.fallInstance && airdrop.soundUpdateThrottle < 0) {
+                    airdrop.soundUpdateThrottle = 0.1;
+                    audioManager.updateSound(airdrop.fallInstance, "sfx", airdrop.pos, {
+                        layer: layer,
                         rangeMult: 1.75,
                         ignoreMinAllowable: true
                     });
                 } else {
-                    u.soundUpdateThrottle -= e;
+                    airdrop.soundUpdateThrottle -= dt;
                 }
-                u.rad = math.lerp(Math.pow(1 - g, 1.1), 5, 12);
-                o.addPIXIObj(u.sprite, y, 1500, u.__id);
-                const k = r.pointToScreen(u.pos);
-                const z = r.pixels((u.rad * 2) / r.ppu);
-                u.sprite.position.set(k.x, k.y);
-                u.sprite.scale.set(z, z);
-                u.sprite.tint = 16776960;
-                u.sprite.alpha = 1;
-                u.sprite.visible = !u.landed;
-                u.isNew = false;
+
+                airdrop.rad = math.lerp(Math.pow(1 - fallT, 1.1), 5, 12);
+                renderer.addPIXIObj(airdrop.sprite, layer, 1500, airdrop.__id);
+
+                const screenPos = camera.pointToScreen(airdrop.pos);
+                const screenScale = camera.pixels((airdrop.rad * 2) / camera.ppu);
+                airdrop.sprite.position.set(screenPos.x, screenPos.y);
+                airdrop.sprite.scale.set(screenScale, screenScale);
+                airdrop.sprite.tint = 16776960;
+                airdrop.sprite.alpha = 1;
+                airdrop.sprite.visible = !airdrop.landed;
+                airdrop.isNew = false;
             }
         }
     }
