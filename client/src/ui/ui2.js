@@ -488,11 +488,20 @@ export class UiManager2 {
         this.uiEvents = [];
     }
 
-    m(e, t, r, a, i, o, s) {
-        const c = this.newState;
-        c.mobile = device.mobile;
-        c.touch = device.touch;
-        if (c.touch) {
+    /**
+     * @param {number} dt
+     * @param {import("../objects/player").Player} activePlayer
+     * @param {boolean} spectating
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+     * @param {import("../objects/loot").LootBarn} lootBarn
+     * @param {import("../map").Map} map
+     * @param {import("../inputBinds")} inputBinds
+     */
+    update(dt, activePlayer, spectating, playerBarn, lootBarn, map, inputBinds) {
+        const state = this.newState;
+        state.mobile = device.mobile;
+        state.touch = device.touch;
+        if (state.touch) {
             for (let m = 0; m < this.itemActions.length; m++) {
                 const p = this.itemActions[m];
                 if (p.actionQueued && p.action == "drop") {
@@ -507,37 +516,37 @@ export class UiManager2 {
             }
         }
         if (
-            c.rareLootMessage.ticker >=
-            c.rareLootMessage.duration &&
+            state.rareLootMessage.ticker >=
+            state.rareLootMessage.duration &&
             this.rareLootMessageQueue.length > 0
         ) {
             const u = this.rareLootMessageQueue.shift();
-            c.rareLootMessage.lootType = u;
-            c.rareLootMessage.ticker = 0;
-            c.rareLootMessage.duration =
+            state.rareLootMessage.lootType = u;
+            state.rareLootMessage.ticker = 0;
+            state.rareLootMessage.duration =
                 this.rareLootMessageQueue.length > 0 ? 2 : 4;
-            c.rareLootMessage.opacity = 0;
+            state.rareLootMessage.opacity = 0;
         }
-        c.rareLootMessage.ticker += e;
-        const g = c.rareLootMessage.ticker;
-        const f = c.rareLootMessage.duration;
-        c.rareLootMessage.opacity = 1 - math.smoothstep(g, f - 0.2, f);
-        c.pickupMessage.ticker += e;
-        const x = c.pickupMessage.ticker;
-        const z = c.pickupMessage.duration;
-        c.pickupMessage.opacity =
+        state.rareLootMessage.ticker += dt;
+        const g = state.rareLootMessage.ticker;
+        const f = state.rareLootMessage.duration;
+        state.rareLootMessage.opacity = 1 - math.smoothstep(g, f - 0.2, f);
+        state.pickupMessage.ticker += dt;
+        const x = state.pickupMessage.ticker;
+        const z = state.pickupMessage.duration;
+        state.pickupMessage.opacity =
             math.smoothstep(x, 0, 0.2) *
             (1 - math.smoothstep(x, z, z + 0.2)) *
-            (1 - c.rareLootMessage.opacity);
-        c.killMessage.ticker += e;
-        const I = c.killMessage.ticker;
-        const T = c.killMessage.duration;
-        c.killMessage.opacity =
+            (1 - state.rareLootMessage.opacity);
+        state.killMessage.ticker += dt;
+        const I = state.killMessage.ticker;
+        const T = state.killMessage.duration;
+        state.killMessage.opacity =
             (1 - math.smoothstep(I, T - 0.2, T)) *
-            (1 - c.rareLootMessage.opacity);
-        for (let P = 0, C = 0; C < c.killFeed.length; C++) {
-            const O = c.killFeed[C];
-            O.ticker += e;
+            (1 - state.rareLootMessage.opacity);
+        for (let P = 0, C = 0; C < state.killFeed.length; C++) {
+            const O = state.killFeed[C];
+            O.ticker += dt;
             const E = O.ticker;
             O.offset = P;
             O.opacity =
@@ -548,28 +557,28 @@ export class UiManager2 {
                 O.opacity = E < 6.5 ? 1 : 0;
             }
         }
-        c.health = t.netData.he ? 0 : math.max(t.Re.Lr, 1);
-        c.boost = t.Re.qr;
-        c.downed = t.netData.ue;
+        state.health = activePlayer.netData.he ? 0 : math.max(activePlayer.Re.Lr, 1);
+        state.boost = activePlayer.Re.qr;
+        state.downed = activePlayer.netData.ue;
         let B = D.None;
         let R = null;
         let L = true;
-        if (t.canInteract(o)) {
+        if (activePlayer.canInteract(map)) {
             let q = null;
             let F = 0;
-            for (let j = o.Ve.p(), N = 0; N < j.length; N++) {
+            for (let j = map.Ve.p(), N = 0; N < j.length; N++) {
                 const H = j[N];
                 if (
                     H.active &&
                     !H.dead &&
-                    util.sameLayer(H.layer, t.layer)
+                    util.sameLayer(H.layer, activePlayer.layer)
                 ) {
                     const V = H.getInteraction();
                     if (V) {
                         const U = collider.intersectCircle(
                             H.collider,
-                            t.netData.ie,
-                            V.rad + t.rad
+                            activePlayer.netData.ie,
+                            V.rad + activePlayer.rad
                         );
                         if (U && U.pen >= F) {
                             q = H;
@@ -583,22 +592,22 @@ export class UiManager2 {
                 R = q;
                 L = true;
             }
-            const W = i.Er();
-            if (W && !t.netData.ue) {
+            const W = lootBarn.Er();
+            if (W && !activePlayer.netData.ue) {
                 const G = GameObjectDefs[W.type];
-                const X = t.Wr(GameConfig.WeaponSlot.Primary);
-                const K = t.Wr(GameConfig.WeaponSlot.Secondary);
+                const X = activePlayer.Wr(GameConfig.WeaponSlot.Primary);
+                const K = activePlayer.Wr(GameConfig.WeaponSlot.Secondary);
                 const Z = X && K;
-                const Y = G.type != "gun" || !Z || t.Ur() == "gun";
+                const Y = G.type != "gun" || !Z || activePlayer.Ur() == "gun";
                 let J = false;
                 if (
-                    (c.touch &&
+                    (state.touch &&
                         G.type == "helmet" &&
-                        t.Nr() == G.level &&
-                        W.type != t.netData.le) ||
+                        activePlayer.Nr() == G.level &&
+                        W.type != activePlayer.netData.le) ||
                     (G.type == "chest" &&
-                        t.Hr() == G.level &&
-                        W.type != t.netData.ce)
+                        activePlayer.Hr() == G.level &&
+                        W.type != activePlayer.netData.ce)
                 ) {
                     J = true;
                 }
@@ -608,38 +617,38 @@ export class UiManager2 {
                 }
                 L =
                     Y &&
-                    (!c.touch ||
+                    (!state.touch ||
                         G.type == "gun" ||
                         G.type == "melee" ||
                         G.type == "outfit" ||
                         G.type == "perk" ||
                         J);
             }
-            const Q = t.hasPerk("self_revive");
-            if (t.action.type == Action.None && (!t.netData.ue || Q)) {
+            const Q = activePlayer.hasPerk("self_revive");
+            if (activePlayer.action.type == Action.None && (!activePlayer.netData.ue || Q)) {
                 for (
-                    let $ = a.qe(t.__id).teamId,
-                        ee = a.$e.p(),
+                    let $ = playerBarn.qe(activePlayer.__id).teamId,
+                        ee = playerBarn.$e.p(),
                         te = 0;
                     te < ee.length;
                     te++
                 ) {
                     const re = ee[te];
                     if (re.active) {
-                        const ae = a.qe(re.__id).teamId;
+                        const ae = playerBarn.qe(re.__id).teamId;
                         if (
-                            (re.__id != t.__id || Q) &&
+                            (re.__id != activePlayer.__id || Q) &&
                             $ == ae &&
                             re.netData.ue &&
                             !re.netData.he &&
                             re.action.type != Action.Revive
                         ) {
                             const ie = v2.length(
-                                v2.sub(re.netData.ie, t.netData.ie)
+                                v2.sub(re.netData.ie, activePlayer.netData.ie)
                             );
                             if (
                                 ie < GameConfig.player.reviveRange &&
-                                util.sameLayer(re.layer, t.layer)
+                                util.sameLayer(re.layer, activePlayer.layer)
                             ) {
                                 B = D.Revive;
                                 R = re;
@@ -649,41 +658,41 @@ export class UiManager2 {
                     }
                 }
             }
-            if (t.action.type == Action.Revive && t.netData.ue && !Q) {
+            if (activePlayer.action.type == Action.Revive && activePlayer.netData.ue && !Q) {
                 B = D.None;
                 R = null;
                 L = false;
             }
             if (
-                (t.action.type == Action.UseItem ||
-                    (t.action.type == Action.Revive &&
-                        (!t.netData.ue || !!Q))) &&
-                !r
+                (activePlayer.action.type == Action.UseItem ||
+                    (activePlayer.action.type == Action.Revive &&
+                        (!activePlayer.netData.ue || !!Q))) &&
+                !spectating
             ) {
                 B = D.Cancel;
                 R = null;
                 L = true;
             }
         }
-        c.interaction.type = B;
-        c.interaction.text = this.getInteractionText(B, R, t);
-        c.interaction.key = this.getInteractionKey(B);
-        c.interaction.usable = L && !r;
-        for (let oe = 0; oe < t.Re.tt.length; oe++) {
-            const se = t.Re.tt[oe];
-            const ne = c.weapons[oe];
+        state.interaction.type = B;
+        state.interaction.text = this.getInteractionText(B, R, activePlayer);
+        state.interaction.key = this.getInteractionKey(B);
+        state.interaction.usable = L && !spectating;
+        for (let oe = 0; oe < activePlayer.Re.tt.length; oe++) {
+            const se = activePlayer.Re.tt[oe];
+            const ne = state.weapons[oe];
             ne.type = se.type;
             ne.ammo = se.ammo;
             if (oe == GameConfig.WeaponSlot.Throwable) {
-                ne.ammo = t.Re.jr[se.type] || 0;
+                ne.ammo = activePlayer.Re.jr[se.type] || 0;
             }
             const le = ne.equipped;
-            ne.equipped = oe == t.Re.rt;
+            ne.equipped = oe == activePlayer.Re.rt;
             ne.selectable =
-                (se.type != "" || oe == 0 || oe == 1) && !r;
+                (se.type != "" || oe == 0 || oe == 1) && !spectating;
             const ce = ne.equipped ? 1 : 0.6;
             const me = ce - ne.opacity;
-            const pe = math.min(me, (math.sign(me) * e) / 0.15);
+            const pe = math.min(me, (math.sign(me) * dt) / 0.15);
             ne.opacity = math.clamp(ne.opacity + pe, 0, 1);
             if (device.mobile) {
                 ne.opacity = ce;
@@ -691,7 +700,7 @@ export class UiManager2 {
             if (ne.type == "bugle" && ne.ammo == 0) {
                 ne.opacity = 0.25;
             }
-            ne.ticker += e;
+            ne.ticker += dt;
             if (!ne.equipped || !le) {
                 ne.ticker = 0;
             }
@@ -704,43 +713,43 @@ export class UiManager2 {
             if (device.mobile) {
                 ne.width = 0;
             }
-            const ue = s.getBind(ne.bind);
+            const ue = inputBinds.getBind(ne.bind);
             ne.bindStr = ue ? ue.toString() : "";
         }
-        const ge = c.weapons[t.Re.rt];
+        const ge = state.weapons[activePlayer.Re.rt];
         const ye = GameObjectDefs[ge.type];
         const we = ge.ammo;
         const fe =
             ye.type == "gun"
                 ? ye.ammoInfinite ||
-                    (t.hasPerk("endless_ammo") &&
+                    (activePlayer.hasPerk("endless_ammo") &&
                         !ye.ignoreEndlessAmmo)
                     ? Number.MAX_VALUE
-                    : t.Re.jr[ye.ammo]
+                    : activePlayer.Re.jr[ye.ammo]
                 : 0;
-        c.ammo.current = we;
-        c.ammo.remaining = fe;
-        c.ammo.displayCurrent = ye.type != "melee";
-        c.ammo.displayRemaining = fe > 0;
-        for (let _e = 0; _e < c.scopes.length; _e++) {
-            const be = c.scopes[_e];
-            be.visible = t.Re.jr[be.type] > 0;
-            be.equipped = be.visible && t.Re.Fr == be.type;
-            be.selectable = be.visible && !r;
+        state.ammo.current = we;
+        state.ammo.remaining = fe;
+        state.ammo.displayCurrent = ye.type != "melee";
+        state.ammo.displayRemaining = fe > 0;
+        for (let _e = 0; _e < state.scopes.length; _e++) {
+            const be = state.scopes[_e];
+            be.visible = activePlayer.Re.jr[be.type] > 0;
+            be.equipped = be.visible && activePlayer.Re.Fr == be.type;
+            be.selectable = be.visible && !spectating;
         }
-        for (let xe = t.Vr(), Se = 0; Se < c.loot.length; Se++) {
-            const ve = c.loot[Se];
+        for (let xe = activePlayer.Vr(), Se = 0; Se < state.loot.length; Se++) {
+            const ve = state.loot[Se];
             const ke = ve.count;
-            ve.count = t.Re.jr[ve.type] || 0;
+            ve.count = activePlayer.Re.jr[ve.type] || 0;
             ve.maximum = GameConfig.bagSizes[ve.type][xe];
-            ve.selectable = ve.count > 0 && !r;
+            ve.selectable = ve.count > 0 && !spectating;
             if (ve.count > ke) {
                 ve.ticker = 0;
             }
             if (this.frameCount < 2) {
                 ve.ticker = 1;
             }
-            ve.ticker += e;
+            ve.ticker += dt;
             const ze = math.min(ve.ticker / 0.05, Math.PI);
             const Ie = Math.sin(ze);
             ve.width = Ie < 0.001 ? 0 : Ie;
@@ -748,29 +757,29 @@ export class UiManager2 {
                 ve.width = 0;
             }
         }
-        for (let Te = 0; Te < c.gear.length; Te++) {
-            const Me = c.gear[Te];
+        for (let Te = 0; Te < state.gear.length; Te++) {
+            const Me = state.gear[Te];
             let Pe = "";
             if (Me.type == "chest") {
-                Pe = t.netData.ce;
+                Pe = activePlayer.netData.ce;
             } else if (Me.type == "helmet") {
-                Pe = t.netData.le;
+                Pe = activePlayer.netData.le;
             } else if (
                 Me.type == "backpack" &&
-                (Pe = t.netData.ne) == "backpack00"
+                (Pe = activePlayer.netData.ne) == "backpack00"
             ) {
                 Pe = "";
             }
             const Ce = Me.item;
             Me.item = Pe;
-            Me.selectable = Pe != "" && !r;
+            Me.selectable = Pe != "" && !spectating;
             if (Ce != Me.item) {
                 Me.ticker = 0;
             }
             if (this.frameCount < 2) {
                 Me.ticker = 1;
             }
-            Me.ticker += e;
+            Me.ticker += dt;
             const Ae = math.min(Me.ticker / 0.05, Math.PI);
             const Oe = Math.sin(Ae);
             Me.width = Oe < 0.001 ? 0 : Oe;
@@ -778,10 +787,10 @@ export class UiManager2 {
                 Me.width = 0;
             }
         }
-        for (let De = 0; De < c.perks.length; De++) {
-            const Ee = c.perks[De];
-            if (t.perks.length > De) {
-                const Be = t.perks[De];
+        for (let De = 0; De < state.perks.length; De++) {
+            const Ee = state.perks[De];
+            if (activePlayer.perks.length > De) {
+                const Be = activePlayer.perks[De];
                 Ee.type = Be.type;
                 Ee.droppable = Be.droppable;
                 if (Be.isNew) {
@@ -790,7 +799,7 @@ export class UiManager2 {
                 if (this.frameCount < 2) {
                     Ee.ticker = 1;
                 }
-                Ee.ticker += e;
+                Ee.ticker += dt;
                 const Re = math.min(Ee.ticker / 0.05, Math.PI);
                 const Le = Math.sin(Re);
                 Ee.width = Le < 0.001 ? 0 : Le;

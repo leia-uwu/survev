@@ -751,7 +751,7 @@ export class Game {
             this.teamMode,
             this.map.factionMode
         );
-        this.ui2Manager.m(
+        this.ui2Manager.update(
             dt,
             this.m_activePlayer,
             this.spectating,
