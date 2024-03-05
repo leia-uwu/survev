@@ -739,7 +739,7 @@ export class Game {
         this.shotBarn.update(dt, this.m_activeId, this.playerBarn, this.particleBarn, this.audioManager);
         this.particleBarn.m(dt, this.camera, debug);
         this.deadBodyBarn.m(dt, this.playerBarn, this.m_activePlayer, this.map, this.camera, this.renderer);
-        this.decalBarn.m(dt, this.camera, this.renderer, debug);
+        this.decalBarn.update(dt, this.camera, this.renderer, debug);
         this.uiManager.m(
             dt,
             this.m_activePlayer,

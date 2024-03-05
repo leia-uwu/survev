@@ -45,8 +45,13 @@ function traceGroundPatch(canvas, patch, seed) {
 }
 
 export class Map {
-    constructor(e) {
-        this.decalBarn = e;
+    /**
+     * Creates an instance of Map.
+     * @constructor
+     * @param {import("./objects/decal").DecalBarn} decalBarn
+     */
+    constructor(decalBarn) {
+        this.decalBarn = decalBarn;
         this.I = false;
         this.Br = false;
         this.display = {
