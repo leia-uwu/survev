@@ -697,7 +697,7 @@ export class Game {
             this.particleBarn,
             this.audioManager
         );
-        this.flareBarn.m(
+        this.flareBarn.update(
             dt,
             this.playerBarn,
             this.map,
