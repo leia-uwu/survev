@@ -12,16 +12,18 @@ class Smoke {
         this.particle = null;
     }
 
-    c(e, t, r, a) {
-        this.type = e.type;
-        this.pos = v2.copy(e.pos);
-        this.rad = e.rad;
-        if (t) {
-            this.layer = e.layer;
-            this.interior = e.interior;
+    c(data, fullUpdate, isNew, ctx) {
+        this.type = data.type;
+        this.pos = v2.copy(data.pos);
+        this.rad = data.rad;
+
+        if (fullUpdate) {
+            this.layer = data.layer;
+            this.interior = data.interior;
         }
-        if (r) {
-            this.particle = a.smokeBarn.allocParticle();
+
+        if (isNew) {
+            this.particle = ctx.smokeBarn.allocParticle();
             this.particle.o(
                 this.pos,
                 this.rad,
@@ -36,20 +38,20 @@ class Smoke {
 
 class SmokeParticle {
     constructor() {
-        const e = ["part-smoke-02.img", "part-smoke-03.img"];
+        const particles = ["part-smoke-02.img", "part-smoke-03.img"];
         this.active = false;
         this.zIdx = 0;
         this.sprite = PIXI.Sprite.from(
-            e[Math.floor(Math.random() * e.length)]
+            particles[Math.floor(Math.random() * particles.length)]
         );
         this.sprite.anchor = new PIXI.Point(0.5, 0.5);
         this.sprite.visible = false;
     }
 
-    o(e, t, r, a) {
-        this.pos = v2.copy(e);
+    o(pos, rad, layer, interior) {
+        this.pos = v2.copy(pos);
         this.posTarget = v2.copy(this.pos);
-        this.rad = t;
+        this.rad = rad;
         this.radTarget = this.rad;
         this.rot = util.random(0, Math.PI * 2);
         this.rotVel =
@@ -62,8 +64,8 @@ class SmokeParticle {
         this.tint = util.rgbToInt(
             util.hsvToRgb(0, 0, util.random(0.9, 0.95))
         );
-        this.layer = r;
-        this.interior = a;
+        this.layer = layer;
+        this.interior = interior;
     }
 
     fadeOut() {
@@ -78,62 +80,72 @@ export class SmokeBarn {
     }
 
     allocParticle() {
-        let e = null;
-        for (let t = 0; t < this.particles.length; t++) {
-            if (!this.particles[t].active) {
-                e = this.particles[t];
+        let particle = null;
+        for (let i = 0; i < this.particles.length; i++) {
+            if (!this.particles[i].active) {
+                particle = this.particles[i];
                 break;
             }
         }
-        if (!e) {
-            e = new SmokeParticle();
-            this.particles.push(e);
+        if (!particle) {
+            particle = new SmokeParticle();
+            this.particles.push(particle);
         }
-        e.active = true;
-        e.zIdx = this.zIdx--;
-        return e;
+        particle.active = true;
+        particle.zIdx = this.zIdx--;
+        return particle;
     }
 
-    m(e, t, r, a, i) {
+    m(dt, camera, activePlayer, map, renderer) {
+        // why is this commented out?
         // for (let o = this.e.p(), s = 0; s < o.length; s++) {
         // o[s].active;
         // }
+
+        // Update visual particles
         for (let m = 0; m < this.particles.length; m++) {
             const p = this.particles[m];
             if (p.active) {
-                p.rad = math.lerp(e * 3, p.rad, p.radTarget);
-                p.pos = math.v2lerp(e * 3, p.pos, p.posTarget);
-                p.rotVel *= 1 / (1 + e * 0.1);
-                p.rot += p.rotVel * e;
-                p.fadeTicker += p.fade ? e : 0;
+                p.rad = math.lerp(dt * 3, p.rad, p.radTarget);
+                p.pos = math.v2lerp(dt * 3, p.pos, p.posTarget);
+                p.rotVel *= 1 / (1 + dt * 0.1);
+                p.rot += p.rotVel * dt;
+                p.fadeTicker += p.fade ? dt : 0;
                 p.active = p.fadeTicker < p.fadeDuration;
-                const h =
+
+                const alpha =
                     math.clamp(
                         1 - p.fadeTicker / p.fadeDuration,
                         0,
                         1
                     ) * 0.9;
-                let d = p.layer;
+
+                // Always add to the top layer if visible and not occluded by
+                // the layer mask (fixes issue of smokes spawning on the ground
+                // level but occluded by the cellar when on the stairs).
+                let layer = p.layer;
                 if (
-                    (!!util.sameLayer(p.layer, r.layer) ||
-                        !!(r.layer & 2)) &&
+                    (!!util.sameLayer(p.layer, activePlayer.layer) ||
+                        !!(activePlayer.layer & 2)) &&
                     (p.layer == 1 ||
-                        !(r.layer & 2) ||
-                        !a.insideStructureMask(
+                        !(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(
                             collider.createCircle(p.pos, 1)
                         ))
                 ) {
-                    d |= 2;
+                    layer |= 2;
                 }
-                const u = p.interior ? 500 : 1000;
-                i.addPIXIObj(p.sprite, d, u, p.zIdx);
-                const g = t.pointToScreen(p.pos);
-                const y = t.pixels((p.rad * 2) / t.ppu);
-                p.sprite.position.set(g.x, g.y);
-                p.sprite.scale.set(y, y);
+                const zOrd = p.interior ? 500 : 1000;
+                renderer.addPIXIObj(p.sprite, layer, zOrd, p.zIdx);
+
+                const screenPos = camera.pointToScreen(p.pos);
+                const screenScale = camera.pixels((p.rad * 2) / camera.ppu);
+
+                p.sprite.position.set(screenPos.x, screenPos.y);
+                p.sprite.scale.set(screenScale, screenScale);
                 p.sprite.rotation = p.rot;
                 p.sprite.tint = p.tint;
-                p.sprite.alpha = h;
+                p.sprite.alpha = alpha;
                 p.sprite.visible = p.active;
             }
         }
