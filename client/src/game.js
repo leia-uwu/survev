@@ -97,6 +97,14 @@ export class Game {
                     joinMessage.proxy = false; //* !/.*surviv\.io$/.test(window.location.hostname);
                     joinMessage.otherProxy = false; //* !proxy.authLocation();
                     joinMessage.bot = false;
+                    joinMessage.emotes = [
+                        'emote_gg',
+                        'emote_thumbsup',
+                        'emote_surviv',
+                        'emote_sadface',
+                        '',
+                        '']
+                   
                     _this.sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };
                 this.ws.onmessage = function(e) {

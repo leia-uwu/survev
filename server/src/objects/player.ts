@@ -1,5 +1,5 @@
 import { type WebSocket } from "uWebSockets.js";
-import { type Game } from "../game";
+import { Emote, type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -203,6 +203,8 @@ export class Player extends BaseGameObject {
         boost: "boost_basic",
         emotes: [...GameConfig.defaultEmoteLoadout]
     };
+
+    emotes = new Set<Emote>()
 
     damageTaken = 0;
     damageDealt = 0;
@@ -418,6 +420,11 @@ export class Player extends BaseGameObject {
         updateMsg.activePlayerData = this;
         updateMsg.playerInfos = this._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
+        for ( const emote of this.emotes) {
+            updateMsg.emotes.push(emote)
+        }
+        
+        if ( this.emotes.size) this.emotes = new Set()
         let newBullets = [];
         const extendedRadius = 1.1 * radius;
         const radiusSquared = extendedRadius * extendedRadius;
