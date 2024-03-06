@@ -9,70 +9,82 @@ class PhysicsParticle {
         this.active = false;
     }
 
-    init(e, t, r, a) {
-        this.pos = v2.copy(e);
-        this.vel = v2.copy(t);
-        this.layer = r;
-        this.particle = a;
+    init(pos, vel, layer, particle) {
+        this.pos = v2.copy(pos);
+        this.vel = v2.copy(vel);
+        this.layer = layer;
+        this.particle = particle;
         this.ticker = 0;
         this.colCount = 0;
         this.active = true;
     }
 
-    update(e, t, r) {
-        const a = v2.copy(this.pos);
-        this.pos = v2.add(this.pos, v2.mul(this.vel, e));
-        this.vel = v2.mul(this.vel, 1 / (1 + e * 5));
-        const i = [];
-        for (let o = t.Ve.p(), n = 0; n < o.length; n++) {
-            const m = o[n];
+    update(dt, map, playerBarn) {
+        // Move and collide with obstacles
+        const posOld = v2.copy(this.pos);
+        this.pos = v2.add(this.pos, v2.mul(this.vel, dt));
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * 5));
+
+        // Gather colliders
+        const colliders = [];
+        const obstacles = map.Ve.p();
+        for (let n = 0; n < obstacles.length; n++) {
+            const obstacle = obstacles[n];
             if (
-                m.active &&
-                !m.dead &&
-                util.sameLayer(this.layer, m.layer)
+                obstacle.active &&
+                !obstacle.dead &&
+                util.sameLayer(this.layer, obstacle.layer)
             ) {
-                i.push(m.collider);
+                colliders.push(obstacle.collider);
             }
         }
-        for (let p = r.$e.p(), h = 0; h < p.length; h++) {
-            const d = p[h];
+
+        const players = playerBarn.$e.p();
+        for (let i = 0; i < players.length; i++) {
+            const player = players[i];
             if (
-                d.active &&
-                !d.dead &&
-                util.sameLayer(this.layer, d.layer)
+                player.active &&
+                !player.dead &&
+                util.sameLayer(this.layer, player.layer)
             ) {
-                i.push(collider.createCircle(d.pos, d.rad, 0));
+                colliders.push(collider.createCircle(player.pos, player.rad, 0));
             }
         }
-        const u = [];
-        for (let g = 0; g < i.length; g++) {
-            const y = collider.intersectSegment(i[g], a, this.pos);
-            if (y) {
-                const w = v2.length(v2.sub(y.point, a));
-                u.push({
-                    point: y.point,
-                    normal: y.normal,
-                    dist: w
+
+        // Intersect with nearest collider
+        const cols = [];
+        for (let i = 0; i < colliders.length; i++) {
+            const res = collider.intersectSegment(colliders[i], posOld, this.pos);
+            if (res) {
+                const dist = v2.length(v2.sub(res.point, posOld));
+                cols.push({
+                    point: res.point,
+                    normal: res.normal,
+                    dist
                 });
             }
         }
-        u.sort((e, t) => {
-            return e.dist - t.dist;
+        cols.sort((a, b) => {
+            return a.dist - b.dist;
         });
-        if (u.length > 0) {
-            const f = u[0];
-            const _ = v2.normalizeSafe(this.vel, v2.create(1, 0));
-            const b = v2.length(this.vel);
-            const x = v2.sub(
-                _,
-                v2.mul(f.normal, v2.dot(f.normal, _) * 2)
+        if (cols.length > 0) {
+            const col = cols[0];
+            const dir = v2.normalizeSafe(this.vel, v2.create(1, 0));
+            const spd = v2.length(this.vel);
+            const reflectDir = v2.sub(
+                dir,
+                v2.mul(col.normal, v2.dot(col.normal, dir) * 2)
             );
-            const S = this.colCount++ > 0 ? 0.35 : 1;
-            this.pos = v2.add(f.point, v2.mul(f.normal, 0.01));
-            this.vel = v2.mul(x, b * S);
+            // Hacky physics:
+            // Apply friction only after the first impact; the idea is to
+            // have explosions that happen near walls throw their particles
+            // off of the wall at full velocity.
+            const friction = this.colCount++ > 0 ? 0.35 : 1;
+            this.pos = v2.add(col.point, v2.mul(col.normal, 0.01));
+            this.vel = v2.mul(reflectDir, spd * friction);
         }
         this.particle.pos = v2.copy(this.pos);
-        this.ticker += e;
+        this.ticker += dt;
         if (this.ticker >= this.particle.life) {
             this.particle.n();
             this.active = false;
@@ -84,16 +96,16 @@ class Explosion {
         this.active = false;
     }
 
-    o(e, t, r) {
-        const a = ExplosionDefs[e].explosionEffectType;
-        const i = ExplosionEffectDefs[a];
+    init(type, pos, layer) {
+        const expType = ExplosionDefs[type].explosionEffectType;
+        const def = ExplosionEffectDefs[expType];
         this.active = true;
         this.done = false;
-        this.type = e;
-        this.pos = v2.copy(t);
-        this.layer = r;
+        this.type = type;
+        this.pos = v2.copy(pos);
+        this.layer = layer;
         this.ticker = 0;
-        this.lifetime = i.lifetime;
+        this.lifetime = def.lifetime;
         this.soundInstance = null;
         this.soundUpdateThrottle = 0;
     }
@@ -102,34 +114,36 @@ class Explosion {
         this.active = false;
     }
 
-    m(e, t, r, a, i, o) {
-        const h = ExplosionDefs[this.type].explosionEffectType;
-        const d = ExplosionEffectDefs[h];
+    m(dt, explosionBarn, particleBarn, audioManager, map, camera) {
+        const expType = ExplosionDefs[this.type].explosionEffectType;
+        const def = ExplosionEffectDefs[expType];
+
         if (this.ticker == 0) {
-            let u = true;
+            // Airstrike explosions should not render if they happen indoors
+            let renderVisuals = true;
             if (this.type == "explosion_bomb_iron") {
-                const g = collider.createCircle(this.pos, 0.5);
-                if (i.insideBuildingCeiling(g, true)) {
-                    u = false;
+                const col = collider.createCircle(this.pos, 0.5);
+                if (map.insideBuildingCeiling(col, true)) {
+                    renderVisuals = false;
                 }
             }
             if (
-                u &&
-                (d.burst.particle &&
-                    r.addParticle(
-                        d.burst.particle,
+                renderVisuals &&
+                (def.burst.particle &&
+                    particleBarn.addParticle(
+                        def.burst.particle,
                         this.layer,
                         this.pos,
                         v2.create(0, 0),
-                        d.burst.scale,
+                        def.burst.scale,
                         0,
                         null
                     ),
-                d.scatter)
+                def.scatter)
             ) {
-                for (let y = 0; y < d.scatter.count; y++) {
-                    const w = r.addParticle(
-                        d.scatter.particle,
+                for (let i = 0; i < def.scatter.count; i++) {
+                    const particle = particleBarn.addParticle(
+                        def.scatter.particle,
                         this.layer,
                         this.pos,
                         v2.create(0, 0),
@@ -137,74 +151,79 @@ class Explosion {
                         0,
                         null
                     );
-                    const f = t.addPhysicsParticle();
-                    const _ = v2.mul(
+                    const physPart = explosionBarn.addPhysicsParticle();
+                    const vel = v2.mul(
                         v2.randomUnit(),
                         util.random(
-                            d.scatter.speed.min,
-                            d.scatter.speed.max
+                            def.scatter.speed.min,
+                            def.scatter.speed.max
                         )
                     );
-                    f.init(this.pos, _, this.layer, w);
+                    physPart.init(this.pos, vel, this.layer, particle);
                 }
             }
-            const b = i.getGroundSurface(this.pos, this.layer);
-            const x =
-                b.type == "water"
-                    ? d.burst.sound.water
-                    : d.burst.sound.grass;
-            let S = 0;
-            if (d.burst.sound.detune != undefined) {
-                S = d.burst.sound.detune;
+            const surface = map.getGroundSurface(this.pos, this.layer);
+            const sound =
+                surface.type == "water"
+                    ? def.burst.sound.water
+                    : def.burst.sound.grass;
+
+            let detune = 0;
+            if (def.burst.sound.detune != undefined) {
+                detune = def.burst.sound.detune;
             }
-            let v = 1;
-            if (d.burst.sound.volume != undefined) {
-                v = d.burst.sound.volume;
+
+            let volume = 1;
+            if (def.burst.sound.volume != undefined) {
+                volume = def.burst.sound.volume;
             }
-            this.soundInstance = a.playSound(x, {
+
+            this.soundInstance = audioManager.playSound(sound, {
                 channel: "sfx",
                 soundPos: this.pos,
                 layer: this.layer,
                 filter: "muffled",
                 rangeMult: 2,
                 ignoreMinAllowable: true,
-                detune: S,
-                volumeScale: v
+                detune,
+                volumeScale: volume
             });
-            if (b.type == "water") {
-                for (let k = 0; k < d.rippleCount; k++) {
-                    const z = d.rippleCount * 0.5;
-                    const I = v2.add(
+
+            // Create ripples if in water
+            if (surface.type == "water") {
+                for (let i = 0; i < def.rippleCount; i++) {
+                    const maxRad = def.rippleCount * 0.5;
+                    const ripplePos = v2.add(
                         this.pos,
-                        v2.mul(v2.randomUnit(), util.random(0, z))
+                        v2.mul(v2.randomUnit(), util.random(0, maxRad))
                     );
-                    const T = r.addRippleParticle(
-                        I,
+                    const part = particleBarn.addRippleParticle(
+                        ripplePos,
                         this.layer,
-                        b.data.rippleColor
+                        surface.data.rippleColor
                     );
-                    T.setDelay(k * 0.06);
+                    part.setDelay(i * 0.06);
                 }
             }
         }
         if (this.soundInstance && this.soundUpdateThrottle < 0) {
             this.soundUpdateThrottle = 0.1;
-            let M = 1;
-            if (d.burst.sound.volume != undefined) {
-                M = d.burst.sound.volume;
+            let volume = 1;
+            if (def.burst.sound.volume != undefined) {
+                volume = def.burst.sound.volume;
             }
-            a.updateSound(this.soundInstance, "sfx", this.pos, {
+            audioManager.updateSound(this.soundInstance, "sfx", this.pos, {
                 layer: this.layer,
                 filter: "muffled",
-                volumeScale: M
+                volumeScale: volume
             });
         } else {
-            this.soundUpdateThrottle -= e;
+            this.soundUpdateThrottle -= dt;
         }
-        this.ticker += e;
-        const P = math.min(this.ticker / d.shakeDur, 1);
-        const C = math.lerp(P, d.shakeStr, 0);
-        o.addShake(this.pos, C);
+        this.ticker += dt;
+        const shakeT = math.min(this.ticker / def.shakeDur, 1);
+        const shakeInt = math.lerp(shakeT, def.shakeStr, 0);
+        camera.addShake(this.pos, shakeInt);
         if (this.ticker >= this.lifetime) {
             this.active = false;
         }
@@ -216,11 +235,11 @@ export class ExplosionBarn {
         this.physicsParticles = [];
     }
 
-    addExplosion(e, t, r) {
+    addExplosion(type, pos, layer) {
         let a = null;
-        for (let o = 0; o < this.explosions.length; o++) {
-            if (!this.explosions[o].active) {
-                a = this.explosions[o];
+        for (let i = 0; i < this.explosions.length; i++) {
+            if (!this.explosions[i].active) {
+                a = this.explosions[i];
                 break;
             }
         }
@@ -228,39 +247,39 @@ export class ExplosionBarn {
             a = new Explosion(this);
             this.explosions.push(a);
         }
-        a.o(e, t, r);
+        a.init(type, pos, layer);
     }
 
     addPhysicsParticle() {
-        let e = null;
-        for (let t = 0; t < this.physicsParticles.length; t++) {
-            const r = this.physicsParticles[t];
-            if (!r.active) {
-                e = r;
+        let p = null;
+        for (let i = 0; i < this.physicsParticles.length; i++) {
+            const particle = this.physicsParticles[i];
+            if (!particle.active) {
+                p = particle;
                 break;
             }
         }
-        if (!e) {
-            e = new PhysicsParticle();
-            this.physicsParticles.push(e);
+        if (!p) {
+            p = new PhysicsParticle();
+            this.physicsParticles.push(p);
         }
-        return e;
+        return p;
     }
 
-    m(e, t, r, a, i, o, s) {
-        for (let n = 0; n < this.explosions.length; n++) {
-            const l = this.explosions[n];
-            if (l.active) {
-                l.m(e, this, i, o, t, a);
-                if (!l.active) {
-                    l.n();
+    m(dt, map, playerBarn, camera, particleBarn, audioManager, debug) {
+        for (let i = 0; i < this.explosions.length; i++) {
+            const e = this.explosions[i];
+            if (e.active) {
+                e.m(dt, this, particleBarn, audioManager, map, camera);
+                if (!e.active) {
+                    e.n();
                 }
             }
         }
-        for (let c = 0; c < this.physicsParticles.length; c++) {
-            const m = this.physicsParticles[c];
-            if (m.active) {
-                m.update(e, t, r);
+        for (let i = 0; i < this.physicsParticles.length; i++) {
+            const p = this.physicsParticles[i];
+            if (p.active) {
+                p.update(dt, map, playerBarn);
             }
         }
     }

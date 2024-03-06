@@ -11,16 +11,16 @@ export class Structure {
     }
 
     n() { }
-    c(e, t, r, a) {
-        if (t) {
-            this.type = e.type;
+    c(data, fullUpdate, isNew, ctx) {
+        if (fullUpdate) {
+            this.type = data.type;
             this.layer = 0;
-            this.pos = v2.copy(e.pos);
-            this.rot = math.oriToRad(e.ori);
+            this.pos = v2.copy(data.pos);
+            this.rot = math.oriToRad(data.ori);
             this.scale = 1;
-            this.interiorSoundAlt = e.interiorSoundAlt;
-            this.interiorSoundEnabled = e.interiorSoundEnabled;
-            if (r) {
+            this.interiorSoundAlt = data.interiorSoundAlt;
+            this.interiorSoundEnabled = data.interiorSoundEnabled;
+            if (isNew) {
                 this.soundTransitionT = this.interiorSoundAlt
                     ? 1
                     : 0;
@@ -34,163 +34,182 @@ export class Structure {
                 this.rot,
                 this.scale
             );
-            const m = MapObjectDefs[this.type];
+            const def = MapObjectDefs[this.type];
             this.layers = [];
-            for (let p = 0; p < m.layers.length; p++) {
-                const h = m.layers[p];
-                const d = e.layerObjIds[p];
-                const u =
-                    h.inheritOri === undefined || h.inheritOri;
-                const g =
-                    h.underground !== undefined
-                        ? h.underground
+            for (let p = 0; p < def.layers.length; p++) {
+                const layer = def.layers[p];
+                const objId = data.layerObjIds[p];
+
+                const inheritOri =
+                    layer.inheritOri === undefined || layer.inheritOri;
+                const underground =
+                    layer.underground !== undefined
+                        ? layer.underground
                         : p == 1;
-                const y = v2.add(this.pos, h.pos);
-                const w = math.oriToRad(u ? e.ori + h.ori : h.ori);
-                const f = collider.transform(
-                    mapHelpers.getBoundingCollider(h.type),
-                    y,
-                    w,
+                const pos = v2.add(this.pos, layer.pos);
+                const rot = math.oriToRad(inheritOri ? data.ori + layer.ori : layer.ori);
+                const collision = collider.transform(
+                    mapHelpers.getBoundingCollider(layer.type),
+                    pos,
+                    rot,
                     1
                 );
                 this.layers.push({
-                    objId: d,
-                    collision: f,
-                    underground: g
+                    objId,
+                    collision,
+                    underground
                 });
             }
             this.stairs = [];
-            for (let _ = 0; _ < m.stairs.length; _++) {
-                const b = m.stairs[_];
-                const x = collider.transform(
-                    b.collision,
+            for (let _ = 0; _ < def.stairs.length; _++) {
+                const stairsDef = def.stairs[_];
+                const stairsCol = collider.transform(
+                    stairsDef.collision,
                     this.pos,
                     this.rot,
                     this.scale
                 );
-                const S = v2.rotate(b.downDir, this.rot);
-                const v = coldet.splitAabb(x, S);
+                const downDir = v2.rotate(stairsDef.downDir, this.rot);
+                const childAabbs = coldet.splitAabb(stairsCol, downDir);
+
                 this.stairs.push({
-                    collision: x,
+                    collision: stairsCol,
                     center: v2.add(
-                        x.min,
-                        v2.mul(v2.sub(x.max, x.min), 0.5)
+                        stairsCol.min,
+                        v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)
                     ),
-                    downDir: S,
-                    downAabb: collider.createAabb(v[0].min, v[0].max),
-                    upAabb: collider.createAabb(v[1].min, v[1].max),
-                    noCeilingReveal: !!b.noCeilingReveal,
-                    lootOnly: !!b.lootOnly
+                    downDir,
+                    downAabb: collider.createAabb(childAabbs[0].min, childAabbs[0].max),
+                    upAabb: collider.createAabb(childAabbs[1].min, childAabbs[1].max),
+                    noCeilingReveal: !!stairsDef.noCeilingReveal,
+                    lootOnly: !!stairsDef.lootOnly
                 });
             }
             this.mask = [];
-            for (let k = 0; k < m.mask.length; k++) {
+            for (let i = 0; i < def.mask.length; i++) {
                 this.mask.push(
                     collider.transform(
-                        m.mask[k],
+                        def.mask[i],
                         this.pos,
                         this.rot,
                         this.scale
                     )
                 );
             }
-            a.renderer.layerMaskDirty = true;
+            ctx.renderer.layerMaskDirty = true;
         }
     }
 
-    update(e, t, r, a) {
+    update(dt, map, activePlayer, ambience) {
         if (MapObjectDefs[this.type].interiorSound) {
-            this.updateInteriorSounds(e, t, r, a);
+            this.updateInteriorSounds(dt, map, activePlayer, ambience);
         }
     }
 
-    updateInteriorSounds(e, t, r, a) {
-        const i = MapObjectDefs[this.type];
-        collider.createCircle(r.pos, 0.001);
-        t.nr.p();
-        const s =
+    updateInteriorSounds(dt, map, activePlayer, ambience) {
+        const def = MapObjectDefs[this.type];
+        collider.createCircle(activePlayer.pos, 0.001);
+        map.nr.p();
+        const building0 =
             this.layers.length > 0
-                ? t.getBuildingById(this.layers[0].objId)
+                ? map.getBuildingById(this.layers[0].objId)
                 : null;
-        const l =
+        const building1 =
             this.layers.length > 1
-                ? t.getBuildingById(this.layers[1].objId)
+                ? map.getBuildingById(this.layers[1].objId)
                 : null;
-        const m =
-            i.interiorSound.outsideMaxDist !== undefined
-                ? i.interiorSound.outsideMaxDist
+        const maxDist =
+            def.interiorSound.outsideMaxDist !== undefined
+                ? def.interiorSound.outsideMaxDist
                 : 10;
-        const p =
-            i.interiorSound.outsideVolume !== undefined
-                ? i.interiorSound.outsideVolume
+        const outsideVol =
+            def.interiorSound.outsideVolume !== undefined
+                ? def.interiorSound.outsideVolume
                 : 0;
-        const h =
-            i.interiorSound.undergroundVolume !== undefined
-                ? i.interiorSound.undergroundVolume
+        const undergroundVol =
+            def.interiorSound.undergroundVolume !== undefined
+                ? def.interiorSound.undergroundVolume
                 : 1;
-        let d = 0;
-        let u = 0;
-        if (r.layer != 1) {
-            if (s) {
-                const g = s.getDistanceToBuilding(r.pos, m);
-                const y = math.remap(g, m, 0, 0, 1);
-                const w = r.layer & 2;
-                const f = s.ceiling.fadeAlpha;
-                d = y * (1 - f);
-                u = y * f * (w ? h : p);
+
+        // Compute weights for the normal (weight0) and filtered (weight1) tracks
+        let weight0 = 0;
+        let weight1 = 0;
+        if (activePlayer.layer != 1) {
+            if (building0) {
+                // Play the filtered sound when we can't see inside the building,
+                // and reduce the volume based on distance from the building.
+                const dist = building0.getDistanceToBuilding(activePlayer.pos, maxDist);
+                const weight = math.remap(dist, maxDist, 0, 0, 1);
+                const onStairs = activePlayer.layer & 2;
+                const visionT = building0.ceiling.fadeAlpha;
+                weight0 = weight * (1 - visionT);
+                weight1 = weight * visionT * (onStairs ? undergroundVol : outsideVol);
             }
-        } else if (l) {
-            const _ = l.getDistanceToBuilding(r.pos, m);
-            const b = math.remap(_, m, 0, 0, 1);
-            d = 0;
-            u = b * h;
+        } else if (building1) {
+            // Immediately play the filtered track at  full weight when
+            // going underground; the filter and reverb effects delay the sound
+            // slightly which ends up sounding okay without a crossfade.
+            const dist = building1.getDistanceToBuilding(activePlayer.pos, maxDist);
+            const weight = math.remap(dist, maxDist, 0, 0, 1);
+            weight0 = 0;
+            weight1 = weight * undergroundVol;
         }
-        const x =
-            i.interiorSound.transitionTime !== undefined
-                ? i.interiorSound.transitionTime
+
+        // Transition between sound and soundAlt tracks
+        const transitionTime =
+            def.interiorSound.transitionTime !== undefined
+                ? def.interiorSound.transitionTime
                 : 1;
         if (this.interiorSoundAlt) {
             this.soundTransitionT = math.clamp(
-                this.soundTransitionT + e / x,
+                this.soundTransitionT + dt / transitionTime,
                 0,
                 1
             );
         }
-        const S = Math.abs(this.soundTransitionT - 0.5) * 2;
+        const transitionWeight = Math.abs(this.soundTransitionT - 0.5) * 2;
+
+        // Fade out the track after it's disabled
         if (!this.interiorSoundEnabled) {
             this.soundEnabledT = math.clamp(
-                this.soundEnabledT - e * 0.5,
+                this.soundEnabledT - dt * 0.5,
                 0,
                 1
             );
         }
-        const v =
+
+        // Choose the actual track based on the state of the transition
+        const sound =
             this.soundTransitionT > 0.5
-                ? i.interiorSound.soundAlt
-                : i.interiorSound.sound;
-        const k = a.getTrack("interior_0");
-        k.sound = v;
-        k.filter = "";
-        k.weight = v ? d * S * this.soundEnabledT : 0;
-        const z = a.getTrack("interior_1");
-        z.sound = v;
-        z.filter = i.interiorSound.filter;
-        z.weight = v ? u * S * this.soundEnabledT : 0;
+                ? def.interiorSound.soundAlt
+                : def.interiorSound.sound;
+
+        // Set the track data
+        const track0 = ambience.getTrack("interior_0");
+        track0.sound = sound;
+        track0.filter = "";
+        track0.weight = sound ? weight0 * transitionWeight * this.soundEnabledT : 0;
+
+        const track1 = ambience.getTrack("interior_1");
+        track1.sound = sound;
+        track1.filter = def.interiorSound.filter;
+        track1.weight = sound ? weight1 * transitionWeight * this.soundEnabledT : 0;
     }
 
-    render(e, t, r) { }
-    insideStairs(e) {
-        for (let t = 0; t < this.stairs.length; t++) {
-            if (collider.intersect(this.stairs[t].collision, e)) {
+    render(camera, debug, layer) { }
+
+    insideStairs(collision) {
+        for (let i = 0; i < this.stairs.length; i++) {
+            if (collider.intersect(this.stairs[i].collision, collision)) {
                 return true;
             }
         }
         return false;
     }
 
-    insideMask(e) {
-        for (let t = 0; t < this.mask.length; t++) {
-            if (collider.intersect(this.mask[t], e)) {
+    insideMask(collision) {
+        for (let i = 0; i < this.mask.length; i++) {
+            if (collider.intersect(this.mask[i], collision)) {
                 return true;
             }
         }

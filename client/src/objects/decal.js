@@ -28,68 +28,76 @@ class Decal {
         }
     }
 
-    c(e, t, r, a) {
-        if (t) {
-            const i = MapObjectDefs[e.type];
-            this.type = e.type;
-            this.pos = v2.copy(e.pos);
-            this.rot = math.oriToRad(e.ori);
-            this.scale = e.scale;
-            this.layer = e.layer;
-            this.goreKills = e.goreKills;
+    c(data, fullUpdate, isNew, ctx) {
+        if (fullUpdate) {
+            const def = MapObjectDefs[data.type];
+
+            // Copy data
+            this.type = data.type;
+            this.pos = v2.copy(data.pos);
+            this.rot = math.oriToRad(data.ori);
+            this.scale = data.scale;
+            this.layer = data.layer;
+            this.goreKills = data.goreKills;
             this.collider = collider.transform(
-                i.collision,
+                def.collision,
                 this.pos,
                 this.rot,
                 this.scale
             );
-            this.surface = i.surface
-                ? util.cloneDeep(i.surface)
+            this.surface = def.surface
+                ? util.cloneDeep(def.surface)
                 : null;
-            this.hasGore = i.gore !== undefined;
-            this.isNew = r;
+            this.hasGore = def.gore !== undefined;
+
+            // Setup render
+            // The separate DecalRender object lets decals fade out
+            // over time after the underlying GameObject has been deleted.
+            this.isNew = isNew;
             if (this.isNew) {
-                this.decalRender = a.decalBarn.allocDecalRender();
-                this.decalRender.o(this, a.map, a.renderer);
+                this.decalRender = ctx.decalBarn.allocDecalRender();
+                this.decalRender.o(this, ctx.map, ctx.renderer);
             }
         }
     }
 
-    m(e, t) {
+    m(dt, t) {
         if (this.hasGore) {
-            const r = MapObjectDefs[this.type];
-            let i = math.delerp(
+            const def = MapObjectDefs[this.type];
+            let goreTarget = math.delerp(
                 this.goreKills,
-                r.gore.fade.start,
-                r.gore.fade.end
+                def.gore.fade.start,
+                def.gore.fade.end
             );
-            i = Math.pow(i, r.gore.fade.pow);
+            goreTarget = Math.pow(goreTarget, def.gore.fade.pow);
             this.goreT = this.isNew
-                ? i
-                : math.lerp(e * r.gore.fade.speed, this.goreT, i);
-            if (r.gore.tint !== undefined) {
-                const o = lerpColor(this.goreT, r.img.tint, r.gore.tint);
-                this.decalRender.setTint(o);
+                ? goreTarget
+                : math.lerp(dt * def.gore.fade.speed, this.goreT, goreTarget);
+
+            // Adjust properties based on the gore level
+            if (def.gore.tint !== undefined) {
+                const tint = lerpColor(this.goreT, def.img.tint, def.gore.tint);
+                this.decalRender.setTint(tint);
             }
-            if (r.gore.alpha !== undefined) {
+            if (def.gore.alpha !== undefined) {
                 this.decalRender.spriteAlpha = math.lerp(
                     this.goreT,
-                    r.img.alpha,
-                    r.gore.alpha
+                    def.img.alpha,
+                    def.gore.alpha
                 );
             }
-            if (r.gore.waterColor !== undefined && this.surface) {
+            if (def.gore.waterColor !== undefined && this.surface) {
                 this.surface.data.waterColor = lerpColor(
                     this.goreT,
-                    r.surface.data.waterColor,
-                    r.gore.waterColor
+                    def.surface.data.waterColor,
+                    def.gore.waterColor
                 );
             }
-            if (r.gore.rippleColor !== undefined && this.surface) {
+            if (def.gore.rippleColor !== undefined && this.surface) {
                 this.surface.data.rippleColor = lerpColor(
                     this.goreT,
-                    r.surface.data.rippleColor,
-                    r.gore.rippleColor
+                    def.surface.data.rippleColor,
+                    def.gore.rippleColor
                 );
             }
         }
@@ -104,40 +112,46 @@ class DecalRender {
         this.sprite.visible = false;
     }
 
-    o(e, t, r) {
-        const a = MapObjectDefs[e.type];
-        this.pos = v2.copy(e.pos);
-        this.rot = e.rot;
-        this.scale = e.scale;
-        this.layer = e.layer;
-        this.zIdx = a.img.zIdx;
-        this.zOrd = e.__id;
-        const i = a.img;
-        this.sprite.texture = PIXI.Texture.from(i.sprite);
+    o(decal, map, renderer) {
+        const def = MapObjectDefs[decal.type];
+
+        this.pos = v2.copy(decal.pos);
+        this.rot = decal.rot;
+        this.scale = decal.scale;
+        this.layer = decal.layer;
+        this.zIdx = def.img.zIdx;
+        this.zOrd = decal.__id;
+
+        const imgDef = def.img;
+        this.sprite.texture = PIXI.Texture.from(imgDef.sprite);
         this.sprite.alpha = 1;
         this.sprite.visible = true;
-        this.imgScale = a.img.scale;
-        this.spriteAlpha = i.alpha;
-        this.valueAdjust = i.ignoreAdjust
+
+        this.imgScale = def.img.scale;
+        this.spriteAlpha = imgDef.alpha;
+        this.valueAdjust = imgDef.ignoreAdjust
             ? 1
-            : t.getMapDef().biome.valueAdjust;
-        this.setTint(i.tint);
+            : map.getMapDef().biome.valueAdjust;
+        this.setTint(imgDef.tint);
+
         this.inWater = false;
-        if (a.height < 0.25) {
-            const o = t.getGroundSurface(e.pos, e.layer);
-            this.inWater = o.type == "water";
+        if (def.height < 0.25) {
+            const surface = map.getGroundSurface(decal.pos, decal.layer);
+            this.inWater = surface.type == "water";
         }
-        this.flicker = a.img.flicker;
+
+        this.flicker = def.img.flicker;
         if (this.flicker) {
-            this.flickerMin = a.img.flickerMin;
-            this.flickerMax = a.img.flickerMax;
+            this.flickerMin = def.img.flickerMin;
+            this.flickerMax = def.img.flickerMax;
             this.flickerTarget = this.imgScale;
-            this.flickerRate = a.img.flickerRate;
+            this.flickerRate = def.img.flickerRate;
             this.flickerCooldown = 0;
         }
+
         this.active = true;
         this.deactivated = false;
-        this.fadeout = a.lifetime !== undefined;
+        this.fadeout = def.lifetime !== undefined;
         this.fadeAlpha = 1;
     }
 
@@ -145,16 +159,16 @@ class DecalRender {
         this.deactivated = true;
     }
 
-    setTint(e) {
+    setTint(color) {
         if (this.valueAdjust < 1) {
-            e = util.adjustValue(e, this.valueAdjust);
+            color = util.adjustValue(color, this.valueAdjust);
         }
-        this.sprite.tint = e;
+        this.sprite.tint = color;
     }
 
-    m(e, t, r) {
+    m(dt, camera, renderer) {
         if (this.deactivated && this.fadeout) {
-            this.fadeAlpha = math.lerp(e * 3, this.fadeAlpha, 0);
+            this.fadeAlpha = math.lerp(dt * 3, this.fadeAlpha, 0);
             if (this.fadeAlpha < 0.01) {
                 this.fadeAlpha = 0;
             }
@@ -166,6 +180,7 @@ class DecalRender {
             this.sprite.visible = false;
             this.active = false;
         }
+
         if (this.flicker) {
             if (this.flickerCooldown < 0) {
                 this.flickerTarget = util.random(
@@ -177,24 +192,25 @@ class DecalRender {
                     this.flickerRate
                 );
             } else {
+                // Lerp towards the last target flicker
                 this.imgScale = math.lerp(
                     this.flickerRate - this.flickerCooldown,
                     this.imgScale,
                     this.flickerTarget
                 );
-                this.flickerCooldown -= e;
+                this.flickerCooldown -= dt;
             }
         }
-        const a = t.pointToScreen(this.pos);
-        const i = t.pixels(this.scale * this.imgScale);
-        this.sprite.position.set(a.x, a.y);
-        this.sprite.scale.set(i, i);
+        const screenPos = camera.pointToScreen(this.pos);
+        const screenScale = camera.pixels(this.scale * this.imgScale);
+        this.sprite.position.set(screenPos.x, screenPos.y);
+        this.sprite.scale.set(screenScale, screenScale);
         this.sprite.rotation = -this.rot;
         this.sprite.alpha =
             this.spriteAlpha *
             (this.inWater ? 0.3 : 1) *
             this.fadeAlpha;
-        r.addPIXIObj(this.sprite, this.layer, this.zIdx, this.zOrd);
+        renderer.addPIXIObj(this.sprite, this.layer, this.zIdx, this.zOrd);
     }
 }
 export class DecalBarn {
@@ -204,35 +220,36 @@ export class DecalBarn {
     }
 
     allocDecalRender() {
-        let e = null;
-        for (let t = 0; t < this.decalRenders.length; t++) {
-            const r = this.decalRenders[t];
-            if (!r.active) {
-                e = r;
+        let decalRender = null;
+        for (let i = 0; i < this.decalRenders.length; i++) {
+            const d = this.decalRenders[i];
+            if (!d.active) {
+                decalRender = d;
                 break;
             }
         }
-        if (!e) {
-            e = new DecalRender();
-            this.decalRenders.push(e);
+        if (!decalRender) {
+            decalRender = new DecalRender();
+            this.decalRenders.push(decalRender);
         }
-        return e;
+        return decalRender;
     }
 
-    m(e, t, r) {
-        for (let a = this._.p(), i = 0; i < a.length; i++) {
-            const o = a[i];
-            if (o.active) {
-                o.m(e);
+    update(dt, camera, renderer) {
+        const decals = this._.p();
+        for (let i = 0; i < decals.length; i++) {
+            const decal = decals[i];
+            if (decal.active) {
+                decal.m(dt);
             }
         }
-        for (let s = 0; s < this.decalRenders.length; s++) {
-            const n = this.decalRenders[s];
-            if (n.active) {
-                n.m(e, t, r);
+        for (let i = 0; i < this.decalRenders.length; i++) {
+            const decalRender = this.decalRenders[i];
+            if (decalRender.active) {
+                decalRender.m(dt, camera, renderer);
             }
         }
     }
 
-    render(e, t, r) { }
+    render(camera, debug, layer) { }
 }

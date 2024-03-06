@@ -45,8 +45,11 @@ function traceGroundPatch(canvas, patch, seed) {
 }
 
 export class Map {
-    constructor(e) {
-        this.decalBarn = e;
+    /**
+     * @param {import("./objects/decal").DecalBarn} decalBarn
+     */
+    constructor(decalBarn) {
+        this.decalBarn = decalBarn;
         this.I = false;
         this.Br = false;
         this.display = {

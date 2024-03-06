@@ -11,95 +11,96 @@ export class FlareBarn {
         this.bullets = [];
     }
 
-    addFlare(e, t, r) {
-        let a = null;
-        for (let s = 0; s < this.bullets.length; s++) {
+    addFlare(bullet, playerBarn, r) {
+        let b = null;
+        for (let i = 0; i < this.bullets.length; i++) {
             if (
-                !this.bullets[s].alive &&
-                !this.bullets[s].collided
+                !this.bullets[i].alive &&
+                !this.bullets[i].collided
             ) {
-                a = this.bullets[s];
+                b = this.bullets[i];
                 break;
             }
         }
-        if (!a) {
-            a = {};
-            a.alive = false;
-            a.flareContainer = new PIXI.Container();
-            a.flareContainer.visible = false;
-            a.flare = PIXI.Sprite.from("part-flare-01.img");
-            a.flare.anchor.set(0.5, 0.5);
-            a.flareContainer.addChild(a.flare);
-            a.trailContainer = new PIXI.Container();
-            a.trailContainer.visible = false;
-            a.trailContainer.pivot.set(14.5, 0);
-            a.bulletTrail = PIXI.Sprite.from(
+        if (!b) {
+            b = {};
+            b.alive = false;
+            b.flareContainer = new PIXI.Container();
+            b.flareContainer.visible = false;
+            b.flare = PIXI.Sprite.from("part-flare-01.img");
+            b.flare.anchor.set(0.5, 0.5);
+            b.flareContainer.addChild(b.flare);
+            b.trailContainer = new PIXI.Container();
+            b.trailContainer.visible = false;
+            b.trailContainer.pivot.set(14.5, 0);
+            b.bulletTrail = PIXI.Sprite.from(
                 "player-bullet-trail-02.img"
             );
-            a.bulletTrail.anchor.set(0.5, 0.5);
-            a.trailContainer.addChild(a.bulletTrail);
-            this.bullets.push(a);
+            b.bulletTrail.anchor.set(0.5, 0.5);
+            b.trailContainer.addChild(b.bulletTrail);
+            this.bullets.push(b);
         }
-        const l = BulletDefs[e.bulletType];
-        const p = 1 + e.varianceT * l.variance;
-        const h = math.remap(e.distAdjIdx, 0, 32, -1, 1);
-        const d =
-            l.distance /
-            Math.pow(GameConfig.bullet.reflectDistDecay, e.reflectCount);
-        a.alive = true;
-        a.isNew = true;
-        a.collided = false;
-        a.flareScale = 0.01;
-        a.trailScale = 1;
-        a.timeAlive = 0;
-        a.maxTimeAlive = 2.5;
-        a.startPos = v2.copy(e.pos);
-        a.pos = v2.copy(e.pos);
-        a.dir = v2.copy(e.dir);
-        a.layer = e.layer;
-        a.speed = l.speed * p;
-        a.distance = d * p + h;
-        const u = Math.atan2(a.dir.x, a.dir.y);
-        a.flareContainer.rotation = u - Math.PI / 2;
-        a.trailContainer.rotation = u - Math.PI / 2;
-        a.layer = e.layer;
-        const g = t.u(a.playerId);
-        if (g && g.layer & 2) {
-            a.layer |= 2;
+        const bulletDef = BulletDefs[bullet.bulletType];
+        const variance = 1 + bullet.varianceT * bulletDef.variance;
+        const distAdj = math.remap(bullet.distAdjIdx, 0, 32, -1, 1);
+        const distance =
+            bulletDef.distance /
+            Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
+        b.alive = true;
+        b.isNew = true;
+        b.collided = false;
+        b.flareScale = 0.01;
+        b.trailScale = 1;
+        b.timeAlive = 0;
+        b.maxTimeAlive = 2.5;
+        b.startPos = v2.copy(bullet.pos);
+        b.pos = v2.copy(bullet.pos);
+        b.dir = v2.copy(bullet.dir);
+        b.layer = bullet.layer;
+        b.speed = bulletDef.speed * variance;
+        b.distance = distance * variance + distAdj;
+
+        const angleRadians = Math.atan2(b.dir.x, b.dir.y);
+        b.flareContainer.rotation = angleRadians - Math.PI / 2;
+        b.trailContainer.rotation = angleRadians - Math.PI / 2;
+        b.layer = bullet.layer;
+
+        const player = playerBarn.u(b.playerId);
+        if (player && player.layer & 2) {
+            b.layer |= 2;
         }
-        const y = GameConfig.tracerColors[l.tracerColor];
-        let w = y.regular;
-        if (g?.isOnBrightSurface) {
-            w = y.saturated;
+        const tracerColorDefs = GameConfig.tracerColors[bulletDef.tracerColor];
+        let tracerColor = tracerColorDefs.regular;
+        if (player?.isOnBrightSurface) {
+            tracerColor = tracerColorDefs.saturated;
         }
-        a.bulletTrail.scale.set(0.8, l.tracerWidth);
-        a.tracerLength = l.tracerLength;
-        a.bulletTrail.tint = w;
-        a.tracerAlphaRate = y.alphaRate;
-        a.tracerAlphaMin = y.alphaMin;
-        a.bulletTrail.alpha = 1;
-        a.flare.scale.set(1, 1);
-        a.flare.tint = l.flareColor;
-        a.flare.alpha = 0.8;
-        a.maxFlareScale = l.maxFlareScale;
-        a.smokeThrottle = 0;
-        a.flareContainer.visible = true;
-        a.trailContainer.visible = true;
+        b.bulletTrail.scale.set(0.8, bulletDef.tracerWidth);
+        b.tracerLength = bulletDef.tracerLength;
+        b.bulletTrail.tint = tracerColor;
+        b.tracerAlphaRate = tracerColorDefs.alphaRate;
+        b.tracerAlphaMin = tracerColorDefs.alphaMin;
+        b.bulletTrail.alpha = 1;
+        b.flare.scale.set(1, 1);
+        b.flare.tint = bulletDef.flareColor;
+        b.flare.alpha = 0.8;
+        b.maxFlareScale = bulletDef.maxFlareScale;
+        b.smokeThrottle = 0;
+        b.flareContainer.visible = true;
+        b.trailContainer.visible = true;
     }
 
-    m(e, t, r, a, i, o, m, p) {
-        t.$e.p();
+    update(dt, playerBarn, map, camera, activePlayer, renderer, particleBarn, audioManager) {
         for (let h = 0; h < this.bullets.length; h++) {
             const d = this.bullets[h];
             if (d.collided) {
-                d.flareScale = math.max(d.flareScale - e * 0.5, 0);
-                d.flare.alpha = math.max(d.flare.alpha - e, 0);
-                d.trailScale = math.max(d.trailScale - e * 6, 0);
+                d.flareScale = math.max(d.flareScale - dt * 0.5, 0);
+                d.flare.alpha = math.max(d.flare.alpha - dt, 0);
+                d.trailScale = math.max(d.trailScale - dt * 6, 0);
                 d.bulletTrail.alpha = math.max(
-                    d.bulletTrail.alpha - e,
+                    d.bulletTrail.alpha - dt,
                     0
                 );
-                d.pos = v2.add(d.pos, v2.mul(d.dir, e * d.speed));
+                d.pos = v2.add(d.pos, v2.mul(d.dir, dt * d.speed));
                 if (d.flare.alpha <= 0) {
                     d.collided = false;
                     d.flareContainer.visible = false;
@@ -107,68 +108,73 @@ export class FlareBarn {
                 }
             }
             if (d.alive) {
+                // Trail alpha
                 if (d.tracerAlphaRate) {
-                    const u =
-                        i.__id == d.playerId
+                    const rate =
+                        activePlayer.__id == d.playerId
                             ? d.tracerAlphaRate
                             : d.tracerAlphaRate * 0.9;
                     d.bulletTrail.alpha = math.max(
                         d.tracerAlphaMin,
-                        d.bulletTrail.alpha * u
+                        d.bulletTrail.alpha * rate
                     );
                 }
-                d.timeAlive += e;
+
+                // Grow the flare size over time
+                d.timeAlive += dt;
                 d.flareScale =
                     math.easeOutExpo(d.timeAlive / d.maxTimeAlive) *
                     d.maxFlareScale;
+
+                // Make a smoke trail
                 if (d.smokeThrottle <= 0) {
                     d.smokeThrottle = 0.05;
                 } else {
-                    d.smokeThrottle -= e;
+                    d.smokeThrottle -= dt;
                 }
-                const g =
+
+                const distLeft =
                     d.distance - v2.length(v2.sub(d.startPos, d.pos));
-                const y = math.min(g, e * d.speed);
-                v2.copy(d.pos);
-                d.pos = v2.add(d.pos, v2.mul(d.dir, y));
-                if (math.eqAbs(g, y)) {
+                const distTravel = math.min(distLeft, dt * d.speed);
+                // v2.copy(d.pos);
+                d.pos = v2.add(d.pos, v2.mul(d.dir, distTravel));
+                if (math.eqAbs(distLeft, distTravel)) {
                     d.collided = true;
                     d.alive = false;
                 }
-                let w = 0;
+                let layer = 0;
                 if (
-                    (!!util.sameLayer(w, i.layer) ||
-                        !!(i.layer & 2)) &&
-                    (!(i.layer & 2) ||
-                        !r.insideStructureMask(
+                    (!!util.sameLayer(layer, activePlayer.layer) ||
+                        !!(activePlayer.layer & 2)) &&
+                    (!(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(
                             collider.createCircle(d.pos, 1)
                         ))
                 ) {
-                    w |= 2;
+                    layer |= 2;
                 }
-                o.addPIXIObj(d.trailContainer, w, 1000, 0);
-                o.addPIXIObj(d.flareContainer, w, 1000, 1);
+                renderer.addPIXIObj(d.trailContainer, layer, 1000, 0);
+                renderer.addPIXIObj(d.flareContainer, layer, 1000, 1);
                 d.isNew = false;
             }
         }
     }
 
-    render(e) {
-        e.pixels(1);
-        for (let t = 0; t < this.bullets.length; t++) {
-            const r = this.bullets[t];
-            if (r.alive || r.collided) {
-                const a = e.pointToScreen(r.pos);
-                r.flareContainer.position.set(a.x, a.y);
-                const i = e.pixels(1);
-                r.flareContainer.scale.set(
-                    i * r.flareScale,
-                    i * r.flareScale
+    render(camera) {
+        for (let i = 0; i < this.bullets.length; i++) {
+            const b = this.bullets[i];
+            if (b.alive || b.collided) {
+                const screenPos = camera.pointToScreen(b.pos);
+                b.flareContainer.position.set(screenPos.x, screenPos.y);
+                const screenScale = camera.pixels(1);
+                b.flareContainer.scale.set(
+                    screenScale * b.flareScale,
+                    screenScale * b.flareScale
                 );
-                const o = v2.length(v2.sub(r.pos, r.startPos));
-                r.trailContainer.position.set(a.x, a.y);
-                const s = math.min(r.tracerLength * 15, o / 2);
-                r.trailContainer.scale.set(i * s * r.trailScale, i);
+                const dist = v2.length(v2.sub(b.pos, b.startPos));
+                b.trailContainer.position.set(screenPos.x, screenPos.y);
+                const trailLength = math.min(b.tracerLength * 15, dist / 2);
+                b.trailContainer.scale.set(screenScale * trailLength * b.trailScale, screenScale);
             }
         }
     }

@@ -57,68 +57,68 @@ export class MapSpriteBarn {
     }
 
     n() {
-        for (let e = 0; e < this.mapSprites.length; e++) {
-            const t = this.mapSprites[e].sprite;
-            t.parent?.removeChild(t);
-            t.destroy({
+        for (let i = 0; i < this.mapSprites.length; i++) {
+            const sprite = this.mapSprites[i].sprite;
+            sprite.parent?.removeChild(sprite);
+            sprite.destroy({
                 children: true
             });
         }
     }
 
     addSprite() {
-        let e = null;
-        for (let t = 0; t < this.mapSprites.length; t++) {
-            if (!this.mapSprites[t].active) {
-                e = this.mapSprites[t];
+        let mapSprite = null;
+        for (let i = 0; i < this.mapSprites.length; i++) {
+            if (!this.mapSprites[i].active) {
+                mapSprite = this.mapSprites[i];
                 break;
             }
         }
-        if (!e) {
-            e = new MapSprite();
-            this.mapSprites.push(e);
-            this.container.addChild(e.sprite);
+        if (!mapSprite) {
+            mapSprite = new MapSprite();
+            this.mapSprites.push(mapSprite);
+            this.container.addChild(mapSprite.sprite);
         }
-        e.init();
-        return e;
+        mapSprite.init();
+        return mapSprite;
     }
 
-    update(e, t, r) {
-        let a = false;
+    update(dt, uiManager, map) {
+        let doSort = false;
         for (let i = 0; i < this.mapSprites.length; i++) {
-            const o = this.mapSprites[i];
-            if (o.active) {
-                if (o.zOrder != o.sprite.__zOrder) {
-                    o.sprite.__zOrder = o.zOrder;
-                    a = true;
+            const m = this.mapSprites[i];
+            if (m.active) {
+                if (m.zOrder != m.sprite.__zOrder) {
+                    m.sprite.__zOrder = m.zOrder;
+                    doSort = true;
                 }
-                o.ticker += e;
-                if (o.pulse) {
-                    o.scale += e / 2.5;
+                m.ticker += dt;
+                if (m.pulse) {
+                    m.scale += dt / 2.5;
                 }
-                const s = t.getMapPosFromWorldPos(o.pos, r);
-                const n = o.scale;
-                const l =
-                    math.smoothstep(o.ticker, 0, 0.1) *
+                const pos = uiManager.getMapPosFromWorldPos(m.pos, map);
+                const scale = m.scale;
+                const fade =
+                    math.smoothstep(m.ticker, 0, 0.1) *
                     (1 -
                         math.smoothstep(
-                            o.ticker,
-                            o.lifetime - 0.5,
-                            o.lifetime
+                            m.ticker,
+                            m.lifetime - 0.5,
+                            m.lifetime
                         ));
-                o.sprite.position.set(s.x, s.y);
-                o.sprite.scale.set(n, n);
-                o.sprite.alpha = o.alpha * l;
-                o.sprite.visible =
-                    o.visible && o.sprite.alpha > 0.0001;
-                if (o.ticker >= o.lifetime && !o.retained) {
-                    o.free();
+                m.sprite.position.set(pos.x, pos.y);
+                m.sprite.scale.set(scale, scale);
+                m.sprite.alpha = m.alpha * fade;
+                m.sprite.visible =
+                    m.visible && m.sprite.alpha > 0.0001;
+                if (m.ticker >= m.lifetime && !m.retained) {
+                    m.free();
                 }
             }
         }
-        if (a) {
-            this.container.children.sort((e, t) => {
-                return e.__zOrder - t.__zOrder;
+        if (doSort) {
+            this.container.children.sort((a, b) => {
+                return a.__zOrder - b.__zOrder;
             });
         }
     }

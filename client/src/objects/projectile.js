@@ -32,50 +32,62 @@ class Projectile {
         }
     }
 
-    c(e, t, r, a) {
-        if (t) {
-            const i = GameObjectDefs[e.type];
-            this.layer = e.layer;
-            this.type = e.type;
-            this.rad = i.rad * 0.5;
+    c(data, fullUpdate, isNew, a) {
+        // Copy data
+        if (fullUpdate) {
+            const itemDef = GameObjectDefs[data.type];
+            this.layer = data.layer;
+            this.type = data.type;
+            // Use a smaller visual radius for collision effects
+            this.rad = itemDef.rad * 0.5;
         }
-        this.posOld = r ? v2.copy(e.pos) : v2.copy(this.pos);
-        this.posZOld = r ? e.posZ : this.posZ;
-        this.pos = v2.copy(e.pos);
-        this.posZ = e.posZ;
-        this.dir = v2.copy(e.dir);
-        if (r) {
-            const s = GameObjectDefs[e.type];
-            const l = s.worldImg;
-            this.imgScale = l.scale;
+
+        this.posOld = isNew ? v2.copy(data.pos) : v2.copy(this.pos);
+        this.posZOld = isNew ? data.posZ : this.posZ;
+        this.pos = v2.copy(data.pos);
+        this.posZ = data.posZ;
+        this.dir = v2.copy(data.dir);
+
+        if (isNew) {
+            const itemDef = GameObjectDefs[data.type];
+            const imgDef = itemDef.worldImg;
+            this.imgScale = imgDef.scale;
             this.rot = 0;
-            this.rotVel = s.throwPhysics.spinVel;
+            this.rotVel = itemDef.throwPhysics.spinVel;
             if (
-                s.throwPhysics.randomizeSpinDir &&
+                itemDef.throwPhysics.randomizeSpinDir &&
                 Math.random() < 0.5
             ) {
                 this.rotVel *= -1;
             }
-            this.rotDrag = s.throwPhysics.spinDrag * util.random(1, 2);
+            this.rotDrag = itemDef.throwPhysics.spinDrag * util.random(1, 2);
             this.velZ = 0;
             this.grounded = false;
             this.inWater = false;
             this.lastSoundObjId = 0;
-            this.playHitSfx = !s.explodeOnImpact;
+            this.playHitSfx = !itemDef.explodeOnImpact;
             this.alwaysRenderOntop = false;
-            let p = true;
+            let isVisible = true;
+
+            // Airstrike-projectile related hacks
             if (this.type == "bomb_iron") {
                 this.alwaysRenderOntop = true;
-                const h = collider.createCircle(this.pos, 0.5);
-                if (a.map.insideBuildingCeiling(h, true)) {
-                    p = false;
+
+                const col = collider.createCircle(this.pos, 0.5);
+                if (a.map.insideBuildingCeiling(col, true)) {
+                    isVisible = false;
                 }
             }
-            this.sprite.texture = PIXI.Texture.from(l.sprite);
-            this.sprite.tint = l.tint;
+
+            // Setup sprite
+            this.sprite.texture = PIXI.Texture.from(imgDef.sprite);
+            this.sprite.tint = imgDef.tint;
             this.sprite.alpha = 1;
-            this.container.visible = p;
-            if (e.type == "strobe") {
+
+            this.container.visible = isVisible;
+
+            // Strobe variables
+            if (data.type == "strobe") {
                 if (!this.strobeSprite) {
                     this.strobeSprite = new PIXI.Sprite();
                     this.strobeSprite.texture =
@@ -94,7 +106,7 @@ class Projectile {
         }
     }
 }
-const g = {
+const groundSounds = {
     grass: "frag_grass",
     sand: "frag_sand",
     water: "frag_water"
@@ -105,203 +117,223 @@ export class ProjectileBarn {
         this.cr = new Pool(Projectile);
     }
 
-    m(e, t, r, a, i, o, h) {
-        for (let y = this.cr.p(), w = 0; w < y.length; w++) {
-            const f = y[w];
-            if (f.active) {
-                const _ = GameObjectDefs[f.type];
-                let b = f.rotDrag;
-                if (f.inWater) {
-                    b *= 3;
+    m(dt, particleBarn, audioManager, activePlayer, map, renderer, camera) {
+        const projectiles = this.cr.p();
+        for (let i = 0; i < projectiles.length; i++) {
+            const p = projectiles[i];
+            if (p.active) {
+                const itemDef = GameObjectDefs[p.type];
+                let rotDrag = p.rotDrag;
+                if (p.inWater) {
+                    rotDrag *= 3;
                 }
-                f.rotVel *= 1 / (1 + e * b);
-                f.rot += f.rotVel * e;
-                const x = {
+                p.rotVel *= 1 / (1 + dt * rotDrag);
+                p.rot += p.rotVel * dt;
+
+                // Detect overlapping obstacles for sound effects
+                const wallCol = {
                     obj: null,
                     pen: 0
                 };
-                const S = {
+                const groundCol = {
                     obj: null,
                     pen: 0
                 };
-                const v = collider.createCircle(f.pos, f.rad);
-                for (let k = i.Ve.p(), z = 0; z < k.length; z++) {
-                    const I = k[z];
+                const projCollider = collider.createCircle(p.pos, p.rad);
+                const obstacles = map.Ve.p();
+                for (let j = 0; j < obstacles.length; j++) {
+                    const o = obstacles[j];
                     if (
-                        I.active &&
-                        !I.dead &&
-                        util.sameLayer(I.layer, f.layer)
+                        o.active &&
+                        !o.dead &&
+                        util.sameLayer(o.layer, p.layer)
                     ) {
-                        const T = collider.intersect(I.collider, v);
-                        if (T) {
-                            const M = I.height > f.posZ ? x : S;
+                        const res = collider.intersect(o.collider, projCollider);
+                        if (res) {
+                            const col = o.height > p.posZ ? wallCol : groundCol;
                             if (
-                                T.pen > M.pen &&
-                                (!M.obj || M.obj.height <= I.height)
+                                res.pen > col.pen &&
+                                (!col.obj || col.obj.height <= o.height)
                             ) {
-                                M.obj = I;
-                                M.pen = T.pen;
+                                col.obj = o;
+                                col.pen = res.pen;
                             }
                         }
                     }
                 }
-                const P = v2.div(v2.sub(f.pos, f.posOld), e);
-                const C = v2.length(P);
+
+                // Wall sound
+                const vel = v2.div(v2.sub(p.pos, p.posOld), dt);
+                const speed = v2.length(vel);
                 if (
-                    x.obj &&
-                    x.obj.__id != f.lastSoundObjId &&
-                    C > 7.5 &&
-                    ((f.lastSoundObjId = x.obj.__id), f.playHitSfx)
+                    wallCol.obj &&
+                    wallCol.obj.__id != p.lastSoundObjId &&
+                    speed > 7.5 &&
+                    ((p.lastSoundObjId = wallCol.obj.__id), p.playHitSfx)
                 ) {
-                    const A = v2.mul(
-                        v2.normalizeSafe(P, v2.create(1, 0)),
+                    const dir = v2.mul(
+                        v2.normalizeSafe(vel, v2.create(1, 0)),
                         -1
                     );
-                    const O = MapObjectDefs[x.obj.type];
+                    const mapDef = MapObjectDefs[wallCol.obj.type];
                     playHitFx(
-                        O.hitParticle,
-                        O.sound.bullet,
-                        f.pos,
-                        A,
-                        f.layer,
-                        t,
-                        r
+                        mapDef.hitParticle,
+                        mapDef.sound.bullet,
+                        p.pos,
+                        dir,
+                        p.layer,
+                        particleBarn,
+                        audioManager
                     );
                 }
-                const D = i.getGroundSurface(f.pos, f.layer);
-                if (f.posZ <= 0.01) {
-                    if (!f.inWater && D.type == "water") {
-                        t.addRippleParticle(
-                            f.pos,
-                            f.layer,
-                            D.data.rippleColor
+                const surface = map.getGroundSurface(p.pos, p.layer);
+                // Play an effect on initial ground contact
+
+                if (p.posZ <= 0.01) {
+                    if (!p.inWater && surface.type == "water") {
+                        particleBarn.addRippleParticle(
+                            p.pos,
+                            p.layer,
+                            surface.data.rippleColor
                         );
                     }
-                    f.inWater = D.type == "water";
+                    p.inWater = surface.type == "water";
                 }
-                const E = f.velZ;
-                f.velZ = (f.posZ - f.posZOld) / e;
+                const velZOld = p.velZ;
+                p.velZ = (p.posZ - p.posZOld) / dt;
+
+                // Ground sound
                 if (
-                    !f.isNew &&
-                    !f.grounded &&
-                    f.velZ >= 0 &&
-                    E < 0
+                    !p.isNew &&
+                    !p.grounded &&
+                    p.velZ >= 0 &&
+                    velZOld < 0
                 ) {
-                    const B = {
+                    // @HACK: there are two different functions for playing
+                    // sounds, and we have to know which one to call for
+                    // particular sound names. Same with the channel.
+                    const sound = {
                         fn: "playGroup",
                         channel: "hits",
                         name: ""
                     };
-                    if (S.obj) {
-                        if (f.lastSoundObjId != S.obj.__id) {
-                            f.lastSoundObjId = S.obj.__id;
-                            const R = MapObjectDefs[S.obj.type];
-                            B.name = R.sound.bullet;
+                    if (groundCol.obj) {
+                        if (p.lastSoundObjId != groundCol.obj.__id) {
+                            p.lastSoundObjId = groundCol.obj.__id;
+                            const def = MapObjectDefs[groundCol.obj.type];
+                            sound.name = def.sound.bullet;
                         }
                     } else {
-                        f.grounded = true;
-                        B.name = g[D.type];
-                        if (B.name === undefined) {
-                            B.name = `footstep_${D.type}`;
-                            B.fn = "playGroup";
-                            B.channel = "sfx";
+                        p.grounded = true;
+                        sound.name = groundSounds[surface.type];
+                        // @HACK: Attept to use a footstep sound if we failed
+                        // finding a surface
+                        if (sound.name === undefined) {
+                            sound.name = `footstep_${surface.type}`;
+                            sound.fn = "playGroup";
+                            sound.channel = "sfx";
                         }
                     }
-                    if (B.name && f.playHitSfx) {
-                        r[B.fn](B.name, {
-                            channel: B.channel,
-                            soundPos: f.pos,
-                            layer: f.layer,
+                    if (sound.name && p.playHitSfx) {
+                        audioManager[sound.fn](sound.name, {
+                            channel: sound.channel,
+                            soundPos: p.pos,
+                            layer: p.layer,
                             filter: "muffled"
                         });
                     }
                 }
-                if (f.type == "strobe" && f.strobeSprite) {
-                    f.strobeTicker = math.clamp(
-                        f.strobeTicker +
-                        e * f.strobeDir * f.strobeSpeed,
+
+                // Strobe effects
+                if (p.type == "strobe" && p.strobeSprite) {
+                    p.strobeTicker = math.clamp(
+                        p.strobeTicker +
+                        dt * p.strobeDir * p.strobeSpeed,
                         0,
                         1
                     );
-                    f.strobeScale =
-                        math.easeInExpo(f.strobeTicker) *
-                        f.strobeScaleMax;
-                    f.strobeSprite.scale.set(
-                        f.strobeScale,
-                        f.strobeScale
+                    p.strobeScale =
+                        math.easeInExpo(p.strobeTicker) *
+                        p.strobeScaleMax;
+                    p.strobeSprite.scale.set(
+                        p.strobeScale,
+                        p.strobeScale
                     );
                     if (
-                        f.strobeScale >= f.strobeScaleMax ||
-                        f.strobeTicker <= 0
+                        p.strobeScale >= p.strobeScaleMax ||
+                        p.strobeTicker <= 0
                     ) {
-                        f.strobeDir *= -1;
+                        p.strobeDir *= -1;
                     }
                 }
-                f.sprite.rotation = f.rot;
-                f.sprite.alpha = f.inWater ? 0.3 : 1;
-                if (_.trail) {
-                    const L = v2.length(P);
-                    const q =
+                p.sprite.rotation = p.rot;
+                p.sprite.alpha = p.inWater ? 0.3 : 1;
+
+                // Trail
+                if (itemDef.trail) {
+                    const speed = v2.length(vel);
+                    const trailT =
                         math.remap(
-                            L,
-                            _.throwPhysics.speed * 0.25,
-                            _.throwPhysics.speed * 1,
+                            speed,
+                            itemDef.throwPhysics.speed * 0.25,
+                            itemDef.throwPhysics.speed * 1,
                             0,
                             1
                         ) *
                         math.remap(
-                            f.posZ,
+                            p.posZ,
                             0.1,
                             GameConfig.projectile.maxHeight * 0.5,
                             0,
                             1
                         );
-                    f.trail.scale.set(
-                        _.trail.maxLength * q,
-                        _.trail.width
+                    p.trail.scale.set(
+                        itemDef.trail.maxLength * trailT,
+                        itemDef.trail.width
                     );
-                    f.trail.rotation = -Math.atan2(
-                        f.dir.y,
-                        f.dir.x
+                    p.trail.rotation = -Math.atan2(
+                        p.dir.y,
+                        p.dir.x
                     );
-                    f.trail.tint = _.trail.tint;
-                    f.trail.alpha = _.trail.alpha * q;
-                    f.trail.visible = true;
+                    p.trail.tint = itemDef.trail.tint;
+                    p.trail.alpha = itemDef.trail.alpha * trailT;
+                    p.trail.visible = true;
                 } else {
-                    f.trail.visible = false;
+                    p.trail.visible = false;
                 }
-                let F = f.layer;
-                let j = f.posZ < 0.25 ? 14 : 25;
-                const N = collider.createCircle(f.pos, f.rad * 3);
-                const H = i.insideStructureStairs(N);
-                const V = i.insideStructureMask(N);
+
+                let layer = p.layer;
+                let zOrd = p.posZ < 0.25 ? 14 : 25;
+                const stairCollider = collider.createCircle(p.pos, p.rad * 3);
+                const onStairs = map.insideStructureStairs(stairCollider);
+                const onMask = map.insideStructureMask(stairCollider);
                 if (
-                    f.posZ >= 0.25 &&
-                    !!H &&
-                    (f.layer & 1) == (a.layer & 1) &&
-                    (!V || !(a.layer & 2))
+                    p.posZ >= 0.25 &&
+                    !!onStairs &&
+                    (p.layer & 1) == (activePlayer.layer & 1) &&
+                    (!onMask || !(activePlayer.layer & 2))
                 ) {
-                    F |= 2;
-                    j += 100;
+                    layer |= 2;
+                    zOrd += 100;
                 }
-                if (f.alwaysRenderOntop && a.layer == 0) {
-                    j = 1000;
-                    F |= 2;
+                if (p.alwaysRenderOntop && activePlayer.layer == 0) {
+                    zOrd = 1000;
+                    layer |= 2;
                 }
-                o.addPIXIObj(f.container, F, j);
-                const U =
-                    f.imgScale *
+                renderer.addPIXIObj(p.container, layer, zOrd);
+                const scale =
+                    p.imgScale *
                     math.remap(
-                        f.posZ,
+                        p.posZ,
                         0,
                         GameConfig.projectile.maxHeight,
                         1,
                         4.75
                     );
-                const W = h.pointToScreen(f.pos);
-                const G = h.pixels(U);
-                f.container.position.set(W.x, W.y);
-                f.container.scale.set(G, G);
+                const screenPos = camera.pointToScreen(p.pos);
+                const screenScale = camera.pixels(scale);
+                p.container.position.set(screenPos.x, screenPos.y);
+                p.container.scale.set(screenScale, screenScale);
             }
         }
     }
