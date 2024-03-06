@@ -17,6 +17,7 @@ import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
+import { Loot } from "./loot";
 
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
@@ -62,7 +63,7 @@ export class Player extends BaseGameObject {
         this.dirty.health = true;
     }
 
-    private _boost: number = 100;
+    private _boost: number = 0;
 
     get boost(): number {
         return this._boost;
@@ -78,7 +79,7 @@ export class Player extends BaseGameObject {
     speed: number = this.game.config.movementSpeed;
 
     zoomDirty = true;
-    zoom: number;
+    zoom: number = 0;
 
     action!: { time: number, duration: number, targetId: number };
 
@@ -117,8 +118,8 @@ export class Player extends BaseGameObject {
 
     outfit = "outfitBase";
     pack = "backpack00";
-    helmet = "helmet01";
-    chest = "";
+    helmet = "helmet03";
+    chest = "chest03";
 
     layer = 0;
     aimLayer = 0;
@@ -246,7 +247,17 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.inventory["12gauge"] = 15;
+        this.inventory["12gauge"] = 12;
+        // this.inventory["frag"] = 3;
+        this.game.addLoot("12gauge", this.pos, this.layer, 5);
+        this.game.addLoot("soda", this.pos, this.layer, 1);
+        this.game.addLoot("2xscope", this.pos, this.layer, 1);
+        this.game.addLoot("4xscope", this.pos, this.layer, 1);
+        this.game.addLoot("8xscope", this.pos, this.layer, 1);
+        this.game.addLoot("frag", this.pos, this.layer, 1);
+        this.game.addLoot("frag", this.pos, this.layer, 1);
+        this.game.addLoot("smoke", this.pos, this.layer, 1);
+        this.game.addLoot("mirv", this.pos, this.layer, 1);
 
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
@@ -549,6 +560,9 @@ export class Player extends BaseGameObject {
 
         for (const item in GameConfig.bagSizes) {
             // const def = GameObjectDefs[item] as AmmoDef | HealDef;
+            if (item == "1xscope"){
+                continue;
+            }
 
             if (this.inventory[item] > 0) {
                 this.game.addLoot(item, this.pos, this.layer, this.inventory[item]);
@@ -613,9 +627,95 @@ export class Player extends BaseGameObject {
                     this.setDirty();
                 }
                 break;
-            case GameConfig.Input.Interact:
+            case GameConfig.Input.EquipOtherGun:
+                if (this.curWeapIdx == 2 && !this.weapons[0].type && !this.weapons[1].type){//nothing, nothing, [melee] => melee
+                    break;
+                }
 
+                if (this.curWeapIdx == 0 && !this.weapons[1].type){//[mosin], nothing, fists => fists
+                    this.curWeapIdx = 2;
+                }else if (this.curWeapIdx == 1 && !this.weapons[0].type){//nothing, [mosin], fists => fists
+                    this.curWeapIdx = 2;
+                }else if (this.curWeapIdx == 2 && this.weapons[0].type){//mosin, wildcard, [melee] => mosin
+                    this.curWeapIdx = 0;
+                }else if (this.curWeapIdx == 2 && !this.weapons[0].type && this.weapons[1].type){//nothing, mosin, [melee] => mosin
+                    this.curWeapIdx = 1;
+                }else{//normal case: [wildcard], [wildcard], melee => other wildcard
+                    this.curWeapIdx ^= 1;//XOR operator, will flip the number from 0 to 1 or from 1 to 0
+                }
+                this.setDirty();
                 break;
+            case GameConfig.Input.Interact:
+                const coll = collider.createCircle(this.pos, this.rad);
+                const objs = this.game.grid.intersectCollider(coll);
+                for (const o of objs){
+                    //if object is not loot or if not on the same layer as the player, ignore it
+                    if (o.__type != ObjectType.Loot || !util.sameLayer(this.layer, o.layer)){
+                        continue;
+                    }
+
+                    if (v2.distance(this.pos, o.pos) < 1.5){
+                        this.interactWith(o);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    interactWith(o: GameObject): void{
+        if (o.__type == ObjectType.Loot){
+            const lootType: string = GameObjectDefs[o.type].type;
+            if (["ammo", "scope", "heal", "boost", "throwable"].includes(lootType)){
+                const backpackLevel = Number(this.pack.at(-1));//backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+                const bagSpace = GameConfig.bagSizes[o.type][backpackLevel];
+                if (this.inventory[o.type] + o.count <= bagSpace){
+                    switch (lootType){
+                        case "ammo":
+                            break;
+                        case "scope"://TODO set zoom based on building or outside
+                            const zoom = GameConfig.scopeZoomRadius.desktop[o.type];
+                            if (zoom > this.zoom){//only switch scopes if new scope is highest level player has
+                                this.zoom = GameConfig.scopeZoomRadius.desktop[o.type];
+                                this.dirty.zoom = true;
+                                this.scope = o.type;
+                            }
+                            break;
+                        case "heal":
+                            break;
+                        case "boost":
+                            break;
+                        case "throwable":
+                            //fill empty slot with throwable, otherwise just add to inv
+                            if (this.inventory[o.type] == 0){
+                                this.weaponManager.weapons[3].type = o.type;
+                                this.weaponManager.weapons[3].ammo = o.count;
+                                this.dirty.weapons = true;
+                            }
+                            break;
+                    }
+                    this.inventory[o.type] += o.count;
+                    this.dirty.inventory = true;
+                }else{//spawn new loot object to animate the pickup rejection
+                    const spaceLeft = bagSpace - this.inventory[o.type];
+                    let amountToAdd: number;
+                    if (spaceLeft == 0){//ex: can hold 15 ammo and inventory contains 15 ammo
+                        amountToAdd = 0;
+                    }else{
+                        amountToAdd = spaceLeft;
+                    }
+
+                    this.inventory[o.type] += amountToAdd;
+                    this.dirty.inventory = true;
+
+                    const amountToDrop = o.count - amountToAdd;
+
+                    const angle = Math.atan2(this.dir.y, this.dir.x);
+                    const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
+                    const newPos = v2.add(o.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
+                    this.game.addLoot(o.type, newPos, o.layer, amountToDrop);
+                }
+                o.remove();
             }
         }
     }
@@ -631,7 +731,14 @@ export class Player extends BaseGameObject {
     }
 
     cancelAction(_?: boolean): void {
+        // this.action.duration = 0;
+        // this.action.targetId = 0;
+        // this.action.time = -1;
 
+        // this.actionType = 0;
+        // this.actionSeq = 0;
+        // this.dirty.action = false;
+        // this.setDirty();
     }
 
     recalculateSpeed(): void {
@@ -649,7 +756,7 @@ export class Player extends BaseGameObject {
 
         //increase speed when adrenaline is above 50%
         if (this.boost >= 50){
-            this.speed *= 1.15;
+            this.speed += 1.15;
         }
     }
 
