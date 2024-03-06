@@ -48,13 +48,13 @@ class DeadBody {
         this.container.visible = false;
     }
 
-    c(e, t, r, a) {
-        this.pos = v2.copy(e.pos);
-        if (t) {
-            this.layer = e.layer;
-            this.playerId = e.playerId;
+    c(data, fullUpdate, isNew, ctx) {
+        this.pos = v2.copy(data.pos);
+        if (fullUpdate) {
+            this.layer = data.layer;
+            this.playerId = data.playerId;
         }
-        if (r) {
+        if (isNew) {
             this.nameTextSet = false;
             this.container.visible = true;
         }
@@ -66,40 +66,45 @@ export class DeadBodyBarn {
         this.ot = new Pool(DeadBody);
     }
 
-    m(e, t, r, a, i, o) {
-        for (let s = this.ot.p(), l = 0; l < s.length; l++) {
-            const c = s[l];
-            if (c.active) {
-                if (!c.nameTextSet) {
-                    c.nameText.text = t.getPlayerName(
-                        c.playerId,
-                        r.__id,
+    m(dt, playerBarn, activePlayer, map, camera, renderer) {
+        const deadBodies = this.ot.p();
+        for (let i = 0; i < deadBodies.length; i++) {
+            const d = deadBodies[i];
+            if (d.active) {
+                if (!d.nameTextSet) {
+                    d.nameText.text = playerBarn.getPlayerName(
+                        d.playerId,
+                        activePlayer.__id,
                         false
                     );
-                    c.nameTextSet = true;
+                    d.nameTextSet = true;
                 }
-                const m = collider.createCircle(c.pos, 1);
-                const p = a.insideStructureStairs(m);
-                let h = c.layer;
-                let d = 12;
-                if (c.layer == 0 && r.layer == 0 && p) {
-                    h |= 2;
-                    d += 100;
+                const col = collider.createCircle(d.pos, 1);
+                const onStairs = map.insideStructureStairs(col);
+
+                let layer = d.layer;
+                let zOrd = 12;
+                if (d.layer == 0 && activePlayer.layer == 0 && onStairs) {
+                    layer |= 2;
+                    zOrd += 100;
                 }
-                o.addPIXIObj(c.container, h, d, c.__id);
-                const u = i.pointToScreen(c.pos);
-                const g = i.pixels(1);
-                c.container.position.set(u.x, u.y);
-                c.container.scale.set(g, g);
+
+                renderer.addPIXIObj(d.container, layer, zOrd, d.__id);
+
+                const screenPos = camera.pointToScreen(d.pos);
+                const screenScale = camera.pixels(1);
+                d.container.position.set(screenPos.x, screenPos.y);
+                d.container.scale.set(screenScale, screenScale);
             }
         }
     }
 
-    getDeadBodyById(e) {
-        for (let t = this.ot.p(), r = 0; r < t.length; r++) {
-            const a = t[r];
-            if (a.active && a.playerId == e) {
-                return a;
+    getDeadBodyById(playerId) {
+        const deadBodies = this.ot.p();
+        for (let i = 0; i < deadBodies.length; i++) {
+            const d = deadBodies[i];
+            if (d.active && d.playerId == playerId) {
+                return d;
             }
         }
         return null;
