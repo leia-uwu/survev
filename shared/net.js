@@ -888,8 +888,10 @@ class JoinMsg {
          * @type {boolean}
          */
         this.bot = false;
-
-        this.emotes = []
+        /**
+         * @type {string[]}
+         */
+        this.emotes = [];
     }
 
     /**
@@ -906,12 +908,12 @@ class JoinMsg {
         this.proxy = s.readBoolean();
         this.otherProxy = s.readBoolean();
         this.bot = s.readBoolean();
-        this.emotes = []
+        this.emotes = [];
         const count = s.readUint8();
-        
+
         for (let i = 0; i < count; i++) {
             const emote = s.readGameType();
-            this.emotes.push(emote)
+            this.emotes.push(emote);
         }
     }
 

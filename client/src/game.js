@@ -97,7 +97,7 @@ export class Game {
                     joinMessage.proxy = false; //* !/.*surviv\.io$/.test(window.location.hostname);
                     joinMessage.otherProxy = false; //* !proxy.authLocation();
                     joinMessage.bot = false;
-                    joinMessage.emotes = _this.config.get("loadout").emotes
+                    joinMessage.emotes = _this.config.get("loadout").emotes;
 
                     _this.sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };

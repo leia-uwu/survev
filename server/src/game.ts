@@ -14,6 +14,7 @@ import { GameConfig } from "../../shared/gameConfig";
 import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
+import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 
 export class Emote {
     playerId: number;
@@ -81,7 +82,7 @@ export class Game {
 
     logger: Logger;
 
-    emotes = new Set<Emote>()
+    emotes = new Set<Emote>();
 
     constructor(id: number, config: ConfigType) {
         this.id = id;
@@ -122,18 +123,17 @@ export class Game {
         // this.serializationCache.update(this);
 
         for (const player of this.connectedPlayers) {
-
-            if ( this.emotes.size ) {
-                for ( const emote of this.emotes) {
-                    if ( emote.playerId === player.id || !emote.isPing ) {
+            if (this.emotes.size) {
+                for (const emote of this.emotes) {
+                    if (emote.playerId === player.id || !emote.isPing) {
                         player.emotes.add(emote);
-                    } 
+                    }
                 }
             }
 
             player.sendMsgs();
         }
-        if ( this.emotes.size ) this.emotes = new Set<Emote>()
+        if (this.emotes.size) this.emotes = new Set<Emote>();
 
         //
         // reset stuff
@@ -242,7 +242,19 @@ export class Game {
             player.name = name;
             player.joinedTime = Date.now();
 
-            player.loadout.emotes = [...joinMsg.emotes]
+            const emotes = joinMsg.emotes;
+            for (let i = 0; i < emotes.length; i++) {
+                const emote = emotes[i];
+                if ((i < 4 && emote === "")) {
+                    player.loadout.emotes.push("emote_logoswine");
+                    continue;
+                }
+
+                if (EmotesDefs[emote as keyof typeof EmotesDefs] === undefined &&
+                    emote != "") {
+                    player.loadout.emotes.push("emote_logoswine");
+                } else player.loadout.emotes.push(emote);
+            }
 
             this.newPlayers.push(player);
             this.grid.addObject(player);
@@ -256,7 +268,7 @@ export class Game {
             const emoteMsg = new net.EmoteMsg();
             emoteMsg.deserialize(stream);
 
-            this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing))
+            this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
         }
         }
     }
