@@ -1,5 +1,5 @@
 import { type WebSocket } from "uWebSockets.js";
-import { type Emote, type Game } from "../game";
+import { Emote, type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -562,6 +562,12 @@ export class Player extends BaseGameObject {
             if (!def.noDropOnDeath) {
                 this.game.addLoot(this.outfit, this.pos, this.layer, 1);
             }
+        }
+
+        // death emote
+
+        if ( this.loadout.emotes[5] != "") {
+            this.game.emotes.add(new Emote(this.id, this.pos, this.loadout.emotes[5], false))
         }
     }
 
