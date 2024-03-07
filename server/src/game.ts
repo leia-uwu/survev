@@ -18,13 +18,13 @@ import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 
 export class Emote {
     playerId: number;
-    position: Vec2;
+    pos: Vec2;
     type: string;
     isPing: boolean;
 
-    constructor(playerId: number, position: Vec2, type: string, isPing: boolean) {
+    constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
         this.playerId = playerId;
-        this.position = position;
+        this.pos = pos;
         this.type = type;
         this.isPing = isPing;
     }
