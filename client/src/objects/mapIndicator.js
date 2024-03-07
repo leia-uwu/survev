@@ -8,26 +8,26 @@ export class MapIndicatorBarn {
     constructor(e) {
         this.ht = e;
         this.dt = [];
-        this.ut = {};
+        this.idToMapIdicator = {};
     }
 
-    Ne(e) {
-        for (let t = 0; t < e.length; t++) {
-            const r = e[t];
-            if (r.dead) {
-                this.gt(r.id);
+    Ne(indicatorData) {
+        for (let i = 0; i < indicatorData.length; i++) {
+            const data = indicatorData[i];
+            if (data.dead) {
+                this.gt(data.id);
             } else {
-                this.yt(r);
+                this.yt(data);
             }
         }
     }
 
-    wt(e) {
-        const t = {
-            id: e.id,
-            type: e.type,
-            pos: v2.copy(e.pos),
-            equipped: e.equipped,
+    wt(data) {
+        const indicator = {
+            id: data.id,
+            type: data.type,
+            pos: v2.copy(data.pos),
+            equipped: data.equipped,
             mapSprite: this.ht.addSprite(),
             pulseSprite: this.ht.addSprite(),
             pulseScale: 0.5,
@@ -37,71 +37,77 @@ export class MapIndicatorBarn {
             pulseDir: 1,
             pulseSpeed: 0.3
         };
-        this.dt.push(t);
-        this.ut[e.id] = t;
-        return t;
+        this.dt.push(indicator);
+        this.idToMapIdicator[data.id] = indicator;
+        return indicator;
     }
 
-    gt(e) {
-        for (let t = 0; t < this.dt.length; t++) {
-            const r = this.dt[t];
-            if (r.id == e) {
-                r.mapSprite.free();
-                r.pulseSprite.free();
-                this.dt.splice(t, 1);
-                delete this.ut[e];
+    gt(id) {
+        for (let i = 0; i < this.dt.length; i++) {
+            const indicator = this.dt[i];
+            if (indicator.id == id) {
+                indicator.mapSprite.free();
+                indicator.pulseSprite.free();
+                this.dt.splice(i, 1);
+                delete this.idToMapIdicator[id];
                 break;
             }
         }
     }
 
-    yt(e) {
-        let t = this.ut[e.id];
-        t ||= this.wt(e);
-        t.pos = v2.copy(e.pos);
-        t.equipped = e.equipped;
-        const r = GameObjectDefs[t.type];
-        const a = (device.uiLayout == device.UiLayout.Sm ? 0.15 : 0.2) * 1.25;
-        const n = t.equipped ? 655350 : 1;
-        const c = t.mapSprite;
-        c.pos = v2.copy(t.pos);
-        c.scale = a;
-        c.alpha = 1;
-        c.zOrder = n;
-        c.visible = true;
-        c.sprite.texture = PIXI.Texture.from(
-            r.mapIndicator.sprite
+    yt(data) {
+        let indicator = this.idToMapIdicator[data.id];
+        indicator ||= this.wt(data);
+
+        indicator.pos = v2.copy(data.pos);
+        indicator.equipped = data.equipped;
+
+        const objDef = GameObjectDefs[indicator.type];
+        const scale = (device.uiLayout == device.UiLayout.Sm ? 0.15 : 0.2) * 1.25;
+        const zOrder = indicator.equipped ? 655350 : 1;
+
+        const mapSprite = indicator.mapSprite;
+        mapSprite.pos = v2.copy(indicator.pos);
+        mapSprite.scale = scale;
+        mapSprite.alpha = 1;
+        mapSprite.zOrder = zOrder;
+        mapSprite.visible = true;
+        mapSprite.sprite.texture = PIXI.Texture.from(
+            objDef.mapIndicator.sprite
         );
-        c.sprite.tint = r.mapIndicator.tint;
-        if (r.mapIndicator.pulse) {
-            const m = t.pulseSprite;
-            m.pos = v2.copy(t.pos);
+
+        mapSprite.sprite.tint = objDef.mapIndicator.tint;
+        if (objDef.mapIndicator.pulse) {
+            const m = indicator.pulseSprite;
+            m.pos = v2.copy(indicator.pos);
             m.scale = 1;
-            m.zOrder = n - 1;
+            m.zOrder = zOrder - 1;
             m.visible = true;
             m.sprite.texture =
                 PIXI.Texture.from("part-pulse-01.img");
-            m.sprite.tint = r.mapIndicator.pulseTint;
+            m.sprite.tint = objDef.mapIndicator.pulseTint;
         }
     }
 
-    Ee(e) {
-        for (let t = 0; t < this.dt.length; t++) {
-            const r = this.dt[t];
-            r.pulseTicker = math.clamp(
-                r.pulseTicker + e * r.pulseDir * r.pulseSpeed,
-                r.pulseScaleMin,
+    Ee(dt) {
+        for (let i = 0; i < this.dt.length; i++) {
+            const indicator = this.dt[i];
+            indicator.pulseTicker = math.clamp(
+                indicator.pulseTicker + dt * indicator.pulseDir * indicator.pulseSpeed,
+                indicator.pulseScaleMin,
                 1
             );
-            r.pulseScale = r.pulseTicker * r.pulseScaleMax;
+
+            // Ease up and down
+            indicator.pulseScale = indicator.pulseTicker * indicator.pulseScaleMax;
             if (
-                r.pulseScale >= r.pulseScaleMax ||
-                r.pulseTicker <= r.pulseScaleMin
+                indicator.pulseScale >= indicator.pulseScaleMax ||
+                indicator.pulseTicker <= indicator.pulseScaleMin
             ) {
-                r.pulseDir *= -1;
+                indicator.pulseDir *= -1;
             }
-            r.pulseSprite.scale = r.pulseScale;
-            r.pulseSprite.visible = r.equipped;
+            indicator.pulseSprite.scale = indicator.pulseScale;
+            indicator.pulseSprite.visible = indicator.equipped;
         }
     }
 }

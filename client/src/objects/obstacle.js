@@ -32,113 +32,114 @@ export class Obstacle {
         }
     }
 
-    c(e, t, r, a) {
-        if (t) {
-            this.type = e.type;
-            this.layer = e.layer;
-            this.healthT = e.healthT;
-            this.dead = e.dead;
-            this.isSkin = e.isSkin;
+    c(data, fullUpdate, isNew, ctx) {
+        if (fullUpdate) {
+            this.type = data.type;
+            this.layer = data.layer;
+            this.healthT = data.healthT;
+            this.dead = data.dead;
+            this.isSkin = data.isSkin;
             if (this.isSkin) {
-                this.skinPlayerId = e.skinPlayerId;
+                this.skinPlayerId = data.skinPlayerId;
             }
         }
-        const m = MapObjectDefs[this.type];
-        this.pos = v2.copy(e.pos);
-        this.rot = math.oriToRad(e.ori);
-        this.scale = e.scale;
-        this.imgScale = m.img.scale;
-        this.imgMirrorY = m.img.mirrorY;
-        this.imgMirrorX = m.img.mirrorX;
+        const def = MapObjectDefs[this.type];
+        this.pos = v2.copy(data.pos);
+        this.rot = math.oriToRad(data.ori);
+        this.scale = data.scale;
+
+        this.imgScale = def.img.scale;
+        this.imgMirrorY = def.img.mirrorY;
+        this.imgMirrorX = def.img.mirrorX;
         this.collider = collider.transform(
-            m.collision,
+            def.collision,
             this.pos,
             this.rot,
             this.scale
         );
-        if (r) {
+        if (isNew) {
             this.isNew = true;
             this.exploded =
-                a.map.deadObstacleIds.indexOf(this.__id) != -1;
-            this.explodeParticle = m.explodeParticle;
-            this.collidable = m.collidable && !this.isSkin;
-            this.destructible = m.destructible;
-            this.height = m.height;
-            this.isWall = !!m.isWall;
-            this.isWindow = !!m.isWindow;
-            this.isBush = !!m.isBush;
-            this.isDoor = m.door !== undefined;
+                ctx.map.deadObstacleIds.indexOf(this.__id) != -1;
+            this.explodeParticle = def.explodeParticle;
+            this.collidable = def.collidable && !this.isSkin;
+            this.destructible = def.destructible;
+            this.height = def.height;
+            this.isWall = !!def.isWall;
+            this.isWindow = !!def.isWindow;
+            this.isBush = !!def.isBush;
+            this.isDoor = def.door !== undefined;
             if (this.isDoor) {
                 this.door = {
-                    openOneWay: m.door.openOneWay,
-                    closedPos: v2.copy(e.pos),
-                    autoOpen: m.door.autoOpen,
-                    interactionRad: m.door.interactionRad,
-                    interpSpeed: m.door.openSpeed,
-                    interpPos: v2.copy(e.pos),
-                    interpRot: math.oriToRad(e.ori),
-                    seq: e.door.seq,
-                    seqOld: e.door.seq,
-                    open: e.door.open,
-                    wasOpen: e.door.open,
-                    locked: e.door.locked,
+                    openOneWay: def.door.openOneWay,
+                    closedPos: v2.copy(data.pos),
+                    autoOpen: def.door.autoOpen,
+                    interactionRad: def.door.interactionRad,
+                    interpSpeed: def.door.openSpeed,
+                    interpPos: v2.copy(data.pos),
+                    interpRot: math.oriToRad(data.ori),
+                    seq: data.door.seq,
+                    seqOld: data.door.seq,
+                    open: data.door.open,
+                    wasOpen: data.door.open,
+                    locked: data.door.locked,
                     casingSprite: null
                 };
-                const p = m.door.casingImg;
-                if (p !== undefined) {
-                    let h = p.pos || v2.create(0, 0);
-                    h = v2.rotate(h, this.rot + Math.PI * 0.5);
-                    const d = new PIXI.Sprite();
-                    d.texture = PIXI.Texture.from(p.sprite);
-                    d.anchor.set(0.5, 0.5);
-                    d.posOffset = h;
-                    d.imgScale = p.scale;
-                    d.tint = p.tint;
-                    d.alpha = p.alpha;
-                    d.visible = true;
-                    this.door.casingSprite = d;
+                const casingImgDef = def.door.casingImg;
+                if (casingImgDef !== undefined) {
+                    let posOffset = casingImgDef.pos || v2.create(0, 0);
+                    posOffset = v2.rotate(posOffset, this.rot + Math.PI * 0.5);
+                    const sprite = new PIXI.Sprite();
+                    sprite.texture = PIXI.Texture.from(casingImgDef.sprite);
+                    sprite.anchor.set(0.5, 0.5);
+                    sprite.posOffset = posOffset;
+                    sprite.imgScale = casingImgDef.scale;
+                    sprite.tint = casingImgDef.tint;
+                    sprite.alpha = casingImgDef.alpha;
+                    sprite.visible = true;
+                    this.door.casingSprite = sprite;
                 }
             }
-            this.isButton = m.button !== undefined;
+            this.isButton = def.button !== undefined;
             if (this.isButton) {
                 this.button = {
-                    interactionRad: m.button.interactionRad,
+                    interactionRad: def.button.interactionRad,
                     interactionText:
-                        m.button.interactionText || "game-use",
-                    seq: e.button.seq,
-                    seqOld: e.button.seq
+                        def.button.interactionText || "game-use",
+                    seq: data.button.seq,
+                    seqOld: data.button.seq
                 };
             }
-            this.isPuzzlePiece = e.isPuzzlePiece;
+            this.isPuzzlePiece = data.isPuzzlePiece;
             this.parentBuildingId = this.isPuzzlePiece
-                ? e.parentBuildingId
+                ? data.parentBuildingId
                 : 0;
         }
-        if (this.isDoor && t) {
-            this.door.canUse = e.door.canUse;
-            this.door.open = e.door.open;
-            this.door.seq = e.door.seq;
+        if (this.isDoor && fullUpdate) {
+            this.door.canUse = data.door.canUse;
+            this.door.open = data.door.open;
+            this.door.seq = data.door.seq;
             const u = v2.rotate(
-                v2.create(m.door.slideOffset, 0),
+                v2.create(def.door.slideOffset, 0),
                 this.rot + Math.PI * 0.5
             );
-            this.door.closedPos = e.door.open
-                ? v2.add(e.pos, u)
-                : v2.copy(e.pos);
+            this.door.closedPos = data.door.open
+                ? v2.add(data.pos, u)
+                : v2.copy(data.pos);
         }
-        if (this.isButton && t) {
-            this.button.onOff = e.button.onOff;
-            this.button.canUse = e.button.canUse;
-            this.button.seq = e.button.seq;
+        if (this.isButton && fullUpdate) {
+            this.button.onOff = data.button.onOff;
+            this.button.canUse = data.button.canUse;
+            this.button.seq = data.button.seq;
         }
         if (
-            m.explosion !== undefined &&
+            def.explosion !== undefined &&
             !this.smokeEmitter &&
-            e.healthT < 0.5 &&
-            !e.dead
+            data.healthT < 0.5 &&
+            !data.dead
         ) {
             const g = v2.normalize(v2.create(1, 1));
-            this.smokeEmitter = a.particleBarn.addEmitter(
+            this.smokeEmitter = ctx.particleBarn.addEmitter(
                 "smoke_barrel",
                 {
                     pos: this.pos,
@@ -148,25 +149,25 @@ export class Obstacle {
             );
         }
         let y = false;
-        let w = this.dead ? m.img.residue : m.img.sprite;
+        let w = this.dead ? def.img.residue : def.img.sprite;
         if (
             this.isButton &&
             this.button.onOff &&
             !this.dead &&
-            m.button.useImg
+            def.button.useImg
         ) {
-            w = m.button.useImg;
+            w = def.button.useImg;
         } else if (
             this.isButton &&
             !this.button.canUse &&
-            m.button.offImg
+            def.button.offImg
         ) {
-            w = m.button.offImg;
+            w = def.button.offImg;
         }
         if (w != this.img) {
             let f = v2.create(0.5, 0.5);
             if (this.isDoor) {
-                f = m.door.spriteAnchor;
+                f = def.door.spriteAnchor;
             }
             const _ = w !== undefined;
             if (!_) {
@@ -178,11 +179,11 @@ export class Obstacle {
                         ? PIXI.Texture.EMPTY
                         : PIXI.Texture.from(w);
                 this.sprite.anchor.set(f.x, f.y);
-                this.sprite.tint = m.img.tint;
+                this.sprite.tint = def.img.tint;
                 this.sprite.imgAlpha = this.dead
                     ? 0.75
-                    : m.img.alpha;
-                this.sprite.zOrd = m.img.zIdx;
+                    : def.img.alpha;
+                this.sprite.zOrd = def.img.zIdx;
                 this.sprite.zIdx =
                     Math.floor(this.scale * 1000) * 65535 +
                     this.__id;
@@ -192,7 +193,7 @@ export class Obstacle {
             this.sprite.visible = _;
             this.img = w;
         }
-        const b = a.map.getMapDef().biome.valueAdjust;
+        const b = ctx.map.getMapDef().biome.valueAdjust;
         if (y && b < 1) {
             this.sprite.tint = util.adjustValue(this.sprite.tint, b);
         }
@@ -222,31 +223,31 @@ export class Obstacle {
         }
     }
 
-    m(e, t, r, a, i, m, p) {
+    m(dt, map, playerBarn, particleBarn, audioManager, activePlayer, renderer) {
         if (this.isButton) {
-            const h = this.button;
-            if (h.seq != h.seqOld) {
-                const d = MapObjectDefs[this.type];
-                if (d.button.useParticle) {
-                    const u = collider.toAabb(this.collider);
-                    const g = v2.mul(v2.sub(u.max, u.min), 0.5);
-                    const y = v2.add(u.min, g);
-                    const w = v2.mul(
+            const button = this.button;
+            if (button.seq != button.seqOld) {
+                const def = MapObjectDefs[this.type];
+                if (def.button.useParticle) {
+                    const aabb = collider.toAabb(this.collider);
+                    const extent = v2.mul(v2.sub(aabb.max, aabb.min), 0.5);
+                    const center = v2.add(aabb.min, extent);
+                    const vel = v2.mul(
                         v2.randomUnit(),
                         util.random(5, 15)
                     );
-                    a.addParticle(
-                        d.button.useParticle,
+                    particleBarn.addParticle(
+                        def.button.useParticle,
                         this.layer,
-                        y,
-                        w
+                        center,
+                        vel
                     );
                 }
-                const f = this.button.onOff
-                    ? d.button.sound.on
-                    : d.button.sound.off;
-                if (f) {
-                    i.playSound(f, {
+                const sound = this.button.onOff
+                    ? def.button.sound.on
+                    : def.button.sound.off;
+                if (sound) {
+                    audioManager.playSound(sound, {
                         channel: "sfx",
                         soundPos: this.pos,
                         layer: this.layer,
@@ -254,74 +255,87 @@ export class Obstacle {
                     });
                 }
             }
-            h.seqOld = h.seq;
+            button.seqOld = button.seq;
         }
+
+        // Door
         if (this.isDoor) {
-            const _ = this.door;
-            const b = _.interpSpeed;
-            const x = v2.sub(this.pos, _.interpPos);
-            const S = v2.length(x);
-            let v = b * e;
-            if (S < v) {
-                v = S;
+            const door = this.door;
+
+            // Interpolate position
+            const moveSpd = door.interpSpeed;
+            const posDiff = v2.sub(this.pos, door.interpPos);
+            const diffLen = v2.length(posDiff);
+            let posMove = moveSpd * dt;
+            if (diffLen < posMove) {
+                posMove = diffLen;
             }
-            const k = S > 0.0001 ? v2.div(x, S) : v2.create(1, 0);
-            _.interpPos = v2.add(_.interpPos, v2.mul(k, v));
-            const z = Math.PI * _.interpSpeed;
-            const I = math.angleDiff(_.interpRot, this.rot);
-            let T = math.sign(I) * z * e;
-            if (Math.abs(I) < Math.abs(T)) {
-                T = I;
+            const moveDir = diffLen > 0.0001 ? v2.div(posDiff, diffLen) : v2.create(1, 0);
+            door.interpPos = v2.add(door.interpPos, v2.mul(moveDir, posMove));
+
+            // Interpolate rotation
+            const rotSpd = Math.PI * door.interpSpeed;
+            const angDiff = math.angleDiff(door.interpRot, this.rot);
+            let angMove = math.sign(angDiff) * rotSpd * dt;
+            if (Math.abs(angDiff) < Math.abs(angMove)) {
+                angMove = angDiff;
             }
-            _.interpRot += T;
-            if (_.seq != _.seqOld) {
-                const M = MapObjectDefs[this.type];
-                const P = M.door.sound.change || "";
-                if (P != "") {
-                    i.playSound(P, {
+            door.interpRot += angMove;
+
+            // Door begin state change sound
+            if (door.seq != door.seqOld) {
+                const def = MapObjectDefs[this.type];
+                const sound = def.door.sound.change || "";
+                if (sound != "") {
+                    audioManager.playSound(sound, {
                         channel: "sfx",
                         soundPos: this.pos,
                         layer: this.layer,
                         filter: "muffled"
                     });
                 }
-                _.seqOld = _.seq;
+                door.seqOld = door.seq;
             }
-            if (_.open != _.wasOpen) {
+
+            // Open/close sounds
+            if (door.open != door.wasOpen) {
                 const C = MapObjectDefs[this.type];
-                const A = _.open
+                const A = door.open
                     ? C.door.sound.open
                     : C.door.sound.close;
-                i.playSound(A, {
+                audioManager.playSound(A, {
                     channel: "sfx",
                     soundPos: this.pos,
                     layer: this.layer,
                     filter: "muffled"
                 });
-                _.wasOpen = _.open;
+                door.wasOpen = door.open;
             }
         }
         if (
             this.dead &&
             !this.exploded &&
-            (t.deadObstacleIds.push(this.__id),
+            (map.deadObstacleIds.push(this.__id),
             (this.exploded = true),
             this.smokeEmitter &&
                 (this.smokeEmitter.stop(),
                 (this.smokeEmitter = null)),
             !this.isNew)
         ) {
-            const O = MapObjectDefs[this.type];
-            const D = collider.toAabb(this.collider);
-            const E = v2.mul(v2.sub(D.max, D.min), 0.5);
-            const B = v2.add(D.min, E);
+            const def = MapObjectDefs[this.type];
+
+            // Destroy effect
+            const aabb = collider.toAabb(this.collider);
+            const extent = v2.mul(v2.sub(aabb.max, aabb.min), 0.5);
+            const center = v2.add(aabb.min, extent);
+            const numParticles = Math.floor(util.random(5, 11));
             for (
-                let R = Math.floor(util.random(5, 11)), L = 0;
-                L < R;
-                L++
+                let i = 0;
+                i < numParticles;
+                i++
             ) {
-                const q = v2.mul(v2.randomUnit(), util.random(5, 15));
-                const F = Array.isArray(this.explodeParticle)
+                const vel = v2.mul(v2.randomUnit(), util.random(5, 15));
+                const particle = Array.isArray(this.explodeParticle)
                     ? this.explodeParticle[
                         Math.floor(
                             Math.random() *
@@ -329,79 +343,91 @@ export class Obstacle {
                         )
                     ]
                     : this.explodeParticle;
-                a.addParticle(F, this.layer, B, q);
+                particleBarn.addParticle(particle, this.layer, center, vel);
             }
-            i.playSound(O.sound.explode, {
+            audioManager.playSound(def.sound.explode, {
                 channel: "sfx",
-                soundPos: B,
+                soundPos: center,
                 layer: this.layer,
                 filter: "muffled"
             });
         }
+
         if (this.smokeEmitter) {
-            const j = this.isSkin ? 0.3 : 0.5;
+            const healthT = this.isSkin ? 0.3 : 0.5;
+
             this.smokeEmitter.pos = v2.copy(this.pos);
             this.smokeEmitter.enabled =
-                !this.dead && this.healthT < j;
+                !this.dead && this.healthT < healthT;
         }
+
         if (this.sprite.visible && this.img) {
-            let N = this.dead ? 5 : this.sprite.zOrd;
-            let H = this.sprite.zIdx;
-            let V = this.layer;
+            let zOrd = this.dead ? 5 : this.sprite.zOrd;
+            let zIdx = this.sprite.zIdx;
+            let layer = this.layer;
+
+            // Render trees, bushes, etc above stair elements when
+            // viewing only the ground level
             if (
                 !this.dead &&
-                N >= 50 &&
+                zOrd >= 50 &&
                 this.layer == 0 &&
-                m.layer == 0
+                activePlayer.layer == 0
             ) {
-                N += 100;
-                V |= 2;
+                zOrd += 100;
+                layer |= 2;
             }
+
             if (!this.dead && this.isSkin) {
-                const U = r.u(this.skinPlayerId);
-                if (U) {
-                    N = math.max(math.max(N, U.renderZOrd), 21);
-                    if (U.renderLayer != 0) {
-                        V = U.renderLayer;
-                        N = U.renderZOrd;
+                const skinPlayer = playerBarn.u(this.skinPlayerId);
+                if (skinPlayer) {
+                    zOrd = math.max(math.max(zOrd, skinPlayer.renderZOrd), 21);
+                    if (skinPlayer.renderLayer != 0) {
+                        layer = skinPlayer.renderLayer;
+                        zOrd = skinPlayer.renderZOrd;
                     }
-                    H = U.renderZIdx + 262144;
+                    zIdx = skinPlayer.renderZIdx + 262144;
                 }
             }
-            p.addPIXIObj(this.sprite, V, N, H);
+
+            renderer.addPIXIObj(this.sprite, layer, zOrd, zIdx);
+
             if (this.isDoor && this.door.casingSprite) {
-                p.addPIXIObj(this.door.casingSprite, V, N + 1, H);
+                renderer.addPIXIObj(this.door.casingSprite, layer, zOrd + 1, zIdx);
             }
         }
         this.isNew = false;
     }
 
-    render(e, t, r) {
-        const a = this.isDoor ? this.door.interpPos : this.pos;
-        const i = this.isDoor ? this.door.interpRot : this.rot;
-        const o = this.scale;
-        const s = e.pointToScreen(a);
-        const n = e.pixels(o * this.imgScale);
-        this.sprite.position.set(s.x, s.y);
-        this.sprite.scale.set(n, n);
+    render(camera, debug, layer) {
+        const pos = this.isDoor ? this.door.interpPos : this.pos;
+        const rot = this.isDoor ? this.door.interpRot : this.rot;
+        const scale = this.scale;
+
+        const screenPos = camera.pointToScreen(pos);
+        const screenScale = camera.pixels(scale * this.imgScale);
+
+        this.sprite.position.set(screenPos.x, screenPos.y);
+        this.sprite.scale.set(screenScale, screenScale);
         if (this.imgMirrorY) {
             this.sprite.scale.y *= -1;
         }
         if (this.imgMirrorX) {
             this.sprite.scale.x *= -1;
         }
-        this.sprite.rotation = -i;
+        this.sprite.rotation = -rot;
+
         if (this.isDoor && this.door.casingSprite) {
-            const c = e.pointToScreen(
+            const casingPos = camera.pointToScreen(
                 v2.add(
                     this.door.closedPos,
                     this.door.casingSprite.posOffset
                 )
             );
-            const m = e.pixels(o * this.door.casingSprite.imgScale);
-            this.door.casingSprite.position.set(c.x, c.y);
-            this.door.casingSprite.scale.set(m, m);
-            this.door.casingSprite.rotation = -i;
+            const casingScale = camera.pixels(scale * this.door.casingSprite.imgScale);
+            this.door.casingSprite.position.set(casingPos.x, casingPos.y);
+            this.door.casingSprite.scale.set(casingScale, casingScale);
+            this.door.casingSprite.rotation = -rot;
             this.door.casingSprite.visible = !this.dead;
         }
     }
