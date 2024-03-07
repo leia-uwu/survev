@@ -39,9 +39,9 @@ export class WeaponManager {
                 ammo: 0
             });
         }
-        this.weapons[0].type = "usas";
-        this.weapons[1].type = "mp220";
-        this.weapons[0].ammo = 1;
+        this.weapons[0].type = "mp5";
+        this.weapons[1].type = "m870";
+        this.weapons[0].ammo = 30;
         this.weapons[1].ammo = 1;
     }
 
@@ -57,7 +57,9 @@ export class WeaponManager {
                 break;
             }
             case "gun": {
-                this.fireWeapon(false, this.activeWeapon);
+                if (this.weapons[this.curWeapIdx].ammo != 0){
+                    this.fireWeapon(false, this.activeWeapon);
+                }
                 break;
             }
             }
@@ -89,6 +91,7 @@ export class WeaponManager {
 
         this.player.cancelAction(false);
 
+        this.weapons[this.curWeapIdx].ammo--;
         this.player.dirty.weapons = true;
 
         const collisionLayer = util.toGroundLayer(this.player.layer);
@@ -235,6 +238,9 @@ export class WeaponManager {
                     this.player.game.bulletManager.fireBullet(sParams);
                 }
             }
+        }
+        if (this.weapons[this.curWeapIdx].ammo == 0){
+            this.player.reload();
         }
     }
 

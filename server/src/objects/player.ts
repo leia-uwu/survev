@@ -82,6 +82,7 @@ export class Player extends BaseGameObject {
     zoom: number = 0;
 
     action!: { time: number, duration: number, targetId: number };
+    lastAction!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
     scope = "1xscope";
@@ -145,6 +146,10 @@ export class Player extends BaseGameObject {
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
 
+    lastActionType: number = GameConfig.Action.None;
+
+    performActionAgain: boolean = false;
+
     get wearingPan(): boolean {
         return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
     }
@@ -161,6 +166,7 @@ export class Player extends BaseGameObject {
     hasteSeq = 0;
 
     actionItem = "";
+    lastActionItem = "";
 
     get hasRole(): boolean {
         return this.role !== "";
@@ -247,9 +253,14 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.inventory["12gauge"] = 12;
+        this.inventory["12gauge"] = 2;
+        this.inventory["bandage"] = 5;
+        this.inventory["healthkit"] = 1;
+        this.inventory["soda"] = 2;
+        this.inventory["painkiller"] = 1;
         // this.inventory["frag"] = 3;
         this.game.addLoot("12gauge", this.pos, this.layer, 5);
+        this.game.addLoot("bandage", this.pos, this.layer, 5);
         this.game.addLoot("soda", this.pos, this.layer, 1);
         this.game.addLoot("2xscope", this.pos, this.layer, 1);
         this.game.addLoot("4xscope", this.pos, this.layer, 1);
@@ -261,6 +272,7 @@ export class Player extends BaseGameObject {
 
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
+        this.action = {time: -1, duration: 0, targetId: -1};
         // this.addPerk("splinter");
         // this.addPerk("explosive")
     }
@@ -300,6 +312,71 @@ export class Player extends BaseGameObject {
         else if (this.boost > 25 && this.boost <= 50) this.health += 3.75/this.game.realDt;
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75/this.game.realDt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5/this.game.realDt;
+
+        if (this.performActionAgain){
+            this.performActionAgain = false;
+            this.doAction(this.lastActionItem, this.lastActionType, this.lastAction.duration);
+        }
+
+        //handle heal and boost actions
+        let actionTimeThreshold;//hacky but works, couldnt find a better way
+        if (this.action.time == -1){
+            actionTimeThreshold = -Date.now();
+        }else{
+            actionTimeThreshold = Date.now() + this.action.time*1000 - this.action.duration*1000;
+        }
+        if (actionTimeThreshold >= 0){
+            if (this.actionType == GameConfig.Action.UseItem){
+                switch (this.actionItem){
+                    case "bandage":
+                        this.health += 15;
+                        break;
+                    case "healthkit":
+                        this.health = 100;
+                        break;
+                    case "soda":
+                        this.boost += 25;
+                        break;
+                    case "painkiller":
+                        this.boost += 50;
+                        break;
+                }
+                this.inventory[this.actionItem]--;
+                this.dirty.inventory = true;
+            }else if (this.actionType == GameConfig.Action.Reload){
+                const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+                const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
+                const spaceLeft = weaponInfo.maxClip - activeWeaponAmmo; //if gun is 27/30 ammo, spaceLeft = 3
+                
+                if (this.inventory[weaponInfo.ammo] < spaceLeft){//27/30, inv = 2
+                    if (weaponInfo.maxClip != weaponInfo.maxReload){//m870, mosin, spas: only refill by one bullet at a time
+                        this.weapons[this.curWeapIdx].ammo++;
+                        this.inventory[weaponInfo.ammo]--;
+                    }else{//mp5, sv98, ak47: refill to as much as you have left in your inventory
+                        this.weapons[this.curWeapIdx].ammo += this.inventory[weaponInfo.ammo];
+                        this.inventory[weaponInfo.ammo] = 0;
+                    }
+                }else{//27/30, inv = 100
+                    this.weapons[this.curWeapIdx].ammo += math.clamp(weaponInfo.maxReload, 0, spaceLeft);
+                    this.inventory[weaponInfo.ammo] -= math.clamp(weaponInfo.maxReload, 0, spaceLeft);
+                }
+
+                //if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
+                const realMaxClip = this.inventory[weaponInfo.ammo] == 0 ? this.weapons[this.curWeapIdx].ammo : weaponInfo.maxClip;
+                if (weaponInfo.maxClip != weaponInfo.maxReload && this.weapons[this.curWeapIdx].ammo != realMaxClip){
+                    this.performActionAgain = true;
+                }
+
+                this.dirty.inventory = true;
+                this.dirty.weapons = true;
+            }
+            if (this.performActionAgain){
+                this.lastAction = {...this.action};//shallow copy so no references are kept
+                this.lastActionItem = this.actionItem;
+                this.lastActionType = this.actionType;
+            }
+            this.cancelAction();
+        }
 
         this.recalculateSpeed();
 
@@ -585,6 +662,59 @@ export class Player extends BaseGameObject {
         }
     }
 
+    useBandage(): void{
+        if (this.health == 100 || this.actionType == GameConfig.Action.UseItem){
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("bandage", GameConfig.Action.UseItem, 3);
+    }
+
+    useHealthkit(): void{
+        if (this.health == 100 || this.actionType == GameConfig.Action.UseItem){
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("healthkit", GameConfig.Action.UseItem, 6);
+    }
+
+    useSoda(): void{
+        if (this.boost == 100 || this.actionType == GameConfig.Action.UseItem){
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("soda", GameConfig.Action.UseItem, 3);
+    }
+
+    usePainkiller(): void{
+        if (this.boost == 100 || this.actionType == GameConfig.Action.UseItem){
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("painkiller", GameConfig.Action.UseItem, 5);
+    }
+
+    reload(){
+        const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+        const conditions = [
+            this.actionType == GameConfig.Action.UseItem,
+            this.weapons[this.curWeapIdx].ammo == weaponInfo.maxClip,
+            this.inventory[weaponInfo.ammo] == 0,
+            this.curWeapIdx == 2 || this.curWeapIdx as number == 3
+        ]
+        if (conditions.some(c => c == true)){
+            return;
+        }
+
+        const duration = weaponInfo.reloadTime;
+        
+        this.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
+    }
+
     toMouseLen = 0;
     shootHold = false;
     shootStart = false;
@@ -607,23 +737,27 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
                 this.curWeapIdx = 2;
+                this.cancelAction();
                 this.setDirty();
                 break;
             case GameConfig.Input.EquipPrimary:
                 if (this.weapons[0].type) {
                     this.curWeapIdx = 0;
+                    this.cancelAction();
                     this.setDirty();
                 }
                 break;
             case GameConfig.Input.EquipSecondary:
                 if (this.weapons[1].type) {
                     this.curWeapIdx = 1;
+                    this.cancelAction();
                     this.setDirty();
                 }
                 break;
             case GameConfig.Input.EquipThrowable:
                 if (this.weapons[3].type) {
                     this.curWeapIdx = 3;
+                    this.cancelAction();
                     this.setDirty();
                 }
                 break;
@@ -643,6 +777,7 @@ export class Player extends BaseGameObject {
                 }else{//normal case: [wildcard], [wildcard], melee => other wildcard
                     this.curWeapIdx ^= 1;//XOR operator, will flip the number from 0 to 1 or from 1 to 0
                 }
+                this.cancelAction();
                 this.setDirty();
                 break;
             case GameConfig.Input.Interact:
@@ -658,6 +793,46 @@ export class Player extends BaseGameObject {
                         this.interactWith(o);
                     }
                 }
+                break;
+            case GameConfig.Input.Reload:
+                this.reload();
+                break;
+            case GameConfig.Input.UseBandage:
+                this.useBandage();
+                break;
+            case GameConfig.Input.UseHealthKit:
+                this.useHealthkit();
+                break;
+            case GameConfig.Input.UsePainkiller:
+                this.useSoda();
+                break;
+            case GameConfig.Input.UseSoda:
+                this.usePainkiller();
+                break;
+            case GameConfig.Input.Cancel:
+                this.cancelAction();
+                break;
+            }
+        }
+
+        switch (msg.useItem){
+            case "bandage": {
+                this.useBandage();
+                break;
+            }
+            case "healthkit":{
+                this.useHealthkit();
+                break;
+            }
+            case "soda":{
+                this.cancelAction();
+                // setTimeout(() => {
+                    this.useSoda();
+                // }, 100);
+                break;
+            }
+            case "painkiller":{
+                this.usePainkiller();
                 break;
             }
         }
@@ -730,15 +905,35 @@ export class Player extends BaseGameObject {
         return false;
     }
 
-    cancelAction(_?: boolean): void {
-        // this.action.duration = 0;
-        // this.action.targetId = 0;
-        // this.action.time = -1;
+    doAction(actionItem: string, actionType: number, duration: number){
+        if (this.dirty.action){//action already in progress
+            return;
+        }
 
-        // this.actionType = 0;
-        // this.actionSeq = 0;
-        // this.dirty.action = false;
-        // this.setDirty();
+        this.action.targetId = -1;
+        this.action.duration = duration;
+        const t = Date.now() + (duration * 1000);
+        this.action.time = duration - (t / 1000);
+        // console.log(this.action.time);
+        // this.action.time = Date.now() + (duration * 1000);
+
+        this.dirty.action = true;
+        this.actionItem = actionItem;
+        this.actionType = actionType;
+        this.actionSeq = 1;
+        this.setDirty();
+    }
+
+    cancelAction(_?: boolean): void {
+        this.action.duration = 0;
+        this.action.targetId = 0;
+        this.action.time = -1;
+
+        this.actionItem = "";
+        this.actionType = 0;
+        this.actionSeq = 0;
+        this.dirty.action = false;
+        this.setDirty();
     }
 
     recalculateSpeed(): void {
@@ -757,6 +952,11 @@ export class Player extends BaseGameObject {
         //increase speed when adrenaline is above 50%
         if (this.boost >= 50){
             this.speed += 1.15;
+        }
+
+        //decrease speed if popping adren or heals
+        if (this.actionType == GameConfig.Action.UseItem){
+            this.speed *= 0.5;
         }
     }
 
