@@ -1780,8 +1780,9 @@ class UpdateMsg {
             for (const emote of this.emotes) {
                 s.writeUint16(emote.playerId);
                 s.writeGameType(emote.type);
-                s.writeBoolean(emote.isPing);
                 s.writeGameType(emote.itemType);
+                s.writeBoolean(emote.isPing);
+
                 if (emote.isPing) s.writeVec(emote.pos, 0, 0, 1024, 1024, 16);
                 s.writeAlignToNextByte();
             }
@@ -1969,6 +1970,7 @@ class UpdateMsg {
                 emote.type = s.readGameType();
                 emote.itemType = s.readGameType();
                 emote.isPing = s.readBoolean();
+
                 if (emote.isPing) {
                     emote.pos = s.readVec(0, 0, 1024, 1024, 16);
                 }
