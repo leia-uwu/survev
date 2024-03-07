@@ -133,7 +133,6 @@ export class Game {
 
             player.sendMsgs();
         }
-        if (this.emotes.size) this.emotes = new Set<Emote>();
 
         //
         // reset stuff
@@ -151,6 +150,8 @@ export class Game {
         this.msgsToSend.length = 0;
         this.explosions.length = 0;
         this.aliveCountDirty = false;
+
+        this.emotes.clear();
 
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!

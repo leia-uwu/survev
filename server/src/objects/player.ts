@@ -423,8 +423,8 @@ export class Player extends BaseGameObject {
         for (const emote of this.emotes) {
             updateMsg.emotes.push(emote);
         }
+        this.emotes.clear();
 
-        if (this.emotes.size) this.emotes = new Set();
         let newBullets = [];
         const extendedRadius = 1.1 * radius;
         const radiusSquared = extendedRadius * extendedRadius;

@@ -915,6 +915,7 @@ class JoinMsg {
             const emote = s.readGameType();
             this.emotes.push(emote);
         }
+        s.readAlignToNextByte();
     }
 
     /**
