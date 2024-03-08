@@ -101,10 +101,7 @@ export class Player extends BaseGameObject {
         this.animType = GameConfig.Anim.None;
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
-            this.performActionXTick = true;
-            this.actionItemXTick = this.activeWeapon;
-            this.actionTypeXTick = GameConfig.Action.Reload;
-            this.timeSincePerformActionXTick = Date.now();
+            this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload)
         }
 
         this.weaponManager.curWeapIdx = idx;
@@ -162,11 +159,16 @@ export class Player extends BaseGameObject {
      * specifically for things like buffering 2 actions trying to run simultaneously.
      * also for automatically reloading if switching to gun with 0 loaded ammo
      */
-    performActionXTick: boolean = false;
-    actionTypeXTick: number = GameConfig.Action.None;
-    actionItemXTick: string = "";
-    // set when we need to perform an action x ticks past the current tick
-    timeSincePerformActionXTick: number = -1;
+    scheduledAction: {
+        perform: boolean;
+        type: typeof GameConfig.Action[keyof typeof GameConfig.Action];
+        item: string
+    } = {
+        perform: false,
+        type: GameConfig.Action.None,
+        item: "",
+    }
+    ticksSinceLastAction = 0;
 
     get wearingPan(): boolean {
         return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
@@ -306,6 +308,7 @@ export class Player extends BaseGameObject {
 
     update(): void {
         if (this.dead) return;
+        this.ticksSinceLastAction++;
 
         const input = this.lastInputMsg;
 
@@ -341,40 +344,40 @@ export class Player extends BaseGameObject {
             this.doAction(this.lastActionItem, this.lastActionType, this.lastAction.duration);
         }
 
-        if (this.performActionXTick && Date.now() - this.timeSincePerformActionXTick >= 66.666) { // 2 ticks threshold
-            switch (this.actionTypeXTick) {
-            case GameConfig.Action.Reload: {
-                if ((this.curWeapIdx == 0 || this.curWeapIdx == 1) && this.weapons[this.curWeapIdx].ammo == 0) {
-                    this.weaponManager.reload();
+        if (this.scheduledAction.perform && this.ticksSinceLastAction > 1) {
+            switch (this.scheduledAction.type) {
+                case GameConfig.Action.Reload: {
+                    if ((this.curWeapIdx == 0 || this.curWeapIdx == 1) && this.weapons[this.curWeapIdx].ammo == 0) {
+                        this.weaponManager.reload();
+                    }
+                    break;
                 }
-                break;
+                case GameConfig.Action.UseItem: {
+                    switch (this.scheduledAction.item) {
+                        case "bandage": {
+                            this.useBandage();
+                            break;
+                        }
+                        case "healthkit":{
+                            this.useHealthkit();
+                            break;
+                        }
+                        case "soda":{
+                            this.useSoda();
+                            break;
+                        }
+                        case "painkiller":{
+                            this.usePainkiller();
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
-            case GameConfig.Action.UseItem: {
-                switch (this.actionItemXTick) {
-                case "bandage": {
-                    this.useBandage();
-                    break;
-                }
-                case "healthkit":{
-                    this.useHealthkit();
-                    break;
-                }
-                case "soda":{
-                    this.useSoda();
-                    break;
-                }
-                case "painkiller":{
-                    this.usePainkiller();
-                    break;
-                }
-                }
-                break;
-            }
-            }
-            this.actionTypeXTick = GameConfig.Action.None;
-            this.actionItemXTick = "";
-            this.performActionXTick = false;
-            this.timeSincePerformActionXTick = -1;
+            this.scheduledAction.type = GameConfig.Action.None;
+            this.scheduledAction.item = "";
+            this.scheduledAction.perform = false;
+            this.ticksSinceLastAction = 0;
         }
 
         // handle heal and boost actions
@@ -728,11 +731,7 @@ export class Player extends BaseGameObject {
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.cancelAction();
-            this.performActionXTick = true;
-            this.actionItemXTick = "bandage";
-            this.actionTypeXTick = GameConfig.Action.UseItem;
-            this.timeSincePerformActionXTick = Date.now();
+            this.scheduleAction("bandage", GameConfig.Action.UseItem)
             return;
         }
 
@@ -747,11 +746,7 @@ export class Player extends BaseGameObject {
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.cancelAction();
-            this.performActionXTick = true;
-            this.actionItemXTick = "healthkit";
-            this.actionTypeXTick = GameConfig.Action.UseItem;
-            this.timeSincePerformActionXTick = Date.now();
+            this.scheduleAction("healthkit", GameConfig.Action.UseItem)
             return;
         }
 
@@ -766,11 +761,7 @@ export class Player extends BaseGameObject {
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.cancelAction();
-            this.performActionXTick = true;
-            this.actionItemXTick = "soda";
-            this.actionTypeXTick = GameConfig.Action.UseItem;
-            this.timeSincePerformActionXTick = Date.now();
+            this.scheduleAction("soda", GameConfig.Action.UseItem)
             return;
         }
 
@@ -786,15 +777,23 @@ export class Player extends BaseGameObject {
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
             this.cancelAction();
-            this.performActionXTick = true;
-            this.actionItemXTick = "painkiller";
-            this.actionTypeXTick = GameConfig.Action.UseItem;
-            this.timeSincePerformActionXTick = Date.now();
+            this.scheduleAction("painkiller", GameConfig.Action.UseItem)
             return;
         }
 
         this.cancelAction();
         this.doAction("painkiller", GameConfig.Action.UseItem, 5);
+    }
+
+    scheduleAction(actionItem: string, actionType: typeof this.scheduledAction.type, shouldCancel = true) {
+        if ( shouldCancel ) {
+            this.cancelAction();
+        } 
+        this.scheduledAction.perform = true;
+        this.scheduledAction.item = actionItem;
+        this.scheduledAction.type = actionType;
+        this.ticksSinceLastAction= 0;
+        console.log("restting", this.ticksSinceLastAction)
     }
 
     toMouseLen = 0;
@@ -1007,10 +1006,7 @@ export class Player extends BaseGameObject {
                     const newWeaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;// info for the picked up gun
 
                     if (this.inventory[newWeaponInfo.ammo] != 0) {
-                        this.performActionXTick = true;
-                        this.actionItemXTick = this.activeWeapon;
-                        this.actionTypeXTick = GameConfig.Action.Reload;
-                        this.timeSincePerformActionXTick = Date.now();
+                        this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload, false)
                     }
 
                     this.cancelAction();
