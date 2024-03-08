@@ -289,6 +289,8 @@ export class Player extends BaseGameObject {
         this.game.addLoot("frag", this.pos, this.layer, 1);
         this.game.addLoot("smoke", this.pos, this.layer, 1);
         this.game.addLoot("mirv", this.pos, this.layer, 1);
+        this.game.addLoot("m870", this.pos, this.layer, 1);
+        this.game.addLoot("pkp", this.pos, this.layer, 1);
 
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
@@ -917,6 +919,9 @@ export class Player extends BaseGameObject {
                 const backpackLevel = Number(this.pack.at(-1));//backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
                 const bagSpace = GameConfig.bagSizes[o.type][backpackLevel];
                 if (this.inventory[o.type] + o.count <= bagSpace){
+                    this.inventory[o.type] += o.count;
+                    this.dirty.inventory = true;
+
                     switch (lootType){
                         case "ammo":
                             break;
@@ -941,16 +946,9 @@ export class Player extends BaseGameObject {
                             }
                             break;
                     }
-                    this.inventory[o.type] += o.count;
-                    this.dirty.inventory = true;
                 }else{//spawn new loot object to animate the pickup rejection
                     const spaceLeft = bagSpace - this.inventory[o.type];
-                    let amountToAdd: number;
-                    if (spaceLeft == 0){//ex: can hold 15 ammo and inventory contains 15 ammo
-                        amountToAdd = 0;
-                    }else{
-                        amountToAdd = spaceLeft;
-                    }
+                    const amountToAdd = spaceLeft;
 
                     this.inventory[o.type] += amountToAdd;
                     this.dirty.inventory = true;
@@ -962,7 +960,62 @@ export class Player extends BaseGameObject {
                     const newPos = v2.add(o.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
                     this.game.addLoot(o.type, newPos, o.layer, amountToDrop);
                 }
+                //this is here because it needs to execute regardless of what happens above
+                //automatically reloads gun if inventory has 0 ammo and ammo is picked up
+                if (lootType == "ammo"){
+                    const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+                    if (
+                        (this.curWeapIdx == 0 || this.curWeapIdx == 1)
+                        && this.weapons[this.curWeapIdx].ammo == 0
+                        && weaponInfo.ammo == o.type //ammo picked up is same type as gun being held
+                    ){
+                        this.weaponManager.reload();
+                    }
+                }
                 o.remove();
+            }else if (lootType == "gun"){
+                if (this.activeWeapon != o.type){//can only pick up a different gun: m870 != pkp
+
+                    const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+                    const backpackLevel = Number(this.pack.at(-1));//backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+
+                    const bagCapacityAmmo = GameConfig.bagSizes[weaponInfo.ammo][backpackLevel];
+                    const weaponAmmo = this.weapons[this.curWeapIdx].ammo;
+                    const inventoryAmmo = this.inventory[weaponInfo.ammo];
+
+                    if (weaponAmmo + inventoryAmmo <= bagCapacityAmmo){//can fit all weapon ammo in inventory
+                        this.inventory[weaponInfo.ammo] += weaponAmmo;
+                        this.dirty.inventory = true;
+                    }else{//can only fit a certain amount of ammo in inventory, rest needs to be dropped
+                        const spaceLeft = bagCapacityAmmo - inventoryAmmo;
+                        const amountToAdd = spaceLeft;
+
+                        this.inventory[weaponInfo.ammo] += amountToAdd;
+                        this.dirty.inventory = true;
+
+                        const amountToDrop = weaponAmmo - amountToAdd;
+                        this.game.addLoot(weaponInfo.ammo, this.pos, this.layer, amountToDrop);
+                    }
+
+
+                    this.game.addGun(this.activeWeapon, this.pos, this.layer, 1);//order matters, drop first so references are correct
+                    this.weapons[this.curWeapIdx].type = o.type;
+                    this.weapons[this.curWeapIdx].ammo = 0;
+
+                    const newWeaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;//info for the picked up gun
+
+                    if (this.inventory[newWeaponInfo.ammo] != 0){
+                        this.performActionXTick = true;
+                        this.actionItemXTick = this.activeWeapon;
+                        this.actionTypeXTick = GameConfig.Action.Reload;
+                        this.timeSincePerformActionXTick = Date.now();
+                    }
+
+                    this.cancelAction();
+                    this.dirty.weapons = true;
+                    this.setDirty();
+                    o.remove();
+                }//else do nothing
             }
         }
     }

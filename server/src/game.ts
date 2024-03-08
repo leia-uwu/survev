@@ -164,6 +164,14 @@ export class Game {
         return player;
     }
 
+    /**
+     * spawns gun loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
+     */
+    addGun(type: string, pos: Vec2, layer: number, count: number){
+        const loot = new Loot(this, type, pos, layer, count);
+        this.grid.addObject(loot);
+    }
+
     addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
         const loot = new Loot(this, type, pos, layer, count);
         this.grid.addObject(loot);
