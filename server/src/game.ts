@@ -66,8 +66,14 @@ export class Game {
 
     tickInterval: NodeJS.Timeout;
 
+    /**
+     * for stuff based on ms
+     */
     realDt: number;
-    // realDt divided by 1000, used for physics since speed values are in unit/second
+    /**
+     * realDt divided by 1000, used for physics since speed values are in unit/second.
+     * for stuff based on seconds
+     */
     dt: number;
 
     config: ConfigType;

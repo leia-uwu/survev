@@ -329,12 +329,12 @@ export class Player extends BaseGameObject {
         }
 
         if (this.boost > 0) {
-            this.boost -= 0.375 / this.game.realDt;
+            this.boost -= 0.375 * this.game.dt;
         }
-        if (this.boost > 0 && this.boost <= 25) this.health += 1 / this.game.realDt;
-        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75 / this.game.realDt;
-        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 / this.game.realDt;
-        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 / this.game.realDt;
+        if (this.boost > 0 && this.boost <= 25) this.health += 1 * this.game.dt;
+        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75 * this.game.dt;
+        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * this.game.dt;
+        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * this.game.dt;
 
         if (this.performActionAgain) {
             this.performActionAgain = false;
