@@ -888,6 +888,10 @@ class JoinMsg {
          * @type {boolean}
          */
         this.bot = false;
+        /**
+         * @type {string[]}
+         */
+        this.emotes = [];
     }
 
     /**
@@ -904,6 +908,13 @@ class JoinMsg {
         this.proxy = s.readBoolean();
         this.otherProxy = s.readBoolean();
         this.bot = s.readBoolean();
+        this.emotes = [];
+        const count = s.readUint8();
+
+        for (let i = 0; i < count; i++) {
+            const emote = s.readGameType();
+            this.emotes.push(emote);
+        }
         s.readAlignToNextByte();
     }
 
@@ -921,6 +932,11 @@ class JoinMsg {
         s.writeBoolean(this.proxy);
         s.writeBoolean(this.otherProxy);
         s.writeBoolean(this.bot);
+
+        s.writeUint8(this.emotes.length);
+        for (const emote of this.emotes) {
+            s.writeGameType(emote);
+        }
         s.writeAlignToNextByte();
     }
 }
@@ -1140,7 +1156,7 @@ class EmoteMsg {
         this.pos = s.readVec(0, 0, 1024, 1024, 16);
         this.type = s.readGameType();
         this.isPing = s.readBoolean();
-        s.readBits(6);
+        s.readBits(5);
     }
 }
 
@@ -1163,7 +1179,6 @@ class JoinedMsg {
         s.writeUint8(this.teamMode);
         s.writeUint16(this.playerId);
         s.writeBoolean(this.started);
-
         s.writeUint8(this.emotes.length);
         for (const emote of this.emotes) {
             s.writeGameType(emote);
@@ -1177,7 +1192,8 @@ class JoinedMsg {
         this.teamMode = s.readUint8();
         this.playerId = s.readUint16();
         this.started = s.readBoolean();
-        for (let count = s.readUint8(), i = 0; i < count; i++) {
+        const count = s.readUint8();
+        for (let i = 0; i < count; i++) {
             const emote = s.readGameType();
             this.emotes.push(emote);
         }
@@ -1612,6 +1628,9 @@ class UpdateMsg {
         this.groupStatusDirty = false;
         this.bullets = [];
         this.explosions = [];
+        /**
+        * @type {Emote[]}
+        */
         this.emotes = [];
         this.planes = [];
         this.airstrikeZones = [];
@@ -1761,8 +1780,9 @@ class UpdateMsg {
             for (const emote of this.emotes) {
                 s.writeUint16(emote.playerId);
                 s.writeGameType(emote.type);
-                s.writeBoolean(emote.isPing);
                 s.writeGameType(emote.itemType);
+                s.writeBoolean(emote.isPing);
+
                 if (emote.isPing) s.writeVec(emote.pos, 0, 0, 1024, 1024, 16);
                 s.writeAlignToNextByte();
             }
@@ -1950,6 +1970,7 @@ class UpdateMsg {
                 emote.type = s.readGameType();
                 emote.itemType = s.readGameType();
                 emote.isPing = s.readBoolean();
+
                 if (emote.isPing) {
                     emote.pos = s.readVec(0, 0, 1024, 1024, 16);
                 }
