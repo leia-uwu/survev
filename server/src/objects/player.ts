@@ -386,20 +386,9 @@ export class Player extends BaseGameObject {
         }
         if (actionTimeThreshold >= 0) {
             if (this.actionType == GameConfig.Action.UseItem) {
-                switch (this.actionItem) {
-                case "bandage":
-                    this.health += (GameObjectDefs.bandage as HealDef).heal;
-                    break;
-                case "healthkit":
-                    this.health = (GameObjectDefs.healthkit as HealDef).heal;
-                    break;
-                case "soda":
-                    this.boost += (GameObjectDefs.soda as BoostDef).boost;
-                    break;
-                case "painkiller":
-                    this.boost += (GameObjectDefs.painkiller as BoostDef).boost;
-                    break;
-                }
+                const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
+                if ("heal" in itemDef) this.health += itemDef.heal;
+                if ("boost" in itemDef) this.boost += itemDef.boost;
                 this.inventory[this.actionItem]--;
                 this.dirty.inventory = true;
             } else if (this.actionType == GameConfig.Action.Reload) {
