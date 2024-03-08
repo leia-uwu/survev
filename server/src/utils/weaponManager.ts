@@ -70,6 +70,23 @@ export class WeaponManager {
         this.shootStart();
     }
 
+    reload(){
+        const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+        const conditions = [
+            this.player.actionType == (GameConfig.Action.UseItem as number),
+            this.weapons[this.curWeapIdx].ammo == weaponInfo.maxClip,
+            this.player.inventory[weaponInfo.ammo] == 0,
+            this.curWeapIdx == 2 || this.curWeapIdx as number == 3
+        ]
+        if (conditions.some(c => c == true)){
+            return;
+        }
+
+        const duration = weaponInfo.reloadTime;
+        
+        this.player.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
+    }
+
     // TODO: proper firing delays and stuff
     fireDelay = 0;
     fireWeapon(offhand: boolean, type: string) {
@@ -240,7 +257,7 @@ export class WeaponManager {
             }
         }
         if (this.weapons[this.curWeapIdx].ammo == 0){
-            this.player.reload();
+            this.reload();
         }
     }
 

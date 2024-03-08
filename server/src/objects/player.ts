@@ -50,7 +50,7 @@ export class Player extends BaseGameObject {
         activeId: true
     };
 
-    private _health: number = GameConfig.player.health;
+    private _health: number = 50;//GameConfig.player.health;
 
     get health(): number {
         return this._health;
@@ -101,6 +101,13 @@ export class Player extends BaseGameObject {
         }
         this.animType = GameConfig.Anim.None;
 
+        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0){
+            this.performActionXTick = true;
+            this.actionItemXTick = this.activeWeapon;
+            this.actionTypeXTick = GameConfig.Action.Reload;
+            this.timeSincePerformActionXTick = Date.now();
+        }
+
         this.weaponManager.curWeapIdx = idx;
         this.setDirty();
         this.dirty.weapons = true;
@@ -148,7 +155,19 @@ export class Player extends BaseGameObject {
 
     lastActionType: number = GameConfig.Action.None;
 
+    /**
+     * specifically for reloading single shot guns to keep reloading until maxClip is reached
+     */
     performActionAgain: boolean = false;
+    /**
+     * specifically for things like buffering 2 actions trying to run simultaneously.
+     * also for automatically reloading if switching to gun with 0 loaded ammo
+     */
+    performActionXTick: boolean = false;
+    actionTypeXTick: number = GameConfig.Action.None;
+    actionItemXTick: string = "";
+    //set when we need to perform an action x ticks past the current tick
+    timeSincePerformActionXTick: number = -1;
 
     get wearingPan(): boolean {
         return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
@@ -254,6 +273,7 @@ export class Player extends BaseGameObject {
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
         this.inventory["12gauge"] = 2;
+        this.inventory["9mm"] = 120;
         this.inventory["bandage"] = 5;
         this.inventory["healthkit"] = 1;
         this.inventory["soda"] = 2;
@@ -316,6 +336,42 @@ export class Player extends BaseGameObject {
         if (this.performActionAgain){
             this.performActionAgain = false;
             this.doAction(this.lastActionItem, this.lastActionType, this.lastAction.duration);
+        }
+
+        if (this.performActionXTick && Date.now() - this.timeSincePerformActionXTick >= 66.666){//2 ticks threshold
+            switch (this.actionTypeXTick){
+                case GameConfig.Action.Reload: {
+                    if ((this.curWeapIdx == 0 || this.curWeapIdx == 1) && this.weapons[this.curWeapIdx].ammo == 0){
+                        this.weaponManager.reload();
+                    }
+                    break;
+                }
+                case GameConfig.Action.UseItem: {
+                    switch (this.actionItemXTick){
+                        case "bandage": {
+                            this.useBandage();
+                            break;
+                        }
+                        case "healthkit":{
+                            this.useHealthkit();
+                            break;
+                        }
+                        case "soda":{
+                            this.useSoda();
+                            break;
+                        }
+                        case "painkiller":{
+                            this.usePainkiller();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            this.actionTypeXTick = GameConfig.Action.None;
+            this.actionItemXTick = "";
+            this.performActionXTick = false;
+            this.timeSincePerformActionXTick = -1;
         }
 
         //handle heal and boost actions
@@ -667,12 +723,32 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        //healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload){
+            this.cancelAction();
+            this.performActionXTick = true;
+            this.actionItemXTick = "bandage";
+            this.actionTypeXTick = GameConfig.Action.UseItem;
+            this.timeSincePerformActionXTick = Date.now();
+            return;
+        }
+
         this.cancelAction();
         this.doAction("bandage", GameConfig.Action.UseItem, 3);
     }
 
     useHealthkit(): void{
         if (this.health == 100 || this.actionType == GameConfig.Action.UseItem){
+            return;
+        }
+
+        //healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload){
+            this.cancelAction();
+            this.performActionXTick = true;
+            this.actionItemXTick = "healthkit";
+            this.actionTypeXTick = GameConfig.Action.UseItem;
+            this.timeSincePerformActionXTick = Date.now();
             return;
         }
 
@@ -685,6 +761,16 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        //healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload){
+            this.cancelAction();
+            this.performActionXTick = true;
+            this.actionItemXTick = "soda";
+            this.actionTypeXTick = GameConfig.Action.UseItem;
+            this.timeSincePerformActionXTick = Date.now();
+            return;
+        }
+
         this.cancelAction();
         this.doAction("soda", GameConfig.Action.UseItem, 3);
     }
@@ -694,25 +780,18 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        this.cancelAction();
-        this.doAction("painkiller", GameConfig.Action.UseItem, 5);
-    }
-
-    reload(){
-        const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
-        const conditions = [
-            this.actionType == GameConfig.Action.UseItem,
-            this.weapons[this.curWeapIdx].ammo == weaponInfo.maxClip,
-            this.inventory[weaponInfo.ammo] == 0,
-            this.curWeapIdx == 2 || this.curWeapIdx as number == 3
-        ]
-        if (conditions.some(c => c == true)){
+        //healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload){
+            this.cancelAction();
+            this.performActionXTick = true;
+            this.actionItemXTick = "painkiller";
+            this.actionTypeXTick = GameConfig.Action.UseItem;
+            this.timeSincePerformActionXTick = Date.now();
             return;
         }
 
-        const duration = weaponInfo.reloadTime;
-        
-        this.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
+        this.cancelAction();
+        this.doAction("painkiller", GameConfig.Action.UseItem, 5);
     }
 
     toMouseLen = 0;
@@ -738,27 +817,23 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.EquipMelee:
                 this.curWeapIdx = 2;
                 this.cancelAction();
-                this.setDirty();
                 break;
             case GameConfig.Input.EquipPrimary:
                 if (this.weapons[0].type) {
                     this.curWeapIdx = 0;
                     this.cancelAction();
-                    this.setDirty();
                 }
                 break;
             case GameConfig.Input.EquipSecondary:
                 if (this.weapons[1].type) {
                     this.curWeapIdx = 1;
                     this.cancelAction();
-                    this.setDirty();
                 }
                 break;
             case GameConfig.Input.EquipThrowable:
                 if (this.weapons[3].type) {
                     this.curWeapIdx = 3;
                     this.cancelAction();
-                    this.setDirty();
                 }
                 break;
             case GameConfig.Input.EquipOtherGun:
@@ -795,7 +870,7 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case GameConfig.Input.Reload:
-                this.reload();
+                this.weaponManager.reload();
                 break;
             case GameConfig.Input.UseBandage:
                 this.useBandage();
@@ -825,10 +900,7 @@ export class Player extends BaseGameObject {
                 break;
             }
             case "soda":{
-                this.cancelAction();
-                // setTimeout(() => {
-                    this.useSoda();
-                // }, 100);
+                this.useSoda();
                 break;
             }
             case "painkiller":{
@@ -951,7 +1023,7 @@ export class Player extends BaseGameObject {
 
         //increase speed when adrenaline is above 50%
         if (this.boost >= 50){
-            this.speed += 1.15;
+            this.speed += 1.85;
         }
 
         //decrease speed if popping adren or heals
