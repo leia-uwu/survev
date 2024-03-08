@@ -57,7 +57,7 @@ export class WeaponManager {
                 break;
             }
             case "gun": {
-                if (this.weapons[this.curWeapIdx].ammo != 0){
+                if (this.weapons[this.curWeapIdx].ammo != 0) {
                     this.fireWeapon(false, this.activeWeapon);
                 }
                 break;
@@ -70,20 +70,20 @@ export class WeaponManager {
         this.shootStart();
     }
 
-    reload(){
+    reload() {
         const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo == weaponInfo.maxClip,
             this.player.inventory[weaponInfo.ammo] == 0,
-            this.curWeapIdx == 2 || this.curWeapIdx as number == 3
-        ]
-        if (conditions.some(c => c == true)){
+            this.curWeapIdx == 2 || this.curWeapIdx == 3
+        ];
+        if (conditions.some(c => c)) {
             return;
         }
 
         const duration = weaponInfo.reloadTime;
-        
+
         this.player.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
     }
 
@@ -256,7 +256,7 @@ export class WeaponManager {
                 }
             }
         }
-        if (this.weapons[this.curWeapIdx].ammo == 0){
+        if (this.weapons[this.curWeapIdx].ammo == 0) {
             this.reload();
         }
     }

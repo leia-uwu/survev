@@ -164,7 +164,7 @@ export class Loot extends BaseGameObject {
         this.vel = v2.add(this.vel, v2.mul(dir, velocity));
     }
 
-    remove(){
+    remove() {
         this.game.grid.remove(this);
     }
 }
