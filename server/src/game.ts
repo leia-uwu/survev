@@ -14,7 +14,21 @@ import { GameConfig } from "../../shared/gameConfig";
 import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
+import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 
+export class Emote {
+    playerId: number;
+    pos: Vec2;
+    type: string;
+    isPing: boolean;
+
+    constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
+        this.playerId = playerId;
+        this.pos = pos;
+        this.type = type;
+        this.isPing = isPing;
+    }
+}
 export class Game {
     stopped = false;
     allowJoin = true;
@@ -68,6 +82,8 @@ export class Game {
 
     logger: Logger;
 
+    emotes = new Set<Emote>();
+
     constructor(id: number, config: ConfigType) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id}`);
@@ -107,6 +123,14 @@ export class Game {
         // this.serializationCache.update(this);
 
         for (const player of this.connectedPlayers) {
+            if (this.emotes.size) {
+                for (const emote of this.emotes) {
+                    if (emote.playerId === player.id || !emote.isPing) {
+                        player.emotes.add(emote);
+                    }
+                }
+            }
+
             player.sendMsgs();
         }
 
@@ -126,6 +150,8 @@ export class Game {
         this.msgsToSend.length = 0;
         this.explosions.length = 0;
         this.aliveCountDirty = false;
+
+        this.emotes.clear();
 
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
@@ -225,6 +251,20 @@ export class Game {
             player.name = name;
             player.joinedTime = Date.now();
 
+            const emotes = joinMsg.emotes;
+            for (let i = 0; i < emotes.length; i++) {
+                const emote = emotes[i];
+                if ((i < 4 && emote === "")) {
+                    player.loadout.emotes.push("emote_logoswine");
+                    continue;
+                }
+
+                if (EmotesDefs[emote as keyof typeof EmotesDefs] === undefined &&
+                    emote != "") {
+                    player.loadout.emotes.push("emote_logoswine");
+                } else player.loadout.emotes.push(emote);
+            }
+
             this.newPlayers.push(player);
             this.grid.addObject(player);
             this.connectedPlayers.add(player);
@@ -232,6 +272,12 @@ export class Game {
             this.livingPlayers.add(player);
             this.aliveCountDirty = true;
             break;
+        }
+        case net.MsgType.Emote: {
+            const emoteMsg = new net.EmoteMsg();
+            emoteMsg.deserialize(stream);
+
+            this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
         }
         }
     }
