@@ -12,7 +12,7 @@ import { Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { DeadBody } from "./deadBody";
-import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef } from "../../../shared/defs/objectsTypings";
+import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
@@ -386,16 +386,16 @@ export class Player extends BaseGameObject {
             if (this.actionType == GameConfig.Action.UseItem) {
                 switch (this.actionItem) {
                 case "bandage":
-                    this.health += 15;
+                    this.health += (GameObjectDefs.bandage as HealDef).heal;
                     break;
                 case "healthkit":
-                    this.health = 100;
+                    this.health = (GameObjectDefs.healthkit as HealDef).heal;
                     break;
                 case "soda":
-                    this.boost += 25;
+                    this.boost += (GameObjectDefs.soda as BoostDef).boost;
                     break;
                 case "painkiller":
-                    this.boost += 50;
+                    this.boost += (GameObjectDefs.painkiller as BoostDef).boost;
                     break;
                 }
                 this.inventory[this.actionItem]--;
@@ -720,7 +720,7 @@ export class Player extends BaseGameObject {
     }
 
     useBandage(): void {
-        if (this.health == 100 || this.actionType == GameConfig.Action.UseItem) {
+        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
@@ -739,7 +739,7 @@ export class Player extends BaseGameObject {
     }
 
     useHealthkit(): void {
-        if (this.health == 100 || this.actionType == GameConfig.Action.UseItem) {
+        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
@@ -758,7 +758,7 @@ export class Player extends BaseGameObject {
     }
 
     useSoda(): void {
-        if (this.boost == 100 || this.actionType == GameConfig.Action.UseItem) {
+        if (this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
@@ -777,7 +777,7 @@ export class Player extends BaseGameObject {
     }
 
     usePainkiller(): void {
-        if (this.boost == 100 || this.actionType == GameConfig.Action.UseItem) {
+        if (this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
