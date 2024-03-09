@@ -101,7 +101,7 @@ export class Player extends BaseGameObject {
         this.animType = GameConfig.Anim.None;
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
-            this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload)
+            this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
         }
 
         this.weaponManager.curWeapIdx = idx;
@@ -160,14 +160,15 @@ export class Player extends BaseGameObject {
      * also for automatically reloading if switching to gun with 0 loaded ammo
      */
     scheduledAction: {
-        perform: boolean;
-        type: typeof GameConfig.Action[keyof typeof GameConfig.Action];
+        perform: boolean
+        type: typeof GameConfig.Action[keyof typeof GameConfig.Action]
         item: string
     } = {
-        perform: false,
-        type: GameConfig.Action.None,
-        item: "",
-    }
+            perform: false,
+            type: GameConfig.Action.None,
+            item: ""
+        };
+
     ticksSinceLastAction = 0;
 
     get wearingPan(): boolean {
@@ -346,33 +347,33 @@ export class Player extends BaseGameObject {
 
         if (this.scheduledAction.perform && this.ticksSinceLastAction > 1) {
             switch (this.scheduledAction.type) {
-                case GameConfig.Action.Reload: {
-                    if ((this.curWeapIdx == 0 || this.curWeapIdx == 1) && this.weapons[this.curWeapIdx].ammo == 0) {
-                        this.weaponManager.reload();
-                    }
+            case GameConfig.Action.Reload: {
+                if ((this.curWeapIdx == 0 || this.curWeapIdx == 1) && this.weapons[this.curWeapIdx].ammo == 0) {
+                    this.weaponManager.reload();
+                }
+                break;
+            }
+            case GameConfig.Action.UseItem: {
+                switch (this.scheduledAction.item) {
+                case "bandage": {
+                    this.useBandage();
                     break;
                 }
-                case GameConfig.Action.UseItem: {
-                    switch (this.scheduledAction.item) {
-                        case "bandage": {
-                            this.useBandage();
-                            break;
-                        }
-                        case "healthkit":{
-                            this.useHealthkit();
-                            break;
-                        }
-                        case "soda":{
-                            this.useSoda();
-                            break;
-                        }
-                        case "painkiller":{
-                            this.usePainkiller();
-                            break;
-                        }
-                    }
+                case "healthkit":{
+                    this.useHealthkit();
                     break;
                 }
+                case "soda":{
+                    this.useSoda();
+                    break;
+                }
+                case "painkiller":{
+                    this.usePainkiller();
+                    break;
+                }
+                }
+                break;
+            }
             }
             this.scheduledAction.type = GameConfig.Action.None;
             this.scheduledAction.item = "";
@@ -731,7 +732,7 @@ export class Player extends BaseGameObject {
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("bandage", GameConfig.Action.UseItem)
+            this.scheduleAction("bandage", GameConfig.Action.UseItem);
             return;
         }
 
@@ -746,7 +747,7 @@ export class Player extends BaseGameObject {
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("healthkit", GameConfig.Action.UseItem)
+            this.scheduleAction("healthkit", GameConfig.Action.UseItem);
             return;
         }
 
@@ -761,7 +762,7 @@ export class Player extends BaseGameObject {
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("soda", GameConfig.Action.UseItem)
+            this.scheduleAction("soda", GameConfig.Action.UseItem);
             return;
         }
 
@@ -777,7 +778,7 @@ export class Player extends BaseGameObject {
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
             this.cancelAction();
-            this.scheduleAction("painkiller", GameConfig.Action.UseItem)
+            this.scheduleAction("painkiller", GameConfig.Action.UseItem);
             return;
         }
 
@@ -785,15 +786,20 @@ export class Player extends BaseGameObject {
         this.doAction("painkiller", GameConfig.Action.UseItem, 5);
     }
 
+    /**
+     * schedules an action function to be called 1 tick after the current tick.
+     * @param actionItem name of gun for reload, name of healing item for useitem
+     * @param actionType reload, useitem, etc
+     * @param shouldCancel if true, calls cancelAction() before doing anything else
+     */
     scheduleAction(actionItem: string, actionType: typeof this.scheduledAction.type, shouldCancel = true) {
-        if ( shouldCancel ) {
+        if (shouldCancel) {
             this.cancelAction();
-        } 
+        }
         this.scheduledAction.perform = true;
         this.scheduledAction.item = actionItem;
         this.scheduledAction.type = actionType;
-        this.ticksSinceLastAction= 0;
-        console.log("restting", this.ticksSinceLastAction)
+        this.ticksSinceLastAction = 0;
     }
 
     toMouseLen = 0;
@@ -920,9 +926,6 @@ export class Player extends BaseGameObject {
                 const backpackLevel = Number(this.pack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
                 const bagSpace = GameConfig.bagSizes[o.type][backpackLevel];
                 if (this.inventory[o.type] + o.count <= bagSpace) {
-                    this.inventory[o.type] += o.count;
-                    this.dirty.inventory = true;
-
                     switch (lootType) {
                     case "ammo":
                         break;
@@ -949,6 +952,8 @@ export class Player extends BaseGameObject {
                         break;
                     }
                     }
+                    this.inventory[o.type] += o.count;
+                    this.dirty.inventory = true;
                 } else { // spawn new loot object to animate the pickup rejection
                     const spaceLeft = bagSpace - this.inventory[o.type];
                     const amountToAdd = spaceLeft;
@@ -1006,7 +1011,7 @@ export class Player extends BaseGameObject {
                     const newWeaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;// info for the picked up gun
 
                     if (this.inventory[newWeaponInfo.ammo] != 0) {
-                        this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload, false)
+                        this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload, false);
                     }
 
                     this.cancelAction();
