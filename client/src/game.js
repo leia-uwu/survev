@@ -1076,7 +1076,7 @@ export class Game {
             }
 
             // Update cheat detection
-            if (helpers.ee() || helpers.te()) {
+            if (helpers.detectCheatWindowVars() || helpers.detectCheatScripts()) {
                 this.m_cheatDetected = true;
             }
             break;
