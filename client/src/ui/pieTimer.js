@@ -47,6 +47,7 @@ export class PieTimer {
     }
 
     destroy() {
+        // Don't destroy the texture being used by timerBackground
         this.container.removeChild(this.timerBackground);
         this.timerBackground.destroy({
             children: true
@@ -57,48 +58,51 @@ export class PieTimer {
         });
     }
 
-    start(e, t, r) {
+    start(label, elapsed, duration) {
         this.active = true;
-        this.label = e;
-        this.elapsed = t;
-        this.duration = r;
+        this.label = label;
+        this.elapsed = elapsed;
+        this.duration = duration;
     }
 
     stop() {
         this.active = false;
     }
 
-    resize(e, t) {
-        this.screenScaleFactor = t;
+    resize(touch, screenScaleFactor) {
+        this.screenScaleFactor = screenScaleFactor;
+
         if (device.uiLayout == device.UiLayout.Sm) {
             if (!device.tablet) {
                 this.container.scale.set(0.5, 0.5);
             }
             this.mobileOffset = device.isLandscape
-                ? e.mobileOffsetLandscape
-                : e.mobileOffsetPortrait;
+                ? touch.mobileOffsetLandscape
+                : touch.mobileOffsetPortrait;
         } else {
             this.container.scale.set(1, 1);
             this.mobileOffset = 0;
         }
     }
 
-    update(e, t) {
+    update(dt, camera) {
         if (!this.active) {
             this.container.visible = false;
             return;
         }
-        this.elapsed = math.min(this.elapsed + e, this.duration);
-        const r = 56 + this.label.length * fontWidth * 0.45;
-        const a = fontWidth * 1.5;
-        const i = 0 - r / 2;
-        const s = 87.5 - a / 2;
+
+        this.elapsed = math.min(this.elapsed + dt, this.duration);
+
+        const labelWidth = 56 + this.label.length * fontWidth * 0.45;
+        const labelHeight = fontWidth * 1.5;
+        const rectX = 0 - labelWidth / 2;
+        const rectY = 87.5 - labelHeight / 2;
         const l =
             math.min(this.elapsed / this.duration, 1) * Math.PI * 2 -
             Math.PI * 0.5;
         this.gfx.clear();
         this.gfx.beginFill(0, 0.5);
-        this.gfx.drawRoundedRect(i, s, r, a, 5);
+        this.gfx.drawRoundedRect(rectX, rectY, labelWidth, labelHeight, 5);
         this.gfx.endFill();
         this.gfx.lineStyle(6, 16777215);
         this.gfx.arc(0, 0, 35, -Math.PI * 0.5, l, false);
@@ -108,8 +112,8 @@ export class PieTimer {
         this.labelText.position.y = 87.5;
         this.labelText.text = this.label;
         this.container.position.set(
-            t.screenWidth / 2,
-            (t.screenHeight / 3) * this.screenScaleFactor +
+            camera.screenWidth / 2,
+            (camera.screenHeight / 3) * this.screenScaleFactor +
             this.mobileOffset
         );
         this.container.visible = true;
