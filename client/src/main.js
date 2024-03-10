@@ -1,12 +1,8 @@
 import { helpers } from "./helpers";
-// helpers.getParameterByName("debug") || (console.log = function () {});
 import $ from "jquery";
 import * as PIXI from "pixi.js";
-
-// PIXI.utils.skipHello();
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
-
 import net from "../../shared/net";
 import { Account } from "./account";
 import { api } from "./api";
@@ -15,7 +11,6 @@ import { AudioManager } from "./audioManager";
 import { device } from "./device";
 import { ConfigManager } from "./config";
 import "./ui/webview";
-// import "./emote";
 import { Game } from "./game";
 import Input from "./input";
 import InputBinds from "./inputBinds";
@@ -34,7 +29,6 @@ import TeamMenu from "./ui/teamMenu";
 
 class Application {
     constructor() {
-        const e = this;
         this.nameInput = $("#player-name-input-solo");
         this.serverSelect = $("#server-select-main");
         this.playMode0Btn = $("#btn-start-mode-0");
@@ -108,25 +102,27 @@ class Application {
         this.checkedPingTest = false;
         this.hasFocus = true;
         this.newsDisplayed = false;
-        const t = function() {
-            e.config.load(() => {
-                e.configLoaded = true;
-                e.m_tryLoad();
+        const onLoadComplete = () => {
+            this.config.load(() => {
+                this.configLoaded = true;
+                this.m_tryLoad();
             });
         };
         if (device.webview && device.version > "1.0.0") {
-            this.loadWebviewDeps(t);
+            this.loadWebviewDeps(onLoadComplete);
         } else {
-            this.loadBrowserDeps(t);
+            this.loadBrowserDeps(onLoadComplete);
         }
     }
 
-    loadBrowserDeps(e) {
-        e();
+    loadBrowserDeps(onLoadCompleteCb) {
+        onLoadCompleteCb();
     }
 
     loadWebviewDeps(e) {
         const t = this;
+
+        // 'deviceready' is fired when cordova.js finishes loading
         document.addEventListener(
             "deviceready",
             () => {
@@ -140,6 +136,8 @@ class Application {
             },
             false
         );
+
+        // Load cordova.js
         (function(e, t, r) {
             let a;
             const i =
@@ -461,118 +459,127 @@ class Application {
     }
 
     startPingTest() {
-        const e = this.config.get("regionSelected")
+        const regions = this.config.get("regionSelected")
             ? [this.config.get("region")]
             : this.pingTest.getRegionList();
-        this.pingTest.start(e);
+        this.pingTest.start(regions);
     }
 
-    setAppActive(e) {
-        this.active = e;
+    setAppActive(active) {
+        this.active = active;
         this.quickPlayPendingModeIdx = -1;
         this.refreshUi();
-        if (e) {
+
+        // Certain systems, like the account, can throw errors
+        // while the user is already in a game.
+        // Seeing these errors when returning to the menu would be
+        // confusing, so we'll hide the modal instead.
+        if (active) {
             this.errorModal.hide();
         }
     }
 
-    setPlayLockout(e) {
+    setPlayLockout(lock) {
         const t = this;
-        const r = e ? 0 : 1000;
+        const delay = lock ? 0 : 1000;
         this.playButtons
             .stop()
-            .delay(r)
+            .delay(delay)
             .animate(
                 {
-                    opacity: e ? 0.5 : 1
+                    opacity: lock ? 0.5 : 1
                 },
                 250
             );
         this.playLoading
             .stop()
-            .delay(r)
+            .delay(delay)
             .animate(
                 {
-                    opacity: e ? 1 : 0
+                    opacity: lock ? 1 : 0
                 },
                 {
                     duration: 250,
                     start: function() {
                         t.playLoading.css({
-                            "pointer-events": e ? "initial" : "none"
+                            "pointer-events": lock ? "initial" : "none"
                         });
                     }
                 }
             );
     }
 
-    onTeamMenuJoinGame(e) {
-        const t = this;
+    onTeamMenuJoinGame(data) {
         this.waitOnAccount(() => {
-            t.joinGame(e);
+            this.joinGame(data);
         });
     }
 
-    onTeamMenuLeave(e) {
-        if (e && e != "" && window.history) {
+    onTeamMenuLeave(errTxt) {
+        if (errTxt && errTxt != "" && window.history) {
             window.history.replaceState("", "", "/");
         }
-        this.errorMessage = e;
+        this.errorMessage = errTxt;
         this.setDOMFromConfig();
         this.refreshUi();
     }
 
+    // Config
     setConfigFromDOM() {
-        const e = helpers.sanitizeNameInput(this.nameInput.val());
-        this.config.set("playerName", e);
-        const t = this.serverSelect.find(":selected").val();
-        this.config.set("region", t);
+        const playerName = helpers.sanitizeNameInput(this.nameInput.val());
+        this.config.set("playerName", playerName);
+        const region = this.serverSelect.find(":selected").val();
+        this.config.set("region", region);
     }
 
     setDOMFromConfig() {
-        const e = this;
         this.nameInput.val(this.config.get("playerName"));
-        this.serverSelect.find("option").each((t, r) => {
-            r.selected = r.value == e.config.get("region");
+        this.serverSelect.find("option").each((i, ele) => {
+            ele.selected = ele.value == this.config.get("region");
         });
         this.languageSelect.val(this.config.get("language"));
     }
 
-    onConfigModified(e) {
-        const t = this.config.get("muteAudio");
-        if (t != this.audioManager.mute) {
+    onConfigModified(key) {
+        const muteAudio = this.config.get("muteAudio");
+        if (muteAudio != this.audioManager.mute) {
             this.muteBtns.removeClass(
-                t ? "audio-on-icon" : "audio-off-icon"
+                muteAudio ? "audio-on-icon" : "audio-off-icon"
             );
             this.muteBtns.addClass(
-                t ? "audio-off-icon" : "audio-on-icon"
+                muteAudio ? "audio-off-icon" : "audio-on-icon"
             );
-            this.audioManager.setMute(t);
+            this.audioManager.setMute(muteAudio);
         }
-        const r = this.config.get("masterVolume");
-        this.masterSliders.val(r * 100);
-        this.audioManager.setMasterVolume(r);
-        const a = this.config.get("soundVolume");
-        this.soundSliders.val(a * 100);
-        this.audioManager.setSoundVolume(a);
-        const i = this.config.get("musicVolume");
-        this.musicSliders.val(i * 100);
-        this.audioManager.setMusicVolume(i);
-        if (e == "language") {
-            const o = this.config.get("language");
-            this.localization.setLocale(o);
+
+        const masterVolume = this.config.get("masterVolume");
+        this.masterSliders.val(masterVolume * 100);
+        this.audioManager.setMasterVolume(masterVolume);
+
+        const soundVolume = this.config.get("soundVolume");
+        this.soundSliders.val(soundVolume * 100);
+        this.audioManager.setSoundVolume(soundVolume);
+
+        const musicVolume = this.config.get("musicVolume");
+        this.musicSliders.val(musicVolume * 100);
+        this.audioManager.setMusicVolume(musicVolume);
+
+        if (key == "language") {
+            const language = this.config.get("language");
+            this.localization.setLocale(language);
         }
-        if (e == "region") {
+
+        if (key == "region") {
             this.config.set("regionSelected", true);
             this.startPingTest();
         }
-        if (e == "highResTex") {
+
+        if (key == "highResTex") {
             location.reload();
         }
     }
 
     refreshUi() {
-        const e = this;
         this.startMenuWrapper.css(
             "display",
             this.active ? "flex" : "none"
@@ -595,75 +602,89 @@ class Application {
                 this.contextListener
             );
         }
+
+        // Hide the left section if on mobile, oriented portrait, and viewing create team
         $("#ad-block-left").css(
             "display",
             !device.isLandscape && this.teamMenu.active
                 ? "none"
                 : "block"
         );
-        const t = this.active && this.errorMessage != "";
+
+        // Warning
+        const hasError = this.active && this.errorMessage != "";
         this.serverWarning.css({
             display: "block",
-            opacity: t ? 1 : 0
+            opacity: hasError ? 1 : 0
         });
         this.serverWarning.html(this.errorMessage);
-        const r = function(t, r) {
-            t.html(
-                e.quickPlayPendingModeIdx === r
+
+        const updateButton = (ele, gameModeIdx) => {
+            ele.html(
+                this.quickPlayPendingModeIdx === gameModeIdx
                     ? '<div class="ui-spinner"></div>'
-                    : e.localization.translate(t.data("l10n"))
+                    : this.localization.translate(ele.data("l10n"))
             );
         };
-        r(this.playMode0Btn, 0);
-        r(this.playMode1Btn, 1);
-        r(this.playMode2Btn, 2);
+
+        updateButton(this.playMode0Btn, 0);
+        updateButton(this.playMode1Btn, 1);
+        updateButton(this.playMode2Btn, 2);
     }
 
-    waitOnAccount(e) {
-        const t = this;
+    waitOnAccount(cb) {
         if (this.account.requestsInFlight == 0) {
-            e();
+            cb();
         } else {
-            Date.now();
-            const r = setTimeout(() => {
-                a();
+            // Wait some maximum amount of time for pending account requests
+            const timeout = setTimeout(() => {
+                runOnce();
             }, 2500);
-            const a = function a() {
-                e();
-                clearTimeout(r);
-                t.account.removeEventListener(
+            const runOnce = () => {
+                cb();
+                clearTimeout(timeout);
+                this.account.removeEventListener(
                     "requestsComplete",
-                    a
+                    runOnce
                 );
             };
-            this.account.addEventListener("requestsComplete", a);
+            this.account.addEventListener("requestsComplete", runOnce);
         }
     }
 
-    tryJoinTeam(e, t) {
+    tryJoinTeam(create, url) {
         if (this.active && this.quickPlayPendingModeIdx === -1) {
-            const r = t || window.location.hash.slice(1);
-            if (e || r != "") {
+            // Join team if the url contains a team address
+            const roomUrl = url || window.location.hash.slice(1);
+            if (create || roomUrl != "") {
+                // The main menu and squad menus have separate
+                // DOM elements for input, such as player name and
+                // selected region. We will stash the menu values
+                // into the config so the team menu can read them.
                 this.setConfigFromDOM();
-                this.teamMenu.connect(e, r);
+                this.teamMenu.connect(create, roomUrl);
                 this.refreshUi();
             }
         }
     }
 
-    tryQuickStartGame(e) {
+    tryQuickStartGame(gameModeIdx) {
         const t = this;
         if (this.quickPlayPendingModeIdx === -1) {
+            // Update UI to display a spinner on the play button
             this.errorMessage = "";
-            this.quickPlayPendingModeIdx = e;
+            this.quickPlayPendingModeIdx = gameModeIdx;
             this.setConfigFromDOM();
             this.refreshUi();
-            let r = 0;
+
+            // Wait some amount of time if we've recently attempted to
+            // find a game to prevent spamming the server
+            let delay = 0;
             if (
                 this.findGameAttempts > 0 &&
                 Date.now() - this.findGameTime < 30000
             ) {
-                r = Math.min(
+                delay = Math.min(
                     this.findGameAttempts * 2.5 * 1000,
                     7500
                 );
@@ -672,120 +693,126 @@ class Application {
             }
             this.findGameTime = Date.now();
             this.findGameAttempts++;
-            const a = GameConfig.protocolVersion;
-            let i = this.config.get("region");
-            const s = helpers.getParameterByName("region");
-            if (s !== undefined && s.length > 0) {
-                i = s;
+
+            const version = GameConfig.protocolVersion;
+            let region = this.config.get("region");
+            const paramRegion = helpers.getParameterByName("region");
+            if (paramRegion !== undefined && paramRegion.length > 0) {
+                region = paramRegion;
             }
-            let n = this.pingTest.getZones(i);
-            const c = helpers.getParameterByName("zone");
-            if (c !== undefined && c.length > 0) {
-                n = [c];
+            let zones = this.pingTest.getZones(region);
+            const paramZone = helpers.getParameterByName("zone");
+            if (paramZone !== undefined && paramZone.length > 0) {
+                zones = [paramZone];
             }
-            const m = {
-                version: a,
-                region: i,
-                zones: n,
+
+            const matchArgs = {
+                version,
+                region,
+                zones,
                 playerCount: 1,
                 autoFill: true,
-                gameModeIdx: e
+                gameModeIdx
             };
-            const p = function() {
-                t.waitOnAccount(() => {
-                    t.findGame(m, (e, r) => {
-                        if (e) {
-                            t.onJoinGameError(e);
+
+            const tryQuickStartGameImpl = () => {
+                this.waitOnAccount(() => {
+                    this.findGame(matchArgs, (err, matchData) => {
+                        if (err) {
+                            this.onJoinGameError(err);
                             return;
                         }
-                        t.joinGame(r);
+                        this.joinGame(matchData);
                     });
                 });
             };
-            if (r == 0) {
-                p();
+
+            if (delay == 0) {
+                // We can improve findGame responsiveness by ~30 ms by skipping
+                // the 0ms setTimeout
+                tryQuickStartGameImpl();
             } else {
                 setTimeout(() => {
-                    p();
-                }, r);
+                    tryQuickStartGameImpl();
+                }, delay);
             }
         }
     }
 
-    findGame(e, t) {
-        (function r(a, i) {
-            if (a >= i) {
-                t("full");
+    findGame(matchArgs, cb) {
+        (function findGameImpl(iter, maxAttempts) {
+            if (iter >= maxAttempts) {
+                cb("full");
                 return;
             }
-            const o = function() {
+            const retry = function() {
                 setTimeout(() => {
-                    r(a + 1, i);
+                    findGameImpl(iter + 1, maxAttempts);
                 }, 500);
             };
             $.ajax({
                 type: "POST",
                 url: api.resolveUrl("/api/find_game"),
-                data: JSON.stringify(e),
+                data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
-                timeout: 10000,
-                success: function(e) {
-                    if (e?.err && e.err != "full") {
-                        t(e.err);
+                timeout: 10 * 1000,
+                success: function(data) {
+                    if (data?.err && data.err != "full") {
+                        cb(data.err);
                         return;
                     }
-                    const r = e?.res ? e.res[0] : null;
-                    if (r?.hosts && r.addrs) {
-                        t(null, r);
+                    const matchData = data?.res ? data.res[0] : null;
+                    if (matchData?.hosts && matchData.addrs) {
+                        cb(null, matchData);
                     } else {
-                        o();
+                        retry();
                     }
                 },
                 error: function(e) {
-                    o();
+                    retry();
                 }
             });
         })(0, 2);
     }
 
-    joinGame(e) {
-        const t = this;
+    joinGame(matchData) {
+        const _this = this;
+
         if (!this.game) {
             setTimeout(() => {
-                t.joinGame(e);
+                _this.joinGame(matchData);
             }, 250);
             return;
         }
-        const r = e.hosts || [];
-        const a = [];
-        for (let i = 0; i < r.length; i++) {
-            a.push(
-                `ws${e.useHttps ? "s" : ""}://${r[i]}/play?gameId=${e.gameId
-                }`
+        const hosts = matchData.hosts || [];
+        const urls = [];
+        for (let i = 0; i < hosts.length; i++) {
+            urls.push(
+                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId}`
             );
         }
-        (function e(r, a) {
-            const i = r.shift();
-            if (!i) {
-                t.onJoinGameError("join_game_failed");
+        (function joinGameImpl(urls, matchData) {
+            const url = urls.shift();
+            if (!url) {
+                _this.onJoinGameError("join_game_failed");
                 return;
             }
-            console.log("Joining", i, a.zone);
-            const o = function() {
-                e(r, a);
+            console.log("Joining", url, matchData.zone);
+            const onFailure = function() {
+                joinGameImpl(urls, matchData);
             };
-            t.game.tryJoinGame(
-                i,
-                a.data,
-                t.account.loadoutPriv,
-                t.account.questPriv,
-                o
+            _this.game.tryJoinGame(
+                url,
+                matchData.data,
+                _this.account.loadoutPriv,
+                _this.account.questPriv,
+                onFailure
             );
-        })(a, e);
+        })(urls, matchData);
     }
 
-    onJoinGameError(e) {
-        const t = {
+    onJoinGameError(err) {
+        const errMap = {
             full: this.localization.translate(
                 "index-failed-finding-game"
             ),
@@ -796,10 +823,10 @@ class Application {
                 "index-failed-joining-game"
             )
         };
-        if (e == "invalid_protocol") {
+        if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
         }
-        this.errorMessage = t[e] || t.full;
+        this.errorMessage = errMap[err] || errMap.full;
         this.quickPlayPendingModeIdx = -1;
         this.teamMenu.leave("join_game_failed");
         this.refreshUi();
@@ -810,34 +837,38 @@ class Application {
     }
 
     update() {
-        const e = math.clamp(
+        const dt = math.clamp(
             this.pixi.ticker.elapsedMS / 1000,
             0.001,
             1 / 8
         );
-        this.pingTest.update(e);
+        this.pingTest.update(dt);
         if (!this.checkedPingTest && this.pingTest.isComplete()) {
             if (!this.config.get("regionSelected")) {
-                const t = this.pingTest.getRegion();
-                if (t) {
-                    this.config.set("region", t);
+                const region = this.pingTest.getRegion();
+
+                if (region) {
+                    this.config.set("region", region);
                     this.setDOMFromConfig();
                 }
             }
             this.checkedPingTest = true;
         }
-        this.resourceManager.update(e);
-        this.audioManager.m(e);
-        this.ambience.update(e, this.audioManager, !this.active);
-        this.teamMenu.update(e);
+        this.resourceManager.update(dt);
+        this.audioManager.m(dt);
+        this.ambience.update(dt, this.audioManager, !this.active);
+        this.teamMenu.update(dt);
 
+        // Game update
         if (this.game?.initialized && this.game.playing) {
             if (this.active) {
                 this.setAppActive(false);
                 this.setPlayLockout(true);
             }
-            this.game.update(e);
+            this.game.update(dt);
         }
+
+        // LoadoutDisplay update
         if (
             this.active &&
             this.loadoutDisplay &&
@@ -849,7 +880,7 @@ class Application {
                     this.loadoutDisplay.o();
                 }
                 this.loadoutDisplay.show();
-                this.loadoutDisplay.m(e, this.hasFocus);
+                this.loadoutDisplay.m(dt, this.hasFocus);
             } else {
                 this.loadoutDisplay.hide();
             }
@@ -858,7 +889,7 @@ class Application {
             this.loadoutMenu.hide();
         }
         if (this.active) {
-            this.pass?.update(e);
+            this.pass?.update(dt);
         }
         this.input.flush();
     }
@@ -891,9 +922,10 @@ window.addEventListener("hashchange", () => {
 });
 window.addEventListener("beforeunload", (e) => {
     if (App.game?.warnPageReload() && !device.webview) {
-        const t = "Do you want to reload the game?";
-        e.returnValue = t;
-        return t;
+        // In new browsers, dialogText is overridden by a generic string
+        const dialogText = "Do you want to reload the game?";
+        e.returnValue = dialogText;
+        return dialogText;
     }
 });
 window.addEventListener("onfocus", () => {
@@ -902,48 +934,36 @@ window.addEventListener("onfocus", () => {
 window.addEventListener("onblur", () => {
     App.hasFocus = false;
 });
-const B = [];
-window.onerror = function(e, t, r, a, i) {
-    e = e || "undefined_error_msg";
-    const s = i ? i.stack : "";
+
+const reportedErrors = [];
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+    msg = msg || "undefined_error_msg";
+    const stacktrace = error ? error.stack : "";
+
+    // Break a malicious iOS app and other extensions
     if (
-        e.indexOf("').innerText") != -1 ||
-        s.includes("cdn.rawgit.com") ||
-        s.includes("chrome-extension://")
+        msg.indexOf("').innerText") != -1 ||
+        stacktrace.includes("cdn.rawgit.com") ||
+        stacktrace.includes("chrome-extension://")
     ) {
         helpers.cheatDetected();
         return;
     }
-    const n = {
-        msg: e,
+    const errObj = {
+        msg: msg,
         id: App.sessionId,
-        url: t,
-        line: r,
-        column: a,
-        stacktrace: s,
+        url: url,
+        line: lineNo,
+        column: columnNo,
+        stacktrace: stacktrace,
         browser: navigator.userAgent,
         protocol: GameConfig.protocolVersion
     };
-    const c = JSON.stringify(n);
-    if (!B.includes(c)) {
-        B.push(c);
-        if (
-            !/tpc.googlesyndication.com/.test(c) &&
-            e != "Script error."
-        ) {
-            if (/surviv\.io\/js\/.*\.js/.test(c)) {
-                if (
-                    n.msg.indexOf(
-                        "TypeError: null is not an object (evaluating 'e.transform._parentID=-1')"
-                    ) !== -1
-                ) {
-                    console.error(c);
-                } else {
-                    console.error("windowOnAppError", c);
-                }
-            } else {
-                console.error("windowOnError", c);
-            }
-        }
+    const errStr = JSON.stringify(errObj);
+
+    // Don't report the same error multiple times
+    if (!reportedErrors.includes(errStr)) {
+        reportedErrors.push(errStr);
+        console.error("windowOnError", errStr);
     }
 };
