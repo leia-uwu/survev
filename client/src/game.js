@@ -368,7 +368,7 @@ export class Game {
         }
         // Update facing direction
         const playerPos = this.m_activePlayer.pos;
-        const mousePos = this.camera.j(this.m_input.Ue);
+        const mousePos = this.camera.screenToPoint(this.m_input.Ue);
         const toMousePos = v2.sub(mousePos, playerPos);
         let toMouseLen = v2.length(toMousePos);
         let toMouseDir = toMouseLen > 0.00001 ? v2.div(toMousePos, toMouseLen) : v2.create(1, 0);
