@@ -66,8 +66,14 @@ export class Game {
 
     tickInterval: NodeJS.Timeout;
 
+    /**
+     * for stuff based on ms
+     */
     realDt: number;
-    // realDt divided by 1000, used for physics since speed values are in unit/second
+    /**
+     * realDt divided by 1000, used for physics since speed values are in unit/second.
+     * for stuff based on seconds
+     */
     dt: number;
 
     config: ConfigType;
@@ -188,6 +194,14 @@ export class Game {
             socket);
 
         return player;
+    }
+
+    /**
+     * spawns gun loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
+     */
+    addGun(type: string, pos: Vec2, layer: number, count: number) {
+        const loot = new Loot(this, type, pos, layer, count);
+        this.grid.addObject(loot);
     }
 
     addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
