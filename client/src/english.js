@@ -84,7 +84,6 @@ export default {
     "index-version": "ver",
     "index-privacy": "privacy",
     "index-attributions": "attributions",
-    "index-proxy-sites": "proxy sites",
     "index-team-is-full": "Team is full!",
     "index-team-kicked": "You were kicked from the team!",
     "index-failed-joining-team": "Failed joining team.",

@@ -879,14 +879,6 @@ class JoinMsg {
         /**
          * @type {boolean}
          */
-        this.proxy = false;
-        /**
-         * @type {boolean}
-         */
-        this.otherProxy = false;
-        /**
-         * @type {boolean}
-         */
         this.bot = false;
         /**
          * @type {string[]}
@@ -905,8 +897,6 @@ class JoinMsg {
         this.name = s.readString(Constants.PlayerNameMaxLen);
         this.useTouch = s.readBoolean();
         this.isMobile = s.readBoolean();
-        this.proxy = s.readBoolean();
-        this.otherProxy = s.readBoolean();
         this.bot = s.readBoolean();
         this.emotes = [];
         const count = s.readUint8();
@@ -929,8 +919,6 @@ class JoinMsg {
         s.writeString(this.name, Constants.PlayerNameMaxLen);
         s.writeBoolean(this.useTouch);
         s.writeBoolean(this.isMobile);
-        s.writeBoolean(this.proxy);
-        s.writeBoolean(this.otherProxy);
         s.writeBoolean(this.bot);
 
         s.writeUint8(this.emotes.length);
