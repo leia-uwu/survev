@@ -54,73 +54,78 @@ export class Building {
 
     allocSprite() {
         for (let e = 0; e < this.sprites.length; e++) {
-            const t = this.sprites[e];
-            if (!t.active) {
-                t.active = true;
-                return t.sprite;
+            const s = this.sprites[e];
+            if (!s.active) {
+                s.active = true;
+                return s.sprite;
             }
         }
-        const r = new PIXI.Sprite();
-        r.anchor.set(0.5, 0.5);
+        const sprite = new PIXI.Sprite();
+        sprite.anchor.set(0.5, 0.5);
         this.sprites.push({
             active: true,
-            sprite: r
+            sprite: sprite
         });
-        return r;
+        return sprite;
     }
 
-    c(e, t, r, a) {
-        const i = this;
-        if (t) {
-            this.type = e.type;
-            this.pos = v2.copy(e.pos);
-            this.ori = e.ori;
-            this.rot = math.oriToRad(e.ori);
+    c(data, fullUpdate, isNew, ctx) {
+        const _this = this;
+        if (fullUpdate) {
+            this.type = data.type;
+            this.pos = v2.copy(data.pos);
+            this.ori = data.ori;
+            this.rot = math.oriToRad(data.ori);
             this.scale = 1;
-            this.layer = e.layer;
+            this.layer = data.layer;
         }
-        this.ceilingDead = e.ceilingDead;
-        this.ceilingDamaged = e.ceilingDamaged;
-        this.occupied = e.occupied;
-        this.hasPuzzle = e.hasPuzzle;
+        this.ceilingDead = data.ceilingDead;
+        this.ceilingDamaged = data.ceilingDamaged;
+        this.occupied = data.occupied;
+        this.hasPuzzle = data.hasPuzzle;
+
         if (this.hasPuzzle) {
             this.puzzleErrSeqModified =
-                e.puzzleErrSeq != this.puzzleErrSeq;
-            this.puzzleSolved = e.puzzleSolved;
-            this.puzzleErrSeq = e.puzzleErrSeq;
+                data.puzzleErrSeq != this.puzzleErrSeq;
+            this.puzzleSolved = data.puzzleSolved;
+            this.puzzleErrSeq = data.puzzleErrSeq;
         }
-        const p = MapObjectDefs[this.type];
-        if (r) {
+        
+        const def = MapObjectDefs[this.type];
+        
+        if (isNew) {
             this.isNew = true;
             this.playedCeilingDeadFx =
-                p.ceiling.destroy !== undefined &&
-                a.map.deadCeilingIds.indexOf(this.__id) != -1;
+                def.ceiling.destroy !== undefined &&
+                ctx.map.deadCeilingIds.indexOf(this.__id) != -1;
             this.playedSolvedPuzzleFx =
                 this.hasPuzzle &&
-                a.map.solvedPuzzleIds.indexOf(this.__id) != -1;
-            const d = function(e) {
-                const t = e.pos || v2.create(0, 0);
-                const r = math.oriToRad(e.rot || 0);
-                const s = i.allocSprite();
-                if (e.sprite && e.sprite != "none") {
-                    s.texture = PIXI.Texture.from(e.sprite);
+                ctx.map.solvedPuzzleIds.indexOf(this.__id) != -1;
+            const createSpriteFromDef = function(imgDef) {
+                const posOffset = imgDef.pos || v2.create(0, 0);
+                const rotOffset = math.oriToRad(imgDef.rot || 0);
+                const sprite = _this.allocSprite();
+                if (imgDef.sprite && imgDef.sprite != "none") {
+                    sprite.texture = PIXI.Texture.from(imgDef.sprite);
                 } else {
-                    s.texture = PIXI.Texture.EMPTY;
+                    sprite.texture = PIXI.Texture.EMPTY;
                 }
-                s.tint = e.tint;
-                const l = a.map.getMapDef().biome.valueAdjust;
-                if (l < 1) {
-                    s.tint = util.adjustValue(s.tint, l);
+                sprite.tint = imgDef.tint;
+
+                const valueAdjust = ctx.map.getMapDef().biome.valueAdjust;
+                if (valueAdjust < 1) {
+                    sprite.tint = util.adjustValue(sprite.tint, valueAdjust);
                 }
-                s.posOffset = v2.rotate(t, i.rot);
-                s.rotOffset = r;
-                s.imgAlpha = e.alpha;
-                s.alpha = s.imgAlpha;
-                s.defScale = e.scale;
-                s.mirrorY = !!e.mirrorY;
-                s.mirrorX = !!e.mirrorX;
-                s.visible = true;
-                return s;
+
+                sprite.posOffset = v2.rotate(posOffset, _this.rot);
+                sprite.rotOffset = rotOffset;
+                sprite.imgAlpha = imgDef.alpha;
+                sprite.alpha = sprite.imgAlpha;
+                sprite.defScale = imgDef.scale;
+                sprite.mirrorY = !!imgDef.mirrorY;
+                sprite.mirrorX = !!imgDef.mirrorX;
+                sprite.visible = true;
+                return sprite;
             };
             this.bounds = collider.transform(
                 mapHelpers.getBoundingCollider(this.type),
@@ -128,57 +133,62 @@ export class Building {
                 this.rot,
                 this.scale
             );
-            this.zIdx = p.zIdx || 0;
+            
+            this.zIdx = def.zIdx || 0;
+            
+            // Create floor surfaces
             this.surfaces = [];
-            for (let u = 0; u < p.floor.surfaces.length; u++) {
-                const surface = p.floor.surfaces[u];
-                const y = {
-                    type: surface.type,
-                    data: surface.data || {},
+            for (let i = 0; i < def.floor.surfaces.length; i++) {
+                const surfaceDef = def.floor.surfaces[i];
+                const surface = {
+                    type: surfaceDef.type,
+                    data: surfaceDef.data || {},
                     colliders: []
                 };
-                for (let i = 0; i < surface.collision.length; i++) {
-                    y.colliders.push(
+                for (let j = 0; j < surfaceDef.collision.length; j++) {
+                    surface.colliders.push(
                         collider.transform(
-                            surface.collision[i],
+                            surfaceDef.collision[j],
                             this.pos,
                             this.rot,
                             this.scale
                         )
                     );
                 }
-                this.surfaces.push(y);
+                this.surfaces.push(surface);
             }
-            const f = Object.assign(
-                {},
+
+            // Create ceiling
+            const vision = Object.assign(
                 {
                     dist: 5.5,
                     width: 2.75,
                     linger: 0,
                     fadeRate: 12
                 },
-                p.ceiling.vision
+                def.ceiling.vision
             );
             this.ceiling = {
                 zoomRegions: [],
-                vision: f,
+                vision: vision,
                 visionTicker: 0,
                 fadeAlpha: 1
             };
-            for (let _ = 0; _ < p.ceiling.zoomRegions.length; _++) {
-                const b = p.ceiling.zoomRegions[_];
+
+            for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
+                const region = def.ceiling.zoomRegions[i];
                 this.ceiling.zoomRegions.push({
-                    zoomIn: b.zoomIn
+                    zoomIn: region.zoomIn
                         ? collider.transform(
-                            b.zoomIn,
+                            region.zoomIn,
                             this.pos,
                             this.rot,
                             this.scale
                         )
                         : null,
-                    zoomOut: b.zoomOut
+                    zoomOut: region.zoomOut
                         ? collider.transform(
-                            b.zoomOut,
+                            region.zoomOut,
                             this.pos,
                             this.rot,
                             this.scale
@@ -186,124 +196,143 @@ export class Building {
                         : null
                 });
             }
+
+            // Create floor and ceiling images
             this.imgs = [];
-            for (let x = 0; x < p.floor.imgs.length; x++) {
+            for (let i = 0; i < def.floor.imgs.length; i++) {
                 this.imgs.push({
-                    sprite: d(p.floor.imgs[x]),
+                    sprite: createSpriteFromDef(def.floor.imgs[i]),
                     isCeiling: false,
                     zOrd: this.zIdx,
-                    zIdx: this.__id * 100 + x
+                    zIdx: this.__id * 100 + i
                 });
             }
-            for (let S = 0; S < p.ceiling.imgs.length; S++) {
-                const v = p.ceiling.imgs[S];
+
+            for (let i = 0; i < def.ceiling.imgs.length; i++) {
+                const imgDef = def.ceiling.imgs[i];
                 this.imgs.push({
-                    sprite: d(v),
+                    sprite: createSpriteFromDef(imgDef),
                     isCeiling: true,
-                    removeOnDamaged: !!v.removeOnDamaged,
+                    removeOnDamaged: !!imgDef.removeOnDamaged,
                     zOrd: 750 - this.zIdx,
-                    zIdx: this.__id * 100 + S
+                    zIdx: this.__id * 100 + i
                 });
             }
+
+            // Create occupied particle emitters
+            let defEmitters = def.occupiedEmitters || [];
             for (
-                let k = p.occupiedEmitters || [], z = 0;
-                z < k.length;
+                let z = 0;
+                z < defEmitters.length;
                 z++
             ) {
-                const I = k[z];
-                const T = I.rot !== undefined ? I.rot : 0;
-                const M = this.rot + T;
-                let P = v2.add(this.pos, v2.rotate(I.pos, M));
-                const C = I.dir || v2.create(1, 0);
-                let A = v2.rotate(C, M);
-                let O = I.scale;
-                let D = null;
-                if (I.parentToCeiling) {
-                    let E = -1;
+                const defEmitter = defEmitters[z];
+                const defRot = defEmitter.rot !== undefined ? defEmitter.rot : 0;
+                const rot = this.rot + defRot;
+                let pos = v2.add(this.pos, v2.rotate(defEmitter.pos, rot));
+                const initDir = defEmitter.dir || v2.create(1, 0);
+                let dir = v2.rotate(initDir, rot);
+                let scale = defEmitter.scale;
+                let parent = null;
+                if (defEmitter.parentToCeiling) {
+                    // Parent to the last ceiling
+                    let lastIdx = -1;
                     for (let B = 0; B < this.imgs.length; B++) {
                         if (this.imgs[B].isCeiling) {
-                            E = B;
+                            lastIdx = B;
                         }
                     }
-                    if (E >= 0) {
-                        const R = this.imgs[E];
-                        D = R.sprite;
-                        P = v2.mul(I.pos, 32);
-                        P.y *= -1;
-                        A = v2.rotate(v2.create(1, 0), I.rot);
-                        O = 1 / R.sprite.defScale;
+                    if (lastIdx >= 0) {
+                        const img = this.imgs[lastIdx];
+                        parent = img.sprite;
+                        // Parented sprites use a different coordinate system...
+                        pos = v2.mul(defEmitter.pos, 32);
+                        pos.y *= -1;
+                        dir = v2.rotate(v2.create(1, 0), defEmitter.rot);
+                        scale = 1 / img.sprite.defScale;
                     }
                 }
-                const L = a.particleBarn.addEmitter(I.type, {
-                    pos: P,
-                    dir: A,
-                    scale: O,
-                    layer: I.layer,
-                    parent: D
+                const emitter = ctx.particleBarn.addEmitter(defEmitter.type, {
+                    pos: pos,
+                    dir: dir,
+                    scale: scale,
+                    layer: defEmitter.layer,
+                    parent: parent
                 });
-                this.particleEmitters.push(L);
+                this.particleEmitters.push(emitter);
             }
+
+            // Create sound emitters
+            let defSoundEmitters = def.soundEmitters || [];
             for (
-                let q = p.soundEmitters || [], F = 0;
-                F < q.length;
-                F++
+                let i = 0;
+                i < defSoundEmitters.length;
+                i++
             ) {
-                const j = q[F];
-                const N = v2.add(
+                const defSound = defSoundEmitters[i];
+                const pos = v2.add(
                     this.pos,
-                    v2.rotate(j.pos, this.rot)
+                    v2.rotate(defSound.pos, this.rot)
                 );
                 this.soundEmitters.push({
                     instance: null,
-                    sound: j.sound,
-                    channel: j.channel,
-                    pos: N,
-                    range: j.range,
-                    falloff: j.falloff,
-                    volume: j.volume
+                    sound: defSound.sound,
+                    channel: defSound.channel,
+                    pos: pos,
+                    range: defSound.range,
+                    falloff: defSound.falloff,
+                    volume: defSound.volume
                 });
             }
         }
     }
 
-    m(e, t, r, i, s, l, d, u) {
+    m(dt, map, particleBarn, audioManager, ambience, activePlayer, renderer, camera) {
+        // Puzzle effects
         if (this.hasPuzzle) {
-            const g = MapObjectDefs[this.type];
+            const def = MapObjectDefs[this.type];
+            // Play puzzle error effects
             if (
                 this.puzzleErrSeqModified &&
                 ((this.puzzleErrSeqModified = false), !this.isNew)
             ) {
-                let y = this;
-                let w = v2.length(v2.sub(l.pos, y.pos));
-                for (let f = t.Ve.p(), _ = 0; _ < f.length; _++) {
-                    const b = f[_];
+                // Find the nearest puzzle-piece obstacle and play the
+                // sound from that location. Fallback to the building location
+                // if none can be found.
+                let nearestObj = this;
+                let nearestDist = v2.length(v2.sub(activePlayer.pos, nearestObj.pos));
+                let obstacles = map.Ve.p();
+                for (let i = 0; i < obstacles.length; i++) {
+                    const o = obstacles[i];
                     if (
-                        b.active &&
-                        b.isPuzzlePiece &&
-                        b.parentBuildingId == this.__id
+                        o.active &&
+                        o.isPuzzlePiece &&
+                        o.parentBuildingId == this.__id
                     ) {
-                        const x = v2.length(v2.sub(l.pos, b.pos));
-                        if (x < w) {
-                            y = b;
-                            w = x;
+                        const dist = v2.length(v2.sub(activePlayer.pos, o.pos));
+                        if (dist < nearestDist) {
+                            nearestObj = o;
+                            nearestDist = dist;
                         }
                     }
                 }
-                i.playSound(g.puzzle.sound.fail, {
+                audioManager.playSound(def.puzzle.sound.fail, {
                     channel: "sfx",
-                    soundPos: y.pos,
-                    layer: y.layer,
+                    soundPos: nearestObj.pos,
+                    layer: nearestObj.layer,
                     filter: "muffled"
                 });
             }
+
+            // Play puzzle solved effects
             if (this.puzzleSolved && !this.playedSolvedPuzzleFx) {
-                t.solvedPuzzleIds.push(this.__id);
+                map.solvedPuzzleIds.push(this.__id);
                 this.playedSolvedPuzzleFx = true;
                 if (
                     !this.isNew &&
-                    g.puzzle.sound.complete != "none"
+                    def.puzzle.sound.complete != "none"
                 ) {
-                    i.playSound(g.puzzle.sound.complete, {
+                    audioManager.playSound(def.puzzle.sound.complete, {
                         channel: "sfx",
                         soundPos: this.pos,
                         layer: this.layer,
@@ -312,47 +341,53 @@ export class Building {
                 }
             }
         }
+
+        // Destroy ceiling
         if (this.ceilingDead && !this.playedCeilingDeadFx) {
-            t.deadCeilingIds.push(this.__id);
+            map.deadCeilingIds.push(this.__id);
             this.playedCeilingDeadFx = true;
             if (!this.isNew) {
-                this.destroyCeilingFx(r, i);
+                this.destroyCeilingFx(particleBarn, audioManager);
             }
         }
         this.isNew = false;
+
+        // Create residue if the ceiling has been destroyed
         if (this.ceilingDead && !this.residue) {
-            const S = MapObjectDefs[this.type];
-            if (S.ceiling.destroy !== undefined) {
-                const v = this.allocSprite();
-                v.texture = PIXI.Texture.from(
-                    S.ceiling.destroy.residue
+            const def = MapObjectDefs[this.type];
+            if (def.ceiling.destroy !== undefined) {
+                const r = this.allocSprite();
+                r.texture = PIXI.Texture.from(
+                    def.ceiling.destroy.residue
                 );
-                v.position.set(0, 0);
-                v.scale.set(1, 1);
-                v.rotation = 0;
-                v.tint = 16777215;
-                v.visible = true;
-                this.imgs[0].sprite.addChild(v);
-                this.residue = v;
+                r.position.set(0, 0);
+                r.scale.set(1, 1);
+                r.rotation = 0;
+                r.tint = 16777215;
+                r.visible = true;
+                this.imgs[0].sprite.addChild(r);
+                this.residue = r;
             }
         }
-        this.ceiling.visionTicker -= e;
-        const k = this.ceiling.vision;
+
+        // Determine ceiling visibility
+        this.ceiling.visionTicker -= dt;
+        const vision = this.ceiling.vision;
 
         let canSeeInside = false;
-        for (let I = 0; I < this.ceiling.zoomRegions.length; I++) {
-            const T = this.ceiling.zoomRegions[I].zoomIn;
+        for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
+            const zoomIn = this.ceiling.zoomRegions[i].zoomIn;
             if (
-                T &&
-                (this.layer == l.layer || l.layer & 2) &&
+                zoomIn &&
+                (this.layer == activePlayer.layer || activePlayer.layer & 2) &&
                 collisionHelpers.scanCollider(
-                    T,
-                    t.Ve.p(),
-                    l.pos,
-                    l.layer,
+                    zoomIn,
+                    map.Ve.p(),
+                    activePlayer.pos,
+                    activePlayer.layer,
                     0.5,
-                    k.width * 2,
-                    k.dist,
+                    vision.width * 2,
+                    vision.dist,
                     5
                 )
             ) {
@@ -364,162 +399,188 @@ export class Building {
             canSeeInside = true;
         }
         if (canSeeInside) {
-            this.ceiling.visionTicker = k.linger + 0.0001;
+            this.ceiling.visionTicker = vision.linger + 0.0001;
         }
-        if (l.noCeilingRevealTicker > 0 && !this.ceilingDead) {
+
+        // @NOTE: This will not allow for revealing any ceilings while
+        // underground near stairs
+        if (activePlayer.noCeilingRevealTicker > 0 && !this.ceilingDead) {
             this.ceiling.visionTicker = 0;
         }
-        const M = this.ceiling.visionTicker > 0;
-        const P = step(
+
+        const visible = this.ceiling.visionTicker > 0;
+        const ceilingStep = step(
             this.ceiling.fadeAlpha,
-            M ? 0 : 1,
-            e * (M ? 12 : k.fadeRate)
+            visible ? 0 : 1,
+            dt * (visible ? 12 : vision.fadeRate)
         );
-        this.ceiling.fadeAlpha += P;
+        this.ceiling.fadeAlpha += ceilingStep;
+
+        // Immediately reveal a ceiling if we're on stairs and
+        // can see inside the other layer
         if (
             canSeeInside &&
-            l.noCeilingRevealTicker <= 0 &&
-            l.layer & 2 &&
-            !util.sameLayer(l.layer, this.layer)
+            activePlayer.noCeilingRevealTicker <= 0 &&
+            activePlayer.layer & 2 &&
+            !util.sameLayer(activePlayer.layer, this.layer)
         ) {
             this.ceiling.fadeAlpha = 0;
         }
-        for (let C = 0; C < this.particleEmitters.length; C++) {
-            this.particleEmitters[C].enabled = this.occupied;
+
+        // Update particle emitters based on occupied status
+        for (let i = 0; i < this.particleEmitters.length; i++) {
+            this.particleEmitters[i].enabled = this.occupied;
         }
-        this.soundEmitterTicker += e;
+
+        // Update sound emitters
+        this.soundEmitterTicker += dt;
         if (this.soundEmitterTicker > 0.1) {
             this.soundEmitterTicker = 0;
             for (let A = 0; A < this.soundEmitters.length; A++) {
-                const O = this.soundEmitters[A];
+                const soundEmitter = this.soundEmitters[A];
+
+                // Play sound if it's loaded
                 if (
-                    !O.instance &&
-                    i.isSoundLoaded(O.sound, O.channel)
+                    !soundEmitter.instance &&
+                    audioManager.isSoundLoaded(soundEmitter.sound, soundEmitter.channel)
                 ) {
-                    O.instance = i.playSound(O.sound, {
-                        channel: O.channel,
+                    soundEmitter.instance = audioManager.playSound(soundEmitter.sound, {
+                        channel: soundEmitter.channel,
                         loop: true,
                         forceStart: true,
                         startSilent: true
                     });
                 }
-                if (O.instance) {
-                    const D = v2.sub(u.pos, O.pos);
-                    const E = v2.length(D);
-                    const B = math.remap(
-                        E,
-                        O.range.min,
-                        O.range.max,
+                if (soundEmitter.instance) {
+                    // Update volume
+                    const diff = v2.sub(camera.pos, soundEmitter.pos);
+                    const dist = v2.length(diff);
+                    const distT = math.remap(
+                        dist,
+                        soundEmitter.range.min,
+                        soundEmitter.range.max,
                         1,
                         0
                     );
-                    const R = Math.pow(B, O.falloff);
-                    const L = math.lerp(
+                    const volumeFalloff = Math.pow(distT, soundEmitter.falloff);
+                    const visibilityMult = math.lerp(
                         this.ceiling.fadeAlpha,
                         1,
                         0.25
                     );
-                    let q =
-                        i.baseVolume *
-                        i.getTypeVolume("sound") *
-                        O.volume *
-                        R *
-                        L;
-                    if (!util.sameAudioLayer(this.layer, l.layer)) {
-                        q = 0;
+                    let volume =
+                        audioManager.baseVolume *
+                        audioManager.getTypeVolume("sound") *
+                        soundEmitter.volume *
+                        volumeFalloff *
+                        visibilityMult;
+                    if (!util.sameAudioLayer(this.layer, activePlayer.layer)) {
+                        volume = 0;
                     }
-                    if (q < 0.003) {
-                        q = 0;
+                    if (volume < 0.003) {
+                        volume = 0;
                     }
-                    O.instance.volume = q;
+                    soundEmitter.instance.volume = volume;
                 }
             }
         }
+
+        // Position sprites for rendering
         for (let F = 0; F < this.imgs.length; F++) {
-            const j = this.imgs[F];
-            const N = j.isCeiling ? this.ceiling.fadeAlpha : 1;
-            this.positionSprite(j.sprite, N, u);
-            if (j.removeOnDamaged && this.ceilingDamaged) {
-                j.sprite.visible = !this.ceilingDamaged;
+            const img = this.imgs[F];
+            const alpha = img.isCeiling ? this.ceiling.fadeAlpha : 1;
+            this.positionSprite(img.sprite, alpha, camera);
+
+            if (img.removeOnDamaged && this.ceilingDamaged) {
+                img.sprite.visible = !this.ceilingDamaged;
             }
-            let H = this.layer;
+
+            // Determine zOrder of ceilings
+            let layer = this.layer;
+            // This hack will render ceilings ontop of players on stairs.
+            // It fixes an issue when outside of the mansion with players
+            // standing on the interior mansion stairs.
             if (
-                j.isCeiling &&
-                (this.layer == l.layer ||
-                    (l.layer & 2 && this.layer == 1))
+                img.isCeiling &&
+                (this.layer == activePlayer.layer ||
+                    (activePlayer.layer & 2 && this.layer == 1))
             ) {
-                H |= 2;
+                layer |= 2;
             }
-            d.addPIXIObj(j.sprite, H, j.zOrd, j.zIdx);
+            renderer.addPIXIObj(img.sprite, layer, img.zOrd, img.zIdx);
         }
     }
 
-    isInsideCeiling(e) {
-        for (let t = 0; t < this.ceiling.zoomRegions.length; t++) {
-            const r = this.ceiling.zoomRegions[t].zoomIn;
-            if (r && collider.intersect(r, e)) {
+    isInsideCeiling(collision) {
+        for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
+            const zoomIn = this.ceiling.zoomRegions[i].zoomIn;
+            if (zoomIn && collider.intersect(zoomIn, collision)) {
                 return true;
             }
         }
         return false;
     }
 
-    getDistanceToBuilding(e, t) {
-        let r = t;
-        for (let a = 0; a < this.ceiling.zoomRegions.length; a++) {
-            const i = this.ceiling.zoomRegions[a].zoomIn;
-            if (i) {
-                const o = collider.intersectCircle(i, e, t);
-                if (o) {
-                    r = math.clamp(t - o.pen, 0, r);
+    getDistanceToBuilding(pos, maxDist) {
+        let dist = maxDist;
+        for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
+            const zoomIn = this.ceiling.zoomRegions[i].zoomIn;
+            if (zoomIn) {
+                const res = collider.intersectCircle(zoomIn, pos, maxDist);
+                if (res) {
+                    dist = math.clamp(maxDist - res.pen, 0, dist);
                 }
             }
         }
-        return r;
+        return dist;
     }
 
-    destroyCeilingFx(e, t) {
-        const r = MapObjectDefs[this.type].ceiling.destroy;
+    destroyCeilingFx(particleBarn, audioManager) {
+        const def = MapObjectDefs[this.type].ceiling.destroy;
+
+        // Spawn particles at random points inside the first surface collision
+        let surface = this.surfaces[0];
         /* eslint-disable no-unreachable-loop */
         for (
-            let a = this.surfaces[0], i = 0;
-            i < a.colliders.length;
+            let i = 0;
+            i < surface.colliders.length;
             i++
         ) {
-            for (
-                let o = collider.toAabb(a.colliders[i]), n = 0;
-                n < r.particleCount;
-                n++
-            ) {
-                const l = v2.create(
-                    util.random(o.min.x, o.max.x),
-                    util.random(o.min.y, o.max.y)
+            let aabb = collider.toAabb(surface.colliders[i]);
+            for ( let j = 0; j < def.particleCount; j++ ) {
+                const pos = v2.create(
+                    util.random(aabb.min.x, aabb.max.x),
+                    util.random(aabb.min.y, aabb.max.y)
                 );
-                const p = v2.mul(v2.randomUnit(), util.random(0, 15));
-                e.addParticle(r.particle, this.layer, l, p);
+                const vel = v2.mul(v2.randomUnit(), util.random(0, 15));
+                particleBarn.addParticle(def.particle, this.layer, pos, vel);
             }
+
+            // Only use the first collider for now;
+            // the shack looks weird with the front step being used
             break;
         }
-        t.playSound(r.sound || "ceiling_break_01", {
+        audioManager.playSound(def.sound || "ceiling_break_01", {
             channel: "sfx",
             soundPos: this.pos
         });
     }
 
-    positionSprite(e, t, r) {
-        const a = r.pointToScreen(v2.add(this.pos, e.posOffset));
-        const i = r.pixels(this.scale * e.defScale);
-        e.position.set(a.x, a.y);
-        e.scale.set(i, i);
-        if (e.mirrorY) {
-            e.scale.y *= -1;
+    positionSprite(sprite, alpha, camera) {
+        const screenPos = camera.pointToScreen(v2.add(this.pos, sprite.posOffset));
+        const screenScale = camera.pixels(this.scale * sprite.defScale);
+
+        sprite.position.set(screenPos.x, screenPos.y);
+        sprite.scale.set(screenScale, screenScale);
+        if (sprite.mirrorY) {
+            sprite.scale.y *= -1;
         }
-        if (e.mirrorX) {
-            e.scale.x *= -1;
+        if (sprite.mirrorX) {
+            sprite.scale.x *= -1;
         }
-        e.rotation = -this.rot + e.rotOffset;
-        e.alpha = e.imgAlpha * t;
+        sprite.rotation = -this.rot + sprite.rotOffset;
+        sprite.alpha = sprite.imgAlpha * alpha;
     }
 
-    render(e, t, r) { }
+    render(camera, debug, layer) { }
 }
