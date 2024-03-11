@@ -3,148 +3,130 @@ import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import { MenuModal } from "./menuModal";
-import { proxy } from "../proxy";
-import webview from "./webview";
 import loadout from "./loadouts";
 
-function i(e, t, r, a) {
-    const i = e.find(".login-options-content");
-    i.empty();
-    if (t) {
-        i.append(
+function createLoginOptions(parentElem, linkAccount, account, localization) {
+    const contentsElem = parentElem.find(".login-options-content");
+    contentsElem.empty();
+    if (linkAccount) {
+        contentsElem.append(
             $("<div/>", {
                 class: "account-login-desc"
             }).append(
                 $("<p/>", {
-                    html: a.translate("index-link-account-to")
+                    html: localization.translate("index-link-account-to")
                 })
             )
         );
     }
-    const o = $("<div/>", {
+    const buttonParentElem = $("<div/>", {
         class: "account-buttons"
     });
-    i.append(o);
-    const n = function(e, r, i) {
-        if (proxy.loginSupported(e)) {
-            const n = $("<div/>", {
-                class: `menu-option btn-darken btn-standard btn-login-${e}`
+    contentsElem.append(buttonParentElem);
+    const addLoginOption = function(method, linked, onClick) {
+        const el = $("<div/>", {
+            class: `menu-option btn-darken btn-standard btn-login-${method}`
+        });
+        el.append(
+            $("<span/>", {
+                class: "login-button-name"
+            })
+                .append(
+                    $("<span/>", {
+                        html: localization.translate(`index-${method}`)
+                    })
+                )
+                .append(
+                    $("<div/>", {
+                        class: "icon"
+                    })
+                )
+        );
+        if (linkAccount && linked) {
+            el.addClass("btn-login-linked");
+            el.find("span.login-button-name").html(
+                '<div class="icon"></div>'
+            );
+        } else {
+            el.click((e) => {
+                onClick();
             });
-            n.append(
-                $("<span/>", {
-                    class: "login-button-name"
-                })
-                    .append(
-                        $("<span/>", {
-                            html: a.translate(`index-${e}`)
-                        })
-                    )
-                    .append(
-                        $("<div/>", {
-                            class: "icon"
-                        })
-                    )
-            );
-            if (t && r) {
-                n.addClass("btn-login-linked");
-                n.find("span.login-button-name").html(
-                    '<div class="icon"></div>'
-                );
-            } else {
-                n.click((e) => {
-                    i();
-                });
-            }
-            o.append(n);
         }
+        buttonParentElem.append(el);
     };
-    n("facebook", r.profile.linkedFacebook, () => {
-        if (device.webview && device.version > "1.0.0") {
-            r.loginWithAccessToken(
-                "/api/user/auth/facebook/token",
-                webview.facebookLogin,
-                (e) => {
-                    return e.authResponse.accessToken;
-                }
-            );
-        } else {
-            window.location.href = "/api/user/auth/facebook";
-        }
-    });
-    n("google", r.profile.linkedGoogle, () => {
-        if (device.webview && device.version > "1.0.0") {
-            r.loginWithAccessToken(
-                "/api/user/auth/google/token",
-                webview.googleLogin,
-                (e) => {
-                    return e.accessToken;
-                }
-            );
-        } else {
-            window.location.href = "/api/user/auth/google";
-        }
-    });
-    n("twitch", r.profile.linkedTwitch, () => {
+
+    // Define the available login methods
+    addLoginOption("twitch", account.profile.linkedTwitch, () => {
         window.location.href = "/api/user/auth/twitch";
     });
-    n("discord", r.profile.linkedDiscord, () => {
+    addLoginOption("discord", account.profile.linkedDiscord, () => {
         window.location.href = "/api/user/auth/discord";
     });
 }
 
 class ProfileUi {
-    constructor(t, r, i, o) {
-        this.account = t;
-        this.localization = r;
-        this.loadoutMenu = i;
-        this.errorModal = o;
+    /**
+     * 
+     * @param {import('./account')} account 
+     * @param {import('./localization')} localization 
+     * @param {import('./loadout-menu')} loadoutMenu 
+     * @param {*} errorModal 
+    */
+    constructor(account, localization, loadoutMenu, errorModal) {
+        this.account = account;
+        this.localization = localization;
+        this.loadoutMenu = loadoutMenu;
+        this.errorModal = errorModal;
         this.setNameModal = null;
         this.resetStatsModal = null;
         this.deleteAccountModal = null;
         this.userSettingsModal = null;
         this.loginOptionsModal = null;
         this.createAccountModal = null;
-        t.addEventListener("error", this.onError.bind(this));
-        t.addEventListener("login", this.onLogin.bind(this));
-        t.addEventListener(
+        account.addEventListener("error", this.onError.bind(this));
+        account.addEventListener("login", this.onLogin.bind(this));
+        account.addEventListener(
             "loadout",
             this.onLoadoutUpdated.bind(this)
         );
-        t.addEventListener("items", this.onItemsUpdated.bind(this));
-        t.addEventListener("request", this.render.bind(this));
+        account.addEventListener("items", this.onItemsUpdated.bind(this));
+        account.addEventListener("request", this.render.bind(this));
         this.initUi();
         this.render();
     }
 
     initUi() {
-        const e = this;
-        const t = function() {
+        const _this = this;
+
+
+        // Set username
+        const clearNamePrompt = function() {
             $("#modal-body-warning").css("display", "none");
             $("#modal-account-name-input").val("");
         };
         this.setNameModal = new MenuModal(
             $("#modal-account-name-change")
         );
-        this.setNameModal.onShow(t);
-        this.setNameModal.onHide(t);
+        this.setNameModal.onShow(clearNamePrompt);
+        this.setNameModal.onHide(clearNamePrompt);
         $("#modal-account-name-finish").click((t) => {
             t.stopPropagation();
             const r = $("#modal-account-name-input").val();
-            e.account.setUsername(r, (t) => {
-                if (t) {
-                    const r = {
+            _this.account.setUsername(r, (error) => {
+                if (error) {
+                    const ERROR_CODE_TO_LOCALIZATION = {
                         failed: "Failed setting username.",
                         invalid: "Invalid username.",
                         taken: "Name already taken!",
                         change_time_not_expired:
                             "Username has already been set recently."
                     };
-                    const a = r[t] || r.failed;
+                    const message = ERROR_CODE_TO_LOCALIZATION[error] || ERROR_CODE_TO_LOCALIZATION.failed;
                     $("#modal-body-warning").hide();
-                    $("#modal-body-warning").html(a);
+                    $("#modal-body-warning").html(message);
                     $("#modal-body-warning").fadeIn();
                 } else {
-                    e.setNameModal.hide();
+                    _this.setNameModal.hide();
                 }
             });
         });
@@ -158,12 +140,14 @@ class ProfileUi {
                 }
             }
         );
+
+        // Reset stats
         this.resetStatsModal = new MenuModal(
             $("#modal-account-reset-stats")
         );
         this.resetStatsModal.onShow(() => {
             $("#modal-account-reset-stats-input").val("");
-            e.modalMobileAccount.hide();
+            _this.modalMobileAccount.hide();
         });
         $("#modal-account-reset-stats-finish").click(
             (t) => {
@@ -173,8 +157,8 @@ class ProfileUi {
                         "#modal-account-reset-stats-input"
                     ).val() == "RESET STATS"
                 ) {
-                    e.account.resetStats();
-                    e.resetStatsModal.hide();
+                    _this.account.resetStats();
+                    _this.resetStatsModal.hide();
                 }
             }
         );
@@ -188,12 +172,13 @@ class ProfileUi {
                 }
             }
         );
+        // Delete account
         this.deleteAccountModal = new MenuModal(
             $("#modal-account-delete")
         );
         this.deleteAccountModal.onShow(() => {
             $("#modal-account-delete-input").val("");
-            e.modalMobileAccount.hide();
+            _this.modalMobileAccount.hide();
         });
         $("#modal-account-delete-finish").click((t) => {
             t.stopPropagation();
@@ -201,8 +186,8 @@ class ProfileUi {
                 $("#modal-account-delete-input").val() ==
                 "DELETE"
             ) {
-                e.account.deleteAccount();
-                e.deleteAccountModal.hide();
+                _this.account.deleteAccount();
+                _this.deleteAccountModal.hide();
             }
         });
         $("#modal-account-delete-input").on(
@@ -215,6 +200,8 @@ class ProfileUi {
                 }
             }
         );
+
+        // User settings
         this.userSettingsModal = new MenuModal(
             $(".account-buttons-settings")
         );
@@ -232,6 +219,8 @@ class ProfileUi {
                 "block"
             );
         });
+
+        // Login and link options
         this.loginOptionsModal = new MenuModal(
             $("#account-login-options")
         );
@@ -249,6 +238,8 @@ class ProfileUi {
                 "block"
             );
         });
+
+        // Login and link options mobile
         this.loginOptionsModalMobile = new MenuModal(
             $("#account-login-options-mobile")
         );
@@ -266,12 +257,16 @@ class ProfileUi {
                 "block"
             );
         });
+
+        // Create account
         this.createAccountModal = new MenuModal(
             $("#modal-create-account-INVALID_ID")
         );
         this.createAccountModal.onHide(() => {
-            e.loadoutMenu.hide();
+            _this.loadoutMenu.hide();
         });
+
+        // Mobile Accounts Modal
         this.modalMobileAccount = new MenuModal(
             $("#modal-mobile-account")
         );
@@ -288,27 +283,34 @@ class ProfileUi {
                 "display",
                 "block"
             );
-            e.userSettingsModal.hide();
+            _this.userSettingsModal.hide();
         });
+
+
+        //  
+        // Main-menu buttons
+        //
+
+        // Leaderboard
         $(".account-leaderboard-link").click((e) => {
             window.open(api.resolveUrl("/stats"), "_blank");
             return false;
         });
         $(".account-stats-link").click((t) => {
-            e.waitOnLogin(() => {
-                if (e.account.loggedIn) {
-                    if (e.account.profile.usernameSet) {
+            _this.waitOnLogin(() => {
+                if (_this.account.loggedIn) {
+                    if (_this.account.profile.usernameSet) {
                         const t =
-                            e.account.profile.slug || "";
+                            _this.account.profile.slug || "";
                         window.open(
                             `/stats/${t}`,
                             "_blank"
                         );
                     } else {
-                        e.setNameModal.show(true);
+                        _this.setNameModal.show(true);
                     }
                 } else {
-                    e.showLoginMenu({
+                    _this.showLoginMenu({
                         modal: true
                     });
                 }
@@ -317,10 +319,10 @@ class ProfileUi {
         });
         $(".account-loadout-link, #btn-customize").click(
             () => {
-                e.loadoutMenu.show();
-                e.waitOnLogin(() => {
-                    if (!e.account.loggedIn) {
-                        e.showLoginMenu({
+                _this.loadoutMenu.show();
+                _this.waitOnLogin(() => {
+                    if (!_this.account.loggedIn) {
+                        _this.showLoginMenu({
                             modal: true
                         });
                     }
@@ -330,21 +332,21 @@ class ProfileUi {
         );
         $(".account-details-user").click(() => {
             if (
-                e.userSettingsModal.isVisible() ||
-                e.loginOptionsModal.isVisible()
+                _this.userSettingsModal.isVisible() ||
+                _this.loginOptionsModal.isVisible()
             ) {
-                e.userSettingsModal.hide();
-                e.loginOptionsModal.hide();
+                _this.userSettingsModal.hide();
+                _this.loginOptionsModal.hide();
             } else {
-                e.waitOnLogin(() => {
+                _this.waitOnLogin(() => {
                     if (device.mobile) {
-                        e.modalMobileAccount.show();
+                        _this.modalMobileAccount.show();
                     }
-                    if (e.account.loggedIn) {
-                        e.loginOptionsModal.hide();
-                        e.userSettingsModal.show();
+                    if (_this.account.loggedIn) {
+                        _this.loginOptionsModal.hide();
+                        _this.userSettingsModal.show();
                     } else {
-                        e.showLoginMenu({
+                        _this.showLoginMenu({
                             modal: false
                         });
                     }
@@ -353,50 +355,50 @@ class ProfileUi {
             return false;
         });
         $(".btn-account-link").click(() => {
-            e.userSettingsModal.hide();
-            e.showLoginMenu({
+            _this.userSettingsModal.hide();
+            _this.showLoginMenu({
                 modal: false,
                 link: true
             });
             return false;
         });
         $(".btn-account-change-name").click(() => {
-            if (e.account.profile.usernameChangeTime <= 0) {
-                e.userSettingsModal.hide();
-                e.modalMobileAccount.hide();
+            if (_this.account.profile.usernameChangeTime <= 0) {
+                _this.userSettingsModal.hide();
+                _this.modalMobileAccount.hide();
                 $("#modal-account-name-title").html(
-                    e.localization.translate(
+                    _this.localization.translate(
                         "index-change-account-name"
                     )
                 );
-                e.setNameModal.show();
+                _this.setNameModal.show();
             }
             return false;
         });
         $(".btn-account-reset-stats").click(() => {
-            e.userSettingsModal.hide();
-            e.resetStatsModal.show();
+            _this.userSettingsModal.hide();
+            _this.resetStatsModal.show();
             return false;
         });
         $(".btn-account-delete").click(() => {
-            e.userSettingsModal.hide();
-            e.deleteAccountModal.show();
+            _this.userSettingsModal.hide();
+            _this.deleteAccountModal.show();
             return false;
         });
         $(".btn-account-logout").click(() => {
-            e.account.logout();
+            _this.account.logout();
             return false;
         });
         $("#btn-pass-locked").click(() => {
-            e.showLoginMenu({
+            _this.showLoginMenu({
                 modal: true
             });
             return false;
         });
     }
 
-    onError(e, t) {
-        const r = {
+    onError(type, data) {
+        const typeText = {
             server_error:
                 "Operation failed, please try again later.",
             facebook_account_in_use:
@@ -407,14 +409,14 @@ class ProfileUi {
                 "Failed linking Twitch account.<br/>Account already in use!",
             discord_account_in_use:
                 "Failed linking Discord account.<br/>Account already in use!",
-            account_banned: `Account banned: ${t}`,
+            account_banned: `Account banned: ${data}`,
             login_failed: "Login failed."
         };
-        const a = r[e];
-        if (a) {
+        const text = typeText[type];
+        if (text) {
             this.errorModal.selector
                 .find(".modal-body-text")
-                .html(a);
+                .html(text);
             this.errorModal.show();
         }
     }
@@ -432,93 +434,94 @@ class ProfileUi {
         this.updateUserIcon();
     }
 
-    onItemsUpdated(e) {
-        let t = 0;
-        let r = 0;
-        for (let a = 0; a < e.length; a++) {
-            const i = e[a];
-            if (i.status < loadout.ItemStatus.Confirmed) {
-                t++;
+    onItemsUpdated(items) {
+        let unconfirmedItemCount = 0;
+        let unackedItemCount = 0;
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            if (item.status < loadout.ItemStatus.Confirmed) {
+                unconfirmedItemCount++;
             }
-            if (i.status < loadout.ItemStatus.Ackd) {
-                r++;
+            if (item.status < loadout.ItemStatus.Ackd) {
+                unackedItemCount++;
             }
         }
-        e.filter((e) => {
+        items.filter((e) => {
             return e.status < loadout.ItemStatus.Confirmed;
         });
-        e.filter((e) => {
+        items.filter((e) => {
             return e.status < loadout.ItemStatus.Ackd;
         });
-        const o = t > 0 || r > 0;
+        const displayAlert = unconfirmedItemCount > 0 || unackedItemCount > 0;
         $("#loadout-alert-main").css({
-            display: o ? "block" : "none"
+            display: displayAlert ? "block" : "none"
         });
     }
 
-    waitOnLogin(e) {
-        const t = this;
+    waitOnLogin(cb) {
         if (
             this.account.loggingIn &&
             !this.account.loggedIn
         ) {
-            const r = function r() {
-                e();
-                t.account.removeEventListener(
+            const runOnce = () => {
+                cb();
+                this.account.removeEventListener(
                     "requestsComplete",
-                    r
+                    runOnce
                 );
             };
             this.account.addEventListener(
                 "requestsComplete",
-                r
+                runOnce
             );
         } else {
-            e();
+            cb();
         }
     }
 
-    showLoginMenu(e) {
-        e = Object.assign(
+    showLoginMenu(opts) {
+        opts = Object.assign(
             {
                 modal: false,
                 link: false
             },
-            e
+            opts
         );
-        const t = e.modal
+        const modal = opts.modal
             ? this.createAccountModal
             : device.mobile
                 ? this.loginOptionsModalMobile
                 : this.loginOptionsModal;
-        i(
-            t.selector,
-            e.link,
+        createLoginOptions(
+            modal.selector,
+            opts.link,
             this.account,
             this.localization
         );
-        t.show();
+        modal.show();
     }
 
     updateUserIcon() {
-        const e =
+        const icon =
             helpers.getSvgFromGameType(
                 this.account.loadout.player_icon
             ) || "img/gui/player-gui.svg";
         $(".account-details-user .account-avatar").css(
             "background-image",
-            `url(${e})`
+            `url(${icon})`
         );
     }
 
     render() {
-        const e = this.account.requestsInFlight > 0;
-        $(".account-loading").css("opacity", e ? 1 : 0);
-        let t = helpers.htmlEscape(
+        // Loading icon
+        const loading = this.account.requestsInFlight > 0;
+        $(".account-loading").css("opacity", loading ? 1 : 0);
+
+        let usernameText = helpers.htmlEscape(
             this.account.profile.username || ""
         );
         if (!this.account.loggedIn) {
-            t = this.account.loggingIn
+            usernameText = this.account.loggingIn
                 ? `${this.localization.translate(
                     "index-logging-in"
                 )}...`
@@ -526,7 +529,7 @@ class ProfileUi {
                     "index-log-in-desc"
                 );
         }
-        $("#account-player-name").html(t);
+        $("#account-player-name").html(usernameText);
         $("#account-player-name").css(
             "display",
             this.account.loggedIn ? "block" : "none"
