@@ -18,44 +18,44 @@ export class Camera {
         return this.ppu * this.O;
     }
 
-    pointToScreen(e) {
+    pointToScreen(point) {
         return {
             x:
                 this.screenWidth * 0.5 +
-                (e.x - this.pos.x) * this.z(),
+                (point.x - this.pos.x) * this.z(),
             y:
                 this.screenHeight * 0.5 -
-                (e.y - this.pos.y) * this.z()
+                (point.y - this.pos.y) * this.z()
         };
     }
 
-    j(e) {
+    screenToPoint(screen) {
         return {
             x:
                 this.pos.x +
-                (e.x - this.screenWidth * 0.5) / this.z(),
+                (screen.x - this.screenWidth * 0.5) / this.z(),
             y:
                 this.pos.y +
-                (this.screenHeight * 0.5 - e.y) / this.z()
+                (this.screenHeight * 0.5 - screen.y) / this.z()
         };
     }
 
-    pixels(e) {
-        return e * this.O;
+    pixels(p) {
+        return p * this.O;
     }
 
-    scaleToScreen(e) {
-        return e * this.z();
+    scaleToScreen(s) {
+        return s * this.z();
     }
 
-    setShakeEnabled(e) {
-        this.shakeEnabled = e;
+    setShakeEnabled(en) {
+        this.shakeEnabled = en;
     }
 
-    addShake(e, t) {
-        const r = v2.length(v2.sub(this.pos, e));
-        const a = math.delerp(r, 40, 10) * t;
-        this.shakeInt = Math.max(this.shakeInt, a);
+    addShake(pos, intensity) {
+        const dist = v2.length(v2.sub(this.pos, pos));
+        const newInt = math.delerp(dist, 40, 10) * intensity;
+        this.shakeInt = Math.max(this.shakeInt, newInt);
     }
 
     applyShake() {

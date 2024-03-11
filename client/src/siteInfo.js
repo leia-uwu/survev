@@ -4,52 +4,59 @@ import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
 
 export class SiteInfo {
-    constructor(e, t) {
-        this.config = e;
-        this.localization = t;
+    /**
+     *
+     * @param {import('./config').ConfigManager} config
+     * @param {import('./ui/localization').Localization} localization
+     */
+    constructor(config, localization) {
+        this.config = config;
+        this.localization = localization;
         this.info = {};
         this.loaded = false;
     }
 
     load() {
-        const e = this;
-        const t = this.localization.getLocale();
-        const r = api.resolveUrl(`/api/site_info?language=${t}`);
-        $.ajax(r).done((t, r) => {
-            e.info = t || {};
-            e.loaded = true;
-            e.updatePageFromInfo();
+        const locale = this.localization.getLocale();
+        const siteInfoUrl = api.resolveUrl(`/api/site_info?language=${locale}`);
+
+        $.ajax(siteInfoUrl).done((data, status) => {
+            this.info = data || {};
+            this.loaded = true;
+            this.updatePageFromInfo();
         });
     }
 
     getGameModeStyles() {
-        const e = {
+        const modeTypes = {
             1: "solo",
             2: "duo",
             4: "squad"
         };
-        const t = [];
+        const availableModes = [];
+        const modes = this.info.modes || [];
         for (
-            let r = this.info.modes || [], a = 0;
-            a < r.length;
+            let a = 0;
+            a < modes.length;
             a++
         ) {
-            const i = r[a];
-            const o = (MapDefs[i.mapName] || MapDefs.main).desc;
-            const s = o.buttonText ? o.buttonText : e[i.teamMode];
-            t.push({
-                icon: o.icon,
-                buttonCss: o.buttonCss,
-                buttonText: s
+            const mode = modes[a];
+            const mapDef = (MapDefs[mode.mapName] || MapDefs.main).desc;
+            const buttonText = mapDef.buttonText ? mapDef.buttonText : modeTypes[mode.teamMode];
+            availableModes.push({
+                icon: mapDef.icon,
+                buttonCss: mapDef.buttonCss,
+                buttonText
             });
         }
-        return t;
+        return availableModes;
     }
 
     updatePageFromInfo() {
         if (this.loaded) {
+            const e = this.getGameModeStyles();
             for (
-                let e = this.getGameModeStyles(), t = 0;
+                let t = 0;
                 t < e.length;
                 t++
             ) {
@@ -82,103 +89,63 @@ export class SiteInfo {
                     }
                 }
             }
-            const m = this.info.pops;
-            if (m) {
+
+            // Region pops
+            const pops = this.info.pops;
+            if (pops) {
+                const regions = Object.keys(pops);
                 for (
-                    let p = Object.keys(m), h = 0;
-                    h < p.length;
+                    let h = 0;
+                    h < regions.length;
                     h++
                 ) {
-                    const d = p[h];
-                    const u = m[d];
-                    const g = $("#server-opts").children(
-                        `option[value="${d}"]`
+                    const region = regions[h];
+                    const count = pops[region];
+                    const sel = $("#server-opts").children(
+                        `option[value="${region}"]`
                     );
-                    g.text(`${g.data("label")} [${u}]`);
+                    sel.text(`${sel.data("label")} [${count}]`);
                 }
             }
-            let y = false;
-            const w = $("#featured-streamers");
-            const f = $(".streamer-list");
+            let hasTwitchStreamers = false;
+            const featuredStreamersElem = $("#featured-streamers");
+            const streamerList = $(".streamer-list");
             if (!device.mobile && this.info.twitch) {
-                f.empty();
-                for (let _ = 0; _ < this.info.twitch.length; _++) {
-                    const b = this.info.twitch[_];
-                    const x = $(
+                streamerList.empty();
+                for (let i = 0; i < this.info.twitch.length; i++) {
+                    const streamer = this.info.twitch[i];
+                    const template = $(
                         "#featured-streamer-template"
                     ).clone();
-                    x.attr(
+                    template.attr(
                         "class",
                         "featured-streamer streamer-tooltip"
                     ).attr("id", "");
-                    const S = x.find("a");
-                    const v = this.localization.translate(
-                        b.viewers == 1
+                    const link = template.find("a");
+                    const text = this.localization.translate(
+                        streamer.viewers == 1
                             ? "index-viewer"
                             : "index-viewers"
                     );
-                    S.html(
-                        `${b.name} <span>${b.viewers} ${v}</span>`
+                    link.html(
+                        `${streamer.name} <span>${streamer.viewers} ${text}</span>`
                     );
-                    S.css("background-image", `url(${b.img})`);
-                    S.attr("href", b.url);
-                    f.append(x);
-                    y = true;
+                    link.css("background-image", `url(${streamer.img})`);
+                    link.attr("href", streamer.url);
+                    streamerList.append(template);
+                    hasTwitchStreamers = true;
                 }
             }
-            w.css("visibility", y ? "visible" : "hidden");
-            const k = $("#featured-youtuber");
-            const z = this.info.youtube;
-            if (z) {
+            featuredStreamersElem.css("visibility", hasTwitchStreamers ? "visible" : "hidden");
+
+            const featuredYoutuberElem = $("#featured-youtuber");
+            const displayYoutuber = this.info.youtube;
+            if (displayYoutuber) {
                 $(".btn-youtuber")
                     .attr("href", this.info.youtube.link)
                     .html(this.info.youtube.name);
             }
-            k.css("display", z ? "block" : "none");
-            if (this.info.promptConsent) {
-                // privacy.showCookieConsent(this.config);
-            }
-            if (window.adsBlocked) {
-                const I = ["US", "GB", "DE"];
-                const T = ["en", "en", "de"];
-                const M = [
-                    "https://www.amazon.com/s?rh=n%3A7141123011%2Cp_4%3Asurviv.io&ref=w_bl_sl_s_ap_web_7141123011",
-                    "https://www.amazon.co.uk/s?rh=n%3A83450031%2Cp_4%3Asurviv.io&ref=w_bl_sl_s_ap_web_83450031",
-                    "https://www.amazon.de/s?rh=n%3A77028031%2Cp_4%3Asurviv.io&ref=w_bl_sl_s_ap_web_77028031"
-                ];
-                const P = I.indexOf(this.info.country);
-                if (P != -1) {
-                    const C = $(".surviv-shirts");
-                    if (C) {
-                        const A = `surviv-shirts-${T[P]}`;
-                        C.addClass(`surviv-shirts ${A}`);
-                        C.find("a").attr("href", M[P]);
-                        $("#ad-block-left")
-                            .find(".surviv-shirts")
-                            .css("display", "block");
-                    }
-                    $(".adblock-plea").remove();
-                } else {
-                    const O =
-                        $("#ad-block-left").find(".adblock-plea");
-                    if (O) {
-                        O.addClass("adblock-plea");
-                        O.css("display", "block");
-                    }
-                    $(".surviv-shirts").remove();
-                }
-                const D = document.getElementById(
-                    "survivio_300x250_main"
-                );
-                if (D) {
-                    D.style.display = "none";
-                }
-                const E =
-                    document.getElementById("surviv-io_300x250");
-                if (E) {
-                    E.style.display = "none";
-                }
-            }
+            featuredYoutuberElem.css("display", displayYoutuber ? "block" : "none");
         }
     }
 }

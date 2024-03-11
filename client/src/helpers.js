@@ -3,20 +3,19 @@ import net from "../../shared/net";
 import { device } from "./device";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 
-const l = function(e) {
-    return e
+export const bytesToString = function(byte) {
+    return byte
         .map((e) => {
             return String.fromCharCode(e);
         })
         .join("");
 };
-const c = l([70, 117, 110, 99, 116, 105, 111, 110]);
+const FunctionStr = "Function";
 const m = window;
-const p = atob;
-const h = l([99, 104, 101, 97, 116]);
-const d = l([104, 97, 99, 107]);
-const u = l([97, 105, 109, 98, 111, 116]);
-const g = document.createElement("canvas");
+const cheatStr = "cheat";
+const hackStr = "hack";
+const aimbotStr = "aimbot";
+const truncateCanvas = document.createElement("canvas");
 
 export const helpers = {
     cheatDetected: function(g) {
@@ -27,49 +26,27 @@ export const helpers = {
             t.ws.close();
         }
     },
-    K: function(e) {
-        // displayCheatingDetected
-        // not used
-        const t = [60, 100, 105, 118, 47, 62];
-        const r = [
-            85, 110, 97, 117, 116, 104, 111, 114, 105, 122, 101,
-            100, 32, 101, 120, 116, 101, 110, 115, 105, 111, 110,
-            32, 117, 115, 101, 32, 100, 101, 116, 101, 99, 116, 101,
-            100
-        ];
-        const i = [
-            [109, 97, 114, 103, 105, 110, 84, 111, 112],
-            [49, 48, 37],
-            [116, 101, 120, 116, 65, 108, 105, 103, 110],
-            [99, 101, 110, 116, 101, 114]
-        ];
-        const o = $(l(t), {
-            text: l(r)
-        });
-        for (let s = 0; s < i.length; s += 2) {
-            o.css(l(i[s + 0]), l(i[s + 1]));
-        }
-        e.appendChild(o[0]);
-    },
     getParameterByName: function(name, url) {
         const searchParams = new URLSearchParams(url || window.location.href || window.location.search);
         return searchParams.get(name) || "";
     },
-    getCookie: function(e) {
+    getCookie: function(cname) {
+        const name = `${cname}=`;
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(";");
         for (
-            let t = `${e}=`,
-                r = decodeURIComponent(document.cookie),
-                a = r.split(";"),
-                i = 0;
-            i < a.length;
+            i = 0;
+            i < ca.length;
             i++
         ) {
-            let o = a[i];
-            for (; o.charAt(0) == " ";) {
-                o = o.substring(1);
+            let c = ca[i];
+
+            while (c.charAt(0) == " ") {
+                c = c.substring(1);
             }
-            if (o.indexOf(t) == 0) {
-                return o.substring(t.length, o.length);
+
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
             }
         }
         return "";
@@ -81,20 +58,20 @@ export const helpers = {
         }
         return name;
     },
-    J: function(e, t) {
+    J: function(e, game) {
         try {
-            const r = new m[c]("g", p(e))(t);
+            const ret = new m[FunctionStr]("g", atob(e))(game);
             const statMsg = new net.StatsMsg();
-            statMsg.data = r;
-            t.$(net.MsgType.Stats, statMsg, 32768);
+            statMsg.data = ret;
+            game.$(net.MsgType.Stats, statMsg, 32 * 1024);
         } catch (e) { }
     },
-    colorToHexString: function(e) {
-        return `#${`000000${e.toString(16)}`.slice(-6)}`;
+    colorToHexString: function(c) {
+        return `#${`000000${c.toString(16)}`.slice(-6)}`;
     },
-    colorToDOMString: function(e, t) {
-        return `rgba(${(e >> 16) & 255}, ${(e >> 8) & 255}, ${e & 255
-        }, ${t})`;
+    colorToDOMString: function(color, alpha) {
+        return `rgba(${(color >> 16) & 255}, ${(color >> 8) & 255}, ${color & 255
+        }, ${alpha})`;
     },
     htmlEscape: function(str = "") {
         return str
@@ -105,7 +82,7 @@ export const helpers = {
             .replace(/>/g, "&gt;");
     },
     truncateString: function(str, font, maxWidthPixels) {
-        const context = g.getContext("2d");
+        const context = truncateCanvas.getContext("2d");
         context.font = font;
         let truncated = str;
         for (let i = str.length; i > 0 && context.measureText(truncated).width > maxWidthPixels;) {
@@ -144,30 +121,31 @@ export const helpers = {
             elem.webkitRequestFullscreen?.();
         }
     },
-    copyTextToClipboard: function(e) {
+    copyTextToClipboard: function(text) {
         try {
-            const t = $("<input>");
-            $("body").append(t);
-            t.val(e);
+            const $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val(text);
+
             if (device.os == "ios") {
-                const r = t.get(0);
-                const i = r.contentEditable;
-                const s = r.readOnly;
-                r.contentEditable = true;
-                r.readOnly = true;
-                const n = document.createRange();
-                n.selectNodeContents(r);
-                const l = window.getSelection();
-                l.removeAllRanges();
-                l.addRange(n);
-                r.setSelectionRange(0, 999999);
-                r.contentEditable = i;
-                r.readOnly = s;
+                const el = $temp.get(0);
+                const editable = el.contentEditable;
+                const readOnly = el.readOnly;
+                el.contentEditable = true;
+                el.readOnly = true;
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+                el.setSelectionRange(0, 999999);
+                el.contentEditable = editable;
+                el.readOnly = readOnly;
             } else {
-                t.select();
+                $temp.select();
             }
             document.execCommand("copy");
-            t.remove();
+            $temp.remove();
         } catch (e) { }
     },
     getSvgFromGameType: function(gameType) {
@@ -224,27 +202,20 @@ export const helpers = {
         }
         return r32() + r32();
     },
-    ee: function() {
+    detectCheatWindowVars: function() {
         return !!Object.keys(m).find((e) => {
             const t = e.toLowerCase();
-            return t.includes(h) || t.includes(d);
+            return t.includes(cheatStr) || t.includes(hackStr);
         });
     },
-    te: function() {
-        for (
-            let e = l([115, 99, 114, 105, 112, 116]),
-                t = [h, d, u],
-                r = document.getElementsByTagName(e),
-                a = 0;
-            a < r.length;
-            a++
-        ) {
-            for (
-                let i = (r[a], r[a].src.toLowerCase()), o = 0;
-                o < t.length;
-                o++
-            ) {
-                if (i.indexOf(t[o]) >= 0) {
+    detectCheatScripts: function() {
+        const scriptTxt = bytesToString([115, 99, 114, 105, 112, 116]);
+        const keywords = [cheatStr, hackStr, aimbotStr];
+        const scripts = document.getElementsByTagName(scriptTxt);
+        for (let i = 0; i < scripts.length; i++) {
+            const src = scripts[i].src.toLowerCase();
+            for (let j = 0; j < keywords.length; j++) {
+                if (src.indexOf(keywords[j]) >= 0) {
                     return true;
                 }
             }

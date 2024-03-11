@@ -5,6 +5,8 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 
+const planeElevateTime = 2;
+
 class Plane {
     constructor() {
         this.active = false;
@@ -13,35 +15,41 @@ class Plane {
         this.sprite.visible = false;
     }
 
-    o(e, t) {
-        this.id = e.id;
-        this.pos = v2.copy(e.pos);
-        this.planeDir = v2.copy(e.planeDir);
-        this.actionComplete = e.actionComplete;
+    o(data, map) {
+        this.id = data.id;
+        this.pos = v2.copy(data.pos);
+        this.planeDir = v2.copy(data.planeDir);
+        this.actionComplete = data.actionComplete;
+
         this.active = true;
         this.dirty = false;
+
         this.soundInstance = null;
         this.soundUpdateThrottle = 0;
+
         this.alpha = 0.75;
         this.renderAlpha = 1;
         this.spriteUpdateTime = 0;
-        this.type = e.action;
+
+        this.type = data.action;
         this.config =
             this.type == GameConfig.Plane.Airdrop ? GameConfig.airdrop : GameConfig.airstrike;
+
         this.rad = this.config.planeRad;
         switch (this.type) {
         case GameConfig.Plane.Airdrop:
             this.sprite.texture = PIXI.Texture.from(
-                t.getMapDef().biome.airdrop.planeImg
+                map.getMapDef().biome.airdrop.planeImg
             );
             this.planeSound =
-                    t.getMapDef().biome.airdrop.planeSound;
+                    map.getMapDef().biome.airdrop.planeSound;
             break;
         case GameConfig.Plane.Airstrike:
             this.sprite.texture =
                     PIXI.Texture.from("map-plane-02.img");
             this.planeSound = "fighter_01";
         }
+
         this.sprite.visible = true;
         this.sprite.rotation = Math.atan2(
             this.planeDir.x,
@@ -49,10 +57,11 @@ class Plane {
         );
     }
 
-    n(e) {
-        if (this.spriteUpdateTime >= 2) {
+    n(audioManager) {
+        // Don't free this plane until it's fully elevated
+        if (this.spriteUpdateTime >= planeElevateTime) {
             if (this.soundInstance) {
-                e.stopSound(this.soundInstance);
+                audioManager.stopSound(this.soundInstance);
                 this.soundInstance = null;
             }
             this.sprite.visible = false;
@@ -62,29 +71,29 @@ class Plane {
 }
 
 class AirstrikeZone {
-    constructor(e) {
+    constructor(container) {
         this.active = false;
         this.pos = v2.create(0, 0);
         this.rad = 0;
         this.duration = 0;
         this.ticker = 0;
         this.gfx = new PIXI.Graphics();
-        e.addChild(this.gfx);
+        container.addChild(this.gfx);
     }
 
-    o(e, t, r) {
+    o(pos, rad, duration) {
         this.active = true;
-        this.pos = v2.copy(e);
-        this.rad = t;
-        this.duration = r;
+        this.pos = v2.copy(pos);
+        this.rad = rad;
+        this.duration = duration;
         this.ticker = 0;
         this.renderPos = v2.create(0, 0);
         this.renderRad = 0;
         this.gfx.visible = true;
     }
 
-    m(e, t, r) {
-        this.ticker += e;
+    m(dt, map, uiManager) {
+        this.ticker += dt;
         this.gfx.visible = true;
         if (this.ticker >= this.duration) {
             this.gfx.visible = false;
@@ -92,35 +101,42 @@ class AirstrikeZone {
         }
     }
 
-    br(e, t, r) {
-        const a = e.getMapPosFromWorldPos(this.pos, t);
-        const i = e.getMapPosFromWorldPos(
+    br(uiManager, map, debug) {
+        // uiManager.getMapPosFromWorldPos is only valid after
+        // uiManager.update() is run, so this logic must be run
+        // afterward; render() is a reasonable place to do it.
+        const pos = uiManager.getMapPosFromWorldPos(this.pos, map);
+        const edge = uiManager.getMapPosFromWorldPos(
             v2.add(this.pos, v2.create(this.rad, 0)),
-            t
+            map
         );
-        const o = v2.length(v2.sub(i, a));
-        const s = !v2.eq(this.renderPos, a, 0.0001);
-        const n = !math.eqAbs(this.renderRad, o, 0.0001);
-        if (s) {
-            this.renderPos = v2.copy(a);
+        const rad = v2.length(v2.sub(edge, pos));
+
+        const posChanged = !v2.eq(this.renderPos, pos, 0.0001);
+        const radChanged = !math.eqAbs(this.renderRad, rad, 0.0001);
+        if (posChanged) {
+            this.renderPos = v2.copy(pos);
         }
-        if (n) {
-            this.renderRad = o;
+        if (radChanged) {
+            this.renderRad = rad;
         }
-        if (s) {
+
+        if (posChanged) {
             this.gfx.position.set(
                 this.renderPos.x,
                 this.renderPos.y
             );
         }
-        if (n) {
+
+        if (radChanged) {
             this.gfx.clear();
-            this.gfx.lineStyle(1.5, 15400704);
-            this.gfx.beginFill(15400704, 0.2);
+            this.gfx.lineStyle(1.5, 0xeaff00);
+            this.gfx.beginFill(0xeaff00, 0.2);
             this.gfx.drawCircle(0, 0, this.renderRad);
             this.gfx.endFill();
         }
-        const l =
+
+        const alpha =
             math.smoothstep(this.ticker, 0, 0.5) *
             (1 -
                 math.smoothstep(
@@ -128,206 +144,221 @@ class AirstrikeZone {
                     this.duration - 0.5,
                     this.duration
                 ));
-        this.gfx.alpha = l;
+        this.gfx.alpha = alpha;
     }
 }
 
 export class PlaneBarn {
-    constructor(e) {
-        this.ia = [];
-        this.oa = [];
+    constructor(audioManager) {
+        this.planes = [];
+        this.airstrikeZones = [];
         this.airstrikeZoneContainer = new PIXI.Container();
-        this.audioManager = e;
+        this.audioManager = audioManager;
     }
 
     free() {
-        for (let e = 0; e < this.ia.length; e++) {
-            this.ia[e].n(this.audioManager);
+        for (let i = 0; i < this.planes.length; i++) {
+            this.planes[i].n(this.audioManager);
         }
     }
 
-    Pr(e, t) {
-        for (let r = 0; r < this.ia.length; r++) {
-            this.ia[r].dirty = true;
+    updatePlanes(planeData, t) {
+        // Mark existing planes as dirty
+        for (let i = 0; i < this.planes.length; i++) {
+            this.planes[i].dirty = true;
         }
-        for (let a = 0; a < e.length; a++) {
-            const i = e[a];
-            let o = null;
-            for (let s = 0; s < this.ia.length; s++) {
-                const n = this.ia[s];
-                if (n.active && n.id == i.id) {
-                    o = n;
+
+        // Update planes and allocate new ones as needed
+        for (let i = 0; i < planeData.length; i++) {
+            const data = planeData[i];
+            let plane = null;
+            for (let j = 0; j < this.planes.length; j++) {
+                const p = this.planes[j];
+                if (p.active && p.id == data.id) {
+                    plane = p;
                     break;
                 }
             }
-            o ||= this.sa(i, t);
-            o.dirty = false;
-            o.actionComplete = i.actionComplete;
+            plane ||= this.addPlane(data, t);
+            plane.dirty = false;
+            plane.actionComplete = data.actionComplete;
         }
-        for (let l = 0; l < this.ia.length; l++) {
-            const c = this.ia[l];
-            if (c.active && c.dirty) {
-                c.n(this.audioManager);
+        // Delete old planes
+        for (let i = 0; i < this.planes.length; i++) {
+            const p = this.planes[i];
+            if (p.active && p.dirty) {
+                p.n(this.audioManager);
             }
         }
     }
 
-    sa(e, t) {
-        let r = null;
-        for (let i = 0; i < this.ia.length; i++) {
-            if (!this.ia[i].active) {
-                r = this.ia[i];
+    addPlane(data, map) {
+        let p = null;
+        for (let i = 0; i < this.planes.length; i++) {
+            if (!this.planes[i].active) {
+                p = this.planes[i];
                 break;
             }
         }
-        if (!r) {
-            r = new Plane();
-            this.ia.push(r);
+        if (!p) {
+            p = new Plane();
+            this.planes.push(p);
         }
-        r.o(e, t);
-        return r;
+
+        p.o(data, map);
+        return p;
     }
 
-    Cr(e) {
-        let t = null;
-        for (let r = 0; r < this.oa.length; r++) {
-            if (!this.oa[r]) {
-                t = this.oa[r];
+    createAirstrikeZone(data) {
+        let zone = null;
+        for (let i = 0; i < this.airstrikeZones.length; i++) {
+            if (!this.airstrikeZones[i]) {
+                zone = this.airstrikeZones[i];
                 break;
             }
         }
-        if (!t) {
-            t = new AirstrikeZone(this.airstrikeZoneContainer);
-            this.oa.push(t);
+        if (!zone) {
+            zone = new AirstrikeZone(this.airstrikeZoneContainer);
+            this.airstrikeZones.push(zone);
         }
-        t.o(e.pos, e.rad, e.duration);
-        return t;
+        zone.o(data.pos, data.rad, data.duration);
+        return zone;
     }
 
-    m(e, t, r, a, i) {
-        for (let o = 0; o < this.ia.length; o++) {
-            const s = this.ia[o];
-            if (s.active) {
-                let h = 0;
+    m(dt, camera, activePlayer, map, renderer) {
+        for (let i = 0; i < this.planes.length; i++) {
+            const p = this.planes[i];
+            if (p.active) {
+                let layer = 0;
                 if (
-                    (!!util.sameLayer(h, r.layer) ||
-                        !!(r.layer & 2)) &&
-                    (!(r.layer & 2) ||
-                        !a.insideStructureMask(
-                            collider.createCircle(s.pos, 1)
+                    (!!util.sameLayer(layer, activePlayer.layer) ||
+                        !!(activePlayer.layer & 2)) &&
+                    (!(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(
+                            collider.createCircle(p.pos, 1)
                         ))
                 ) {
-                    h |= 2;
+                    layer |= 2;
                 }
-                s.pos = v2.add(
-                    s.pos,
-                    v2.mul(s.planeDir, e * s.config.planeVel)
+
+                // Do we need to reconcile the client plane and the server plane pos?
+                p.pos = v2.add(
+                    p.pos,
+                    v2.mul(p.planeDir, dt * p.config.planeVel)
                 );
-                if (s.actionComplete) {
-                    s.spriteUpdateTime = Math.min(
-                        s.spriteUpdateTime + e,
-                        2
+
+                // If the drop is deployed, lerp towards the elevated sprite values
+                if (p.actionComplete) {
+                    p.spriteUpdateTime = Math.min(
+                        p.spriteUpdateTime + dt,
+                        planeElevateTime
                     );
-                    s.rad = math.lerp(
-                        s.spriteUpdateTime,
-                        s.config.planeRad,
-                        s.config.planeRad * 1.25
+                    p.rad = math.lerp(
+                        p.spriteUpdateTime,
+                        p.config.planeRad,
+                        p.config.planeRad * 1.25
                     );
-                    s.alpha = math.lerp(
-                        s.spriteUpdateTime,
+                    p.alpha = math.lerp(
+                        p.spriteUpdateTime,
                         0.75,
                         0.5625
                     );
-                    s.soundRangeMult = math.max(
+                    p.soundRangeMult = math.max(
                         0,
                         math.lerp(
-                            s.spriteUpdateTime,
-                            s.config.soundRangeMult,
-                            s.config.soundRangeMult -
-                            s.config.soundRangeDelta
+                            p.spriteUpdateTime,
+                            p.config.soundRangeMult,
+                            p.config.soundRangeMult -
+                            p.config.soundRangeDelta
                         )
                     );
                 }
-                if (s.soundInstance) {
-                    if (s.soundUpdateThrottle < 0) {
+                if (p.soundInstance) {
+                    if (p.soundUpdateThrottle < 0) {
                         this.audioManager.updateSound(
-                            s.soundInstance,
+                            p.soundInstance,
                             "sfx",
-                            s.pos,
+                            p.pos,
                             {
-                                layer: h,
-                                rangeMult: s.config.soundRangeMult,
+                                layer,
+                                rangeMult: p.config.soundRangeMult,
                                 ignoreMinAllowable: true,
-                                fallOff: s.config.fallOff
+                                fallOff: p.config.fallOff
                             }
                         );
-                        s.soundUpdateThrottle = 0.1;
+                        p.soundUpdateThrottle = 0.1;
                     } else {
-                        s.soundUpdateThrottle -= e;
+                        p.soundUpdateThrottle -= dt;
                     }
                 } else {
-                    const d = v2.length(v2.sub(r.pos, s.pos));
-                    const u =
-                        s.config.soundRangeMax *
-                        s.config.soundRangeMult;
-                    let g = 0;
-                    if (s.type == GameConfig.Plane.Airstrike) {
-                        const y = math.max(150, d);
-                        g =
-                            (1 - math.clamp(math.max(0, y) / 800, 0, 1)) *
-                            2.25;
+                    const distToPlane = v2.length(v2.sub(activePlayer.pos, p.pos));
+                    const maxRange =
+                        p.config.soundRangeMax *
+                        p.config.soundRangeMult;
+                    let offset = 0;
+                    // Offset fighter sounds to compensate for distToPlane
+                    if (p.type == GameConfig.Plane.Airstrike) {
+                        const maxDistToOffset = 800;
+                        const minDist = 150;
+                        const maxSoundOffset = 2.25;
+                        const distToCompare = math.max(minDist, distToPlane);
+                        offset =
+                            (1 - math.clamp(math.max(0, distToCompare) / maxDistToOffset, 0, 1)) *
+                            maxSoundOffset;
                     }
-                    if (d < u) {
-                        s.soundInstance =
+                    if (distToPlane < maxRange) {
+                        p.soundInstance =
                             this.audioManager.playSound(
-                                s.planeSound,
+                                p.planeSound,
                                 {
                                     channel: "sfx",
-                                    soundPos: s.pos,
-                                    layer: h,
+                                    soundPos: p.pos,
+                                    layer,
                                     loop: true,
                                     rangeMult: 2.5,
                                     ignoreMinAllowable: true,
-                                    fallOff: s.config.fallOff,
-                                    offset: g
+                                    fallOff: p.config.fallOff,
+                                    offset
                                 }
                             );
                     }
                 }
-                i.addPIXIObj(s.sprite, h, 1501, s.id);
-                const w = t.pointToScreen(s.pos);
-                const f = t.pixels(s.rad / t.ppu);
-                const _ = a.insideBuildingCeiling(
-                    collider.createCircle(r.pos, 0.01),
+                renderer.addPIXIObj(p.sprite, layer, 1501, p.id);
+                const screenPos = camera.pointToScreen(p.pos);
+                const screenScale = camera.pixels(p.rad / camera.ppu);
+                const activePlayerIndoors = map.insideBuildingCeiling(
+                    collider.createCircle(activePlayer.pos, 0.01),
                     true
                 );
-                let b = s.alpha;
-                if (r.layer == 1) {
-                    b = 0;
-                } else if (_ || r.layer & 1) {
-                    b = 0.15;
+                let alphaTarget = p.alpha;
+                if (activePlayer.layer == 1) {
+                    alphaTarget = 0;
+                } else if (activePlayerIndoors || activePlayer.layer & 1) {
+                    alphaTarget = 0.15;
                 }
-                s.renderAlpha = math.lerp(e * 3, s.renderAlpha, b);
-                s.sprite.position.set(w.x, w.y);
-                s.sprite.scale.set(f, f);
-                s.sprite.tint = 16776960;
-                s.sprite.alpha = s.renderAlpha;
-                s.sprite.visible = true;
+                p.renderAlpha = math.lerp(dt * 3, p.renderAlpha, alphaTarget);
+                p.sprite.position.set(screenPos.x, screenPos.y);
+                p.sprite.scale.set(screenScale, screenScale);
+                p.sprite.tint = 16776960;
+                p.sprite.alpha = p.renderAlpha;
+                p.sprite.visible = true;
             }
         }
-        for (let x = 0; x < this.oa.length; x++) {
-            const S = this.oa[x];
-            if (S.active) {
-                S.m(e);
+
+        // Update airstrike zones
+        for (let i = 0; i < this.airstrikeZones.length; i++) {
+            const zone = this.airstrikeZones[i];
+            if (zone.active) {
+                zone.m(dt);
             }
         }
     }
 
-    renderAirstrikeZones(e, t, r) {
-        for (let a = 0; a < this.oa.length; a++) {
-            const i = this.oa[a];
-            if (i.active) {
-                i.br(e, t, r);
+    renderAirstrikeZones(uiManager, map, debug) {
+        for (let i = 0; i < this.airstrikeZones.length; i++) {
+            const zone = this.airstrikeZones[i];
+            if (zone.active) {
+                zone.br(uiManager, map, debug);
             }
         }
     }

@@ -1,68 +1,29 @@
-const o = [
-    /* {
-  region: "na",
-  zone: "sfo",
-  url: "na-sfo-p1.surviv.io",
-},
-{
-  region: "na",
-  zone: "mia",
-  url: "na-mia-p1.surviv.io",
-},
-{
-  region: "na",
-  zone: "nyc",
-  url: "na-nyc-p1.surviv.io",
-},
-{
-  region: "na",
-  zone: "chi",
-  url: "na-chi-p1.surviv.io",
-},
-{
-  region: "sa",
-  zone: "sao",
-  url: "sa-sao-p1.surviv.io",
-},
-{
-  region: "eu",
-  zone: "fra",
-  url: "eu-fra-p1.surviv.io",
-},
-{
-  region: "eu",
-  zone: "waw",
-  url: "eu-waw-p1.surviv.io",
-},
-{
-  region: "as",
-  zone: "sgp",
-  url: "as-sgp-p1.surviv.io",
-},
-{
-  region: "as",
-  zone: "nrt",
-  url: "as-nrt-p1.surviv.io",
-},
-{
-  region: "as",
-  zone: "hkg",
-  url: "as-hkg-p1.surviv.io",
-},
-{
-  region: "kr",
-  zone: "sel",
-  url: "kr-sel-p1.surviv.io",
-}, */
+/**
+ * @typedef {Object} ServerConfig
+ * @property {string} region
+ * @property {string} zone
+ * @property {string} url
+ */
+
+/**
+ * @type {ServerConfig[]}
+ */
+const testUrls = [
+    {
+        region: "na",
+        zone: "sfo",
+        url: "na-sfo-p1.example.com"
+    }
 ];
+
 class PingTest {
     constructor() {
         this.ptcDataBuf = new ArrayBuffer(1);
-        this.tests = o.map((e) => {
+        this.tests = testUrls.map((config) => {
             return {
-                region: e.region,
-                zone: e.zone,
-                url: e.url,
+                region: config.region,
+                zone: config.zone,
+                url: config.url,
                 ping: 9999,
                 active: false,
                 complete: false,
@@ -81,112 +42,114 @@ class PingTest {
         this.printSummary = true;
     }
 
-    start(e) {
+    start(regions) {
         if ("WebSocket" in window) {
-            let t = 0;
-            for (let r = 0; r < this.tests.length; r++) {
-                const a = this.tests[r];
+            let startCount = 0;
+            for (let i = 0; i < this.tests.length; i++) {
+                const test = this.tests[i];
                 if (
-                    !a.active &&
-                    !a.complete &&
-                    e.indexOf(a.region) !== -1
+                    !test.active &&
+                    !test.complete &&
+                    regions.indexOf(test.region) !== -1
                 ) {
-                    a.active = true;
+                    test.active = true;
                     this.testsStarted++;
-                    t++;
+                    startCount++;
                 }
             }
-            if (t > 0) {
+            if (startCount > 0) {
                 this.printSummary = true;
             }
         }
     }
 
-    update(e) {
-        const t = this;
-        const r = function(e) {
-            e.active = false;
-            e.complete = true;
-            t.testsCompleted++;
+    update(dt) {
+        const _this = this;
+        const completeTest = (test) => {
+            test.active = false;
+            test.complete = true;
+            this.testsCompleted++;
         };
-        const a = function(e) {
-            if (e.ws) {
-                e.ws.close();
-                e.ws = null;
+
+        const onClose = function(test) {
+            if (test.ws) {
+                test.ws.close();
+                test.ws = null;
             }
-            if (!e.complete) {
-                if (e.retryCount++ >= e.retryCountMax) {
-                    r(e);
+            if (!test.complete) {
+                if (test.retryCount++ >= test.retryCountMax) {
+                    completeTest(test);
                 }
             }
         };
+
         for (let i = 0; i < this.tests.length; i++) {
-            const o = t.tests[i];
-            if (!o.active) {
+            const test = _this.tests[i];
+            if (!test.active) {
                 return "continue";
             }
-            if (!o.ws) {
-                const s = new WebSocket(
-                    `wss://${o.url}/ptc`
+            if (!test.ws) {
+                const ws = new WebSocket(
+                    `wss://${test.url}/ptc`
                 );
-                s.binaryType = "arraybuffer";
-                s.onopen = function() { };
-                s.onmessage = function(e) {
-                    const t =
-                        (Date.now() - o.sendTime) /
+                ws.binaryType = "arraybuffer";
+                ws.onopen = function() { };
+                ws.onmessage = function(msg) {
+                    const elapsed =
+                        (Date.now() - test.sendTime) /
                         1000;
-                    o.ping = Math.min(o.ping, t);
-                    o.recvCount++;
-                    o.sendDelay = 0.125;
+                    test.ping = Math.min(test.ping, elapsed);
+                    test.recvCount++;
+                    test.sendDelay = 0.125;
                 };
-                s.onerror = function(e) {
-                    a(o);
+                ws.onerror = function(e) {
+                    onClose(test);
                 };
-                s.onclose = function() {
-                    a(o);
+                ws.onclose = function() {
+                    onClose(test);
                 };
-                o.ws = s;
-                o.sendDelay = 0;
-                o.sendCount = 0;
-                o.recvCount = 0;
+                test.ws = ws;
+                test.sendDelay = 0;
+                test.sendCount = 0;
+                test.recvCount = 0;
             }
-            if (o.ws.readyState == o.ws.OPEN) {
-                o.sendDelay -= e;
+            if (test.ws.readyState == test.ws.OPEN) {
+                test.sendDelay -= dt;
                 if (
-                    o.sendCount == o.recvCount &&
-                    o.sendDelay < 0
+                    test.sendCount == test.recvCount &&
+                    test.sendDelay < 0
                 ) {
-                    o.sendTime = Date.now();
-                    o.sendCount++;
+                    test.sendTime = Date.now();
+                    test.sendCount++;
                     try {
-                        o.ws.send(t.ptcDataBuf);
+                        test.ws.send(_this.ptcDataBuf);
                     } catch (e) {
-                        o.ws.close();
+                        test.ws.close();
                     }
                 }
-                if (o.recvCount >= o.recvCountMax) {
-                    r(o);
-                    o.ws.close();
+                if (test.recvCount >= test.recvCountMax) {
+                    completeTest(test);
+                    test.ws.close();
                 }
             }
         }
         if (this.printSummary && this.isComplete()) {
-            const o = this.tests.sort((e, t) => {
-                return e.ping - t.ping;
+            const sorted = this.tests.sort((a, b) => {
+                return a.ping - b.ping;
             });
             console.log("Ping test results");
             console.log(
                 "----------------------------------------"
             );
-            for (let i = 0; i < o.length; i++) {
-                const s = o[i];
+            for (let i = 0; i < sorted.length; i++) {
+                const test = sorted[i];
                 console.log(
                     "region",
-                    s.region,
+                    test.region,
                     "zone  ",
-                    s.zone,
+                    test.zone,
                     "ping  ",
-                    s.ping
+                    test.ping
                 );
             }
             this.printSummary = false;
@@ -201,19 +164,19 @@ class PingTest {
     }
 
     getRegionList() {
-        const e = [];
-        for (let t = 0; t < o.length; t++) {
-            const r = o[t].region;
-            if (!e.includes(r)) {
-                e.push(r);
+        const regions = [];
+        for (let t = 0; t < testUrls.length; t++) {
+            const region = testUrls[t].region;
+            if (!regions.includes(region)) {
+                regions.push(region);
             }
         }
-        return e;
+        return regions;
     }
 
     getRegion() {
-        this.tests.sort((e, t) => {
-            return e.ping - t.ping;
+        this.tests.sort((a, b) => {
+            return a.ping - b.ping;
         });
         return this.tests[0].region;
     }

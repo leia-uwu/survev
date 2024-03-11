@@ -94,8 +94,6 @@ export class Game {
                     joinMessage.name = name;
                     joinMessage.useTouch = device.touch;
                     joinMessage.isMobile = device.mobile || window.mobile;
-                    joinMessage.proxy = false; //* !/.*surviv\.io$/.test(window.location.hostname);
-                    joinMessage.otherProxy = false; //* !proxy.authLocation();
                     joinMessage.bot = false;
                     joinMessage.emotes = _this.config.get("loadout").emotes;
 
@@ -368,7 +366,7 @@ export class Game {
         }
         // Update facing direction
         const playerPos = this.m_activePlayer.pos;
-        const mousePos = this.camera.j(this.m_input.Ue);
+        const mousePos = this.camera.screenToPoint(this.m_input.Ue);
         const toMousePos = v2.sub(mousePos, playerPos);
         let toMouseLen = v2.length(toMousePos);
         let toMouseDir = toMouseLen > 0.00001 ? v2.div(toMousePos, toMouseLen) : v2.create(1, 0);
@@ -1019,11 +1017,11 @@ export class Game {
         }
 
         // Update planes
-        this.planeBarn.Pr(msg.planes, this.map);
+        this.planeBarn.updatePlanes(msg.planes, this.map);
 
         // Create airstrike zones
         for (let x = 0; x < msg.airstrikeZones.length; x++) {
-            this.planeBarn.Cr(msg.airstrikeZones[x]);
+            this.planeBarn.createAirstrikeZone(msg.airstrikeZones[x]);
         }
 
         // Update map indicators
@@ -1076,7 +1074,7 @@ export class Game {
             }
 
             // Update cheat detection
-            if (helpers.ee() || helpers.te()) {
+            if (helpers.detectCheatWindowVars() || helpers.detectCheatScripts()) {
                 this.m_cheatDetected = true;
             }
             break;

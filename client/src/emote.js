@@ -14,42 +14,54 @@ import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 const Input = GameConfig.Input;
 const EmoteSlot = GameConfig.EmoteSlot;
 
-function a(e) {
-    if (e.displayCloseIcon) {
+const airdropIdx = 4;
+const airstrikeIdx = 5;
+
+function getImgUrlFromSelector(data) {
+    if (data.displayCloseIcon) {
         return "img/gui/close.svg";
     } else {
-        return helpers.getSvgFromGameType(e.ping || e.emote);
+        return helpers.getSvgFromGameType(data.ping || data.emote);
     }
 }
-function i(e) {
-    let t = (Math.atan2(e.y, e.x) * 180) / Math.PI;
-    if (t < 0) {
-        t += 360;
+function vectorToDegreeAngle(vector) {
+    let angle = (Math.atan2(vector.y, vector.x) * 180) / Math.PI;
+    if (angle < 0) {
+        angle += 360;
     }
-    return t;
+    return angle;
 }
-function o(e, t, r) {
-    if (t <= r) {
-        if (r - t <= 180) {
-            return t <= e && e <= r;
+
+function isAngleBetween(target, angle1, angle2) {
+    if (angle1 <= angle2) {
+        if (angle2 - angle1 <= 180) {
+            return angle1 <= target && target <= angle2;
         } else {
-            return r <= e || e <= t;
+            return angle2 <= target || target <= angle1;
         }
-    } else if (t - r <= 180) {
-        return r <= e && e <= t;
+    } else if (angle1 - angle2 <= 180) {
+        return angle2 <= target && target <= angle1;
     } else {
-        return t <= e || e <= r;
+        return angle1 <= target || target <= angle2;
     }
 }
 export class EmoteBarn {
+    /**
+     * @param {import("./audioManager").AudioManager} audioManager
+     * @param {import("./camera").Camera} camera
+     * @param {import("./map").Map} map
+     */
     constructor(audioManager, uiManager, playerBarn, camera, map) {
-        const s = this;
+        const _this = this;
         this.audioManager = audioManager;
         this.uiManager = uiManager;
         this.gameElem = $("#ui-game");
         this.disable = false;
         this.dr = null;
         this.playerBarn = playerBarn;
+        /**
+           * @type {import("./camera").Camera} camera
+         */
         this.camera = camera;
         this.map = map;
         this.worldPos = v2.create(0, 0);
@@ -58,6 +70,8 @@ export class EmoteBarn {
             ping: "",
             emote: ""
         };
+
+        // Client ping/emote throttle
         this.emoteSoftTicker = 0;
         this.emoteHardTicker = 0;
         this.emoteCounter = 0;
@@ -65,65 +79,77 @@ export class EmoteBarn {
         this.teamEmotesGreyed = false;
         this.wheelKeyTriggered = false;
         this.emoteTimeoutTicker = 0;
-        this.aa = false;
+
+        // Track team pings and emote inputs separately
+        this.pingKeyTriggered = false;
         this.pingKeyDown = false;
         this.pingMouseTriggered = false;
         this.wheelDisplayed = false;
+
         this.emoteMouseTriggered = false;
         this.emoteScreenPos = v2.create(0, 0);
+
         this.triggerPing = function() {
-            if (s.dr) {
-                let e;
-                if (s.emoteSelector.ping && !s.emoteWheelsGreyed) {
-                    const t = PingDefs[s.emoteSelector.ping];
-                    if (t?.pingMap) {
-                        e = s.uiManager.getWorldPosFromMapPos(
-                            s.bigmapPingPos || s.emoteScreenPos,
-                            s.map,
-                            s.camera
+            if (_this.dr) {
+                let worldPos;
+                // Determine if this is going to be a team ping or an emote
+                if (_this.emoteSelector.ping && !_this.emoteWheelsGreyed) {
+                    const pingData = PingDefs[_this.emoteSelector.ping];
+                    if (pingData?.pingMap) {
+                        // Where on the world do we ping?
+                        worldPos = _this.uiManager.getWorldPosFromMapPos(
+                            _this.bigmapPingPos || _this.emoteScreenPos,
+                            _this.map,
+                            _this.camera
                         );
-                        e ||= s.camera.j(s.emoteScreenPos);
-                        e.x = math.clamp(e.x, 0, s.map.width);
-                        e.y = math.clamp(e.y, 0, s.map.height);
-                        s.sendPing({
-                            type: s.emoteSelector.ping,
-                            pos: e
+                        worldPos ||= _this.camera.screenToPoint(_this.emoteScreenPos);
+                        worldPos.x = math.clamp(worldPos.x, 0, _this.map.width);
+                        worldPos.y = math.clamp(worldPos.y, 0, _this.map.height);
+                        _this.sendPing({
+                            type: _this.emoteSelector.ping,
+                            pos: worldPos
                         });
                     }
                 } else if (
-                    s.emoteSelector.emote &&
-                    !s.emoteWheelsGreyed
+                    _this.emoteSelector.emote &&
+                    !_this.emoteWheelsGreyed
                 ) {
-                    e = s.dr.pos;
-                    s.sendEmote({
-                        type: s.emoteSelector.emote,
-                        pos: e
+                    worldPos = _this.dr.pos;
+                    _this.sendEmote({
+                        type: _this.emoteSelector.emote,
+                        pos: worldPos
                     });
-                    s.uiManager.displayMapLarge(true);
+                    _this.uiManager.displayMapLarge(true);
                 }
-                s.inputReset();
-                s.aa = s.pingKeyDown;
+                _this.inputReset();
+                _this.pingKeyTriggered = _this.pingKeyDown;
             }
         };
+
         this.triggerEmote = function() {
-            if (s.dr) {
-                let e;
-                if (s.emoteSelector.emote && !s.emoteWheelsGreyed) {
-                    e = s.dr.pos;
-                    s.sendEmote({
-                        type: s.emoteSelector.emote,
-                        pos: e
+            if (_this.dr) {
+                let worldPos;
+                if (_this.emoteSelector.emote && !_this.emoteWheelsGreyed) {
+                    worldPos = _this.dr.pos;
+
+                    // Send the emote to the server
+                    _this.sendEmote({
+                        type: _this.emoteSelector.emote,
+                        pos: worldPos
                     });
                 }
-                s.inputReset();
+                _this.inputReset();
             }
         };
+
+        // Touch listeners
         this.emoteTouchedPos = null;
         this.bigmapPingPos = null;
-        this.onTouchStart = function(e) {
-            if (s.wheelDisplayed) {
-                e.stopPropagation();
-                s.inputReset();
+
+        this.onTouchStart = function(event) {
+            if (_this.wheelDisplayed) {
+                event.stopPropagation();
+                _this.inputReset();
             }
         };
         if (device.touch) {
@@ -132,40 +158,48 @@ export class EmoteBarn {
             this.bigmapCollision = $("#big-map-collision");
             this.bigmapCollision.on("touchend", (e) => {
                 e.stopPropagation();
-                s.bigmapPingPos = {
+                _this.bigmapPingPos = {
                     x: e.originalEvent.changedTouches[0].pageX,
                     y: e.originalEvent.changedTouches[0].pageY
                 };
-                s.emoteScreenPos = v2.create(
-                    s.camera.screenWidth / 2,
-                    s.camera.screenHeight / 2
+                _this.emoteScreenPos = v2.create(
+                    _this.camera.screenWidth / 2,
+                    _this.camera.screenHeight / 2
                 );
-                s.pingMouseTriggered = true;
+                _this.pingMouseTriggered = true;
             });
+
+            // Dragging Emote button
             this.emoteButtonElem = $("#ui-emote-button");
             this.emoteButtonElem.css("pointer-events", "auto");
-            this.emoteButtonElem.on("touchstart", (e) => {
-                e.stopPropagation();
-                s.emoteScreenPos = v2.create(
-                    s.camera.screenWidth / 2,
-                    s.camera.screenHeight / 2
+            this.emoteButtonElem.on("touchstart", (event) => {
+                event.stopPropagation();
+                _this.emoteScreenPos = v2.create(
+                    _this.camera.screenWidth / 2,
+                    _this.camera.screenHeight / 2
                 );
-                s.emoteMouseTriggered = true;
+                _this.emoteMouseTriggered = true;
             });
+
+            // Listen for an emote wheel touch
             this.emoteElems.on("touchstart", (e) => {
                 e.stopPropagation();
-                s.emoteTouchedPos = {
+                _this.emoteTouchedPos = {
                     x: e.originalEvent.changedTouches[0].pageX,
                     y: e.originalEvent.changedTouches[0].pageY
                 };
             });
+            // Reset wheel
             $(document).on("touchstart", this.onTouchStart);
         }
         this.emoteWheels = $("#ui-emotes, #ui-team-pings");
         this.teamEmotes = $(
             ".ui-emote-bottom-left, .ui-emote-top-left"
         );
+
+        // Emotes
         this.emoteWheel = $("#ui-emotes");
+        // Set ping wheel specific data
         this.emoteWheelData = {
             middle: {
                 parent: $("#ui-emote-middle"),
@@ -208,8 +242,11 @@ export class EmoteBarn {
                 emoteSlot: EmoteSlot.Left
             }
         };
+
+        // Team pings
         this.teamPingWheel = $("#ui-team-pings");
-        const c = {
+        // Set ping wheel specific data
+        const teamPingData = {
             middle: {
                 parent: $("#ui-team-ping-middle"),
                 vA: v2.create(-1, 1),
@@ -255,22 +292,24 @@ export class EmoteBarn {
                 ammoEmote: true
             }
         };
+
         this.teamPingSelectors = [];
-        for (const h in c) {
-            if (c.hasOwnProperty(h)) {
-                const g = c[h];
-                const w = i(g.vA);
-                const f = i(g.vC);
+        // Populate the ping selectors
+        for (const key in teamPingData) {
+            if (teamPingData.hasOwnProperty(key)) {
+                const pingData = teamPingData[key];
+                const angleA = vectorToDegreeAngle(pingData.vA);
+                const angleC = vectorToDegreeAngle(pingData.vC);
                 this.teamPingSelectors.push({
-                    parent: g.parent,
-                    angleA: w,
-                    angleC: f,
-                    highlight: g.parent.find(".ui-emote-hl"),
+                    parent: pingData.parent,
+                    angleA,
+                    angleC,
+                    highlight: pingData.parent.find(".ui-emote-hl"),
                     highlightDisplayed: false,
-                    ping: g.ping,
-                    emote: g.emote,
-                    ammoEmote: g.ammoEmote,
-                    displayCloseIcon: g.displayCloseIcon
+                    ping: pingData.ping,
+                    emote: pingData.emote,
+                    ammoEmote: pingData.ammoEmote,
+                    displayCloseIcon: pingData.displayCloseIcon
                 });
             }
         }
@@ -281,37 +320,42 @@ export class EmoteBarn {
         this.pingContainer = new PIXI.Container();
         this.container.addChild(this.pingContainer);
         this.indContainer = new PIXI.Container();
-        const v = function(e, t = 16777215) {
-            const r = new PIXI.Container();
-            const a = new PIXI.Container();
-            const i = GameConfig.groupColors[e] || t;
-            const o = PIXI.Sprite.from("ping-border.img");
-            o.scale.set(0.4, 0.4);
-            o.anchor.set(0.5, 0.5);
-            o.tint = i;
-            o.alpha = 0;
-            o.visible = true;
-            r.addChild(o);
-            const s = PIXI.Sprite.from("ping-team-danger.img");
-            s.scale.set(0.4, 0.4);
-            s.anchor.set(0.5, 0.5);
-            s.tint = i;
-            s.alpha = 0;
-            s.visible = true;
-            r.addChild(s);
-            const c = PIXI.Sprite.from("ping-team-danger.img");
-            c.scale.set(0.5, 0.5);
-            c.anchor.set(0.5, 0.5);
-            c.tint = i;
-            c.alpha = 0;
-            c.visible = true;
-            a.addChild(c);
-            const m = PIXI.Sprite.from("ping-indicator.img");
-            m.scale.set(0.5, 0.5);
-            m.anchor.set(0.5, 0);
-            m.alpha = 0;
-            m.visible = true;
-            a.addChild(m);
+        const createIndicator = function(e, indTint = 16777215) {
+            const pingContainer = new PIXI.Container();
+            const indContainer = new PIXI.Container();
+            const tint = GameConfig.groupColors[e] || indTint;
+
+            const pingBorder = PIXI.Sprite.from("ping-border.img");
+            pingBorder.scale.set(0.4, 0.4);
+            pingBorder.anchor.set(0.5, 0.5);
+            pingBorder.tint = tint;
+            pingBorder.alpha = 0;
+            pingBorder.visible = true;
+            pingContainer.addChild(pingBorder);
+
+            const pingSprite = PIXI.Sprite.from("ping-team-danger.img");
+            pingSprite.scale.set(0.4, 0.4);
+            pingSprite.anchor.set(0.5, 0.5);
+            pingSprite.tint = tint;
+            pingSprite.alpha = 0;
+            pingSprite.visible = true;
+            pingContainer.addChild(pingSprite);
+
+            const indSpriteInner = PIXI.Sprite.from("ping-team-danger.img");
+            indSpriteInner.scale.set(0.5, 0.5);
+            indSpriteInner.anchor.set(0.5, 0.5);
+            indSpriteInner.tint = tint;
+            indSpriteInner.alpha = 0;
+            indSpriteInner.visible = true;
+            indContainer.addChild(indSpriteInner);
+
+            const indSpriteOuter = PIXI.Sprite.from("ping-indicator.img");
+            indSpriteOuter.scale.set(0.5, 0.5);
+            indSpriteOuter.anchor.set(0.5, 0);
+            indSpriteOuter.alpha = 0;
+            indSpriteOuter.visible = true;
+            indContainer.addChild(indSpriteOuter);
+
             return {
                 elem: $("#ui-team-indicators").find(
                     `.ui-indicator-ping[data-id=${e}]`
@@ -319,25 +363,25 @@ export class EmoteBarn {
                 borderElem: $("#ui-team-indicators").find(
                     `.ui-indicator-ping-border[data-id=${e}]`
                 ),
-                pingContainer: r,
-                indContainer: a,
+                pingContainer,
+                indContainer,
                 borderSprite: {
-                    sprite: o,
+                    sprite: pingBorder,
                     baseScale: 0.4
                 },
                 pingSprite: {
-                    sprite: s,
+                    sprite: pingSprite,
                     baseScale: 0.4
                 },
                 indSpriteOuter: {
-                    sprite: m,
+                    sprite: indSpriteOuter,
                     baseScale: 0.5,
-                    baseTint: m.tint
+                    baseTint: indSpriteOuter.tint
                 },
                 indSpriteInner: {
-                    sprite: c,
+                    sprite: indSpriteInner,
                     baseScale: 0.5,
-                    baseTint: c.tint
+                    baseTint: indSpriteInner.tint
                 },
                 displayed: false,
                 fadeIn: 0,
@@ -347,15 +391,17 @@ export class EmoteBarn {
             };
         };
         this.pingIndicators = [];
-        for (let k = 0; k < 4; k++) {
-            const z = v(k);
-            this.pingContainer.addChild(z.pingContainer);
-            this.indContainer.addChild(z.indContainer);
+
+        // Populate ping indicators
+        for (let i = 0; i < 4; i++) {
+            const indicator = createIndicator(i);
+            this.pingContainer.addChild(indicator.pingContainer);
+            this.indContainer.addChild(indicator.indContainer);
             this.pingIndicators.push({
-                ping: z
+                ping: indicator
             });
         }
-        this.airdropIndicator = v(x, PingDefs.ping_airdrop.tint);
+        this.airdropIndicator = createIndicator(airdropIdx, PingDefs.ping_airdrop.tint);
         this.pingContainer.addChild(
             this.airdropIndicator.pingContainer
         );
@@ -363,7 +409,7 @@ export class EmoteBarn {
         this.pingIndicators.push({
             ping: this.airdropIndicator
         });
-        this.airstrikeIndicator = v(S, PingDefs.ping_airstrike.tint);
+        this.airstrikeIndicator = createIndicator(airstrikeIdx, PingDefs.ping_airstrike.tint);
         this.pingContainer.addChild(
             this.airstrikeIndicator.pingContainer
         );
@@ -410,7 +456,7 @@ export class EmoteBarn {
 
     inputReset() {
         this.pingMouseTriggered = false;
-        this.aa = false;
+        this.pingKeyTriggered = false;
         this.emoteMouseTriggered = false;
         this.wheelDisplayed = false;
         this.displayWheel(this.teamPingWheel, false);
@@ -418,212 +464,241 @@ export class EmoteBarn {
         this.emoteTouchedPos = null;
         this.bigmapPingPos = null;
         this.emoteTimeoutTicker = 0;
-        for (let e = 0; e < this.displayedSelectors.length; e++) {
-            const t = this.displayedSelectors[e];
-            const r = EmotesDefs[t.emote];
-            const a = r?.teamOnly;
-            if (this.teamEmotesGreyed && a) {
-                t.parent.css("opacity", this.teamEmoteOpacityReset);
+        for (let i = 0; i < this.displayedSelectors.length; i++) {
+            const s = this.displayedSelectors[i];
+            const emoteData = EmotesDefs[s.emote];
+            const teamOnly = emoteData?.teamOnly;
+            if (this.teamEmotesGreyed && teamOnly) {
+                s.parent.css("opacity", this.teamEmoteOpacityReset);
             } else {
-                t.parent.css("opacity", this.wedgeOpacityReset);
+                s.parent.css("opacity", this.wedgeOpacityReset);
             }
-            t.highlight.css("display", "none");
-            t.highlightDisplayed = false;
+            s.highlight.css("display", "none");
+            s.highlightDisplayed = false;
         }
     }
 
-    sendPing(e) {
-        const t = {
-            type: e.type,
-            pos: e.pos
+    sendPing(ping) {
+        const e = {
+            type: ping.type,
+            pos: ping.pos
         };
-        this.newPings.push(t);
+        this.newPings.push(e);
         this.incrementEmote();
     }
 
-    addPing(e, t) {
+    addPing(ping, factionMode) {
+        // Given the ping position, create an indicator on the map and make a sound
         if (this.dr) {
-            const r = PingDefs[e.type];
-            if (r) {
+            const pingData = PingDefs[ping.type];
+            if (pingData) {
                 this.uiManager.createPing(
-                    e.type,
-                    e.pos,
-                    e.playerId,
+                    ping.type,
+                    ping.pos,
+                    ping.playerId,
                     this.dr.__id,
                     this.playerBarn,
-                    t
+                    factionMode
                 );
-                let a = null;
-                let i = r.sound;
-                if (e.type == "ping_airdrop") {
-                    a = this.pingIndicators[x].ping;
-                } else if (e.type == "ping_airstrike") {
-                    a = this.pingIndicators[S].ping;
+                let indicator = null;
+                let pingSound = pingData.sound;
+                if (ping.type == "ping_airdrop") {
+                    indicator = this.pingIndicators[airdropIdx].ping;
+                } else if (ping.type == "ping_airstrike") {
+                    indicator = this.pingIndicators[airstrikeIdx].ping;
                 } else {
-                    const o = this.playerBarn.qe(e.playerId);
-                    if (o) {
-                        const s = this.playerBarn.qe(
+                    const playerInfo = this.playerBarn.qe(ping.playerId);
+                    if (playerInfo) {
+                        const activeGroupId = this.playerBarn.qe(
                             this.dr.__id
                         ).groupId;
-                        const n = o.groupId;
-                        if (s == n) {
+                        const groupId = playerInfo.groupId;
+                        if (activeGroupId == groupId) {
                             const l =
-                                this.playerBarn.getGroupInfo(n);
+                                this.playerBarn.getGroupInfo(groupId);
                             const c = l.playerIds.indexOf(
-                                e.playerId
+                                ping.playerId
                             );
                             if (c !== -1) {
-                                a = this.pingIndicators[c].ping;
+                                indicator = this.pingIndicators[c].ping;
                             }
                         }
                     }
-                    const m = this.playerBarn.Fe(e.playerId);
-                    if (m && m.role == "leader") {
-                        i = r.soundLeader;
+                    const playerStatus = this.playerBarn.Fe(ping.playerId);
+                    if (playerStatus && playerStatus.role == "leader") {
+                        pingSound = pingData.soundLeader;
                     }
                 }
-                if (t || e.type != "ping_airstrike") {
-                    this.audioManager.playSound(i, {
+
+                if (factionMode || ping.type != "ping_airstrike") {
+                    // Pings always play at full volume
+                    this.audioManager.playSound(pingSound, {
                         channel: "ui"
                     });
                 } else {
-                    this.audioManager.playSound(i, {
+                    // If we're too far from an air strike ping in non-faction mode, reduce the ping sound
+                    this.audioManager.playSound(pingSound, {
                         channel: "ui",
                         fallOff: 1,
-                        soundPos: e.pos,
+                        soundPos: ping.pos,
                         rangeMult: 20
                     });
                 }
-                if (a) {
-                    a.pos = e.pos;
-                    a.pingSprite.sprite.texture =
-                        PIXI.Texture.from(r.texture);
-                    a.indSpriteInner.sprite.texture =
-                        PIXI.Texture.from(r.texture);
-                    a.indSpriteInner.sprite.tint = r.mapEvent
-                        ? r.tint
-                        : a.indSpriteInner.baseTint;
-                    a.indSpriteOuter.sprite.tint = r.mapEvent
-                        ? r.tint
-                        : a.indSpriteOuter.baseTint;
-                    a.fadeIn = this.pingFadeIn;
-                    a.life = this.pingLife;
-                    a.fadeOut = this.pingFadeOut;
-                    a.mapEvent = r.mapEvent;
-                    a.worldDisplay = r.worldDisplay;
+                if (indicator) {
+                    indicator.pos = ping.pos;
+                    indicator.pingSprite.sprite.texture =
+                        PIXI.Texture.from(pingData.texture);
+                    indicator.indSpriteInner.sprite.texture =
+                        PIXI.Texture.from(pingData.texture);
+                    indicator.indSpriteInner.sprite.tint = pingData.mapEvent
+                        ? pingData.tint
+                        : indicator.indSpriteInner.baseTint;
+                    indicator.indSpriteOuter.sprite.tint = pingData.mapEvent
+                        ? pingData.tint
+                        : indicator.indSpriteOuter.baseTint;
+                    indicator.fadeIn = this.pingFadeIn;
+                    indicator.life = this.pingLife;
+                    indicator.fadeOut = this.pingFadeOut;
+                    indicator.mapEvent = pingData.mapEvent;
+                    indicator.worldDisplay = pingData.worldDisplay;
                 }
             }
         }
     }
 
-    sendEmote(e) {
-        const t = {
-            type: e.type,
-            pos: e.pos
+    sendEmote(emote) {
+        const e = {
+            type: emote.type,
+            pos: emote.pos
         };
-        this.newEmotes.push(t);
+        this.newEmotes.push(e);
         this.incrementEmote();
     }
 
-    addEmote(e) {
-        const t = EmotesDefs[e.type];
-        if (t) {
-            let r = null;
-            for (let a = 0; a < this.emotes.length; a++) {
-                if (this.emotes[a].alive || r) {
+    addEmote(emote) {
+        const emoteData = EmotesDefs[emote.type];
+        if (emoteData) {
+            // Turn off any other emotes for this player
+            let e = null;
+            for (let i = 0; i < this.emotes.length; i++) {
+                if (this.emotes[i].alive || e) {
                     if (
-                        this.emotes[a].alive &&
-                        this.emotes[a].playerId == e.playerId
+                        this.emotes[i].alive &&
+                        this.emotes[i].playerId == emote.playerId
                     ) {
-                        this.emotes[a].alive = false;
+                        this.emotes[i].alive = false;
                     }
                 } else {
-                    r = this.emotes[a];
+                    e = this.emotes[i];
                 }
             }
-            if (!r) {
-                r = {};
-                r.alive = false;
-                r.pos = v2.create(0, 0);
-                r.container = new PIXI.Container();
-                r.circleOuter = PIXI.Sprite.from(
+            if (!e) {
+                e = {};
+                e.alive = false;
+                e.pos = v2.create(0, 0);
+                e.container = new PIXI.Container();
+                e.circleOuter = PIXI.Sprite.from(
                     "emote-circle-outer.img"
                 );
-                r.circleOuter.anchor.set(0.5, 0.5);
-                r.baseScale = 0.55;
-                r.circleOuter.scale.set(
-                    r.baseScale * 0.8,
-                    r.baseScale * 0.8
+                e.circleOuter.anchor.set(0.5, 0.5);
+                e.baseScale = 0.55;
+                e.circleOuter.scale.set(
+                    e.baseScale * 0.8,
+                    e.baseScale * 0.8
                 );
-                r.circleOuter.tint = 0;
-                r.circleOuter.visible = true;
-                r.container.addChild(r.circleOuter);
-                r.sprite = new PIXI.Sprite();
-                r.sprite.anchor.set(0.5, 0.5);
-                r.container.addChild(r.sprite);
-                r.sprite.scale.set(r.baseScale, r.baseScale);
-                r.posOffset = v2.create(0, 4);
-                r.container.scale.set(1, 1);
-                r.container.visible = false;
-                this.emotes.push(r);
+                e.circleOuter.tint = 0;
+                e.circleOuter.visible = true;
+                e.container.addChild(e.circleOuter);
+
+                e.sprite = new PIXI.Sprite();
+                e.sprite.anchor.set(0.5, 0.5);
+                e.container.addChild(e.sprite);
+
+                e.sprite.scale.set(e.baseScale, e.baseScale);
+                e.posOffset = v2.create(0, 4);
+                e.container.scale.set(1, 1);
+                e.container.visible = false;
+                this.emotes.push(e);
             }
-            r.alive = true;
-            r.isNew = true;
-            r.type = e.type;
-            r.playerId = e.playerId;
-            r.pos = v2.create(0, 0);
-            r.lifeIn = this.emoteLifeIn;
-            r.life = this.emoteLife;
-            r.lifeOut = this.emoteLifeOut;
-            r.zIdx = this.zIdxNext++;
-            r.sprite.texture = PIXI.Texture.from(t.texture);
-            r.container.visible = false;
-            r.baseScale = 0.55;
-            r.sound = t.sound;
-            r.channel = t.channel;
-            if (e.type == "emote_loot") {
-                const i = GameObjectDefs[e.itemType];
-                if (i?.lootImg) {
-                    r.sprite.texture = PIXI.Texture.from(
-                        i.lootImg.sprite
+            e.alive = true;
+            e.isNew = true;
+            e.type = emote.type;
+            e.playerId = emote.playerId;
+            e.pos = v2.create(0, 0);
+            e.lifeIn = this.emoteLifeIn;
+            e.life = this.emoteLife;
+            e.lifeOut = this.emoteLifeOut;
+            e.zIdx = this.zIdxNext++;
+            e.sprite.texture = PIXI.Texture.from(emoteData.texture);
+            e.container.visible = false;
+            e.baseScale = 0.55;
+            e.sound = emoteData.sound;
+            e.channel = emoteData.channel;
+
+            // Rotate if it's loot and rotation defined
+            if (emote.type == "emote_loot") {
+                const lootDef = GameObjectDefs[emote.itemType];
+                if (lootDef?.lootImg) {
+                    e.sprite.texture = PIXI.Texture.from(
+                        lootDef.lootImg.sprite
                     );
-                    const o = GameObjectDefs[i.ammo];
-                    r.circleOuter.tint = o ? o.lootImg.tintDark : 0;
-                    if (i.lootImg.rot) {
-                        r.sprite.rotation = i.lootImg.rot;
+
+                    // Colorize if defined
+                    const ammo = GameObjectDefs[lootDef.ammo];
+                    e.circleOuter.tint = ammo ? ammo.lootImg.tintDark : 0;
+
+                    // Rotate if defined
+                    if (lootDef.lootImg.rot) {
+                        e.sprite.rotation = lootDef.lootImg.rot;
                     } else {
-                        r.sprite.rotation = 0;
+                        e.sprite.rotation = 0;
                     }
-                    if (i.lootImg.mirror) {
-                        r.sprite.scale.set(
-                            r.baseScale * -1,
-                            r.baseScale
+
+                    // Mirror if defined
+                    if (lootDef.lootImg.mirror) {
+                        e.sprite.scale.set(
+                            e.baseScale * -1,
+                            e.baseScale
                         );
                     } else {
-                        r.sprite.scale.set(
-                            r.baseScale,
-                            r.baseScale
+                        e.sprite.scale.set(
+                            e.baseScale,
+                            e.baseScale
                         );
                     }
-                    if (i.sound?.deploy) {
-                        if (i.type == "gun") {
-                            r.sound = i.sound.deploy;
-                            r.channel = "activePlayer";
+
+                    // This 'emote_loot' type is primarily used in potato mode,
+                    // and we'd like to highlight the new weapon that is acquired.
+                    //
+                    // The player plays a deploy sound when equipping new
+                    // weapons, except gun_switch_01 is played instead for guns
+                    // if the player is not under a full switch penalty. To work
+                    // around that, we'll play the proper gun deploy sound here as
+                    // the emote sound. Similarly, playing melee or throwable deploy
+                    // sounds here would lead to an echo as they are always played
+                    // as a part of that player equip logic.
+
+                    if (lootDef.sound?.deploy) {
+                        if (lootDef.type == "gun") {
+                            e.sound = lootDef.sound.deploy;
+                            e.channel = "activePlayer";
                         } else {
-                            r.sound = "";
+                            e.sound = "";
                         }
                     }
                 }
             } else {
-                r.circleOuter.tint = 0;
-                r.sprite.rotation = 0;
-                r.sprite.scale.set(r.baseScale, r.baseScale);
+                // Reset anything set by a loot emote
+                e.circleOuter.tint = 0;
+                e.sprite.rotation = 0;
+                e.sprite.scale.set(e.baseScale, e.baseScale);
             }
         }
     }
 
     incrementEmote() {
-        if (++this.emoteCounter >= GameConfig.player.emoteThreshold) {
+        this.emoteCounter++;
+        if (this.emoteCounter >= GameConfig.player.emoteThreshold) {
             this.emoteHardTicker =
                 this.emoteHardTicker > 0
                     ? this.emoteHardTicker
@@ -631,54 +706,55 @@ export class EmoteBarn {
         }
     }
 
-    m(e, t, r, s, n, m, p, w, b, x) {
-        const S = this.playerBarn;
-        const v = this.camera;
-        let k = v2.create(w.Ue.x, w.Ue.y);
-        if (w.lostFocus) {
+    m(e, t, r, s, n, m, p, input, inputBinds, x) {
+        const playerBarn = this.playerBarn;
+        const camera = this.camera;
+        let mousePos = v2.create(input.Ue.x, input.Ue.y);
+
+        if (input.lostFocus) {
             this.inputReset();
         }
-        if (b.isBindPressed(Input.TeamPingMenu)) {
+        if (inputBinds.isBindPressed(Input.TeamPingMenu)) {
             if (!this.pingKeyDown && !x) {
                 this.pingKeyDown = true;
-                this.aa = true;
+                this.pingKeyTriggered = true;
             }
         }
-        if (b.isBindReleased(Input.TeamPingMenu) && this.pingKeyDown) {
+        if (inputBinds.isBindReleased(Input.TeamPingMenu) && this.pingKeyDown) {
             this.pingKeyDown = false;
-            this.aa = this.wheelDisplayed;
+            this.pingKeyTriggered = this.wheelDisplayed;
         }
-        if (b.isBindPressed(Input.TeamPingSingle)) {
+        if (inputBinds.isBindPressed(Input.TeamPingSingle)) {
             if (
                 !this.pingMouseTriggered &&
                 !this.emoteMouseTriggered
             ) {
-                this.emoteScreenPos = v2.copy(k);
+                this.emoteScreenPos = v2.copy(mousePos);
                 this.pingMouseTriggered = true;
             }
         }
         if (
-            b.isBindReleased(Input.TeamPingSingle) &&
+            inputBinds.isBindReleased(Input.TeamPingSingle) &&
             this.pingMouseTriggered
         ) {
             this.triggerPing();
         }
-        if (b.isBindPressed(Input.EmoteMenu)) {
+        if (inputBinds.isBindPressed(Input.EmoteMenu)) {
             if (
                 !this.pingMouseTriggered &&
                 !this.emoteMouseTriggered &&
                 !!this.pingKeyDown
             ) {
-                this.emoteScreenPos = v2.copy(k);
+                this.emoteScreenPos = v2.copy(mousePos);
                 this.pingMouseTriggered = true;
             }
             if (!this.pingMouseTriggered) {
-                this.emoteScreenPos = v2.copy(k);
+                this.emoteScreenPos = v2.copy(mousePos);
                 this.emoteMouseTriggered = true;
             }
         }
-        if (b.isBindReleased(Input.EmoteMenu)) {
-            if (this.aa && this.pingMouseTriggered) {
+        if (inputBinds.isBindReleased(Input.EmoteMenu)) {
+            if (this.pingKeyTriggered && this.pingMouseTriggered) {
                 this.triggerPing();
             }
             if (this.emoteMouseTriggered) {
@@ -695,7 +771,7 @@ export class EmoteBarn {
             !this.disable &&
             !z &&
             ((this.wheelKeyTriggered =
-                this.aa || this.emoteMouseTriggered),
+                this.pingKeyTriggered || this.emoteMouseTriggered),
             (this.emoteSoftTicker -= e),
             this.emoteCounter >= GameConfig.player.emoteThreshold &&
                     this.emoteHardTicker > 0
@@ -723,7 +799,7 @@ export class EmoteBarn {
                 (this.displayedSelectors = this.pingMouseTriggered
                     ? this.teamPingSelectors
                     : this.emoteWheelSelectors),
-                (this.worldPos = v.j(this.emoteScreenPos))),
+                (this.worldPos = camera.screenToPoint(this.emoteScreenPos))),
             this.wheelDisplayed)
         ) {
             this.emoteTimeoutTicker += e;
@@ -752,13 +828,13 @@ export class EmoteBarn {
                 }
                 let I = null;
                 if (device.touch) {
-                    k = this.emoteTouchedPos;
+                    mousePos = this.emoteTouchedPos;
                 }
-                if (k) {
-                    const T = v2.sub(k, this.emoteScreenPos);
+                if (mousePos) {
+                    const T = v2.sub(mousePos, this.emoteScreenPos);
                     T.y *= -1;
                     const M = v2.length(T);
-                    const P = i(T);
+                    const P = vectorToDegreeAngle(T);
                     const C = r.Re.tt[r.Re.rt];
                     const A = GameObjectDefs[C.type];
                     let O = "";
@@ -790,7 +866,7 @@ export class EmoteBarn {
                                     E.parent.find(
                                         ".ui-emote-image"
                                     );
-                                const q = a(E);
+                                const q = getImgUrlFromSelector(E);
                                 L.css(
                                     "background-image",
                                     `url(${q})`
@@ -809,7 +885,7 @@ export class EmoteBarn {
                         ) {
                             I = E;
                         } else if (
-                            o(P, E.angleC, E.angleA) &&
+                            isAngleBetween(P, E.angleC, E.angleA) &&
                             M > 35 &&
                             F &&
                             this.emoteHardTicker <= 0 &&
@@ -849,7 +925,7 @@ export class EmoteBarn {
                 let W = false;
                 let G = v2.create(0, 0);
                 let X = 0;
-                const K = S.u(U.playerId);
+                const K = playerBarn.u(U.playerId);
                 if (K && !K.netData.he) {
                     G = v2.copy(K.pos);
                     X = K.layer;
@@ -890,72 +966,72 @@ export class EmoteBarn {
         }
         for (
             let J = v2.create(
-                    (v.screenWidth * 0.5) / v.z(),
-                    (v.screenHeight * 0.5) / v.z()
+                    (camera.screenWidth * 0.5) / camera.z(),
+                    (camera.screenHeight * 0.5) / camera.z()
                 ),
                 Q = {
-                    min: v2.sub(v.pos, J),
-                    max: v2.add(v.pos, J)
+                    min: v2.sub(camera.pos, J),
+                    max: v2.add(camera.pos, J)
                 },
-                $ = S.qe(r.__id).groupId,
-                ee = S.getGroupInfo($),
+                $ = playerBarn.qe(r.__id).groupId,
+                ee = playerBarn.getGroupInfo($),
                 te = (ee.playerIds.length, 0);
             te < this.pingIndicators.length;
             te++
         ) {
-            const re = this.pingIndicators[te].ping;
+            const indicator = this.pingIndicators[te].ping;
             const ae = ee.playerIds[te];
-            const ie = re.pingContainer;
-            const oe = re.indContainer;
-            if (ae != undefined || re.mapEvent) {
-                S.qe(ae);
-                const se = ae == this.dr.__id;
-                const ne = S.Fe(ae);
-                const le = re.borderSprite.sprite;
-                const ce = re.pingSprite.sprite;
-                const me = re.indSpriteOuter.sprite;
-                const pe = re.indSpriteInner.sprite;
+            const indContainer = indicator.indContainer;
+            const pingContainer = indicator.pingContainer;
+            if (ae != undefined || indicator.mapEvent) {
+                playerBarn.qe(ae);
+                const isActivePlayer = ae == this.dr.__id;
+                const ne = playerBarn.Fe(ae);
+                const le = indicator.borderSprite.sprite;
+                const ce = indicator.pingSprite.sprite;
+                const me = indicator.indSpriteOuter.sprite;
+                const indSpriteInner = indicator.indSpriteInner.sprite;
                 let he = true;
-                re.fadeIn -= e;
-                re.life -= e;
-                re.fadeOut -= re.life > 0 ? 0 : e;
-                if (re.fadeOut > 0) {
-                    const de = re.pos;
+                indicator.fadeIn -= e;
+                indicator.life -= e;
+                indicator.fadeOut -= indicator.life > 0 ? 0 : e;
+                if (indicator.fadeOut > 0) {
+                    const de = indicator.pos;
                     const ue = v2.normalizeSafe(
-                        v2.sub(de, v.pos),
+                        v2.sub(de, camera.pos),
                         v2.create(1, 0)
                     );
                     const ge = coldet.intersectRayAabb(
-                        v.pos,
+                        camera.pos,
                         ue,
                         Q.min,
                         Q.max
                     );
                     const ye =
                         Math.atan2(ue.y, -ue.x) + Math.PI * 0.5;
-                    const we = v.pointToScreen(ge);
-                    const fe = coldet.testCircleAabb(
+                    const we = camera.pointToScreen(ge);
+                    const onscreen = coldet.testCircleAabb(
                         de,
                         GameConfig.player.radius,
                         Q.min,
                         Q.max
                     );
-                    const _e = v.pixels(re.borderSprite.baseScale);
-                    const be = v.pixels(re.pingSprite.baseScale);
+                    const _e = camera.pixels(indicator.borderSprite.baseScale);
+                    const be = camera.pixels(indicator.pingSprite.baseScale);
                     le.scale.set(_e, _e);
                     ce.scale.set(be, be);
                     if (ne?.dead) {
                         continue;
                     }
-                    he = re.fadeOut < 0;
-                    const xe = fe
-                        ? v.pointToScreen(de).x
-                        : math.clamp(we.x, 64, v.screenWidth - 64);
-                    const Se = fe
-                        ? v.pointToScreen(de).y
-                        : math.clamp(we.y, 64, v.screenHeight - 64);
-                    const ve = v.pointToScreen(de).x;
-                    const ke = v.pointToScreen(de).y;
+                    he = indicator.fadeOut < 0;
+                    const xe = onscreen
+                        ? camera.pointToScreen(de).x
+                        : math.clamp(we.x, 64, camera.screenWidth - 64);
+                    const Se = onscreen
+                        ? camera.pointToScreen(de).y
+                        : math.clamp(we.y, 64, camera.screenHeight - 64);
+                    const ve = camera.pointToScreen(de).x;
+                    const ke = camera.pointToScreen(de).y;
                     ce.position.x = ve;
                     ce.position.y = ke;
                     le.position.x = ve;
@@ -963,131 +1039,133 @@ export class EmoteBarn {
                     me.position.x = xe;
                     me.position.y = Se;
                     me.rotation = ye;
-                    pe.position.x = xe;
-                    pe.position.y = Se;
-                    const ze = le.alpha <= 0 ? 1 : le.alpha - e;
-                    le.alpha = ze;
-                    const Ie = v.pixels(
-                        re.borderSprite.baseScale * (2 - ze)
+                    indSpriteInner.position.x = xe;
+                    indSpriteInner.position.y = Se;
+                    const pulseAlpha = le.alpha <= 0 ? 1 : le.alpha - e;
+                    le.alpha = pulseAlpha;
+                    const pulseScale = camera.pixels(
+                        indicator.borderSprite.baseScale * (2 - pulseAlpha)
                     );
-                    le.scale.set(Ie, Ie);
-                    pe.alpha = fe ? 0 : ze;
-                    if (re.fadeIn > 0) {
-                        const Te = 1 - re.fadeIn / this.pingFadeIn;
-                        ie.alpha = 1;
-                        oe.alpha = 1;
+                    le.scale.set(pulseScale, pulseScale);
+                    indSpriteInner.alpha = onscreen ? 0 : pulseAlpha;
+
+                    // Update ping fade-in
+                    if (indicator.fadeIn > 0) {
+                        const elemOpacity = 1 - indicator.fadeIn / this.pingFadeIn;
+                        pingContainer.alpha = 1;
+                        indContainer.alpha = 1;
                         ce.alpha = 1;
-                        me.alpha = fe ? 0 : Te;
+                        me.alpha = onscreen ? 0 : elemOpacity;
                     } else {
-                        me.alpha = fe ? 0 : 1;
+                        me.alpha = onscreen ? 0 : 1;
                     }
-                    if (re.life < 0) {
-                        const Me = re.fadeOut / this.pingFadeOut;
-                        ie.alpha = Me;
-                        oe.alpha = Me;
+
+                    // Update ping fade-out
+                    if (indicator.life < 0) {
+                        const elemOpacity = indicator.fadeOut / this.pingFadeOut;
+                        pingContainer.alpha = elemOpacity;
+                        indContainer.alpha = elemOpacity;
                     }
-                    if (!re.displayed) {
-                        ie.visible = re.worldDisplay;
-                        oe.visible = !se || re.mapEvent;
-                        re.displayed = true;
+
+                    if (!indicator.displayed) {
+                        pingContainer.visible = indicator.worldDisplay;
+                        // Don't show our own edge of screen indicators
+                        indContainer.visible = !isActivePlayer || indicator.mapEvent;
+                        indicator.displayed = true;
                     }
                 }
-                if (he && re.displayed) {
-                    ie.visible = false;
-                    oe.visible = false;
-                    re.displayed = false;
+                if (he && indicator.displayed) {
+                    pingContainer.visible = false;
+                    indContainer.visible = false;
+                    indicator.displayed = false;
                 }
             } else {
-                ie.visible = false;
-                oe.visible = false;
-                re.displayed = false;
+                pingContainer.visible = false;
+                indContainer.visible = false;
+                indicator.displayed = false;
             }
         }
     }
 
-    displayWheel(e, t) {
-        e.css("display", t ? "block" : "none");
+    displayWheel(parent, display) {
+        parent.css("display", display ? "block" : "none");
     }
 
-    updateEmoteWheel(e) {
-        this.emoteLoadout = e;
-        const t = {
-            top: e[EmoteSlot.Top],
-            right: e[EmoteSlot.Right],
-            bottom: e[EmoteSlot.Bottom],
-            left: e[EmoteSlot.Left]
+    updateEmoteWheel(emoteLoadout) {
+        this.emoteLoadout = emoteLoadout;
+
+        // Map emotes to selector names
+        const emotes = {
+            top: emoteLoadout[EmoteSlot.Top],
+            right: emoteLoadout[EmoteSlot.Right],
+            bottom: emoteLoadout[EmoteSlot.Bottom],
+            left: emoteLoadout[EmoteSlot.Left]
         };
-        for (const r in t) {
-            if (t.hasOwnProperty(r)) {
-                const o = t[r];
-                const s = EmotesDefs[o];
-                if (s && this.emoteWheelData[r]) {
-                    this.emoteWheelData[r].emote = o;
+
+        for (const key in emotes) {
+            if (emotes.hasOwnProperty(key)) {
+                const emoteType = emotes[key];
+                const emoteData = EmotesDefs[emoteType];
+                if (emoteData && this.emoteWheelData[key]) {
+                    this.emoteWheelData[key].emote = emoteType;
                 }
             }
         }
+
         this.emoteWheelSelectors = [];
-        for (const n in this.emoteWheelData) {
-            if (this.emoteWheelData.hasOwnProperty(n)) {
-                const l = this.emoteWheelData[n];
-                const c = i(l.vA);
-                const p = i(l.vC);
+        // Populate the ping selectors
+        for (const key in this.emoteWheelData) {
+            if (this.emoteWheelData.hasOwnProperty(key)) {
+                const ewData = this.emoteWheelData[key];
+                const angleA = vectorToDegreeAngle(ewData.vA);
+                const angleC = vectorToDegreeAngle(ewData.vC);
                 this.emoteWheelSelectors.push(
                     Object.assign(
                         {
-                            angleA: c,
-                            angleC: p,
+                            angleA,
+                            angleC,
                             highlight:
-                                l.parent.find(".ui-emote-hl"),
+                                ewData.parent.find(".ui-emote-hl"),
                             highlightDisplayed: false
                         },
-                        l
+                        ewData
                     )
                 );
-                const h = l.parent.find(".ui-emote-image");
-                const d = a(l);
-                h.css("background-image", `url(${d})`);
+
+                // Change the image background to our chosen emotes
+                const imageElem = ewData.parent.find(".ui-emote-image");
+                const imgUrl = getImgUrlFromSelector(ewData);
+                imageElem.css("background-image", `url(${imgUrl})`);
             }
         }
     }
 
-    render(e) {
-        for (let t = 0; t < this.emotes.length; t++) {
-            const r = this.emotes[t];
-            r.container.visible = r.alive;
-            if (r.alive) {
-                let a = 0;
-                if (r.lifeIn > 0) {
-                    const i = 1 - r.lifeIn / this.emoteLifeIn;
-                    a = math.easeOutElastic(i);
-                } else if (r.life > 0) {
-                    a = 1;
-                } else if (r.lifeOut > 0) {
-                    const o = r.lifeOut / this.emoteLifeOut;
-                    a = o;
+    render(camera) {
+        for (let i = 0; i < this.emotes.length; i++) {
+            const emote = this.emotes[i];
+            emote.container.visible = emote.alive;
+            if (emote.alive) {
+                let scale = 0;
+                if (emote.lifeIn > 0) {
+                    const normLifeIn = 1 - emote.lifeIn / this.emoteLifeIn;
+                    scale = math.easeOutElastic(normLifeIn);
+                } else if (emote.life > 0) {
+                    scale = 1;
+                } else if (emote.lifeOut > 0) {
+                    const normLifeOut = emote.lifeOut / this.emoteLifeOut;
+                    scale = normLifeOut;
                 }
-                const s = v2.add(
-                    r.pos,
-                    v2.mul(r.posOffset, 1 / math.clamp(e.O, 0.75, 1))
+
+                const pos = v2.add(
+                    emote.pos,
+                    v2.mul(emote.posOffset, 1 / math.clamp(camera.O, 0.75, 1))
                 );
-                const n = e.pointToScreen(s);
-                const l = a * r.baseScale * math.clamp(e.O, 0.9, 1.75);
-                r.container.position.set(n.x, n.y);
-                r.container.scale.set(l, l);
+                const screenPos = camera.pointToScreen(pos);
+                const screenScale = scale * emote.baseScale * math.clamp(camera.O, 0.9, 1.75);
+
+                emote.container.position.set(screenPos.x, screenPos.y);
+                emote.container.scale.set(screenScale, screenScale);
             }
         }
     }
 }
-
-const x = 4;
-const S = 5;
-const v = function(e) {
-    return e
-        .map((e) => {
-            return String.fromCharCode(e);
-        })
-        .join("");
-};
-v([109, 101, 110, 117]);
-v([105, 110, 105, 116]);
-v([99, 104, 101, 97, 116]);

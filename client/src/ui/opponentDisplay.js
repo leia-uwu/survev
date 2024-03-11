@@ -257,14 +257,14 @@ class LoadoutDisplay {
         const r = document.getElementById("modal-content-left");
         const a = r.getBoundingClientRect();
         const i = collider.createAabb(
-            this.De.j(v2.create(a.left, a.top + a.height)),
-            this.De.j(v2.create(a.left + a.width, a.top))
+            this.De.screenToPoint(v2.create(a.left, a.top + a.height)),
+            this.De.screenToPoint(v2.create(a.left + a.width, a.top))
         );
         const o = v2.mul(v2.sub(i.max, i.min), 0.5);
         const n = v2.add(i.min, o);
         const l = collider.createAabb(
-            this.De.j(v2.create(0, this.De.screenHeight)),
-            this.De.j(v2.create(this.De.screenWidth, 0))
+            this.De.screenToPoint(v2.create(0, this.De.screenHeight)),
+            this.De.screenToPoint(v2.create(this.De.screenWidth, 0))
         );
         const c = v2.mul(v2.sub(l.max, l.min), 0.5);
         const h = v2.add(l.min, c);
