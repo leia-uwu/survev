@@ -12,7 +12,7 @@ import { Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { DeadBody } from "./deadBody";
-import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef } from "../../../shared/defs/objectsTypings";
+import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
@@ -49,7 +49,7 @@ export class Player extends BaseGameObject {
         activeId: true
     };
 
-    private _health: number = GameConfig.player.health;
+    private _health: number = 50;// GameConfig.player.health;
 
     get health(): number {
         return this._health;
@@ -62,12 +62,26 @@ export class Player extends BaseGameObject {
         this.dirty.health = true;
     }
 
-    boost = 0;
+    private _boost: number = 0;
+
+    get boost(): number {
+        return this._boost;
+    }
+
+    set boost(boost: number) {
+        if (this._boost === boost) return;
+        this._boost = boost;
+        this._boost = math.clamp(this._boost, 0, 100);
+        this.dirty.boost = true;
+    }
+
+    speed: number = this.game.config.movementSpeed;
 
     zoomDirty = true;
-    zoom: number;
+    zoom: number = 0;
 
     action!: { time: number, duration: number, targetId: number };
+    lastAction!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
     scope = "1xscope";
@@ -85,6 +99,10 @@ export class Player extends BaseGameObject {
             clearTimeout(timeout);
         }
         this.animType = GameConfig.Anim.None;
+
+        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
+            this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
+        }
 
         this.weaponManager.curWeapIdx = idx;
         this.setDirty();
@@ -104,8 +122,8 @@ export class Player extends BaseGameObject {
 
     outfit = "outfitBase";
     pack = "backpack00";
-    helmet = "helmet01";
-    chest = "";
+    helmet = "helmet03";
+    chest = "chest03";
 
     layer = 0;
     aimLayer = 0;
@@ -131,6 +149,28 @@ export class Player extends BaseGameObject {
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
 
+    lastActionType: number = GameConfig.Action.None;
+
+    /**
+     * specifically for reloading single shot guns to keep reloading until maxClip is reached
+     */
+    performActionAgain: boolean = false;
+    /**
+     * specifically for things like buffering 2 actions trying to run simultaneously.
+     * also for automatically reloading if switching to gun with 0 loaded ammo
+     */
+    scheduledAction: {
+        perform: boolean
+        type: typeof GameConfig.Action[keyof typeof GameConfig.Action]
+        item: string
+    } = {
+            perform: false,
+            type: GameConfig.Action.None,
+            item: ""
+        };
+
+    ticksSinceLastAction = 0;
+
     get wearingPan(): boolean {
         return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
     }
@@ -147,6 +187,7 @@ export class Player extends BaseGameObject {
     hasteSeq = 0;
 
     actionItem = "";
+    lastActionItem = "";
 
     get hasRole(): boolean {
         return this.role !== "";
@@ -235,9 +276,29 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+        this.inventory["12gauge"] = 2;
+        this.inventory["9mm"] = 120;
+        this.inventory.bandage = 5;
+        this.inventory.healthkit = 1;
+        this.inventory.soda = 2;
+        this.inventory.painkiller = 1;
+        // this.inventory["frag"] = 3;
+        this.game.addLoot("12gauge", this.pos, this.layer, 5);
+        this.game.addLoot("bandage", this.pos, this.layer, 5);
+        this.game.addLoot("soda", this.pos, this.layer, 1);
+        this.game.addLoot("2xscope", this.pos, this.layer, 1);
+        this.game.addLoot("4xscope", this.pos, this.layer, 1);
+        this.game.addLoot("8xscope", this.pos, this.layer, 1);
+        this.game.addLoot("frag", this.pos, this.layer, 1);
+        this.game.addLoot("frag", this.pos, this.layer, 1);
+        this.game.addLoot("smoke", this.pos, this.layer, 1);
+        this.game.addLoot("mirv", this.pos, this.layer, 1);
+        this.game.addLoot("m870", this.pos, this.layer, 1);
+        this.game.addLoot("pkp", this.pos, this.layer, 1);
 
         this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
+        this.action = { time: -1, duration: 0, targetId: -1 };
         // this.addPerk("splinter");
         // this.addPerk("explosive")
     }
@@ -248,6 +309,7 @@ export class Player extends BaseGameObject {
 
     update(): void {
         if (this.dead) return;
+        this.ticksSinceLastAction++;
 
         const input = this.lastInputMsg;
 
@@ -270,18 +332,107 @@ export class Player extends BaseGameObject {
             }
         }
 
-        let speed = this.game.config.movementSpeed;
+        if (this.boost > 0) {
+            this.boost -= 0.375 * this.game.dt;
+        }
+        if (this.boost > 0 && this.boost <= 25) this.health += 1 * this.game.dt;
+        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75 * this.game.dt;
+        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * this.game.dt;
+        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * this.game.dt;
 
-        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-
-        if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
-            speed += weaponDef.speed.equip;
+        if (this.performActionAgain) {
+            this.performActionAgain = false;
+            this.doAction(this.lastActionItem, this.lastActionType, this.lastAction.duration);
         }
 
-        const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
-        if (isOnWater) speed -= 3;
+        if (this.scheduledAction.perform && this.ticksSinceLastAction > 1) {
+            switch (this.scheduledAction.type) {
+            case GameConfig.Action.Reload: {
+                if ((this.curWeapIdx == 0 || this.curWeapIdx == 1) && this.weapons[this.curWeapIdx].ammo == 0) {
+                    this.weaponManager.reload();
+                }
+                break;
+            }
+            case GameConfig.Action.UseItem: {
+                switch (this.scheduledAction.item) {
+                case "bandage": {
+                    this.useBandage();
+                    break;
+                }
+                case "healthkit":{
+                    this.useHealthkit();
+                    break;
+                }
+                case "soda":{
+                    this.useSoda();
+                    break;
+                }
+                case "painkiller":{
+                    this.usePainkiller();
+                    break;
+                }
+                }
+                break;
+            }
+            }
+            this.scheduledAction.type = GameConfig.Action.None;
+            this.scheduledAction.item = "";
+            this.scheduledAction.perform = false;
+            this.ticksSinceLastAction = 0;
+        }
 
-        this.pos = v2.add(this.pos, v2.mul(movement, speed * this.game.dt));
+        // handle heal and boost actions
+        let actionTimeThreshold;// hacky but works, couldnt find a better way
+        if (this.action.time == -1) {
+            actionTimeThreshold = -Date.now();
+        } else {
+            actionTimeThreshold = Date.now() + this.action.time * 1000 - this.action.duration * 1000;
+        }
+        if (actionTimeThreshold >= 0) {
+            if (this.actionType == GameConfig.Action.UseItem) {
+                const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
+                if ("heal" in itemDef) this.health += itemDef.heal;
+                if ("boost" in itemDef) this.boost += itemDef.boost;
+                this.inventory[this.actionItem]--;
+                this.dirty.inventory = true;
+            } else if (this.actionType == GameConfig.Action.Reload) {
+                const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+                const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
+                const spaceLeft = weaponInfo.maxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
+
+                if (this.inventory[weaponInfo.ammo] < spaceLeft) { // 27/30, inv = 2
+                    if (weaponInfo.maxClip != weaponInfo.maxReload) { // m870, mosin, spas: only refill by one bullet at a time
+                        this.weapons[this.curWeapIdx].ammo++;
+                        this.inventory[weaponInfo.ammo]--;
+                    } else { // mp5, sv98, ak47: refill to as much as you have left in your inventory
+                        this.weapons[this.curWeapIdx].ammo += this.inventory[weaponInfo.ammo];
+                        this.inventory[weaponInfo.ammo] = 0;
+                    }
+                } else { // 27/30, inv = 100
+                    this.weapons[this.curWeapIdx].ammo += math.clamp(weaponInfo.maxReload, 0, spaceLeft);
+                    this.inventory[weaponInfo.ammo] -= math.clamp(weaponInfo.maxReload, 0, spaceLeft);
+                }
+
+                // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
+                const realMaxClip = this.inventory[weaponInfo.ammo] == 0 ? this.weapons[this.curWeapIdx].ammo : weaponInfo.maxClip;
+                if (weaponInfo.maxClip != weaponInfo.maxReload && this.weapons[this.curWeapIdx].ammo != realMaxClip) {
+                    this.performActionAgain = true;
+                }
+
+                this.dirty.inventory = true;
+                this.dirty.weapons = true;
+            }
+            if (this.performActionAgain) {
+                this.lastAction = { ...this.action };// shallow copy so no references are kept
+                this.lastActionItem = this.actionItem;
+                this.lastActionType = this.actionType;
+            }
+            this.cancelAction();
+        }
+
+        this.recalculateSpeed();
+
+        this.pos = v2.add(this.pos, v2.mul(movement, this.speed * this.game.dt));
 
         let collided = true;
         let step = 0;
@@ -543,6 +694,9 @@ export class Player extends BaseGameObject {
 
         for (const item in GameConfig.bagSizes) {
             // const def = GameObjectDefs[item] as AmmoDef | HealDef;
+            if (item == "1xscope") {
+                continue;
+            }
 
             if (this.inventory[item] > 0) {
                 this.game.addLoot(item, this.pos, this.layer, this.inventory[item]);
@@ -571,6 +725,83 @@ export class Player extends BaseGameObject {
         }
     }
 
+    useBandage(): void {
+        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
+            return;
+        }
+
+        // healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload) {
+            this.scheduleAction("bandage", GameConfig.Action.UseItem);
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("bandage", GameConfig.Action.UseItem, 3);
+    }
+
+    useHealthkit(): void {
+        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
+            return;
+        }
+
+        // healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload) {
+            this.scheduleAction("healthkit", GameConfig.Action.UseItem);
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("healthkit", GameConfig.Action.UseItem, 6);
+    }
+
+    useSoda(): void {
+        if (this.actionType == GameConfig.Action.UseItem) {
+            return;
+        }
+
+        // healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload) {
+            this.scheduleAction("soda", GameConfig.Action.UseItem);
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("soda", GameConfig.Action.UseItem, 3);
+    }
+
+    usePainkiller(): void {
+        if (this.actionType == GameConfig.Action.UseItem) {
+            return;
+        }
+
+        // healing gets action priority over reloading
+        if (this.actionType == GameConfig.Action.Reload) {
+            this.cancelAction();
+            this.scheduleAction("painkiller", GameConfig.Action.UseItem);
+            return;
+        }
+
+        this.cancelAction();
+        this.doAction("painkiller", GameConfig.Action.UseItem, 5);
+    }
+
+    /**
+     * schedules an action function to be called 1 tick after the current tick.
+     * @param actionItem name of gun for reload, name of healing item for useitem
+     * @param actionType reload, useitem, etc
+     * @param shouldCancel if true, calls cancelAction() before doing anything else
+     */
+    scheduleAction(actionItem: string, actionType: typeof this.scheduledAction.type, shouldCancel = true) {
+        if (shouldCancel) {
+            this.cancelAction();
+        }
+        this.scheduledAction.perform = true;
+        this.scheduledAction.item = actionItem;
+        this.scheduledAction.type = actionType;
+        this.ticksSinceLastAction = 0;
+    }
+
     toMouseLen = 0;
     shootHold = false;
     shootStart = false;
@@ -593,29 +824,201 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
                 this.curWeapIdx = 2;
-                this.setDirty();
+                this.cancelAction();
                 break;
             case GameConfig.Input.EquipPrimary:
                 if (this.weapons[0].type) {
                     this.curWeapIdx = 0;
-                    this.setDirty();
+                    this.cancelAction();
                 }
                 break;
             case GameConfig.Input.EquipSecondary:
                 if (this.weapons[1].type) {
                     this.curWeapIdx = 1;
-                    this.setDirty();
+                    this.cancelAction();
                 }
                 break;
             case GameConfig.Input.EquipThrowable:
                 if (this.weapons[3].type) {
                     this.curWeapIdx = 3;
-                    this.setDirty();
+                    this.cancelAction();
                 }
                 break;
-            case GameConfig.Input.Interact:
+            case GameConfig.Input.EquipOtherGun:
+                if (this.curWeapIdx == 2 && !this.weapons[0].type && !this.weapons[1].type) { // nothing, nothing, [melee] => melee
+                    break;
+                }
 
+                if (this.curWeapIdx == 0 && !this.weapons[1].type) { // [mosin], nothing, fists => fists
+                    this.curWeapIdx = 2;
+                } else if (this.curWeapIdx == 1 && !this.weapons[0].type) { // nothing, [mosin], fists => fists
+                    this.curWeapIdx = 2;
+                } else if (this.curWeapIdx == 2 && this.weapons[0].type) { // mosin, wildcard, [melee] => mosin
+                    this.curWeapIdx = 0;
+                } else if (this.curWeapIdx == 2 && !this.weapons[0].type && this.weapons[1].type) { // nothing, mosin, [melee] => mosin
+                    this.curWeapIdx = 1;
+                } else { // normal case: [wildcard], [wildcard], melee => other wildcard
+                    this.curWeapIdx ^= 1;// XOR operator, will flip the number from 0 to 1 or from 1 to 0
+                }
+                this.cancelAction();
+                this.setDirty();
                 break;
+            case GameConfig.Input.Interact: {
+                const coll = collider.createCircle(this.pos, this.rad);
+                const objs = this.game.grid.intersectCollider(coll);
+                for (const o of objs) {
+                    // if object is not loot or if not on the same layer as the player, ignore it
+                    if (o.__type != ObjectType.Loot || !util.sameLayer(this.layer, o.layer)) {
+                        continue;
+                    }
+
+                    if (v2.distance(this.pos, o.pos) < 1.5) {
+                        this.interactWith(o);
+                    }
+                }
+                break;
+            }
+            case GameConfig.Input.Reload:
+                this.weaponManager.reload();
+                break;
+            case GameConfig.Input.UseBandage:
+                this.useBandage();
+                break;
+            case GameConfig.Input.UseHealthKit:
+                this.useHealthkit();
+                break;
+            case GameConfig.Input.UsePainkiller:
+                this.useSoda();
+                break;
+            case GameConfig.Input.UseSoda:
+                this.usePainkiller();
+                break;
+            case GameConfig.Input.Cancel:
+                this.cancelAction();
+                break;
+            }
+        }
+
+        switch (msg.useItem) {
+        case "bandage": {
+            this.useBandage();
+            break;
+        }
+        case "healthkit":{
+            this.useHealthkit();
+            break;
+        }
+        case "soda":{
+            this.useSoda();
+            break;
+        }
+        case "painkiller":{
+            this.usePainkiller();
+            break;
+        }
+        }
+    }
+
+    interactWith(o: GameObject): void {
+        if (o.__type == ObjectType.Loot) {
+            const lootType: string = GameObjectDefs[o.type].type;
+            if (["ammo", "scope", "heal", "boost", "throwable"].includes(lootType)) {
+                const backpackLevel = Number(this.pack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+                const bagSpace = GameConfig.bagSizes[o.type][backpackLevel];
+                if (this.inventory[o.type] + o.count <= bagSpace) {
+                    switch (lootType) {
+                    case "ammo":
+                        break;
+                    case "scope": { // TODO set zoom based on building or outside
+                        const zoom = GameConfig.scopeZoomRadius.desktop[o.type];
+                        if (zoom > this.zoom) { // only switch scopes if new scope is highest level player has
+                            this.zoom = GameConfig.scopeZoomRadius.desktop[o.type];
+                            this.dirty.zoom = true;
+                            this.scope = o.type;
+                        }
+                        break;
+                    }
+                    case "heal":
+                        break;
+                    case "boost":
+                        break;
+                    case "throwable": {
+                        // fill empty slot with throwable, otherwise just add to inv
+                        if (this.inventory[o.type] == 0) {
+                            this.weaponManager.weapons[3].type = o.type;
+                            this.weaponManager.weapons[3].ammo = o.count;
+                            this.dirty.weapons = true;
+                        }
+                        break;
+                    }
+                    }
+                    this.inventory[o.type] += o.count;
+                    this.dirty.inventory = true;
+                } else { // spawn new loot object to animate the pickup rejection
+                    const spaceLeft = bagSpace - this.inventory[o.type];
+                    const amountToAdd = spaceLeft;
+
+                    this.inventory[o.type] += amountToAdd;
+                    this.dirty.inventory = true;
+
+                    const amountToDrop = o.count - amountToAdd;
+
+                    const angle = Math.atan2(this.dir.y, this.dir.x);
+                    const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
+                    const newPos = v2.add(o.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
+                    this.game.addLoot(o.type, newPos, o.layer, amountToDrop);
+                }
+                // this is here because it needs to execute regardless of what happens above
+                // automatically reloads gun if inventory has 0 ammo and ammo is picked up
+                if (lootType == "ammo") {
+                    const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+                    if (
+                        (this.curWeapIdx == 0 || this.curWeapIdx == 1) &&
+                        this.weapons[this.curWeapIdx].ammo == 0 &&
+                        weaponInfo.ammo == o.type // ammo picked up is same type as gun being held
+                    ) {
+                        this.weaponManager.reload();
+                    }
+                }
+                o.remove();
+            } else if (lootType == "gun") {
+                if (this.activeWeapon != o.type) { // can only pick up a different gun: m870 != pkp
+                    const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+                    const backpackLevel = Number(this.pack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+
+                    const bagCapacityAmmo = GameConfig.bagSizes[weaponInfo.ammo][backpackLevel];
+                    const weaponAmmo = this.weapons[this.curWeapIdx].ammo;
+                    const inventoryAmmo = this.inventory[weaponInfo.ammo];
+
+                    if (weaponAmmo + inventoryAmmo <= bagCapacityAmmo) { // can fit all weapon ammo in inventory
+                        this.inventory[weaponInfo.ammo] += weaponAmmo;
+                        this.dirty.inventory = true;
+                    } else { // can only fit a certain amount of ammo in inventory, rest needs to be dropped
+                        const spaceLeft = bagCapacityAmmo - inventoryAmmo;
+                        const amountToAdd = spaceLeft;
+
+                        this.inventory[weaponInfo.ammo] += amountToAdd;
+                        this.dirty.inventory = true;
+
+                        const amountToDrop = weaponAmmo - amountToAdd;
+                        this.game.addLoot(weaponInfo.ammo, this.pos, this.layer, amountToDrop);
+                    }
+
+                    this.game.addGun(this.activeWeapon, this.pos, this.layer, 1);// order matters, drop first so references are correct
+                    this.weapons[this.curWeapIdx].type = o.type;
+                    this.weapons[this.curWeapIdx].ammo = 0;
+
+                    const newWeaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;// info for the picked up gun
+
+                    if (this.inventory[newWeaponInfo.ammo] != 0) {
+                        this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload, false);
+                    }
+
+                    this.cancelAction();
+                    this.dirty.weapons = true;
+                    this.setDirty();
+                    o.remove();
+                }// else do nothing
             }
         }
     }
@@ -630,8 +1033,59 @@ export class Player extends BaseGameObject {
         return false;
     }
 
-    cancelAction(_?: boolean): void {
+    doAction(actionItem: string, actionType: number, duration: number) {
+        if (this.dirty.action) { // action already in progress
+            return;
+        }
 
+        this.action.targetId = -1;
+        this.action.duration = duration;
+        const t = Date.now() + (duration * 1000);
+        this.action.time = duration - (t / 1000);
+        // console.log(this.action.time);
+        // this.action.time = Date.now() + (duration * 1000);
+
+        this.dirty.action = true;
+        this.actionItem = actionItem;
+        this.actionType = actionType;
+        this.actionSeq = 1;
+        this.setDirty();
+    }
+
+    cancelAction(_?: boolean): void {
+        this.action.duration = 0;
+        this.action.targetId = 0;
+        this.action.time = -1;
+
+        this.actionItem = "";
+        this.actionType = 0;
+        this.actionSeq = 0;
+        this.dirty.action = false;
+        this.setDirty();
+    }
+
+    recalculateSpeed(): void {
+        this.speed = this.game.config.movementSpeed;
+
+        // if melee is selected increase speed
+        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+        if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
+            this.speed += weaponDef.speed.equip;
+        }
+
+        // if player is on water decrease speed
+        const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        if (isOnWater) this.speed -= 3;
+
+        // increase speed when adrenaline is above 50%
+        if (this.boost >= 50) {
+            this.speed += 1.85;
+        }
+
+        // decrease speed if popping adren or heals
+        if (this.actionType == GameConfig.Action.UseItem) {
+            this.speed *= 0.5;
+        }
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {

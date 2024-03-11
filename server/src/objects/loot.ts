@@ -163,6 +163,10 @@ export class Loot extends BaseGameObject {
     push(dir: Vec2, velocity: number): void {
         this.vel = v2.add(this.vel, v2.mul(dir, velocity));
     }
+
+    remove() {
+        this.game.grid.remove(this);
+    }
 }
 
 export function getLootTable(modeName: keyof typeof MapDefs, tier: string): Array<{ name: string, count: number }> {
