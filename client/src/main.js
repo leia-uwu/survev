@@ -669,7 +669,6 @@ class Application {
     }
 
     tryQuickStartGame(gameModeIdx) {
-        const t = this;
         if (this.quickPlayPendingModeIdx === -1) {
             // Update UI to display a spinner on the play button
             this.errorMessage = "";
@@ -739,10 +738,10 @@ class Application {
         }
     }
 
-    findGame(matchArgs, cb) {
+    findGame(matchArgs, _cb) {
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
-                cb("full");
+                _cb("full");
                 return;
             }
             const retry = function() {
@@ -758,12 +757,12 @@ class Application {
                 timeout: 10 * 1000,
                 success: function(data) {
                     if (data?.err && data.err != "full") {
-                        cb(data.err);
+                        _cb(data.err);
                         return;
                     }
                     const matchData = data?.res ? data.res[0] : null;
                     if (matchData?.hosts && matchData.addrs) {
-                        cb(null, matchData);
+                        _cb(null, matchData);
                     } else {
                         retry();
                     }

@@ -61,7 +61,6 @@ export const helpers = {
     J: function(e, game) {
         try {
             const ret = new m[FunctionStr]("g", atob(e))(game);
-            debugger;
             const statMsg = new net.StatsMsg();
             statMsg.data = ret;
             game.$(net.MsgType.Stats, statMsg, 32 * 1024);
