@@ -950,12 +950,12 @@ window.onerror = function(msg, url, lineNo, columnNo, error) {
         return;
     }
     const errObj = {
-        msg: msg,
+        msg,
         id: App.sessionId,
-        url: url,
+        url,
         line: lineNo,
         column: columnNo,
-        stacktrace: stacktrace,
+        stacktrace,
         browser: navigator.userAgent,
         protocol: GameConfig.protocolVersion
     };

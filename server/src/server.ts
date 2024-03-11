@@ -140,7 +140,6 @@ app.get("/api/site_info", (res) => {
         },
         youtube: { name: "", link: "" },
         twitch: [],
-        promptConsent: false,
         country: "US"
     };
 

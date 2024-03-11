@@ -64,7 +64,7 @@ export class Building {
         sprite.anchor.set(0.5, 0.5);
         this.sprites.push({
             active: true,
-            sprite: sprite
+            sprite
         });
         return sprite;
     }
@@ -90,9 +90,9 @@ export class Building {
             this.puzzleSolved = data.puzzleSolved;
             this.puzzleErrSeq = data.puzzleErrSeq;
         }
-        
+
         const def = MapObjectDefs[this.type];
-        
+
         if (isNew) {
             this.isNew = true;
             this.playedCeilingDeadFx =
@@ -133,9 +133,9 @@ export class Building {
                 this.rot,
                 this.scale
             );
-            
+
             this.zIdx = def.zIdx || 0;
-            
+
             // Create floor surfaces
             this.surfaces = [];
             for (let i = 0; i < def.floor.surfaces.length; i++) {
@@ -170,7 +170,7 @@ export class Building {
             );
             this.ceiling = {
                 zoomRegions: [],
-                vision: vision,
+                vision,
                 visionTicker: 0,
                 fadeAlpha: 1
             };
@@ -220,7 +220,7 @@ export class Building {
             }
 
             // Create occupied particle emitters
-            let defEmitters = def.occupiedEmitters || [];
+            const defEmitters = def.occupiedEmitters || [];
             for (
                 let z = 0;
                 z < defEmitters.length;
@@ -253,17 +253,17 @@ export class Building {
                     }
                 }
                 const emitter = ctx.particleBarn.addEmitter(defEmitter.type, {
-                    pos: pos,
-                    dir: dir,
-                    scale: scale,
+                    pos,
+                    dir,
+                    scale,
                     layer: defEmitter.layer,
-                    parent: parent
+                    parent
                 });
                 this.particleEmitters.push(emitter);
             }
 
             // Create sound emitters
-            let defSoundEmitters = def.soundEmitters || [];
+            const defSoundEmitters = def.soundEmitters || [];
             for (
                 let i = 0;
                 i < defSoundEmitters.length;
@@ -278,7 +278,7 @@ export class Building {
                     instance: null,
                     sound: defSound.sound,
                     channel: defSound.channel,
-                    pos: pos,
+                    pos,
                     range: defSound.range,
                     falloff: defSound.falloff,
                     volume: defSound.volume
@@ -301,7 +301,7 @@ export class Building {
                 // if none can be found.
                 let nearestObj = this;
                 let nearestDist = v2.length(v2.sub(activePlayer.pos, nearestObj.pos));
-                let obstacles = map.Ve.p();
+                const obstacles = map.Ve.p();
                 for (let i = 0; i < obstacles.length; i++) {
                     const o = obstacles[i];
                     if (
@@ -539,15 +539,15 @@ export class Building {
         const def = MapObjectDefs[this.type].ceiling.destroy;
 
         // Spawn particles at random points inside the first surface collision
-        let surface = this.surfaces[0];
+        const surface = this.surfaces[0];
         /* eslint-disable no-unreachable-loop */
         for (
             let i = 0;
             i < surface.colliders.length;
             i++
         ) {
-            let aabb = collider.toAabb(surface.colliders[i]);
-            for ( let j = 0; j < def.particleCount; j++ ) {
+            const aabb = collider.toAabb(surface.colliders[i]);
+            for (let j = 0; j < def.particleCount; j++) {
                 const pos = v2.create(
                     util.random(aabb.min.x, aabb.max.x),
                     util.random(aabb.min.y, aabb.max.y)

@@ -33,7 +33,7 @@ class Plane {
 
         this.type = data.action;
         this.config =
-            this.type == GameConfig.Plane.Airdrop ? GameConfig.airdrop : GameConfig.airstrike
+            this.type == GameConfig.Plane.Airdrop ? GameConfig.airdrop : GameConfig.airstrike;
 
         this.rad = this.config.planeRad;
         switch (this.type) {
@@ -111,7 +111,6 @@ class AirstrikeZone {
             map
         );
         const rad = v2.length(v2.sub(edge, pos));
-
 
         const posChanged = !v2.eq(this.renderPos, pos, 0.0001);
         const radChanged = !math.eqAbs(this.renderRad, rad, 0.0001);
@@ -281,7 +280,7 @@ export class PlaneBarn {
                             "sfx",
                             p.pos,
                             {
-                                layer: layer,
+                                layer,
                                 rangeMult: p.config.soundRangeMult,
                                 ignoreMinAllowable: true,
                                 fallOff: p.config.fallOff
@@ -314,12 +313,12 @@ export class PlaneBarn {
                                 {
                                     channel: "sfx",
                                     soundPos: p.pos,
-                                    layer: layer,
+                                    layer,
                                     loop: true,
                                     rangeMult: 2.5,
                                     ignoreMinAllowable: true,
                                     fallOff: p.config.fallOff,
-                                    offset: offset
+                                    offset
                                 }
                             );
                     }

@@ -66,11 +66,11 @@ function createLoginOptions(parentElem, linkAccount, account, localization) {
 
 class ProfileUi {
     /**
-     * 
-     * @param {import('./account')} account 
-     * @param {import('./localization')} localization 
-     * @param {import('./loadout-menu')} loadoutMenu 
-     * @param {*} errorModal 
+     *
+     * @param {import('./account')} account
+     * @param {import('./localization')} localization
+     * @param {import('./loadout-menu')} loadoutMenu
+     * @param {*} errorModal
     */
     constructor(account, localization, loadoutMenu, errorModal) {
         this.account = account;
@@ -97,7 +97,6 @@ class ProfileUi {
 
     initUi() {
         const _this = this;
-
 
         // Set username
         const clearNamePrompt = function() {
@@ -286,8 +285,7 @@ class ProfileUi {
             _this.userSettingsModal.hide();
         });
 
-
-        //  
+        //
         // Main-menu buttons
         //
 

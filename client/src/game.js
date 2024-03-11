@@ -94,8 +94,6 @@ export class Game {
                     joinMessage.name = name;
                     joinMessage.useTouch = device.touch;
                     joinMessage.isMobile = device.mobile || window.mobile;
-                    joinMessage.proxy = false; //* !/.*surviv\.io$/.test(window.location.hostname);
-                    joinMessage.otherProxy = false; //* !proxy.authLocation();
                     joinMessage.bot = false;
                     joinMessage.emotes = _this.config.get("loadout").emotes;
 
@@ -1019,11 +1017,11 @@ export class Game {
         }
 
         // Update planes
-        this.planeBarn.Pr(msg.planes, this.map);
+        this.planeBarn.updatePlanes(msg.planes, this.map);
 
         // Create airstrike zones
         for (let x = 0; x < msg.airstrikeZones.length; x++) {
-            this.planeBarn.Cr(msg.airstrikeZones[x]);
+            this.planeBarn.createAirstrikeZone(msg.airstrikeZones[x]);
         }
 
         // Update map indicators

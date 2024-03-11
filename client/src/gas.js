@@ -10,39 +10,38 @@ const overdraw = 100 * 1000;
 const segments = 512;
 
 export class GasRenderer {
-    constructor(t, r) {
+    constructor(canvasMode, gasColor) {
         this.gasColorDOMString = "";
         this.display = null;
         this.canvas = null;
-        if (t) {
+        if (canvasMode) {
             this.canvas = document.createElement("canvas");
             this.canvas.width = window.innerWidth;
             this.canvas.height = window.innerHeight;
             this.display = new PIXI.Sprite(
                 PIXI.Texture.fromCanvas(this.canvas)
             );
-            this.gasColorDOMString = helpers.colorToDOMString(r, 0.6);
+            this.gasColorDOMString = helpers.colorToDOMString(gasColor, 0.6);
         } else {
             this.display = new PIXI.Graphics();
-            const i = this.display;
-            i.clear();
-            i.beginFill(r, 0.6);
-            i.moveTo(-overdraw, -overdraw);
-            i.lineTo(overdraw, -overdraw);
-            i.lineTo(overdraw, overdraw);
-            i.lineTo(-overdraw, overdraw);
-            i.closePath();
-            i.beginHole();
-            i.moveTo(0, 1);
-            for (let s = 1; s < segments; s++) {
-                const n = s / segments;
-                const l = Math.sin(Math.PI * 2 * n);
-                const c = Math.cos(Math.PI * 2 * n);
-                i.lineTo(l, c);
+            const ctx = this.display;
+            ctx.clear();
+            ctx.beginFill(gasColor, 0.6);
+            ctx.moveTo(-overdraw, -overdraw);
+            ctx.lineTo(overdraw, -overdraw);
+            ctx.lineTo(overdraw, overdraw);
+            ctx.lineTo(-overdraw, overdraw);
+            ctx.closePath();
+            ctx.beginHole();
+            ctx.moveTo(0, 1);
+            for (let i = 1; i < segments; i++) {
+                const theta = i / segments;
+                const s = Math.sin(Math.PI * 2 * theta);
+                const c = Math.cos(Math.PI * 2 * theta);
+                ctx.lineTo(s, c);
             }
-            // i.addHole();
-            i.endHole();
-            i.closePath();
+            ctx.endHole();
+            ctx.closePath();
         }
         this.display.visible = false;
     }

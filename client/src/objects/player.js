@@ -595,7 +595,7 @@ export class Player {
             this.visualsDirty = true;
         }
         if (z) {
-            const P = n.j(v2.create(n.screenWidth, 0));
+            const P = n.screenToPoint(v2.create(n.screenWidth, 0));
             const D = v2.sub(P, n.pos);
             this.viewAabb.min = v2.sub(n.pos, D);
             this.viewAabb.max = v2.add(n.pos, D);

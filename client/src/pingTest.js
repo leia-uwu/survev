@@ -12,7 +12,7 @@ const testUrls = [
     {
         region: "na",
         zone: "sfo",
-        url: "na-sfo-p1.example.com",
+        url: "na-sfo-p1.example.com"
     }
 ];
 
