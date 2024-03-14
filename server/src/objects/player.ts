@@ -85,7 +85,7 @@ export class Player extends BaseGameObject {
 
     inventoryDirty = true;
     private _scope = "1xscope";
-    
+
     get scope() {
         return this._scope;
     }
@@ -93,13 +93,12 @@ export class Player extends BaseGameObject {
     set scope(scope: string) {
         this._scope = scope;
 
-        if ( this.isMobile ) this.zoom = GameConfig.scopeZoomRadius.desktop[this._scope];
+        if (this.isMobile) this.zoom = GameConfig.scopeZoomRadius.desktop[this._scope];
         else this.zoom = GameConfig.scopeZoomRadius.mobile[this._scope];
 
         this.dirty.zoom = true;
         this.dirty.inventory = true;
     }
-
 
     inventory: Record<string, number> = {};
 
