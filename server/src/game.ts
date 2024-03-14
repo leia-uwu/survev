@@ -256,6 +256,7 @@ export class Game {
             if (name.trim() === "") name = "Player";
             player.name = name;
             player.joinedTime = Date.now();
+            player.isMobile = joinMsg.isMobile;
 
             const emotes = joinMsg.emotes;
             for (let i = 0; i < emotes.length; i++) {

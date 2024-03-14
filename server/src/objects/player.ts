@@ -84,7 +84,22 @@ export class Player extends BaseGameObject {
     lastAction!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
-    scope = "1xscope";
+    private _scope = "1xscope";
+    
+    get scope() {
+        return this._scope;
+    }
+
+    set scope(scope: string) {
+        this._scope = scope;
+
+        if ( this.isMobile ) this.zoom = GameConfig.scopeZoomRadius.desktop[this._scope];
+        else this.zoom = GameConfig.scopeZoomRadius.mobile[this._scope];
+
+        this.dirty.zoom = true;
+        this.dirty.inventory = true;
+    }
+
 
     inventory: Record<string, number> = {};
 
@@ -121,7 +136,7 @@ export class Player extends BaseGameObject {
     spectatorCount = 0;
 
     outfit = "outfitBase";
-    pack = "backpack00";
+    pack = "backpack03";
     helmet = "helmet03";
     chest = "chest03";
 
@@ -235,6 +250,7 @@ export class Player extends BaseGameObject {
     }
 
     name = "Player";
+    isMobile: boolean = false;
 
     teamId = 1;
     groupId = 0;
@@ -932,8 +948,6 @@ export class Player extends BaseGameObject {
                     case "scope": { // TODO set zoom based on building or outside
                         const zoom = GameConfig.scopeZoomRadius.desktop[o.type];
                         if (zoom > this.zoom) { // only switch scopes if new scope is highest level player has
-                            this.zoom = GameConfig.scopeZoomRadius.desktop[o.type];
-                            this.dirty.zoom = true;
                             this.scope = o.type;
                         }
                         break;
