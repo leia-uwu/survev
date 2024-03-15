@@ -15,6 +15,7 @@ import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
+import { type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef } from "../../shared/defs/objectsTypings";
 
 export class Emote {
     playerId: number;
@@ -257,6 +258,8 @@ export class Game {
             player.name = name;
             player.joinedTime = Date.now();
 
+            player.isMobile = joinMsg.isMobile;
+
             const emotes = joinMsg.emotes;
             for (let i = 0; i < emotes.length; i++) {
                 const emote = emotes[i];
@@ -284,6 +287,78 @@ export class Game {
             emoteMsg.deserialize(stream);
 
             this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
+            break;
+        }
+        case net.MsgType.DropItem: {
+            const dropMsg = new net.DropItemMsg();
+            dropMsg.deserialize(stream);
+
+            // @TODO: move me somewhere
+            if (player.weapons.some(weapon => weapon.type === dropMsg.item)) {
+                this.addLoot(dropMsg.item, player.pos, player.layer, 1);
+                player.setDirty();
+            } else {
+                const item = GameObjectDefs[dropMsg.item] as ScopeDef | HelmetDef | ChestDef | HealDef | BoostDef | AmmoDef;
+                switch (item.type) {
+                case "ammo": {
+                    const inventoryCount = player.inventory[dropMsg.item];
+
+                    if (inventoryCount === 0) return;
+
+                    let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+
+                    if (item.minStackSize && inventoryCount <= item.minStackSize) {
+                        amountToDrop = Math.min(item.minStackSize, inventoryCount);
+                    } else if (inventoryCount <= 5) {
+                        amountToDrop = Math.min(5, inventoryCount);
+                    }
+
+                    splitUpLoot(this, player, dropMsg.item, amountToDrop);
+                    player.inventory[dropMsg.item] -= amountToDrop;
+                    player.dirty.inventory = true;
+                    break;
+                }
+                case "scope": {
+                    const level = item.level;
+                    if (level === 1) break;
+
+                    const availableScopeLevels = [15, 8, 4, 2, 1];
+                    let targetScopeLevel = availableScopeLevels.indexOf(level);
+
+                    this.addLoot(dropMsg.item, player.pos, player.layer, 1);
+                    player.inventory[`${level}xscope`] = 0;
+
+                    for (let i = 0; i < availableScopeLevels.length; i++) {
+                        if (player.inventory[`${availableScopeLevels[i]}xscope`]) {
+                            targetScopeLevel = availableScopeLevels[i];
+                            break;
+                        }
+                    }
+
+                    player.scope = `${targetScopeLevel}xscope`;
+                    break;
+                }
+                case "chest":
+                case "helmet": {
+                    if (item.noDrop) break;
+                    this.addLoot(dropMsg.item, player.pos, player.layer, 1);
+                    player[item.type] = "";
+                    player.setDirty();
+                    break;
+                }
+                case "heal":
+                case "boost": {
+                    if (player.inventory[dropMsg.item] === 0) break;
+                    player.inventory[dropMsg.item]--;
+                    // @TODO: drop more than one?
+                    this.addLoot(dropMsg.item, player.pos, player.layer, 1);
+                    player.dirty.inventory = true;
+                    break;
+                }
+                }
+            }
+
+            player.cancelAction();
         }
         }
     }
@@ -301,4 +376,12 @@ export class Game {
         }
         this.logger.log("Game Ended");
     }
+}
+
+function splitUpLoot(game: Game, player: Player, item: string, amount: number) {
+    const dropCount = Math.floor(amount / 60);
+    for (let i = 0; i < dropCount; i++) {
+        game.addLoot(item, player.pos, player.layer, 60);
+    }
+    if (amount % 60 !== 0) game.addLoot(item, player.pos, player.layer, amount % 60);
 }
