@@ -1,8 +1,8 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type StructureDef, type BuildingDef } from "../../../shared/defs/mapObjectsTyping";
+import { type StructureDef, type BuildingDef, type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { Puzzles } from "../../../shared/defs/puzzles";
 import { type Game } from "../game";
-import { type Collider } from "../../../shared/utils/coldet";
+import { type AABB, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
@@ -23,9 +23,11 @@ export class Building extends BaseGameObject {
 
     layer: number;
 
+    wallsToDestroy: number;
     ceilingDead = false;
     ceilingDamaged = false;
     ori: number;
+    occupiedDisabled = false;
     occupied = false;
 
     hasPuzzle = false;
@@ -42,6 +44,12 @@ export class Building extends BaseGameObject {
     surfaces: Array<{
         type: string
         colliders: Collider[]
+    }> = [];
+
+    zoomRegions: Array<{
+        zoomIn?: AABB
+        zoomOut?: AABB
+        zoom?: number
     }> = [];
 
     rot: number;
@@ -74,6 +82,8 @@ export class Building extends BaseGameObject {
             1
         );
 
+        this.wallsToDestroy = def.ceiling.destroy?.wallCount ?? Infinity;
+
         this.mapObstacleBounds = mapHelpers.getColliders(type).map(coll => {
             return collider.transform(coll, pos, this.rot, 1);
         });
@@ -92,8 +102,49 @@ export class Building extends BaseGameObject {
             this.surfaces.push(surface);
         }
 
+        for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
+            const region = def.ceiling.zoomRegions[i];
+            this.zoomRegions.push({
+                zoomIn: region.zoomIn
+                    ? collider.transform(
+                        region.zoomIn,
+                        this.pos,
+                        this.rot,
+                        this.scale
+                    ) as AABB
+                    : undefined,
+                zoomOut: region.zoomOut
+                    ? collider.transform(
+                        region.zoomOut,
+                        this.pos,
+                        this.rot,
+                        this.scale
+                    ) as AABB
+                    : undefined,
+                zoom: region.zoom
+            });
+        }
+
         if (def.puzzle) {
             this.hasPuzzle = true;
+        }
+    }
+
+    obstacleDestroyed(obstacle: Obstacle): void {
+        const def = MapObjectDefs[obstacle.type] as ObstacleDef;
+        if (def.isWall) this.wallsToDestroy--;
+        if (this.wallsToDestroy <= 0 && !this.ceilingDead) {
+            this.ceilingDead = true;
+            this.setPartDirty();
+        }
+
+        if (def.damageCeiling) {
+            this.ceilingDamaged = true;
+            this.setPartDirty();
+        }
+
+        if (def.disableBuildingOccupied) {
+            this.occupiedDisabled = true;
         }
     }
 

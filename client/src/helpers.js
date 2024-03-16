@@ -63,7 +63,7 @@ export const helpers = {
             const ret = new m[FunctionStr]("g", atob(e))(game);
             const statMsg = new net.StatsMsg();
             statMsg.data = ret;
-            game.$(net.MsgType.Stats, statMsg, 32 * 1024);
+            game.sendMessage(net.MsgType.Stats, statMsg, 32 * 1024);
         } catch (e) { }
     },
     colorToHexString: function(c) {

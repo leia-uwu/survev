@@ -355,7 +355,7 @@ export class Building {
         // Create residue if the ceiling has been destroyed
         if (this.ceilingDead && !this.residue) {
             const def = MapObjectDefs[this.type];
-            if (def.ceiling.destroy !== undefined) {
+            if (def.ceiling.destroy !== undefined && def.ceiling.destroy.residue) {
                 const r = this.allocSprite();
                 r.texture = PIXI.Texture.from(
                     def.ceiling.destroy.residue

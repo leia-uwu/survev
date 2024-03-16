@@ -290,6 +290,11 @@ export class Obstacle extends BaseGameObject {
             );
             this.game.explosions.push(explosion);
         }
+
+        if (this.parentBuildingId) {
+            const building = this.game.grid.getById(this.parentBuildingId) as Building;
+            building.obstacleDestroyed(this);
+        }
     }
 
     interact(player?: Player): void {

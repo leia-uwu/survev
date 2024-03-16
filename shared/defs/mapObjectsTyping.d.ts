@@ -29,6 +29,8 @@ interface ObstacleDef {
     health: number
     reflectBullets?: boolean
     explosion?: string
+    disableBuildingOccupied?: boolean
+    damageCeiling?: boolean
     loot: Array<({
         tier: string
         min: number
@@ -107,6 +109,12 @@ interface BuildingDef {
             width: number
             linger?: number
             fadeRate?: number
+        }
+        destroy?: {
+            wallCount: number
+            particle: string
+            particleCount: number
+            residue: string
         }
     }
     surfaces: Array<{
