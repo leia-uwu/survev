@@ -518,19 +518,21 @@ export class Player extends BaseGameObject {
                     this.setDirty();
                 }
             } else if (obj.__type === ObjectType.Building) {
-                if (!util.sameLayer(this.layer, obj.layer) || obj.ceilingDead) continue;
+                let layer = this.layer;
+                if (this.layer > 2) layer = 0;
+                if (!util.sameLayer(util.toGroundLayer(layer), obj.layer) || obj.ceilingDead) continue;
 
                 for (let i = 0; i < obj.zoomRegions.length; i++) {
                     const zoomRegion = obj.zoomRegions[i];
 
                     if (zoomRegion.zoomIn) {
-                        if (coldet.testPointAabb(this.pos, zoomRegion.zoomIn.min, zoomRegion.zoomIn.max)) {
+                        if (coldet.testCircleAabb(this.pos, this.rad, zoomRegion.zoomIn.min, zoomRegion.zoomIn.max)) {
                             this.indoors = true;
                         }
                     }
 
                     if (zoomRegion.zoomOut && this.indoors) {
-                        if (coldet.testPointAabb(this.pos, zoomRegion.zoomOut.min, zoomRegion.zoomOut.max)) {
+                        if (coldet.testCircleAabb(this.pos, this.rad, zoomRegion.zoomOut.min, zoomRegion.zoomOut.max)) {
                             collidesWithZoomOut = true;
                         }
                     }
