@@ -42,7 +42,7 @@ export class WeaponManager {
         this.weapons[0].type = "mp5";
         this.weapons[1].type = "m870";
         this.weapons[0].ammo = 30;
-        this.weapons[1].ammo = 1;
+        this.weapons[1].ammo = 0;
     }
 
     shootStart(): void {
@@ -107,6 +107,11 @@ export class WeaponManager {
         const toMouseLen = this.player.toMouseLen;
 
         this.player.cancelAction(false);
+        // this.player.performActionAgain = false;
+        // this.player.lastAction = {time: -1, duration: 0, targetId: 0};// shallow copy so no references are kept
+        // this.player.lastActionItem = "";
+        // this.player.lastActionType = 0;
+        // console.log(this.player.lastAction, this.player.lastActionItem);
 
         this.weapons[this.curWeapIdx].ammo--;
         this.player.dirty.weapons = true;
@@ -257,7 +262,7 @@ export class WeaponManager {
             }
         }
         if (this.weapons[this.curWeapIdx].ammo == 0) {
-            this.reload();
+            this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
         }
     }
 

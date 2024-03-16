@@ -362,7 +362,7 @@ export class Player {
         this.netData.oe = v2.copy(e.dir);
         if (t) {
             this.netData.se = e.outfit;
-            this.netData.ne = e.pack;
+            this.netData.ne = e.backpack;
             this.netData.le = e.helmet;
             this.netData.ce = e.chest;
             this.netData.me = e.activeWeapon;
