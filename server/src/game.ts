@@ -15,7 +15,7 @@ import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
-import { GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, ThrowableDef } from "../../shared/defs/objectsTypings";
+import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef } from "../../shared/defs/objectsTypings";
 
 export class Emote {
     playerId: number;
@@ -352,22 +352,21 @@ export class Game {
                 break;
             }
             case "gun": {
-
-                const weaponAmmoType =  (GameObjectDefs[player.weapons[player.curWeapIdx].type] as GunDef).ammo;
+                const weaponAmmoType = (GameObjectDefs[player.weapons[player.curWeapIdx].type] as GunDef).ammo;
                 const weaponAmmoCount = player.weapons[player.curWeapIdx].ammo;
 
                 player.weapons[player.curWeapIdx].type = "";
                 player.weapons[player.curWeapIdx].ammo = 0;
-                if (player.curWeapIdx == dropMsg.weapIdx){
+                if (player.curWeapIdx == dropMsg.weapIdx) {
                     player.curWeapIdx = 2;
                 }
 
                 const backpackLevel = Number(player.backpack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
                 const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
-                if (player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace){
+                if (player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
                     player.inventory[weaponAmmoType] += weaponAmmoCount;
                     player.dirty.inventory = true;
-                }else{
+                } else {
                     const spaceLeft = bagSpace - player.inventory[weaponAmmoType];
                     const amountToAdd = spaceLeft;
 
@@ -378,23 +377,24 @@ export class Game {
 
                     this.addLoot(weaponAmmoType, player.pos, player.layer, amountToDrop);
                 }
-                
+
                 this.addGun(dropMsg.item, player.pos, player.layer, 1);
                 player.dirty.weapons = true;
                 player.setDirty();
+                break;
             }
             case "throwable": {
                 const inventoryCount = player.inventory[dropMsg.item];
 
                 if (inventoryCount === 0) return;
 
-                let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+                const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
 
                 splitUpLoot(this, player, dropMsg.item, amountToDrop);
                 player.inventory[dropMsg.item] -= amountToDrop;
                 player.weapons[3].ammo -= amountToDrop;
 
-                if (player.inventory[dropMsg.item] == 0){
+                if (player.inventory[dropMsg.item] == 0) {
                     player.showNextThrowable();
                 }
                 player.dirty.inventory = true;
