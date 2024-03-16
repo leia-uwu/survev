@@ -8,7 +8,7 @@ import { type PlayerContainer } from "../server";
 import { coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { Obstacle } from "./obstacle";
+import { type Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { DeadBody } from "./deadBody";
@@ -78,7 +78,20 @@ export class Player extends BaseGameObject {
     speed: number = this.game.config.movementSpeed;
 
     zoomDirty = true;
-    zoom: number = 0;
+
+    indoors = false;
+
+    private _zoom: number = 0;
+
+    get zoom(): number {
+        return this._zoom;
+    }
+
+    set zoom(zoom: number) {
+        if (zoom === this._zoom) return;
+        this._zoom = zoom;
+        this.dirty.zoom = true;
+    }
 
     action!: { time: number, duration: number, targetId: number };
     lastAction!: { time: number, duration: number, targetId: number };
@@ -91,12 +104,12 @@ export class Player extends BaseGameObject {
     }
 
     set scope(scope: string) {
+        if (this.scope === scope) return;
         this._scope = scope;
 
         if (this.isMobile) this.zoom = GameConfig.scopeZoomRadius.desktop[this._scope];
         else this.zoom = GameConfig.scopeZoomRadius.mobile[this._scope];
 
-        this.dirty.zoom = true;
         this.dirty.inventory = true;
     }
 
@@ -143,8 +156,6 @@ export class Player extends BaseGameObject {
     aimLayer = 0;
     dead = false;
     downed = false;
-
-    indoors = false;
 
     private _animType: number = GameConfig.Anim.None;
     get animType() {
@@ -374,15 +385,15 @@ export class Player extends BaseGameObject {
                     this.useBandage();
                     break;
                 }
-                case "healthkit":{
+                case "healthkit": {
                     this.useHealthkit();
                     break;
                 }
-                case "soda":{
+                case "soda": {
                     this.useSoda();
                     break;
                 }
-                case "painkiller":{
+                case "painkiller": {
                     this.usePainkiller();
                     break;
                 }
@@ -460,7 +471,7 @@ export class Player extends BaseGameObject {
             objs = this.game.grid.intersectCollider(coll);
 
             for (const obj of objs) {
-                if (obj instanceof Obstacle &&
+                if (obj.__type === ObjectType.Obstacle &&
                     obj.collidable &&
                     util.sameLayer(obj.layer, this.layer) &&
                     !obj.dead
@@ -480,6 +491,10 @@ export class Player extends BaseGameObject {
         const rot = Math.atan2(this.dir.y, this.dir.x);
         const ori = math.radToOri(rot);
 
+        const scopeZoom = GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
+        let zoom = GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"]["1xscope"];
+
+        let collidesWithZoomOut = false;
         for (const obj of objs!) {
             if (obj.__type === ObjectType.Structure) {
                 for (const stair of obj.stairs) {
@@ -502,8 +517,31 @@ export class Player extends BaseGameObject {
                 if (this.layer !== originalLayer) {
                     this.setDirty();
                 }
+            } else if (obj.__type === ObjectType.Building) {
+                if (!util.sameLayer(this.layer, obj.layer) || obj.ceilingDead) continue;
+
+                for (let i = 0; i < obj.zoomRegions.length; i++) {
+                    const zoomRegion = obj.zoomRegions[i];
+
+                    if (zoomRegion.zoomIn) {
+                        if (coldet.testPointAabb(this.pos, zoomRegion.zoomIn.min, zoomRegion.zoomIn.max)) {
+                            this.indoors = true;
+                        }
+                    }
+
+                    if (zoomRegion.zoomOut && this.indoors) {
+                        if (coldet.testPointAabb(this.pos, zoomRegion.zoomOut.min, zoomRegion.zoomOut.max)) {
+                            collidesWithZoomOut = true;
+                        }
+                    }
+
+                    if (this.indoors) zoom = zoomRegion.zoom ?? zoom;
+                }
             }
         }
+
+        this.zoom = this.indoors ? zoom : scopeZoom;
+        if (!collidesWithZoomOut) this.indoors = false;
 
         this.pos = math.v2Clamp(
             this.pos,
@@ -919,15 +957,15 @@ export class Player extends BaseGameObject {
             this.useBandage();
             break;
         }
-        case "healthkit":{
+        case "healthkit": {
             this.useHealthkit();
             break;
         }
-        case "soda":{
+        case "soda": {
             this.useSoda();
             break;
         }
-        case "painkiller":{
+        case "painkiller": {
             this.usePainkiller();
             break;
         }

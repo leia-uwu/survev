@@ -48,9 +48,10 @@
 
 ### Buildings
  - [x] Generation
- - [ ] Ceiling Zoom
- - [ ] Destroying and damaging ceilings
+ - [x] Ceiling Zoom
+ - [x] Destroying and damaging ceilings
  - [x] Puzzles
+ - [ ] Occupied emitters
 
 ### Structures
  - [x] Generation
