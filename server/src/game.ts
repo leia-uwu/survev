@@ -15,7 +15,7 @@ import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
-import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef, MeleeDef } from "../../shared/defs/objectsTypings";
+import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef, type MeleeDef } from "../../shared/defs/objectsTypings";
 
 export class Emote {
     playerId: number;
@@ -402,7 +402,7 @@ export class Game {
                 break;
             }
             case "melee": {
-                if (player.weapons[2].type != "fists"){
+                if (player.weapons[2].type != "fists") {
                     this.addLoot(dropMsg.item, player.pos, player.layer, 1);
                     player.weapons[2].type = "fists";
                     player.weapons[2].ammo = 0;

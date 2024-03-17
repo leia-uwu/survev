@@ -1013,7 +1013,7 @@ export class Player extends BaseGameObject {
                 break;
             case GameConfig.Input.EquipPrevScope:// low priority but will do eventually
                 break;
-            case GameConfig.Input.SwapWeapSlots:
+            case GameConfig.Input.SwapWeapSlots: {
                 const firstSlotWeaponType = this.weapons[0].type;
                 const firstSlotWeaponAmmo = this.weapons[0].ammo;
 
@@ -1026,6 +1026,7 @@ export class Player extends BaseGameObject {
                 this.curWeapIdx ^= 1;
                 this.dirty.weapons = true;
                 break;
+            }
             }
         }
 
@@ -1061,21 +1062,21 @@ export class Player extends BaseGameObject {
                 this.pickupGun(obj);
             } else if (["helmet", "chest", "backpack"].includes(lootType)) {
                 this.pickupGear(lootType, obj);
-            }else if (lootType == "outfit"){
+            } else if (lootType == "outfit") {
                 this.pickupOutfit(obj);
-            }else if (lootType == "melee"){
+            } else if (lootType == "melee") {
                 this.pickupMelee(obj);
             }
         }
     }
 
-    pickupMelee(obj: Loot){
-        if (this.weapons[2].type != obj.type){
+    pickupMelee(obj: Loot) {
+        if (this.weapons[2].type != obj.type) {
             this.weapons[2].type = obj.type;
             this.weapons[2].ammo = 0;
             this.dirty.weapons = true;
             this.setDirty();
-        }else{
+        } else {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
@@ -1084,11 +1085,11 @@ export class Player extends BaseGameObject {
         obj.remove();
     }
 
-    pickupOutfit(obj: Loot){
-        if (this.outfit != obj.type){
+    pickupOutfit(obj: Loot) {
+        if (this.outfit != obj.type) {
             this.outfit = obj.type;
             this.setDirty();
-        }else{
+        } else {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
