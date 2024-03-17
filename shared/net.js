@@ -327,7 +327,7 @@ setSerializeFns(
      **/
     (s, data) => {
         s.writeGameType(data.outfit);
-        s.writeGameType(data.pack);
+        s.writeGameType(data.backpack);
         s.writeGameType(data.helmet);
         s.writeGameType(data.chest);
         s.writeGameType(data.activeWeapon);
@@ -391,7 +391,7 @@ setSerializeFns(
      **/
     (s, data) => {
         data.outfit = s.readGameType(); // outfit
-        data.pack = s.readGameType(); // pack
+        data.backpack = s.readGameType(); // pack
         data.helmet = s.readGameType(); // helmet
         data.chest = s.readGameType(); // chest
         data.activeWeapon = s.readGameType(); // active weapon
