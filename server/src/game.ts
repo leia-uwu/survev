@@ -352,11 +352,11 @@ export class Game {
                 break;
             }
             case "gun": {
-                const weaponAmmoType = (GameObjectDefs[player.weapons[player.curWeapIdx].type] as GunDef).ammo;
-                const weaponAmmoCount = player.weapons[player.curWeapIdx].ammo;
+                const weaponAmmoType = (GameObjectDefs[player.weapons[dropMsg.weapIdx].type] as GunDef).ammo;
+                const weaponAmmoCount = player.weapons[dropMsg.weapIdx].ammo;
 
-                player.weapons[player.curWeapIdx].type = "";
-                player.weapons[player.curWeapIdx].ammo = 0;
+                player.weapons[dropMsg.weapIdx].type = "";
+                player.weapons[dropMsg.weapIdx].ammo = 0;
                 if (player.curWeapIdx == dropMsg.weapIdx) {
                     player.curWeapIdx = 2;
                 }

@@ -72,6 +72,9 @@ export class WeaponManager {
     }
 
     reload() {
+        if (this.player.actionType == GameConfig.Action.Reload){
+            return;
+        }
         const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),

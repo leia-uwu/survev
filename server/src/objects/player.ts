@@ -354,6 +354,7 @@ export class Player extends BaseGameObject {
         this.game.addLoot("katana", this.pos, this.layer, 1);
         this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
         this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
+        this.game.addLoot("9mm", this.pos, this.layer, 100);
         this.game.addLoot("12gauge", this.pos, this.layer, 5);
         this.game.addLoot("bandage", this.pos, this.layer, 5);
         this.game.addLoot("soda", this.pos, this.layer, 1);
@@ -395,7 +396,7 @@ export class Player extends BaseGameObject {
         this.posOld = v2.copy(this.pos);
 
         const movement = v2.create(0, 0);
-
+        
         if (this.lastInputMsg.touchMoveActive) {
             movement.x = this.lastInputMsg.touchMoveDir.x;
             movement.y = this.lastInputMsg.touchMoveDir.y;
