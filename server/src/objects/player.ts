@@ -350,6 +350,10 @@ export class Player extends BaseGameObject {
         this.inventory.painkiller = 1;
         this.inventory["8xscope"] = 1;
         this.scope = "8xscope";
+        this.game.addLoot("katana", this.pos, this.layer, 1);
+        this.game.addLoot("katana", this.pos, this.layer, 1);
+        this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
+        this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
         this.game.addLoot("12gauge", this.pos, this.layer, 5);
         this.game.addLoot("bandage", this.pos, this.layer, 5);
         this.game.addLoot("soda", this.pos, this.layer, 1);
@@ -1009,6 +1013,19 @@ export class Player extends BaseGameObject {
                 break;
             case GameConfig.Input.EquipPrevScope:// low priority but will do eventually
                 break;
+            case GameConfig.Input.SwapWeapSlots:
+                const firstSlotWeaponType = this.weapons[0].type;
+                const firstSlotWeaponAmmo = this.weapons[0].ammo;
+
+                this.weapons[0].type = this.weapons[1].type;
+                this.weapons[0].ammo = this.weapons[1].ammo;
+
+                this.weapons[1].type = firstSlotWeaponType;
+                this.weapons[1].ammo = firstSlotWeaponAmmo;
+
+                this.curWeapIdx ^= 1;
+                this.dirty.weapons = true;
+                break;
             }
         }
 
@@ -1044,8 +1061,40 @@ export class Player extends BaseGameObject {
                 this.pickupGun(obj);
             } else if (["helmet", "chest", "backpack"].includes(lootType)) {
                 this.pickupGear(lootType, obj);
+            }else if (lootType == "outfit"){
+                this.pickupOutfit(obj);
+            }else if (lootType == "melee"){
+                this.pickupMelee(obj);
             }
         }
+    }
+
+    pickupMelee(obj: Loot){
+        if (this.weapons[2].type != obj.type){
+            this.weapons[2].type = obj.type;
+            this.weapons[2].ammo = 0;
+            this.dirty.weapons = true;
+            this.setDirty();
+        }else{
+            const angle = Math.atan2(this.dir.y, this.dir.x);
+            const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
+            const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
+            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+        }
+        obj.remove();
+    }
+
+    pickupOutfit(obj: Loot){
+        if (this.outfit != obj.type){
+            this.outfit = obj.type;
+            this.setDirty();
+        }else{
+            const angle = Math.atan2(this.dir.y, this.dir.x);
+            const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
+            const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
+            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+        }
+        obj.remove();
     }
 
     pickupGear(lootType: string, obj: Loot): void {

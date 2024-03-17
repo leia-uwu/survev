@@ -15,7 +15,7 @@ import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
-import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef } from "../../shared/defs/objectsTypings";
+import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef, MeleeDef } from "../../shared/defs/objectsTypings";
 
 export class Emote {
     playerId: number;
@@ -294,7 +294,7 @@ export class Game {
             dropMsg.deserialize(stream);
 
             // @TODO: move me somewhere
-            const item = GameObjectDefs[dropMsg.item] as ScopeDef | HelmetDef | ChestDef | HealDef | BoostDef | AmmoDef | GunDef | ThrowableDef;
+            const item = GameObjectDefs[dropMsg.item] as ScopeDef | HelmetDef | ChestDef | HealDef | BoostDef | AmmoDef | GunDef | ThrowableDef | MeleeDef;
             switch (item.type) {
             case "ammo": {
                 const inventoryCount = player.inventory[dropMsg.item];
@@ -400,6 +400,15 @@ export class Game {
                 player.dirty.inventory = true;
                 player.dirty.weapons = true;
                 break;
+            }
+            case "melee": {
+                if (player.weapons[2].type != "fists"){
+                    this.addLoot(dropMsg.item, player.pos, player.layer, 1);
+                    player.weapons[2].type = "fists";
+                    player.weapons[2].ammo = 0;
+                    player.dirty.weapons = true;
+                    player.setDirty();
+                }
             }
             }
 
