@@ -80,7 +80,7 @@ export class WeaponManager {
         const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
-            this.weapons[this.curWeapIdx].ammo == weaponInfo.maxClip,
+            this.weapons[this.curWeapIdx].ammo >= weaponInfo.maxClip,
             this.player.inventory[weaponInfo.ammo] == 0,
             this.curWeapIdx == 2 || this.curWeapIdx == 3
         ];

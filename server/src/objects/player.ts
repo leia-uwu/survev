@@ -158,13 +158,15 @@ export class Player extends BaseGameObject {
 
         const curWeapon = this.weapons[this.weaponManager.curWeapIdx];
         const nextWeapon = this.weapons[idx];
-        const gunDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef;
-        if (nextWeapon.cooldown - this.game.now > 0) { // cooldown still in progress
-            nextWeapon.cooldown = this.game.now + (gunDef.switchDelay * 1000);
-        } else {
-            // this.weaponManager.fireDelay = this.game.now + (gunDef.switchDelay * 1000);
-            curWeapon.cooldown = this.game.now + (gunDef.switchDelay * 1000);
-            nextWeapon.cooldown = this.game.now + (0.25 * 1000);
+        if (curWeapon.type && nextWeapon.type){//ensure that player is still holding both weapons (didnt drop one)
+            const gunDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+            const switchDelay = gunDef.type == "throwable" ? 0.25 : gunDef.switchDelay;
+            if (nextWeapon.cooldown - this.game.now > 0) { // cooldown still in progress
+                nextWeapon.cooldown = this.game.now + (switchDelay * 1000);
+            } else {
+                curWeapon.cooldown = this.game.now + (switchDelay * 1000);
+                nextWeapon.cooldown = this.game.now + (0.25 * 1000);
+            }
         }
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
