@@ -368,7 +368,7 @@ export class Player extends BaseGameObject {
         this.inventory["8xscope"] = 1;
         this.scope = "8xscope";
         this.game.addLoot("katana", this.pos, this.layer, 1);
-        this.game.addLoot("katana", this.pos, this.layer, 1);
+        this.game.addLoot("hook", this.pos, this.layer, 1);
         this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
         this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
         this.game.addLoot("9mm", this.pos, this.layer, 100);
@@ -381,7 +381,7 @@ export class Player extends BaseGameObject {
         this.game.addLoot("frag", this.pos, this.layer, 10);
         this.game.addLoot("smoke", this.pos, this.layer, 3);
         this.game.addLoot("mirv", this.pos, this.layer, 3);
-        this.game.addLoot("m870", this.pos, this.layer, 1);
+        this.game.addLoot("deagle_dual", this.pos, this.layer, 1);
         this.game.addLoot("pkp", this.pos, this.layer, 1);
         this.game.addLoot("backpack03", this.pos, this.layer, 1);
         this.game.addLoot("helmet03", this.pos, this.layer, 1);
@@ -630,12 +630,6 @@ export class Player extends BaseGameObject {
 
         if (this.shotSlowdownTimer - Date.now() <= 0) {
             this.shotSlowdownTimer = -1;
-        }
-        if (this.shootStart) {
-            this.weaponManager.shootStart();
-        }
-        if (this.shootHold) {
-            this.weaponManager.shootHold();
         }
     }
 
@@ -948,6 +942,10 @@ export class Player extends BaseGameObject {
         this.shootHold = msg.shootHold;
         this.shootStart = msg.shootStart;
         this.toMouseLen = msg.toMouseLen;
+
+        if (this.shootStart) {
+            this.weaponManager.shootStart();
+        }
 
         for (const input of msg.inputs) {
             switch (input) {

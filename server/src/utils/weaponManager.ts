@@ -54,15 +54,11 @@ export class WeaponManager {
         if (def) {
             switch (def.type) {
             case "melee": {
-                if (this.player.game.now > this.meleeCooldown) {
-                    this.meleeAttack();
-                }
+                this.meleeAttack();
                 break;
             }
             case "gun": {
-                if (this.weapons[this.curWeapIdx].ammo != 0) {
-                    this.fireWeapon(false, this.activeWeapon);
-                }
+                this.fireWeapon();
                 break;
             }
             }
@@ -93,15 +89,24 @@ export class WeaponManager {
         this.player.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
     }
 
-    // TODO: proper firing delays and stuff
     fireDelay = 0;
-    fireWeapon(offhand: boolean, type: string) {
-        // if (this.fireDelay > this.player.game.now) return;
+    offHand = false;
+
+    fireWeapon(skipDelayCheck = false) {
         if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now) return;
-        const itemDef = GameObjectDefs[type] as GunDef;
+        if (this.fireDelay > this.player.game.now && !skipDelayCheck) return;
+        if (this.weapons[this.curWeapIdx].ammo <= 0) return;
+
+        const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
         // this.fireDelay = this.player.game.now + (itemDef.fireDelay * 1000);
+
+        if (this.player.shootHold && itemDef.fireMode === "auto") {
+            this.timeouts.push(
+                setTimeout(() => this.fireWeapon(this.player.shootHold), itemDef.fireDelay * 1000)
+            );
+        }
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
@@ -124,7 +129,7 @@ export class WeaponManager {
         const collisionLayer = util.toGroundLayer(this.player.layer);
         const bulletLayer = this.player.aimLayer;
 
-        const gunOff = itemDef.isDual ? itemDef.dualOffset! * (offhand ? 1.0 : -1.0) : itemDef.barrelOffset;
+        const gunOff = itemDef.isDual ? itemDef.dualOffset! * (this.offHand ? 1.0 : -1.0) : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));
         const gunLen = itemDef.barrelLength;
 
@@ -222,7 +227,7 @@ export class WeaponManager {
             const params: BulletParams = {
                 playerId: this.player.id,
                 bulletType: itemDef.bulletType,
-                sourceType: type,
+                sourceType: this.activeWeapon,
                 damageType: GameConfig.DamageType.Player,
                 pos: shotPos,
                 dir: shotDir,
@@ -231,7 +236,7 @@ export class WeaponManager {
                 variance: 1,
                 damageMult,
                 shotFx: i === 0,
-                shotOffhand: offhand,
+                shotOffhand: this.offHand,
                 trailSmall: false,
                 reflectCount: 0,
                 splinter: hasSplinter,
@@ -269,6 +274,7 @@ export class WeaponManager {
         if (this.weapons[this.curWeapIdx].ammo == 0) {
             this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
         }
+        this.offHand = !this.offHand;
     }
 
     getMeleeCollider() {
@@ -284,7 +290,9 @@ export class WeaponManager {
         return collider.createCircle(rotated, rad, 0);
     }
 
-    meleeAttack(): void {
+    meleeAttack(skipCooldownCheck = false): void {
+        if (this.player.game.now < this.meleeCooldown && !skipCooldownCheck) return;
+
         const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
 
         this.player.animType = GameConfig.Anim.Melee;
@@ -300,6 +308,11 @@ export class WeaponManager {
             this.timeouts.push(setTimeout(() => {
                 this.meleeDamage();
             }, damageTime * 1000));
+        }
+        if (meleeDef.autoAttack && this.player.shootHold) {
+            this.timeouts.push(setTimeout(() => {
+                if (this.player.shootHold) { this.meleeAttack(true); }
+            }, meleeDef.attack.cooldownTime * 1000));
         }
     }
 
