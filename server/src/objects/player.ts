@@ -136,6 +136,7 @@ export class Player extends BaseGameObject {
 
         this.weapons[3].type = "";
         this.weapons[3].ammo = 0;
+        this.weapons[3].cooldown = 0;
         if (this.curWeapIdx == 3) { // set weapon index to melee if run out of grenades
             this.curWeapIdx = 2;
         }
@@ -154,6 +155,17 @@ export class Player extends BaseGameObject {
             clearTimeout(timeout);
         }
         this.animType = GameConfig.Anim.None;
+
+        const curWeapon = this.weapons[this.weaponManager.curWeapIdx];
+        const nextWeapon = this.weapons[idx];
+        const gunDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef;
+        if (nextWeapon.cooldown - this.game.now > 0) { // cooldown still in progress
+            nextWeapon.cooldown = this.game.now + (gunDef.switchDelay * 1000);
+        } else {
+            // this.weaponManager.fireDelay = this.game.now + (gunDef.switchDelay * 1000);
+            curWeapon.cooldown = this.game.now + (gunDef.switchDelay * 1000);
+            nextWeapon.cooldown = this.game.now + (0.25 * 1000);
+        }
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
             this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
@@ -341,7 +353,7 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.inventory["12gauge"] = 2;
+        this.inventory["12gauge"] = 15;
         this.inventory["9mm"] = 120;
         this.inventory.bandage = 5;
         this.inventory.healthkit = 1;
@@ -389,6 +401,7 @@ export class Player extends BaseGameObject {
     update(): void {
         if (this.dead) return;
         this.ticksSinceLastAction++;
+        // console.log(this.weapons.slice(0, 1).map(w => w.cooldown - this.game.now));
 
         const input = this.lastInputMsg;
 
@@ -1074,6 +1087,7 @@ export class Player extends BaseGameObject {
         if (this.weapons[2].type != obj.type) {
             this.weapons[2].type = obj.type;
             this.weapons[2].ammo = 0;
+            this.weapons[2].cooldown = 0;
             this.dirty.weapons = true;
             this.setDirty();
         } else {
@@ -1227,13 +1241,16 @@ export class Player extends BaseGameObject {
             if (this.curWeapIdx == 0 && this.weapons[0].type && !this.weapons[1].type) { // [gun], nothing => [gun], newGun
                 this.weapons[1].type = obj.type;
                 this.weapons[1].ammo = 0;
+                this.weapons[1].cooldown = 0;
             } else if (this.curWeapIdx == 1 && !this.weapons[0].type && this.weapons[1].type) { // nothing, [gun] => newGun, [gun]
                 this.weapons[0].type = obj.type;
                 this.weapons[0].ammo = 0;
+                this.weapons[0].cooldown = 0;
             } else { // [gun], gun => [newGun], gun
                 this.game.addGun(this.activeWeapon, this.pos, this.layer, 1);// order matters, drop first so references are correct
                 this.weapons[this.curWeapIdx].type = obj.type;
                 this.weapons[this.curWeapIdx].ammo = 0;
+                this.weapons[this.curWeapIdx].cooldown = 0;
             }
         } else if (this.curWeapIdx == 2) { // melee selected
             if (this.weapons[0].type && this.weapons[1].type) { // return early if both gun slots are full
@@ -1243,10 +1260,12 @@ export class Player extends BaseGameObject {
             if (!this.weapons[0].type) { // always give gun to first slot if it's open
                 this.weapons[0].type = obj.type;
                 this.weapons[0].ammo = 0;
+                this.weapons[0].cooldown = 0;
                 this.curWeapIdx = 0;
             } else { // else just give it to the second slot
                 this.weapons[1].type = obj.type;
                 this.weapons[1].ammo = 0;
+                this.weapons[1].cooldown = 0;
                 this.curWeapIdx = 1;
             }
         }

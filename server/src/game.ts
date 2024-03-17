@@ -357,6 +357,7 @@ export class Game {
 
                 player.weapons[dropMsg.weapIdx].type = "";
                 player.weapons[dropMsg.weapIdx].ammo = 0;
+                player.weapons[dropMsg.weapIdx].cooldown = 0;
                 if (player.curWeapIdx == dropMsg.weapIdx) {
                     player.curWeapIdx = 2;
                 }
@@ -406,6 +407,7 @@ export class Game {
                     this.addLoot(dropMsg.item, player.pos, player.layer, 1);
                     player.weapons[2].type = "fists";
                     player.weapons[2].ammo = 0;
+                    player.weapons[2].cooldown = 0;
                     player.dirty.weapons = true;
                     player.setDirty();
                 }
