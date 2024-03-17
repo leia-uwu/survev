@@ -12,7 +12,7 @@ import { type Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { DeadBody } from "./deadBody";
-import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef } from "../../../shared/defs/objectsTypings";
+import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
@@ -183,12 +183,11 @@ export class Player extends BaseGameObject {
     /** "" is no chest, "chest03" is the max level chest */
     chest = "";
 
-    /** backpack02 => 2, "" => 0 */
-    getGearLevel(gearStr: string): number {
-        if (!gearStr) { // not wearing any armor, level 0
+    getGearLevel(type: string): number {
+        if (!type) { // not wearing any armor, level 0
             return 0;
         } else {
-            return Number(gearStr.at(-1));
+            return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
         }
     }
 
@@ -396,7 +395,7 @@ export class Player extends BaseGameObject {
         this.posOld = v2.copy(this.pos);
 
         const movement = v2.create(0, 0);
-        
+
         if (this.lastInputMsg.touchMoveActive) {
             movement.x = this.lastInputMsg.touchMoveDir.x;
             movement.y = this.lastInputMsg.touchMoveDir.y;
@@ -1058,11 +1057,11 @@ export class Player extends BaseGameObject {
         if (obj.__type == ObjectType.Loot) {
             const lootType: string = GameObjectDefs[obj.type].type;
             if (["ammo", "scope", "heal", "boost", "throwable"].includes(lootType)) {
-                this.pickupInventoryItems(lootType, obj);
+                this.pickupInventoryItems(obj);
             } else if (lootType == "gun") {
                 this.pickupGun(obj);
             } else if (["helmet", "chest", "backpack"].includes(lootType)) {
-                this.pickupGear(lootType, obj);
+                this.pickupGear(obj);
             } else if (lootType == "outfit") {
                 this.pickupOutfit(obj);
             } else if (lootType == "melee") {
@@ -1099,7 +1098,7 @@ export class Player extends BaseGameObject {
         obj.remove();
     }
 
-    pickupGear(lootType: string, obj: Loot): void {
+    pickupGear(obj: Loot): void {
         const objLevel = this.getGearLevel(obj.type);
         const helmetLevel = this.getGearLevel(this.helmet);
         const chestLevel = this.getGearLevel(this.chest);
@@ -1132,18 +1131,17 @@ export class Player extends BaseGameObject {
         obj.remove();
     }
 
-    pickupInventoryItems(lootType: string, obj: Loot): void {
-        const backpackLevel = Number(this.backpack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+    pickupInventoryItems(obj: Loot): void {
+        const def = GameObjectDefs[obj.type];
+        const backpackLevel = this.getGearLevel(this.backpack);
         const bagSpace = GameConfig.bagSizes[obj.type][backpackLevel];
         if (this.inventory[obj.type] + obj.count <= bagSpace) {
-            switch (lootType) {
+            switch (def.type) {
             case "ammo":
                 break;
-            case "scope": { // TODO set zoom based on building or outside
-                const zoom = GameConfig.scopeZoomRadius.desktop[obj.type];
-                if (zoom > this.zoom) { // only switch scopes if new scope is highest level player has
-                    this.zoom = GameConfig.scopeZoomRadius.desktop[obj.type];
-                    this.dirty.zoom = true;
+            case "scope": {
+                const currentScope = GameObjectDefs[this.scope] as ScopeDef;
+                if (def.level > currentScope.level) { // only switch scopes if new scope is highest level player has
                     this.scope = obj.type;
                 }
                 break;
@@ -1170,7 +1168,7 @@ export class Player extends BaseGameObject {
 
             this.inventory[obj.type] += amountToAdd;
             this.dirty.inventory = true;
-            if (lootType == "throwable" && amountToAdd != 0) {
+            if (def.type == "throwable" && amountToAdd != 0) {
                 this.weapons[3].type = obj.type;
                 this.weapons[3].ammo = amountToAdd;
                 this.dirty.weapons = true;
@@ -1186,7 +1184,7 @@ export class Player extends BaseGameObject {
         }
         // this is here because it needs to execute regardless of what happens above
         // automatically reloads gun if inventory has 0 ammo and ammo is picked up
-        if (lootType == "ammo") {
+        if (def.type == "ammo") {
             const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
             if (
                 (this.curWeapIdx == 0 || this.curWeapIdx == 1) &&
