@@ -86,7 +86,7 @@ export class Explosion {
                     }
                 }
 
-                if (object.__type === ObjectType.Obstacle && !object.collidable) break;
+                if (object.__type === ObjectType.Obstacle && object.collidable) break;
             }
         }
 
