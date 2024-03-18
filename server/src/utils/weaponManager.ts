@@ -16,7 +16,21 @@ import net from "../../../shared/net";
 export class WeaponManager {
     player: Player;
 
-    curWeapIdx = 2;
+    private _curWeapIdx = 2;
+
+    lastWeaponIdx = 0;
+
+    get curWeapIdx(): number {
+        return this._curWeapIdx;
+    }
+
+    set curWeapIdx(idx: number) {
+        if (idx === this._curWeapIdx) return;
+        if (this.weapons[idx].type === "") return;
+        this.lastWeaponIdx = this._curWeapIdx;
+        this.player.cancelAction();
+        this._curWeapIdx = idx;
+    }
 
     weapons: Array<{
         type: string
@@ -93,8 +107,7 @@ export class WeaponManager {
     offHand = false;
 
     fireWeapon(skipDelayCheck = false) {
-        if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now) return;
-        if (this.fireDelay > this.player.game.now && !skipDelayCheck) return;
+        if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now && !skipDelayCheck) return;
         if (this.weapons[this.curWeapIdx].ammo <= 0) return;
 
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;

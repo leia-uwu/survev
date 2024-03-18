@@ -955,45 +955,31 @@ export class Player extends BaseGameObject {
                 this.cancelAction();
                 break;
             case GameConfig.Input.EquipPrimary:
-                if (this.weapons[0].type) {
-                    this.curWeapIdx = 0;
-                    this.cancelAction();
-                }
+                this.curWeapIdx = 0;
                 break;
             case GameConfig.Input.EquipSecondary:
-                if (this.weapons[1].type) {
-                    this.curWeapIdx = 1;
+                this.curWeapIdx = 1;
+                this.cancelAction();
+                break;
+            case GameConfig.Input.EquipThrowable:
+                if (this.curWeapIdx === 3) {
+                    this.showNextThrowable();
+                } else {
+                    this.curWeapIdx = 3;
                     this.cancelAction();
                 }
                 break;
-            case GameConfig.Input.EquipThrowable:
-                if (this.weapons[3].type) {
-                    if (this.curWeapIdx == 3) {
-                        this.showNextThrowable();
-                    } else {
-                        this.curWeapIdx = 3;
-                        this.cancelAction();
-                    }
-                }
+            case GameConfig.Input.EquipLastWeap:
+                this.curWeapIdx = this.weaponManager.lastWeaponIdx;
                 break;
             case GameConfig.Input.EquipOtherGun:
-                if (this.curWeapIdx == 2 && !this.weapons[0].type && !this.weapons[1].type) { // nothing, nothing, [melee] => melee
-                    break;
+                for (let i = 0; i < this.weapons.length; i++) {
+                    if (GameConfig.WeaponType[i] === "gun" &&
+                        this.weapons[i] !== this.weapons[this.curWeapIdx]) {
+                        this.curWeapIdx = i;
+                        break;
+                    }
                 }
-
-                if (this.curWeapIdx == 0 && !this.weapons[1].type) { // [mosin], nothing, fists => fists
-                    this.curWeapIdx = 2;
-                } else if (this.curWeapIdx == 1 && !this.weapons[0].type) { // nothing, [mosin], fists => fists
-                    this.curWeapIdx = 2;
-                } else if (this.curWeapIdx == 2 && this.weapons[0].type) { // mosin, wildcard, [melee] => mosin
-                    this.curWeapIdx = 0;
-                } else if (this.curWeapIdx == 2 && !this.weapons[0].type && this.weapons[1].type) { // nothing, mosin, [melee] => mosin
-                    this.curWeapIdx = 1;
-                } else { // normal case: [wildcard], [wildcard], melee => other wildcard
-                    this.curWeapIdx ^= 1;// XOR operator, will flip the number from 0 to 1 or from 1 to 0
-                }
-                this.cancelAction();
-                this.setDirty();
                 break;
             case GameConfig.Input.Interact: {
                 const coll = collider.createCircle(this.pos, this.rad);
