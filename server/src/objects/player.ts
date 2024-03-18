@@ -1085,7 +1085,7 @@ export class Player extends BaseGameObject {
 
     pickupMelee(obj: Loot) {
         if (this.weapons[2].type != obj.type) {
-            if (this.weapons[2].type != "fists"){
+            if (this.weapons[2].type != "fists") {
                 this.game.addLoot(this.weapons[2].type, this.pos, this.layer, 1);
             }
             this.weapons[2].type = obj.type;
@@ -1104,6 +1104,7 @@ export class Player extends BaseGameObject {
 
     pickupOutfit(obj: Loot) {
         if (this.outfit != obj.type) {
+            this.game.addLoot(this.outfit, this.pos, this.layer, 1);
             this.outfit = obj.type;
             this.setDirty();
         } else {
