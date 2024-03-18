@@ -34,7 +34,7 @@
 ### Melee weapons
  - [x] Collision
  - [x] Delays
- - [ ] Auto use (hook)
+ - [x] Auto use (hook)
 
 ### Obstacles
  - [x] Spawning, destroying, collision
@@ -113,7 +113,7 @@ won't list all that need to be competently done because lazy
  - [ ] Randomized duos / squads when not using create team
 
 ### Other features
- - [ ] Explosions
+ - [x] Explosions
  - [ ] Throwables
  - [ ] Airdrops
  - [ ] Planes
