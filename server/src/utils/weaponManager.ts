@@ -21,6 +21,7 @@ export class WeaponManager {
     weapons: Array<{
         type: string
         ammo: number
+        cooldown: number
     }> = [];
 
     get activeWeapon(): string {
@@ -37,13 +38,14 @@ export class WeaponManager {
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             this.weapons.push({
                 type: GameConfig.WeaponType[i] === "melee" ? "fists" : "",
-                ammo: 0
+                ammo: 0,
+                cooldown: 0
             });
         }
-        this.weapons[0].type = "mp5";
-        this.weapons[1].type = "m870";
+        this.weapons[0].type = "m870";
+        this.weapons[1].type = "mp5";
         this.weapons[0].ammo = 30;
-        this.weapons[1].ammo = 0;
+        this.weapons[1].ammo = 30;
     }
 
     shootStart(): void {
@@ -78,7 +80,7 @@ export class WeaponManager {
         const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
-            this.weapons[this.curWeapIdx].ammo == weaponInfo.maxClip,
+            this.weapons[this.curWeapIdx].ammo >= weaponInfo.maxClip,
             this.player.inventory[weaponInfo.ammo] == 0,
             this.curWeapIdx == 2 || this.curWeapIdx == 3
         ];
@@ -94,10 +96,12 @@ export class WeaponManager {
     // TODO: proper firing delays and stuff
     fireDelay = 0;
     fireWeapon(offhand: boolean, type: string) {
-        if (this.fireDelay > this.player.game.now) return;
+        // if (this.fireDelay > this.player.game.now) return;
+        if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now) return;
         const itemDef = GameObjectDefs[type] as GunDef;
 
-        this.fireDelay = this.player.game.now + (itemDef.fireDelay * 1000);
+        this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
+        // this.fireDelay = this.player.game.now + (itemDef.fireDelay * 1000);
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
@@ -110,12 +114,9 @@ export class WeaponManager {
         const direction = this.player.dir;
         const toMouseLen = this.player.toMouseLen;
 
+        this.player.shotSlowdownTimer = this.player.game.now + itemDef.fireDelay * 700;// 700ms is approximation
+
         this.player.cancelAction(false);
-        // this.player.performActionAgain = false;
-        // this.player.lastAction = {time: -1, duration: 0, targetId: 0};// shallow copy so no references are kept
-        // this.player.lastActionItem = "";
-        // this.player.lastActionType = 0;
-        // console.log(this.player.lastAction, this.player.lastActionItem);
 
         this.weapons[this.curWeapIdx].ammo--;
         this.player.dirty.weapons = true;
