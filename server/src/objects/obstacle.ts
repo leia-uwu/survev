@@ -249,7 +249,7 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
-    kill(sourceType: string, damageType: number, source?: GameObject) {
+    kill(_sourceType: string, damageType: number, source?: GameObject) {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.health = this.healthT = 0;
         this.dead = true;
@@ -284,7 +284,7 @@ export class Obstacle extends BaseGameObject {
             const explosion = new Explosion(def.explosion,
                 this.pos,
                 this.layer,
-                sourceType,
+                this.type,
                 damageType,
                 source
             );

@@ -18,6 +18,7 @@ import { Structure } from "./structure";
 import net, { type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
+import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
@@ -757,7 +758,8 @@ export class Player extends BaseGameObject {
 
         const killMsg = new net.KillMsg();
         killMsg.damageType = damageType;
-        killMsg.itemSourceType = sourceType;
+        killMsg.itemSourceType = GameObjectDefs[sourceType] ? sourceType : "";
+        killMsg.mapSourceType = MapObjectDefs[sourceType] ? sourceType : "";
         killMsg.targetId = this.id;
         killMsg.killed = true;
 

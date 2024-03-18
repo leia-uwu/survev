@@ -477,10 +477,20 @@ export class WeaponManager {
             const obj = hit.obj;
 
             if (obj.__type === ObjectType.Obstacle) {
-                obj.damage(meleeDef.damage * meleeDef.obstacleDamage, this.activeWeapon, GameConfig.DamageType.Player);
+                obj.damage(
+                    meleeDef.damage * meleeDef.obstacleDamage,
+                    this.activeWeapon,
+                    GameConfig.DamageType.Player,
+                    this.player
+                );
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {
-                obj.damage(meleeDef.damage, this.activeWeapon, GameConfig.DamageType.Player, this.player);
+                obj.damage(
+                    meleeDef.damage,
+                    this.activeWeapon,
+                    GameConfig.DamageType.Player,
+                    this.player
+                );
             }
         }
     }
