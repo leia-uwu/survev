@@ -1025,7 +1025,7 @@ export class Game {
         }
 
         // Update map indicators
-        this.uiManager.je(msg.mapIndicators);
+        this.uiManager.updateMapIndicators(msg.mapIndicators);
 
         // Update kill leader
         if (msg.killLeaderDirty) {
