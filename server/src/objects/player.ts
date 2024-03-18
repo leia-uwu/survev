@@ -941,7 +941,7 @@ export class Player extends BaseGameObject {
                 break;
             case GameConfig.Input.EquipThrowable:
                 if (this.curWeapIdx === 3) {
-                    this.showNextThrowable();
+                    this.weaponManager.showNextThrowable();
                 } else {
                     this.curWeapIdx = 3;
                     this.cancelAction();
