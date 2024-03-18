@@ -319,19 +319,19 @@ export class Game {
                 if (level === 1) break;
 
                 const availableScopeLevels = [15, 8, 4, 2, 1];
-                let targetScopeLevel = availableScopeLevels.indexOf(level);
-
+                let targetScopeIndex = availableScopeLevels.indexOf(level);
                 this.addLoot(dropMsg.item, player.pos, player.layer, 1);
                 player.inventory[`${level}xscope`] = 0;
 
                 for (let i = 0; i < availableScopeLevels.length; i++) {
                     if (player.inventory[`${availableScopeLevels[i]}xscope`]) {
-                        targetScopeLevel = availableScopeLevels[i];
+                        targetScopeIndex = availableScopeLevels[i];
                         break;
                     }
                 }
 
-                player.scope = `${targetScopeLevel}xscope`;
+                player.scope = `${targetScopeIndex}xscope`;
+                player.dirty.inventory = true;
                 break;
             }
             case "chest":
@@ -396,7 +396,7 @@ export class Game {
                 player.weapons[3].ammo -= amountToDrop;
 
                 if (player.inventory[dropMsg.item] == 0) {
-                    player.showNextThrowable();
+                    player.weaponManager.showNextThrowable();
                 }
                 player.dirty.inventory = true;
                 player.dirty.weapons = true;
