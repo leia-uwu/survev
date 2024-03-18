@@ -6,23 +6,23 @@
  - [x] Health and dying
  - [x] Kill messages
  - [x] Armor and vests
- - [ ] Adrenaline
- - [ ] Scopes
- - [ ] Consumable items
+ - [x] Adrenaline
+ - [x] Scopes
+ - [x] Consumable items
  - [ ] Spectating
  - [x] Slowdown on water
  - [ ] Kill Leader
  - [ ] Loadouts
- - [ ] Emotes
+ - [x] Emotes
  - [ ] Roles and cobalt classes
 
 ### Guns
  - [x] Firing logic (should be 1/1 to surviv firing logic)
  - [x] fix bullet spawn layer when on stairs
- - [ ] Switch delays
- - [ ] Firing delays
- - [ ] Ammo
- - [ ] Reloading
+ - [x] Switch delays
+ - [x] Firing delays
+ - [x] Ammo
+ - [x] Reloading
 
 
 ### Bullets
@@ -68,7 +68,7 @@
  - [x] Loot game object
  - [x] Loot tables
  - [x] Physics
- - [ ] Picking up loot
+ - [x] Picking up loot
  - [x] Switching layers
  - [ ] Fix loot on bridges
  - [x] River flow
