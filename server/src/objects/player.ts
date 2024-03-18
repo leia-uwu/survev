@@ -5,7 +5,7 @@ import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
 import { type PlayerContainer } from "../server";
-import { coldet } from "../../../shared/utils/coldet";
+import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type Obstacle } from "./obstacle";
@@ -34,10 +34,25 @@ export class Player extends BaseGameObject {
         return GameConfig.player.radius * this.scale;
     }
 
+    set rad(rad: number) {
+        this.collider.rad = rad;
+        this.rad = rad;
+    }
+
     dir = v2.create(0, 0);
 
     posOld = v2.create(0, 0);
     dirOld = v2.create(0, 0);
+
+    collider: Circle;
+
+    get pos() {
+        return this.collider.pos;
+    }
+
+    set pos(pos: Vec2) {
+        this.collider.pos = pos;
+    }
 
     dirty = {
         health: true,
@@ -151,32 +166,6 @@ export class Player extends BaseGameObject {
     }
 
     set curWeapIdx(idx: number) {
-        if (this.weapons[idx].type === "" || idx === this.weaponManager.curWeapIdx) return;
-
-        for (const timeout of this.weaponManager.timeouts) {
-            clearTimeout(timeout);
-        }
-        this.animType = GameConfig.Anim.None;
-
-        const curWeapon = this.weapons[this.weaponManager.curWeapIdx];
-        const nextWeapon = this.weapons[idx];
-        if (curWeapon.type && nextWeapon.type) { // ensure that player is still holding both weapons (didnt drop one)
-            const gunDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-            const switchDelay = gunDef.type == "throwable" ? 0.25 : gunDef.switchDelay;
-            if (nextWeapon.cooldown - this.game.now > 0) { // cooldown still in progress
-                nextWeapon.cooldown = this.game.now + (switchDelay * 1000);
-            } else {
-                curWeapon.cooldown = this.game.now + (switchDelay * 1000);
-                nextWeapon.cooldown = this.game.now + (0.25 * 1000);
-            }
-        }
-
-        this.shotSlowdownTimer = -1;
-
-        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
-            this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
-        }
-
         this.weaponManager.curWeapIdx = idx;
         this.setDirty();
         this.dirty.weapons = true;
@@ -349,6 +338,8 @@ export class Player extends BaseGameObject {
     constructor(game: Game, pos: Vec2, socket: WebSocket<PlayerContainer>) {
         super(game, pos);
         this.socket = socket;
+
+        this.collider = collider.createCircle(pos, this.rad);
 
         if (game.config.map !== "faction") {
             this.groupId = this.teamId = ++this.game.nextGroupId;
@@ -539,8 +530,7 @@ export class Player extends BaseGameObject {
         while (step < 20 && collided) {
             step++;
             collided = false;
-            const coll = collider.createCircle(this.pos, this.rad);
-            objs = this.game.grid.intersectCollider(coll);
+            objs = this.game.grid.intersectCollider(this.collider);
 
             for (const obj of objs) {
                 if (obj.__type === ObjectType.Obstacle &&
@@ -720,7 +710,18 @@ export class Player extends BaseGameObject {
         }
 
         updateMsg.bullets = newBullets;
-        updateMsg.explosions = this.game.explosions;
+
+        for (let i = 0; i < this.game.explosions.length; i++) {
+            const explosion = this.game.explosions[i];
+            const rad = explosion.rad + extendedRadius;
+            if (v2.lengthSqr(v2.sub(explosion.pos, this.pos)) < rad * rad && updateMsg.explosions.length < 255) {
+                updateMsg.explosions.push(explosion);
+            }
+        }
+        if (updateMsg.explosions.length > 255) {
+            console.error("Too many new explosions created!", updateMsg.explosions.length);
+            updateMsg.explosions = updateMsg.explosions.slice(0, 255);
+        }
 
         msgStream.serializeMsg(net.MsgType.Update, updateMsg);
 
@@ -773,6 +774,11 @@ export class Player extends BaseGameObject {
         this.actionType = this.actionSeq = 0;
         this.animType = this.animSeq = 0;
         this.setDirty();
+
+        this.shootHold = false;
+        for (const timeout of this.weaponManager.timeouts) {
+            clearTimeout(timeout);
+        }
 
         this.game.aliveCountDirty = true;
         this.game.livingPlayers.delete(this);
@@ -975,7 +981,7 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.EquipOtherGun:
                 for (let i = 0; i < this.weapons.length; i++) {
                     if (GameConfig.WeaponType[i] === "gun" &&
-                        this.weapons[i] !== this.weapons[this.curWeapIdx]) {
+                            this.weapons[i] !== this.weapons[this.curWeapIdx]) {
                         this.curWeapIdx = i;
                         break;
                     }

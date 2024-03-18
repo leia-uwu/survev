@@ -1,5 +1,5 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type GunDef, type MeleeDef } from "../../../shared/defs/objectsTypings";
+import { type ThrowableDef, type GunDef, type MeleeDef } from "../../../shared/defs/objectsTypings";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type BulletParams } from "../objects/bullet";
 import { ObjectType, type GameObject } from "../objects/gameObject";
@@ -27,9 +27,36 @@ export class WeaponManager {
     set curWeapIdx(idx: number) {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
+
+        for (const timeout of this.timeouts) {
+            clearTimeout(timeout);
+        }
+        this.player.animType = GameConfig.Anim.None;
+
+        const curWeapon = this.weapons[this.curWeapIdx];
+        const nextWeapon = this.weapons[idx];
+        if (curWeapon.type && nextWeapon.type) { // ensure that player is still holding both weapons (didnt drop one)
+            const gunDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+            const switchDelay = gunDef.type == "throwable" ? 0.25 : gunDef.switchDelay;
+            if (nextWeapon.cooldown - this.player.game.now > 0) { // cooldown still in progress
+                nextWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
+            } else {
+                curWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
+                nextWeapon.cooldown = this.player.game.now + (0.25 * 1000);
+            }
+        }
+
+        this.player.shotSlowdownTimer = -1;
+
+        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
+            this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
+        }
+
         this.lastWeaponIdx = this._curWeapIdx;
-        this.player.cancelAction();
         this._curWeapIdx = idx;
+        this.player.cancelAction();
+        this.player.setDirty();
+        this.player.dirty.weapons = true;
     }
 
     weapons: Array<{
