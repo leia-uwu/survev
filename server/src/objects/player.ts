@@ -147,6 +147,7 @@ export class Player extends BaseGameObject {
                 this.weapons[3].type = type;
                 this.weapons[3].ammo = amount;
                 this.dirty.weapons = true;
+                this.setDirty();
                 return;
             }
         }
@@ -1084,6 +1085,9 @@ export class Player extends BaseGameObject {
 
     pickupMelee(obj: Loot) {
         if (this.weapons[2].type != obj.type) {
+            if (this.weapons[2].type != "fists"){
+                this.game.addLoot(this.weapons[2].type, this.pos, this.layer, 1);
+            }
             this.weapons[2].type = obj.type;
             this.weapons[2].ammo = 0;
             this.weapons[2].cooldown = 0;
@@ -1251,7 +1255,7 @@ export class Player extends BaseGameObject {
                 this.weapons[this.curWeapIdx].ammo = 0;
                 this.weapons[this.curWeapIdx].cooldown = 0;
             }
-        } else if (this.curWeapIdx == 2) { // melee selected
+        } else if (this.curWeapIdx == 2 || this.curWeapIdx == 3) { // melee selected
             if (this.weapons[0].type && this.weapons[1].type) { // return early if both gun slots are full
                 return;
             }
