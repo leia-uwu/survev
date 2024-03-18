@@ -45,6 +45,7 @@ export class Explosion {
             const lineEnd = v2.add(this.pos, v2.rotate(v2.create(this.rad, 0), angle));
 
             for (const obj of objects) {
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
                 if (obj.__type === ObjectType.Player || obj.__type === ObjectType.Obstacle || obj.__type === ObjectType.Loot) {
                     // check if the object hitbox collides with a line from the explosion center to the explosion max distance
                     const intersection = collider.intersectSegment(obj.collider, this.pos, lineEnd);
