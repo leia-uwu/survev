@@ -78,6 +78,8 @@ export class Player extends BaseGameObject {
 
     speed: number = this.game.config.movementSpeed;
 
+    shotSlowdownTimer: number = -1;
+
     zoomDirty = true;
 
     indoors = false;
@@ -168,6 +170,8 @@ export class Player extends BaseGameObject {
                 nextWeapon.cooldown = this.game.now + (0.25 * 1000);
             }
         }
+
+        this.shotSlowdownTimer = -1;
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
             this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
@@ -385,7 +389,7 @@ export class Player extends BaseGameObject {
         this.game.addLoot("backpack01", this.pos, this.layer, 1);
         this.game.addLoot("helmet01", this.pos, this.layer, 1);
         this.game.addLoot("chest01", this.pos, this.layer, 1);
-        // for (const objName of Object.keys(OutfitDefs)){
+        // for (const objName of Object.keys(GearDefs)){
         //     this.game.addLoot(objName, this.pos, this.layer, 1);
         // }
 
@@ -624,6 +628,9 @@ export class Player extends BaseGameObject {
             this.game.grid.updateObject(this);
         }
 
+        if (this.shotSlowdownTimer - Date.now() <= 0) {
+            this.shotSlowdownTimer = -1;
+        }
         if (this.shootStart) {
             this.weaponManager.shootStart();
         }
@@ -1120,7 +1127,7 @@ export class Player extends BaseGameObject {
         const chestLevel = this.getGearLevel(this.chest);
         const backpackLevel = this.getGearLevel(this.backpack);
 
-        const objName = obj.type.replace(/\d+$/, "") as "helmet" | "chest" | "backpack";// asserts that it will only ever be one of those 3
+        const objName = GameObjectDefs[obj.type].type as "helmet" | "chest" | "backpack";
         const gearNameToLevel = {
             helmet: helmetLevel,
             chest: chestLevel,
@@ -1345,6 +1352,10 @@ export class Player extends BaseGameObject {
 
         // decrease speed if popping adren or heals
         if (this.actionType == GameConfig.Action.UseItem) {
+            this.speed *= 0.5;
+        }
+
+        if (this.shotSlowdownTimer != -1) {
             this.speed *= 0.5;
         }
     }

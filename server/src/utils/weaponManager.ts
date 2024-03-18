@@ -43,7 +43,7 @@ export class WeaponManager {
             });
         }
         this.weapons[0].type = "m870";
-        this.weapons[1].type = "spas12";
+        this.weapons[1].type = "mp5";
         this.weapons[0].ammo = 30;
         this.weapons[1].ammo = 30;
     }
@@ -113,6 +113,8 @@ export class WeaponManager {
 
         const direction = this.player.dir;
         const toMouseLen = this.player.toMouseLen;
+
+        this.player.shotSlowdownTimer = this.player.game.now + itemDef.fireDelay * 700;// 700ms is approximation
 
         this.player.cancelAction(false);
 
