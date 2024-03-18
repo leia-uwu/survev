@@ -64,7 +64,8 @@ const BindDefs = {
     [GameInput.HideUI]: def("Hide UI", null),
     [GameInput.TeamPingSingle]: def("Team Ping Menu", null)
 };
-class InputBinds {
+
+export class InputBinds {
     constructor(t, r) {
         this.input = t;
         this.config = r;
@@ -266,7 +267,7 @@ class InputBinds {
     }
 }
 
-class InputBindUi {
+export class InputBindUi {
     constructor(input, inputBinds) {
         this.input = input;
         this.inputBinds = inputBinds;
@@ -361,8 +362,3 @@ class InputBindUi {
         $("#keybind-link").html(this.inputBinds.toBase64());
     }
 }
-
-export default {
-    InputBinds,
-    InputBindUi
-};

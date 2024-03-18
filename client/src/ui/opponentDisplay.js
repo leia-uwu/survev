@@ -199,7 +199,7 @@ class LoadoutDisplay {
         }
         const r = {
             outfit: this.loadout.outfit,
-            pack: "backpack02",
+            backpack: "backpack02",
             helmet: "helmet01",
             chest: "chest03",
             activeWeapon: this.loadout.melee,

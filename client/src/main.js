@@ -13,7 +13,7 @@ import { ConfigManager } from "./config";
 import "./ui/webview";
 import { Game } from "./game";
 import Input from "./input";
-import InputBinds from "./inputBinds";
+import { InputBinds, InputBindUi } from "./inputBinds";
 import { loadStaticDomImages } from "./ui/ui2";
 import OpponentDisplay from "./ui/opponentDisplay";
 import LoadoutMenu from "./ui/loadoutMenu";
@@ -23,7 +23,7 @@ import { MenuModal } from "./ui/menuModal";
 import Pass from "./ui/pass";
 import PingTest from "./pingTest";
 import ProfileUi from "./ui/profileUi";
-import Resources from "./resources";
+import { ResourceManager } from "./resources";
 import { SiteInfo } from "./siteInfo";
 import TeamMenu from "./ui/teamMenu";
 
@@ -333,7 +333,7 @@ class Application {
             this.pixi.renderer.events.destroy();
             this.pixi.ticker.add(this.update, this);
             this.pixi.renderer.background.color = 7378501;
-            this.resourceManager = new Resources.ResourceManager(
+            this.resourceManager = new ResourceManager(
                 this.pixi.renderer,
                 this.audioManager,
                 this.config
@@ -342,11 +342,11 @@ class Application {
             this.input = new Input.InputHandler(
                 document.getElementById("game-touch-area")
             );
-            this.inputBinds = new InputBinds.InputBinds(
+            this.inputBinds = new InputBinds(
                 this.input,
                 this.config
             );
-            this.inputBindUi = new InputBinds.InputBindUi(
+            this.inputBindUi = new InputBindUi(
                 this.input,
                 this.inputBinds
             );

@@ -41,22 +41,36 @@ function Interpolate(start, end, steps, count) {
     return Math.floor(f);
 }
 
-function Color(r, g, b) {
-    return {
-        getColors: function () {
-            return {
-                r: r,
-                g: g,
-                b: b
-            };
-        }
+function Color(_r, _g, _b) {
+    var r, g, b;
+    var setColors = function setColors(_r, _g, _b) {
+        r = _r;
+        g = _g;
+        b = _b;
+    };
+
+    setColors(_r, _g, _b);
+    this.getColors = function () {
+        var colors = {
+            r: r,
+            g: g,
+            b: b
+        };
+        return colors;
     };
 }
 
 export class UiManager {
+    /**
+     * @param {import("../game").Game} game
+     * @param {import("../audioManager").AudioManager} audioManager
+     * @param {import("../objects/plane").PlaneBarn} planeBarn
+     * @param {import("../ui/localization").Localization} localization
+     * @param {import("../inputBinds").InputBinds} inputBinds
+     * @param {import("../inputBinds").InputBindUi} inputBindUi
+     */
     constructor(game, audioManager, particleBarn, planeBarn, localization, canvasMode, touch, inputBinds, inputBindUi) {
-        const d = this;
-        const g = this;
+        const This = this;
         this.game = game;
         this.particleBarn = particleBarn;
         this.localization = localization;
@@ -74,6 +88,19 @@ export class UiManager {
         this.statsOptions = $("#ui-stats-options");
         this.statsAds = $(".ui-stats-ad-container");
         this.statsLogo = $("#ui-stats-logo");
+
+        this.fpsDisplay = $("#ui-fps-counter");
+        this.fpsDisplay.toggle(this.game.config.get("showFps"));
+        this.game.config.addModifiedListener((key) => {
+            if (key === "showFps") {
+                this.fpsDisplay.toggle(this.game.config.get("showFps"));
+            }
+        });
+
+        setInterval(() => {
+            this.fpsDisplay.text(`${Math.round(this.game.pixi.ticker.FPS)} FPS`);
+        }, 500);
+
         this.escMenuElem = $("#ui-game-menu");
         this.escMenuDisplayed = false;
         this.roleMenuElemWrapper = $("#ui-role-menu-wrapper");
@@ -88,8 +115,8 @@ export class UiManager {
         this.roleMenuConfirm = $("#ui-role-footer-enter");
         this.roleMenuConfirm.on("click", (e) => {
             e.stopPropagation();
-            g.roleSelected = g.roleDisplayed;
-            g.setRoleMenuActive(false);
+            This.roleSelected = This.roleDisplayed;
+            This.setRoleMenuActive(false);
         });
         this.roleMenuInst = null;
         this.topLeft = $("#ui-top-left");
@@ -142,11 +169,11 @@ export class UiManager {
         });
         $(".ui-map-expand").on("click", (e) => {
             if (device.touch) {
-                if (!d.bigmapDisplayed) {
-                    d.displayMapLarge();
+                if (!This.bigmapDisplayed) {
+                    This.displayMapLarge();
                 }
             } else if (device.uiLayout == device.UiLayout.Lg) {
-                d.displayMapLarge(d.bigmapDisplayed);
+                This.displayMapLarge(This.bigmapDisplayed);
             }
         });
         $("#ui-map-minimize").on("mousedown", (e) => {
@@ -154,11 +181,11 @@ export class UiManager {
         });
         $("#ui-map-minimize").on("click", (e) => {
             e.stopPropagation();
-            d.toggleMiniMap();
+            This.toggleMiniMap();
         });
         $("#ui-menu-display").on("click", (e) => {
             e.stopPropagation();
-            d.toggleEscMenu();
+            This.toggleEscMenu();
         });
         this.bigmap = $("#big-map");
         this.bigmapCollision = $("#big-map-collision");
@@ -176,21 +203,21 @@ export class UiManager {
         });
         this.onTouchScreen = function(e) {
             if (e.target.id == "cvs") {
-                d.toggleEscMenu(true);
+                This.toggleEscMenu(true);
             }
         };
         $(document).on("touchstart", this.onTouchScreen);
         this.bigmapClose = $("#big-map-close");
         this.bigmapClose.on("touchend", (e) => {
             e.stopPropagation();
-            d.displayMapLarge(true);
+            This.displayMapLarge(true);
         });
         this.bigmapClose.on("mousedown", (e) => {
             e.stopPropagation();
         });
         this.bigmapClose.on("click", (e) => {
             e.stopPropagation();
-            d.displayMapLarge(true);
+            This.displayMapLarge(true);
         });
 
         // In-game menu
@@ -199,7 +226,7 @@ export class UiManager {
         this.gameKeybindBtns = $(".btn-keybind-desc");
         this.currentGameTab = "settings";
         this.gameTabBtns.on("click", (e) => {
-            d.setCurrentGameTab($(e.target).data("tab"));
+            This.setCurrentGameTab($(e.target).data("tab"));
         });
         this.setCurrentGameTab(this.currentGameTab);
 
@@ -209,7 +236,7 @@ export class UiManager {
         });
         this.fullScreenButton.on("click", () => {
             helpers.toggleFullScreen();
-            d.toggleEscMenu();
+            This.toggleEscMenu();
         });
         
         // Display full screen
@@ -224,36 +251,36 @@ export class UiManager {
             e.stopPropagation();
         });
         this.resumeButton.on("click", () => {
-            d.toggleEscMenu();
+            This.toggleEscMenu();
         });
         if (device.touch) {
             this.resumeButton.css("display", "none");
         }
         $("#btn-spectate-quit").on("click", () => {
-            d.quitGame();
+            This.quitGame();
         });
         $("#btn-game-quit").on("mousedown", (e) => {
             e.stopPropagation();
         });
         $("#btn-game-quit").on("click", () => {
-            d.game.updatePass = true;
-            d.game.updatePassDelay = 1;
-            d.quitGame();
+            This.game.updatePass = true;
+            This.game.updatePassDelay = 1;
+            This.quitGame();
         });
         this.specStatsButton = $("#btn-spectate-view-stats");
         this.specStatsButton.on("click", () => {
-            d.toggleLocalStats();
+            This.toggleLocalStats();
         });
         this.specBegin = false;
         this.specNext = false;
         this.specPrev = false;
         this.specNextButton = $("#btn-spectate-next-player");
         this.specNextButton.on("click", () => {
-            d.specNext = true;
+            This.specNext = true;
         });
         this.specPrevButton = $("#btn-spectate-prev-player");
         this.specPrevButton.on("click", () => {
-            d.specPrev = true;
+            This.specPrev = true;
         });
 
         // Touch specific buttons
@@ -264,7 +291,7 @@ export class UiManager {
         this.interactionElems.css("pointer-events", "auto");
         this.interactionElems.on("touchstart", (e) => {
             e.stopPropagation();
-            d.interactionTouched = true;
+            This.interactionTouched = true;
         });
 
         this.reloadElems = $(
@@ -274,7 +301,7 @@ export class UiManager {
         this.reloadElems.css("pointer-events", "auto");
         this.reloadElems.on("touchstart", (e) => {
             e.stopPropagation();
-            d.reloadTouched = true;
+            This.reloadTouched = true;
         });
 
         // Faction flair display
@@ -308,8 +335,8 @@ export class UiManager {
         this.weapDragging = false;
         this.weapDropped = false;
         this.resetWeapSlotStyling = function() {
-            if (g.weapDraggedDiv) {
-                g.weapSwitches.css({
+            if (This.weapDraggedDiv) {
+                This.weapSwitches.css({
                     left: "",
                     top: ""
                 });
@@ -317,58 +344,58 @@ export class UiManager {
                     "pointer-events": ""
                 });
             }
-            g.weapDraggedDiv = null;
-            g.weapDragging = false;
-            g.weapDropped = false;
-            if (g.weapSwitches.hasClass("ui-weapon-dragged")) {
-                g.weapSwitches.removeClass("ui-weapon-dragged");
+            This.weapDraggedDiv = null;
+            This.weapDragging = false;
+            This.weapDropped = false;
+            if (This.weapSwitches.hasClass("ui-weapon-dragged")) {
+                This.weapSwitches.removeClass("ui-weapon-dragged");
             }
-            if (!g.weapNoSwitches.hasClass("ui-outline-hover")) {
-                g.weapNoSwitches.addClass("ui-outline-hover");
+            if (!This.weapNoSwitches.hasClass("ui-outline-hover")) {
+                This.weapNoSwitches.addClass("ui-outline-hover");
             }
         };
         if (!device.touch) {
             this.weapSwitches.on("mousedown", function(e) {
                 if (e.button == 0) {
-                    g.weapDraggedDiv = $(this);
-                    g.weapDraggedId = $(this).data("slot");
+                    This.weapDraggedDiv = $(this);
+                    This.weapDraggedId = $(this).data("slot");
                 }
             });
             $("#ui-game").on("mousemove", (e) => {
-                if (g.weapDraggedDiv && !g.weapDropped) {
-                    if (g.weapDragging) {
-                        g.weapDraggedDiv.css({
+                if (This.weapDraggedDiv && !This.weapDropped) {
+                    if (This.weapDragging) {
+                        This.weapDraggedDiv.css({
                             left: e.pageX - 80,
                             top: e.pageY - 30
                         });
-                        g.weapDraggedDiv.addClass("ui-weapon-dragged");
+                        This.weapDraggedDiv.addClass("ui-weapon-dragged");
                     } else {
                         $("#ui-game").css({
                             "pointer-events": "initial"
                         });
-                        g.weapNoSwitches.removeClass(
+                        This.weapNoSwitches.removeClass(
                             "ui-outline-hover"
                         );
-                        g.weapDragging = true;
+                        This.weapDragging = true;
                     }
                 }
             });
             $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on(
                 "mouseup",
                 (e) => {
-                    if (e.button == 0 && g.weapDraggedDiv != null) {
-                        g.weapSwitches.each(function() {
+                    if (e.button == 0 && This.weapDraggedDiv != null) {
+                        This.weapSwitches.each(function() {
                             const e = $(this).data("slot");
                             if (
                                 $(this).is(":hover") &&
-                                g.weapDraggedId != e
+                                This.weapDraggedId != e
                             ) {
-                                g.swapWeapSlots = true;
-                                g.weapDropped = true;
+                                This.swapWeapSlots = true;
+                                This.weapDropped = true;
                             }
                         });
-                        if (!g.swapWeapSlots) {
-                            g.resetWeapSlotStyling();
+                        if (!This.swapWeapSlots) {
+                            This.resetWeapSlotStyling();
                         }
                     }
                 }
@@ -422,10 +449,10 @@ export class UiManager {
             e.stopPropagation();
         });
         this.muteButton.on("click", (e) => {
-            let t = d.audioManager.muteToggle();
-            d.muteButtonImage.attr(
+            let t = This.audioManager.muteToggle();
+            This.muteButtonImage.attr(
                 "src",
-                t ? d.muteOffImg : d.muteOnImg
+                t ? This.muteOffImg : This.muteOnImg
             );
             t = null;
         });

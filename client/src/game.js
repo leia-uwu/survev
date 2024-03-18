@@ -37,16 +37,27 @@ import { UiManager2 } from "./ui/ui2";
 const Input = GameConfig.Input;
 
 export class Game {
-    constructor(pixi, audioManager, localization, config, input, inputBinds, inputBindUi, l, resourceManager, onJoin, onQuit) {
+    /**
+     * @param {PIXI.Application} PIXI
+     * @param {import("./audioManager").AudioManager} audioManager
+     * @param {import("./ui/localization")} localization
+     * @param {import("./config").ConfigManager} config
+     * @param {import("./input")} input
+     * @param {import("./inputBinds").InputBinds} inputBinds
+     * @param {import("./inputBinds").InputBindUi} inputBindUi
+     * @param {import("./ambiance").Ambiance} ambience
+     * @param {import("./resources").ResourceManager} resourceManager
+     */
+    constructor(pixi, audioManager, localization, config, input, inputBinds, inputBindUi, ambience, resourceManager, onJoin, onQuit) {
         this.initialized = false;
         this.teamMode = 0;
         // Callbacks
         this.onJoin = onJoin;
         this.onQuit = onQuit;
-        /** @type {PIXI.Application} */
+
         this.pixi = pixi;
         this.audioManager = audioManager;
-        this.ambience = l;
+        this.ambience = ambience;
         this.localization = localization;
         this.config = config;
         this.m_input = input;
