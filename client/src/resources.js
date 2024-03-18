@@ -93,9 +93,11 @@ function selectTextureRes(renderer, config) {
     return textureRes;
 }
 
-class ResourceManager {
+export class ResourceManager {
     /**
     * @param {PIXI.Renderer} renderer
+    * @param {import("./audioManager").AudioManager} audioManager
+    * @param {import("./config").ConfigManager} config
     */
     constructor(renderer, audioManager, config) {
         this.renderer = renderer;
@@ -263,7 +265,3 @@ class ResourceManager {
         }
     }
 }
-
-export default {
-    ResourceManager
-};
