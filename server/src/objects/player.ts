@@ -131,35 +131,6 @@ export class Player extends BaseGameObject {
         this.dirty.inventory = true;
     }
 
-    /**
-     * switch weapons slot throwable to the next one in the throwables array
-     * only call this method after the inventory state has been updated accordingly, this function only changes the weaponManager.weapons' state
-     */
-    showNextThrowable(): void {
-        const throwables = ["frag", "smoke", "strobe", "mirv", "snowball", "potato"];
-        const startingIndex = throwables.indexOf(this.weapons[3].type) + 1;
-        for (let i = startingIndex; i < startingIndex + throwables.length; i++) {
-            const arrayIndex = i % throwables.length;
-            const type = throwables[arrayIndex];
-            const amount = this.inventory[type];
-
-            if (amount != 0) {
-                this.weapons[3].type = type;
-                this.weapons[3].ammo = amount;
-                this.dirty.weapons = true;
-                this.setDirty();
-                return;
-            }
-        }
-
-        this.weapons[3].type = "";
-        this.weapons[3].ammo = 0;
-        this.weapons[3].cooldown = 0;
-        if (this.curWeapIdx == 3) { // set weapon index to melee if run out of grenades
-            this.curWeapIdx = 2;
-        }
-    }
-
     inventory: Record<string, number> = {};
 
     get curWeapIdx() {
