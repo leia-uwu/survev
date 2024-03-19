@@ -165,7 +165,7 @@ export class Map {
         return this.mapTexture;
     }
 
-    m(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
+    update(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
         const obstacles = this.Ve.p();

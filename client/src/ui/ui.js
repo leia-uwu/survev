@@ -566,7 +566,7 @@ export class UiManager {
         }
     }
 
-    m(e, t, r, a, i, o, s, n, l) {
+    update(e, t, r, a, i, o, s, n, l) {
         const d = t;
         if (this.weapsDirty) {
             this.resetWeapSlotStyling();

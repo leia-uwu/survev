@@ -117,7 +117,7 @@ export class ProjectileBarn {
         this.cr = new Pool(Projectile);
     }
 
-    m(dt, particleBarn, audioManager, activePlayer, map, renderer, camera) {
+    update(dt, particleBarn, audioManager, activePlayer, map, renderer, camera) {
         const projectiles = this.cr.p();
         for (let i = 0; i < projectiles.length; i++) {
             const p = projectiles[i];

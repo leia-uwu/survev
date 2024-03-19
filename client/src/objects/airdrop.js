@@ -55,7 +55,7 @@ export class AirdropBarn {
         }
     }
 
-    m(dt, activePlayer, camera, map, particleBarn, renderer, audioManager) {
+    update(dt, activePlayer, camera, map, particleBarn, renderer, audioManager) {
         const airdrops = this.re.p();
         for (let i = 0; i < airdrops.length; i++) {
             const airdrop = airdrops[i];

@@ -360,10 +360,10 @@ class LoadoutDisplay {
             false,
             false
         );
-        this.smokeBarn.m(e, this.De, this.dr, this.Et, this.Ct);
-        this.Ot.m(e, this.De, r);
+        this.smokeBarn.update(e, this.De, this.dr, this.Et, this.Ct);
+        this.Ot.update(e, this.De, r);
         this.decalBarn.update(e, this.De, this.Ct, r);
-        this.Ct.m(e, this.De, this.Et, r);
+        this.Ct.update(e, this.De, this.Et, r);
         this.dr.playActionStartSfx = false;
         this.br(e, r);
     }

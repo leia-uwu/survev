@@ -225,7 +225,7 @@ export class PlaneBarn {
         return zone;
     }
 
-    m(dt, camera, activePlayer, map, renderer) {
+    update(dt, camera, activePlayer, map, renderer) {
         for (let i = 0; i < this.planes.length; i++) {
             const p = this.planes[i];
             if (p.active) {

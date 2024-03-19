@@ -140,7 +140,7 @@ export class BulletBarn {
         r.addPIXIObj(a.container, a.layer, 20);
     }
 
-    m(e, t, r, i, s, n, u, w) {
+    update(e, t, r, i, s, n, u, w) {
         for (
             let f = t.$e.p(), _ = 0;
             _ < this.bullets.length;

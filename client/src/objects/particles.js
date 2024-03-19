@@ -223,7 +223,7 @@ export class ParticleBarn {
         return r;
     }
 
-    m(e, t, r) {
+    update(e, t, r) {
         for (let a = 0; a < this.emitters.length; a++) {
             const o = this.emitters[a];
             if (o.active && o.enabled) {

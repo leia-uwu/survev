@@ -706,7 +706,7 @@ export class EmoteBarn {
         }
     }
 
-    m(e, t, r, s, n, m, p, input, inputBinds, x) {
+    update(e, t, r, s, n, m, p, input, inputBinds, x) {
         const playerBarn = this.playerBarn;
         const camera = this.camera;
         let mousePos = v2.create(input.Ue.x, input.Ue.y);
