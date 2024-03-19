@@ -656,22 +656,25 @@ class LineSprites {
         return e;
     }
 
-    update(e, t, r, a, i) {
+    /**
+     * @param {import("../objects/player").Player} activePlayer
+     */
+    update(e, activePlayer, r, a, i) {
         const o =
             device.touch && e.touchingAim && e.touchAimLine;
         if (o) {
-            const s = t.netData.me;
+            const s = activePlayer.netData.me;
             const g = GameObjectDefs[s];
             let y = 30;
             if (g.type == "gun") {
                 const w = BulletDefs[g.bulletType].distance;
                 y = g.barrelLength + w;
             }
-            const f = t.yr();
+            const f = activePlayer.getZoom();
             const _ = Math.sqrt(f * 1.414 * f);
             y = math.min(y, _);
-            const b = v2.copy(t.pos);
-            let x = v2.add(b, v2.mul(t.dir, y));
+            const b = v2.copy(activePlayer.pos);
+            let x = v2.add(b, v2.mul(activePlayer.dir, y));
             for (
                 let S = r.Ve.p(), v = 0;
                 v < S.length;
@@ -684,7 +687,7 @@ class LineSprites {
                     k.height >= GameConfig.bullet.height &&
                     !!k.collidable &&
                     !k.isWindow &&
-                    util.sameLayer(t.layer, k.layer) &&
+                    util.sameLayer(activePlayer.layer, k.layer) &&
                     (g.type != "throwable" ||
                         k.height > GameConfig.projectile.maxHeight)
                 ) {
@@ -717,7 +720,7 @@ class LineSprites {
             for (let C = 0; C < this.dots.length; C++) {
                 const A = this.dots[C];
                 const O = 3.5 + C * 1.5;
-                const D = v2.add(t.pos, v2.mul(t.dir, O));
+                const D = v2.add(activePlayer.pos, v2.mul(activePlayer.dir, O));
                 A.position.set(D.x, D.y);
                 A.scale.set(0.01171875, 0.01171875);
                 A.visible = C < M;
@@ -728,7 +731,7 @@ class LineSprites {
             this.container.position.set(E.x, E.y);
             this.container.scale.set(R.x, R.y);
             this.container.alpha = 0.3;
-            i.addPIXIObj(this.container, t.layer, 19, 0);
+            i.addPIXIObj(this.container, activePlayer.layer, 19, 0);
         }
         this.container.visible = o;
     }

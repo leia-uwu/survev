@@ -191,7 +191,7 @@ export class Game {
 
         // Register types
         const TypeToPool = {
-            [GameObject.Type.Player]: this.playerBarn.$e,
+            [GameObject.Type.Player]: this.playerBarn.playerPool,
             [GameObject.Type.Obstacle]: this.map.Ve,
             [GameObject.Type.Loot]: this.lootBarn.sr,
             [GameObject.Type.DeadBody]: this.deadBodyBarn.ot,
@@ -344,7 +344,7 @@ export class Game {
 
         this.camera.pos = v2.copy(this.m_activePlayer.pos);
         this.camera.applyShake();
-        const zoom = this.m_activePlayer.yr();
+        const zoom = this.m_activePlayer.getZoom();
         const minDim = math.min(this.camera.screenWidth, this.camera.screenHeight);
         const maxDim = math.max(this.camera.screenWidth, this.camera.screenHeight);
         const maxScreenDim = math.max(minDim * (16 / 9), maxDim);
@@ -928,29 +928,29 @@ export class Game {
         }
         // Update player infos
         for (let i = 0; i < msg.playerInfos.length; i++) {
-            this.playerBarn.vr(msg.playerInfos[i]);
+            this.playerBarn.setPlayerInfo(msg.playerInfos[i]);
         }
         // Delete player infos
         for (let i = 0; i < msg.deletedPlayerIds.length; i++) {
             const playerId = msg.deletedPlayerIds[i];
-            this.playerBarn.kr(playerId);
+            this.playerBarn.deletePlayerInfo(playerId);
         }
         if (
             msg.playerInfos.length > 0 ||
             msg.deletedPlayerIds.length > 0
         ) {
-            this.playerBarn.zr();
+            this.playerBarn.recomputeTeamData();
         }
         // Update player status
         if (msg.playerStatusDirty) {
             const teamId = this.playerBarn.qe(this.m_activeId).teamId;
-            this.playerBarn.Ir(teamId, msg.playerStatus, this.map.factionMode);
+            this.playerBarn.updatePlayerStatus(teamId, msg.playerStatus, this.map.factionMode);
         }
 
         // Update group status
         if (msg.groupStatusDirty) {
             const groupId = this.playerBarn.qe(this.m_activeId).groupId;
-            this.playerBarn.Tr(groupId, msg.groupStatus);
+            this.playerBarn.updateGroupStatus(groupId, msg.groupStatus);
         }
 
         // Delete objects
@@ -971,7 +971,7 @@ export class Game {
         }
         this.spectating = this.m_activeId != this.m_localId;
         this.m_activePlayer = this.playerBarn.u(this.m_activeId);
-        this.m_activePlayer.Mr(msg.activePlayerData, this.playerBarn);
+        this.m_activePlayer.setLocalData(msg.activePlayerData, this.playerBarn);
         if (msg.activePlayerData.weapsDirty) {
             this.uiManager.weapsDirty = true;
         }
@@ -1037,7 +1037,7 @@ export class Game {
         }
 
         // Update map indicators
-        this.uiManager.je(msg.mapIndicators);
+        this.uiManager.updateMapIndicators(msg.mapIndicators);
 
         // Update kill leader
         if (msg.killLeaderDirty) {

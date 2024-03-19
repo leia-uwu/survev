@@ -418,7 +418,7 @@ class Application {
             this.game.resize();
         }
         if (this.loadoutDisplay?.initialized) {
-            this.loadoutDisplay.xr();
+            this.loadoutDisplay.resize();
         }
         this.refreshUi();
     }

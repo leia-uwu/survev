@@ -18,62 +18,75 @@ import { SmokeBarn } from "../objects/smoke";
 import { Creator } from "../objects/objectPool";
 
 export class LoadoutDisplay {
-    constructor(e, t, r, a, i) {
+    /**
+     * @param {import("../audioManager").AudioManager} audioManager
+     * @param {import("../config").ConfigManager} config
+     * @param {import("../inputBinds").InputBinds} inputBinds
+     * @param {import("../inputBinds").InputBindUi} inputBindUi
+    */
+    constructor(e, audioManager, config, inputBinds, account) {
         this.active = false;
         this.initialized = false;
         this.pixi = e;
-        this.ft = t;
-        this.config = r;
-        this.xt = a;
-        this.account = i;
+        this.audioManager = audioManager;
+        this.config = config;
+        this.inputBinds = inputBinds;
+        this.account = account;
     }
 
     o() {
-        const t = this;
+        const This = this;
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
-        this.De = new Camera();
-        this.Ct = new Renderer(this, this.canvasMode);
-        this.Ot = new ParticleBarn(this.Ct);
+        this.camera = new Camera();
+        this.renderer = new Renderer(this, this.canvasMode);
+        this.particleBarn = new ParticleBarn(this.renderer);
         this.decalBarn = new DecalBarn();
-        this.Et = new Map(this.decalBarn);
-        this.Rt = new PlayerBarn();
+        this.map = new Map(this.decalBarn);
+        this.playerBarn = new PlayerBarn();
         this.smokeBarn = new SmokeBarn();
-        const r = {
-            [gameObject.Type.Player]: this.Rt.$e,
-            [gameObject.Type.Obstacle]: this.Et.Ve,
-            [gameObject.Type.Building]: this.Et.nr,
-            [gameObject.Type.Structure]: this.Et.lr,
+
+        // Register types
+        const TypeToPool = {
+            [gameObject.Type.Player]: this.playerBarn.playerPool,
+            [gameObject.Type.Obstacle]: this.map.Ve,
+            [gameObject.Type.Building]: this.map.nr,
+            [gameObject.Type.Structure]: this.map.lr,
             [gameObject.Type.Decal]: this.decalBarn._,
             [gameObject.Type.Smoke]: this.smokeBarn.e
         };
-        this.mr = new Creator();
-        for (const i in r) {
-            if (r.hasOwnProperty(i)) {
-                this.mr.registerType(i, r[i]);
+
+        this.objectCreator = new Creator();
+        for (const type in TypeToPool) {
+            if (TypeToPool.hasOwnProperty(type)) {
+                this.objectCreator.registerType(type, TypeToPool[type]);
             }
         }
+
+        // Render ordering
         this.debugDisplay = new PIXI.Graphics();
+
+        const pixiContainers = [
+            this.map.display.ground,
+            this.renderer.layers[0],
+            this.renderer.ground,
+            this.renderer.layers[1],
+            this.renderer.layers[2],
+            this.renderer.layers[3],
+            this.debugDisplay
+        ];
         for (
-            let s = [
-                    this.Et.display.ground,
-                    this.Ct.layers[0],
-                    this.Ct.ground,
-                    this.Ct.layers[1],
-                    this.Ct.layers[2],
-                    this.Ct.layers[3],
-                    this.debugDisplay
-                ],
-                n = 0;
-            n < s.length;
+            let n = 0;
+            n < pixiContainers.length;
             n++
         ) {
-            const m = s[n];
-            if (m) {
-                m.interactiveChildren = false;
-                this.pixi.stage.addChild(m);
+            const container = pixiContainers[n];
+            if (container) {
+                container.interactiveChildren = false;
+                this.pixi.stage.addChild(container);
             }
         }
+
         this.loadout = loadouts.defaultLoadout();
         this.setLoadout(this.loadout);
         this.view = "outfit";
@@ -82,8 +95,10 @@ export class LoadoutDisplay {
         this.q = 1;
         this.debugZoom = 1;
         this.useDebugZoom = false;
+
         this.outfitOld = this.loadout.outfit;
-        this.Et.loadMap(
+
+        this.map.loadMap(
             {
                 grassInset: 18,
                 groundPatches: [],
@@ -96,13 +111,14 @@ export class LoadoutDisplay {
                 shoreInset: 48,
                 width: 720
             },
-            this.De,
+            this.camera,
             this.canvasMode,
-            this.Ot
+            this.particleBarn
         );
-        this.hr = 98;
-        this.dr = this.Rt.u(this.hr);
-        this.dr.Mr(
+
+        this.activeId = 98;
+        this.dr = this.playerBarn.u(this.activeId);
+        this.dr.setLocalData(
             {
                 boost: 100,
                 boostDirty: true,
@@ -132,29 +148,36 @@ export class LoadoutDisplay {
                     }
                 ]
             },
-            this.Rt
+            this.playerBarn
         );
+
         this.dr.layer = this.dr.netData.pe;
         this.dr.isLoadoutAvatar = true;
-        this.Ct.setActiveLayer(this.dr.layer);
-        this.ft.activeLayer = this.dr.layer;
+        this.renderer.setActiveLayer(this.dr.layer);
+        this.audioManager.activeLayer = this.dr.layer;
+
+        // Idle anim ticker
         this.animIdleTicker = 3;
         this.animSeq = 0;
         this.actionSeq = 0;
+
         this.hide();
         this.account.addEventListener("loadout", (e) => {
-            t.setLoadout(e, true);
+            This.setLoadout(e, true);
         });
+
         this.setLoadout(this.account.loadout, true);
+
         this.initialized = true;
-        this.xr();
+
+        this.resize();
     }
 
     n() {
         if (this.initialized) {
-            this.Et.free();
-            this.Ot.free();
-            this.Ct.free();
+            this.map.free();
+            this.particleBarn.free();
+            this.renderer.free();
             while (this.pixi.stage.children.length > 0) {
                 const e = this.pixi.stage.children[0];
                 this.pixi.stage.removeChild(e);
@@ -166,10 +189,10 @@ export class LoadoutDisplay {
         this.initialized = false;
     }
 
-    setLoadout(e, t) {
-        this.loadout = loadouts.validate(e);
+    setLoadout(loadout, skipEffects) {
+        this.loadout = loadouts.validate(loadout);
         this.updateCharDisplay();
-        if (t) {
+        if (skipEffects) {
             this.outfitOld = this.loadout.outfit;
         }
         if (this.dr) {
@@ -178,26 +201,29 @@ export class LoadoutDisplay {
         this.animIdleTicker = 0;
     }
 
-    setView(e) {
+    setView(view) {
         this.viewOld = this.view;
-        this.view = e;
+        this.view = view;
     }
 
-    updateCharDisplay(e = {}) {
-        const t = {
-            audioManager: this.ft,
-            renderer: this.Ct,
-            particleBarn: this.Ot,
-            map: this.Et,
+    updateCharDisplay(options = {}) {
+        const ctx = {
+            audioManager: this.audioManager,
+            renderer: this.renderer,
+            particleBarn: this.particleBarn,
+            map: this.map,
             smokeBarn: this.smokeBarn,
             decalBarn: this.decalBarn
         };
+
+        // HACK: clear the player particle emitter and reset the anim counter
         if (this.dr?.useItemEmitter) {
             this.dr.useItemEmitter.stop();
             this.dr.useItemEmitter = null;
             this.animIdleTicker = 0;
         }
-        const r = {
+
+        const obj = {
             outfit: this.loadout.outfit,
             backpack: "backpack02",
             helmet: "helmet01",
@@ -206,11 +232,11 @@ export class LoadoutDisplay {
             layer: 0,
             dead: false,
             downed: false,
-            animType: e.animType || 0,
-            animSeq: e.animSeq || 0,
-            actionSeq: e.actionSeq || 0,
-            actionType: e.actionType || 0,
-            actionItem: e.actionItem || "",
+            animType: options.animType || 0,
+            animSeq: options.animSeq || 0,
+            actionSeq: options.actionSeq || 0,
+            actionType: options.actionType || 0,
+            actionItem: options.actionItem || "",
             wearingPan: false,
             healEffect: false,
             frozen: false,
@@ -222,10 +248,12 @@ export class LoadoutDisplay {
             perks: [],
             $r: false
         };
-        r.pos = v2.create(50, 50);
-        r.dir = v2.create(0, -1);
-        this.mr.updateObjFull(1, 98, r, t);
-        this.Rt.vr({
+        obj.pos = v2.create(50, 50);
+        obj.dir = v2.create(0, -1);
+
+        this.objectCreator.updateObjFull(1, 98, obj, ctx);
+
+        this.playerBarn.setPlayerInfo({
             playerId: 98,
             teamId: 0,
             groupId: 0,
@@ -242,149 +270,168 @@ export class LoadoutDisplay {
             ((document
                 .getElementById("modal-content-left")
                 .getBoundingClientRect().height /
-                this.De.screenHeight) *
+                this.camera.screenHeight) *
                 0.2 *
-                this.De.screenHeight *
+                this.camera.screenHeight *
                 0.5) /
-            this.De.ppu
+            this.camera.ppu
         );
     }
 
     getCameraLoadoutOffset() {
-        const e = this.De.O;
-        const t = this.getCameraTargetZoom();
-        this.De.O = t;
-        const r = document.getElementById("modal-content-left");
-        const a = r.getBoundingClientRect();
-        const i = collider.createAabb(
-            this.De.screenToPoint(v2.create(a.left, a.top + a.height)),
-            this.De.screenToPoint(v2.create(a.left + a.width, a.top))
+        const zoomPrev = this.camera.O;
+
+        const targetZoom = this.getCameraTargetZoom();
+        this.camera.O = targetZoom;
+
+        const modal = document.getElementById("modal-content-left");
+        const modalBound = modal.getBoundingClientRect();
+        const modalAabb = collider.createAabb(
+            this.camera.screenToPoint(v2.create(modalBound.left, modalBound.top + modalBound.height)),
+            this.camera.screenToPoint(v2.create(modalBound.left + modalBound.width, modalBound.top))
         );
-        const o = v2.mul(v2.sub(i.max, i.min), 0.5);
-        const n = v2.add(i.min, o);
-        const l = collider.createAabb(
-            this.De.screenToPoint(v2.create(0, this.De.screenHeight)),
-            this.De.screenToPoint(v2.create(this.De.screenWidth, 0))
+        const modalExt = v2.mul(v2.sub(modalAabb.max, modalAabb.min), 0.5);
+        const modalPos = v2.add(modalAabb.min, modalExt);
+
+        const screenAabb = collider.createAabb(
+            this.camera.screenToPoint(v2.create(0, this.camera.screenHeight)),
+            this.camera.screenToPoint(v2.create(this.camera.screenWidth, 0))
         );
-        const c = v2.mul(v2.sub(l.max, l.min), 0.5);
-        const h = v2.add(l.min, c);
-        const d = v2.sub(n, h);
-        const u = c.x - d.x - o.x;
-        const g = math.clamp(u * 0.5, 2.5, 6);
-        const y = v2.create(d.x + o.x + g, d.y + 0.33);
-        this.De.O = e;
-        return y;
+
+        const screenExt = v2.mul(v2.sub(screenAabb.max, screenAabb.min), 0.5);
+        const screenPos = v2.add(screenAabb.min, screenExt);
+        const modalOffset = v2.sub(modalPos, screenPos);
+        const viewWidth = screenExt.x - modalOffset.x - modalExt.x;
+        const offsetX = math.clamp(viewWidth * 0.5, 2.5, 6);
+        const offsetY = 0.33;
+        const offset = v2.create(modalOffset.x + modalExt.x + offsetX, modalOffset.y + offsetY);
+        this.camera.O = zoomPrev;
+        return offset;
     }
 
     show() {
         if (!this.active) {
             this.active = true;
-            this.xr();
+            this.resize();
         }
     }
 
     hide() {
         if (this.active) {
             this.active = false;
-            this.De.O = 2;
+            this.camera.O = 2;
         }
     }
 
-    m(e, t) {
-        const r = {};
-        r.render = r.render || {};
-        this.De.pos = v2.sub(this.dr.pos, this.cameraOffset);
-        this.De.O = math.lerp(e * 5, this.De.O, this.De.q);
-        this.ft.cameraPos = v2.copy(this.De.pos);
+    m(dt, hasFocus) {
+        const debug = {};
+        debug.render = debug.render || {};
+
+        // Camera
+        this.camera.pos = v2.sub(this.dr.pos, this.cameraOffset);
+        this.camera.O = math.lerp(dt * 5, this.camera.O, this.camera.q);
+
+        this.audioManager.cameraPos = v2.copy(this.camera.pos);
+
+        // DebugLines.addAabb(modalAabb.min, modalAabb.max, 0xff0000, 0.0);
+        // DebugLines.addCircle(this.m_activePlayer.pos, 1.5, 0xff0000, 0.0);
+
         if (
-            t &&
+            hasFocus &&
             (this.view == this.viewOld ||
                 (this.view != "heal" && this.view != "boost") ||
                 (this.animIdleTicker = 0),
             (this.viewOld = this.view),
-            (this.animIdleTicker -= e),
+            (this.animIdleTicker -= dt),
             this.animIdleTicker < 0)
         ) {
             if (this.view == "heal") {
                 this.actionSeq = (this.actionSeq + 1) % 8;
-                const a = {
+                const options = {
                     actionType: GameConfig.Action.UseItem,
                     actionItem: "bandage",
                     actionSeq: this.actionSeq
                 };
-                this.updateCharDisplay(a);
+                this.updateCharDisplay(options);
                 this.animIdleTicker = 2 + Math.random();
             } else if (this.view == "boost") {
                 this.actionSeq = (this.actionSeq + 1) % 8;
-                const i = {
+                const options = {
                     actionType: GameConfig.Action.UseItem,
                     actionItem: "soda",
                     actionSeq: this.actionSeq
                 };
-                this.updateCharDisplay(i);
+                this.updateCharDisplay(options);
                 this.animIdleTicker = 2 + Math.random();
             } else if (
                 this.view != "emote" &&
                 this.view != "crosshair"
             ) {
                 this.animSeq = (this.animSeq + 1) % 8;
-                const o = {
+                const options = {
                     animType: GameConfig.Anim.Melee,
                     animSeq: this.animSeq
                 };
-                this.updateCharDisplay(o);
+                this.updateCharDisplay(options);
                 this.animIdleTicker = 1.5 + Math.random();
             }
         }
-        const s = this.loadout.outfit != this.outfitOld;
+
+        // Play a sound when changing oufits
+        const outfitDirty = this.loadout.outfit != this.outfitOld;
         this.outfitOld = this.loadout.outfit;
-        if (t && s) {
-            const l = GameObjectDefs[this.loadout.outfit];
-            if (l) {
-                this.ft.playSound(l.sound.pickup, {
+        if (hasFocus && outfitDirty) {
+            const itemDef = GameObjectDefs[this.loadout.outfit];
+            if (itemDef) {
+                this.audioManager.playSound(itemDef.sound.pickup, {
                     channel: "ui"
                 });
             }
         }
-        this.Rt.m(
-            e,
-            this.hr,
+        this.playerBarn.m(
+            dt,
+            this.activeId,
             this.teamMode,
-            this.Ct,
-            this.Ot,
-            this.De,
-            this.Et,
-            this.xt,
-            this.ft,
+            this.renderer,
+            this.particleBarn,
+            this.camera,
+            this.map,
+            this.inputBinds,
+            this.audioManager,
             false,
             false,
             false
         );
-        this.smokeBarn.update(e, this.De, this.dr, this.Et, this.Ct);
-        this.Ot.update(e, this.De, r);
-        this.decalBarn.update(e, this.De, this.Ct, r);
-        this.Ct.update(e, this.De, this.Et, r);
+        this.smokeBarn.update(dt, this.camera, this.dr, this.map, this.renderer);
+        this.particleBarn.update(dt, this.camera, debug);
+        this.decalBarn.update(dt, this.camera, this.renderer, debug);
+        this.renderer.update(dt, this.camera, this.map, debug);
         this.dr.playActionStartSfx = false;
-        this.br(e, r);
+
+        this.render(dt, debug);
     }
 
-    br(e, t) {
-        const r = this.Et.mapLoaded
-            ? this.Et.getMapDef().biome.colors.grass
+    render(dt, debug) {
+        const grassColor = this.map.mapLoaded
+            ? this.map.getMapDef().biome.colors.grass
             : 8433481;
-        this.pixi.renderer.background.color = r;
-        this.Rt.render(this.De, t);
-        this.Et.render(this.De);
+
+        this.pixi.renderer.background.color = grassColor;
+
+        // Module rendering
+        this.playerBarn.render(this.camera, debug);
+        this.map.render(this.camera);
+
         debugLines.flush();
     }
 
-    xr() {
+    resize() {
         if (this.initialized) {
-            this.De.screenWidth = device.screenWidth;
-            this.De.screenHeight = device.screenHeight;
-            this.Et.resize(this.pixi.renderer, this.canvasMode);
-            this.Ct.resize(this.Et, this.De);
-            this.De.q = this.getCameraTargetZoom();
+            this.camera.screenWidth = device.screenWidth;
+            this.camera.screenHeight = device.screenHeight;
+            this.map.resize(this.pixi.renderer, this.canvasMode);
+            this.renderer.resize(this.map, this.camera);
+            this.camera.q = this.getCameraTargetZoom();
             this.cameraOffset = this.getCameraLoadoutOffset();
         }
     }

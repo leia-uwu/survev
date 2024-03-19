@@ -165,6 +165,9 @@ export class Map {
         return this.mapTexture;
     }
 
+    /**
+     * @param {import("./objects/player").Player} activePlayer
+    */
     update(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
@@ -196,7 +199,7 @@ export class Map {
 
             // Adjust radius and spawn rate based on zoom
             const maxRadius = 120;
-            const camRadius = activePlayer.yr() * 2.5;
+            const camRadius = activePlayer.getZoom() * 2.5;
             this.cameraEmitter.radius = math.min(camRadius, maxRadius);
             const radius = this.cameraEmitter.radius;
             const ratio = (radius * radius) / (maxRadius * maxRadius);

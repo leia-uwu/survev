@@ -156,7 +156,7 @@ class UiState {
             displayRemaining: false
         };
         this.interaction = {
-            type: D.None,
+            type: InteractionType.None,
             text: "",
             key: "",
             usable: false
@@ -560,7 +560,7 @@ export class UiManager2 {
         state.health = activePlayer.netData.he ? 0 : math.max(activePlayer.Re.Lr, 1);
         state.boost = activePlayer.Re.qr;
         state.downed = activePlayer.netData.ue;
-        let B = D.None;
+        let B = InteractionType.None;
         let R = null;
         let L = true;
         if (activePlayer.canInteract(map)) {
@@ -588,7 +588,7 @@ export class UiManager2 {
                 }
             }
             if (q) {
-                B = D.Object;
+                B = InteractionType.Object;
                 R = q;
                 L = true;
             }
@@ -612,7 +612,7 @@ export class UiManager2 {
                     J = true;
                 }
                 if (Y || device.uiLayout == device.UiLayout.Sm) {
-                    B = D.Loot;
+                    B = InteractionType.Loot;
                     R = W;
                 }
                 L =
@@ -628,7 +628,7 @@ export class UiManager2 {
             if (activePlayer.action.type == Action.None && (!activePlayer.netData.ue || Q)) {
                 for (
                     let $ = playerBarn.qe(activePlayer.__id).teamId,
-                        ee = playerBarn.$e.p(),
+                        ee = playerBarn.playerPool.p(),
                         te = 0;
                     te < ee.length;
                     te++
@@ -650,7 +650,7 @@ export class UiManager2 {
                                 ie < GameConfig.player.reviveRange &&
                                 util.sameLayer(re.layer, activePlayer.layer)
                             ) {
-                                B = D.Revive;
+                                B = InteractionType.Revive;
                                 R = re;
                                 L = true;
                             }
@@ -659,7 +659,7 @@ export class UiManager2 {
                 }
             }
             if (activePlayer.action.type == Action.Revive && activePlayer.netData.ue && !Q) {
-                B = D.None;
+                B = InteractionType.None;
                 R = null;
                 L = false;
             }
@@ -669,7 +669,7 @@ export class UiManager2 {
                         (!activePlayer.netData.ue || !!Q))) &&
                 !spectating
             ) {
-                B = D.Cancel;
+                B = InteractionType.Cancel;
                 R = null;
                 L = true;
             }
@@ -737,7 +737,7 @@ export class UiManager2 {
             be.equipped = be.visible && activePlayer.Re.Fr == be.type;
             be.selectable = be.visible && !spectating;
         }
-        for (let xe = activePlayer.Vr(), Se = 0; Se < state.loot.length; Se++) {
+        for (let xe = activePlayer.getBagLevel(), Se = 0; Se < state.loot.length; Se++) {
             const ve = state.loot[Se];
             const ke = ve.count;
             ve.count = activePlayer.Re.jr[ve.type] || 0;
@@ -990,7 +990,7 @@ export class UiManager2 {
         }
         if (e.interaction.type) {
             r.interaction.div.style.display =
-                t.interaction.type == D.None ? "none" : "flex";
+                t.interaction.type == InteractionType.None ? "none" : "flex";
         }
         if (e.interaction.text) {
             r.interaction.text.innerHTML = t.interaction.text;
@@ -1407,12 +1407,12 @@ export class UiManager2 {
         }
     }
 
-    getKillText(e, t, r, a, i, o, s, n, l) {
-        const c = a && !i;
+    getKillText(e, t, r, downed, killed, o, s, n, l) {
+        const knockedOut = downed && !killed;
         const m = l
             ? e
             : this.localization.translate("game-you").toUpperCase();
-        const p = c
+        const p = knockedOut
             ? "game-knocked-out"
             : r
                 ? "game-killed"
@@ -1431,73 +1431,73 @@ export class UiManager2 {
                 : `game-${s}`
         );
         const g = this.localization.translate("game-with");
-        if (u && (r || c)) {
+        if (u && (r || knockedOut)) {
             return `${m} ${h} ${d} ${g} ${u}`;
         } else {
             return `${m} ${h} ${d}`;
         }
     }
 
-    getKillCountText(e) {
-        return `${e} ${this.localization.translate(
-            e != 1 ? "game-kills" : "game-kill"
+    getKillCountText(killCount) {
+        return `${killCount} ${this.localization.translate(
+            killCount != 1 ? "game-kills" : "game-kill"
         )}`;
     }
 
-    getDownedText(e, t, r, a, i) {
-        const o = i
-            ? t
+    getDownedText(killerName, targetName, sourceType, damageType, spectating) {
+        const youTxt = spectating
+            ? targetName
             : this.localization.translate("game-you").toUpperCase();
-        let s = e;
-        if (!s) {
-            if (a == GameConfig.DamageType.Gas) {
-                s =
+        let killerTxt = killerName;
+        if (!killerTxt) {
+            if (damageType == GameConfig.DamageType.Gas) {
+                killerTxt =
                     this.localization.translate(
                         "game-the-red-zone"
                     );
-            } else if (a == GameConfig.DamageType.Airdrop) {
-                s =
+            } else if (damageType == GameConfig.DamageType.Airdrop) {
+                killerTxt =
                     this.localization.translate(
                         "game-the-air-drop"
                     );
-            } else if (a == GameConfig.DamageType.Airstrike) {
-                s = this.localization.translate(
+            } else if (damageType == GameConfig.DamageType.Airstrike) {
+                killerTxt = this.localization.translate(
                     "game-the-air-strike"
                 );
             }
         }
-        let n = this.localization.translate(`game-${r}`);
-        if (e && a == GameConfig.DamageType.Airstrike) {
-            n = this.localization.translate("game-an-air-strike");
+        let damageTxt = this.localization.translate(`game-${sourceType}`);
+        if (killerName && damageType == GameConfig.DamageType.Airstrike) {
+            damageTxt = this.localization.translate("game-an-air-strike");
         }
-        const l = this.localization.translate("game-with");
-        if (n) {
-            return `${s} knocked ${o} out ${l} ${n}`;
+        const withTxt = this.localization.translate("game-with");
+        if (damageTxt) {
+            return `${killerTxt} knocked ${youTxt} out ${withTxt} ${damageTxt}`;
         } else {
-            return `${s} knocked ${o} out`;
+            return `${killerTxt} knocked ${youTxt} out`;
         }
     }
 
-    getPickupMessageText(e) {
-        const r = {
+    getPickupMessageText(type) {
+        const typeMap = {
             [PickupMsgType.Full]: "game-not-enough-space",
             [PickupMsgType.AlreadyOwned]: "game-item-already-owned",
             [PickupMsgType.AlreadyEquipped]: "game-item-already-equipped",
             [PickupMsgType.BetterItemEquipped]: "game-better-item-equipped",
             [PickupMsgType.GunCannotFire]: "game-gun-cannot-fire"
         };
-        const i = r[e] || r[PickupMsgType.Full];
-        return this.localization.translate(i);
+        const key = typeMap[type] || typeMap[PickupMsgType.Full];
+        return this.localization.translate(key);
     }
 
-    getInteractionText(e, t, r) {
-        switch (e) {
-        case D.None:
+    getInteractionText(type, object, player) {
+        switch (type) {
+        case InteractionType.None:
             return "";
-        case D.Cancel:
+        case InteractionType.Cancel:
             return this.localization.translate("game-cancel");
-        case D.Revive:
-            if (t && r && t == r && r.hasPerk("self_revive")) {
+        case InteractionType.Revive:
+            if (object && player && object == player && player.hasPerk("self_revive")) {
                 return this.localization.translate(
                     "game-revive-self"
                 );
@@ -1506,49 +1506,50 @@ export class UiManager2 {
                     "game-revive-teammate"
                 );
             }
-        case D.Object: {
-            const a = t.getInteraction();
-            return `${this.localization.translate(a.action)} ${this.localization.translate(a.object)}`;
+        case InteractionType.Object: {
+            const x = object.getInteraction();
+            return `${this.localization.translate(x.action)} ${this.localization.translate(x.object)}`;
         }
-        case D.Loot: {
-            let i = this.localization.translate(`game-${t.type}`) || t.type;
-            if (t.count > 1) {
-                i += ` (${t.count})`;
+        case InteractionType.Loot: {
+            let txt = this.localization.translate(`game-${object.type}`) || object.type;
+            if (object.count > 1) {
+                txt += ` (${object.count})`;
             }
-            return i;
+            return txt;
         }
         default:
             return "";
         }
     }
 
-    getInteractionKey(e) {
-        let t = null;
-        switch (e) {
-        case D.Cancel:
-            t = this.inputBinds.getBind(Input.Cancel);
+    getInteractionKey(type) {
+        let bind = null;
+        switch (type) {
+        case InteractionType.Cancel:
+            bind = this.inputBinds.getBind(Input.Cancel);
             break;
-        case D.Loot:
-            t =
+        case InteractionType.Loot:
+            bind =
                     this.inputBinds.getBind(Input.Loot) ||
                     this.inputBinds.getBind(Input.Interact);
             break;
-        case D.Object:
-            t =
+        case InteractionType.Object:
+            bind =
                     this.inputBinds.getBind(Input.Use) ||
                     this.inputBinds.getBind(Input.Interact);
             break;
-        case D.Revive:
-            t =
+        case InteractionType.Revive:
+            bind =
                     this.inputBinds.getBind(Input.Revive) ||
                     this.inputBinds.getBind(Input.Interact);
             break;
-        case D.None:
+        case InteractionType.None:
         default:
-            t = this.inputBinds.getBind(Input.Use);
+            bind = this.inputBinds.getBind(Input.Use);
         }
-        if (t) {
-            return t.toString();
+
+        if (bind) {
+            return bind.toString();
         } else {
             return "<Unbound>";
         }
@@ -1556,28 +1557,34 @@ export class UiManager2 {
 }
 
 export function loadStaticDomImages() {
-    const e = function(e, t) {
-        domElemById(e).getElementsByClassName("ui-loot-image")[0].src = t;
+    // Fetch dom images here instead of index.html to speed up page responsiveness
+    const lootImages = {
+        "ui-loot-bandage": "img/loot/loot-medical-bandage.svg",
+        "ui-loot-healthkit": "img/loot/loot-medical-healthkit.svg",
+        "ui-loot-soda": "img/loot/loot-medical-soda.svg",
+        "ui-loot-painkiller": "img/loot/loot-medical-pill.svg",
+        "ui-loot-9mm": "img/loot/loot-ammo-box.svg",
+        "ui-loot-12gauge": "img/loot/loot-ammo-box.svg",
+        "ui-loot-762mm": "img/loot/loot-ammo-box.svg",
+        "ui-loot-556mm": "img/loot/loot-ammo-box.svg",
+        "ui-loot-50AE": "img/loot/loot-ammo-box.svg",
+        "ui-loot-308sub": "img/loot/loot-ammo-box.svg",
+        "ui-loot-flare": "img/loot/loot-ammo-box.svg",
+        "ui-loot-45acp": "img/loot/loot-ammo-box.svg"
     };
-    e("ui-loot-bandage", "img/loot/loot-medical-bandage.svg");
-    e("ui-loot-healthkit", "img/loot/loot-medical-healthkit.svg");
-    e("ui-loot-soda", "img/loot/loot-medical-soda.svg");
-    e("ui-loot-painkiller", "img/loot/loot-medical-pill.svg");
-    e("ui-loot-9mm", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-12gauge", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-762mm", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-556mm", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-50AE", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-308sub", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-flare", "img/loot/loot-ammo-box.svg");
-    e("ui-loot-45acp", "img/loot/loot-ammo-box.svg");
+
+    for (const [id, img] of Object.entries(lootImages)) {
+        domElemById(id).getElementsByClassName("ui-loot-image")[0].src = img;
+    }
+
     domElemById("mag-glass-white").src = "img/gui/mag-glass.svg";
     domElemById("ui-minimize-img").src = "img/gui/minimize.svg";
 }
 const C = 6;
 const A = 750;
 const O = 3;
-const D = {
+
+const InteractionType = {
     None: 0,
     Cancel: 1,
     Loot: 2,

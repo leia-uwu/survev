@@ -6,6 +6,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@taufik-nurrohman/color-picker": "1.4.2",
     "base64-js": "^1.5.1",
     "bit-buffer": "^0.2.5",
     "jquery": "^3.7.1",

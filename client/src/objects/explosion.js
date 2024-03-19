@@ -19,6 +19,9 @@ class PhysicsParticle {
         this.active = true;
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+     */
     update(dt, map, playerBarn) {
         // Move and collide with obstacles
         const posOld = v2.copy(this.pos);
@@ -39,7 +42,7 @@ class PhysicsParticle {
             }
         }
 
-        const players = playerBarn.$e.p();
+        const players = playerBarn.playerPool.p();
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
             if (
