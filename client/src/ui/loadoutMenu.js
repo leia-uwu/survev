@@ -411,6 +411,7 @@ class LoadoutMenu {
     }
 
     onPass(e) {
+        // should be unlocked by default
         const a = this;
         const i = [
             "facebook",

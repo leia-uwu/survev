@@ -210,37 +210,6 @@ function setupModals(inputBinds, inputBindUi) {
     $("#force-refresh").click(() => {
         window.location.href = `/?t=${Date.now()}`;
     });
-    /* var S = new h(l("#modal-notification")),
-  v = (function () {
-      return "WebSocket" in window
-          ? d.Y()
-              ? "ie" == c.browser
-                  ? 'Please use the <a href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">Chrome browser</a> for a better playing experience!<br><br>¡Usa el <a href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">navegador Chrome</a> para una mejor experiencia de juego!<br><br><a href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">구글 크롬</a> 브라우저로이 게임을 즐겨보세요.'
-                  : void 0
-              : 'Please use the <a href="https://surviv.io" target="_blank">official surviv.io site</a> for a better playing experience!'
-          : 'WebSockets are required to play.<br><br>Please use the <a href="https://www.google.com/chrome/browser/desktop/index.html" target="_blank">Chrome browser</a> for a better playing experience!';
-  })();
-if (
-  (v &&
-      (S.selector.find(".modal-body-text").html(v),
-      S.show()),
-  m.Z(),
-  window.adsBlocked)
-) {
-  var k = document.getElementById(
-      "main-med-rect-blocked",
-  );
-  k && (k.style.display = "block");
-  var z = document.getElementById(
-      "survivio_300x250_main",
-  );
-  z && (z.style.display = "none");
-  var I = document.getElementById("surviv-io_300x250");
-  I && (I.style.display = "none");
-}
-window.aiptag &&
-  ((window.aiptag.gdprConsent = window.cookiesConsented),
-  (window.aiptag.consented = window.cookiesConsented)); */
 }
 function onResize() {
     // Add styling specific to safari in browser
