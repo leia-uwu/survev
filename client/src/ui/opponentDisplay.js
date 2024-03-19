@@ -402,10 +402,10 @@ class LoadoutDisplay {
             false,
             false
         );
-        this.smokeBarn.m(dt, this.camera, this.dr, this.map, this.renderer);
-        this.particleBarn.m(dt, this.camera, debug);
+        this.smokeBarn.update(dt, this.camera, this.dr, this.map, this.renderer);
+        this.particleBarn.update(dt, this.camera, debug);
         this.decalBarn.update(dt, this.camera, this.renderer, debug);
-        this.renderer.m(dt, this.camera, this.map, debug);
+        this.renderer.update(dt, this.camera, this.map, debug);
         this.dr.playActionStartSfx = false;
         
         this.render(dt, debug);

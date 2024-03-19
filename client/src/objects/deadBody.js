@@ -66,7 +66,7 @@ export class DeadBodyBarn {
         this.ot = new Pool(DeadBody);
     }
 
-    m(dt, playerBarn, activePlayer, map, camera, renderer) {
+    update(dt, playerBarn, activePlayer, map, camera, renderer) {
         const deadBodies = this.ot.p();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];

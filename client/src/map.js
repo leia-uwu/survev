@@ -168,7 +168,7 @@ export class Map {
     /**
      * @param {import("./objects/player").Player} activePlayer
     */
-    m(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
+    update(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
         const obstacles = this.Ve.p();

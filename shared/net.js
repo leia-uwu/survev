@@ -298,7 +298,7 @@ const Constants = {
     MaxMapIndicators: 16
 };
 
-const ObjectSerializeFns = {};
+export const ObjectSerializeFns = {};
 
 function setSerializeFns(type, serializedFullSize, serializePart, serializeFull, deserializePart, deserializeFull) {
     ObjectSerializeFns[type] = {
@@ -1537,7 +1537,7 @@ function serializePlayerInfo(s, data) {
     s.writeAlignToNextByte();
 }
 
-function deserializePlayerInfos(s, data) {
+function deserializePlayerInfo(s, data) {
     data.playerId = s.readUint16();
     data.teamId = s.readUint8();
     data.groupId = s.readUint8();
@@ -1874,7 +1874,7 @@ class UpdateMsg {
         if ((flags & UpdateExtFlags.PlayerInfos) != 0) {
             for (let i = s.readUint8(), b = 0; b < i; b++) {
                 const x = {};
-                deserializePlayerInfos(s, x);
+                deserializePlayerInfo(s, x);
                 this.playerInfos.push(x);
             }
         }

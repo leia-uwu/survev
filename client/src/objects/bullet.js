@@ -152,7 +152,7 @@ export class BulletBarn {
     /**
      * @param {import("../objects/player").PlayerBarn} playerBarn
     */
-    m(dt, playerBarn, r, i, s, n, u, w) {
+    update(dt, playerBarn, r, i, s, n, u, w) {
         for (
             let f = playerBarn.playerPool.p(), _ = 0;
             _ < this.bullets.length;

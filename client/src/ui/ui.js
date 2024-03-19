@@ -604,7 +604,7 @@ export class UiManager {
     /** *
      * @param {import("../objects/player").PlayerBarn} playerBarn 
      */
-    m(dt, player, map, gas, i, playerBarn, camera, teamMode, factionMode) {
+    update(dt, player, map, gas, i, playerBarn, camera, teamMode, factionMode) {
         const localPlayer = player;
 
         if (this.weapsDirty) {

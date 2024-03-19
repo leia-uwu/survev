@@ -96,7 +96,7 @@ export class SmokeBarn {
         return particle;
     }
 
-    m(dt, camera, activePlayer, map, renderer) {
+    update(dt, camera, activePlayer, map, renderer) {
         // why is this commented out?
         // for (let o = this.e.p(), s = 0; s < o.length; s++) {
         // o[s].active;

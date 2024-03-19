@@ -685,7 +685,7 @@ export class Game {
         // Clear cached data
         this.ui2Manager.flushInput();
 
-        this.map.m(
+        this.map.update(
             dt,
             this.m_activePlayer,
             this.playerBarn,
@@ -698,7 +698,7 @@ export class Game {
             debug
         );
         this.lootBarn.update(dt, this.m_activePlayer, this.map, this.audioManager, this.camera, debug);
-        this.bulletBarn.m(
+        this.bulletBarn.update(
             dt,
             this.playerBarn,
             this.map,
@@ -718,7 +718,7 @@ export class Game {
             this.particleBarn,
             this.audioManager
         );
-        this.projectileBarn.m(
+        this.projectileBarn.update(
             dt,
             this.particleBarn,
             this.audioManager,
@@ -727,7 +727,7 @@ export class Game {
             this.renderer,
             this.camera
         );
-        this.explosionBarn.m(
+        this.explosionBarn.update(
             dt,
             this.map,
             this.playerBarn,
@@ -736,7 +736,7 @@ export class Game {
             this.audioManager,
             debug
         );
-        this.airdropBarn.m(
+        this.airdropBarn.update(
             dt,
             this.m_activePlayer,
             this.camera,
@@ -745,13 +745,13 @@ export class Game {
             this.renderer,
             this.audioManager
         );
-        this.planeBarn.m(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
-        this.smokeBarn.m(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
+        this.planeBarn.update(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
+        this.smokeBarn.update(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
         this.shotBarn.update(dt, this.m_activeId, this.playerBarn, this.particleBarn, this.audioManager);
-        this.particleBarn.m(dt, this.camera, debug);
-        this.deadBodyBarn.m(dt, this.playerBarn, this.m_activePlayer, this.map, this.camera, this.renderer);
+        this.particleBarn.update(dt, this.camera, debug);
+        this.deadBodyBarn.update(dt, this.playerBarn, this.m_activePlayer, this.map, this.camera, this.renderer);
         this.decalBarn.update(dt, this.camera, this.renderer, debug);
-        this.uiManager.m(
+        this.uiManager.update(
             dt,
             this.m_activePlayer,
             this.map,
@@ -771,7 +771,7 @@ export class Game {
             this.map,
             this.m_inputBinds
         );
-        this.emoteBarn.m(
+        this.emoteBarn.update(
             dt,
             this.m_localId,
             this.m_activePlayer,
@@ -784,7 +784,8 @@ export class Game {
             this.spectating
         );
         this.touch.update(dt, this.m_activePlayer, this.map, this.camera, this.renderer);
-        this.renderer.m(dt, this.camera, this.map, debug);
+        this.renderer.update(dt, this.camera, this.map, debug);
+
         if (!this.m_cheatSentLoadoutMsg && this.map._r && this.map.U) {
             this.m_cheatSentLoadoutMsg = true;
             const me = new net.LoadoutMsg();

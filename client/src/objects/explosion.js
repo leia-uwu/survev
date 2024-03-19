@@ -268,7 +268,7 @@ export class ExplosionBarn {
         return p;
     }
 
-    m(dt, map, playerBarn, camera, particleBarn, audioManager, debug) {
+    update(dt, map, playerBarn, camera, particleBarn, audioManager, debug) {
         for (let i = 0; i < this.explosions.length; i++) {
             const e = this.explosions[i];
             if (e.active) {
