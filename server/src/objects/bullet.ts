@@ -83,7 +83,8 @@ export class BulletManager {
 
                 if (bullet.onHitFx && !bullet.reflected) {
                     const explosion = new Explosion(bullet.onHitFx,
-                        bullet.pos,
+                        // spawn the bullet a bit behind the bullet so it won't spawn inside obstacles
+                        v2.sub(bullet.pos, v2.mul(bullet.dir, 0.01)),
                         bullet.layer,
                         bullet.sourceType,
                         bullet.damageType,
