@@ -236,6 +236,9 @@ export class Game {
             let name = joinMsg.name;
             if (name.trim() === "") name = "Player";
             player.name = name;
+
+            this.logger.log(`Player ${name} joined`);
+
             player.joinedTime = Date.now();
 
             player.isMobile = joinMsg.isMobile;
