@@ -81,7 +81,7 @@ export class BulletManager {
             if (!bullet.alive || bullet.skipCollision || (bullet.player?.dead ?? false)) {
                 this.bullets.splice(i, 1);
 
-                if (bullet.onHitFx) {
+                if (bullet.onHitFx && !bullet.reflected) {
                     const explosion = new Explosion(bullet.onHitFx,
                         bullet.pos,
                         bullet.layer,
@@ -474,7 +474,7 @@ export class Bullet {
                 });
 
                 const obstacleDef = (MapObjectDefs[obj.type] as ObstacleDef);
-                if (obstacleDef.reflectBullets) {
+                if (obstacleDef.reflectBullets && this.onHitFx !== "explosion_rounds") {
                     this.reflect(collision.point, collision.normal, obj.id);
                 }
             } else if (obj instanceof Player) {
