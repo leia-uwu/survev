@@ -9,7 +9,7 @@ import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 
-function transformSegment(p0, p1, pos, dir) {
+export function transformSegment(p0, p1, pos, dir) {
     const ang = Math.atan2(dir.y, dir.x);
     return {
         p0: v2.add(pos, v2.rotate(p0, ang)),
@@ -17,29 +17,29 @@ function transformSegment(p0, p1, pos, dir) {
     };
 }
 
-export function createBullet(e, t, r, a, i) {
-    if (BulletDefs[e.bulletType].addFlare) {
-        r.addFlare(e, a, i);
+export function createBullet(bullet, bulletBarn, flareBarn, playerBarn, renderer) {
+    if (BulletDefs[bullet.bulletType].addFlare) {
+        flareBarn.addFlare(bullet, playerBarn, renderer);
     } else {
-        t.addBullet(e, a, i);
+        bulletBarn.addBullet(bullet, playerBarn, renderer);
     }
 }
 
-export function playHitFx(e, t, r, a, i, o, s) {
+export function playHitFx(particleName, soundName, pos, a, layer, particleBarn, audioManager) {
+    let numParticles = Math.floor(util.random(1, 2));
+    let vel = v2.mul(a, 9.5);
     for (
-        let n = Math.floor(util.random(1, 2)),
-            l = v2.mul(a, 9.5),
-            c = 0;
-        c < n;
-        c++
+        let i = 0;
+        i < numParticles;
+        i++
     ) {
-        l = v2.rotate(l, ((Math.random() - 0.5) * Math.PI) / 3);
-        o.addParticle(e, i, r, l);
+        vel = v2.rotate(vel, ((Math.random() - 0.5) * Math.PI) / 3);
+        particleBarn.addParticle(particleName, layer, pos, vel);
     }
-    s.playGroup(t, {
+    audioManager.playGroup(soundName, {
         channel: "hits",
-        soundPos: r,
-        layer: i,
+        soundPos: pos,
+        layer: layer,
         filter: "muffled"
     });
 }
@@ -49,16 +49,16 @@ export class BulletBarn {
         this.tracerColors = {};
     }
 
-    onMapLoad(e) {
+    onMapLoad(map) {
         this.tracerColors = util.mergeDeep(
-            {},
             GameConfig.tracerColors,
-            e.getMapDef().biome.tracerColors
+            map.getMapDef().biome.tracerColors
         );
     }
 
-    addBullet(e, t, r) {
+    addBullet(bullet, t, renderer) {
         let a = null;
+
         for (let i = 0; i < this.bullets.length; i++) {
             if (
                 !this.bullets[i].alive &&
@@ -68,6 +68,7 @@ export class BulletBarn {
                 break;
             }
         }
+
         if (!a) {
             a = {};
             a.alive = false;
@@ -81,85 +82,97 @@ export class BulletBarn {
             a.container.addChild(a.bulletTrail);
             this.bullets.push(a);
         }
-        const o = BulletDefs[e.bulletType];
-        const s = 1 + e.varianceT * o.variance;
-        const l = math.remap(e.distAdjIdx, 0, 16, -1, 1);
-        let c =
-            o.distance /
-            Math.pow(GameConfig.bullet.reflectDistDecay, e.reflectCount);
-        if (e.clipDistance) {
-            c = e.distance;
+
+        const bulletDef = BulletDefs[bullet.bulletType];
+        
+        const variance = 1 + bullet.varianceT * bulletDef.variance;
+        const distAdj = math.remap(bullet.distAdjIdx, 0, 16, -1, 1);
+        let distance =
+            bulletDef.distance /
+            Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
+        if (bullet.clipDistance) {
+            distance = bullet.distance;
         }
         a.alive = true;
         a.isNew = true;
         a.collided = false;
         a.scale = 1;
-        a.playerId = e.playerId;
-        a.startPos = v2.copy(e.pos);
-        a.pos = v2.copy(e.pos);
-        a.dir = v2.copy(e.dir);
-        a.layer = e.layer;
-        a.speed = o.speed * s;
-        a.distance = c * s + l;
-        a.damageSelf = o.shrapnel || e.reflectCount > 0;
-        a.reflectCount = e.reflectCount;
-        a.reflectObjId = e.reflectObjId;
+        a.playerId = bullet.playerId;
+        a.startPos = v2.copy(bullet.pos);
+        a.pos = v2.copy(bullet.pos);
+        a.dir = v2.copy(bullet.dir);
+        a.layer = bullet.layer;
+        a.speed = bulletDef.speed * variance;
+        a.distance = distance * variance + distAdj;
+        a.damageSelf = bulletDef.shrapnel || bullet.reflectCount > 0;
+        a.reflectCount = bullet.reflectCount;
+        a.reflectObjId = bullet.reflectObjId;
         a.whizHeard = false;
-        const h = Math.atan2(a.dir.x, a.dir.y);
-        a.container.rotation = h - Math.PI / 2;
-        a.layer = e.layer;
-        const g = t.u(a.playerId);
-        if (g && g.layer & 2) {
+        
+        const angleRadians = Math.atan2(a.dir.x, a.dir.y);
+        a.container.rotation = angleRadians - Math.PI / 2;
+        
+        a.layer = bullet.layer;
+        const player = t.u(a.playerId);
+        if (player && player.layer & 2) {
             a.layer |= 2;
         }
-        let y = o.tracerWidth;
-        if (e.trailSmall) {
-            y *= 0.5;
+
+        // Set default scale.x to standard working length of 0.8
+        let tracerWidth = bulletDef.tracerWidth;
+        if (bullet.trailSmall) {
+            tracerWidth *= 0.5;
         }
-        if (e.trailThick) {
-            y *= 2;
+        if (bullet.trailThick) {
+            tracerWidth *= 2;
         }
-        a.bulletTrail.scale.set(0.8, y);
-        a.tracerLength = o.tracerLength;
-        a.suppressed = !!o.suppressed;
-        const w = this.tracerColors[o.tracerColor];
-        let f = w.regular;
-        if (e.trailSaturated) {
-            f = w.chambered || w.saturated;
-        } else if (g?.surface?.data.isBright) {
-            f = w.saturated;
+        a.bulletTrail.scale.set(0.8, tracerWidth);
+        a.tracerLength = bulletDef.tracerLength;
+        a.suppressed = !!bulletDef.suppressed;
+
+        // Use saturated color if the player is on a bright surface
+        const tracerColors = this.tracerColors[bulletDef.tracerColor];
+        let tracerTint = tracerColors.regular;
+        if (bullet.trailSaturated) {
+            tracerTint = tracerColors.chambered || tracerColors.saturated;
+        } else if (player?.surface?.data.isBright) {
+            tracerTint = tracerColors.saturated;
         }
-        a.bulletTrail.tint = f;
-        a.tracerAlphaRate = w.alphaRate;
-        a.tracerAlphaMin = w.alphaMin;
+        a.bulletTrail.tint = tracerTint;
+        a.tracerAlphaRate = tracerColors.alphaRate;
+        a.tracerAlphaMin = tracerColors.alphaMin;
         a.bulletTrail.alpha = 1;
         if (a.reflectCount > 0) {
             a.bulletTrail.alpha *= 0.5;
         }
         a.container.visible = true;
-        r.addPIXIObj(a.container, a.layer, 20);
+        renderer.addPIXIObj(a.container, a.layer, 20);
     }
 
-    m(e, t, r, i, s, n, u, w) {
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+    */
+    m(dt, playerBarn, r, i, s, n, u, w) {
         for (
-            let f = t.$e.p(), _ = 0;
+            let f = playerBarn.playerPool.p(), _ = 0;
             _ < this.bullets.length;
             _++
         ) {
             const b = this.bullets[_];
             if (b.collided) {
-                b.scale = math.max(b.scale - e * 6, 0);
+                b.scale = math.max(b.scale - dt * 6, 0);
                 if (b.scale <= 0) {
                     b.collided = false;
                     b.container.visible = false;
                 }
             }
             if (b.alive) {
-                const x =
+                const distLeft =
                     b.distance - v2.length(v2.sub(b.startPos, b.pos));
-                const S = math.min(x, e * b.speed);
-                const v = v2.copy(b.pos);
-                b.pos = v2.add(b.pos, v2.mul(b.dir, S));
+                const distTravel = math.min(distLeft, dt * b.speed);
+                const posOld = v2.copy(b.pos);
+                b.pos = v2.add(b.pos, v2.mul(b.dir, distTravel));
+
                 if (
                     !s.netData.he &&
                     util.sameAudioLayer(s.layer, b.layer) &&
@@ -173,36 +186,43 @@ export class BulletBarn {
                     });
                     b.whizHeard = true;
                 }
+
+                // Trail alpha
                 if (b.tracerAlphaRate && b.suppressed) {
-                    const k = b.tracerAlphaRate;
+                    const rate = b.tracerAlphaRate;
                     b.bulletTrail.alpha = math.max(
                         b.tracerAlphaMin,
-                        b.bulletTrail.alpha * k
+                        b.bulletTrail.alpha * rate
                     );
                 }
-                const z = [];
-                for (let I = r.Ve.p(), T = 0; T < I.length; T++) {
-                    const M = I[T];
+
+                // Gather colliding obstacles and players
+                const colObjs = [];
+
+                // Obstacles
+                const obstacles = r.Ve.p();
+                for (let i = 0; i < obstacles.length; i++) {
+                    const obstacle = obstacles[i];
                     if (
-                        !!M.active &&
-                        !M.dead &&
-                        !!util.sameLayer(M.layer, b.layer) &&
-                        M.height >= GameConfig.bullet.height &&
+                        !!obstacle.active &&
+                        !obstacle.dead &&
+                        !!util.sameLayer(obstacle.layer, b.layer) &&
+                        obstacle.height >= GameConfig.bullet.height &&
                         (b.reflectCount <= 0 ||
-                            M.__id != b.reflectObjId)
+                            obstacle.__id != b.reflectObjId)
                     ) {
-                        const P = collider.intersectSegment(
-                            M.collider,
-                            v,
+                        const res = collider.intersectSegment(
+                            obstacle.collider,
+                            posOld,
                             b.pos
                         );
-                        if (P) {
-                            z.push({
+                        if (res) {
+                            colObjs.push({
                                 type: "obstacle",
-                                obstacleType: M.type,
-                                collidable: M.collidable,
-                                point: P.point,
-                                normal: P.normal
+                                obstacleType: obstacle.type,
+                                collidable: obstacle.collidable,
+                                point: res.point,
+                                normal: res.normal
                             });
                         }
                     }
@@ -228,13 +248,13 @@ export class BulletBarn {
                             );
                             const R = transformSegment(E.p0, E.p1, D.pos, D.dir);
                             const L = coldet.intersectSegmentSegment(
-                                v,
+                                posOld,
                                 b.pos,
                                 B.p0,
                                 B.p1
                             );
                             const q = coldet.intersectSegmentSegment(
-                                v,
+                                posOld,
                                 b.pos,
                                 R.p0,
                                 R.p1
@@ -251,7 +271,7 @@ export class BulletBarn {
                             }
                         }
                         const N = coldet.intersectSegmentCircle(
-                            v,
+                            posOld,
                             b.pos,
                             A.pos,
                             A.rad
@@ -266,7 +286,7 @@ export class BulletBarn {
                                     v2.sub(O.point, b.startPos)
                                 ))
                         ) {
-                            z.push({
+                            colObjs.push({
                                 type: "player",
                                 player: A,
                                 point: N.point,
@@ -275,7 +295,7 @@ export class BulletBarn {
                                 collidable: true
                             });
                             if (A.hasPerk("steelskin")) {
-                                z.push({
+                                colObjs.push({
                                     type: "pan",
                                     point: v2.add(
                                         N.point,
@@ -287,7 +307,7 @@ export class BulletBarn {
                                 });
                             }
                         } else if (O) {
-                            z.push({
+                            colObjs.push({
                                 type: "pan",
                                 point: O.point,
                                 normal: O.normal,
@@ -300,36 +320,44 @@ export class BulletBarn {
                         }
                     }
                 }
-                for (let H = 0; H < z.length; H++) {
-                    const V = z[H];
-                    V.dist = v2.length(v2.sub(V.point, v));
+
+                for (let i = 0; i < colObjs.length; i++) {
+                    const col = colObjs[i];
+                    col.dist = v2.length(v2.sub(col.point, posOld));
                 }
-                z.sort((e, t) => {
-                    return e.dist - t.dist;
+
+                colObjs.sort((a, b) => {
+                    return a.dist - b.dist;
                 });
-                let U = false;
-                const W = t.u(b.playerId);
+
+                let shooterDead = false;
+                const W = playerBarn.u(b.playerId);
                 if (W && (W.netData.he || W.netData.ue)) {
-                    U = true;
+                    shooterDead = true;
                 }
-                let G = false;
-                for (let X = 0; X < z.length; X++) {
-                    const K = z[X];
-                    if (K.type == "obstacle") {
-                        const Z = MapObjectDefs[K.obstacleType];
+                let hit = false;
+                for (let X = 0; X < colObjs.length; X++) {
+                    const col = colObjs[X];
+                    if (col.type == "obstacle") {
+                        const mapDef = MapObjectDefs[col.obstacleType];
                         playHitFx(
-                            Z.hitParticle,
-                            Z.sound.bullet,
-                            K.point,
-                            K.normal,
+                            mapDef.hitParticle,
+                            mapDef.sound.bullet,
+                            col.point,
+                            col.normal,
                             b.layer,
                             u,
                             w
                         );
-                        G = K.collidable;
-                    } else if (K.type == "player") {
-                        if (!U) {
-                            const Y = K.player;
+
+                        // Continue travelling if non-collidable
+                        hit = col.collidable;
+                    } else if (col.type == "player") {
+                        // Don't create a hit particle if the shooting
+                        // player is dead; this helps avoid confusion around
+                        // bullets being inactivated when a player dies.
+                        if (!shooterDead) {
+                            const Y = col.player;
                             if (
                                 r.turkeyMode &&
                                 W?.hasPerk("turkey_shoot")
@@ -345,7 +373,7 @@ export class BulletBarn {
                                     J
                                 );
                             }
-                            const Q = v2.sub(K.point, Y.pos);
+                            const Q = v2.sub(col.point, Y.pos);
                             Q.y *= -1;
                             u.addParticle(
                                 "bloodSplat",
@@ -363,21 +391,21 @@ export class BulletBarn {
                                 filter: "muffled"
                             });
                         }
-                        G = K.collidable;
-                    } else if (K.type == "pan") {
+                        hit = col.collidable;
+                    } else if (col.type == "pan") {
                         playHitFx(
                             "barrelChip",
                             GameObjectDefs.pan.sound.bullet,
-                            K.point,
-                            K.normal,
-                            K.layer,
+                            col.point,
+                            col.normal,
+                            col.layer,
                             u,
                             w
                         );
-                        G = K.collidable;
+                        hit = col.collidable;
                     }
-                    if (G) {
-                        b.pos = K.point;
+                    if (hit) {
+                        b.pos = col.point;
                         break;
                     }
                 }
@@ -400,7 +428,7 @@ export class BulletBarn {
                                     collider.intersectSegment(
                                         se.collision,
                                         b.pos,
-                                        v
+                                        posOld
                                     )
                                 ) {
                                     ae = true;
@@ -416,7 +444,7 @@ export class BulletBarn {
                                     collider.intersectSegment(
                                         re.mask[ne],
                                         b.pos,
-                                        v
+                                        posOld
                                     )
                                 ) {
                                     ie = true;
@@ -433,7 +461,7 @@ export class BulletBarn {
                         n.addPIXIObj(b.container, b.layer, 20);
                     }
                 }
-                if (G || math.eqAbs(x, S)) {
+                if (hit || math.eqAbs(distLeft, distTravel)) {
                     b.collided = true;
                     b.alive = false;
                 }
@@ -442,29 +470,29 @@ export class BulletBarn {
         }
     }
 
-    createBulletHit(e, t, r) {
-        const a = e.u(t);
-        if (a) {
-            r.playGroup("player_bullet_hit", {
-                soundPos: a.pos,
+    createBulletHit(playerBarn, targetId, audioManager) {
+        const player = playerBarn.u(targetId);
+        if (player) {
+            audioManager.playGroup("player_bullet_hit", {
+                soundPos: player.pos,
                 fallOff: 1,
-                layer: a.layer,
+                layer: player.layer,
                 filter: "muffled"
             });
         }
     }
 
-    render(e, t) {
-        e.pixels(1);
-        for (let r = 0; r < this.bullets.length; r++) {
-            const a = this.bullets[r];
-            if (a.alive || a.collided) {
-                const i = v2.length(v2.sub(a.pos, a.startPos));
-                const o = e.pointToScreen(a.pos);
-                a.container.position.set(o.x, o.y);
-                const s = e.pixels(1);
-                const n = math.min(a.tracerLength * 15, i / 2);
-                a.container.scale.set(s * n * a.scale, s);
+    render(camera, debug) {
+        camera.pixels(1);
+        for (let i = 0; i < this.bullets.length; i++) {
+            const b = this.bullets[i];
+            if (b.alive || b.collided) {
+                const dist = v2.length(v2.sub(b.pos, b.startPos));
+                const screenPos = camera.pointToScreen(b.pos);
+                b.container.position.set(screenPos.x, screenPos.y);
+                const screenScale = camera.pixels(1);
+                const trailLength = math.min(b.tracerLength * 15, dist / 2);
+                b.container.scale.set(screenScale * trailLength * b.scale, screenScale);
             }
         }
     }

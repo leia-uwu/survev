@@ -20,6 +20,8 @@ const Anim = GameConfig.Anim;
 const Input = GameConfig.Input;
 const HasteType = GameConfig.HasteType;
 
+const submergeMaskScaleFactor = 0.1;
+
 function perksEqual(a, b) {
     if (a.length != b.length) {
         return false;
@@ -55,73 +57,79 @@ function createPlayerNameText() {
 }
 
 function createSprite() {
-    const e = new PIXI.Sprite();
-    e.texture = PIXI.Texture.EMPTY;
-    e.anchor.set(0.5, 0.5);
-    e.scale.set(1, 1);
-    e.tint = 16777215;
-    e.visible = false;
-    return e;
+    const sprite = new PIXI.Sprite();
+    sprite.texture = PIXI.Texture.EMPTY;
+    sprite.anchor.set(0.5, 0.5);
+    sprite.scale.set(1, 1);
+    sprite.tint = 16777215;
+    sprite.visible = false;
+    return sprite;
 }
 
 const Pose = animData.Pose;
 const Bones = animData.Bones;
+
 const desktopZoomRads = [];
 const mobileZoomRads = [];
+let scopeKeys = Object.keys(GameConfig.scopeZoomRadius.mobile);
+
 for (
-    let R = Object.keys(GameConfig.scopeZoomRadius.mobile), L = 0;
-    L < R.length;
-    L++
+    let i = 0;
+    i < scopeKeys.length;
+    i++
 ) {
-    const q = R[L];
-    desktopZoomRads.push(GameConfig.scopeZoomRadius.desktop[q]);
-    mobileZoomRads.push(GameConfig.scopeZoomRadius.mobile[q]);
+    const key = scopeKeys[i];
+    desktopZoomRads.push(GameConfig.scopeZoomRadius.desktop[key]);
+    mobileZoomRads.push(GameConfig.scopeZoomRadius.mobile[key]);
 }
 
 class Gun {
     constructor() {
         this.gunBarrel = createSprite();
         this.gunMag = createSprite();
+
         this.container = new PIXI.Container();
         this.container.addChild(this.gunBarrel);
         this.container.addChild(this.gunMag);
         this.container.rotation = Math.PI * 0.5;
         this.container.visible = false;
+
         this.magTop = false;
     }
 
-    setVisible(e) {
-        this.container.visible = e;
+    setVisible(vis) {
+        this.container.visible = vis;
     }
 
-    setType(e, t) {
-        const r = GameObjectDefs[e];
-        const a = r.worldImg;
+    setType(type, t) {
+        const gunDef = GameObjectDefs[type];
+        const imgDef = gunDef.worldImg;
         this.gunBarrel.texture = PIXI.Texture.from(
-            a.sprite
+            imgDef.sprite
         );
         this.gunBarrel.anchor.set(0.5, 1);
         this.gunBarrel.position.set(0, 0);
         this.gunBarrel.scale.set(
-            (a.scale.x * 0.5) / t,
-            (a.scale.y * 0.5) / t
+            (imgDef.scale.x * 0.5) / t,
+            (imgDef.scale.y * 0.5) / t
         );
-        this.gunBarrel.tint = a.tint;
+        
+        this.gunBarrel.tint = imgDef.tint;
         this.gunBarrel.visible = true;
-        if (a.magImg) {
-            const i = a.magImg;
+        if (imgDef.magImg) {
+            const magDef = imgDef.magImg;
             this.gunMag.texture = PIXI.Texture.from(
-                i.sprite
+                magDef.sprite
             );
             this.gunMag.anchor.set(0.5, 0.5);
             this.gunMag.position.set(
-                i.pos.x / t,
-                i.pos.y / t
+                magDef.pos.x / t,
+                magDef.pos.y / t
             );
             this.gunMag.scale.set(0.25 / t, 0.25 / t);
             this.gunMag.tint = 16777215;
             this.gunMag.visible = true;
-            if (i.top) {
+            if (magDef.top) {
                 this.container.addChild(this.gunMag);
             } else {
                 this.container.addChildAt(this.gunMag, 0);
@@ -129,15 +137,17 @@ class Gun {
         } else {
             this.gunMag.visible = false;
         }
-        this.magTop = a.magImg?.top;
-        const o = r.isDual
+
+        this.magTop = imgDef.magImg?.top;
+        
+        const handOffset = gunDef.isDual
             ? v2.create(-5.95, 0)
             : v2.create(-4.25, -1.75);
-        if (a.gunOffset) {
-            o.x += a.gunOffset.x;
-            o.y += a.gunOffset.y;
+        if (imgDef.gunOffset) {
+            handOffset.x += imgDef.gunOffset.x;
+            handOffset.y += imgDef.gunOffset.y;
         }
-        this.container.position.set(o.x, o.y);
+        this.container.position.set(handOffset.x, handOffset.y);
     }
 }
 
@@ -185,6 +195,7 @@ export class Player {
         this.footLContainer.addChild(this.footLSprite);
         this.footRContainer = new PIXI.Container();
         this.footRContainer.addChild(this.footRSprite);
+
         this.bodyContainer = new PIXI.Container();
         this.bodyContainer.addChild(this.footLContainer);
         this.bodyContainer.addChild(this.footRContainer);
@@ -200,14 +211,20 @@ export class Player {
         this.bodyContainer.addChild(this.handRContainer);
         this.bodyContainer.addChild(this.visorSprite);
         this.bodyContainer.addChild(this.helmetSprite);
+
         this.container = new PIXI.Container();
         this.container.addChild(this.bodyContainer);
+
         this.nameText = createPlayerNameText();
         this.container.addChild(this.nameText);
+        
         this.auraContainer = new PIXI.Container();
         this.auraCircle = createSprite();
         this.auraContainer.addChild(this.auraCircle);
+
         this.initSubmergeSprites();
+        
+        // Anim
         this.bones = [];
         this.anim = {
             type: Anim.None,
@@ -216,14 +233,18 @@ export class Player {
             ticker: 0,
             bones: []
         };
-        for (let e = Object.keys(Bones).length, t = 0; t < e; t++) {
+
+        let boneCount = Object.keys(Bones).length;
+        for (let t = 0; t < boneCount; t++) {
             this.bones.push(new Pose());
             this.anim.bones.push({
                 weight: 0,
                 pose: new Pose()
             });
         }
+
         this.perks = [];
+        // Maintain a list of just the perk types as a hasPerk() optimization
         this.perkTypes = [];
         this.perksDirty = false;
         this.surface = null;
@@ -247,29 +268,38 @@ export class Player {
         this.gunRecoilL = 0;
         this.gunRecoilR = 0;
         this.fireDelay = 0;
+
         this.throwableState = "equip";
         this.throwableStatePrev = this.throwableState;
         this.lastThrowablePickupSfxTicker = 0;
+        
         this.isNearDoorError = false;
         this.doorErrorTicker = 0;
         this.noCeilingRevealTicker = 0;
         this.frozenTicker = 0;
         this.updateFrozenImage = true;
+
         this.viewAabb = {
             min: v2.create(0, 0),
             max: v2.create(0, 0)
         };
+
         this.auraViewFade = 0;
         this.auraPulseTicker = 0;
         this.auraPulseDir = 1;
+        
         this.renderLayer = 0;
         this.renderZOrd = 18;
         this.renderZIdx = 0;
+
+        // Anti-cheat
         this.I = 0;
         this.Br = 0;
+
         this.action = {};
         this.netData = {};
         this.Re = {};
+
         this.rad = GameConfig.player.radius;
         this.bodyRad = this.rad;
         this.pos = v2.create(0, 0);
@@ -289,6 +319,7 @@ export class Player {
         this.lastSwapIdx = -1;
         this.hasteSeq = -1;
         this.actionSoundInstance = null;
+
         this.action = {
             type: Action.None,
             seq: -1,
@@ -301,6 +332,7 @@ export class Player {
             throttleCount: 0,
             throttleTicker: 0
         };
+
         this.playAnim(Anim.None, -1);
         this.netData = {
             ie: v2.create(0, 0),
@@ -357,44 +389,48 @@ export class Player {
         }
     }
 
-    c(e, t, r, a) {
-        this.netData.ie = v2.copy(e.pos);
-        this.netData.oe = v2.copy(e.dir);
-        if (t) {
-            this.netData.se = e.outfit;
-            this.netData.ne = e.backpack;
-            this.netData.le = e.helmet;
-            this.netData.ce = e.chest;
-            this.netData.me = e.activeWeapon;
-            this.netData.pe = e.layer;
-            this.netData.he = e.dead;
-            this.netData.ue = e.downed;
-            this.netData.ge = e.animType;
-            this.netData.ye = e.animSeq;
-            this.netData.we = e.actionType;
-            this.netData.fe = e.actionSeq;
-            this.netData._e = e.wearingPan;
-            this.netData.be = e.healEffect;
-            this.netData.xe = e.frozen;
-            this.netData.Se = e.frozenOri;
-            this.netData.ve = e.hasteType;
-            this.netData.ke = e.hasteSeq;
-            this.netData.ze = e.actionItem;
-            this.netData.Ie = e.scale;
-            this.netData.Te = e.role;
-            if (!!r || !perksEqual(this.netData.Me, e.perks)) {
+    c(data, fullUpdate, isNew, ctx) {
+        this.netData.ie = v2.copy(data.pos);
+        this.netData.oe = v2.copy(data.dir);
+
+        if (fullUpdate) {
+            this.netData.se = data.outfit;
+            this.netData.ne = data.backpack;
+            this.netData.le = data.helmet;
+            this.netData.ce = data.chest;
+            this.netData.me = data.activeWeapon;
+            this.netData.pe = data.layer;
+            this.netData.he = data.dead;
+            this.netData.ue = data.downed;
+            this.netData.ge = data.animType;
+            this.netData.ye = data.animSeq;
+            this.netData.we = data.actionType;
+            this.netData.fe = data.actionSeq;
+            this.netData._e = data.wearingPan;
+            this.netData.be = data.healEffect;
+            this.netData.xe = data.frozen;
+            this.netData.Se = data.frozenOri;
+            this.netData.ve = data.hasteType;
+            this.netData.ke = data.hasteSeq;
+            this.netData.ze = data.actionItem;
+            this.netData.Ie = data.scale;
+            this.netData.Te = data.role;
+
+            if (!!isNew || !perksEqual(this.netData.Me, data.perks)) {
                 this.perksDirty = true;
             }
-            this.netData.Me = e.perks;
-            if (e.ye != this.anim.seq) {
-                this.playAnim(e.animType, e.animSeq);
+
+            this.netData.Me = data.perks;
+            if (data.ye != this.anim.seq) {
+                this.playAnim(data.animType, data.animSeq);
             }
-            this.action.type = e.actionType;
-            this.action.seq = e.actionSeq;
-            this.action.item = e.actionItem;
+            this.action.type = data.actionType;
+            this.action.seq = data.actionSeq;
+            this.action.item = data.actionItem;
             this.visualsDirty = true;
         }
-        if (r) {
+
+        if (isNew) {
             this.isNew = true;
             this.renderLayer = this.netData.pe;
             this.renderZOrd = 18;
@@ -402,60 +438,69 @@ export class Player {
         }
     }
 
-    Mr(e, t) {
-        const r = this.Re.Fr;
-        if (e.healthDirty) {
-            this.Re.Lr = e.health;
+    setLocalData(data, t) {
+        const scopeOld = this.Re.Fr;
+        
+        if (data.healthDirty) {
+            this.Re.Lr = data.health;
         }
-        if (e.boostDirty) {
-            this.Re.qr = e.boost;
+        
+        if (data.boostDirty) {
+            this.Re.qr = data.boost;
         }
-        if (e.zoomDirty) {
-            this.Re.O = e.zoom;
+
+        if (data.zoomDirty) {
+            this.Re.O = data.zoom;
             this.zoomFast = false;
         }
-        if (e.actionDirty) {
-            this.action.time = e.action.time;
-            this.action.duration = e.action.duration;
-            this.action.targetId = e.action.targetId;
+
+        if (data.actionDirty) {
+            this.action.time = data.action.time;
+            this.action.duration = data.action.duration;
+            this.action.targetId = data.action.targetId;
         }
-        if (e.inventoryDirty) {
-            this.Re.Fr = e.scope;
+
+        if (data.inventoryDirty) {
+            this.Re.Fr = data.scope;
             this.Re.jr = {};
-            for (const a in GameConfig.bagSizes) {
-                if (GameConfig.bagSizes.hasOwnProperty(a)) {
-                    this.Re.jr[a] = e.inventory[a];
+            for (const item in GameConfig.bagSizes) {
+                if (GameConfig.bagSizes.hasOwnProperty(item)) {
+                    this.Re.jr[item] = data.inventory[item];
                 }
             }
         }
-        if (e.weapsDirty) {
-            this.Re.rt = e.curWeapIdx;
+        if (data.weapsDirty) {
+            this.Re.rt = data.curWeapIdx;
             this.Re.tt = [];
             for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
-                const o = {
-                    type: e.weapons[i].type,
-                    ammo: e.weapons[i].ammo
+                const w = {
+                    type: data.weapons[i].type,
+                    ammo: data.weapons[i].ammo
                 };
-                this.Re.tt.push(o);
+                this.Re.tt.push(w);
             }
         }
-        if (e.spectatorCountDirty) {
-            this.Re.Be = e.spectatorCount;
+        if (data.spectatorCountDirty) {
+            this.Re.Be = data.spectatorCount;
         }
-        if (this.Re.Fr != r) {
+
+        // Zoom more quickly when changing scopes
+        if (this.Re.Fr != scopeOld) {
             this.zoomFast = true;
         }
     }
 
-    yr() {
-        let e = this.Re.O;
+    getZoom() {
+        let zoom = this.Re.O;
+        
         if (device.mobile) {
-            const t = desktopZoomRads.indexOf(e);
-            if (t !== -1) {
-                e = mobileZoomRads[t];
+            const stepIdx = desktopZoomRads.indexOf(zoom);
+            if (stepIdx !== -1) {
+                zoom = mobileZoomRads[stepIdx];
             }
         }
-        return e;
+
+        return zoom;
     }
 
     Nr() {
@@ -474,7 +519,7 @@ export class Player {
         }
     }
 
-    Vr() {
+    getBagLevel() {
         return GameObjectDefs[this.netData.ne].level;
     }
 
@@ -487,15 +532,15 @@ export class Player {
     }
 
     getMeleeCollider() {
-        const e = GameObjectDefs[this.netData.me];
-        const t = Math.atan2(this.dir.y, this.dir.x);
-        const r = v2.add(
-            e.attack.offset,
+        const meleeDef = GameObjectDefs[this.netData.me];
+        const ang = Math.atan2(this.dir.y, this.dir.x);
+        const off = v2.add(
+            meleeDef.attack.offset,
             v2.mul(v2.create(1, 0), this.netData.Ie - 1)
         );
-        const a = v2.add(this.pos, v2.rotate(r, t));
-        const i = e.attack.rad;
-        return collider.createCircle(a, i, 0);
+        const pos = v2.add(this.pos, v2.rotate(off, ang));
+        const rad = meleeDef.attack.rad;
+        return collider.createCircle(pos, rad, 0);
     }
 
     hasActivePan() {
@@ -506,78 +551,80 @@ export class Player {
     }
 
     getPanSegment() {
-        const e = this.netData._e ? "unequipped" : "equipped";
-        return GameObjectDefs.pan.reflectSurface[e];
+        const panSurface = this.netData._e ? "unequipped" : "equipped";
+        return GameObjectDefs.pan.reflectSurface[panSurface];
     }
 
-    canInteract(e) {
-        return !this.netData.he && (!e.perkMode || this.netData.Te);
+    canInteract(map) {
+        return !this.netData.he && (!map.perkMode || this.netData.Te);
     }
 
-    Gr(e, t, r) {
-        const a = this;
+    updatePerks(isActivePlayer, isSpectating, ui2Manager) {
+        const _this = this;
         for (let i = 0; i < this.perks.length; i++) {
             this.perks[i].isNew = false;
         }
         if (this.perksDirty) {
-            if (e && !t) {
-                for (let o = 0; o < this.netData.Me.length; o++) {
-                    (function(e) {
-                        const t = a.netData.Me[e];
+            if (isActivePlayer && !isSpectating) {
+                // Create Ui notifications for newly added perks
+                for (let i = 0; i < this.netData.Me.length; i++) {
+                        const perk = _this.netData.Me[i];
                         if (
-                            a.perks.findIndex((e) => {
-                                return e.type == t.type;
+                            _this.perks.findIndex((x) => {
+                                return x.type == perk.type;
                             }) === -1
                         ) {
-                            r.addRareLootMessage(t.type);
+                            ui2Manager.addRareLootMessage(perk.type);
                         }
-                    })(o);
                 }
-                for (let s = 0; s < this.perks.length; s++) {
-                    (function(e) {
-                        const t = a.perks[e];
+
+                // Remove active Ui messages for perks we no longer have
+                for (let i = 0; i < this.perks.length; i++) {
+                        const perk = _this.perks[i];
                         if (
-                            a.netData.Me.findIndex((e) => {
-                                return e.type == t.type;
+                            _this.netData.Me.findIndex((x) => {
+                                return x.type == perk.type;
                             }) === -1
                         ) {
-                            r.removeRareLootMessage(t.type);
+                            ui2Manager.removeRareLootMessage(perk.type);
                         }
-                    })(s);
                 }
             }
-            const n = [];
-            for (let l = 0; l < this.netData.Me.length; l++) {
-                (function(e) {
-                    const t = a.netData.Me[e];
-                    const r =
-                        a.perks.findIndex((e) => {
-                            return e.type == t.type;
+
+            // Update the internal perk list and calculate an 'isNew' property;
+            // this is used by the Ui to animate the perk icon.
+            const perks = [];
+            for (let i = 0; i < this.netData.Me.length; i++) {
+                    const perk = _this.netData.Me[i];
+                    const isNew =
+                        _this.perks.findIndex((x) => {
+                            return x.type == perk.type;
                         }) === -1;
-                    n.push({
-                        type: t.type,
-                        droppable: t.droppable,
-                        isNew: r && !a.isNew
+                    perks.push({
+                        type: perk.type,
+                        droppable: perk.droppable,
+                        isNew: isNew && !_this.isNew
                     });
-                })(l);
             }
-            this.perks = n;
+
+            this.perks = perks;
+            
             this.perkTypes = [];
-            for (let c = 0; c < this.netData.Me.length; c++) {
-                this.perkTypes.push(this.netData.Me[c].type);
+            for (let i = 0; i < this.netData.Me.length; i++) {
+                this.perkTypes.push(this.netData.Me[i].type);
             }
             this.perksDirty = false;
         }
     }
 
-    hasPerk(e) {
-        return this.perkTypes.includes(e);
+    hasPerk(type) {
+        return this.perkTypes.includes(type);
     }
 
-    m(e, t, r, i, o, s, n, l, c, m, p, w, x) {
-        const k = GameObjectDefs[this.netData.me];
-        const z = this.__id == m;
-        const I = t.u(m);
+    m(dt, playerBarn, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating) {
+        const curWeapDef = GameObjectDefs[this.netData.me];
+        const isActivePlayer = this.__id == activeId;
+        const activePlayer = playerBarn.u(activeId);
         this.posOld = v2.copy(this.pos);
         this.dirOld = v2.copy(this.dir);
         this.pos = v2.copy(this.netData.ie);
@@ -585,120 +632,142 @@ export class Player {
         this.layer = this.netData.pe;
         this.downed = this.netData.ue;
         this.rad = this.netData.Ie * GameConfig.player.radius;
+
+        // Ease radius transitions
         if (!math.eqAbs(this.rad, this.bodyRad)) {
-            const T = this.rad - this.bodyRad;
-            let M = Math.abs(T) > 0.0001 ? T * e * 6 : T;
+            const bodyRadDist = this.rad - this.bodyRad;
+            let bodyRadStep = Math.abs(bodyRadDist) > 0.0001 ? bodyRadDist * dt * 6 : bodyRadDist;
             if (this.isNew) {
-                M = T;
+                bodyRadStep = bodyRadDist;
             }
-            this.bodyRad += M;
+            this.bodyRad += bodyRadStep;
             this.visualsDirty = true;
         }
-        if (z) {
-            const P = n.screenToPoint(v2.create(n.screenWidth, 0));
-            const D = v2.sub(P, n.pos);
-            this.viewAabb.min = v2.sub(n.pos, D);
-            this.viewAabb.max = v2.add(n.pos, D);
+
+        // Calculate an aabb that fits the camera view
+        if (isActivePlayer) {
+            const viewEdge = camera.screenToPoint(v2.create(camera.screenWidth, 0));
+            const viewExtent = v2.sub(viewEdge, camera.pos);
+            this.viewAabb.min = v2.sub(camera.pos, viewExtent);
+            this.viewAabb.max = v2.add(camera.pos, viewExtent);
         }
-        this.Gr(z, x, c);
-        const E = this.weapTypeOld != this.netData.me;
+
+        // Should happen early in the frame so the rest of the update will have
+        // accurate hasPerk() calls
+        this.updatePerks(isActivePlayer, isSpectating, ui2Manager);
+
+        const weapTypeDirty = this.weapTypeOld != this.netData.me;
         this.weapTypeOld = this.netData.me;
-        this.lastThrowablePickupSfxTicker -= e;
-        this.noCeilingRevealTicker -= e;
-        const B = t.qe(m).groupId;
-        const R = t.qe(this.__id);
-        const L = R.groupId == B;
-        this.nameText.text = R.name;
-        this.nameText.visible = !z && L;
-        let q = null;
-        let F = null;
-        for (let j = r.Ve.p(), N = 0; N < j.length; N++) {
-            const H = j[N];
+
+        this.lastThrowablePickupSfxTicker -= dt;
+        this.noCeilingRevealTicker -= dt;
+
+        // Update nameTex
+        const activeGroupId = playerBarn.qe(activeId).groupId;
+        const playerInfo = playerBarn.qe(this.__id);
+        const inSameGroup = playerInfo.groupId == activeGroupId;
+        this.nameText.text = playerInfo.name;
+        this.nameText.visible = !isActivePlayer && inSameGroup;
+
+
+        // Locate nearby obstacles that may play interaction effects
+        let insideObstacle = null;
+        let doorErrorObstacle = null;
+        let obstacles = map.Ve.p();
+        for (let N = 0; N < obstacles.length; N++) {
+            const H = obstacles[N];
             if (H.active && !H.dead && H.layer == this.netData.pe) {
                 if (H.isBush) {
-                    const V = this.rad * 0.25;
+                    const rad = this.rad * 0.25;
                     if (
-                        collider.intersectCircle(H.collider, this.pos, V)
+                        collider.intersectCircle(H.collider, this.pos, rad)
                     ) {
-                        q = H;
+                        insideObstacle = H;
                     }
                 } else if (H.isDoor) {
-                    const U = this.rad + 0.25;
-                    const W = v2.sub(H.pos, this.pos);
-                    const G = v2.rotate(v2.create(1, 0), H.rot);
-                    const X = collider.intersectCircle(
+                    const rad = this.rad + 0.25;
+                    const toDoor = v2.sub(H.pos, this.pos);
+                    const doorDir = v2.rotate(v2.create(1, 0), H.rot);
+                    const res = collider.intersectCircle(
                         H.collider,
                         this.pos,
-                        U
+                        rad
                     );
                     if (
-                        X &&
+                        res &&
                         (H.door.locked ||
-                            (H.door.openOneWay && v2.dot(W, G) < 0))
+                            (H.door.openOneWay && v2.dot(toDoor, doorDir) < 0))
                     ) {
-                        F = H;
+                        doorErrorObstacle = H;
                     }
                 }
             }
         }
-        const K = q != null;
-        if (K) {
-            this.insideObstacleType = q.type;
+
+
+        // Enter/exit bush effects
+        const isInside = insideObstacle != null;
+        if (isInside) {
+            this.insideObstacleType = insideObstacle.type;
         }
-        this.lastInsideObstacleTime -= e;
+        this.lastInsideObstacleTime -= dt;
         if (
-            this.wasInsideObstacle != K &&
+            this.wasInsideObstacle != isInside &&
             this.lastInsideObstacleTime < 0 &&
             !this.isNew
         ) {
-            const Z = MapObjectDefs[this.insideObstacleType];
+            const obstacleDef = MapObjectDefs[this.insideObstacleType];
             this.lastInsideObstacleTime = 0.2;
-            i.playSound(Z.sound.enter, {
+            audioManager.playSound(obstacleDef.sound.enter, {
                 channel: "sfx",
                 soundPos: this.pos,
                 falloff: 1,
                 layer: this.layer,
                 filter: "muffled"
             });
+
+            let moveDir = v2.normalizeSafe(
+                    v2.sub(this.posOld, this.pos),
+                    v2.create(1, 0)
+                ),
+                partDir = isInside ? 1 : -1,
+                numParticles = Math.floor(util.random(3, 5));
             for (
-                let Y = v2.normalizeSafe(
-                        v2.sub(this.posOld, this.pos),
-                        v2.create(1, 0)
-                    ),
-                    J = K ? 1 : -1,
-                    Q = Math.floor(util.random(3, 5)),
-                    $ = 0;
-                $ < Q;
-                $++
+                let i = 0;
+                i < numParticles;
+                i++
             ) {
-                const ee = v2.mul(
+                const vel = v2.mul(
                     v2.rotate(
-                        v2.mul(Y, J),
+                        v2.mul(moveDir, partDir),
                         ((Math.random() - 0.5) * Math.PI) / 1.5
                     ),
                     util.random(6, 8)
                 );
-                o.addParticle(
-                    Z.hitParticle,
+                particleBarn.addParticle(
+                    obstacleDef.hitParticle,
                     this.layer,
                     this.pos,
-                    ee
+                    vel
                 );
             }
         }
-        this.wasInsideObstacle = K;
-        const te = this.isNearDoorError;
-        this.isNearDoorError = F != null;
-        this.doorErrorTicker -= e;
+        this.wasInsideObstacle = isInside;
+
+        // Play a sound effect when touching a one-way door from the wrong side
+        const wasNearDoorError = this.isNearDoorError;
+        this.isNearDoorError = doorErrorObstacle != null;
+        this.doorErrorTicker -= dt;
         if (
             this.isNearDoorError &&
-            !te &&
+            !wasNearDoorError &&
             this.doorErrorTicker <= 0
         ) {
             this.doorErrorTicker = 0.5;
-            const re = MapObjectDefs[F.type];
-            const ae = re.door.sound.error;
-            i.playSound(ae, {
+
+            const doorDef = MapObjectDefs[doorErrorObstacle.type];
+            const doorSfx = doorDef.door.sound.error;
+            audioManager.playSound(doorSfx, {
                 channel: "sfx",
                 soundPos: this.pos,
                 falloff: 1,
@@ -706,42 +775,49 @@ export class Player {
                 filter: "muffled"
             });
         }
-        this.surface = r.getGroundSurface(this.pos, this.layer);
-        const ie = this.surface.type == "water";
-        this.updateSubmersion(e, r);
-        this.updateFrozenState(e);
+        this.surface = map.getGroundSurface(this.pos, this.layer);
+
+        //SOUND
+
+        const inWater = this.surface.type == "water";
+        this.updateSubmersion(dt, map);
+        this.updateFrozenState(dt);
+
+         // Play a footstep if we've moved enough
         if (!this.netData.he) {
             this.stepDistance += v2.length(
                 v2.sub(this.posOld, this.pos)
             );
             if (
-                (this.stepDistance > 5 && ie) ||
-                (ie && !this.wasInWater)
+                (this.stepDistance > 5 && inWater) ||
+                (inWater && !this.wasInWater)
             ) {
                 this.stepDistance = 0;
-                o.addRippleParticle(
+                particleBarn.addRippleParticle(
                     this.pos,
                     this.layer,
                     this.surface.data.rippleColor
                 );
-                i.playGroup("footstep_water", {
+                audioManager.playGroup("footstep_water", {
                     soundPos: this.pos,
                     fallOff: 3,
                     layer: this.layer,
                     filter: "muffled"
                 });
-            } else if (this.stepDistance > 4 && !ie) {
+            } else if (this.stepDistance > 4 && !inWater) {
                 this.stepDistance = 0;
-                i.playGroup(`footstep_${this.surface.type}`, {
+                audioManager.playGroup(`footstep_${this.surface.type}`, {
                     soundPos: this.pos,
                     fallOff: 3,
                     layer: this.layer,
                     filter: "muffled"
                 });
             }
-            this.wasInWater = ie;
+            this.wasInWater = inWater;
         }
-        this.bleedTicker -= e;
+
+        // Take bleeding damage
+        this.bleedTicker -= dt;
         if (
             !this.netData.he &&
             ((this.netData.ue && this.action.type == Action.None) ||
@@ -751,23 +827,23 @@ export class Player {
             this.bleedTicker = this.hasPerk("trick_drain")
                 ? GameConfig.player.bleedTickRate * 3
                 : GameConfig.player.bleedTickRate;
-            const oe = v2.rotate(
+            const vel = v2.rotate(
                 v2.mul(this.dir, -1),
                 ((Math.random() - 0.5) * Math.PI) / 3
             );
-            oe.y *= -1;
-            o.addParticle(
+            vel.y *= -1;
+            particleBarn.addParticle(
                 "bloodSplat",
                 this.renderLayer,
                 v2.create(0, 0),
-                v2.mul(oe, n.ppu),
+                v2.mul(vel, camera.ppu),
                 1,
                 Math.random() * Math.PI * 2,
                 this.container,
                 this.renderZOrd + 1
             );
-            if (!w) {
-                i.playSound("player_bullet_hit_02", {
+            if (!displayingStats) {
+                audioManager.playSound("player_bullet_hit_02", {
                     channel: "hits",
                     soundPos: this.pos,
                     fallOff: 3,
@@ -776,79 +852,90 @@ export class Player {
                 });
             }
         }
-        this.gunSwitchCooldown -= e;
-        this.fireDelay -= e;
-        if (z && (E || this.lastSwapIdx != this.Re.rt)) {
-            const se = this.lastSwapIdx;
+
+        // Only play swaps for local players.
+        this.gunSwitchCooldown -= dt;
+        this.fireDelay -= dt;
+        if (isActivePlayer && (weapTypeDirty || this.lastSwapIdx != this.Re.rt)) {
+            const lastWeapIdx = this.lastSwapIdx;
             this.lastSwapIdx = this.Re.rt;
-            const ne = GameObjectDefs[this.netData.me];
-            if (ne.type == "melee" || ne.type == "throwable") {
+            const itemDef = GameObjectDefs[this.netData.me];
+            if (itemDef.type == "melee" || itemDef.type == "throwable") {
+                // @HACK: Equipping a throwable currently plays
+                // the same SFX as picking up a throwable, leading
+                // to an echo effect
                 if (
-                    ne.type != "throwable" ||
+                    itemDef.type != "throwable" ||
                     this.lastThrowablePickupSfxTicker <= 0
                 ) {
-                    const le = this.isLoadoutAvatar
-                        ? n.pos
+                    // Fixes issue with melee equip sounds being offset in the loadoutMenu
+                    const soundPos = this.isLoadoutAvatar
+                        ? camera.pos
                         : this.pos;
-                    i.playSound(ne.sound.deploy, {
+                    audioManager.playSound(itemDef.sound.deploy, {
                         channel: "sfx",
-                        soundPos: le,
+                        soundPos: soundPos,
                         fallOff: 3
                     });
                 }
-            } else if (ne.type == "gun") {
-                let ce = "gun_switch_01";
-                let me = false;
+            } else if (itemDef.type == "gun") {
+                let switchSound = "gun_switch_01";
+                let deployFull = false;
+                // Check if we're using 2 guns in the same group
                 if (
-                    (se == 0 || se == 1) &&
+                    (lastWeapIdx == 0 || lastWeapIdx == 1) &&
                     (this.lastSwapIdx == 0 ||
                         this.lastSwapIdx == 1) &&
                     this.fireDelay > 0
                 ) {
-                    const pe = GameObjectDefs[this.Re.tt[se].type];
+                    const lastWeapDef = GameObjectDefs[this.Re.tt[lastWeapIdx].type];
                     if (
-                        ne &&
-                        pe &&
-                        ne.deployGroup !== undefined &&
-                        pe.deployGroup !== undefined &&
-                        ne.deployGroup == pe.deployGroup
+                        itemDef &&
+                        lastWeapDef &&
+                        itemDef.deployGroup !== undefined &&
+                        lastWeapDef.deployGroup !== undefined &&
+                        itemDef.deployGroup == lastWeapDef.deployGroup
                     ) {
-                        me = true;
+                        deployFull = true;
                     }
                 }
-                if (this.gunSwitchCooldown > 0 || me) {
-                    ce = ne.sound.deploy;
+                if (this.gunSwitchCooldown > 0 || deployFull) {
+                    switchSound = itemDef.sound.deploy;
                 } else {
                     this.gunSwitchCooldown =
                         GameConfig.player.freeSwitchCooldown;
                 }
-                i.stopSound(this.cycleSoundInstance);
-                this.cycleSoundInstance = i.playSound(ce, {
+                audioManager.stopSound(this.cycleSoundInstance);
+                this.cycleSoundInstance = audioManager.playSound(switchSound, {
                     channel: "activePlayer"
                 });
                 this.fireDelay = 0;
             }
         }
-        if (!i.isSoundPlaying(this.cycleSoundInstance)) {
+        if (!audioManager.isSoundPlaying(this.cycleSoundInstance)) {
             this.cycleSoundInstance = null;
         }
+
+        // Action effect
         if (this.action.seq != this.action.seqOld && !this.isNew) {
-            let he = true;
-            if (!z && this.action.type != Action.None) {
+            // Throttle effects for other players if they repeatedly cancel and
+            // start new actions
+            let playEffect = true;
+            if (!isActivePlayer && this.action.type != Action.None) {
                 this.action.throttleTicker = 0.5;
                 if (this.action.throttleCount < 5) {
                     this.action.throttleCount++;
                 } else {
-                    he = false;
+                    playEffect = false;
                 }
             }
-            if (he) {
-                this.playActionStartEffect(z, o, i);
+            if (playEffect) {
+                this.playActionStartEffect(isActivePlayer, particleBarn, audioManager);
             }
         }
         this.action.seqOld = this.action.seq;
-        this.updateActionEffect(z, R, o, i);
-        this.action.throttleTicker -= e;
+        this.updateActionEffect(isActivePlayer, playerInfo, particleBarn, audioManager);
+        this.action.throttleTicker -= dt;
         if (
             this.action.throttleTicker < 0 &&
             this.action.throttleCount > 0
@@ -856,6 +943,8 @@ export class Player {
             this.action.throttleCount--;
             this.action.throttleTicker = 0.25;
         }
+
+        // Haste effect
         if (this.netData.ve && this.netData.ke != this.hasteSeq) {
             const hasteEffects = {
                 [HasteType.None]: {
@@ -875,9 +964,10 @@ export class Player {
                     sound: "ability_stim_01"
                 }
             };
-            const ge = hasteEffects[this.netData.ve];
+            const fx = hasteEffects[this.netData.ve];
+
             if (!this.isNew) {
-                i.playSound(ge.sound, {
+                audioManager.playSound(fx.sound, {
                     channel: "sfx",
                     soundPos: this.pos,
                     fallOff: 1,
@@ -885,8 +975,9 @@ export class Player {
                     filter: "muffled"
                 });
             }
+
             this.hasteEmitter?.stop();
-            this.hasteEmitter = o.addEmitter(ge.particle, {
+            this.hasteEmitter = particleBarn.addEmitter(fx.particle, {
                 pos: this.pos,
                 layer: this.layer
             });
@@ -903,8 +994,10 @@ export class Player {
             this.hasteEmitter.layer = this.renderLayer;
             this.hasteEmitter.zOrd = this.renderZOrd + 1;
         }
+
+         // Passive heal effect
         if (this.netData.be && !this.passiveHealEmitter) {
-            this.passiveHealEmitter = o.addEmitter("heal_basic", {
+            this.passiveHealEmitter = particleBarn.addEmitter("heal_basic", {
                 pos: this.pos,
                 layer: this.layer
             });
@@ -920,259 +1013,303 @@ export class Player {
             this.passiveHealEmitter.layer = this.renderLayer;
             this.passiveHealEmitter.zOrd = this.renderZOrd + 1;
         }
-        if (z && !x) {
-            const ye = this.Re.rt;
-            const we = this.Re.tt[ye];
-            const fe = GameObjectDefs[we.type];
+        if (isActivePlayer && !isSpectating) {
+            const curWeapIdx = this.Re.rt;
+            const curWeap = this.Re.tt[curWeapIdx];
+            const itemDef = GameObjectDefs[curWeap.type];
+
+            // Play dry fire sound when empty
             if (
                 !this.playedDryFire &&
                 this.Ur() == "gun" &&
-                (s.isBindPressed(Input.Fire) ||
-                    (s.isBindDown(Input.Fire) &&
-                        fe.fireMode == "auto")) &&
+                (inputBinds.isBindPressed(Input.Fire) ||
+                    (inputBinds.isBindDown(Input.Fire) &&
+                        itemDef.fireMode == "auto")) &&
                 this.action.type == Action.None &&
-                !p &&
-                !fe.ammoInfinite
+                !preventInput &&
+                !itemDef.ammoInfinite
             ) {
-                const _e = this.Re.jr[fe.ammo] || 0;
-                const be = we.ammo;
-                if (_e == 0 && be == 0) {
-                    i.playSound(fe.sound.empty);
+                const ammoLeft = this.Re.jr[itemDef.ammo] || 0;
+                const currentClip = curWeap.ammo;
+                if (ammoLeft == 0 && currentClip == 0) {
+                    audioManager.playSound(itemDef.sound.empty);
                     this.playedDryFire = true;
                 }
             }
-            if (!s.isBindDown(Input.Fire)) {
+            if (!inputBinds.isBindDown(Input.Fire)) {
                 this.playedDryFire = false;
             }
         }
+
+        // Decay gun recoil
         this.gunRecoilL = math.max(
             0,
-            this.gunRecoilL - this.gunRecoilL * e * 5 - e
+            this.gunRecoilL - this.gunRecoilL * dt * 5 - dt
         );
         this.gunRecoilR = math.max(
             0,
-            this.gunRecoilR - this.gunRecoilR * e * 5 - e
+            this.gunRecoilR - this.gunRecoilR * dt * 5 - dt
         );
         const xe = {
-            playerBarn: t,
-            map: r,
-            audioManager: i,
-            particleBarn: o
+            playerBarn: playerBarn,
+            map: map,
+            audioManager: audioManager,
+            particleBarn: particleBarn
         };
-        this.updateAnim(e, xe);
+        this.updateAnim(dt, xe);
         if (this.currentAnim() == Anim.None) {
             this.throwableState = "equip";
         }
         if (
             (this.currentAnim() == Anim.Cook ||
                 this.currentAnim() == Anim.Throw) &&
-            k.type != "throwable"
+            curWeapDef.type != "throwable"
         ) {
             this.playAnim(Anim.None, this.anim.seq);
         }
+
+        // Compute blended bone positions
+        const idlePose = this.selectIdlePose();
+        const idlePoseData = animData.IdlePoses[idlePose];
         for (
-            let Se = this.selectIdlePose(),
-                ve = animData.IdlePoses[Se],
-                ke = 0;
-            ke < this.bones.length;
-            ke++
+            let boneIdx = 0;
+            boneIdx < this.bones.length;
+            boneIdx++
         ) {
-            const ze = ke;
-            const Ie = ve[ze] || Pose.identity;
-            const Te = this.anim.bones[ze];
-            if (Te.weight > 0) {
-                this.bones[ke].copy(Pose.lerp(Te.weight, Ie, Te.pose));
+            const idleBonePose = idlePoseData[boneIdx] || Pose.identity;
+            const animBone = this.anim.bones[boneIdx];
+            if (animBone.weight > 0) {
+                this.bones[boneIdx].copy(Pose.lerp(animBone.weight, idleBonePose, animBone.pose));
             } else {
-                this.bones[ke].copy(Ie);
+                this.bones[boneIdx].copy(idleBonePose);
             }
         }
+
+        // Update sprite components
         if (this.throwableStatePrev != this.throwableState) {
             this.visualsDirty = true;
         }
         this.throwableStatePrev = this.throwableState;
+
         if (this.visualsDirty) {
-            this.Xr(t, r);
+            this.updateVisuals(playerBarn, map);
         }
         this.visualsDirty = false;
-        this.Kr(e, z, I);
+        
+        this.updateAura(dt, isActivePlayer, activePlayer);
+
         this.Zr();
-        this.Yr(z, I, r);
-        l.addPIXIObj(
+
+        // @NOTE: There's an off-by-one frame issue for effects spawned earlier
+        // in this frame that reference renderLayer / zOrd / zIdx. This issue is
+        // prevalent for other effects that reference the player outside of
+        // update, like shot shell particle creation.
+        this.updateRenderLayer(isActivePlayer, activePlayer, map);
+        
+        renderer.addPIXIObj(
             this.auraContainer,
             this.renderLayer,
             this.renderZOrd - 1,
             this.renderZIdx
         );
-        const Me =
-            I.layer & 2 ||
-            (I.layer & 1) == 1 ||
+
+        // Special visibility rules for the aura since it doesn't clip well with
+        // the bunker mask system
+        const auraLayerMatch =
+            activePlayer.layer & 2 ||
+            (activePlayer.layer & 1) == 1 ||
             (this.layer & 1) == 0;
-        this.auraContainer.visible = !this.netData.he && Me;
-        l.addPIXIObj(
+
+        this.auraContainer.visible = !this.netData.he && auraLayerMatch;
+
+        renderer.addPIXIObj(
             this.container,
             this.renderLayer,
             this.renderZOrd,
             this.renderZIdx
         );
+
         this.isNew = false;
     }
 
-    br(e, t) {
-        const r = e.pointToScreen(this.pos);
-        const a = e.pixels(1);
-        this.container.position.set(r.x, r.y);
-        this.container.scale.set(a, a);
+    br(camera, debug) {
+        const screenPos = camera.pointToScreen(this.pos);
+        const screenScale = camera.pixels(1);
+        this.container.position.set(screenPos.x, screenPos.y);
+        this.container.scale.set(screenScale, screenScale);
         this.container.visible = !this.netData.he;
-        this.auraContainer.position.set(r.x, r.y);
-        this.auraContainer.scale.set(a, a);
+        this.auraContainer.position.set(screenPos.x, screenPos.y);
+        this.auraContainer.scale.set(screenScale, screenScale);
     }
 
-    Yr(e, t, r) {
-        const a = collider.createCircle(this.pos, GameConfig.player.maxVisualRadius);
-        let i = false;
-        let o = false;
-        let s = false;
-        for (let n = r.lr.p(), l = 0; l < n.length; l++) {
-            const c = n[l];
-            if (c.active) {
-                for (let m = 0; m < c.stairs.length; m++) {
-                    const p = c.stairs[m];
-                    const d = collider.intersect(p.collision, a);
-                    if (d) {
-                        o = true;
-                        const u = v2.add(
-                            p.center,
-                            v2.mul(p.downDir, -2.5)
+    updateRenderLayer(isActivePlayer, activePlayer, map) {
+        // Give the player a larger stairs collision radius.
+        // This is a hack to reduce popping when emerging from below,
+        // and to fix sorting issues with decals and loot when near
+        // the bottom and top of stairs
+        const visualCol = collider.createCircle(this.pos, GameConfig.player.maxVisualRadius);
+        let onMask = false;
+        let onStairs = false;
+        let occluded = false;
+        let structures = map.lr.p();
+        for (let i = 0; i < structures.length; i++) {
+            const structure = structures[i];
+            if (structure.active) {
+                for (let j = 0; j < structure.stairs.length; j++) {
+                    const stairs = structure.stairs[j];
+                    const col = collider.intersect(stairs.collision, visualCol);
+                    if (col) {
+                        onStairs = true;
+
+                        const stairTop = v2.add(
+                            stairs.center,
+                            v2.mul(stairs.downDir, -2.5)
                         );
-                        let g = v2.sub(u, this.pos);
-                        const y = v2.length(g);
-                        g =
-                            y > 0.0001
-                                ? v2.div(g, y)
+                        let dir = v2.sub(stairTop, this.pos);
+                        const dist = v2.length(dir);
+                        dir =
+                            dist > 0.0001
+                                ? v2.div(dir, dist)
                                 : v2.create(1, 0);
-                        s =
+                        occluded =
                             collisionHelpers.intersectSegmentDist(
-                                r.Ve.p(),
+                                map.Ve.p(),
                                 this.pos,
-                                g,
-                                y,
+                                dir,
+                                dist,
                                 0.5,
                                 this.layer,
                                 false
-                            ) < y;
+                            ) < dist;
                     }
+
+                    // Disable ceiling reveals if we're near certain types
+                    // of stairs. This lets the player enter cellars from an
+                    // exterior entrance without peeking inside the building
+                    // when passing through the exterior walls via the stairs.
                     if (
-                        e &&
-                        p.noCeilingReveal &&
-                        d &&
+                        isActivePlayer &&
+                        stairs.noCeilingReveal &&
+                        col &&
                         this.layer != 0
                     ) {
                         this.noCeilingRevealTicker = 0.25;
                     }
                 }
-                for (let w = 0; w < c.mask.length; w++) {
-                    if (collider.intersect(c.mask[w], a)) {
-                        i = true;
+                for (let j = 0; j < structure.mask.length; j++) {
+                    if (collider.intersect(structure.mask[j], visualCol)) {
+                        onMask = true;
                         break;
                     }
                 }
             }
         }
-        let f = this.layer;
-        let b = 18;
+        let renderLayer = this.layer;
+        let renderZOrd = 18;
         if (
-            o &&
-            ((f & 1 && (t.layer & 1 || !s)) || (t.layer & 2 && !i))
+            onStairs &&
+            ((renderLayer & 1 && (activePlayer.layer & 1 || !occluded)) || (activePlayer.layer & 2 && !onMask))
         ) {
-            f |= 2;
+            renderLayer |= 2;
         }
         if (
-            !!o &&
-            (f & 1) == (t.layer & 1) &&
-            (!i || t.layer == 0)
+            !!onStairs &&
+            (renderLayer & 1) == (activePlayer.layer & 1) &&
+            (!onMask || activePlayer.layer == 0)
         ) {
-            f |= 2;
-            b += 100;
+            renderLayer |= 2;
+            renderZOrd += 100;
         }
-        const x =
+        const renderZIdx =
             this.__id +
             (this.netData.ue ? 0 : 262144) +
-            (e ? 65536 : 0) +
+            (isActivePlayer ? 65536 : 0) +
             (this.rad > 1 ? 131072 : 0);
-        this.renderLayer = f;
-        this.renderZOrd = b;
-        this.renderZIdx = x;
+
+        this.renderLayer = renderLayer;
+        this.renderZOrd = renderZOrd;
+        this.renderZIdx = renderZIdx;
     }
 
-    Xr(e, t) {
-        const r = GameObjectDefs[this.netData.se];
-        const a = r.skinImg;
-        const i = this.bodyRad / GameConfig.player.radius;
-        this.bodySprite.texture = PIXI.Texture.from(a.baseSprite);
-        this.bodySprite.tint = r.ghillie
-            ? t.getMapDef().biome.colors.playerGhillie
-            : a.baseTint;
+    updateVisuals(playerBarn, map) {
+        const outfitDef = GameObjectDefs[this.netData.se];
+        const outfitImg = outfitDef.skinImg;
+        const bodyScale = this.bodyRad / GameConfig.player.radius;
+
+        this.bodySprite.texture = PIXI.Texture.from(outfitImg.baseSprite);
+        this.bodySprite.tint = outfitDef.ghillie
+            ? map.getMapDef().biome.colors.playerGhillie
+            : outfitImg.baseTint;
         this.bodySprite.scale.set(0.25, 0.25);
         this.bodySprite.visible = true;
+
         if (this.netData.xe && this.updateFrozenImage) {
-            const o = t.getMapDef().biome.frozenSprites || [];
-            if (o.length > 0) {
-                const s = o[Math.floor(Math.random() * o.length)];
+            const frozenSprites = map.getMapDef().biome.frozenSprites || [];
+            if (frozenSprites.length > 0) {
+                const sprite = frozenSprites[Math.floor(Math.random() * frozenSprites.length)];
                 const n =
                     math.oriToRad(this.netData.Se) +
                     Math.PI * 0.5 +
                     (Math.random() - 0.5) * Math.PI * 0.25;
                 this.bodyEffectSprite.texture =
-                    PIXI.Texture.from(s);
+                    PIXI.Texture.from(sprite);
                 this.bodyEffectSprite.rotation = n;
                 this.bodyEffectSprite.tint = 16777215;
                 this.bodyEffectSprite.scale.set(0.25, 0.25);
             }
             this.updateFrozenImage = false;
         }
-        if (t.factionMode && !r.ghillie) {
-            const l = e.qe(this.__id);
-            const c = l.teamId;
-            const m = [
+        
+        if (map.factionMode && !outfitDef.ghillie) {
+            const playerInfo = playerBarn.qe(this.__id);
+            const teamId = playerInfo.teamId;
+            const teamSprites = [
                 "player-patch-01.img",
                 "player-patch-02.img"
             ];
-            const g = (c - 1) % m.length;
-            const y = m[g];
-            const w = GameConfig.teamColors[g];
-            const f = math.oriToRad(3) + Math.PI * 0.5;
-            this.patchSprite.texture = PIXI.Texture.from(y);
-            this.patchSprite.rotation = f;
-            this.patchSprite.tint = w;
+            const teamIdx = (teamId - 1) % teamSprites.length;
+            const sprite = teamSprites[teamIdx];
+            const tint = GameConfig.teamColors[teamIdx];
+            const rot = math.oriToRad(3) + Math.PI * 0.5;
+            this.patchSprite.texture = PIXI.Texture.from(sprite);
+            this.patchSprite.rotation = rot;
+            this.patchSprite.tint = tint;
             this.patchSprite.scale.set(0.25, 0.25);
             this.patchSprite.visible = true;
         } else {
             this.patchSprite.visible = false;
         }
-        const _ = function(e, t, r) {
-            e.texture = PIXI.Texture.from(t);
-            e.scale.set(0.175, 0.175);
-            e.tint = r;
-            e.visible = true;
+
+        // Hands
+        const setHandSprite = function(sprite, img, tint) {
+            sprite.texture = PIXI.Texture.from(img);
+            sprite.scale.set(0.175, 0.175);
+            sprite.tint = tint;
+            sprite.visible = true;
         };
-        const x = r.ghillie
-            ? t.getMapDef().biome.colors.playerGhillie
-            : a.handTint;
-        _(this.handLSprite, a.handSprite, x);
-        _(this.handRSprite, a.handSprite, x);
-        const S = function(e, t, r) {
-            e.texture = PIXI.Texture.from("player-feet-01.img");
-            e.scale.set(0.45, 0.45);
-            e.rotation = Math.PI * 0.5;
-            e.tint = t;
-            e.visible = r;
+        const handTint = outfitDef.ghillie
+            ? map.getMapDef().biome.colors.playerGhillie
+            : outfitImg.handTint;
+        setHandSprite(this.handLSprite, outfitImg.handSprite, handTint);
+        setHandSprite(this.handRSprite, outfitImg.handSprite, handTint);
+
+        // Feet
+        const setFootSprite = function(sprite, tint, downed) {
+            sprite.texture = PIXI.Texture.from("player-feet-01.img");
+            sprite.scale.set(0.45, 0.45);
+            sprite.rotation = Math.PI * 0.5;
+            sprite.tint = tint;
+            sprite.visible = downed;
         };
-        const v = r.ghillie
-            ? t.getMapDef().biome.colors.playerGhillie
-            : a.footTint;
-        S(this.footLSprite, v, this.downed);
-        S(this.footRSprite, v, this.downed);
-        if (this.hasPerk("flak_jacket") && !r.ghillie) {
+
+        const footTint = outfitDef.ghillie
+            ? map.getMapDef().biome.colors.playerGhillie
+            : outfitImg.footTint;
+        setFootSprite(this.footLSprite, footTint, this.downed);
+        setFootSprite(this.footRSprite, footTint, this.downed);
+    
+        // Flak Jacket
+        if (this.hasPerk("flak_jacket") && !outfitDef.ghillie) {
             this.flakSprite.texture = PIXI.Texture.from(
                 "player-armor-base-01.img"
             );
@@ -1183,97 +1320,109 @@ export class Player {
         } else {
             this.flakSprite.visible = false;
         }
-        if (this.netData.ce == "" || r.ghillie) {
+
+        // Chest
+        if (this.netData.ce == "" || outfitDef.ghillie) {
             this.chestSprite.visible = false;
         } else {
-            const k = GameObjectDefs[this.netData.ce];
-            const z = k.skinImg;
+            const chestDef = GameObjectDefs[this.netData.ce];
+            const chestSkin = chestDef.skinImg;
             this.chestSprite.texture = PIXI.Texture.from(
-                z.baseSprite
+                chestSkin.baseSprite
             );
             this.chestSprite.scale.set(0.25, 0.25);
-            this.chestSprite.tint = z.baseTint;
+            this.chestSprite.tint = chestSkin.baseTint;
             this.chestSprite.visible = true;
         }
-        if (this.hasPerk("steelskin") && !r.ghillie) {
+
+        // Steelskin
+        if (this.hasPerk("steelskin") && !outfitDef.ghillie) {
             this.steelskinSprite.texture = PIXI.Texture.from(
                 "loot-melee-pan-black.img"
             );
             this.steelskinSprite.scale.set(0.4, 0.4);
             this.steelskinSprite.anchor.set(0.575, 0.5);
-            this.steelskinSprite.tint = 16777215;
+            this.steelskinSprite.tint = 0xFFFFFF;
             this.steelskinSprite.visible = true;
         } else {
             this.steelskinSprite.visible = false;
         }
-        if (this.netData.le == "" || r.ghillie) {
+
+        // Helmet
+        if (this.netData.le == "" || outfitDef.ghillie) {
             this.helmetSprite.visible = false;
         } else {
-            const I = GameObjectDefs[this.netData.le];
-            const T = I.skinImg;
-            const M = (this.downed ? 1 : -1) * 3.33;
+            const helmetDef = GameObjectDefs[this.netData.le];
+            const helmetSkin = helmetDef.skinImg;
+            const helmetOffset = (this.downed ? 1 : -1) * 3.33;
             this.helmetSprite.texture = PIXI.Texture.from(
-                T.baseSprite
+                helmetSkin.baseSprite
             );
-            this.helmetSprite.position.set(M, 0);
-            if (T.spriteScale) {
+            this.helmetSprite.position.set(helmetOffset, 0);
+            if (helmetSkin.spriteScale) {
                 this.helmetSprite.scale.set(
-                    T.spriteScale,
-                    T.spriteScale
+                    helmetSkin.spriteScale,
+                    helmetSkin.spriteScale
                 );
             } else {
                 this.helmetSprite.scale.set(0.15, 0.15);
             }
-            let P = T.baseTint;
-            if (t.factionMode) {
-                P =
-                    e.qe(this.__id).teamId == 1
-                        ? T.baseTintRed
-                        : T.baseTintBlue;
+            let helmetTint = helmetSkin.baseTint;
+            if (map.factionMode) {
+                helmetTint =
+                    playerBarn.qe(this.__id).teamId == 1
+                        ? helmetSkin.baseTintRed
+                        : helmetSkin.baseTintBlue;
             }
-            this.helmetSprite.tint = P;
+            this.helmetSprite.tint = helmetTint;
             this.helmetSprite.visible = true;
         }
-        if (this.Vr() > 0 && !r.ghillie && !this.downed) {
-            const A = [10.25, 11.5, 12.75];
-            const O = this.Vr();
-            const D = A[math.min(O - 1, A.length - 1)];
-            const E = (0.4 + O * 0.03) * 0.5;
+
+        // Backpack
+        if (this.getBagLevel() > 0 && !outfitDef.ghillie && !this.downed) {
+            const bagOffsets = [10.25, 11.5, 12.75];
+            const bagLevel = this.getBagLevel();
+            const bagOffset = bagOffsets[math.min(bagLevel - 1, bagOffsets.length - 1)];
+            const scale = (0.4 + bagLevel * 0.03) * 0.5;
+
             this.backpackSprite.texture = PIXI.Texture.from(
                 "player-circle-base-01.img"
             );
-            this.backpackSprite.position.set(-D, 0);
-            this.backpackSprite.scale.set(E, E);
-            this.backpackSprite.tint = a.backpackTint;
+            this.backpackSprite.position.set(-bagOffset, 0);
+            this.backpackSprite.scale.set(scale, scale);
+            this.backpackSprite.tint = outfitImg.backpackTint;
             this.backpackSprite.visible = true;
-            (function(e, t, r) {
-                e.texture = PIXI.Texture.from(t);
-                e.tint = r;
+            (function(sprite, img, tint) {
+                sprite.texture = PIXI.Texture.from(img);
+                sprite.tint = tint;
             })(
                 this.backpackSprite,
-                a.backpackSprite,
-                a.backpackTint
+                outfitImg.backpackSprite,
+                outfitImg.backpackTint
             );
         } else {
             this.backpackSprite.visible = false;
         }
+
+        // Hip
         if (this.netData._e) {
-            const B = GameObjectDefs.pan.hipImg;
-            this.hipSprite.texture = PIXI.Texture.from(B.sprite);
-            this.hipSprite.position.set(B.pos.x, B.pos.y);
-            this.hipSprite.scale.set(B.scale.x, B.scale.y);
-            this.hipSprite.rotation = B.rot;
-            this.hipSprite.tint = B.tint;
+            const imgDef = GameObjectDefs.pan.hipImg;
+            this.hipSprite.texture = PIXI.Texture.from(imgDef.sprite);
+            this.hipSprite.position.set(imgDef.pos.x, imgDef.pos.y);
+            this.hipSprite.scale.set(imgDef.scale.x, imgDef.scale.y);
+            this.hipSprite.rotation = imgDef.rot;
+            this.hipSprite.tint = imgDef.tint;
             this.hipSprite.visible = true;
         } else {
             this.hipSprite.visible = false;
         }
+
         const R = GameObjectDefs[this.netData.me];
         if (R.type == "gun") {
-            this.gunRSprites.setType(this.netData.me, i);
+            this.gunRSprites.setType(this.netData.me, bodyScale);
             this.gunRSprites.setVisible(true);
             if (R.isDual) {
-                this.gunLSprites.setType(this.netData.me, i);
+                this.gunLSprites.setType(this.netData.me, bodyScale);
                 this.gunLSprites.setVisible(true);
             } else {
                 this.gunLSprites.setVisible(false);
@@ -1337,8 +1486,8 @@ export class Player {
             );
             this.meleeSprite.pivot.set(-V.pos.x, -V.pos.y);
             this.meleeSprite.scale.set(
-                V.scale.x / i,
-                V.scale.y / i
+                V.scale.x / bodyScale,
+                V.scale.y / bodyScale
             );
             this.meleeSprite.rotation = V.rot;
             this.meleeSprite.tint = V.tint;
@@ -1390,6 +1539,8 @@ export class Player {
             this.objectLSprite.visible = false;
             this.objectRSprite.visible = false;
         }
+
+        // Hide weapons when reviving or downed
         if (this.downed || this.currentAnim() == Anim.Revive) {
             this.gunLSprites.setVisible(false);
             this.gunRSprites.setVisible(false);
@@ -1397,9 +1548,13 @@ export class Player {
             this.objectLSprite.visible = false;
             this.objectRSprite.visible = false;
         }
+
+        // Hide additional gear when downed
         if (this.downed) {
             this.backpackSprite.visible = false;
         }
+
+        // Role specific visuals
         if (
             (this.action.type != Action.UseItem &&
                 this.action.type != Action.Revive) ||
@@ -1411,39 +1566,43 @@ export class Player {
             this.auraPulseDir = 1;
             this.auraCircle.visible = false;
         } else {
-            const Y = GameObjectDefs[this.action.item];
-            const J = Y?.aura
-                ? Y.aura.sprite
+            const actionItemDef = GameObjectDefs[this.action.item];
+            // Assume if there's no item defined, it's a revive circle
+            const sprite = actionItemDef?.aura
+                ? actionItemDef.aura.sprite
                 : "part-aura-circle-01.img";
-            const Q = Y?.aura ? Y.aura.tint : 16711935;
-            let $ = Y
+            const tint = actionItemDef?.aura ? actionItemDef.aura.tint : 0xff00ff;
+            const auraScale = 0.125;
+            let auraRad = actionItemDef
                 ? GameConfig.player.medicHealRange
                 : GameConfig.player.medicReviveRange;
-            $ *= 0.125;
-            this.auraCircle.texture = PIXI.Texture.from(J);
-            this.auraCircle.scale.set($, $);
-            this.auraCircle.tint = Q;
+            auraRad *= auraScale;
+            this.auraCircle.texture = PIXI.Texture.from(sprite);
+            this.auraCircle.scale.set(auraRad, auraRad);
+            this.auraCircle.tint = tint;
             this.auraCircle.visible = true;
         }
+
+        // Class visors
         if (
-            t.perkMode &&
+            map.perkMode &&
             this.netData.Te != "" &&
             this.netData.le != "" &&
-            !r.ghillie
+            !outfitDef.ghillie
         ) {
-            const ee = GameObjectDefs[this.netData.Te];
-            const te = ee.visorImg;
-            if (te) {
-                const re = (this.downed ? 1 : -1) * 3.33;
+            const roleDef = GameObjectDefs[this.netData.Te];
+            const visorSkin = roleDef.visorImg;
+            if (visorSkin) {
+                const helmetOffset = (this.downed ? 1 : -1) * 3.33;
                 this.visorSprite.texture = PIXI.Texture.from(
-                    te.baseSprite
+                    visorSkin.baseSprite
                 );
-                this.visorSprite.position.set(re, 0);
+                this.visorSprite.position.set(helmetOffset, 0);
             }
-            if (te.spriteScale) {
+            if (visorSkin.spriteScale) {
                 this.visorSprite.scale.set(
-                    te.spriteScale,
-                    te.spriteScale
+                    visorSkin.spriteScale,
+                    visorSkin.spriteScale
                 );
             } else {
                 this.visorSprite.scale.set(0.15, 0.15);
@@ -1452,31 +1611,36 @@ export class Player {
         } else {
             this.visorSprite.visible = false;
         }
-        this.bodyContainer.scale.set(i, i);
+        this.bodyContainer.scale.set(bodyScale, bodyScale);
     }
 
-    Kr(e, t, r) {
-        let a = true;
-        if (!t) {
-            a = coldet.testCircleAabb(
+    updateAura(dt, isActivePlayer, activePlayer) {
+        // Fade in/out when entering/exiting the screen edge of the active player.
+        // This fixes popping caused by the player being culled before the aura
+        // is off screen.
+        let inView = true;
+        if (!isActivePlayer) {
+            inView = coldet.testCircleAabb(
                 this.pos,
                 this.rad,
-                r.viewAabb.min,
-                r.viewAabb.max
+                activePlayer.viewAabb.min,
+                activePlayer.viewAabb.max
             );
         }
         this.auraViewFade = math.lerp(
-            e * 6,
+            dt * 6,
             this.auraViewFade,
-            a ? 1 : 0
+            inView ? 1 : 0
         );
+
+        // Pulse healing circle
         if (this.auraCircle.visible) {
             this.auraPulseTicker = math.clamp(
-                this.auraPulseTicker + e * this.auraPulseDir * 1.5,
+                this.auraPulseTicker + dt * this.auraPulseDir * 1.5,
                 0,
                 1
             );
-            const i =
+            const pulseAlpha =
                 math.easeOutExpo(this.auraPulseTicker) * 0.75 + 0.25;
             if (
                 this.auraPulseTicker >= 1 ||
@@ -1484,7 +1648,8 @@ export class Player {
             ) {
                 this.auraPulseDir *= -1;
             }
-            this.auraCircle.alpha = i * this.auraViewFade;
+
+            this.auraCircle.alpha = pulseAlpha * this.auraViewFade;
         }
     }
 
@@ -1519,104 +1684,117 @@ export class Player {
         );
     }
 
-    playActionStartEffect(e, t, r) {
-        let a = null;
+    playActionStartEffect(isActivePlayer, particleBarn, audioManager) {
+        // Play action sound
+        let actionSound = null;
         switch (this.action.type) {
         case Action.Reload:
         case Action.ReloadAlt: {
-            const i = GameObjectDefs[this.action.item];
-            if (i) {
-                a = {
+            const actionItemDef = GameObjectDefs[this.action.item];
+            if (actionItemDef) {
+                actionSound = {
                     sound:
                             this.action.type == Action.ReloadAlt
-                                ? i.sound.reloadAlt
-                                : i.sound.reload,
-                    channel: e ? "activePlayer" : "otherPlayers"
+                                ? actionItemDef.sound.reloadAlt
+                                : actionItemDef.sound.reload,
+                    channel: isActivePlayer ? "activePlayer" : "otherPlayers"
                 };
             }
         }
             break;
         case Action.UseItem: {
-            const o = GameObjectDefs[this.action.item];
-            if (o) {
-                a = {
-                    sound: o.sound.use,
-                    channel: e ? "activePlayer" : "otherPlayers"
+            const actionItemDef = GameObjectDefs[this.action.item];
+            if (actionItemDef) {
+                actionSound = {
+                    sound: actionItemDef.sound.use,
+                    channel: isActivePlayer ? "activePlayer" : "otherPlayers"
                 };
             }
         }
         }
-        r.stopSound(this.actionSoundInstance);
-        if (a && this.playActionStartSfx) {
-            this.actionSoundInstance = r.playSound(a.sound, {
-                channel: a.channel,
+
+        audioManager.stopSound(this.actionSoundInstance);
+        
+        if (actionSound && this.playActionStartSfx) {
+            this.actionSoundInstance = audioManager.playSound(actionSound.sound, {
+                channel: actionSound.channel,
                 soundPos: this.pos,
                 fallOff: 2,
                 layer: this.layer,
                 filter: "muffled"
             });
         }
+
+        // Create a casing shell if reloading certain types of weapons
         if (
             this.action.type == Action.Reload ||
             this.action.type == Action.ReloadAlt
         ) {
-            const s = GameObjectDefs[this.action.item];
-            if (s && s.caseTiming == "reload") {
-                for (let n = 0; n < s.maxReload; n++) {
-                    const l = n % 2 == 0 ? -1 : 1;
-                    const c = Math.PI + (Math.PI / 4) * l;
-                    const m =
-                        s.maxReload <= 2
+            const actionItemDef = GameObjectDefs[this.action.item];
+            if (actionItemDef && actionItemDef.caseTiming == "reload") {
+                for (let n = 0; n < actionItemDef.maxReload; n++) {
+                    const shellDir = n % 2 == 0 ? -1 : 1;
+                    const shellAngle = Math.PI + (Math.PI / 4) * shellDir;
+                    const shellSpeedMult =
+                        actionItemDef.maxReload <= 2
                             ? 1
                             : math.lerp(Math.random(), 0.8, 1.2);
                     createCasingParticle(
                         this.action.item,
-                        c,
-                        m,
+                        shellAngle,
+                        shellSpeedMult,
                         this.pos,
                         this.dir,
                         this.renderLayer,
                         this.renderZOrd + 1,
-                        t
+                        particleBarn
                     );
                 }
             }
         }
     }
 
-    updateActionEffect(e, t, r, a) {
-        let i = "";
-        const o = {};
+    updateActionEffect(isActivePlayer, playerInfo, r, audioManager) {
+        // Determine if we should have an emitter
+        let emitterType = "";
+        const emitterProps = {};
+
         switch (this.action.type) {
         case Action.UseItem: {
-            const s = GameObjectDefs[this.action.item];
-            const n = t.loadout;
-            if (s.type == "heal") {
-                i = GameObjectDefs[n.heal].emitter;
-            } else if (s.type == "boost") {
-                i = GameObjectDefs[n.boost].emitter;
+            const actionItemDef = GameObjectDefs[this.action.item];
+            const loadout = playerInfo.loadout;
+            if (actionItemDef.type == "heal") {
+                emitterType = GameObjectDefs[loadout.heal].emitter;
+            } else if (actionItemDef.type == "boost") {
+                emitterType = GameObjectDefs[loadout.boost].emitter;
             }
             if (this.hasPerk("aoe_heal")) {
-                o.scale = 1.5;
-                o.radius = GameConfig.player.medicHealRange / o.scale;
-                o.rateMult = 0.25;
+                emitterProps.scale = 1.5;
+                emitterProps.radius = GameConfig.player.medicHealRange / emitterProps.scale;
+                emitterProps.rateMult = 0.25;
             }
             break;
         }
-        case Action.Revive:
+        case Action.Revive: {
             if (this.netData.ue) {
-                i = "revive_basic";
+                emitterType = "revive_basic";
             }
+            break;
         }
+        }
+
+        // Add emitter
         if (
-            !!i &&
-            (!this.useItemEmitter || this.useItemEmitter.type != i)
+            !!emitterType &&
+            (!this.useItemEmitter || this.useItemEmitter.type != emitterType)
         ) {
             this.useItemEmitter?.stop();
-            o.pos = this.pos;
-            o.layer = this.layer;
-            this.useItemEmitter = r.addEmitter(i, o);
+            emitterProps.pos = this.pos;
+            emitterProps.layer = this.layer;
+            this.useItemEmitter = r.addEmitter(emitterType, emitterProps);
         }
+
+        // Update existing emitter
         if (this.useItemEmitter) {
             this.useItemEmitter.pos = v2.add(
                 this.pos,
@@ -1625,15 +1803,20 @@ export class Player {
             this.useItemEmitter.layer = this.renderLayer;
             this.useItemEmitter.zOrd = this.renderZOrd + 1;
         }
-        if (this.useItemEmitter && !i) {
+
+        // Stop emitter
+        if (this.useItemEmitter && !emitterType) {
             this.useItemEmitter.stop();
             this.useItemEmitter = null;
         }
-        if (!a.isSoundPlaying(this.actionSoundInstance)) {
+
+        // Update action sound effect position
+        if (!audioManager.isSoundPlaying(this.actionSoundInstance)) {
             this.actionSoundInstance = null;
         }
-        if (this.actionSoundInstance && !e) {
-            a.updateSound(
+
+        if (this.actionSoundInstance && !isActivePlayer) {
+            audioManager.updateSound(
                 this.actionSoundInstance,
                 "otherPlayers",
                 this.pos,
@@ -1646,42 +1829,42 @@ export class Player {
         }
     }
 
-    playItemPickupSound(e, t) {
-        const r = GameObjectDefs[e];
-        if (r) {
-            t.playSound(r.sound.pickup, {
+    playItemPickupSound(item, audioManager) {
+        const itemDef = GameObjectDefs[item];
+        if (itemDef) {
+            audioManager.playSound(itemDef.sound.pickup, {
                 channel: "ui"
             });
-            if (r.type == "throwable") {
+            if (itemDef.type == "throwable") {
                 this.lastThrowablePickupSfxTicker = 0.3;
             }
         }
     }
 
     selectIdlePose() {
-        const e = GameObjectDefs[this.netData.me];
-        let t = "fists";
-        t = this.downed
+        const curWeapDef = GameObjectDefs[this.netData.me];
+        let idlePose = "fists";
+        idlePose = this.downed
             ? "downed"
-            : e.anim?.idlePose
-                ? e.anim.idlePose
-                : e.type == "gun"
-                    ? e.pistol
-                        ? e.isDual
+            : curWeapDef.anim?.idlePose
+                ? curWeapDef.anim.idlePose
+                : curWeapDef.type == "gun"
+                    ? curWeapDef.pistol
+                        ? curWeapDef.isDual
                             ? "dualPistol"
                             : "pistol"
-                        : e.isBullpup
+                        : curWeapDef.isBullpup
                             ? "bullpup"
-                            : e.isLauncher
+                            : curWeapDef.isLauncher
                                 ? "launcher"
-                                : e.isDual
+                                : curWeapDef.isDual
                                     ? "dualRifle"
                                     : "rifle"
-                    : e.type == "throwable"
+                    : curWeapDef.type == "throwable"
                         ? "throwable"
                         : "fists";
-        if (animData.IdlePoses[t]) {
-            return t;
+        if (animData.IdlePoses[idlePose]) {
+            return idlePose;
         } else {
             return "fists";
         }
@@ -1795,11 +1978,11 @@ export class Player {
         }
     }
 
-    animPlaySound(e, t) {
-        const r = GameObjectDefs[this.netData.me];
-        const a = r.sound[t.sound];
-        if (a) {
-            e.audioManager.playSound(a, {
+    animPlaySound(animCtx, args) {
+        const itemDef = GameObjectDefs[this.netData.me];
+        const sound = itemDef.sound[args.sound];
+        if (sound) {
+            animCtx.audioManager.playSound(sound, {
                 channel: "sfx",
                 soundPos: this.pos,
                 fallOff: 3,
@@ -1809,34 +1992,35 @@ export class Player {
         }
     }
 
-    animSetThrowableState(e, t) {
-        this.throwableState = t.state;
+    animSetThrowableState(animCtx, args) {
+        this.throwableState = args.state;
     }
 
-    animThrowableParticles(e, t) {
+    animThrowableParticles(animCtx, args) {
         if (GameObjectDefs[this.netData.me].useThrowParticles) {
-            const r = v2.rotate(
+            // Pin
+            const pinOff = v2.rotate(
                 v2.create(0.75, 0.75),
                 Math.atan2(this.dir.y, this.dir.x)
             );
-            e.particleBarn.addParticle(
+            animCtx.particleBarn.addParticle(
                 "fragPin",
                 this.renderLayer,
-                v2.add(this.pos, r),
+                v2.add(this.pos, pinOff),
                 v2.mul(v2.rotate(this.dir, Math.PI * 0.5), 4.5),
                 1,
                 Math.random() * Math.PI * 2,
                 null,
                 this.renderZOrd + 1
             );
-            const a = v2.rotate(
+            const leverOff = v2.rotate(
                 v2.create(0.75, -0.75),
                 Math.atan2(this.dir.y, this.dir.x)
             );
-            e.particleBarn.addParticle(
+            animCtx.particleBarn.addParticle(
                 "fragLever",
                 this.renderLayer,
-                v2.add(this.pos, a),
+                v2.add(this.pos, leverOff),
                 v2.mul(v2.rotate(this.dir, -Math.PI * 0.25), 3.5),
                 1,
                 Math.random() * Math.PI * 2,
@@ -1846,14 +2030,17 @@ export class Player {
         }
     }
 
-    animMeleeCollision(e, t) {
-        const r = GameObjectDefs[this.netData.me];
-        if (r && r.type == "melee") {
-            const a = this.getMeleeCollider();
-            const i = a.rad + v2.length(v2.sub(this.pos, a.pos));
-            const o = [];
-            for (let s = e.map.Ve.p(), n = 0; n < s.length; n++) {
-                const l = s[n];
+    animMeleeCollision(animCtx, args) {
+        const meleeDef = GameObjectDefs[this.netData.me];
+        if (meleeDef && meleeDef.type == "melee") {
+            const meleeCol = this.getMeleeCollider();
+            const meleeDist = meleeCol.rad + v2.length(v2.sub(this.pos, meleeCol.pos));
+            const hits = [];
+
+            // Obstacles
+            let obstacles = animCtx.map.Ve.p();
+            for (let n = 0; n < obstacles.length; n++) {
+                const l = obstacles[n];
                 if (
                     !!l.active &&
                     !l.dead &&
@@ -1861,140 +2048,146 @@ export class Player {
                     l.height >= GameConfig.player.meleeHeight &&
                     util.sameLayer(l.layer, this.layer & 1)
                 ) {
-                    let c = collider.intersectCircle(
+                    let res = collider.intersectCircle(
                         l.collider,
-                        a.pos,
-                        a.rad
+                        meleeCol.pos,
+                        meleeCol.rad
                     );
-                    if (r.cleave || r.wallCheck) {
-                        const m = v2.normalizeSafe(
+
+                    // Certain melee weapons should perform a more expensive wall check
+                    // to not hit obstacles behind walls.
+                    if (meleeDef.cleave || meleeDef.wallCheck) {
+                        const meleeDir = v2.normalizeSafe(
                             v2.sub(l.pos, this.pos),
                             v2.create(1, 0)
                         );
-                        const p = collisionHelpers.intersectSegment(
-                            e.map.Ve.p(),
+                        const wallCheck = collisionHelpers.intersectSegment(
+                            animCtx.map.Ve.p(),
                             this.pos,
-                            m,
-                            i,
+                            meleeDir,
+                            meleeDist,
                             1,
                             this.layer,
                             false
                         );
-                        if (p && p.id !== l.__id) {
-                            c = null;
+                        if (wallCheck && wallCheck.id !== l.__id) {
+                            res = null;
                         }
                     }
-                    if (c) {
-                        const d = MapObjectDefs[l.type];
-                        const u = v2.add(
-                            a.pos,
-                            v2.mul(v2.neg(c.dir), a.rad - c.pen)
+                    if (res) {
+                        const def = MapObjectDefs[l.type];
+                        const closestPt = v2.add(
+                            meleeCol.pos,
+                            v2.mul(v2.neg(res.dir), meleeCol.rad - res.pen)
                         );
-                        const g = v2.rotate(
-                            v2.mul(c.dir, 7.5),
+                        const vel = v2.rotate(
+                            v2.mul(res.dir, 7.5),
                             ((Math.random() - 0.5) * Math.PI) / 3
                         );
-                        o.push({
-                            pen: c.pen,
+                        hits.push({
+                            pen: res.pen,
                             prio: 1,
-                            pos: u,
-                            vel: g,
+                            pos: closestPt,
+                            vel: vel,
                             layer: this.renderLayer,
                             zOrd: this.renderZOrd,
-                            particle: d.hitParticle,
-                            sound: d.sound.punch,
+                            particle: def.hitParticle,
+                            sound: def.sound.punch,
                             soundFn: "playGroup"
                         });
                     }
                 }
             }
+            let ourTeamId = animCtx.playerBarn.qe(this.__id).teamId;
+            let players = animCtx.playerBarn.playerPool.p();
             for (
-                let y = e.playerBarn.qe(this.__id).teamId,
-                    w = e.playerBarn.$e.p(),
-                    v = 0;
-                v < w.length;
-                v++
+                let i = 0;
+                i < players.length;
+                i++
             ) {
-                const z = w[v];
+                const playerCol = players[i];
                 if (
-                    z.active &&
-                    z.__id != this.__id &&
-                    !z.netData.he &&
-                    util.sameLayer(z.layer, this.layer)
+                    playerCol.active &&
+                    playerCol.__id != this.__id &&
+                    !playerCol.netData.he &&
+                    util.sameLayer(playerCol.layer, this.layer)
                 ) {
-                    const I = v2.normalizeSafe(
-                        v2.sub(z.pos, this.pos),
+                    const meleeDir = v2.normalizeSafe(
+                        v2.sub(playerCol.pos, this.pos),
                         v2.create(1, 0)
                     );
-                    const T = coldet.intersectCircleCircle(
-                        a.pos,
-                        a.rad,
-                        z.pos,
-                        z.rad
+                    const col = coldet.intersectCircleCircle(
+                        meleeCol.pos,
+                        meleeCol.rad,
+                        playerCol.pos,
+                        playerCol.rad
                     );
                     if (
-                        T &&
+                        col &&
                         math.eqAbs(
-                            i,
+                            meleeDist,
                             collisionHelpers.intersectSegmentDist(
-                                e.map.Ve.p(),
+                                animCtx.map.Ve.p(),
                                 this.pos,
-                                I,
-                                i,
+                                meleeDir,
+                                meleeDist,
                                 GameConfig.player.meleeHeight,
                                 this.layer,
                                 false
                             )
                         )
                     ) {
-                        const M = e.playerBarn.qe(z.__id).teamId;
-                        const P = v2.rotate(
-                            I,
+                        const teamId = animCtx.playerBarn.qe(playerCol.__id).teamId;
+                        const vel = v2.rotate(
+                            meleeDir,
                             ((Math.random() - 0.5) * Math.PI) / 3
                         );
-                        const O =
-                            r.sound[t.playerHit] ||
-                            r.sound.playerHit;
-                        o.push({
-                            pen: T.pen,
-                            prio: M == y ? 2 : 0,
-                            pos: v2.copy(z.pos),
-                            vel: P,
-                            layer: z.renderLayer,
-                            zOrd: z.renderZOrd,
+                        const hitSound =
+                            meleeDef.sound[args.playerHit] ||
+                            meleeDef.sound.playerHit;
+                        hits.push({
+                            pen: col.pen,
+                            prio: teamId == ourTeamId ? 2 : 0,
+                            pos: v2.copy(playerCol.pos),
+                            vel: vel,
+                            layer: playerCol.renderLayer,
+                            zOrd: playerCol.renderZOrd,
                             particle: "bloodSplat",
-                            sound: O,
+                            sound: hitSound,
                             soundFn: "playSound"
                         });
                     }
                 }
             }
-            o.sort((e, t) => {
-                if (e.prio == t.prio) {
-                    return t.pen - e.pen;
+
+            hits.sort((a, b) => {
+                if (a.prio == b.prio) {
+                    return b.pen - a.pen;
                 } else {
-                    return e.prio - t.prio;
+                    return a.prio - b.prio;
                 }
             });
-            let D = o.length;
-            if (!r.cleave) {
-                D = math.min(D, 1);
+            
+            let hitCount = hits.length;
+            if (!meleeDef.cleave) {
+                hitCount = math.min(hitCount, 1);
             }
-            for (let E = 0; E < D; E++) {
-                const B = o[E];
-                e.particleBarn.addParticle(
-                    B.particle,
-                    B.layer,
-                    B.pos,
-                    B.vel,
+
+            for (let i = 0; i < hitCount; i++) {
+                const hit = hits[i];
+                animCtx.particleBarn.addParticle(
+                    hit.particle,
+                    hit.layer,
+                    hit.pos,
+                    hit.vel,
                     1,
                     Math.random() * Math.PI * 2,
                     null,
-                    B.zOrd + 1
+                    hit.zOrd + 1
                 );
-                e.audioManager[B.soundFn](B.sound, {
+                animCtx.audioManager[hit.soundFn](hit.sound, {
                     channel: "hits",
-                    soundPos: B.pos,
+                    soundPos: hit.pos,
                     layer: this.layer,
                     filter: "muffled"
                 });
@@ -2003,109 +2196,120 @@ export class Player {
     }
 
     initSubmergeSprites() {
-        const e = function(e, t) {
-            e.texture = PIXI.Texture.from(t);
-            e.anchor.set(0.5, 0.5);
-            e.tint = 16777215;
-            e.alpha = 0;
-            e.visible = false;
+        const initSprite = function(sprite, img) {
+            sprite.texture = PIXI.Texture.from(img);
+            sprite.anchor.set(0.5, 0.5);
+            sprite.tint = 16777215;
+            sprite.alpha = 0;
+            sprite.visible = false;
         };
-        e(this.bodySubmergeSprite, "player-wading-01.img");
-        e(this.handLSubmergeSprite, "player-hands-01.img");
-        e(this.handRSubmergeSprite, "player-hands-01.img");
-        e(this.footLSubmergeSprite, "player-feet-01.img");
-        e(this.footRSubmergeSprite, "player-feet-01.img");
-        const t = new PIXI.Graphics();
-        t.beginFill(16711680, 0.5);
-        t.drawCircle(0, 0, 7.6000000000000005);
-        t.position.set(0, 0);
-        this.bodySubmergeSprite.addChild(t);
-        this.bodySubmergeSprite.mask = t;
+        initSprite(this.bodySubmergeSprite, "player-wading-01.img");
+        initSprite(this.handLSubmergeSprite, "player-hands-01.img");
+        initSprite(this.handRSubmergeSprite, "player-hands-01.img");
+        initSprite(this.footLSubmergeSprite, "player-feet-01.img");
+        initSprite(this.footRSubmergeSprite, "player-feet-01.img");
+
+        // submergeMaskScaleFactor reduces the number of verts generated
+        // by PIXI.Graphics; we scale it back up to the world size remains
+        // the same
+        const mask = new PIXI.Graphics();
+        mask.beginFill(0xff0000, 0.5);
+        mask.drawCircle(0, 0, 38.0 * 2.0 * submergeMaskScaleFactor);
+        mask.position.set(0, 0);
+        this.bodySubmergeSprite.addChild(mask);
+        this.bodySubmergeSprite.mask = mask;
         this.bodySubmergeSprite.scale.set(0.5, 0.5);
     }
 
-    updateSubmersion(e, t) {
-        const r = this.surface.type == "water";
-        let a = 0;
-        if (r) {
-            const i = this.surface.data.river;
-            const o = i && !t.isInOcean(this.pos);
-            const s = o
-                ? i.distanceToShore(this.pos)
-                : t.distanceToShore(this.pos);
-            const n = o ? 12 : 16;
-            a = math.remap(s, 0, n, 0.6, 1);
+    updateSubmersion(dt, map) {
+        const inWater = this.surface.type == "water";
+
+        // Compute submersion
+        let submersionAmount = 0;
+        if (inWater) {
+            const river = this.surface.data.river;
+            const inRiver = river && !map.isInOcean(this.pos);
+            const dist = inRiver
+                ? river.distanceToShore(this.pos)
+                : map.distanceToShore(this.pos);
+            const maxDist = inRiver ? 12 : 16;
+            submersionAmount = math.remap(dist, 0, maxDist, 0.6, 1);
         }
-        this.submersion = math.lerp(e * 4, this.submersion, a);
-        const l = this.submersion * 0.8;
-        const c = (0.9 - this.submersion * 0.4) * 2;
-        const m = 1 / (c * 0.1);
-        this.bodySubmergeSprite.scale.set(c, c);
-        this.bodySubmergeSprite.mask.scale.set(m, m);
-        this.bodySubmergeSprite.alpha = l;
-        this.bodySubmergeSprite.visible = l > 0.001;
-        if (r) {
+        this.submersion = math.lerp(dt * 4, this.submersion, submersionAmount);
+        
+        // Update sprites
+        const submersionAlpha = this.submersion * 0.8;
+        const submersionScale = (0.9 - this.submersion * 0.4) * 2;
+        const maskScale = 1 / (submersionScale * submergeMaskScaleFactor);
+        this.bodySubmergeSprite.scale.set(submersionScale, submersionScale);
+        this.bodySubmergeSprite.mask.scale.set(maskScale, maskScale);
+        this.bodySubmergeSprite.alpha = submersionAlpha;
+        this.bodySubmergeSprite.visible = submersionAlpha > 0.001;
+        if (inWater) {
             this.bodySubmergeSprite.tint =
                 this.surface.data.waterColor;
         }
+
+        let limbs = [
+                this.handLSubmergeSprite,
+                this.handRSubmergeSprite,
+                this.footLSubmergeSprite,
+                this.footRSubmergeSprite
+        ];
         for (
-            let p = [
-                    this.handLSubmergeSprite,
-                    this.handRSubmergeSprite,
-                    this.footLSubmergeSprite,
-                    this.footRSubmergeSprite
-                ],
-                h = 0;
-            h < p.length;
-            h++
+            let i = 0;
+            i < limbs.length;
+            i++
         ) {
-            const d = p[h];
-            d.alpha = this.downed ? l : 0;
-            d.visible = d.alpha > 0.001;
-            if (r) {
-                d.tint = this.surface.data.waterColor;
+            const limb = limbs[i];
+            limb.alpha = this.downed ? submersionAlpha : 0;
+            limb.visible = limb.alpha > 0.001;
+            if (inWater) {
+                limb.tint = this.surface.data.waterColor;
             }
         }
     }
 
-    updateFrozenState(e) {
+    updateFrozenState(dt) {
+        const fadeDuration = 0.25;
         if (this.netData.xe) {
-            this.frozenTicker = 0.25;
+            this.frozenTicker = fadeDuration;
         } else {
-            this.frozenTicker -= e;
+            this.frozenTicker -= dt;
             this.updateFrozenImage = true;
         }
         this.bodyEffectSprite.alpha = this.netData.xe
             ? 1
-            : math.remap(this.frozenTicker, 0, 0.25, 0, 1);
+            : math.remap(this.frozenTicker, 0, fadeDuration, 0, 1);
         this.bodyEffectSprite.visible = this.frozenTicker > 0;
     }
 
-    addRecoil(e, t, r) {
-        if (t) {
-            this.gunRecoilL += e;
+    addRecoil(amount, leftHand, rightHand) {
+        if (leftHand) {
+            this.gunRecoilL += amount;
         }
-        if (r) {
-            this.gunRecoilR += e;
+        if (rightHand) {
+            this.gunRecoilR += amount;
         }
     }
 
-    isUnderground(e) {
+    isUnderground(map) {
         if (this.layer != 1) {
             return false;
         }
-        for (let t = e.lr.p(), r = 0; r < t.length; r++) {
-            const a = t[r];
-            if (a.layers.length >= 2) {
-                const i = a.layers[1];
+        const structures = map.lr.p();
+        for (let i = 0; i < structures.length; i++) {
+            const s = structures[i];
+            if (s.layers.length >= 2) {
+                const layer = s.layers[1];
                 if (
                     collider.intersectCircle(
-                        i.collision,
+                        layer.collision,
                         this.pos,
                         this.rad
                     )
                 ) {
-                    return i.underground;
+                    return layer.underground;
                 }
             }
         }
@@ -2115,8 +2319,8 @@ export class Player {
 
 export class PlayerBarn {
     constructor() {
-        this.$e = new Pool(Player);
-        this.Rr = {};
+        this.playerPool = new Pool(Player);
+        this.playerInfo = {};
         this.playerIds = [];
         this.teamInfo = {};
         this.groupInfo = {};
@@ -2125,125 +2329,151 @@ export class PlayerBarn {
     }
 
     onMapLoad(e) { }
-    m(e, t, r, a, i, o, s, n, l, c, m, p, h) {
-        for (let d = this.$e.p(), u = 0; u < d.length; u++) {
-            const g = d[u];
-            if (g.active) {
-                g.m(e, this, s, l, i, n, o, a, c, t, m, p, h);
+
+    m(dt, activeId, r, a, i, o, map, n, l, c, m, p, h) {
+        // Update players
+        let players = this.playerPool.p();
+        for (let u = 0; u < players.length; u++) {
+            const p = players[u];
+            if (p.active) {
+                p.m(dt, this, map, l, i, n, o, a, c, activeId, m, p, h);
             }
         }
-        const y = this.qe(t);
-        const f = this.u(t);
-        this.Jr(t, {
-            pos: v2.copy(f.netData.ie),
-            health: f.Re.Lr,
+
+        //
+        // Update player status data
+        //
+        // @HACK: Set the local player data; the server will only
+        // send status updates when not in solo-mode. We may also
+        // have not yet received an update for ourselves yet, but
+        // we always expect the local data to be available.
+        const activeInfo = this.qe(activeId);
+        const activePlayer = this.u(activeId);
+
+        this.setPlayerStatus(activeId, {
+            pos: v2.copy(activePlayer.netData.ie),
+            health: activePlayer.Re.Lr,
             disconnected: false,
-            dead: f.netData.he,
-            downed: f.netData.ue,
-            role: f.netData.Te,
+            dead: activePlayer.netData.he,
+            downed: activePlayer.netData.ue,
+            role: activePlayer.netData.Te,
             visible: true
         });
+
+        let statusUpdateRate = net.getPlayerStatusUpdateRate(map.factionMode);
+        let keys = Object.keys(this.playerStatus);
         for (
-            let x = net.getPlayerStatusUpdateRate(s.factionMode),
-                S = Object.keys(this.playerStatus),
-                v = 0;
-            v < S.length;
-            v++
+            let i = 0;
+            i < keys.length;
+            i++
         ) {
-            const k = this.playerStatus[S[v]];
-            const z = k.playerId;
-            const I = this.qe(z);
-            const T = this.u(z);
-            if (T) {
-                k.posDelta = v2.length(v2.sub(T.netData.ie, k.pos));
-                k.posTarget = v2.copy(T.netData.ie);
-                k.posInterp = math.clamp(
-                    k.posInterp + e * 0.2,
-                    e / x,
+            const status = this.playerStatus[keys[i]];
+            const playerId = status.playerId;
+            const playerInfo = this.qe(playerId);
+            
+            const player = this.u(playerId);
+            if (player) {
+                // Update data with latest position if on screen
+                status.posDelta = v2.length(v2.sub(player.netData.ie, status.pos));
+                status.posTarget = v2.copy(player.netData.ie);
+                status.posInterp = math.clamp(
+                    status.posInterp + dt * 0.2,
+                    dt / statusUpdateRate,
                     1
                 );
-                k.dead = T.netData.he;
-                k.downed = T.netData.ue;
+                status.dead = player.netData.he;
+                status.downed = player.netData.ue;
             } else {
-                k.posInterp = e / x;
+                status.posInterp = dt / statusUpdateRate;
             }
-            const M = v2.sub(k.posTarget, k.pos);
-            const P = v2.length(M);
-            const C = P > 0.0001 ? v2.div(M, P) : v2.create(1, 0);
-            const A = math.min(P, k.posDelta * k.posInterp);
-            k.pos = v2.add(k.pos, v2.mul(C, A));
-            k.timeSinceVisible += e;
-            k.timeSinceUpdate += e;
-            const O =
-                !k.dead ||
-                    (I.teamId != y.teamId && k.role != "leader")
+
+            // Interpolate position
+            const move = v2.sub(status.posTarget, status.pos);
+            const moveLen = v2.length(move);
+            const moveDir = moveLen > 0.0001 ? v2.div(move, moveLen) : v2.create(1, 0);
+            const moveAmt = math.min(moveLen, status.posDelta * status.posInterp);
+            status.pos = v2.add(status.pos, v2.mul(moveDir, moveAmt));
+
+            status.timeSinceVisible += dt;
+            status.timeSinceUpdate += dt;
+            
+            const fade =
+                !status.dead ||
+                    (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
                     ? 0
                     : 0.6;
-            k.minimapAlpha =
-                math.smoothstep(k.timeSinceVisible, 0, 0.1) *
+
+            status.minimapAlpha =
+                math.smoothstep(status.timeSinceVisible, 0, 0.1) *
                 math.lerp(
-                    math.smoothstep(k.timeSinceUpdate, 2, 2.5),
+                    math.smoothstep(status.timeSinceUpdate, 2, 2.5),
                     1,
-                    O
+                    fade
                 );
-            if (!s.factionMode && I.teamId != y.teamId) {
-                k.minimapAlpha = 0;
+
+            // @HACK: Fix issue in non-faction mode when spectating and swapping
+            // between teams. We don't want the old player indicators to fade out
+            // after moving to the new team
+            if (!map.factionMode && playerInfo.teamId != activeInfo.teamId) {
+                status.minimapAlpha = 0;
             }
-            k.minimapVisible = k.minimapAlpha > 0.01;
+            status.minimapVisible = status.minimapAlpha > 0.01;
         }
     }
 
-    render(e, t) {
-        for (let r = this.$e.p(), a = 0; a < r.length; a++) {
-            const i = r[a];
-            if (i.active) {
-                i.br(e, t);
+    render(camera, debug) {
+        let players = this.playerPool.p();
+        for (let i = 0; i < players.length; i++) {
+            const p = players[i];
+            if (p.active) {
+                p.br(camera, debug);
             }
         }
     }
 
     u(e) {
-        for (let t = this.$e.p(), r = 0; r < t.length; r++) {
-            const a = t[r];
-            if (a.active && a.__id === e) {
-                return a;
+        let pool = this.playerPool.p()
+        for (let i = 0; i < pool.length; i++) {
+            const p = pool[i];
+            if (p.active && p.__id === e) {
+                return p;
             }
         }
         return null;
     }
 
-    vr(e) {
-        this.Rr[e.playerId] = {
-            playerId: e.playerId,
-            teamId: e.teamId,
-            groupId: e.groupId,
-            name: e.name,
+    setPlayerInfo(info) {
+        this.playerInfo[info.playerId] = {
+            playerId: info.playerId,
+            teamId: info.teamId,
+            groupId: info.groupId,
+            name: info.name,
             nameTruncated: helpers.truncateString(
-                e.name || "",
+                info.name || "",
                 "bold 16px arial",
                 180
             ),
-            anonName: `Player${e.playerId - 2750}`,
-            loadout: util.cloneDeep(e.loadout)
+            anonName: `Player${info.playerId - 2750}`,
+            loadout: util.cloneDeep(info.loadout)
         };
-        this.playerIds.push(e.playerId);
-        this.playerIds.sort((e, t) => {
-            return e - t;
+        this.playerIds.push(info.playerId);
+        this.playerIds.sort((a, b) => {
+            return a - b;
         });
     }
 
-    kr(e) {
-        const t = this.playerIds.indexOf(e);
-        if (t !== -1) {
-            this.playerIds.splice(t, 1);
+    deletePlayerInfo(id) {
+        const idx = this.playerIds.indexOf(id);
+        if (idx !== -1) {
+            this.playerIds.splice(idx, 1);
         }
-        delete this.Rr[e];
-        delete this.playerStatus[e];
+        delete this.playerInfo[id];
+        delete this.playerStatus[id];
     }
 
-    qe(e) {
+    qe(id) {
         return (
-            this.Rr[e] || {
+            this.playerInfo[id] || {
                 playerId: 0,
                 group: 0,
                 teamId: 0,
@@ -2255,80 +2485,92 @@ export class PlayerBarn {
         );
     }
 
-    zr() {
+    recomputeTeamData() {
         this.teamInfo = {};
         this.groupInfo = {};
+
+        let keys = Object.keys(this.playerInfo);
         for (
-            let e = Object.keys(this.Rr), t = 0;
-            t < e.length;
-            t++
+            let i = 0;
+            i < keys.length;
+            i++
         ) {
-            const r = this.Rr[e[t]];
-            const a = r.playerId;
-            const i = r.teamId;
-            this.teamInfo[i] = this.teamInfo[i] || {
-                teamId: i,
+            const playerInfo = this.playerInfo[keys[i]];
+            const playerId = playerInfo.playerId;
+            
+            const teamId = playerInfo.teamId;
+            this.teamInfo[teamId] = this.teamInfo[teamId] || {
+                teamId: teamId,
                 playerIds: []
             };
-            this.teamInfo[i].playerIds.push(a);
-            const o = r.groupId;
-            this.groupInfo[o] = this.groupInfo[o] || {
-                groupId: o,
+            this.teamInfo[teamId].playerIds.push(playerId);
+            
+            const groupId = playerInfo.groupId;
+            this.groupInfo[groupId] = this.groupInfo[groupId] || {
+                groupId: groupId,
                 playerIds: []
             };
-            this.groupInfo[o].playerIds.push(a);
+            this.groupInfo[groupId].playerIds.push(playerId);
         }
+
+        let teams = Object.keys(this.teamInfo);
         for (
-            let s = Object.keys(this.teamInfo), n = 0;
-            n < s.length;
-            n++
+            let i = 0;
+            i < teams.length;
+            i++
         ) {
-            this.teamInfo[s[n]].playerIds.sort((e, t) => {
-                return e - t;
+            this.teamInfo[teams[i]].playerIds.sort((a, b) => {
+                return a - b;
             });
         }
+
+        let groups = Object.keys(this.groupInfo);
         for (
-            let l = Object.keys(this.groupInfo), c = 0;
-            c < l.length;
-            c++
+            let i = 0;
+            i < groups.length;
+            i++
         ) {
-            this.groupInfo[l[c]].playerIds.sort((e, t) => {
-                return e - t;
+            this.groupInfo[groups[i]].playerIds.sort((a, b) => {
+                return a - b;
             });
         }
     }
 
-    getTeamInfo(e) {
-        return this.teamInfo[e];
+    getTeamInfo(teamId) {
+        return this.teamInfo[teamId];
     }
 
-    getGroupInfo(e) {
-        return this.groupInfo[e];
+    getGroupInfo(groupId) {
+        return this.groupInfo[groupId];
     }
 
-    Ir(e, t, r) {
-        const a = this.getTeamInfo(e);
-        const i = r ? this.playerIds : a.playerIds;
-        if (i.length != t.players.length) {
+    updatePlayerStatus(teamId, playerStatus, factionMode) {
+        // In factionMode, playerStatus refers to all playerIds in the game.
+        // In all other modes, playerStatus refers to only playerIds in our team.
+        const team = this.getTeamInfo(teamId);
+        const playerIds = factionMode ? this.playerIds : team.playerIds;
+
+        if (playerIds.length != playerStatus.players.length) {
             console.error(
-                `PlayerIds and playerStatus.players out of sync. OurLen: ${i.length} MsgLen: ${t.players.length} FactionMode: ${r}`
+                `PlayerIds and playerStatus.players out of sync. OurLen: ${playerIds.length} MsgLen: ${playerStatus.players.length} FactionMode: ${factionMode}`
             );
             return;
         }
-        for (let o = 0; o < i.length; o++) {
-            const s = i[o];
-            const n = t.players[o];
-            if (n.hasData) {
-                this.Jr(s, n);
+        
+        for (let o = 0; o < playerIds.length; o++) {
+            const playerId = playerIds[o];
+            const status = playerStatus.players[o];
+            if (status.hasData) {
+                this.setPlayerStatus(playerId, status);
             }
         }
     }
 
-    Jr(e, t) {
-        const r = this.playerStatus[e] || {
-            playerId: e,
-            pos: v2.copy(t.pos),
-            posTarget: v2.copy(t.pos),
+    setPlayerStatus(playerId, newStatus) {
+        const status = this.playerStatus[playerId] || {
+            playerId: playerId,
+            pos: v2.copy(newStatus.pos),
+            posTarget: v2.copy(newStatus.pos),
             posDelta: v2.create(0, 0),
             health: 100,
             posInterp: 0,
@@ -2342,117 +2584,126 @@ export class PlayerBarn {
             minimapAlpha: 0,
             minimapVisible: false
         };
-        if (!r.minimapVisible) {
-            r.pos = v2.copy(t.pos);
-            if (!r.visible && t.visible) {
-                r.timeSinceVisible = 0;
+
+        if (!status.minimapVisible) {
+            status.pos = v2.copy(newStatus.pos);
+            if (!status.visible && newStatus.visible) {
+                status.timeSinceVisible = 0;
             }
         }
-        r.visible = t.visible;
-        if (r.visible) {
-            r.timeSinceUpdate = 0;
+
+        status.visible = newStatus.visible;
+        if (status.visible) {
+            status.timeSinceUpdate = 0;
         }
-        r.posTarget = v2.copy(t.pos);
-        r.posDelta = v2.length(v2.sub(t.pos, r.pos));
-        r.dead = t.dead;
-        r.downed = t.downed;
-        r.role = t.role;
-        if (t.health !== undefined) {
-            r.health = t.health;
+
+        status.posTarget = v2.copy(newStatus.pos);
+        status.posDelta = v2.length(v2.sub(newStatus.pos, status.pos));
+        status.dead = newStatus.dead;
+        status.downed = newStatus.downed;
+        status.role = newStatus.role;
+        if (newStatus.health !== undefined) {
+            status.health = newStatus.health;
         }
-        if (t.disconnected !== undefined) {
-            r.disconnected = t.disconnected;
+        if (newStatus.disconnected !== undefined) {
+            status.disconnected = newStatus.disconnected;
         }
-        this.playerStatus[e] = r;
+        this.playerStatus[playerId] = status;
     }
 
-    Fe(e) {
-        return this.playerStatus[e];
+    getPlayerStatus(playerId) {
+        return this.playerStatus[playerId];
     }
 
-    Tr(e, t) {
-        const r = this.getGroupInfo(e);
-        if (r.playerIds.length != t.players.length) {
+    updateGroupStatus(groupId, groupStatus) {
+        const info = this.getGroupInfo(groupId);
+        if (info.playerIds.length != groupStatus.players.length) {
             console.error(
                 "PlayerIds and groupStatus.players out of sync"
             );
             return;
         }
-        for (let a = 0; a < r.playerIds.length; a++) {
-            const i = r.playerIds[a];
-            const o = t.players[a];
-            const s = this.Fe(i);
-            if (s) {
-                s.health = o.health;
-                s.disconnected = o.disconnected;
+        for (let i = 0; i < info.playerIds.length; i++) {
+            const playerId = info.playerIds[i];
+            const playerStatus = groupStatus.players[i];
+
+            // Stash groupStatus values into playerStatus
+            const status = this.getPlayerStatus(playerId);
+            if (status) {
+                status.health = playerStatus.health;
+                status.disconnected = playerStatus.disconnected;
             }
         }
     }
 
-    getGroupColor(e) {
-        const t = this.qe(e);
-        const r = this.getGroupInfo(t.groupId);
-        const a = r ? r.playerIds.indexOf(e) : 0;
-        if (a >= 0 && a < GameConfig.groupColors.length) {
-            return GameConfig.groupColors[a];
+    getGroupColor(playerId) {
+        const playerInfo = this.qe(playerId);
+        const group = this.getGroupInfo(playerInfo.groupId);
+        const groupIdx = group ? group.playerIds.indexOf(playerId) : 0;
+        if (groupIdx >= 0 && groupIdx < GameConfig.groupColors.length) {
+            return GameConfig.groupColors[groupIdx];
         } else {
-            return 16777215;
+            return 0xFFFFFF;
         }
     }
 
-    getTeamColor(e) {
-        const t = e - 1;
-        if (t >= 0 && t < GameConfig.teamColors.length) {
-            return GameConfig.teamColors[t];
+    getTeamColor(teamId) {
+        const teamIdx = teamId - 1;
+        if (teamIdx >= 0 && teamIdx < GameConfig.teamColors.length) {
+            return GameConfig.teamColors[teamIdx];
         } else {
-            return 16777215;
+            return 0xFFFFFF;
         }
     }
 
-    getPlayerName(e, t, r) {
-        const a = this.qe(e);
-        if (!a) {
+    getPlayerName(playerId, activePlayerId, truncateForKillfeed) {
+        const info = this.qe(playerId);
+        if (!info) {
             return "";
         }
-        let i = a.name;
-        if (r) {
-            i = a.nameTruncated;
+        let name = info.name;
+
+        if (truncateForKillfeed) {
+            name = info.nameTruncated;
         }
+
+        // Anonymize player name if they aren't in the active player's group
         if (
             this.anonPlayerNames &&
-            this.qe(t).groupId != a.groupId
+            this.qe(activePlayerId).groupId != info.groupId
         ) {
-            i = a.anonName;
+            name = info.anonName;
         }
-        return i;
+        return name;
     }
 
-    addDeathEffect(e, t, r, a, i) {
-        const o = this.u(e);
-        const s = this.u(t);
-        if (o && s?.hasPerk("turkey_shoot")) {
-            a.playGroup("cluck", {
-                soundPos: o.pos,
-                layer: o.layer,
+    addDeathEffect(targetId, killerId, r, audioManager, particleBarn) {
+        const target = this.u(targetId);
+        const killer = this.u(killerId);
+        if (target && killer?.hasPerk("turkey_shoot")) {
+            audioManager.playGroup("cluck", {
+                soundPos: target.pos,
+                layer: target.layer,
                 muffled: true
             });
-            a.playSound("feather_01", {
+            audioManager.playSound("feather_01", {
                 channel: "sfx",
-                soundPos: o.pos,
-                layer: o.layer,
+                soundPos: target.pos,
+                layer: target.layer,
                 muffled: true
             });
+            let numParticles = Math.floor(util.random(30, 35));
             for (
-                let n = Math.floor(util.random(30, 35)), l = 0;
-                l < n;
-                l++
+                let i = 0;
+                i < numParticles;
+                i++
             ) {
-                const c = v2.mul(v2.randomUnit(), util.random(5, 15));
-                i.addParticle(
+                const vel = v2.mul(v2.randomUnit(), util.random(5, 15));
+                particleBarn.addParticle(
                     "turkeyFeathersDeath",
-                    o.layer,
-                    o.pos,
-                    c
+                    target.layer,
+                    target.pos,
+                    vel
                 );
             }
         }

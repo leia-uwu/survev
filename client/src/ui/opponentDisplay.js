@@ -48,7 +48,7 @@ class LoadoutDisplay {
 
         // Register types
         const TypeToPool = {
-            [gameObject.Type.Player]: this.playerBarn.$e,
+            [gameObject.Type.Player]: this.playerBarn.playerPool,
             [gameObject.Type.Obstacle]: this.map.Ve,
             [gameObject.Type.Building]: this.map.nr,
             [gameObject.Type.Structure]: this.map.lr,
@@ -118,7 +118,7 @@ class LoadoutDisplay {
 
         this.activeId = 98;
         this.dr = this.playerBarn.u(this.activeId);
-        this.dr.Mr(
+        this.dr.setLocalData(
             {
                 boost: 100,
                 boostDirty: true,
@@ -253,7 +253,7 @@ class LoadoutDisplay {
 
         this.objectCreator.updateObjFull(1, 98, obj, ctx);
         
-        this.playerBarn.vr({
+        this.playerBarn.setPlayerInfo({
             playerId: 98,
             teamId: 0,
             groupId: 0,

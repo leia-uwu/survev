@@ -59,9 +59,6 @@ export class EmoteBarn {
         this.disable = false;
         this.dr = null;
         this.playerBarn = playerBarn;
-        /**
-           * @type {import("./camera").Camera} camera
-         */
         this.camera = camera;
         this.map = map;
         this.worldPos = v2.create(0, 0);
@@ -524,7 +521,7 @@ export class EmoteBarn {
                             }
                         }
                     }
-                    const playerStatus = this.playerBarn.Fe(ping.playerId);
+                    const playerStatus = this.playerBarn.getPlayerStatus(ping.playerId);
                     if (playerStatus && playerStatus.role == "leader") {
                         pingSound = pingData.soundLeader;
                     }
@@ -986,7 +983,7 @@ export class EmoteBarn {
             if (ae != undefined || indicator.mapEvent) {
                 playerBarn.qe(ae);
                 const isActivePlayer = ae == this.dr.__id;
-                const ne = playerBarn.Fe(ae);
+                const ne = playerBarn.getPlayerStatus(ae);
                 const le = indicator.borderSprite.sprite;
                 const ce = indicator.pingSprite.sprite;
                 const me = indicator.indSpriteOuter.sprite;

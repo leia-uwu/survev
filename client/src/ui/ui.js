@@ -600,7 +600,10 @@ export class UiManager {
             );
         }
     }
-
+    
+    /** *
+     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     */
     m(dt, player, map, gas, i, playerBarn, camera, teamMode, factionMode) {
         const localPlayer = player;
 
@@ -758,7 +761,7 @@ export class UiManager {
             const playerId = groupInfo.playerIds[L];
             const playerInfo = playerBarn.qe(playerId);
             const isLocalPlayer = playerId == localPlayer.__id;
-            const playerStatus = playerBarn.Fe(playerId);
+            const playerStatus = playerBarn.getPlayerStatus(playerId);
             if (playerStatus && teamMode > 1) {
                 if (!teamElems.groupIdDisplayed) {
                     teamElems.groupId.css("display", "block");
@@ -1061,7 +1064,10 @@ export class UiManager {
             return 4;
         }
     }
-
+    /**
+     * @param {import("../objects/player
+     * ").playerBarn} playerBarn
+    */
     createPing(e, pos, r, a, playerBarn, o) {
         const s = this;
         const pingDef = PingDefs[e];
@@ -1114,7 +1120,7 @@ export class UiManager {
                 let tint = 0xffffff;
                 const activePlayerInfo = playerBarn.qe(a);
                 const playerInfo = playerBarn.qe(r);
-                const playerStatus = playerBarn.Fe(r);
+                const playerStatus = playerBarn.getPlayerStatus(r);
                 if (activePlayerInfo && playerInfo && playerStatus) {
                     if (playerStatus.role == "leader") {
                         // Use a special color if they are a faction leader
