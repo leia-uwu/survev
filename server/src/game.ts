@@ -303,7 +303,8 @@ export class Game {
                 this.addLoot(dropMsg.item, player.pos, player.layer, 1);
                 player.inventory[`${level}xscope`] = 0;
 
-                for (let i = 0; i < availableScopeLevels.length; i++) {
+                if ( player.scope === `${level}xscope` ) {
+                for (let i = targetScopeIndex; i < availableScopeLevels.length; i++) {
                     if (player.inventory[`${availableScopeLevels[i]}xscope`]) {
                         targetScopeIndex = availableScopeLevels[i];
                         break;
@@ -311,6 +312,8 @@ export class Game {
                 }
 
                 player.scope = `${targetScopeIndex}xscope`;
+                }
+                
                 player.dirty.inventory = true;
                 break;
             }
