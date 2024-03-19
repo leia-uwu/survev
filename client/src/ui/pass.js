@@ -29,7 +29,7 @@ function o(e) {
     return (i += `${a}m`);
 }
 
-class Pass {
+export class Pass {
     constructor(t, r, i) {
         this.account = t;
         this.loadoutMenu = r;
@@ -605,5 +605,3 @@ class Pass {
         this.setPassUnlockImage(e.items[0].item);
     }
 }
-
-export default Pass;

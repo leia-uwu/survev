@@ -17,7 +17,7 @@ import { PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Creator } from "../objects/objectPool";
 
-class LoadoutDisplay {
+export class LoadoutDisplay {
     /**
      * @param {import("../audioManager").AudioManager} audioManager
      * @param {import("../config").ConfigManager} config
@@ -436,6 +436,3 @@ class LoadoutDisplay {
         }
     }
 }
-export default {
-    LoadoutDisplay
-};

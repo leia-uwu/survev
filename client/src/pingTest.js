@@ -16,7 +16,7 @@ const testUrls = [
     }
 ];
 
-class PingTest {
+export class PingTest {
     constructor() {
         this.ptcDataBuf = new ArrayBuffer(1);
         this.tests = testUrls.map((config) => {
@@ -193,4 +193,3 @@ class PingTest {
         return zones;
     }
 }
-export default PingTest;

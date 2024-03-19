@@ -32,22 +32,20 @@ function itemSort(sortFn) {
         const rarityB = GameObjectDefs[b.type].rarity || 0;
         if (rarityA == 0 && rarityB == 0) {
             return sortAlphabetical(a, b);
-        } else if (rarityA == 0) {
+        } if (rarityA == 0) {
             return -1;
-        } else if (rarityB == 0) {
+        } if (rarityB == 0) {
             return 1;
-        } else {
-            return sortFn(a, b);
         }
+        return sortFn(a, b);
     };
 }
 
 function sortAcquired(a, b) {
     if (b.timeAcquired == a.timeAcquired) {
         return sortSubcat(a, b);
-    } else {
-        return b.timeAcquired - a.timeAcquired;
     }
+    return b.timeAcquired - a.timeAcquired;
 }
 
 function sortAlphabetical(a, b) {
@@ -55,11 +53,10 @@ function sortAlphabetical(a, b) {
     const defB = GameObjectDefs[b.type];
     if (defA.name < defB.name) {
         return -1;
-    } else if (defA.name > defB.name) {
+    } if (defA.name > defB.name) {
         return 1;
-    } else {
-        return 0;
     }
+    return 0;
 }
 
 function sortRarity(a, b) {
@@ -67,19 +64,17 @@ function sortRarity(a, b) {
     const rarityB = GameObjectDefs[b.type].rarity || 0;
     if (rarityA == rarityB) {
         return sortAlphabetical(a, b);
-    } else {
-        return rarityB - rarityA;
     }
+    return rarityB - rarityA;
 }
 
 function sortSubcat(a, b) {
     const defA = GameObjectDefs[a.type];
     const defB = GameObjectDefs[b.type];
-    if (defA.category && defB.category && defA.category != defB.category) {
-        return defA.category - defB.category;
-    } else {
+    if (!defA.category || !defB.category || defA.category == defB.category) {
         return sortAlphabetical(a, b);
     }
+    return defA.category - defB.category;
 }
 
 const sortTypes = {
@@ -89,7 +84,7 @@ const sortTypes = {
     subcat: itemSort(sortSubcat)
 };
 
-class LoadoutMenu {
+export class LoadoutMenu {
     /**
      *
      * @param {import('../account').Account} account
@@ -1264,5 +1259,3 @@ class LoadoutMenu {
         );
     }
 }
-
-export default LoadoutMenu;

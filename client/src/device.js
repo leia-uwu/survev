@@ -9,25 +9,6 @@ function detectMobile() {
     return isMobile.android.device || isMobile.apple.device || isIpad();
 }
 
-function detectTablet() {
-    // https://github.com/PoeHaH/devicedetector/blob/master/devicedetector-production.js
-    let isTablet = false;
-    const ua = navigator.userAgent.toLowerCase();
-
-    (function(a) {
-        if (/(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(ua)) isTablet = true;
-    })(navigator.userAgent || navigator.vendor || window.opera); // Workaround for iOS 12 not returning iPad
-
-    if (!isTablet) {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        if (isIOS && window.innerWidth >= 1023 && window.innerHeight >= 747) {
-            isTablet = true;
-        }
-    }
-
-    return isTablet || isIpad();
-}
 function isIpad() {
     const ua = navigator.userAgent.toLowerCase();
     return (
@@ -35,12 +16,11 @@ function isIpad() {
         (ua.includes("macintosh") && "ontouchend" in document)
     );
 }
+
 function detectiOS() {
-    return (
-        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (isIpad() && !window.MSStream)
-    );
+    return isMobile.apple.phone || isMobile.apple.ipod;
 }
+
 function detectAndroid() {
     return isMobile.android.device;
 }
@@ -105,7 +85,7 @@ class Device {
         }
         this.version = getItem("surviv_version") || "1.0.0";
         this.mobile = detectMobile();
-        this.tablet = detectTablet();
+        this.tablet = isMobile.tablet;
         this.touch = this.mobile || this.tablet;
         this.pixelRatio = window.devicePixelRatio;
         this.debug = false;

@@ -64,7 +64,7 @@ function createLoginOptions(parentElem, linkAccount, account, localization) {
     });
 }
 
-class ProfileUi {
+export class ProfileUi {
     /**
      *
      * @param {import('./account')} account
@@ -548,5 +548,3 @@ class ProfileUi {
         }
     }
 }
-
-export default ProfileUi;
