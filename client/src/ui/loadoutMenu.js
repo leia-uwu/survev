@@ -18,7 +18,7 @@ function emoteSlotToDomElem(e) {
         [EmoteSlot.Bottom]: "customize-emote-bottom",
         [EmoteSlot.Left]: "customize-emote-left",
         [EmoteSlot.Win]: "customize-emote-win",
-        [EmoteSlot.Death]: "customize-emote-death",
+        [EmoteSlot.Death]: "customize-emote-death"
     };
     const domId = emoteSlotToDomId[e] || emoteSlotToDomId[EmoteSlot.Top];
     return $(`#${domId}`);
@@ -91,9 +91,9 @@ const sortTypes = {
 
 class LoadoutMenu {
     /**
-     * 
-     * @param {import('../account').Account} account 
-     * @param {import('./localization').Localization} localization 
+     *
+     * @param {import('../account').Account} account
+     * @param {import('./localization').Localization} localization
      */
     constructor(account, localization) {
         this.account = account;
@@ -118,18 +118,18 @@ class LoadoutMenu {
         if (!device.touch) {
             this.categories.push({
                 loadoutType: "crosshair", gameType: "crosshair", categoryImage: "img/gui/loadout-crosshair.svg"
-            })
+            });
         }
         this.categories.push({
             loadoutType: "player_icon", gameType: "emote", categoryImage: "img/gui/loadout-emote.svg"
-        })
+        });
         this.selectedItem = {
             prevSlot: null,
             img: "",
             type: ""
         };
         this.emotesLoaded = false;
-        
+
         this.selectedCatIdx = 0;
         this.selectedCatItems = [];
         this.equippedItems = [];
@@ -261,7 +261,7 @@ class LoadoutMenu {
                     _this.updateLoadoutFromDOM();
                 }
             });
-            
+
             this.colorCode =
                 document.getElementById("color-picker-hex");
             const updateColor = function() {
@@ -523,7 +523,7 @@ class LoadoutMenu {
                 );
                 $("#modal-item-confirm-image-inner").css({
                     "background-image": imageUrl,
-                    transform: transform
+                    transform
                 });
                 this.confirmItemModal.show();
             }, 200);
@@ -577,7 +577,7 @@ class LoadoutMenu {
 
         if (loadoutType == "emote") {
             this.setEmoteDraggable(this.selectableSlots, _this);
-            
+
             // Only do this once, assuming the wheel is only used for emotes
             if (!this.emotesLoaded) {
                 this.setEmoteDraggable(
@@ -723,7 +723,7 @@ class LoadoutMenu {
         }
 
         this.loadout = loadout.validate(this.loadout);
-        
+
         if (this.loadoutDisplay?.initialized) {
             this.loadoutDisplay.setLoadout(this.loadout);
         }
@@ -742,7 +742,7 @@ class LoadoutMenu {
         const parent = isListItem ? selector : selector.parent();
         const image = parent.find(".customize-item-image");
         const selectorIdx = parent.data("idx");
-        let selectedItem = parent.data("slot")
+        const selectedItem = parent.data("slot")
             ? this.equippedItems[selectorIdx]
             : this.selectedCatItems[selectorIdx];
 
@@ -770,7 +770,7 @@ class LoadoutMenu {
         }
 
         this.itemSelected = true;
-        
+
         this.selectedItem = {
             prevSlot: isListItem ? null : parent,
             img: image.data("img"),
@@ -928,7 +928,7 @@ class LoadoutMenu {
         if (emoteDef) {
             const itemInfo = {
                 loadoutType: "emote",
-                type: type,
+                type,
                 rarity: emoteDef.rarity || 0,
                 displayName: emoteDef.name,
                 displayLore: emoteDef.lore,
@@ -970,7 +970,7 @@ class LoadoutMenu {
         const displaySubcatSort =
             category.loadoutType == "emote" ||
             category.loadoutType == "player_icon";
-        
+
         $("#customize-sort-subcat").css(
             "display",
             displaySubcatSort ? "block" : "none"
@@ -983,13 +983,13 @@ class LoadoutMenu {
         }
 
         loadoutItems.sort(sortTypes[sortType]);
-        
+
         const displayEmoteWheel = category.loadoutType == "emote";
         const displayCrosshairAdjust = category.loadoutType == "crosshair";
         const draggable = category.loadoutType == "emote";
 
         this.loadoutDisplay?.setView(category.loadoutType);
-        
+
         const _ = $(
             `.modal-customize-cat[data-idx='${this.selectedCatIdx}']`
         );
@@ -1042,95 +1042,94 @@ class LoadoutMenu {
                 return source;
             }
         };
-        
+
         this.selectedCatItems = [];
         let loadoutItemDiv = "";
         const listItems = $("<div/>");
         for (let i = 0; i < loadoutItems.length; i++) {
-                const item = loadoutItems[i];
-                const objDef = GameObjectDefs[item.type];
+            const item = loadoutItems[i];
+            const objDef = GameObjectDefs[item.type];
 
-                const itemInfo = {
-                    loadoutType: category.loadoutType,
-                    type: item.type,
-                    rarity: objDef.rarity || 0,
-                    displayName: objDef.name,
-                    displaySource: getItemSourceName(item.source),
-                    displayLore: objDef.lore,
-                    timeAcquired: item.timeAcquired,
-                    idx: i,
-                    subcat: objDef.category,
-                    outerDiv: null
-                };
+            const itemInfo = {
+                loadoutType: category.loadoutType,
+                type: item.type,
+                rarity: objDef.rarity || 0,
+                displayName: objDef.name,
+                displaySource: getItemSourceName(item.source),
+                displayLore: objDef.lore,
+                timeAcquired: item.timeAcquired,
+                idx: i,
+                subcat: objDef.category,
+                outerDiv: null
+            };
 
-                // Create div for emote customization list
-                const outerDiv = $("<div/>", {
-                    class: "customize-list-item customize-list-item-unlocked",
-                    "data-idx": i
-                });
+            // Create div for emote customization list
+            const outerDiv = $("<div/>", {
+                class: "customize-list-item customize-list-item-unlocked",
+                "data-idx": i
+            });
 
-                const svg = helpers.getSvgFromGameType(item.type);
-                const transform = helpers.getCssTransformFromGameType(
-                    item.type
-                );
-                const innerDiv = $("<div/>", {
-                    class: "customize-item-image",
+            const svg = helpers.getSvgFromGameType(item.type);
+            const transform = helpers.getCssTransformFromGameType(
+                item.type
+            );
+            const innerDiv = $("<div/>", {
+                class: "customize-item-image",
+                css: {
+                    "background-image": `url(${svg})`,
+                    transform
+                },
+                "data-img": `url(${svg})`,
+                draggable
+            });
+            outerDiv.append(innerDiv);
+
+            // Notification pulse
+            if (
+                _this.localAckItems.findIndex((x) => {
+                    return x.type == item.type;
+                }) !== -1
+            ) {
+                const alertDiv = $("<div/>", {
+                    class: "account-alert account-alert-cat",
                     css: {
-                        "background-image": `url(${svg})`,
-                        transform: transform
-                    },
-                    "data-img": `url(${svg})`,
-                    draggable: draggable
-                });
-                outerDiv.append(innerDiv);
-
-                // Notification pulse
-                if (
-                    _this.localAckItems.findIndex((x) => {
-                        return x.type == item.type;
-                    }) !== -1
-                ) {
-                    const alertDiv = $("<div/>", {
-                        class: "account-alert account-alert-cat",
-                        css: {
-                            display: "block"
-                        }
-                    });
-                    outerDiv.append(alertDiv);
-                }
-
-
-                // Crosshair specific styling
-                if (category.gameType == "crosshair") {
-                    // Change the pointer in this slot
-                    const crosshairDef = {
-                        type: itemInfo.type,
-                        color: 16777215,
-                        size: 1,
-                        stroke: 0
-                    };
-                    crosshair.setElemCrosshair(outerDiv, crosshairDef);
-                }
-
-                listItems.append(outerDiv);
-                
-                // Add the itemInfo to the currently selected items array
-                itemInfo.outerDiv = outerDiv;
-                _this.selectedCatItems.push(itemInfo);
-                
-                if (!loadoutItemDiv) {
-                    if (
-                        category.loadoutType == "crosshair" &&
-                        itemInfo.type == _this.loadout.crosshair.type
-                    ) {
-                        loadoutItemDiv = itemInfo.outerDiv;
-                    } else if (
-                        category.loadoutType != "emote" &&
-                        itemInfo.type == _this.loadout[category.loadoutType]
-                    ) {
-                        loadoutItemDiv = itemInfo.outerDiv;
+                        display: "block"
                     }
+                });
+                outerDiv.append(alertDiv);
+            }
+
+            // Crosshair specific styling
+            if (category.gameType == "crosshair") {
+                // Change the pointer in this slot
+                const crosshairDef = {
+                    type: itemInfo.type,
+                    color: 16777215,
+                    size: 1,
+                    stroke: 0
+                };
+                crosshair.setElemCrosshair(outerDiv, crosshairDef);
+            }
+
+            listItems.append(outerDiv);
+
+            // Add the itemInfo to the currently selected items array
+            itemInfo.outerDiv = outerDiv;
+            _this.selectedCatItems.push(itemInfo);
+
+            if (!loadoutItemDiv) {
+                if (
+                    category.loadoutType == "crosshair" &&
+                        itemInfo.type == _this.loadout.crosshair.type
+                ) {
+                    loadoutItemDiv = itemInfo.outerDiv;
+                } else if (
+                    category.loadoutType != "emote" &&
+                        itemInfo.type == _this.loadout[category.loadoutType]
+                ) {
+                    loadoutItemDiv = itemInfo.outerDiv;
                 }
+            }
         }
         this.modalCustomizeList.html("");
         this.modalCustomizeList.append(listItems);

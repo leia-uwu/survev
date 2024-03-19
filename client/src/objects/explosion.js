@@ -18,6 +18,7 @@ class PhysicsParticle {
         this.colCount = 0;
         this.active = true;
     }
+
     /**
      * @param {import("../objects/player").PlayerBarn} playerBarn
      */

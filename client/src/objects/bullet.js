@@ -26,7 +26,7 @@ export function createBullet(bullet, bulletBarn, flareBarn, playerBarn, renderer
 }
 
 export function playHitFx(particleName, soundName, pos, a, layer, particleBarn, audioManager) {
-    let numParticles = Math.floor(util.random(1, 2));
+    const numParticles = Math.floor(util.random(1, 2));
     let vel = v2.mul(a, 9.5);
     for (
         let i = 0;
@@ -39,7 +39,7 @@ export function playHitFx(particleName, soundName, pos, a, layer, particleBarn, 
     audioManager.playGroup(soundName, {
         channel: "hits",
         soundPos: pos,
-        layer: layer,
+        layer,
         filter: "muffled"
     });
 }
@@ -84,7 +84,7 @@ export class BulletBarn {
         }
 
         const bulletDef = BulletDefs[bullet.bulletType];
-        
+
         const variance = 1 + bullet.varianceT * bulletDef.variance;
         const distAdj = math.remap(bullet.distAdjIdx, 0, 16, -1, 1);
         let distance =
@@ -108,10 +108,10 @@ export class BulletBarn {
         a.reflectCount = bullet.reflectCount;
         a.reflectObjId = bullet.reflectObjId;
         a.whizHeard = false;
-        
+
         const angleRadians = Math.atan2(a.dir.x, a.dir.y);
         a.container.rotation = angleRadians - Math.PI / 2;
-        
+
         a.layer = bullet.layer;
         const player = t.u(a.playerId);
         if (player && player.layer & 2) {

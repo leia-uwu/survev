@@ -55,7 +55,7 @@ class LoadoutDisplay {
             [gameObject.Type.Decal]: this.decalBarn._,
             [gameObject.Type.Smoke]: this.smokeBarn.e
         };
-        
+
         this.objectCreator = new Creator();
         for (const type in TypeToPool) {
             if (TypeToPool.hasOwnProperty(type)) {
@@ -65,16 +65,16 @@ class LoadoutDisplay {
 
         // Render ordering
         this.debugDisplay = new PIXI.Graphics();
-        
-        let pixiContainers = [
-                this.map.display.ground,
-                this.renderer.layers[0],
-                this.renderer.ground,
-                this.renderer.layers[1],
-                this.renderer.layers[2],
-                this.renderer.layers[3],
-                this.debugDisplay
-            ];
+
+        const pixiContainers = [
+            this.map.display.ground,
+            this.renderer.layers[0],
+            this.renderer.ground,
+            this.renderer.layers[1],
+            this.renderer.layers[2],
+            this.renderer.layers[3],
+            this.debugDisplay
+        ];
         for (
             let n = 0;
             n < pixiContainers.length;
@@ -97,7 +97,7 @@ class LoadoutDisplay {
         this.useDebugZoom = false;
 
         this.outfitOld = this.loadout.outfit;
-        
+
         this.map.loadMap(
             {
                 grassInset: 18,
@@ -155,7 +155,7 @@ class LoadoutDisplay {
         this.dr.isLoadoutAvatar = true;
         this.renderer.setActiveLayer(this.dr.layer);
         this.audioManager.activeLayer = this.dr.layer;
-        
+
         // Idle anim ticker
         this.animIdleTicker = 3;
         this.animSeq = 0;
@@ -165,11 +165,11 @@ class LoadoutDisplay {
         this.account.addEventListener("loadout", (e) => {
             This.setLoadout(e, true);
         });
-        
+
         this.setLoadout(this.account.loadout, true);
 
         this.initialized = true;
-        
+
         this.resize();
     }
 
@@ -252,7 +252,7 @@ class LoadoutDisplay {
         obj.dir = v2.create(0, -1);
 
         this.objectCreator.updateObjFull(1, 98, obj, ctx);
-        
+
         this.playerBarn.setPlayerInfo({
             playerId: 98,
             teamId: 0,
@@ -280,10 +280,10 @@ class LoadoutDisplay {
 
     getCameraLoadoutOffset() {
         const zoomPrev = this.camera.O;
-        
+
         const targetZoom = this.getCameraTargetZoom();
         this.camera.O = targetZoom;
-        
+
         const modal = document.getElementById("modal-content-left");
         const modalBound = modal.getBoundingClientRect();
         const modalAabb = collider.createAabb(
@@ -297,7 +297,7 @@ class LoadoutDisplay {
             this.camera.screenToPoint(v2.create(0, this.camera.screenHeight)),
             this.camera.screenToPoint(v2.create(this.camera.screenWidth, 0))
         );
-        
+
         const screenExt = v2.mul(v2.sub(screenAabb.max, screenAabb.min), 0.5);
         const screenPos = v2.add(screenAabb.min, screenExt);
         const modalOffset = v2.sub(modalPos, screenPos);
@@ -407,7 +407,7 @@ class LoadoutDisplay {
         this.decalBarn.update(dt, this.camera, this.renderer, debug);
         this.renderer.update(dt, this.camera, this.map, debug);
         this.dr.playActionStartSfx = false;
-        
+
         this.render(dt, debug);
     }
 
@@ -415,9 +415,9 @@ class LoadoutDisplay {
         const grassColor = this.map.mapLoaded
             ? this.map.getMapDef().biome.colors.grass
             : 8433481;
-        
+
         this.pixi.renderer.background.color = grassColor;
-        
+
         // Module rendering
         this.playerBarn.render(this.camera, debug);
         this.map.render(this.camera);

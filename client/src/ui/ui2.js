@@ -1574,9 +1574,8 @@ export function loadStaticDomImages() {
     };
 
     for (const [id, img] of Object.entries(lootImages)) {
-        console.log(id, img, )
         domElemById(id).getElementsByClassName("ui-loot-image")[0].src = img;
-    } 
+    }
 
     domElemById("mag-glass-white").src = "img/gui/mag-glass.svg";
     domElemById("ui-minimize-img").src = "img/gui/minimize.svg";

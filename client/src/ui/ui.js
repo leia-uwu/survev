@@ -42,19 +42,19 @@ function Interpolate(start, end, steps, count) {
 }
 
 function Color(_r, _g, _b) {
-    var r, g, b;
-    var setColors = function setColors(_r, _g, _b) {
+    let r, g, b;
+    const setColors = function setColors(_r, _g, _b) {
         r = _r;
         g = _g;
         b = _b;
     };
 
     setColors(_r, _g, _b);
-    this.getColors = function () {
-        var colors = {
-            r: r,
-            g: g,
-            b: b
+    this.getColors = function() {
+        const colors = {
+            r,
+            g,
+            b
         };
         return colors;
     };
@@ -238,7 +238,7 @@ export class UiManager {
             helpers.toggleFullScreen();
             This.toggleEscMenu();
         });
-        
+
         // Display full screen
         let showFullScreen = device.os == "ios" ? "none" : "block";
         if (device.webview || device.touch) {
@@ -513,7 +513,7 @@ export class UiManager {
         this.gasRenderer.free();
 
         this.clearUI();
-        
+
         this.roleMenuConfirm.off("click");
         $(".ui-role-option").off("click");
         $(".ui-map-expand").off("mousedown");
@@ -592,7 +592,7 @@ export class UiManager {
             "display",
             displayLeader ? "block" : "none"
         );
-        
+
         if (!device.mobile) {
             $("#ui-killfeed-wrapper").css(
                 "top",
@@ -600,9 +600,9 @@ export class UiManager {
             );
         }
     }
-    
+
     /** *
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     update(dt, player, map, gas, i, playerBarn, camera, teamMode, factionMode) {
         const localPlayer = player;
@@ -698,7 +698,7 @@ export class UiManager {
                 break;
             }
             }
-            
+
             if (actionTxt1 != "" || actionTxt2 != "") {
                 // Change subject/verb/object order
                 if (
@@ -745,7 +745,7 @@ export class UiManager {
         if (!groupInfo) {
             const err = {
                 playerId: player.__id,
-                groupId: groupId,
+                groupId,
                 spectating: this.spectating,
                 playing: this.game.playingTicker,
                 groupInfo: playerBarn.groupInfo
@@ -837,7 +837,7 @@ export class UiManager {
                                         off,
                                         camera.screenHeight - off - heightAdjust
                                     ),
-                                    transform: transform
+                                    transform
                                 });
                                 if (!indicator.displayed) {
                                     elem.css("display", "block");
@@ -871,7 +871,7 @@ export class UiManager {
             }
         }
 
-         // Faction specific rendering
+        // Faction specific rendering
         if (map.factionMode) {
             const localPlayerInfo = playerBarn.qe(localPlayer.__id);
             if (this.flairId != localPlayerInfo.teamId) {
@@ -958,7 +958,7 @@ export class UiManager {
             mapSprite.sprite.texture = PIXI.Texture.from(texture);
             mapSprite.sprite.tint = tint;
         };
-        let keys = Object.keys(playerBarn.playerStatus);
+        const keys = Object.keys(playerBarn.playerStatus);
         for (
             let i = 0;
             i < keys.length;
@@ -970,7 +970,7 @@ export class UiManager {
             const sameGroup = playerInfo.groupId == activePlayerInfo.groupId;
             let zOrder = 65535 + playerId * 2;
             if (playerId == activePlayerInfo.playerId) {
-                zOrder +=  65535 * 2;
+                zOrder += 65535 * 2;
             }
             const roleDef = RoleDefs[playerStatus.role];
             const customMapIcon = roleDef?.mapIcon;
@@ -1014,7 +1014,7 @@ export class UiManager {
 
             addSprite(playerStatus.pos, scale, playerStatus.minimapAlpha, playerStatus.minimapVisible, zOrder, texture, tint);
 
-             // Add an outer sprite if this player is in our group
+            // Add an outer sprite if this player is in our group
             if (sameGroup) {
                 const scale = device.uiLayout == device.UiLayout.Sm ? 0.25 : 0.3;
                 const visible = playerStatus.minimapVisible && !customMapIcon;
@@ -1064,16 +1064,17 @@ export class UiManager {
             return 4;
         }
     }
+
     /**
      * @param {import("../objects/player
      * ").playerBarn} playerBarn
     */
-    createPing(e, pos, r, a, playerBarn, o) {
-        const s = this;
-        const pingDef = PingDefs[e];
+    createPing(pingType, pos, playerId, activePlayerId, playerBarn, o) {
+        const _this = this;
+        const pingDef = PingDefs[pingType];
         if (pingDef) {
             const createPingSprite = function(scale, tint) {
-                const s = s.mapSpriteBarn.addSprite();
+                const s = _this.mapSpriteBarn.addSprite();
                 s.pos = v2.copy(pos);
                 s.scale = scale;
                 s.lifetime = pingDef.mapLife;
@@ -1086,7 +1087,7 @@ export class UiManager {
                 return s;
             };
             const createPulseSprite = function(tint) {
-                const s = s.mapSpriteBarn.addSprite();
+                const s = _this.mapSpriteBarn.addSprite();
                 s.pos = v2.copy(pos);
                 s.scale = 0;
                 s.lifetime = pingDef.pingLife;
@@ -1106,7 +1107,7 @@ export class UiManager {
                     scale,
                     pingDef.tint
                 ).release();
-                
+
                 createPulseSprite(pingDef.tint).release();
             } else {
                 //
@@ -1118,16 +1119,16 @@ export class UiManager {
                 // Otherwise, use their team color.
                 // Faction leaders get a special color.
                 let tint = 0xffffff;
-                const activePlayerInfo = playerBarn.qe(a);
-                const playerInfo = playerBarn.qe(r);
-                const playerStatus = playerBarn.getPlayerStatus(r);
+                const activePlayerInfo = playerBarn.qe(activePlayerId);
+                const playerInfo = playerBarn.qe(playerId);
+                const playerStatus = playerBarn.getPlayerStatus(playerId);
                 if (activePlayerInfo && playerInfo && playerStatus) {
                     if (playerStatus.role == "leader") {
                         // Use a special color if they are a faction leader
                         tint = 0x00ff00;
                     } else if (activePlayerInfo.groupId == playerInfo.groupId) {
                         // Use group color
-                        tint = playerBarn.getGroupColor(r);
+                        tint = playerBarn.getGroupColor(playerId);
                     } else {
                         // Use the team color
                         tint = playerBarn.getTeamColor(playerInfo.teamId);
@@ -1135,12 +1136,12 @@ export class UiManager {
                 }
 
                 // Store ping sprites per-player so we can cancel the most recent
-                if (!this.playerPingSprites[r]) {
-                    this.playerPingSprites[r] = [];
+                if (!this.playerPingSprites[playerId]) {
+                    this.playerPingSprites[playerId] = [];
                 }
 
                 // Free the most recently created ping sprites
-                const pingSprites = this.playerPingSprites[r];
+                const pingSprites = this.playerPingSprites[playerId];
                 for (let i = 0; i < pingSprites.length; i++) {
                     pingSprites[i].free();
                 }
@@ -1340,7 +1341,6 @@ export class UiManager {
         // If we're spectating a team that's not our own, and the game isn't over yet,
         // don't display the stats screen again.
         if (!c || t == localTeamId || o) {
-
             this.toggleEscMenu(true);
             this.displayingStats = true;
             this.Pe.stop();
@@ -1983,7 +1983,7 @@ export class UiManager {
         );
         const gasRad = v2.length(v2.sub(gasEdge, gasPos));
         this.gasRenderer.render(gasPos, gasRad, gas.isActive());
-        
+
         // Gas safe zone
         const circleSafe = gas.circleNew;
         const safePos = this.getMapPosFromWorldPos(circleSafe.pos, map);
@@ -1996,7 +1996,7 @@ export class UiManager {
         const drawCircle = gas.isActive();
         const drawLine = gas.isActive() && !this.bigmapDisplayed;
         this.gasSafeZoneRenderer.render(safePos, safeRad, playerMapPos, drawCircle, drawLine);
-        
+
         planeBarn.renderAirstrikeZones(this, map, debug);
     }
 
@@ -2066,7 +2066,7 @@ export class UiManager {
                 teamHealthInner,
                 null,
                 {
-                    health: health,
+                    health,
                     dead: status.dead,
                     downed: status.downed
                 }
@@ -2116,16 +2116,16 @@ export class UiManager {
                     math.clamp(camera.screenHeight / 1024, 0.75, 1)
                 );
         this.Pe.resize(this.touch, this.screenScaleFactor);
-        
+
         this.gasRenderer.resize();
 
         this.mapSprite.texture = map.getMapTexture();
-        
+
         const roleMenuScale = math.min(
             1,
             math.min(camera.screenWidth / 1200, camera.screenHeight / 900)
         );
-        
+
         this.roleMenuElem.css(
             "transform",
             `translateX(-50%) translateY(-50%) scale(${roleMenuScale})`
@@ -2137,9 +2137,9 @@ export class UiManager {
     redraw(camera) {
         const screenWidth = camera.screenWidth;
         const screenHeight = camera.screenHeight;
-        
+
         const thisMinimapMargin = this.getMinimapMargin();
-        
+
         let thisMinimapMarginXAdjust = 0;
         let thisMinimapMarginYAdjust = 0;
 
@@ -2309,9 +2309,9 @@ export class UiManager {
 
     setRoleMenuOptions(role, roles) {
         const _this = this;
-        
+
         $("#ui-role-header").html("");
-        
+
         for (let a = 0; a < roles.length; a++) {
             const role = roles[a];
             const roleDef = GameObjectDefs[role];
@@ -2324,13 +2324,13 @@ export class UiManager {
             });
             $("#ui-role-header").append(roleOption);
         }
-        
+
         $(".ui-role-option").on("click", (e) => {
             e.stopPropagation();
             const el = $(e.currentTarget);
             _this.setRoleMenuInfo(el.data("role"));
         });
-  
+
         let selectedRole = roles[0];
         if (roles.indexOf(role) !== -1) {
             selectedRole = role;
@@ -2357,7 +2357,7 @@ export class UiManager {
         const roleBodyImg = $("<div/>", {
             class: "ui-role-body-image"
         });
-        
+
         const roleName = this.localization.translate(`game-${role}`);
         roleBodyName.html(roleName);
         roleBodyImg.css({
@@ -2367,11 +2367,11 @@ export class UiManager {
         this.roleMenuElem.css("border-color", borderColor);
 
         roleBodyLeft.append(roleBodyName).append(roleBodyImg);
-        
+
         const roleBodyRight = $("<div/>", {
             class: "ui-role-body-right"
         });
-        let rolePerks = roleDef.perks;
+        const rolePerks = roleDef.perks;
         for (let i = 0; i < rolePerks.length; i++) {
             const perk = rolePerks[i];
             const perkElem = $("<div/>", {

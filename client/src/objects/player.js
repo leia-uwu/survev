@@ -71,7 +71,7 @@ const Bones = animData.Bones;
 
 const desktopZoomRads = [];
 const mobileZoomRads = [];
-let scopeKeys = Object.keys(GameConfig.scopeZoomRadius.mobile);
+const scopeKeys = Object.keys(GameConfig.scopeZoomRadius.mobile);
 
 for (
     let i = 0;
@@ -113,7 +113,7 @@ class Gun {
             (imgDef.scale.x * 0.5) / t,
             (imgDef.scale.y * 0.5) / t
         );
-        
+
         this.gunBarrel.tint = imgDef.tint;
         this.gunBarrel.visible = true;
         if (imgDef.magImg) {
@@ -139,7 +139,7 @@ class Gun {
         }
 
         this.magTop = imgDef.magImg?.top;
-        
+
         const handOffset = gunDef.isDual
             ? v2.create(-5.95, 0)
             : v2.create(-4.25, -1.75);
@@ -217,13 +217,13 @@ export class Player {
 
         this.nameText = createPlayerNameText();
         this.container.addChild(this.nameText);
-        
+
         this.auraContainer = new PIXI.Container();
         this.auraCircle = createSprite();
         this.auraContainer.addChild(this.auraCircle);
 
         this.initSubmergeSprites();
-        
+
         // Anim
         this.bones = [];
         this.anim = {
@@ -234,7 +234,7 @@ export class Player {
             bones: []
         };
 
-        let boneCount = Object.keys(Bones).length;
+        const boneCount = Object.keys(Bones).length;
         for (let t = 0; t < boneCount; t++) {
             this.bones.push(new Pose());
             this.anim.bones.push({
@@ -272,7 +272,7 @@ export class Player {
         this.throwableState = "equip";
         this.throwableStatePrev = this.throwableState;
         this.lastThrowablePickupSfxTicker = 0;
-        
+
         this.isNearDoorError = false;
         this.doorErrorTicker = 0;
         this.noCeilingRevealTicker = 0;
@@ -287,7 +287,7 @@ export class Player {
         this.auraViewFade = 0;
         this.auraPulseTicker = 0;
         this.auraPulseDir = 1;
-        
+
         this.renderLayer = 0;
         this.renderZOrd = 18;
         this.renderZIdx = 0;
@@ -440,11 +440,11 @@ export class Player {
 
     setLocalData(data, t) {
         const scopeOld = this.Re.Fr;
-        
+
         if (data.healthDirty) {
             this.Re.Lr = data.health;
         }
-        
+
         if (data.boostDirty) {
             this.Re.qr = data.boost;
         }
@@ -492,7 +492,7 @@ export class Player {
 
     getZoom() {
         let zoom = this.Re.O;
-        
+
         if (device.mobile) {
             const stepIdx = desktopZoomRads.indexOf(zoom);
             if (stepIdx !== -1) {
@@ -568,26 +568,26 @@ export class Player {
             if (isActivePlayer && !isSpectating) {
                 // Create Ui notifications for newly added perks
                 for (let i = 0; i < this.netData.Me.length; i++) {
-                        const perk = _this.netData.Me[i];
-                        if (
-                            _this.perks.findIndex((x) => {
-                                return x.type == perk.type;
-                            }) === -1
-                        ) {
-                            ui2Manager.addRareLootMessage(perk.type);
-                        }
+                    const perk = _this.netData.Me[i];
+                    if (
+                        _this.perks.findIndex((x) => {
+                            return x.type == perk.type;
+                        }) === -1
+                    ) {
+                        ui2Manager.addRareLootMessage(perk.type);
+                    }
                 }
 
                 // Remove active Ui messages for perks we no longer have
                 for (let i = 0; i < this.perks.length; i++) {
-                        const perk = _this.perks[i];
-                        if (
-                            _this.netData.Me.findIndex((x) => {
-                                return x.type == perk.type;
-                            }) === -1
-                        ) {
-                            ui2Manager.removeRareLootMessage(perk.type);
-                        }
+                    const perk = _this.perks[i];
+                    if (
+                        _this.netData.Me.findIndex((x) => {
+                            return x.type == perk.type;
+                        }) === -1
+                    ) {
+                        ui2Manager.removeRareLootMessage(perk.type);
+                    }
                 }
             }
 
@@ -595,20 +595,20 @@ export class Player {
             // this is used by the Ui to animate the perk icon.
             const perks = [];
             for (let i = 0; i < this.netData.Me.length; i++) {
-                    const perk = _this.netData.Me[i];
-                    const isNew =
+                const perk = _this.netData.Me[i];
+                const isNew =
                         _this.perks.findIndex((x) => {
                             return x.type == perk.type;
                         }) === -1;
-                    perks.push({
-                        type: perk.type,
-                        droppable: perk.droppable,
-                        isNew: isNew && !_this.isNew
-                    });
+                perks.push({
+                    type: perk.type,
+                    droppable: perk.droppable,
+                    isNew: isNew && !_this.isNew
+                });
             }
 
             this.perks = perks;
-            
+
             this.perkTypes = [];
             for (let i = 0; i < this.netData.Me.length; i++) {
                 this.perkTypes.push(this.netData.Me[i].type);
@@ -669,11 +669,10 @@ export class Player {
         this.nameText.text = playerInfo.name;
         this.nameText.visible = !isActivePlayer && inSameGroup;
 
-
         // Locate nearby obstacles that may play interaction effects
         let insideObstacle = null;
         let doorErrorObstacle = null;
-        let obstacles = map.Ve.p();
+        const obstacles = map.Ve.p();
         for (let N = 0; N < obstacles.length; N++) {
             const H = obstacles[N];
             if (H.active && !H.dead && H.layer == this.netData.pe) {
@@ -704,7 +703,6 @@ export class Player {
             }
         }
 
-
         // Enter/exit bush effects
         const isInside = insideObstacle != null;
         if (isInside) {
@@ -726,12 +724,12 @@ export class Player {
                 filter: "muffled"
             });
 
-            let moveDir = v2.normalizeSafe(
-                    v2.sub(this.posOld, this.pos),
-                    v2.create(1, 0)
-                ),
-                partDir = isInside ? 1 : -1,
-                numParticles = Math.floor(util.random(3, 5));
+            const moveDir = v2.normalizeSafe(
+                v2.sub(this.posOld, this.pos),
+                v2.create(1, 0)
+            );
+            const partDir = isInside ? 1 : -1;
+            const numParticles = Math.floor(util.random(3, 5));
             for (
                 let i = 0;
                 i < numParticles;
@@ -777,13 +775,13 @@ export class Player {
         }
         this.surface = map.getGroundSurface(this.pos, this.layer);
 
-        //SOUND
+        // SOUND
 
         const inWater = this.surface.type == "water";
         this.updateSubmersion(dt, map);
         this.updateFrozenState(dt);
 
-         // Play a footstep if we've moved enough
+        // Play a footstep if we've moved enough
         if (!this.netData.he) {
             this.stepDistance += v2.length(
                 v2.sub(this.posOld, this.pos)
@@ -874,7 +872,7 @@ export class Player {
                         : this.pos;
                     audioManager.playSound(itemDef.sound.deploy, {
                         channel: "sfx",
-                        soundPos: soundPos,
+                        soundPos,
                         fallOff: 3
                     });
                 }
@@ -995,7 +993,7 @@ export class Player {
             this.hasteEmitter.zOrd = this.renderZOrd + 1;
         }
 
-         // Passive heal effect
+        // Passive heal effect
         if (this.netData.be && !this.passiveHealEmitter) {
             this.passiveHealEmitter = particleBarn.addEmitter("heal_basic", {
                 pos: this.pos,
@@ -1051,10 +1049,10 @@ export class Player {
             this.gunRecoilR - this.gunRecoilR * dt * 5 - dt
         );
         const xe = {
-            playerBarn: playerBarn,
-            map: map,
-            audioManager: audioManager,
-            particleBarn: particleBarn
+            playerBarn,
+            map,
+            audioManager,
+            particleBarn
         };
         this.updateAnim(dt, xe);
         if (this.currentAnim() == Anim.None) {
@@ -1095,7 +1093,7 @@ export class Player {
             this.updateVisuals(playerBarn, map);
         }
         this.visualsDirty = false;
-        
+
         this.updateAura(dt, isActivePlayer, activePlayer);
 
         this.Zr();
@@ -1105,7 +1103,7 @@ export class Player {
         // prevalent for other effects that reference the player outside of
         // update, like shot shell particle creation.
         this.updateRenderLayer(isActivePlayer, activePlayer, map);
-        
+
         renderer.addPIXIObj(
             this.auraContainer,
             this.renderLayer,
@@ -1151,7 +1149,7 @@ export class Player {
         let onMask = false;
         let onStairs = false;
         let occluded = false;
-        let structures = map.lr.p();
+        const structures = map.lr.p();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active) {
@@ -1259,7 +1257,7 @@ export class Player {
             }
             this.updateFrozenImage = false;
         }
-        
+
         if (map.factionMode && !outfitDef.ghillie) {
             const playerInfo = playerBarn.qe(this.__id);
             const teamId = playerInfo.teamId;
@@ -1307,7 +1305,7 @@ export class Player {
             : outfitImg.footTint;
         setFootSprite(this.footLSprite, footTint, this.downed);
         setFootSprite(this.footRSprite, footTint, this.downed);
-    
+
         // Flak Jacket
         if (this.hasPerk("flak_jacket") && !outfitDef.ghillie) {
             this.flakSprite.texture = PIXI.Texture.from(
@@ -1714,7 +1712,7 @@ export class Player {
         }
 
         audioManager.stopSound(this.actionSoundInstance);
-        
+
         if (actionSound && this.playActionStartSfx) {
             this.actionSoundInstance = audioManager.playSound(actionSound.sound, {
                 channel: actionSound.channel,
@@ -2038,7 +2036,7 @@ export class Player {
             const hits = [];
 
             // Obstacles
-            let obstacles = animCtx.map.Ve.p();
+            const obstacles = animCtx.map.Ve.p();
             for (let n = 0; n < obstacles.length; n++) {
                 const l = obstacles[n];
                 if (
@@ -2088,7 +2086,7 @@ export class Player {
                             pen: res.pen,
                             prio: 1,
                             pos: closestPt,
-                            vel: vel,
+                            vel,
                             layer: this.renderLayer,
                             zOrd: this.renderZOrd,
                             particle: def.hitParticle,
@@ -2098,8 +2096,8 @@ export class Player {
                     }
                 }
             }
-            let ourTeamId = animCtx.playerBarn.qe(this.__id).teamId;
-            let players = animCtx.playerBarn.playerPool.p();
+            const ourTeamId = animCtx.playerBarn.qe(this.__id).teamId;
+            const players = animCtx.playerBarn.playerPool.p();
             for (
                 let i = 0;
                 i < players.length;
@@ -2149,7 +2147,7 @@ export class Player {
                             pen: col.pen,
                             prio: teamId == ourTeamId ? 2 : 0,
                             pos: v2.copy(playerCol.pos),
-                            vel: vel,
+                            vel,
                             layer: playerCol.renderLayer,
                             zOrd: playerCol.renderZOrd,
                             particle: "bloodSplat",
@@ -2167,7 +2165,7 @@ export class Player {
                     return a.prio - b.prio;
                 }
             });
-            
+
             let hitCount = hits.length;
             if (!meleeDef.cleave) {
                 hitCount = math.min(hitCount, 1);
@@ -2236,7 +2234,7 @@ export class Player {
             submersionAmount = math.remap(dist, 0, maxDist, 0.6, 1);
         }
         this.submersion = math.lerp(dt * 4, this.submersion, submersionAmount);
-        
+
         // Update sprites
         const submersionAlpha = this.submersion * 0.8;
         const submersionScale = (0.9 - this.submersion * 0.4) * 2;
@@ -2250,11 +2248,11 @@ export class Player {
                 this.surface.data.waterColor;
         }
 
-        let limbs = [
-                this.handLSubmergeSprite,
-                this.handRSubmergeSprite,
-                this.footLSubmergeSprite,
-                this.footRSubmergeSprite
+        const limbs = [
+            this.handLSubmergeSprite,
+            this.handRSubmergeSprite,
+            this.footLSubmergeSprite,
+            this.footRSubmergeSprite
         ];
         for (
             let i = 0;
@@ -2332,7 +2330,7 @@ export class PlayerBarn {
 
     m(dt, activeId, r, a, i, o, map, n, l, c, m, p, h) {
         // Update players
-        let players = this.playerPool.p();
+        const players = this.playerPool.p();
         for (let u = 0; u < players.length; u++) {
             const p = players[u];
             if (p.active) {
@@ -2360,8 +2358,8 @@ export class PlayerBarn {
             visible: true
         });
 
-        let statusUpdateRate = net.getPlayerStatusUpdateRate(map.factionMode);
-        let keys = Object.keys(this.playerStatus);
+        const statusUpdateRate = net.getPlayerStatusUpdateRate(map.factionMode);
+        const keys = Object.keys(this.playerStatus);
         for (
             let i = 0;
             i < keys.length;
@@ -2370,7 +2368,7 @@ export class PlayerBarn {
             const status = this.playerStatus[keys[i]];
             const playerId = status.playerId;
             const playerInfo = this.qe(playerId);
-            
+
             const player = this.u(playerId);
             if (player) {
                 // Update data with latest position if on screen
@@ -2396,7 +2394,7 @@ export class PlayerBarn {
 
             status.timeSinceVisible += dt;
             status.timeSinceUpdate += dt;
-            
+
             const fade =
                 !status.dead ||
                     (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
@@ -2422,7 +2420,7 @@ export class PlayerBarn {
     }
 
     render(camera, debug) {
-        let players = this.playerPool.p();
+        const players = this.playerPool.p();
         for (let i = 0; i < players.length; i++) {
             const p = players[i];
             if (p.active) {
@@ -2432,7 +2430,7 @@ export class PlayerBarn {
     }
 
     u(e) {
-        let pool = this.playerPool.p()
+        const pool = this.playerPool.p();
         for (let i = 0; i < pool.length; i++) {
             const p = pool[i];
             if (p.active && p.__id === e) {
@@ -2489,7 +2487,7 @@ export class PlayerBarn {
         this.teamInfo = {};
         this.groupInfo = {};
 
-        let keys = Object.keys(this.playerInfo);
+        const keys = Object.keys(this.playerInfo);
         for (
             let i = 0;
             i < keys.length;
@@ -2497,23 +2495,23 @@ export class PlayerBarn {
         ) {
             const playerInfo = this.playerInfo[keys[i]];
             const playerId = playerInfo.playerId;
-            
+
             const teamId = playerInfo.teamId;
             this.teamInfo[teamId] = this.teamInfo[teamId] || {
-                teamId: teamId,
+                teamId,
                 playerIds: []
             };
             this.teamInfo[teamId].playerIds.push(playerId);
-            
+
             const groupId = playerInfo.groupId;
             this.groupInfo[groupId] = this.groupInfo[groupId] || {
-                groupId: groupId,
+                groupId,
                 playerIds: []
             };
             this.groupInfo[groupId].playerIds.push(playerId);
         }
 
-        let teams = Object.keys(this.teamInfo);
+        const teams = Object.keys(this.teamInfo);
         for (
             let i = 0;
             i < teams.length;
@@ -2524,7 +2522,7 @@ export class PlayerBarn {
             });
         }
 
-        let groups = Object.keys(this.groupInfo);
+        const groups = Object.keys(this.groupInfo);
         for (
             let i = 0;
             i < groups.length;
@@ -2556,7 +2554,7 @@ export class PlayerBarn {
             );
             return;
         }
-        
+
         for (let o = 0; o < playerIds.length; o++) {
             const playerId = playerIds[o];
             const status = playerStatus.players[o];
@@ -2568,7 +2566,7 @@ export class PlayerBarn {
 
     setPlayerStatus(playerId, newStatus) {
         const status = this.playerStatus[playerId] || {
-            playerId: playerId,
+            playerId,
             pos: v2.copy(newStatus.pos),
             posTarget: v2.copy(newStatus.pos),
             posDelta: v2.create(0, 0),
@@ -2692,7 +2690,7 @@ export class PlayerBarn {
                 layer: target.layer,
                 muffled: true
             });
-            let numParticles = Math.floor(util.random(30, 35));
+            const numParticles = Math.floor(util.random(30, 35));
             for (
                 let i = 0;
                 i < numParticles;
