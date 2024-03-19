@@ -227,8 +227,8 @@ export class Obstacle extends BaseGameObject {
             stonePiercing?: boolean
         };
 
-        if (def.armorPlated && !sourceDef.armorPiercing) return;
-        if (def.stonePlated && !sourceDef.stonePiercing) return;
+        if (def.armorPlated && !sourceDef?.armorPiercing) return;
+        if (def.stonePlated && !sourceDef?.stonePiercing) return;
 
         this.health -= amount;
 
