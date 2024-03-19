@@ -15,17 +15,17 @@ import { Game } from "./game";
 import Input from "./input";
 import { InputBinds, InputBindUi } from "./inputBinds";
 import { loadStaticDomImages } from "./ui/ui2";
-import OpponentDisplay from "./ui/opponentDisplay";
-import LoadoutMenu from "./ui/loadoutMenu";
+import { LoadoutDisplay } from "./ui/opponentDisplay";
+import { LoadoutMenu } from "./ui/loadoutMenu";
 import { Localization } from "./ui/localization";
 import Menu from "./ui/menu";
 import { MenuModal } from "./ui/menuModal";
-import Pass from "./ui/pass";
-import PingTest from "./pingTest";
-import ProfileUi from "./ui/profileUi";
+import { Pass } from "./ui/pass";
+import { PingTest } from "./pingTest";
+import { ProfileUi } from "./ui/profileUi";
 import { ResourceManager } from "./resources";
 import { SiteInfo } from "./siteInfo";
-import TeamMenu from "./ui/teamMenu";
+import { TeamMenu } from "./ui/teamMenu";
 
 class Application {
     constructor() {
@@ -386,7 +386,7 @@ class Application {
                 onJoin,
                 onQuit
             );
-            this.loadoutDisplay = new OpponentDisplay.LoadoutDisplay(
+            this.loadoutDisplay = new LoadoutDisplay(
                 this.pixi,
                 this.audioManager,
                 this.config,

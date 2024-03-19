@@ -23,7 +23,7 @@ function errorTypeToString(type, localization) {
     return typeMap[type] || typeMap.lost_conn;
 }
 
-class TeamMenu {
+export class TeamMenu {
     constructor(config, pingTest, siteInfo, localization, audioManager, joinGameCb, leaveCb) {
         const _this = this;
 
@@ -743,5 +743,3 @@ class TeamMenu {
         }
     }
 }
-
-export default TeamMenu;

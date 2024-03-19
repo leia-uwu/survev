@@ -17,7 +17,7 @@ import { PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Creator } from "../objects/objectPool";
 
-class LoadoutDisplay {
+export class LoadoutDisplay {
     constructor(e, t, r, a, i) {
         this.active = false;
         this.initialized = false;
@@ -389,6 +389,3 @@ class LoadoutDisplay {
         }
     }
 }
-export default {
-    LoadoutDisplay
-};

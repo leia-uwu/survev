@@ -11,91 +11,80 @@ import "./colorPicker";
 
 const EmoteSlot = GameConfig.EmoteSlot;
 
-function i(e, t, r) {
-    if (t in e) {
-        Object.defineProperty(e, t, {
-            value: r,
-            enumerable: true,
-            configurable: true,
-            writable: true
-        });
-    } else {
-        e[t] = r;
-    }
-    return e;
-}
-function o(e) {
-    const t = {};
-    i(t, EmoteSlot.Top, "customize-emote-top");
-    i(t, EmoteSlot.Right, "customize-emote-right");
-    i(t, EmoteSlot.Bottom, "customize-emote-bottom");
-    i(t, EmoteSlot.Left, "customize-emote-left");
-    i(t, EmoteSlot.Win, "customize-emote-win");
-    i(t, EmoteSlot.Death, "customize-emote-death");
-    const r = t;
-    const a = r[e] || r[EmoteSlot.Top];
+function emoteSlotToDomElem(emoteSlot) {
+    const r = {
+        [EmoteSlot.Top]: "customize-emote-top",
+        [EmoteSlot.Right]: "customize-emote-right",
+        [EmoteSlot.Bottom]: "customize-emote-bottom",
+        [EmoteSlot.Left]: "customize-emote-left",
+        [EmoteSlot.Win]: "customize-emote-win",
+        [EmoteSlot.Death]: "customize-emote-death"
+    };
+    const a = r[emoteSlot] || r[EmoteSlot.Top];
     return $(`#${a}`);
 }
-function s(e) {
-    return function(t, r) {
-        const a = GameObjectDefs[t.type].rarity || 0;
-        const i = GameObjectDefs[r.type].rarity || 0;
-        if (a == 0 && i == 0) {
-            return l(t, r);
-        } else if (a == 0) {
+
+function itemSort(sortFn) {
+    return function(a, b) {
+        // Always put stock items at the front of the list;
+        // if not stock, sort by the given sort routine
+        const rarityA = GameObjectDefs[a.type].rarity || 0;
+        const rarityB = GameObjectDefs[b.type].rarity || 0;
+        if (rarityA == 0 && rarityB == 0) {
+            return sortAlphabetical(a, b);
+        } if (rarityA == 0) {
             return -1;
-        } else if (i == 0) {
+        } if (rarityB == 0) {
             return 1;
-        } else {
-            return e(t, r);
         }
+        return sortFn(a, b);
     };
 }
-function n(e, t) {
-    if (t.timeAcquired == e.timeAcquired) {
-        return m(e, t);
-    } else {
-        return t.timeAcquired - e.timeAcquired;
+
+function sortAcquired(a, b) {
+    if (b.timeAcquired == a.timeAcquired) {
+        return sortSubcat(a, b);
     }
+    return b.timeAcquired - a.timeAcquired;
 }
-function l(e, t) {
-    const r = GameObjectDefs[e.type];
-    const a = GameObjectDefs[t.type];
-    if (r.name < a.name) {
+
+function sortAlphabetical(a, b) {
+    const defA = GameObjectDefs[a.type];
+    const defB = GameObjectDefs[b.type];
+    if (defA.name < defB.name) {
         return -1;
-    } else if (r.name > a.name) {
+    } if (defA.name > defB.name) {
         return 1;
-    } else {
-        return 0;
     }
+    return 0;
 }
-function c(e, t) {
-    const r = GameObjectDefs[e.type].rarity || 0;
-    const a = GameObjectDefs[t.type].rarity || 0;
-    if (r == a) {
-        return l(e, t);
-    } else {
-        return a - r;
+
+function sortRarity(a, b) {
+    const rarityA = GameObjectDefs[a.type].rarity || 0;
+    const rarityB = GameObjectDefs[b.type].rarity || 0;
+    if (rarityA == rarityB) {
+        return sortAlphabetical(a, b);
     }
+    return rarityB - rarityA;
 }
-function m(e, t) {
-    const r = GameObjectDefs[e.type];
-    const a = GameObjectDefs[t.type];
-    if (r.category && a.category && r.category != a.category) {
-        return r.category - a.category;
-    } else {
-        return l(e, t);
+
+function sortSubcat(a, b) {
+    const defA = GameObjectDefs[a.type];
+    const defB = GameObjectDefs[b.type];
+    if (!defA.category || !defB.category || defA.category == defB.category) {
+        return sortAlphabetical(a, b);
     }
+    return defA.category - defB.category;
 }
 
 const S = {
-    newest: s(n),
-    alpha: s(l),
-    rarity: s(c),
-    subcat: s(m)
+    newest: itemSort(sortAcquired),
+    alpha: itemSort(sortAlphabetical),
+    rarity: itemSort(sortRarity),
+    subcat: itemSort(sortSubcat)
 };
 
-class LoadoutMenu {
+export class LoadoutMenu {
     constructor(account, localization) {
         this.account = account;
         this.localization = localization;
@@ -684,7 +673,7 @@ class LoadoutMenu {
                 .loadoutType;
         if (e == "emote") {
             for (let t = 0; t < EmoteSlot.Count; t++) {
-                const r = o(t);
+                const r = emoteSlotToDomElem(t);
                 const a = r.data("idx");
                 const i = this.equippedItems[a];
                 if (i?.type) {
@@ -1098,7 +1087,7 @@ class LoadoutMenu {
                 if (GameObjectDefs[M]) {
                     const P = helpers.getSvgFromGameType(M);
                     const C = `url(${P})`;
-                    const A = o(T);
+                    const A = emoteSlotToDomElem(T);
                     this.updateSlotData(A, C, M);
                 }
             }
@@ -1208,5 +1197,3 @@ class LoadoutMenu {
         );
     }
 }
-
-export default LoadoutMenu;
