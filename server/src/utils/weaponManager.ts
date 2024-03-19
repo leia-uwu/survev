@@ -145,7 +145,7 @@ export class WeaponManager {
         if (this.player.shootHold && itemDef.fireMode === "auto") {
             this.timeouts.push(
                 setTimeout(() => {
-                   if (this.player.shootHold) this.fireWeapon(this.player.shootHold)
+                    if (this.player.shootHold) this.fireWeapon(this.player.shootHold);
                 }, itemDef.fireDelay * 1000)
             );
         }
