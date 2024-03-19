@@ -1,6 +1,6 @@
 import { type WebSocket } from "uWebSockets.js";
 import { type PlayerContainer } from "./server";
-import { Player } from "./objects/player";
+import { Emote, Player } from "./objects/player";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { Grid } from "./utils/grid";
 import { ObjectType, type BaseGameObject } from "./objects/gameObject";
@@ -17,19 +17,6 @@ import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef, type MeleeDef } from "../../shared/defs/objectsTypings";
 
-export class Emote {
-    playerId: number;
-    pos: Vec2;
-    type: string;
-    isPing: boolean;
-
-    constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
-        this.playerId = playerId;
-        this.pos = pos;
-        this.type = type;
-        this.isPing = isPing;
-    }
-}
 export class Game {
     stopped = false;
     allowJoin = true;
@@ -130,14 +117,6 @@ export class Game {
         // this.serializationCache.update(this);
 
         for (const player of this.connectedPlayers) {
-            if (this.emotes.size) {
-                for (const emote of this.emotes) {
-                    if (emote.playerId === player.id || !emote.isPing) {
-                        player.emotes.add(emote);
-                    }
-                }
-            }
-
             player.sendMsgs();
         }
 
@@ -156,6 +135,7 @@ export class Game {
         this.bulletManager.reset();
         this.msgsToSend.length = 0;
         this.explosions.length = 0;
+        this.grid.updateObjects = false;
         this.aliveCountDirty = false;
 
         this.emotes.clear();

@@ -32,6 +32,8 @@ export class Grid {
 
     private readonly objects = new Map<number, GameObject>();
 
+    updateObjects = false;
+
     readonly categories = {
         [ObjectType.Invalid]: new Set(),
         [ObjectType.Player]: new Set<Player>(),
@@ -64,6 +66,7 @@ export class Grid {
     addObject(obj: GameObject): void {
         this.objects.set(obj.id, obj);
         (this.categories[obj.__type] as Set<typeof obj>).add(obj);
+        this.updateObjects = true;
         this.updateObject(obj);
     }
 
@@ -96,6 +99,7 @@ export class Grid {
     remove(obj: GameObject): void {
         this.objects.delete(obj.id);
         this.removeFromGrid(obj);
+        this.updateObjects = true;
         (this.categories[obj.__type] as Set<typeof obj>).delete(obj);
     }
 

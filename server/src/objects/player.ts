@@ -1,5 +1,5 @@
 import { type WebSocket } from "uWebSockets.js";
-import { Emote, type Game } from "../game";
+import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -19,6 +19,20 @@ import net, { type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
+
+export class Emote {
+    playerId: number;
+    pos: Vec2;
+    type: string;
+    isPing: boolean;
+
+    constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
+        this.playerId = playerId;
+        this.pos = pos;
+        this.type = type;
+        this.isPing = isPing;
+    }
+}
 
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
@@ -155,6 +169,8 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     spectatorCount = 0;
 
+    spectating?: Player;
+
     outfit = "outfitBase";
     /** "backpack00" is no backpack, "backpack03" is the max level backpack */
     backpack = "backpack00";
@@ -289,8 +305,6 @@ export class Player extends BaseGameObject {
         boost: "boost_basic",
         emotes: [] as string[]
     };
-
-    emotes = new Set<Emote>();
 
     damageTaken = 0;
     damageDealt = 0;
@@ -597,6 +611,8 @@ export class Player extends BaseGameObject {
     }
 
     private _firstUpdate = true;
+    fullUpdate = false;
+    secondsSinceLastUpdate = 0;
 
     sendMsgs(): void {
         const msgStream = new net.MsgStream(new ArrayBuffer(65536));
@@ -622,24 +638,34 @@ export class Player extends BaseGameObject {
         const updateMsg = new net.UpdateMsg();
         // updateMsg.serializationCache = this.game.serializationCache;
 
-        const radius = this.zoom + 4;
-        const rect = coldet.circleToAabb(this.pos, radius);
+        const player = this.spectating ?? this;
 
-        const newVisibleObjects = new Set(this.game.grid.intersectCollider(rect));
+        const radius = player.zoom + 4;
+        const rect = coldet.circleToAabb(player.pos, radius);
 
-        for (const obj of this.visibleObjects) {
-            if (!newVisibleObjects.has(obj)) {
-                updateMsg.delObjIds.push(obj.id);
+        this.secondsSinceLastUpdate += this.game.dt;
+        if (this.game.grid.updateObjects ||
+            this._firstUpdate ||
+            this.fullUpdate ||
+            this.secondsSinceLastUpdate > 0.5
+        ) {
+            this.secondsSinceLastUpdate = 0;
+            const newVisibleObjects = new Set(this.game.grid.intersectCollider(rect));
+
+            for (const obj of this.visibleObjects) {
+                if (!newVisibleObjects.has(obj)) {
+                    updateMsg.delObjIds.push(obj.id);
+                }
             }
-        }
 
-        for (const obj of newVisibleObjects) {
-            if (!this.visibleObjects.has(obj)) {
-                updateMsg.fullObjects.push(obj);
+            for (const obj of newVisibleObjects) {
+                if (!this.visibleObjects.has(obj)) {
+                    updateMsg.fullObjects.push(obj);
+                }
             }
-        }
 
-        this.visibleObjects = newVisibleObjects;
+            this.visibleObjects = newVisibleObjects;
+        }
 
         for (const obj of this.game.fullObjs) {
             if (this.visibleObjects.has(obj as GameObject)) {
@@ -653,15 +679,17 @@ export class Player extends BaseGameObject {
             }
         }
 
-        updateMsg.activePlayerId = this.id;
-        updateMsg.activePlayerIdDirty = this.dirty.activeId;
-        updateMsg.activePlayerData = this;
-        updateMsg.playerInfos = this._firstUpdate ? [...this.game.players] : this.game.newPlayers;
+        updateMsg.activePlayerId = player.id;
+        updateMsg.activePlayerIdDirty = player.dirty.activeId || this.fullUpdate;
+        updateMsg.activePlayerData = player;
+        updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
-        for (const emote of this.emotes) {
-            updateMsg.emotes.push(emote);
+        for (const emote of this.game.emotes) {
+            const emotePlayer = this.game.grid.getById(emote.playerId);
+            if (emotePlayer && player.visibleObjects.has(emotePlayer)) {
+                updateMsg.emotes.push(emote);
+            }
         }
-        this.emotes.clear();
 
         let newBullets = [];
         const extendedRadius = 1.1 * radius;
@@ -670,8 +698,8 @@ export class Player extends BaseGameObject {
         const bullets = this.game.bulletManager.newBullets;
         for (let i = 0; i < bullets.length; i++) {
             const bullet = bullets[i];
-            if (v2.lengthSqr(v2.sub(bullet.pos, this.pos)) < radiusSquared ||
-                v2.lengthSqr(v2.sub(bullet.clientEndPos, this.pos)) < radiusSquared ||
+            if (v2.lengthSqr(v2.sub(bullet.pos, player.pos)) < radiusSquared ||
+                v2.lengthSqr(v2.sub(bullet.clientEndPos, player.pos)) < radiusSquared ||
                 coldet.intersectSegmentCircle(bullet.pos, bullet.clientEndPos, this.pos, extendedRadius)
             ) {
                 newBullets.push(bullet);
@@ -687,7 +715,7 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < this.game.explosions.length; i++) {
             const explosion = this.game.explosions[i];
             const rad = explosion.rad + extendedRadius;
-            if (v2.lengthSqr(v2.sub(explosion.pos, this.pos)) < rad * rad && updateMsg.explosions.length < 255) {
+            if (v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad && updateMsg.explosions.length < 255) {
                 updateMsg.explosions.push(explosion);
             }
         }

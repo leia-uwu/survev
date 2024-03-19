@@ -107,21 +107,18 @@ export class Loot extends BaseGameObject {
                 const res = coldet.intersectCircleCircle(this.pos, this.collider.rad, obj.pos, obj.collider.rad);
                 if (res) {
                     this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
+                    const norm = res.dir;
+                    const vRelativeVelocity = v2.create(this.vel.x - obj.vel.x, this.vel.y - obj.vel.y);
+
+                    const speed = (vRelativeVelocity.x * norm.x + vRelativeVelocity.y * norm.y);
+
+                    if (speed < 0) continue;
+
+                    this.vel.x -= speed * norm.x;
+                    this.vel.y -= speed * norm.y;
+                    obj.vel.x += speed * norm.x;
+                    obj.vel.y += speed * norm.y;
                 }
-
-                const dist = Math.max(v2.distance(obj.pos, this.pos), 1);
-                const vecCollision = v2.create(obj.pos.x - this.pos.x, obj.pos.y - this.pos.y);
-                const vecCollisionNorm = v2.create(vecCollision.x / dist, vecCollision.y / dist);
-                const vRelativeVelocity = v2.create(this.vel.x - obj.vel.x, this.vel.y - obj.vel.y);
-
-                const speed = (vRelativeVelocity.x * vecCollisionNorm.x + vRelativeVelocity.y * vecCollisionNorm.y);
-
-                if (speed < 0) continue;
-
-                this.vel.x -= speed * vecCollisionNorm.x;
-                this.vel.y -= speed * vecCollisionNorm.y;
-                obj.vel.x += speed * vecCollisionNorm.x;
-                obj.vel.y += speed * vecCollisionNorm.y;
             }
         }
 
