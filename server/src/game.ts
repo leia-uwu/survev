@@ -303,7 +303,7 @@ export class Game {
                 this.addLoot(dropMsg.item, player.pos, player.layer, 1);
                 player.inventory[`${level}xscope`] = 0;
 
-                if ( player.scope === `${level}xscope` ) {
+                if (player.scope === `${level}xscope`) {
                     for (let i = targetScopeIndex; i < availableScopeLevels.length; i++) {
                         if (player.inventory[`${availableScopeLevels[i]}xscope`]) {
                             targetScopeIndex = availableScopeLevels[i];
@@ -313,7 +313,7 @@ export class Game {
 
                     player.scope = `${targetScopeIndex}xscope`;
                 }
-                
+
                 player.dirty.inventory = true;
                 break;
             }
@@ -335,7 +335,7 @@ export class Game {
                 break;
             }
             case "gun": {
-                if ( !player.weapons.some((weapon) => weapon.type === dropMsg.item) ) break;
+                if (!player.weapons.some((weapon) => weapon.type === dropMsg.item)) break;
                 const weaponAmmoType = (GameObjectDefs[player.weapons[dropMsg.weapIdx].type] as GunDef).ammo;
                 const weaponAmmoCount = player.weapons[dropMsg.weapIdx].ammo;
 
