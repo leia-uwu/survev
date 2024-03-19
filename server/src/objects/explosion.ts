@@ -70,7 +70,7 @@ export class Explosion {
 
                 if (!damagedObjects.has(object.id)) {
                     damagedObjects.set(object.id, true);
-                    const dist = Math.sqrt(collision.distance);
+                    const dist = collision.distance;
 
                     if (object.__type === ObjectType.Player || object.__type === ObjectType.Obstacle) {
                         object.damage(
