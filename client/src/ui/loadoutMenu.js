@@ -7,7 +7,7 @@ import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { crosshair } from "../crosshair";
 import { MenuModal } from "./menuModal";
-import "./colorPicker";
+import "@taufik-nurrohman/color-picker";
 
 const EmoteSlot = GameConfig.EmoteSlot;
 
