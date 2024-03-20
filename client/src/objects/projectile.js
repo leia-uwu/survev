@@ -24,15 +24,15 @@ class Projectile {
         this.strobeSprite = null;
     }
 
-    o() { }
-    n() {
+    init() { }
+    free() {
         this.container.visible = false;
         if (this.strobeSprite) {
             this.strobeSprite.visible = false;
         }
     }
 
-    c(data, fullUpdate, isNew, a) {
+    updateData(data, fullUpdate, isNew, a) {
         // Copy data
         if (fullUpdate) {
             const itemDef = GameObjectDefs[data.type];
@@ -118,7 +118,7 @@ export class ProjectileBarn {
     }
 
     update(dt, particleBarn, audioManager, activePlayer, map, renderer, camera) {
-        const projectiles = this.cr.p();
+        const projectiles = this.cr.getPool();
         for (let i = 0; i < projectiles.length; i++) {
             const p = projectiles[i];
             if (p.active) {
@@ -140,7 +140,7 @@ export class ProjectileBarn {
                     pen: 0
                 };
                 const projCollider = collider.createCircle(p.pos, p.rad);
-                const obstacles = map.Ve.p();
+                const obstacles = map.Ve.getPool();
                 for (let j = 0; j < obstacles.length; j++) {
                     const o = obstacles[j];
                     if (

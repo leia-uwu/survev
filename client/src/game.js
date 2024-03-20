@@ -315,7 +315,7 @@ export class Game {
 
     update(dt) {
         const smokeParticles = this.smokeBarn.particles;
-        const obstacles = this.map.Ve.p();
+        const obstacles = this.map.Ve.getPool();
         let a = 0;
         // End anti-cheat hacking
         this.m_mangle = true;

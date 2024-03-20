@@ -311,7 +311,7 @@ export class Player {
         this.playActionStartSfx = true;
     }
 
-    o() {
+    init() {
         this.isNew = false;
         this.wasInsideObstacle = false;
         this.insideObstacleType = "";
@@ -372,7 +372,7 @@ export class Player {
         };
     }
 
-    n() {
+    free() {
         this.container.visible = false;
         this.auraContainer.visible = false;
         if (this.useItemEmitter) {
@@ -389,7 +389,7 @@ export class Player {
         }
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         this.netData.ie = v2.copy(data.pos);
         this.netData.oe = v2.copy(data.dir);
 
@@ -672,7 +672,7 @@ export class Player {
         // Locate nearby obstacles that may play interaction effects
         let insideObstacle = null;
         let doorErrorObstacle = null;
-        const obstacles = map.Ve.p();
+        const obstacles = map.Ve.getPool();
         for (let N = 0; N < obstacles.length; N++) {
             const H = obstacles[N];
             if (H.active && !H.dead && H.layer == this.netData.pe) {
@@ -1149,7 +1149,7 @@ export class Player {
         let onMask = false;
         let onStairs = false;
         let occluded = false;
-        const structures = map.lr.p();
+        const structures = map.lr.getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active) {
@@ -1171,7 +1171,7 @@ export class Player {
                                 : v2.create(1, 0);
                         occluded =
                             collisionHelpers.intersectSegmentDist(
-                                map.Ve.p(),
+                                map.Ve.getPool(),
                                 this.pos,
                                 dir,
                                 dist,
@@ -2036,7 +2036,7 @@ export class Player {
             const hits = [];
 
             // Obstacles
-            const obstacles = animCtx.map.Ve.p();
+            const obstacles = animCtx.map.Ve.getPool();
             for (let n = 0; n < obstacles.length; n++) {
                 const l = obstacles[n];
                 if (
@@ -2060,7 +2060,7 @@ export class Player {
                             v2.create(1, 0)
                         );
                         const wallCheck = collisionHelpers.intersectSegment(
-                            animCtx.map.Ve.p(),
+                            animCtx.map.Ve.getPool(),
                             this.pos,
                             meleeDir,
                             meleeDist,
@@ -2097,7 +2097,7 @@ export class Player {
                 }
             }
             const ourTeamId = animCtx.playerBarn.qe(this.__id).teamId;
-            const players = animCtx.playerBarn.playerPool.p();
+            const players = animCtx.playerBarn.playerPool.getPool();
             for (
                 let i = 0;
                 i < players.length;
@@ -2125,7 +2125,7 @@ export class Player {
                         math.eqAbs(
                             meleeDist,
                             collisionHelpers.intersectSegmentDist(
-                                animCtx.map.Ve.p(),
+                                animCtx.map.Ve.getPool(),
                                 this.pos,
                                 meleeDir,
                                 meleeDist,
@@ -2295,7 +2295,7 @@ export class Player {
         if (this.layer != 1) {
             return false;
         }
-        const structures = map.lr.p();
+        const structures = map.lr.getPool();
         for (let i = 0; i < structures.length; i++) {
             const s = structures[i];
             if (s.layers.length >= 2) {
@@ -2330,7 +2330,7 @@ export class PlayerBarn {
 
     m(dt, activeId, r, a, i, o, map, n, l, c, m, p, h) {
         // Update players
-        const players = this.playerPool.p();
+        const players = this.playerPool.getPool();
         for (let u = 0; u < players.length; u++) {
             const p = players[u];
             if (p.active) {
@@ -2420,7 +2420,7 @@ export class PlayerBarn {
     }
 
     render(camera, debug) {
-        const players = this.playerPool.p();
+        const players = this.playerPool.getPool();
         for (let i = 0; i < players.length; i++) {
             const p = players[i];
             if (p.active) {
@@ -2430,7 +2430,7 @@ export class PlayerBarn {
     }
 
     u(e) {
-        const pool = this.playerPool.p();
+        const pool = this.playerPool.getPool();
         for (let i = 0; i < pool.length; i++) {
             const p = pool[i];
             if (p.active && p.__id === e) {

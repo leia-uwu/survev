@@ -20,7 +20,7 @@ export class Building {
         this.soundEmitters = [];
     }
 
-    o() {
+    init() {
         this.isNew = false;
         this.residue = null;
         this.ceilingDead = false;
@@ -34,7 +34,7 @@ export class Building {
         this.soundEmitterTicker = 0;
     }
 
-    n() {
+    free() {
         for (let e = 0; e < this.sprites.length; e++) {
             const t = this.sprites[e];
             t.active = false;
@@ -69,7 +69,7 @@ export class Building {
         return sprite;
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         const _this = this;
         if (fullUpdate) {
             this.type = data.type;
@@ -301,7 +301,7 @@ export class Building {
                 // if none can be found.
                 let nearestObj = this;
                 let nearestDist = v2.length(v2.sub(activePlayer.pos, nearestObj.pos));
-                const obstacles = map.Ve.p();
+                const obstacles = map.Ve.getPool();
                 for (let i = 0; i < obstacles.length; i++) {
                     const o = obstacles[i];
                     if (
@@ -382,7 +382,7 @@ export class Building {
                 (this.layer == activePlayer.layer || activePlayer.layer & 2) &&
                 collisionHelpers.scanCollider(
                     zoomIn,
-                    map.Ve.p(),
+                    map.Ve.getPool(),
                     activePlayer.pos,
                     activePlayer.layer,
                     0.5,

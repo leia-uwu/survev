@@ -154,7 +154,7 @@ export class BulletBarn {
     */
     update(dt, playerBarn, r, i, s, n, u, w) {
         for (
-            let f = playerBarn.playerPool.p(), _ = 0;
+            let f = playerBarn.playerPool.getPool(), _ = 0;
             _ < this.bullets.length;
             _++
         ) {
@@ -200,7 +200,7 @@ export class BulletBarn {
                 const colObjs = [];
 
                 // Obstacles
-                const obstacles = r.Ve.p();
+                const obstacles = r.Ve.getPool();
                 for (let i = 0; i < obstacles.length; i++) {
                     const obstacle = obstacles[i];
                     if (
@@ -410,7 +410,7 @@ export class BulletBarn {
                     }
                 }
                 if (!(b.layer & 2)) {
-                    const $ = r.lr.p();
+                    const $ = r.lr.getPool();
                     let ee = b.layer;
                     for (let te = 0; te < $.length; te++) {
                         const re = $[te];

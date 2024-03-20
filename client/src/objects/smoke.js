@@ -6,13 +6,13 @@ import { v2 } from "../../../shared/utils/v2";
 import { Pool } from "./objectPool";
 
 class Smoke {
-    o() { }
-    n() {
+    init() { }
+    free() {
         this.particle.fadeOut();
         this.particle = null;
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         this.type = data.type;
         this.pos = v2.copy(data.pos);
         this.rad = data.rad;
@@ -98,7 +98,7 @@ export class SmokeBarn {
 
     update(dt, camera, activePlayer, map, renderer) {
         // why is this commented out?
-        // for (let o = this.e.p(), s = 0; s < o.length; s++) {
+        // for (let o = this.e.getPool(), s = 0; s < o.length; s++) {
         // o[s].active;
         // }
 

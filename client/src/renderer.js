@@ -137,7 +137,7 @@ export class Renderer {
             if (this.layerMaskActive) {
                 mask.beginFill(0xffffff, 1.0);
                 mask.drawRect(0.0, 0.0, camera.screenWidth, camera.screenHeight);
-                const structures = map.lr.p();
+                const structures = map.lr.getPool();
                 for (let i = 0; i < structures.length; i++) {
                     const structure = structures[i];
                     if (!structure.active) {
@@ -161,7 +161,7 @@ export class Renderer {
                 mask.clear();
                 mask.beginFill(0xffffff, 1.0);
                 drawRect(mask, 0.0, 0.0, 1024.0, 1024.0);
-                const structures = map.lr.p();
+                const structures = map.lr.getPool();
                 for (let i = 0; i < structures.length; i++) {
                     const structure = structures[i];
                     if (!structure.active) {
@@ -195,7 +195,7 @@ export class Renderer {
         const r = this.debugLayerMask;
         r.clear();
         r.beginFill(16711935, 1);
-        for (let a = map.lr.p(), i = 0; i < a.length; i++) {
+        for (let a = map.lr.getPool(), i = 0; i < a.length; i++) {
             const o = a[i];
             if (o.active) {
                 for (let s = 0; s < o.mask.length; s++) {

@@ -12,14 +12,14 @@ export class Obstacle {
         this.sprite.visible = false;
     }
 
-    o() {
+    init() {
         this.isNew = false;
         this.smokeEmitter = null;
         this.sprite.visible = false;
         this.img = "";
     }
 
-    n() {
+    free() {
         this.sprite.visible = false;
         this.sprite.parent?.removeChild(this.sprite);
         if (this.door?.casingSprite) {
@@ -32,7 +32,7 @@ export class Obstacle {
         }
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         if (fullUpdate) {
             this.type = data.type;
             this.layer = data.layer;

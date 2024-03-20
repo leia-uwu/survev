@@ -13,7 +13,7 @@ class AirDrop {
         this.sprite.visible = false;
     }
 
-    o() {
+    init() {
         this.playedLandFx = false;
         this.landed = false;
         this.fallInstance = null;
@@ -24,13 +24,13 @@ class AirDrop {
         this.fallTicker = 0;
     }
 
-    n() {
+    free() {
         this.fallInstance?.stop();
         this.fallInstance = null;
         this.sprite.visible = false;
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         if (isNew) {
             this.isNew = true;
             this.fallTicker = data.fallT * GameConfig.airdrop.fallTime;
@@ -49,14 +49,14 @@ export class AirdropBarn {
     }
 
     free() {
-        const airdrops = this.re.p();
+        const airdrops = this.re.getPool();
         for (let i = 0; i < airdrops.length; i++) {
-            airdrops[i].n();
+            airdrops[i].free();
         }
     }
 
     update(dt, activePlayer, camera, map, particleBarn, renderer, audioManager) {
-        const airdrops = this.re.p();
+        const airdrops = this.re.getPool();
         for (let i = 0; i < airdrops.length; i++) {
             const airdrop = airdrops[i];
             if (airdrop.active) {

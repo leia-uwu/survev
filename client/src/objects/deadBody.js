@@ -43,12 +43,12 @@ class DeadBody {
         this.container.visible = this.sprite;
     }
 
-    o() { }
-    n() {
+    init() { }
+    free() {
         this.container.visible = false;
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         this.pos = v2.copy(data.pos);
         if (fullUpdate) {
             this.layer = data.layer;
@@ -67,7 +67,7 @@ export class DeadBodyBarn {
     }
 
     update(dt, playerBarn, activePlayer, map, camera, renderer) {
-        const deadBodies = this.ot.p();
+        const deadBodies = this.ot.getPool();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];
             if (d.active) {
@@ -100,7 +100,7 @@ export class DeadBodyBarn {
     }
 
     getDeadBodyById(playerId) {
-        const deadBodies = this.ot.p();
+        const deadBodies = this.ot.getPool();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];
             if (d.active && d.playerId == playerId) {

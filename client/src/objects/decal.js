@@ -16,19 +16,19 @@ class Decal {
         this.decalRender = null;
     }
 
-    o() {
+    init() {
         this.isNew = false;
         this.goreT = 0;
     }
 
-    n() {
+    free() {
         if (this.decalRender) {
             this.decalRender.n();
             this.decalRender = null;
         }
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         if (fullUpdate) {
             const def = MapObjectDefs[data.type];
 
@@ -236,7 +236,7 @@ export class DecalBarn {
     }
 
     update(dt, camera, renderer) {
-        const decals = this._.p();
+        const decals = this._.getPool();
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
             if (decal.active) {
