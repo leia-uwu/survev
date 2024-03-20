@@ -28,9 +28,7 @@ export class WeaponManager {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
-        for (const timeout of this.timeouts) {
-            clearTimeout(timeout);
-        }
+        this.clearTimeouts();
         this.player.animType = GameConfig.Anim.None;
 
         const curWeapon = this.weapons[this.curWeapIdx];
@@ -73,6 +71,13 @@ export class WeaponManager {
 
     timeouts: NodeJS.Timeout[] = [];
 
+    clearTimeouts(): void {
+        for (const timeout of this.timeouts) {
+            clearTimeout(timeout);
+        }
+        this.timeouts.length = 0;
+    }
+
     constructor(player: Player) {
         this.player = player;
 
@@ -106,10 +111,6 @@ export class WeaponManager {
         }
     }
 
-    shootHold(): void {
-        this.shootStart();
-    }
-
     reload() {
         if (this.player.actionType == GameConfig.Action.Reload) {
             return;
@@ -130,7 +131,6 @@ export class WeaponManager {
         this.player.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
     }
 
-    fireDelay = 0;
     offHand = false;
 
     fireWeapon(skipDelayCheck = false) {
@@ -140,9 +140,9 @@ export class WeaponManager {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
-        // this.fireDelay = this.player.game.now + (itemDef.fireDelay * 1000);
 
         if (this.player.shootHold && itemDef.fireMode === "auto") {
+            this.clearTimeouts();
             this.timeouts.push(
                 setTimeout(() => {
                     if (this.player.shootHold) this.fireWeapon(this.player.shootHold);
