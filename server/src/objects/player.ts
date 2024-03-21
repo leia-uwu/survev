@@ -15,7 +15,7 @@ import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import net, { type DropItemMsg, type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
-import { splitUpLoot, type Loot } from "./loot";
+import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
 
@@ -782,7 +782,7 @@ export class Player extends BaseGameObject {
             const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
 
             if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists") {
-                this.game.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
+                this.game.lootBarn.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
             }
         }
 
@@ -793,7 +793,7 @@ export class Player extends BaseGameObject {
             }
 
             if (this.inventory[item] > 0) {
-                this.game.addLoot(item, this.pos, this.layer, this.inventory[item]);
+                this.game.lootBarn.addLoot(item, this.pos, this.layer, this.inventory[item]);
             }
         }
 
@@ -802,13 +802,13 @@ export class Player extends BaseGameObject {
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
             if (!!def.noDrop || def.level < 1) continue;
-            this.game.addLoot(type, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(type, this.pos, this.layer, 1);
         }
 
         if (this.outfit) {
             const def = GameObjectDefs[this.outfit] as OutfitDef;
             if (!def.noDropOnDeath) {
-                this.game.addLoot(this.outfit, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
             }
         }
 
@@ -1049,7 +1049,7 @@ export class Player extends BaseGameObject {
     pickupMelee(obj: Loot) {
         if (this.weapons[2].type != obj.type) {
             if (this.weapons[2].type != "fists") {
-                this.game.addLoot(this.weapons[2].type, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(this.weapons[2].type, this.pos, this.layer, 1);
             }
             this.weapons[2].type = obj.type;
             this.weapons[2].ammo = 0;
@@ -1060,21 +1060,21 @@ export class Player extends BaseGameObject {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, 1);
         }
         obj.remove();
     }
 
     pickupOutfit(obj: Loot) {
         if (this.outfit != obj.type) {
-            this.game.addLoot(this.outfit, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
             this.outfit = obj.type;
             this.setDirty();
         } else {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, 1);
         }
         obj.remove();
     }
@@ -1096,7 +1096,7 @@ export class Player extends BaseGameObject {
             if (objName == gearName && objLevel > gearLevel) {
                 success = true;
                 if (this[objName] && this[objName] != "backpack00") { // empty string only signifies no gear for chest and helmet, backpack is "backpack00"
-                    this.game.addLoot(this[objName], this.pos, this.layer, 1);
+                    this.game.lootBarn.addLoot(this[objName], this.pos, this.layer, 1);
                 }
                 this[objName] = obj.type;
                 this.setDirty();
@@ -1107,7 +1107,7 @@ export class Player extends BaseGameObject {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, 1);
         }
         obj.remove();
     }
@@ -1161,7 +1161,7 @@ export class Player extends BaseGameObject {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, amountToDrop);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, amountToDrop);
         }
         // this is here because it needs to execute regardless of what happens above
         // automatically reloads gun if inventory has 0 ammo and ammo is picked up
@@ -1203,7 +1203,7 @@ export class Player extends BaseGameObject {
                 this.dirty.inventory = true;
 
                 const amountToDrop = weaponAmmo - amountToAdd;
-                this.game.addLoot(weaponInfo.ammo, this.pos, this.layer, amountToDrop);
+                this.game.lootBarn.addLoot(weaponInfo.ammo, this.pos, this.layer, amountToDrop);
             }
             if (this.curWeapIdx == 0 && this.weapons[0].type && !this.weapons[1].type) { // [gun], nothing => [gun], newGun
                 this.weapons[1].type = obj.type;
@@ -1214,7 +1214,7 @@ export class Player extends BaseGameObject {
                 this.weapons[0].ammo = 0;
                 this.weapons[0].cooldown = 0;
             } else { // [gun], gun => [newGun], gun
-                this.game.addGun(this.activeWeapon, this.pos, this.layer, 1);// order matters, drop first so references are correct
+                this.game.lootBarn.addGun(this.activeWeapon, this.pos, this.layer, 1);// order matters, drop first so references are correct
                 this.weapons[this.curWeapIdx].type = obj.type;
                 this.weapons[this.curWeapIdx].ammo = 0;
                 this.weapons[this.curWeapIdx].cooldown = 0;
@@ -1265,7 +1265,7 @@ export class Player extends BaseGameObject {
                 amountToDrop = Math.min(5, inventoryCount);
             }
 
-            splitUpLoot(this.game, this, dropMsg.item, amountToDrop);
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
             this.inventory[dropMsg.item] -= amountToDrop;
             this.dirty.inventory = true;
             break;
@@ -1276,7 +1276,7 @@ export class Player extends BaseGameObject {
 
             const availableScopeLevels = [15, 8, 4, 2, 1];
             let targetScopeIndex = availableScopeLevels.indexOf(level);
-            this.game.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
             this.inventory[`${level}xscope`] = 0;
 
             if (this.scope === `${level}xscope`) {
@@ -1296,7 +1296,7 @@ export class Player extends BaseGameObject {
         case "chest":
         case "helmet": {
             if (item.noDrop) break;
-            this.game.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
             this[item.type] = "";
             this.setDirty();
             break;
@@ -1306,7 +1306,7 @@ export class Player extends BaseGameObject {
             if (this.inventory[dropMsg.item] === 0) break;
             this.inventory[dropMsg.item]--;
             // @TODO: drop more than one?
-            this.game.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
             this.dirty.inventory = true;
             break;
         }
@@ -1336,10 +1336,10 @@ export class Player extends BaseGameObject {
 
                 const amountToDrop = weaponAmmoCount - amountToAdd;
 
-                this.game.addLoot(weaponAmmoType, this.pos, this.layer, amountToDrop);
+                this.game.lootBarn.addLoot(weaponAmmoType, this.pos, this.layer, amountToDrop);
             }
 
-            this.game.addGun(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addGun(dropMsg.item, this.pos, this.layer, 1);
             this.dirty.weapons = true;
             this.setDirty();
             break;
@@ -1351,7 +1351,7 @@ export class Player extends BaseGameObject {
 
             const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
 
-            splitUpLoot(this.game, this, dropMsg.item, amountToDrop);
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
             this.inventory[dropMsg.item] -= amountToDrop;
             this.weapons[3].ammo -= amountToDrop;
 
@@ -1364,7 +1364,7 @@ export class Player extends BaseGameObject {
         }
         case "melee": {
             if (this.weapons[2].type != "fists") {
-                this.game.addLoot(dropMsg.item, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
                 this.weapons[2].type = "fists";
                 this.weapons[2].ammo = 0;
                 this.weapons[2].cooldown = 0;

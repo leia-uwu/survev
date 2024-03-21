@@ -6,7 +6,6 @@ import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
 import { ObjectType } from "./objects/gameObject";
-import { getLootTable } from "./objects/loot";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "../../shared/utils/coldet";
@@ -317,10 +316,10 @@ export class GameMap {
                 break;
             case "loot_spawner":
                 for (const tier of def.loot) {
-                    const items = getLootTable(this.game.config.map, tier.tier);
+                    const items = this.game.lootBarn.getLootTable(tier.tier);
 
                     for (const item of items) {
-                        this.game.addLoot(item.name, finalPos, 0, item.count);
+                        this.game.lootBarn.addLoot(item.name, finalPos, 0, item.count);
                     }
                 }
                 break;
@@ -464,10 +463,10 @@ export class GameMap {
             }
             case "loot_spawner": {
                 for (const tier of part.loot) {
-                    const items = getLootTable(this.game.config.map, tier.tier);
+                    const items = this.game.lootBarn.getLootTable(tier.tier);
 
                     for (const item of items) {
-                        this.game.addLoot(item.name, partPosition, layer, item.count);
+                        this.game.lootBarn.addLoot(item.name, partPosition, layer, item.count);
                     }
                 }
             }

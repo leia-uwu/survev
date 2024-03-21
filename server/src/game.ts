@@ -6,14 +6,13 @@ import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
-import { Loot } from "./objects/loot";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { type ServerSocket } from "./abstractServer";
+import { LootBarn } from "./objects/loot";
 
 export class Game {
     stopped = false;
@@ -39,6 +38,8 @@ export class Game {
 
     partialObjs = new Set<BaseGameObject>();
     fullObjs = new Set<BaseGameObject>();
+
+    lootBarn = new LootBarn(this);
 
     newPlayers: Player[] = [];
 
@@ -173,37 +174,6 @@ export class Game {
             socket);
 
         return player;
-    }
-
-    /**
-     * spawns gun loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
-     */
-    addGun(type: string, pos: Vec2, layer: number, count: number) {
-        const loot = new Loot(this, type, pos, layer, count);
-        this.grid.addObject(loot);
-    }
-
-    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
-        const loot = new Loot(this, type, pos, layer, count);
-        this.grid.addObject(loot);
-
-        const def = GameObjectDefs[type];
-
-        if (def.type === "gun" && GameObjectDefs[def.ammo]) {
-            const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
-            const halfAmmo = Math.ceil(ammoCount / 2);
-
-            const leftAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
-            leftAmmo.push(v2.create(-1, -1), 0.5);
-            this.grid.addObject(leftAmmo);
-
-            if (ammoCount - halfAmmo >= 1) {
-                const rightAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
-                rightAmmo.push(v2.create(1, -1), 0.5);
-
-                this.grid.addObject(rightAmmo);
-            }
-        }
     }
 
     handleMsg(buff: ArrayBuffer, player: Player): void {

@@ -1,5 +1,4 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { MapDefs } from "../../../shared/defs/mapDefs";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
@@ -10,13 +9,82 @@ import { BaseGameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Structure } from "./structure";
 import { type Player } from "./player";
+import { MapDefs } from "../../../shared/defs/mapDefs";
 
-export function splitUpLoot(game: Game, player: Player, item: string, amount: number) {
-    const dropCount = Math.floor(amount / 60);
-    for (let i = 0; i < dropCount; i++) {
-        game.addLoot(item, player.pos, player.layer, 60);
+export class LootBarn {
+    constructor(public game: Game) {
+
     }
-    if (amount % 60 !== 0) game.addLoot(item, player.pos, player.layer, amount % 60);
+
+    splitUpLoot(player: Player, item: string, amount: number) {
+        const dropCount = Math.floor(amount / 60);
+        for (let i = 0; i < dropCount; i++) {
+            this.addLoot(item, player.pos, player.layer, 60);
+        }
+        if (amount % 60 !== 0) this.addLoot(item, player.pos, player.layer, amount % 60);
+    }
+
+    /**
+    * spawns gun loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
+    */
+    addGun(type: string, pos: Vec2, layer: number, count: number) {
+        const loot = new Loot(this.game, type, pos, layer, count);
+        this.game.grid.addObject(loot);
+    }
+
+    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
+        const loot = new Loot(this.game, type, pos, layer, count);
+        this.game.grid.addObject(loot);
+
+        const def = GameObjectDefs[type];
+
+        if (def.type === "gun" && GameObjectDefs[def.ammo]) {
+            const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
+            const halfAmmo = Math.ceil(ammoCount / 2);
+
+            const leftAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
+            leftAmmo.push(v2.create(-1, -1), 0.5);
+            this.game.grid.addObject(leftAmmo);
+
+            if (ammoCount - halfAmmo >= 1) {
+                const rightAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
+                rightAmmo.push(v2.create(1, -1), 0.5);
+
+                this.game.grid.addObject(rightAmmo);
+            }
+        }
+    }
+
+    getLootTable(tier: string): Array<{ name: string, count: number }> {
+        const lootTable = MapDefs[this.game.config.map].lootTable[tier];
+        const items: Array<{ name: string, count: number }> = [];
+
+        if (!lootTable) {
+            console.warn(`Unknown loot tier with type ${tier}`);
+            return [];
+        }
+
+        const weights: number[] = [];
+
+        const weightedItems: Array<{ name: string, count: number }> = [];
+        for (const item of lootTable) {
+            weightedItems.push({
+                name: item.name,
+                count: item.count
+            });
+            weights.push(item.weight);
+        }
+
+        const item = util.weightedRandom(weightedItems, weights);
+
+        if (item.name.startsWith("tier_")) {
+            items.push(...this.getLootTable(item.name));
+        } else if (item.name) {
+            items.push(item);
+        }
+
+        return items;
+    }
 }
 
 export class Loot extends BaseGameObject {
@@ -173,35 +241,4 @@ export class Loot extends BaseGameObject {
     remove() {
         this.game.grid.remove(this);
     }
-}
-
-export function getLootTable(modeName: keyof typeof MapDefs, tier: string): Array<{ name: string, count: number }> {
-    const lootTable = MapDefs[modeName].lootTable[tier];
-    const items: Array<{ name: string, count: number }> = [];
-
-    if (!lootTable) {
-        console.warn(`Unknown loot tier with type ${tier}`);
-        return [];
-    }
-
-    const weights: number[] = [];
-
-    const weightedItems: Array<{ name: string, count: number }> = [];
-    for (const item of lootTable) {
-        weightedItems.push({
-            name: item.name,
-            count: item.count
-        });
-        weights.push(item.weight);
-    }
-
-    const item = util.weightedRandom(weightedItems, weights);
-
-    if (item.name.startsWith("tier_")) {
-        items.push(...getLootTable(modeName, item.name));
-    } else if (item.name) {
-        items.push(item);
-    }
-
-    return items;
 }
