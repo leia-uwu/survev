@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
 import GameObject from "../../shared/utils/gameObject";
 import { mapHelpers } from "../../shared/utils/mapHelpers";

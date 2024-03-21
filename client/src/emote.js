@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { GameConfig } from "../../shared/gameConfig";
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { coldet } from "../../shared/utils/coldet";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";

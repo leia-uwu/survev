@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { math } from "../../../shared/utils/math";
 import { device } from "../device";
 

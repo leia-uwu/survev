@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { GameConfig } from "../../../shared/gameConfig";

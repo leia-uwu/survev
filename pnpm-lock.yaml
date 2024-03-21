@@ -53,9 +53,9 @@ importers:
       jquery:
         specifier: ^3.7.1
         version: 3.7.1
-      pixi.js:
+      pixi.js-legacy:
         specifier: ^7.4.2
-        version: 7.4.2
+        version: 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extract@7.4.2)(@pixi/graphics@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/prepare@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text@7.4.2)
     devDependencies:
       '@types/jquery':
         specifier: ^3.5.29
@@ -79,8 +79,8 @@ importers:
         specifier: ^5.4.3
         version: 5.4.3
       uWebSockets.js:
-        specifier: github:uNetworking/uWebSockets.js#v20.34.0
-        version: github.com/uNetworking/uWebSockets.js/fca27c05066342b01951782248640c8013b37196
+        specifier: github:uNetworking/uWebSockets.js#v20.43.0
+        version: github.com/uNetworking/uWebSockets.js/1977b5039938ad863d42fc4958d48c17e5a1fa06
 
   shared:
     dependencies:
@@ -428,6 +428,126 @@ packages:
     dependencies:
       '@pixi/core': 7.4.2
       '@types/css-font-loading-module': 0.0.12
+    dev: false
+
+  /@pixi/canvas-display@7.4.2(@pixi/display@7.4.2):
+    resolution: {integrity: sha512-cKplWdhy+ReYRQK9ideLlKoBdTI9cB10382jWkLDiBeguM9cWSIOrmY5Bd84V0/5FOTLc/AFl4LL1wws27MVKg==}
+    peerDependencies:
+      '@pixi/display': 7.4.2
+    dependencies:
+      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+    dev: false
+
+  /@pixi/canvas-extract@7.4.2(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extract@7.4.2):
+    resolution: {integrity: sha512-4rbH4sLPcPEz+OjehFUluFHN8mup9zwzedJLYc7KtqScg/npYKtVmDSaI/0cZBr9vmael+ZuCg/hjaDYTJhubg==}
+    peerDependencies:
+      '@pixi/canvas-renderer': 7.4.2
+      '@pixi/core': 7.4.2
+      '@pixi/display': 7.4.2
+      '@pixi/extract': 7.4.2
+    dependencies:
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.2
+      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/extract': 7.4.2(@pixi/core@7.4.2)
+    dev: false
+
+  /@pixi/canvas-graphics@7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/graphics@7.4.2):
+    resolution: {integrity: sha512-1ANBcV5IietfQuABT2PUxTs4TsQP4kmpwUnkRLpZgvM5NL0UBMUZCqBhcBnbfAyV7zvpPm3i+eWhIwn6Xz/2Tg==}
+    peerDependencies:
+      '@pixi/canvas-display': 7.4.2
+      '@pixi/canvas-renderer': 7.4.2
+      '@pixi/core': 7.4.2
+      '@pixi/graphics': 7.4.2
+    dependencies:
+      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2)
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.2
+      '@pixi/graphics': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/sprite@7.4.2)
+    dev: false
+
+  /@pixi/canvas-mesh@7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2):
+    resolution: {integrity: sha512-CdxlV6a6H3wULwwFtURIycQT7oCtvFGDMotz3glyAj625EEx+mwSLo1mAVzs8Hl9pmetFmNKj4Z1gy890VSemw==}
+    peerDependencies:
+      '@pixi/canvas-display': 7.4.2
+      '@pixi/canvas-renderer': 7.4.2
+      '@pixi/core': 7.4.2
+      '@pixi/mesh': 7.4.2
+      '@pixi/mesh-extras': 7.4.2
+    dependencies:
+      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2)
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.2
+      '@pixi/mesh': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)
+      '@pixi/mesh-extras': 7.4.2(@pixi/core@7.4.2)(@pixi/mesh@7.4.2)
+    dev: false
+
+  /@pixi/canvas-particle-container@7.4.2(@pixi/particle-container@7.4.2):
+    resolution: {integrity: sha512-775rF/d7atlZTq5oODr6K3qDZ+awWkDe0QQ4BvGqPAXaWXB5doGs3j5KpTEoFD/JnbX7Q7o8ZTVGla6qsBnT6A==}
+    peerDependencies:
+      '@pixi/particle-container': 7.4.2
+    dependencies:
+      '@pixi/particle-container': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/sprite@7.4.2)
+    dev: false
+
+  /@pixi/canvas-prepare@7.4.2(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/prepare@7.4.2):
+    resolution: {integrity: sha512-BB50HZb8ttPMkef+9BXfzeT1HS/AUkXRS0uwhwpq4L75D7XwIlIfwS0lCv2bw2KflavA8wT0qWuwlQTgHSalcA==}
+    peerDependencies:
+      '@pixi/canvas-renderer': 7.4.2
+      '@pixi/core': 7.4.2
+      '@pixi/prepare': 7.4.2
+    dependencies:
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.2
+      '@pixi/prepare': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/graphics@7.4.2)(@pixi/text@7.4.2)
+    dev: false
+
+  /@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2):
+    resolution: {integrity: sha512-5qBrr4hJ3hQYMJwxIkKCnvMxL9m7aL26h4zbacK0KH7SQ0i+RCcZS2NzvPa451FtnhquIUjwuuWQyjPFdM5R7g==}
+    peerDependencies:
+      '@pixi/core': 7.4.2
+    dependencies:
+      '@pixi/core': 7.4.2
+    dev: false
+
+  /@pixi/canvas-sprite-tiling@7.4.2(@pixi/canvas-renderer@7.4.2)(@pixi/canvas-sprite@7.4.2)(@pixi/core@7.4.2)(@pixi/sprite-tiling@7.4.2):
+    resolution: {integrity: sha512-3/YEohGAiiVHnkOkL1wyjGBJlndXsLPG4XFn3Lpc84Cm5kbR/C6RvNvDcRckQod+jWmqQ8n4x4SjhoFBjdP+dQ==}
+    peerDependencies:
+      '@pixi/canvas-renderer': 7.4.2
+      '@pixi/canvas-sprite': 7.4.2
+      '@pixi/core': 7.4.2
+      '@pixi/sprite-tiling': 7.4.2
+    dependencies:
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/canvas-sprite': 7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/sprite@7.4.2)
+      '@pixi/core': 7.4.2
+      '@pixi/sprite-tiling': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/sprite@7.4.2)
+    dev: false
+
+  /@pixi/canvas-sprite@7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/sprite@7.4.2):
+    resolution: {integrity: sha512-XM6O6liAm2okHlSpUd0+muQAqLzY6EdQtfuqVP628FjHQkLJ/nb6Rg7qqtt3a3T4eyxzMBkqkzqBNBXomgf1SA==}
+    peerDependencies:
+      '@pixi/canvas-display': 7.4.2
+      '@pixi/canvas-renderer': 7.4.2
+      '@pixi/core': 7.4.2
+      '@pixi/sprite': 7.4.2
+    dependencies:
+      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2)
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.2
+      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)
+    dev: false
+
+  /@pixi/canvas-text@7.4.2(@pixi/canvas-sprite@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text@7.4.2):
+    resolution: {integrity: sha512-EOzYNaNcD4QWwL7LQ3v2WM4LQNXeS0aJbNOwJ1+9xiNjY53iF0w5XgSGcfGef4itym6nrwTBft1QwKyTE23zhQ==}
+    peerDependencies:
+      '@pixi/canvas-sprite': 7.4.2
+      '@pixi/sprite': 7.4.2
+      '@pixi/text': 7.4.2
+    dependencies:
+      '@pixi/canvas-sprite': 7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/sprite@7.4.2)
+      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)
+      '@pixi/text': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2)
     dev: false
 
   /@pixi/color@7.4.2:
@@ -2509,6 +2629,34 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
+  /pixi.js-legacy@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extract@7.4.2)(@pixi/graphics@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/prepare@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text@7.4.2):
+    resolution: {integrity: sha512-azGsuJvLHk/VJwt45AjlathtTNdUjLDSoaGt8JBNjzG/05cxVswFLL7GsSe83eNSe0eEuIrxiNIt3vBRNyU3AA==}
+    dependencies:
+      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2)
+      '@pixi/canvas-extract': 7.4.2(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extract@7.4.2)
+      '@pixi/canvas-graphics': 7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/graphics@7.4.2)
+      '@pixi/canvas-mesh': 7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)
+      '@pixi/canvas-particle-container': 7.4.2(@pixi/particle-container@7.4.2)
+      '@pixi/canvas-prepare': 7.4.2(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/prepare@7.4.2)
+      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/canvas-sprite': 7.4.2(@pixi/canvas-display@7.4.2)(@pixi/canvas-renderer@7.4.2)(@pixi/core@7.4.2)(@pixi/sprite@7.4.2)
+      '@pixi/canvas-sprite-tiling': 7.4.2(@pixi/canvas-renderer@7.4.2)(@pixi/canvas-sprite@7.4.2)(@pixi/core@7.4.2)(@pixi/sprite-tiling@7.4.2)
+      '@pixi/canvas-text': 7.4.2(@pixi/canvas-sprite@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text@7.4.2)
+      pixi.js: 7.4.2
+    transitivePeerDependencies:
+      - '@pixi/core'
+      - '@pixi/display'
+      - '@pixi/extract'
+      - '@pixi/graphics'
+      - '@pixi/mesh'
+      - '@pixi/mesh-extras'
+      - '@pixi/particle-container'
+      - '@pixi/prepare'
+      - '@pixi/sprite'
+      - '@pixi/sprite-tiling'
+      - '@pixi/text'
+    dev: false
+
   /pixi.js@7.4.2:
     resolution: {integrity: sha512-TifqgHGNofO7UCEbdZJOpUu7dUnpu4YZ0o76kfCqxDa4RS8ITc9zjECCbtalmuNXkVhSEZmBKQvE7qhHMqw/xg==}
     dependencies:
@@ -3085,8 +3233,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/uNetworking/uWebSockets.js/fca27c05066342b01951782248640c8013b37196:
-    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/fca27c05066342b01951782248640c8013b37196}
+  github.com/uNetworking/uWebSockets.js/1977b5039938ad863d42fc4958d48c17e5a1fa06:
+    resolution: {tarball: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/1977b5039938ad863d42fc4958d48c17e5a1fa06}
     name: uWebSockets.js
-    version: 20.34.0
+    version: 20.43.0
     dev: false

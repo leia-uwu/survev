@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import SoundDefs from "./soundDefs";

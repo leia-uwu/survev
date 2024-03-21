@@ -1,6 +1,6 @@
 import { helpers } from "./helpers";
 import $ from "jquery";
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import net from "../../shared/net";
@@ -320,6 +320,7 @@ class Application {
                     view: domCanvas,
                     antialias: false,
                     resolution: rendererRes,
+                    hello: true,
                     forceCanvas
                 });
             };

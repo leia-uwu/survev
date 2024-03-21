@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
 import net from "../../../shared/net";
 import { util } from "../../../shared/utils/util";
