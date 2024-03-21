@@ -1,5 +1,3 @@
-import { type WebSocket } from "uWebSockets.js";
-import { type PlayerContainer } from "./server";
 import { Emote, Player } from "./objects/player";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { Grid } from "./utils/grid";
@@ -15,6 +13,7 @@ import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
+import { type ServerSocket } from "./abstractServer";
 
 export class Game {
     stopped = false;
@@ -153,7 +152,7 @@ export class Game {
         }
     }
 
-    addPlayer(socket: WebSocket<PlayerContainer>): Player {
+    addPlayer(socket: ServerSocket): Player {
         let position: Vec2;
 
         switch (this.config.spawn.mode) {

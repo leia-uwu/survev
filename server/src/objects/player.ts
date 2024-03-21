@@ -1,10 +1,8 @@
-import { type WebSocket } from "uWebSockets.js";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
-import { type PlayerContainer } from "../server";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
@@ -19,6 +17,7 @@ import net, { type DropItemMsg, type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
 import { splitUpLoot, type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
+import { type ServerSocket } from "../abstractServer";
 
 export class Emote {
     playerId: number;
@@ -315,14 +314,14 @@ export class Player extends BaseGameObject {
         return (Date.now() - this.joinedTime) / 1000;
     }
 
-    socket: WebSocket<PlayerContainer>;
+    socket: ServerSocket;
 
     msgsToSend: Array<{ type: number, msg: Msg }> = [];
 
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
 
-    constructor(game: Game, pos: Vec2, socket: WebSocket<PlayerContainer>) {
+    constructor(game: Game, pos: Vec2, socket: ServerSocket) {
         super(game, pos);
         this.socket = socket;
 
@@ -1492,7 +1491,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer): void {
         try {
-            this.socket.send(buffer, true, true);
+            this.socket.send(buffer);
         } catch (e) {
             console.warn("Error sending packet. Details:", e);
         }
