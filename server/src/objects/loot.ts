@@ -9,6 +9,15 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject, ObjectType } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Structure } from "./structure";
+import { type Player } from "./player";
+
+export function splitUpLoot(game: Game, player: Player, item: string, amount: number) {
+    const dropCount = Math.floor(amount / 60);
+    for (let i = 0; i < dropCount; i++) {
+        game.addLoot(item, player.pos, player.layer, 60);
+    }
+    if (amount % 60 !== 0) game.addLoot(item, player.pos, player.layer, amount % 60);
+}
 
 export class Loot extends BaseGameObject {
     bounds = collider.createCircle(v2.create(0.0, 0.0), 3.0);
