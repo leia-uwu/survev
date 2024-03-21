@@ -79,7 +79,7 @@ export class Player extends BaseGameObject {
         activeId: true
     };
 
-    private _health: number = 50;// GameConfig.player.health;
+    private _health: number = GameConfig.player.health;
 
     get health(): number {
         return this._health;
@@ -125,7 +125,7 @@ export class Player extends BaseGameObject {
         this.dirty.zoom = true;
     }
 
-    action!: { time: number, duration: number, targetId: number };
+    action: { time: number, duration: number, targetId: number };
     lastAction!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
@@ -336,45 +336,8 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.inventory["12gauge"] = 15;
-        this.inventory["9mm"] = 120;
-        this.inventory.bandage = 5;
-        this.inventory.healthkit = 1;
-        this.inventory.soda = 2;
-        this.inventory.painkiller = 1;
-        this.inventory["8xscope"] = 1;
-        this.scope = "8xscope";
-        this.game.addLoot("katana", this.pos, this.layer, 1);
-        this.game.addLoot("hook", this.pos, this.layer, 1);
-        this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
-        this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
-        this.game.addLoot("9mm", this.pos, this.layer, 100);
-        this.game.addLoot("12gauge", this.pos, this.layer, 5);
-        this.game.addLoot("bandage", this.pos, this.layer, 5);
-        this.game.addLoot("soda", this.pos, this.layer, 1);
-        this.game.addLoot("2xscope", this.pos, this.layer, 1);
-        this.game.addLoot("4xscope", this.pos, this.layer, 1);
-        this.game.addLoot("8xscope", this.pos, this.layer, 1);
-        this.game.addLoot("frag", this.pos, this.layer, 10);
-        this.game.addLoot("smoke", this.pos, this.layer, 3);
-        this.game.addLoot("mirv", this.pos, this.layer, 3);
-        this.game.addLoot("deagle_dual", this.pos, this.layer, 1);
-        this.game.addLoot("pkp", this.pos, this.layer, 1);
-        this.game.addLoot("backpack03", this.pos, this.layer, 1);
-        this.game.addLoot("helmet03", this.pos, this.layer, 1);
-        this.game.addLoot("chest03", this.pos, this.layer, 1);
-        this.game.addLoot("backpack01", this.pos, this.layer, 1);
-        this.game.addLoot("helmet01", this.pos, this.layer, 1);
-        this.game.addLoot("chest01", this.pos, this.layer, 1);
-        // for (const objName of Object.keys(GearDefs)){
-        //     this.game.addLoot(objName, this.pos, this.layer, 1);
-        // }
-
-        this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
         this.action = { time: -1, duration: 0, targetId: -1 };
-        // this.addPerk("splinter");
-        // this.addPerk("explosive")
     }
 
     visibleObjects = new Set<GameObject>();
