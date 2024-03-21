@@ -56,97 +56,97 @@ export class BulletBarn {
         );
     }
 
-    addBullet(bullet, t, renderer) {
-        let a = null;
+    addBullet(params, t, renderer) {
+        let bullet = null;
 
         for (let i = 0; i < this.bullets.length; i++) {
             if (
                 !this.bullets[i].alive &&
                 !this.bullets[i].collided
             ) {
-                a = this.bullets[i];
+                bullet = this.bullets[i];
                 break;
             }
         }
 
-        if (!a) {
-            a = {};
-            a.alive = false;
-            a.container = new PIXI.Container();
-            a.container.pivot.set(14.5, 0);
-            a.container.visible = false;
-            a.bulletTrail = PIXI.Sprite.from(
+        if (!bullet) {
+            bullet = {};
+            bullet.alive = false;
+            bullet.container = new PIXI.Container();
+            bullet.container.pivot.set(14.5, 0);
+            bullet.container.visible = false;
+            bullet.bulletTrail = PIXI.Sprite.from(
                 "player-bullet-trail-02.img"
             );
-            a.bulletTrail.anchor.set(0.5, 0.5);
-            a.container.addChild(a.bulletTrail);
-            this.bullets.push(a);
+            bullet.bulletTrail.anchor.set(0.5, 0.5);
+            bullet.container.addChild(bullet.bulletTrail);
+            this.bullets.push(bullet);
         }
 
-        const bulletDef = BulletDefs[bullet.bulletType];
+        const bulletDef = BulletDefs[params.bulletType];
 
-        const variance = 1 + bullet.varianceT * bulletDef.variance;
-        const distAdj = math.remap(bullet.distAdjIdx, 0, 16, -1, 1);
+        const variance = 1 + params.varianceT * bulletDef.variance;
+        const distAdj = math.remap(params.distAdjIdx, 0, 16, -1, 1);
         let distance =
             bulletDef.distance /
-            Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
-        if (bullet.clipDistance) {
-            distance = bullet.distance;
+            Math.pow(GameConfig.bullet.reflectDistDecay, params.reflectCount);
+        if (params.clipDistance) {
+            distance = params.distance;
         }
-        a.alive = true;
-        a.isNew = true;
-        a.collided = false;
-        a.scale = 1;
-        a.playerId = bullet.playerId;
-        a.startPos = v2.copy(bullet.pos);
-        a.pos = v2.copy(bullet.pos);
-        a.dir = v2.copy(bullet.dir);
-        a.layer = bullet.layer;
-        a.speed = bulletDef.speed * variance;
-        a.distance = distance * variance + distAdj;
-        a.damageSelf = bulletDef.shrapnel || bullet.reflectCount > 0;
-        a.reflectCount = bullet.reflectCount;
-        a.reflectObjId = bullet.reflectObjId;
-        a.whizHeard = false;
+        bullet.alive = true;
+        bullet.isNew = true;
+        bullet.collided = false;
+        bullet.scale = 1;
+        bullet.playerId = params.playerId;
+        bullet.startPos = v2.copy(params.pos);
+        bullet.pos = v2.copy(params.pos);
+        bullet.dir = v2.copy(params.dir);
+        bullet.layer = params.layer;
+        bullet.speed = bulletDef.speed * variance;
+        bullet.distance = distance * variance + distAdj;
+        bullet.damageSelf = bulletDef.shrapnel || params.reflectCount > 0;
+        bullet.reflectCount = params.reflectCount;
+        bullet.reflectObjId = params.reflectObjId;
+        bullet.whizHeard = false;
 
-        const angleRadians = Math.atan2(a.dir.x, a.dir.y);
-        a.container.rotation = angleRadians - Math.PI / 2;
+        const angleRadians = Math.atan2(bullet.dir.x, bullet.dir.y);
+        bullet.container.rotation = angleRadians - Math.PI / 2;
 
-        a.layer = bullet.layer;
-        const player = t.u(a.playerId);
+        bullet.layer = params.layer;
+        const player = t.u(bullet.playerId);
         if (player && player.layer & 2) {
-            a.layer |= 2;
+            bullet.layer |= 2;
         }
 
         // Set default scale.x to standard working length of 0.8
         let tracerWidth = bulletDef.tracerWidth;
-        if (bullet.trailSmall) {
+        if (params.trailSmall) {
             tracerWidth *= 0.5;
         }
-        if (bullet.trailThick) {
+        if (params.trailThick) {
             tracerWidth *= 2;
         }
-        a.bulletTrail.scale.set(0.8, tracerWidth);
-        a.tracerLength = bulletDef.tracerLength;
-        a.suppressed = !!bulletDef.suppressed;
+        bullet.bulletTrail.scale.set(0.8, tracerWidth);
+        bullet.tracerLength = bulletDef.tracerLength;
+        bullet.suppressed = !!bulletDef.suppressed;
 
         // Use saturated color if the player is on a bright surface
         const tracerColors = this.tracerColors[bulletDef.tracerColor];
         let tracerTint = tracerColors.regular;
-        if (bullet.trailSaturated) {
+        if (params.trailSaturated) {
             tracerTint = tracerColors.chambered || tracerColors.saturated;
         } else if (player?.surface?.data.isBright) {
             tracerTint = tracerColors.saturated;
         }
-        a.bulletTrail.tint = tracerTint;
-        a.tracerAlphaRate = tracerColors.alphaRate;
-        a.tracerAlphaMin = tracerColors.alphaMin;
-        a.bulletTrail.alpha = 1;
-        if (a.reflectCount > 0) {
-            a.bulletTrail.alpha *= 0.5;
+        bullet.bulletTrail.tint = tracerTint;
+        bullet.tracerAlphaRate = tracerColors.alphaRate;
+        bullet.tracerAlphaMin = tracerColors.alphaMin;
+        bullet.bulletTrail.alpha = 1;
+        if (bullet.reflectCount > 0) {
+            bullet.bulletTrail.alpha *= 0.5;
         }
-        a.container.visible = true;
-        renderer.addPIXIObj(a.container, a.layer, 20);
+        bullet.container.visible = true;
+        renderer.addPIXIObj(bullet.container, bullet.layer, 20);
     }
 
     /**

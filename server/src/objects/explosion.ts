@@ -104,9 +104,8 @@ export class Explosion {
                         playerId: this.source?.id ?? 0,
                         shotFx: false,
                         damageMult: 1,
-                        variance: util.random(0, bulletDef.variance),
+                        varianceT: Math.random(),
                         sourceType: this.sourceType,
-                        maxDistance: bulletDef.distance,
                         dir: v2.randomUnit()
                     }
                 );

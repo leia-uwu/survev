@@ -51,12 +51,13 @@ export interface BulletParams {
     trailSaturated?: boolean
     trailSmall?: boolean
     trailThick?: boolean
-    variance: number
+    varianceT?: number
     playerId: number
     reflectCount?: number
     reflectObjId?: number
     onHitFx?: string
-    maxDistance: number
+    clipDistance?: boolean
+    distance?: number
 }
 
 export class BulletManager {
@@ -170,6 +171,8 @@ export class Bullet {
     constructor(public bulletManager: BulletManager, params: BulletParams) {
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
 
+        const variance = 1 + (params.varianceT ?? 1) * bulletDef.variance;
+
         this.layer = params.layer;
         this.pos = v2.copy(params.pos);
         this.dir = v2.copy(params.dir);
@@ -179,7 +182,7 @@ export class Bullet {
         this.reflectCount = params.reflectCount ?? 0;
         this.reflectObjId = params.reflectObjId ?? -1;
         this.lastShot = params.lastShot ?? false;
-        this.speed = bulletDef.speed * params.variance;
+        this.speed = bulletDef.speed * variance;
         this.onHitFx = bulletDef.onHit ?? params.onHitFx;
         this.hasOnHitFx = !!this.onHitFx;
 
@@ -196,14 +199,16 @@ export class Bullet {
         const distAdjIdxMax = 16;
         const distAdjIdx = params.bulletType !== "bullet_shotgun" && params.bulletType !== "bullet_frag" ? util.randomInt(0, distAdjIdxMax) : distAdjIdxMax / 2;
         const distAdj = math.remap(distAdjIdx, 0, distAdjIdxMax, -1.0, 1.0);
-        const desiredDistance = (bulletDef.distance * params.variance + distAdj) / GameConfig.bullet.reflectDistDecay ** this.reflectCount;
 
+        let distance = bulletDef.distance / Math.pow(GameConfig.bullet.reflectDistDecay, this.reflectCount);
+        if (params.clipDistance) {
+            distance = Math.min(bulletDef.distance, params.distance!);
+        }
         // this.serialized = false;
         // this.sentToClient = false;
         // this.timeInactive = 0.0;
         this.sourceType = params.sourceType;
         this.damageType = params.damageType;
-        this.maxDistance = params.maxDistance;
         this.damageMult = params.damageMult;
         this.shotFx = params.shotFx ?? false;
         this.shotOffhand = params.shotOffhand ?? false;
@@ -212,10 +217,10 @@ export class Bullet {
         this.trailSaturated = params.trailSaturated ?? false;
         this.trailSmall = params.trailSmall ?? false;
         this.trailThick = params.trailThick ?? false;
-        this.varianceT = params.variance;
+        this.varianceT = params.varianceT ?? 1;
         this.distAdjIdx = distAdjIdx;
-        this.distance = math.min(desiredDistance, params.maxDistance);
-        this.clipDistance = desiredDistance > params.maxDistance;
+        this.distance = distance * variance + distAdj;
+        this.clipDistance = !!params.clipDistance;
         this.endPos = v2.add(params.pos, v2.mul(this.dir, this.distance));
         this.clientEndPos = v2.copy(this.endPos);
         this.damage = bulletDef.damage * this.damageMult;
@@ -533,8 +538,8 @@ export class Bullet {
             trailSmall: this.trailSmall,
             trailThick: this.trailThick,
             onHitFx: this.onHitFx,
-            variance: this.varianceT,
-            maxDistance: this.maxDistance
+            varianceT: this.varianceT,
+            distance: this.distance
         });
     }
 }

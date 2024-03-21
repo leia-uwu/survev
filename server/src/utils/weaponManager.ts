@@ -260,9 +260,9 @@ export class WeaponManager {
                 }
             }
             const shotPos = v2.add(gunPos, v2.mul(toBlt, toBltLen));
-            let maxDistance = Number.MAX_VALUE;
+            let distance = Number.MAX_VALUE;
             if (itemDef.toMouseHit) {
-                maxDistance = math.max(toMouseLen - gunLen, 0.0);
+                distance = math.max(toMouseLen - gunLen, 0.0);
             }
             const damageMult = 1.0;
 
@@ -274,8 +274,8 @@ export class WeaponManager {
                 pos: shotPos,
                 dir: shotDir,
                 layer: bulletLayer,
-                maxDistance,
-                variance: 1,
+                distance,
+                clipDistance: itemDef.toMouseHit,
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: this.offHand,
