@@ -421,7 +421,7 @@ export class Player {
             }
 
             this.netData.Me = data.perks;
-            if (data.ye != this.anim.seq) {
+            if (data.animSeq != this.anim.seq) {
                 this.playAnim(data.animType, data.animSeq);
             }
             this.action.type = data.actionType;
