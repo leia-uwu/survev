@@ -1,5 +1,5 @@
 import $ from "jquery";
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { collider } from "../../../shared/utils/collider";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
@@ -676,7 +676,7 @@ class LineSprites {
             const b = v2.copy(activePlayer.pos);
             let x = v2.add(b, v2.mul(activePlayer.dir, y));
             for (
-                let S = r.Ve.p(), v = 0;
+                let S = r.Ve.getPool(), v = 0;
                 v < S.length;
                 v++
             ) {

@@ -6,12 +6,12 @@ import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 
 export class Structure {
-    o() {
+    init() {
         this.soundTransitionT = 0;
     }
 
-    n() { }
-    c(data, fullUpdate, isNew, ctx) {
+    free() { }
+    updateData(data, fullUpdate, isNew, ctx) {
         if (fullUpdate) {
             this.type = data.type;
             this.layer = 0;
@@ -109,7 +109,7 @@ export class Structure {
     updateInteriorSounds(dt, map, activePlayer, ambience) {
         const def = MapObjectDefs[this.type];
         collider.createCircle(activePlayer.pos, 0.001);
-        map.nr.p();
+        map.nr.getPool();
         const building0 =
             this.layers.length > 0
                 ? map.getBuildingById(this.layers[0].objId)

@@ -28,9 +28,7 @@ export class WeaponManager {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
-        for (const timeout of this.timeouts) {
-            clearTimeout(timeout);
-        }
+        this.clearTimeouts();
         this.player.animType = GameConfig.Anim.None;
 
         const curWeapon = this.weapons[this.curWeapIdx];
@@ -73,6 +71,13 @@ export class WeaponManager {
 
     timeouts: NodeJS.Timeout[] = [];
 
+    clearTimeouts(): void {
+        for (const timeout of this.timeouts) {
+            clearTimeout(timeout);
+        }
+        this.timeouts.length = 0;
+    }
+
     constructor(player: Player) {
         this.player = player;
 
@@ -83,10 +88,6 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
-        this.weapons[0].type = "usas";
-        this.weapons[1].type = "mp5";
-        this.weapons[0].ammo = 30;
-        this.weapons[1].ammo = 30;
     }
 
     shootStart(): void {
@@ -104,10 +105,6 @@ export class WeaponManager {
             }
             }
         }
-    }
-
-    shootHold(): void {
-        this.shootStart();
     }
 
     reload() {
@@ -130,7 +127,6 @@ export class WeaponManager {
         this.player.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
     }
 
-    fireDelay = 0;
     offHand = false;
 
     fireWeapon(skipDelayCheck = false) {
@@ -140,12 +136,12 @@ export class WeaponManager {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
-        // this.fireDelay = this.player.game.now + (itemDef.fireDelay * 1000);
 
         if (this.player.shootHold && itemDef.fireMode === "auto") {
+            this.clearTimeouts();
             this.timeouts.push(
                 setTimeout(() => {
-                   if (this.player.shootHold) this.fireWeapon(this.player.shootHold)
+                    if (this.player.shootHold) this.fireWeapon(this.player.shootHold);
                 }, itemDef.fireDelay * 1000)
             );
         }
@@ -260,9 +256,9 @@ export class WeaponManager {
                 }
             }
             const shotPos = v2.add(gunPos, v2.mul(toBlt, toBltLen));
-            let maxDistance = Number.MAX_VALUE;
+            let distance = Number.MAX_VALUE;
             if (itemDef.toMouseHit) {
-                maxDistance = math.max(toMouseLen - gunLen, 0.0);
+                distance = math.max(toMouseLen - gunLen, 0.0);
             }
             const damageMult = 1.0;
 
@@ -274,8 +270,8 @@ export class WeaponManager {
                 pos: shotPos,
                 dir: shotDir,
                 layer: bulletLayer,
-                maxDistance,
-                variance: 1,
+                distance,
+                clipDistance: itemDef.toMouseHit,
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: this.offHand,

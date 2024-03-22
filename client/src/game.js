@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
 import GameObject from "../../shared/utils/gameObject";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
@@ -315,7 +315,7 @@ export class Game {
 
     update(dt) {
         const smokeParticles = this.smokeBarn.particles;
-        const obstacles = this.map.Ve.p();
+        const obstacles = this.map.Ve.getPool();
         let a = 0;
         // End anti-cheat hacking
         this.m_mangle = true;

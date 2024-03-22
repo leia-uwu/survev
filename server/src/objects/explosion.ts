@@ -46,6 +46,8 @@ export class Explosion {
 
             for (const obj of objects) {
                 if (!util.sameLayer(obj.layer, this.layer)) continue;
+                if ((obj as { dead?: boolean }).dead) continue;
+                if (obj.__type === ObjectType.Obstacle && obj.height <= 0.25) continue;
                 if (obj.__type === ObjectType.Player || obj.__type === ObjectType.Obstacle || obj.__type === ObjectType.Loot) {
                     // check if the object hitbox collides with a line from the explosion center to the explosion max distance
                     const intersection = collider.intersectSegment(obj.collider, this.pos, lineEnd);
@@ -68,7 +70,7 @@ export class Explosion {
 
                 if (!damagedObjects.has(object.id)) {
                     damagedObjects.set(object.id, true);
-                    const dist = Math.sqrt(collision.distance);
+                    const dist = collision.distance;
 
                     if (object.__type === ObjectType.Player || object.__type === ObjectType.Obstacle) {
                         object.damage(
@@ -102,9 +104,8 @@ export class Explosion {
                         playerId: this.source?.id ?? 0,
                         shotFx: false,
                         damageMult: 1,
-                        variance: util.random(0, bulletDef.variance),
+                        varianceT: Math.random(),
                         sourceType: this.sourceType,
-                        maxDistance: bulletDef.distance,
                         dir: v2.randomUnit()
                     }
                 );

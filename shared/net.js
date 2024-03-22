@@ -1059,7 +1059,7 @@ export class InputMsg {
     }
 }
 
-class DropItemMsg {
+export class DropItemMsg {
     constructor() {
         /**
          * @type {string}

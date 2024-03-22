@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import { v2 } from "../../shared/utils/v2";
@@ -19,7 +19,7 @@ export class GasRenderer {
             this.canvas.width = window.innerWidth;
             this.canvas.height = window.innerHeight;
             this.display = new PIXI.Sprite(
-                PIXI.Texture.fromCanvas(this.canvas)
+                PIXI.Texture.from(this.canvas)
             );
             this.gasColorDOMString = helpers.colorToDOMString(gasColor, 0.6);
         } else {

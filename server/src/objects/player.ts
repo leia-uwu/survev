@@ -1,10 +1,8 @@
-import { type WebSocket } from "uWebSockets.js";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
-import { type PlayerContainer } from "../server";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
@@ -12,13 +10,14 @@ import { type Obstacle } from "./obstacle";
 import { WeaponManager } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { DeadBody } from "./deadBody";
-import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef } from "../../../shared/defs/objectsTypings";
+import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type AmmoDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
-import net, { type InputMsg } from "../../../shared/net";
+import net, { type DropItemMsg, type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
+import { type ServerSocket } from "../abstractServer";
 
 export class Emote {
     playerId: number;
@@ -80,7 +79,7 @@ export class Player extends BaseGameObject {
         activeId: true
     };
 
-    private _health: number = 50;// GameConfig.player.health;
+    private _health: number = GameConfig.player.health;
 
     get health(): number {
         return this._health;
@@ -126,7 +125,7 @@ export class Player extends BaseGameObject {
         this.dirty.zoom = true;
     }
 
-    action!: { time: number, duration: number, targetId: number };
+    action: { time: number, duration: number, targetId: number };
     lastAction!: { time: number, duration: number, targetId: number };
 
     inventoryDirty = true;
@@ -315,14 +314,14 @@ export class Player extends BaseGameObject {
         return (Date.now() - this.joinedTime) / 1000;
     }
 
-    socket: WebSocket<PlayerContainer>;
+    socket: ServerSocket;
 
     msgsToSend: Array<{ type: number, msg: Msg }> = [];
 
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
 
-    constructor(game: Game, pos: Vec2, socket: WebSocket<PlayerContainer>) {
+    constructor(game: Game, pos: Vec2, socket: ServerSocket) {
         super(game, pos);
         this.socket = socket;
 
@@ -337,45 +336,8 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.inventory["12gauge"] = 15;
-        this.inventory["9mm"] = 120;
-        this.inventory.bandage = 5;
-        this.inventory.healthkit = 1;
-        this.inventory.soda = 2;
-        this.inventory.painkiller = 1;
-        this.inventory["8xscope"] = 1;
-        this.scope = "8xscope";
-        this.game.addLoot("katana", this.pos, this.layer, 1);
-        this.game.addLoot("hook", this.pos, this.layer, 1);
-        this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
-        this.game.addLoot("outfitPrisoner", this.pos, this.layer, 1);
-        this.game.addLoot("9mm", this.pos, this.layer, 100);
-        this.game.addLoot("12gauge", this.pos, this.layer, 5);
-        this.game.addLoot("bandage", this.pos, this.layer, 5);
-        this.game.addLoot("soda", this.pos, this.layer, 1);
-        this.game.addLoot("2xscope", this.pos, this.layer, 1);
-        this.game.addLoot("4xscope", this.pos, this.layer, 1);
-        this.game.addLoot("8xscope", this.pos, this.layer, 1);
-        this.game.addLoot("frag", this.pos, this.layer, 10);
-        this.game.addLoot("smoke", this.pos, this.layer, 3);
-        this.game.addLoot("mirv", this.pos, this.layer, 3);
-        this.game.addLoot("deagle_dual", this.pos, this.layer, 1);
-        this.game.addLoot("pkp", this.pos, this.layer, 1);
-        this.game.addLoot("backpack03", this.pos, this.layer, 1);
-        this.game.addLoot("helmet03", this.pos, this.layer, 1);
-        this.game.addLoot("chest03", this.pos, this.layer, 1);
-        this.game.addLoot("backpack01", this.pos, this.layer, 1);
-        this.game.addLoot("helmet01", this.pos, this.layer, 1);
-        this.game.addLoot("chest01", this.pos, this.layer, 1);
-        // for (const objName of Object.keys(GearDefs)){
-        //     this.game.addLoot(objName, this.pos, this.layer, 1);
-        // }
-
-        this.zoom = GameConfig.scopeZoomRadius.desktop[this.scope];
 
         this.action = { time: -1, duration: 0, targetId: -1 };
-        // this.addPerk("splinter");
-        // this.addPerk("explosive")
     }
 
     visibleObjects = new Set<GameObject>();
@@ -820,7 +782,7 @@ export class Player extends BaseGameObject {
             const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
 
             if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists") {
-                this.game.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
+                this.game.lootBarn.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
             }
         }
 
@@ -831,7 +793,7 @@ export class Player extends BaseGameObject {
             }
 
             if (this.inventory[item] > 0) {
-                this.game.addLoot(item, this.pos, this.layer, this.inventory[item]);
+                this.game.lootBarn.addLoot(item, this.pos, this.layer, this.inventory[item]);
             }
         }
 
@@ -840,13 +802,13 @@ export class Player extends BaseGameObject {
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
             if (!!def.noDrop || def.level < 1) continue;
-            this.game.addLoot(type, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(type, this.pos, this.layer, 1);
         }
 
         if (this.outfit) {
             const def = GameObjectDefs[this.outfit] as OutfitDef;
             if (!def.noDropOnDeath) {
-                this.game.addLoot(this.outfit, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
             }
         }
 
@@ -1087,7 +1049,7 @@ export class Player extends BaseGameObject {
     pickupMelee(obj: Loot) {
         if (this.weapons[2].type != obj.type) {
             if (this.weapons[2].type != "fists") {
-                this.game.addLoot(this.weapons[2].type, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(this.weapons[2].type, this.pos, this.layer, 1);
             }
             this.weapons[2].type = obj.type;
             this.weapons[2].ammo = 0;
@@ -1098,21 +1060,21 @@ export class Player extends BaseGameObject {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, 1);
         }
         obj.remove();
     }
 
     pickupOutfit(obj: Loot) {
         if (this.outfit != obj.type) {
-            this.game.addLoot(this.outfit, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
             this.outfit = obj.type;
             this.setDirty();
         } else {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, 1);
         }
         obj.remove();
     }
@@ -1134,7 +1096,7 @@ export class Player extends BaseGameObject {
             if (objName == gearName && objLevel > gearLevel) {
                 success = true;
                 if (this[objName] && this[objName] != "backpack00") { // empty string only signifies no gear for chest and helmet, backpack is "backpack00"
-                    this.game.addLoot(this[objName], this.pos, this.layer, 1);
+                    this.game.lootBarn.addLoot(this[objName], this.pos, this.layer, 1);
                 }
                 this[objName] = obj.type;
                 this.setDirty();
@@ -1145,7 +1107,7 @@ export class Player extends BaseGameObject {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, 1);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, 1);
         }
         obj.remove();
     }
@@ -1199,7 +1161,7 @@ export class Player extends BaseGameObject {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.addLoot(obj.type, newPos, obj.layer, amountToDrop);
+            this.game.lootBarn.addLoot(obj.type, newPos, obj.layer, amountToDrop);
         }
         // this is here because it needs to execute regardless of what happens above
         // automatically reloads gun if inventory has 0 ammo and ammo is picked up
@@ -1241,7 +1203,7 @@ export class Player extends BaseGameObject {
                 this.dirty.inventory = true;
 
                 const amountToDrop = weaponAmmo - amountToAdd;
-                this.game.addLoot(weaponInfo.ammo, this.pos, this.layer, amountToDrop);
+                this.game.lootBarn.addLoot(weaponInfo.ammo, this.pos, this.layer, amountToDrop);
             }
             if (this.curWeapIdx == 0 && this.weapons[0].type && !this.weapons[1].type) { // [gun], nothing => [gun], newGun
                 this.weapons[1].type = obj.type;
@@ -1252,7 +1214,7 @@ export class Player extends BaseGameObject {
                 this.weapons[0].ammo = 0;
                 this.weapons[0].cooldown = 0;
             } else { // [gun], gun => [newGun], gun
-                this.game.addGun(this.activeWeapon, this.pos, this.layer, 1);// order matters, drop first so references are correct
+                this.game.lootBarn.addGun(this.activeWeapon, this.pos, this.layer, 1);// order matters, drop first so references are correct
                 this.weapons[this.curWeapIdx].type = obj.type;
                 this.weapons[this.curWeapIdx].ammo = 0;
                 this.weapons[this.curWeapIdx].cooldown = 0;
@@ -1285,6 +1247,134 @@ export class Player extends BaseGameObject {
         this.dirty.weapons = true;
         this.setDirty();
         obj.remove();
+    }
+
+    dropItem(dropMsg: DropItemMsg): void {
+        const item = GameObjectDefs[dropMsg.item] as ScopeDef | HelmetDef | ChestDef | HealDef | BoostDef | AmmoDef | GunDef | ThrowableDef | MeleeDef;
+        switch (item.type) {
+        case "ammo": {
+            const inventoryCount = this.inventory[dropMsg.item];
+
+            if (inventoryCount === 0) return;
+
+            let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+
+            if (item.minStackSize && inventoryCount <= item.minStackSize) {
+                amountToDrop = Math.min(item.minStackSize, inventoryCount);
+            } else if (inventoryCount <= 5) {
+                amountToDrop = Math.min(5, inventoryCount);
+            }
+
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
+            this.inventory[dropMsg.item] -= amountToDrop;
+            this.dirty.inventory = true;
+            break;
+        }
+        case "scope": {
+            const level = item.level;
+            if (level === 1) break;
+
+            const availableScopeLevels = [15, 8, 4, 2, 1];
+            let targetScopeIndex = availableScopeLevels.indexOf(level);
+            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.inventory[`${level}xscope`] = 0;
+
+            if (this.scope === `${level}xscope`) {
+                for (let i = targetScopeIndex; i < availableScopeLevels.length; i++) {
+                    if (this.inventory[`${availableScopeLevels[i]}xscope`]) {
+                        targetScopeIndex = availableScopeLevels[i];
+                        break;
+                    }
+                }
+
+                this.scope = `${targetScopeIndex}xscope`;
+            }
+
+            this.dirty.inventory = true;
+            break;
+        }
+        case "chest":
+        case "helmet": {
+            if (item.noDrop) break;
+            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this[item.type] = "";
+            this.setDirty();
+            break;
+        }
+        case "heal":
+        case "boost": {
+            if (this.inventory[dropMsg.item] === 0) break;
+            this.inventory[dropMsg.item]--;
+            // @TODO: drop more than one?
+            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.dirty.inventory = true;
+            break;
+        }
+        case "gun": {
+            if (!this.weapons.some((weapon) => weapon.type === dropMsg.item)) break;
+            const weaponAmmoType = (GameObjectDefs[this.weapons[dropMsg.weapIdx].type] as GunDef).ammo;
+            const weaponAmmoCount = this.weapons[dropMsg.weapIdx].ammo;
+
+            this.weapons[dropMsg.weapIdx].type = "";
+            this.weapons[dropMsg.weapIdx].ammo = 0;
+            this.weapons[dropMsg.weapIdx].cooldown = 0;
+            if (this.curWeapIdx == dropMsg.weapIdx) {
+                this.curWeapIdx = 2;
+            }
+
+            const backpackLevel = Number(this.backpack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+            const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
+            if (this.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
+                this.inventory[weaponAmmoType] += weaponAmmoCount;
+                this.dirty.inventory = true;
+            } else {
+                const spaceLeft = bagSpace - this.inventory[weaponAmmoType];
+                const amountToAdd = spaceLeft;
+
+                this.inventory[weaponAmmoType] += amountToAdd;
+                this.dirty.inventory = true;
+
+                const amountToDrop = weaponAmmoCount - amountToAdd;
+
+                this.game.lootBarn.addLoot(weaponAmmoType, this.pos, this.layer, amountToDrop);
+            }
+
+            this.game.lootBarn.addGun(dropMsg.item, this.pos, this.layer, 1);
+            this.dirty.weapons = true;
+            this.setDirty();
+            break;
+        }
+        case "throwable": {
+            const inventoryCount = this.inventory[dropMsg.item];
+
+            if (inventoryCount === 0) return;
+
+            const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
+            this.inventory[dropMsg.item] -= amountToDrop;
+            this.weapons[3].ammo -= amountToDrop;
+
+            if (this.inventory[dropMsg.item] == 0) {
+                this.weaponManager.showNextThrowable();
+            }
+            this.dirty.inventory = true;
+            this.dirty.weapons = true;
+            break;
+        }
+        case "melee": {
+            if (this.weapons[2].type != "fists") {
+                this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+                this.weapons[2].type = "fists";
+                this.weapons[2].ammo = 0;
+                this.weapons[2].cooldown = 0;
+                this.dirty.weapons = true;
+                this.setDirty();
+            }
+        }
+        }
+
+        this.cancelAction();
     }
 
     isOnOtherSide(door: Obstacle): boolean {
@@ -1364,7 +1454,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer): void {
         try {
-            this.socket.send(buffer, true, true);
+            this.socket.send(buffer);
         } catch (e) {
             console.warn("Error sending packet. Details:", e);
         }

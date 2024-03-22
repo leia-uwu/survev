@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
@@ -21,11 +21,11 @@ class Loot {
         this.emitter = null;
     }
 
-    o() {
+    init() {
         this.updatedData = false;
     }
 
-    n() {
+    free() {
         this.container.visible = false;
         if (this.emitter) {
             this.emitter.stop();
@@ -33,7 +33,7 @@ class Loot {
         }
     }
 
-    c(data, fullUpdate, isNew, ctx) {
+    updateData(data, fullUpdate, isNew, ctx) {
         this.updatedData = true;
         this.pos = v2.copy(data.pos);
 
@@ -136,7 +136,7 @@ export class LootBarn {
     update(dt, activePlayer, map, audioManager, camera, debug) {
         this.closestLoot = null;
         let closestDist = Number.MAX_VALUE;
-        const loots = this.sr.p();
+        const loots = this.sr.getPool();
         for (let i = 0; i < loots.length; i++) {
             /** @type {Loot} */
             const loot = loots[i];

@@ -1,4 +1,4 @@
-import { isMobile } from "pixi.js";
+import { isMobile } from "pixi.js-legacy";
 
 function getParameterByName(name, url) {
     const searchParams = new URLSearchParams(url || window.location.href || window.location.search);

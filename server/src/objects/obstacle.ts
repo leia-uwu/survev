@@ -10,7 +10,6 @@ import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Building } from "./building";
 import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
-import { getLootTable } from "./loot";
 import { type Player } from "./player";
 import net from "../../../shared/net";
 import { Explosion } from "./explosion";
@@ -269,14 +268,14 @@ export class Obstacle extends BaseGameObject {
                 const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
 
                 for (let i = 0; i < count; i++) {
-                    const items = getLootTable(this.game.config.map, lootTierOrItem.tier);
+                    const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier);
 
                     for (const item of items) {
-                        this.game.addLoot(item.name, lootPos, this.layer, item.count);
+                        this.game.lootBarn.addLoot(item.name, lootPos, this.layer, item.count);
                     }
                 }
             } else {
-                this.game.addLoot(lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
+                this.game.lootBarn.addLoot(lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
             }
         }
 

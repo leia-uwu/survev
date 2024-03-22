@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { coldet } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
@@ -89,10 +89,10 @@ export class Map {
 
     free() {
         // Buildings need to stop sound emitters
-        const buildings = this.nr.p();
+        const buildings = this.nr.getPool();
         for (
             let i = 0; i < buildings.length; i++) {
-            buildings[i].n();
+            buildings[i].free();
         }
         this.mapTexture?.destroy(true);
         this.display.ground.destroy({
@@ -171,7 +171,7 @@ export class Map {
     update(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
-        const obstacles = this.Ve.p();
+        const obstacles = this.Ve.getPool();
         for (let h = 0; h < obstacles.length; h++) {
             const u = obstacles[h];
             if (u.active) {
@@ -179,14 +179,14 @@ export class Map {
                 u.render(camera, c, activePlayer.layer);
             }
         }
-        for (let y = this.nr.p(), f = 0; f < y.length; f++) {
+        for (let y = this.nr.getPool(), f = 0; f < y.length; f++) {
             const _ = y[f];
             if (_.active) {
                 _.m(dt, this, a, i, o, activePlayer, s, camera);
                 _.render(camera, c, activePlayer.layer);
             }
         }
-        for (let b = this.lr.p(), x = 0; x < b.length; x++) {
+        for (let b = this.lr.getPool(), x = 0; x < b.length; x++) {
             const S = b[x];
             if (S.active) {
                 S.update(dt, this, activePlayer, o);
@@ -599,7 +599,7 @@ export class Map {
         };
 
         // Check decals
-        const decals = this.decalBarn._.p();
+        const decals = this.decalBarn._.getPool();
         for (
             let i = 0;
             i < decals.length;
@@ -620,7 +620,7 @@ export class Map {
         let surface = null;
         let zIdx = 0;
         const onStairs = layer & 2;
-        const buildings = this.nr.p();
+        const buildings = this.nr.getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (
@@ -699,7 +699,7 @@ export class Map {
     }
 
     insideStructureStairs(collision) {
-        const structures = this.lr.p();
+        const structures = this.lr.getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active && structure.insideStairs(collision)) {
@@ -710,7 +710,7 @@ export class Map {
     }
 
     getBuildingById(objId) {
-        const buildings = this.nr.p();
+        const buildings = this.nr.getPool();
         for (let r = 0; r < buildings.length; r++) {
             const building = buildings[r];
             if (building.active && building.__id == objId) {
@@ -721,7 +721,7 @@ export class Map {
     }
 
     insideStructureMask(collision) {
-        const structures = this.lr.p();
+        const structures = this.lr.getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active && structure.insideMask(collision)) {
@@ -732,7 +732,7 @@ export class Map {
     }
 
     insideBuildingCeiling(collision, checkVisible) {
-        const buildings = this.nr.p();
+        const buildings = this.nr.getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (

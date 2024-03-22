@@ -9,26 +9,26 @@ export class Pool {
     }
 
     alloc() {
-        let e = null;
-        for (let t = 0; t < this.pool.length; t++) {
-            if (!this.pool[t].active) {
-                e = this.pool[t];
+        let obj = null;
+        for (let i = 0; i < this.pool.length; i++) {
+            if (!this.pool[i].active) {
+                obj = this.pool[i];
                 break;
             }
         }
-        if (!e) {
+        if (!obj) {
             /* eslint-disable new-cap */
-            e = new this.creator.type();
-            this.pool.push(e);
+            obj = new this.creator.type();
+            this.pool.push(obj);
         }
-        e.active = true;
-        e.o();
+        obj.active = true;
+        obj.init();
         this.activeCount++;
-        return e;
+        return obj;
     }
 
     free(obj) {
-        obj.n();
+        obj.free();
         obj.active = false;
         this.activeCount--;
 
@@ -46,7 +46,7 @@ export class Pool {
         }
     }
 
-    p() {
+    getPool() {
         return this.pool;
     }
 }
@@ -91,14 +91,14 @@ export class Creator {
             this.seenCount++;
             isNew = true;
         }
-        obj.c(data, true, isNew, ctx);
+        obj.updateData(data, true, isNew, ctx);
         return obj;
     }
 
     updateObjPart(id, data, ctx) {
         const obj = this.getObjById(id);
         if (obj) {
-            obj.c(data, false, false, ctx);
+            obj.updateData(data, false, false, ctx);
         } else {
             console.error("updateObjPart, missing object", id);
         }

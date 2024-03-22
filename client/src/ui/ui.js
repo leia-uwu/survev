@@ -1,5 +1,5 @@
 import $ from "jquery";
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { coldet } from "../../../shared/utils/coldet";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";

@@ -1,5 +1,3 @@
-import { type WebSocket } from "uWebSockets.js";
-import { type PlayerContainer } from "./server";
 import { Emote, Player } from "./objects/player";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { Grid } from "./utils/grid";
@@ -8,14 +6,13 @@ import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
-import { Loot } from "./objects/loot";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
-import { type GunDef, type AmmoDef, type BoostDef, type ChestDef, type HealDef, type HelmetDef, type ScopeDef, type ThrowableDef, type MeleeDef } from "../../shared/defs/objectsTypings";
+import { type ServerSocket } from "./abstractServer";
+import { LootBarn } from "./objects/loot";
 
 export class Game {
     stopped = false;
@@ -41,6 +38,8 @@ export class Game {
 
     partialObjs = new Set<BaseGameObject>();
     fullObjs = new Set<BaseGameObject>();
+
+    lootBarn = new LootBarn(this);
 
     newPlayers: Player[] = [];
 
@@ -154,7 +153,7 @@ export class Game {
         }
     }
 
-    addPlayer(socket: WebSocket<PlayerContainer>): Player {
+    addPlayer(socket: ServerSocket): Player {
         let position: Vec2;
 
         switch (this.config.spawn.mode) {
@@ -175,37 +174,6 @@ export class Game {
             socket);
 
         return player;
-    }
-
-    /**
-     * spawns gun loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
-     */
-    addGun(type: string, pos: Vec2, layer: number, count: number) {
-        const loot = new Loot(this, type, pos, layer, count);
-        this.grid.addObject(loot);
-    }
-
-    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
-        const loot = new Loot(this, type, pos, layer, count);
-        this.grid.addObject(loot);
-
-        const def = GameObjectDefs[type];
-
-        if (def.type === "gun" && GameObjectDefs[def.ammo]) {
-            const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
-            const halfAmmo = Math.ceil(ammoCount / 2);
-
-            const leftAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
-            leftAmmo.push(v2.create(-1, -1), 0.5);
-            this.grid.addObject(leftAmmo);
-
-            if (ammoCount - halfAmmo >= 1) {
-                const rightAmmo = new Loot(this, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
-                rightAmmo.push(v2.create(1, -1), 0.5);
-
-                this.grid.addObject(rightAmmo);
-            }
-        }
     }
 
     handleMsg(buff: ArrayBuffer, player: Player): void {
@@ -236,6 +204,9 @@ export class Game {
             let name = joinMsg.name;
             if (name.trim() === "") name = "Player";
             player.name = name;
+
+            this.logger.log(`Player ${name} joined`);
+
             player.joinedTime = Date.now();
 
             player.isMobile = joinMsg.isMobile;
@@ -272,133 +243,7 @@ export class Game {
         case net.MsgType.DropItem: {
             const dropMsg = new net.DropItemMsg();
             dropMsg.deserialize(stream);
-
-            // @TODO: move me somewhere
-            const item = GameObjectDefs[dropMsg.item] as ScopeDef | HelmetDef | ChestDef | HealDef | BoostDef | AmmoDef | GunDef | ThrowableDef | MeleeDef;
-            switch (item.type) {
-            case "ammo": {
-                const inventoryCount = player.inventory[dropMsg.item];
-
-                if (inventoryCount === 0) return;
-
-                let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
-
-                if (item.minStackSize && inventoryCount <= item.minStackSize) {
-                    amountToDrop = Math.min(item.minStackSize, inventoryCount);
-                } else if (inventoryCount <= 5) {
-                    amountToDrop = Math.min(5, inventoryCount);
-                }
-
-                splitUpLoot(this, player, dropMsg.item, amountToDrop);
-                player.inventory[dropMsg.item] -= amountToDrop;
-                player.dirty.inventory = true;
-                break;
-            }
-            case "scope": {
-                const level = item.level;
-                if (level === 1) break;
-
-                const availableScopeLevels = [15, 8, 4, 2, 1];
-                let targetScopeIndex = availableScopeLevels.indexOf(level);
-                this.addLoot(dropMsg.item, player.pos, player.layer, 1);
-                player.inventory[`${level}xscope`] = 0;
-
-                if (player.scope === `${level}xscope`) {
-                    for (let i = targetScopeIndex; i < availableScopeLevels.length; i++) {
-                        if (player.inventory[`${availableScopeLevels[i]}xscope`]) {
-                            targetScopeIndex = availableScopeLevels[i];
-                            break;
-                        }
-                    }
-
-                    player.scope = `${targetScopeIndex}xscope`;
-                }
-
-                player.dirty.inventory = true;
-                break;
-            }
-            case "chest":
-            case "helmet": {
-                if (item.noDrop) break;
-                this.addLoot(dropMsg.item, player.pos, player.layer, 1);
-                player[item.type] = "";
-                player.setDirty();
-                break;
-            }
-            case "heal":
-            case "boost": {
-                if (player.inventory[dropMsg.item] === 0) break;
-                player.inventory[dropMsg.item]--;
-                // @TODO: drop more than one?
-                this.addLoot(dropMsg.item, player.pos, player.layer, 1);
-                player.dirty.inventory = true;
-                break;
-            }
-            case "gun": {
-                if (!player.weapons.some((weapon) => weapon.type === dropMsg.item)) break;
-                const weaponAmmoType = (GameObjectDefs[player.weapons[dropMsg.weapIdx].type] as GunDef).ammo;
-                const weaponAmmoCount = player.weapons[dropMsg.weapIdx].ammo;
-
-                player.weapons[dropMsg.weapIdx].type = "";
-                player.weapons[dropMsg.weapIdx].ammo = 0;
-                player.weapons[dropMsg.weapIdx].cooldown = 0;
-                if (player.curWeapIdx == dropMsg.weapIdx) {
-                    player.curWeapIdx = 2;
-                }
-
-                const backpackLevel = Number(player.backpack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
-                const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
-                if (player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
-                    player.inventory[weaponAmmoType] += weaponAmmoCount;
-                    player.dirty.inventory = true;
-                } else {
-                    const spaceLeft = bagSpace - player.inventory[weaponAmmoType];
-                    const amountToAdd = spaceLeft;
-
-                    player.inventory[weaponAmmoType] += amountToAdd;
-                    player.dirty.inventory = true;
-
-                    const amountToDrop = weaponAmmoCount - amountToAdd;
-
-                    this.addLoot(weaponAmmoType, player.pos, player.layer, amountToDrop);
-                }
-
-                this.addGun(dropMsg.item, player.pos, player.layer, 1);
-                player.dirty.weapons = true;
-                player.setDirty();
-                break;
-            }
-            case "throwable": {
-                const inventoryCount = player.inventory[dropMsg.item];
-
-                if (inventoryCount === 0) return;
-
-                const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
-
-                splitUpLoot(this, player, dropMsg.item, amountToDrop);
-                player.inventory[dropMsg.item] -= amountToDrop;
-                player.weapons[3].ammo -= amountToDrop;
-
-                if (player.inventory[dropMsg.item] == 0) {
-                    player.weaponManager.showNextThrowable();
-                }
-                player.dirty.inventory = true;
-                player.dirty.weapons = true;
-                break;
-            }
-            case "melee": {
-                if (player.weapons[2].type != "fists") {
-                    this.addLoot(dropMsg.item, player.pos, player.layer, 1);
-                    player.weapons[2].type = "fists";
-                    player.weapons[2].ammo = 0;
-                    player.weapons[2].cooldown = 0;
-                    player.dirty.weapons = true;
-                    player.setDirty();
-                }
-            }
-            }
-
-            player.cancelAction();
+            player.dropItem(dropMsg);
         }
         }
     }
@@ -416,12 +261,4 @@ export class Game {
         }
         this.logger.log("Game Ended");
     }
-}
-
-function splitUpLoot(game: Game, player: Player, item: string, amount: number) {
-    const dropCount = Math.floor(amount / 60);
-    for (let i = 0; i < dropCount; i++) {
-        game.addLoot(item, player.pos, player.layer, 60);
-    }
-    if (amount % 60 !== 0) game.addLoot(item, player.pos, player.layer, amount % 60);
 }

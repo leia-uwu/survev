@@ -30,7 +30,7 @@ class PhysicsParticle {
 
         // Gather colliders
         const colliders = [];
-        const obstacles = map.Ve.p();
+        const obstacles = map.Ve.getPool();
         for (let n = 0; n < obstacles.length; n++) {
             const obstacle = obstacles[n];
             if (
@@ -42,7 +42,7 @@ class PhysicsParticle {
             }
         }
 
-        const players = playerBarn.playerPool.p();
+        const players = playerBarn.playerPool.getPool();
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
             if (

@@ -566,7 +566,7 @@ export class UiManager2 {
         if (activePlayer.canInteract(map)) {
             let q = null;
             let F = 0;
-            for (let j = map.Ve.p(), N = 0; N < j.length; N++) {
+            for (let j = map.Ve.getPool(), N = 0; N < j.length; N++) {
                 const H = j[N];
                 if (
                     H.active &&
@@ -628,7 +628,7 @@ export class UiManager2 {
             if (activePlayer.action.type == Action.None && (!activePlayer.netData.ue || Q)) {
                 for (
                     let $ = playerBarn.qe(activePlayer.__id).teamId,
-                        ee = playerBarn.playerPool.p(),
+                        ee = playerBarn.playerPool.getPool(),
                         te = 0;
                     te < ee.length;
                     te++
