@@ -1438,12 +1438,17 @@ export class Player extends BaseGameObject {
 
         // decrease speed if popping adren or heals
         if (this.actionType == GameConfig.Action.UseItem) {
-            this.speed *= 0.5;
+            this.speed -= 6;
         }
 
-        if (this.shotSlowdownTimer != -1) {
-            this.speed *= 0.5;
+        if (this.downed) {
+            this.speed -= 8;
         }
+
+        if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
+            this.speed -= weaponDef.speed.attack || 6;
+        }
+        this.speed = math.max(this.speed, 1);
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
