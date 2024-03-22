@@ -1868,14 +1868,14 @@ export class Player {
         }
     }
 
-    selectAnim(e) {
+    selectAnim(type) {
         const t = function(e, t) {
             return {
                 type: e,
                 mirror: !!t && Math.random() < 0.5
             };
         };
-        switch (e) {
+        switch (type) {
         case Anim.None:
             return t("none", false);
         case Anim.Cook:
@@ -1907,10 +1907,10 @@ export class Player {
         return this.anim.type;
     }
 
-    playAnim(e, t) {
-        this.anim.type = e;
-        this.anim.data = this.selectAnim(e);
-        this.anim.seq = t;
+    playAnim(type, seq) {
+        this.anim.type = type;
+        this.anim.data = this.selectAnim(type);
+        this.anim.seq = seq;
         this.anim.ticker = 0;
         for (let r = 0; r < this.bones.length; r++) {
             const a = this.anim.bones[r];

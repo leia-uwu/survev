@@ -330,6 +330,7 @@ export class WeaponManager {
 
     meleeAttack(skipCooldownCheck = false): void {
         if (this.player.game.now < this.meleeCooldown && !skipCooldownCheck) return;
+        if (this.player.animType === GameConfig.Anim.Melee) return;
 
         const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
 
