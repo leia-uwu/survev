@@ -60,9 +60,9 @@ export class Game {
         this.ambience = ambience;
         this.localization = localization;
         this.config = config;
-        this.m_input = input;
-        this.m_inputBinds = inputBinds;
-        this.m_inputBindUi = inputBindUi;
+        this.input = input;
+        this.inputBinds = inputBinds;
+        this.inputBindUi = inputBindUi;
         this.resourceManager = resourceManager;
         this.victoryMusic = null;
         this.ws = null;
@@ -147,11 +147,12 @@ export class Game {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         // Anti-cheat
         this.m_mangle = false;
-        this.m_frame = 0;
-        this.m_cheatDetected = false;
-        this.m_cheatSentLoadoutMsg = false;
+        this.frame = 0;
+        this.cheatDetected = false;
+        this.cheatSentLoadoutMsg = false;
+
         // Modules
-        this.touch = new Touch(this.m_input, this.config);
+        this.touch = new Touch(this.input, this.config);
         this.camera = new Camera();
         this.renderer = new Renderer(this, this.canvasMode);
         this.particleBarn = new ParticleBarn(this.renderer);
@@ -176,10 +177,10 @@ export class Game {
             this.localization,
             this.canvasMode,
             this.touch,
-            this.m_inputBinds,
-            this.m_inputBindUi
+            this.inputBinds,
+            this.inputBindUi
         );
-        this.ui2Manager = new UiManager2(this.localization, this.m_inputBinds);
+        this.ui2Manager = new UiManager2(this.localization, this.inputBinds);
         this.emoteBarn = new EmoteBarn(
             this.audioManager,
             this.uiManager,
@@ -247,11 +248,11 @@ export class Game {
         this.updateRecvCount = 0;
         this.updatePass = false;
         this.updatePassDelay = 0;
-        this.m_localId = 0;
-        this.m_activeId = 0;
-        this.m_activePlayer = null;
-        this.m_validateAlpha = false;
-        this.m_targetZoom = 1;
+        this.localId = 0;
+        this.activeId = 0;
+        this.activePlayer = null;
+        this.validateAlpha = false;
+        this.targetZoom = 1;
         this.debugZoom = 1;
         this.useDebugZoom = false;
 
@@ -291,7 +292,7 @@ export class Game {
             this.map.free();
             this.particleBarn.free();
             this.renderer.free();
-            this.m_input.n();
+            this.input.n();
             this.audioManager.stopAll();
             while (this.pixi.stage.children.length > 0) {
                 const c = this.pixi.stage.children[0];
@@ -327,13 +328,13 @@ export class Game {
         }
         this.playerBarn.m(
             dt,
-            this.m_activeId,
+            this.activeId,
             this.teamMode,
             this.renderer,
             this.particleBarn,
             this.camera,
             this.map,
-            this.m_inputBinds,
+            this.inputBinds,
             this.audioManager,
             this.ui2Manager,
             this.emoteBarn.wheelKeyTriggered,
@@ -342,42 +343,42 @@ export class Game {
         );
         this.updateAmbience();
 
-        this.camera.pos = v2.copy(this.m_activePlayer.pos);
+        this.camera.pos = v2.copy(this.activePlayer.pos);
         this.camera.applyShake();
-        const zoom = this.m_activePlayer.getZoom();
+        const zoom = this.activePlayer.getZoom();
         const minDim = math.min(this.camera.screenWidth, this.camera.screenHeight);
         const maxDim = math.max(this.camera.screenWidth, this.camera.screenHeight);
         const maxScreenDim = math.max(minDim * (16 / 9), maxDim);
         this.camera.q = (maxScreenDim * 0.5) / (zoom * this.camera.ppu);
-        const zoomLerpIn = this.m_activePlayer.zoomFast ? 3 : 2;
-        const zoomLerpOut = this.m_activePlayer.zoomFast ? 3 : 1.4;
+        const zoomLerpIn = this.activePlayer.zoomFast ? 3 : 2;
+        const zoomLerpOut = this.activePlayer.zoomFast ? 3 : 1.4;
         const zoomLerp = this.camera.q > this.camera.O ? zoomLerpIn : zoomLerpOut;
         this.camera.O = math.lerp(dt * zoomLerp, this.camera.O, this.camera.q);
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
-        if (this.m_input.We(input.Key.Escape)) {
+        if (this.input.We(input.Key.Escape)) {
             this.uiManager.toggleEscMenu();
         }
         // Large Map
         if (
-            this.m_inputBinds.isBindPressed(Input.ToggleMap) ||
-            (this.m_input.We(input.Key.G) && !this.m_inputBinds.isKeyBound(input.Key.G))
+            this.inputBinds.isBindPressed(Input.ToggleMap) ||
+            (this.input.We(input.Key.G) && !this.inputBinds.isKeyBound(input.Key.G))
         ) {
             this.uiManager.displayMapLarge(false);
         }
         // Minimap
-        if (this.m_inputBinds.isBindPressed(Input.CycleUIMode)) {
+        if (this.inputBinds.isBindPressed(Input.CycleUIMode)) {
             this.uiManager.cycleVisibilityMode();
         }
         // Hide UI
         if (
-            this.m_inputBinds.isBindPressed(Input.HideUI) ||
-            (this.m_input.We(input.Key.Escape) && !this.uiManager.hudVisible)
+            this.inputBinds.isBindPressed(Input.HideUI) ||
+            (this.input.We(input.Key.Escape) && !this.uiManager.hudVisible)
         ) {
             this.uiManager.cycleHud();
         }
         // Update facing direction
-        const playerPos = this.m_activePlayer.pos;
-        const mousePos = this.camera.screenToPoint(this.m_input.Ue);
+        const playerPos = this.activePlayer.pos;
+        const mousePos = this.camera.screenToPoint(this.input.Ue);
         const toMousePos = v2.sub(mousePos, playerPos);
         let toMouseLen = v2.length(toMousePos);
         let toMouseDir = toMouseLen > 0.00001 ? v2.div(toMousePos, toMouseLen) : v2.create(1, 0);
@@ -393,7 +394,7 @@ export class Game {
         if (!this.spectating) {
             if (device.touch) {
                 const touchPlayerMovement = this.touch.getTouchMovement(this.camera);
-                const touchAimMovement = this.touch.getAimMovement(this.m_activePlayer, this.camera);
+                const touchAimMovement = this.touch.getAimMovement(this.activePlayer, this.camera);
                 let aimDir = v2.copy(touchAimMovement.aimMovement.toAimDir);
                 this.touch.turnDirTicker -= dt;
                 if (this.touch.moveDetected && !touchAimMovement.touched) {
@@ -433,21 +434,21 @@ export class Game {
             } else {
                 // Only use arrow keys if they are unbound
                 inputMsg.moveLeft =
-                    this.m_inputBinds.isBindDown(Input.MoveLeft) ||
-                    (this.m_input.Ye(input.Key.Left) &&
-                        !this.m_inputBinds.isKeyBound(input.Key.Left));
+                    this.inputBinds.isBindDown(Input.MoveLeft) ||
+                    (this.input.Ye(input.Key.Left) &&
+                        !this.inputBinds.isKeyBound(input.Key.Left));
                 inputMsg.moveRight =
-                    this.m_inputBinds.isBindDown(Input.MoveRight) ||
-                    (this.m_input.Ye(input.Key.Right) &&
-                        !this.m_inputBinds.isKeyBound(input.Key.Right));
+                    this.inputBinds.isBindDown(Input.MoveRight) ||
+                    (this.input.Ye(input.Key.Right) &&
+                        !this.inputBinds.isKeyBound(input.Key.Right));
                 inputMsg.moveUp =
-                    this.m_inputBinds.isBindDown(Input.MoveUp) ||
-                    (this.m_input.Ye(input.Key.Up) &&
-                        !this.m_inputBinds.isKeyBound(input.Key.Up));
+                    this.inputBinds.isBindDown(Input.MoveUp) ||
+                    (this.input.Ye(input.Key.Up) &&
+                        !this.inputBinds.isKeyBound(input.Key.Up));
                 inputMsg.moveDown =
-                    this.m_inputBinds.isBindDown(Input.MoveDown) ||
-                    (this.m_input.Ye(input.Key.Down) &&
-                        !this.m_inputBinds.isKeyBound(input.Key.Down));
+                    this.inputBinds.isBindDown(Input.MoveDown) ||
+                    (this.input.Ye(input.Key.Down) &&
+                        !this.inputBinds.isKeyBound(input.Key.Down));
                 inputMsg.toMouseDir = v2.copy(toMouseDir);
                 inputMsg.toMouseLen = toMouseLen;
             }
@@ -466,8 +467,8 @@ export class Game {
                 net.Constants.MouseMaxDist
             );
             inputMsg.shootStart =
-                this.m_inputBinds.isBindPressed(Input.Fire) || this.touch.wr;
-            inputMsg.shootHold = this.m_inputBinds.isBindDown(Input.Fire) || this.touch.wr;
+                this.inputBinds.isBindPressed(Input.Fire) || this.touch.wr;
+            inputMsg.shootHold = this.inputBinds.isBindDown(Input.Fire) || this.touch.wr;
             inputMsg.portrait = this.camera.screenWidth < this.camera.screenHeight;
             const checkInputs = [
                 Input.Reload,
@@ -493,19 +494,19 @@ export class Game {
                 B++
             ) {
                 const input = checkInputs[B];
-                if (this.m_inputBinds.isBindPressed(input)) {
+                if (this.inputBinds.isBindPressed(input)) {
                     inputMsg.addInput(input);
                 }
             }
 
             // Handle Interact
             // Interact should not activate Revive, Use, or Loot if those inputs are bound separately.
-            if (this.m_inputBinds.isBindPressed(Input.Interact)) {
+            if (this.inputBinds.isBindPressed(Input.Interact)) {
                 const inputs = [];
                 const interactBinds = [Input.Revive, Input.Use, Input.Loot];
                 for (let i = 0; i < interactBinds.length; i++) {
                     const b = interactBinds[i];
-                    if (!this.m_inputBinds.getBind(b)) {
+                    if (!this.inputBinds.getBind(b)) {
                         inputs.push(b);
                     }
                 }
@@ -520,11 +521,11 @@ export class Game {
 
             // Swap weapon slots
             if (
-                this.m_inputBinds.isBindPressed(Input.SwapWeapSlots) ||
+                this.inputBinds.isBindPressed(Input.SwapWeapSlots) ||
                 this.uiManager.swapWeapSlots
             ) {
                 inputMsg.addInput(Input.SwapWeapSlots);
-                this.m_activePlayer.gunSwitchCooldown = 0;
+                this.activePlayer.gunSwitchCooldown = 0;
             }
 
             // Handle touch inputs
@@ -556,13 +557,13 @@ export class Game {
                     }
                 }
             }
-            if (this.m_inputBinds.isBindPressed(Input.UseBandage)) {
+            if (this.inputBinds.isBindPressed(Input.UseBandage)) {
                 inputMsg.useItem = "bandage";
-            } else if (this.m_inputBinds.isBindPressed(Input.UseHealthKit)) {
+            } else if (this.inputBinds.isBindPressed(Input.UseHealthKit)) {
                 inputMsg.useItem = "healthkit";
-            } else if (this.m_inputBinds.isBindPressed(Input.UseSoda)) {
+            } else if (this.inputBinds.isBindPressed(Input.UseSoda)) {
                 inputMsg.useItem = "soda";
-            } else if (this.m_inputBinds.isBindPressed(Input.UsePainkiller)) {
+            } else if (this.inputBinds.isBindPressed(Input.UsePainkiller)) {
                 inputMsg.useItem = "painkiller";
             }
 
@@ -573,11 +574,11 @@ export class Game {
                 if (e.action == "drop") {
                     const dropMsg = new net.DropItemMsg();
                     if (e.type == "weapon") {
-                        const Y = this.m_activePlayer.Re.tt;
+                        const Y = this.activePlayer.Re.tt;
                         dropMsg.item = Y[e.data].type;
                         dropMsg.weapIdx = e.data;
                     } else if (e.type == "perk") {
-                        const J = this.m_activePlayer.netData.Me;
+                        const J = this.activePlayer.netData.Me;
                         const Q =
                             J.length > e.data ? J[e.data] : null;
                         if (Q?.droppable) {
@@ -587,9 +588,9 @@ export class Game {
                         let $ = "";
                         $ =
                             e.data == "helmet"
-                                ? this.m_activePlayer.netData.le
+                                ? this.activePlayer.netData.le
                                 : e.data == "chest"
-                                    ? this.m_activePlayer.netData.ce
+                                    ? this.activePlayer.netData.ce
                                     : e.data;
                         dropMsg.item = $;
                     }
@@ -616,12 +617,12 @@ export class Game {
         const specBegin = this.uiManager.specBegin;
         const specNext =
             this.uiManager.specNext ||
-            (this.spectating && this.m_input.We(input.Key.Right));
+            (this.spectating && this.input.We(input.Key.Right));
         const specPrev =
             this.uiManager.specPrev ||
-            (this.spectating && this.m_input.We(input.Key.Left));
+            (this.spectating && this.input.We(input.Key.Left));
         const specForce =
-            this.m_input.We(input.Key.Right) || this.m_input.We(input.Key.Left);
+            this.input.We(input.Key.Right) || this.input.We(input.Key.Left);
         if (specBegin || (this.spectating && specNext) || specPrev) {
             const specMsg = new net.SpectateMsg();
             specMsg.specBegin = specBegin;
@@ -687,7 +688,7 @@ export class Game {
 
         this.map.update(
             dt,
-            this.m_activePlayer,
+            this.activePlayer,
             this.playerBarn,
             this.particleBarn,
             this.audioManager,
@@ -697,13 +698,13 @@ export class Game {
             smokeParticles,
             debug
         );
-        this.lootBarn.update(dt, this.m_activePlayer, this.map, this.audioManager, this.camera, debug);
+        this.lootBarn.update(dt, this.activePlayer, this.map, this.audioManager, this.camera, debug);
         this.bulletBarn.update(
             dt,
             this.playerBarn,
             this.map,
             this.camera,
-            this.m_activePlayer,
+            this.activePlayer,
             this.renderer,
             this.particleBarn,
             this.audioManager
@@ -713,7 +714,7 @@ export class Game {
             this.playerBarn,
             this.map,
             this.camera,
-            this.m_activePlayer,
+            this.activePlayer,
             this.renderer,
             this.particleBarn,
             this.audioManager
@@ -722,7 +723,7 @@ export class Game {
             dt,
             this.particleBarn,
             this.audioManager,
-            this.m_activePlayer,
+            this.activePlayer,
             this.map,
             this.renderer,
             this.camera
@@ -738,22 +739,22 @@ export class Game {
         );
         this.airdropBarn.update(
             dt,
-            this.m_activePlayer,
+            this.activePlayer,
             this.camera,
             this.map,
             this.particleBarn,
             this.renderer,
             this.audioManager
         );
-        this.planeBarn.update(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
-        this.smokeBarn.update(dt, this.camera, this.m_activePlayer, this.map, this.renderer);
-        this.shotBarn.update(dt, this.m_activeId, this.playerBarn, this.particleBarn, this.audioManager);
+        this.planeBarn.update(dt, this.camera, this.activePlayer, this.map, this.renderer);
+        this.smokeBarn.update(dt, this.camera, this.activePlayer, this.map, this.renderer);
+        this.shotBarn.update(dt, this.activeId, this.playerBarn, this.particleBarn, this.audioManager);
         this.particleBarn.update(dt, this.camera, debug);
-        this.deadBodyBarn.update(dt, this.playerBarn, this.m_activePlayer, this.map, this.camera, this.renderer);
+        this.deadBodyBarn.update(dt, this.playerBarn, this.activePlayer, this.map, this.camera, this.renderer);
         this.decalBarn.update(dt, this.camera, this.renderer, debug);
         this.uiManager.update(
             dt,
-            this.m_activePlayer,
+            this.activePlayer,
             this.map,
             this.gas,
             this.lootBarn,
@@ -764,30 +765,30 @@ export class Game {
         );
         this.ui2Manager.update(
             dt,
-            this.m_activePlayer,
+            this.activePlayer,
             this.spectating,
             this.playerBarn,
             this.lootBarn,
             this.map,
-            this.m_inputBinds
+            this.inputBinds
         );
         this.emoteBarn.update(
             dt,
-            this.m_localId,
-            this.m_activePlayer,
+            this.localId,
+            this.activePlayer,
             this.teamMode,
             this.deadBodyBarn,
             this.map,
             this.renderer,
-            this.m_input,
-            this.m_inputBinds,
+            this.input,
+            this.inputBinds,
             this.spectating
         );
-        this.touch.update(dt, this.m_activePlayer, this.map, this.camera, this.renderer);
+        this.touch.update(dt, this.activePlayer, this.map, this.camera, this.renderer);
         this.renderer.update(dt, this.camera, this.map, debug);
 
-        if (!this.m_cheatSentLoadoutMsg && this.map._r && this.map.U) {
-            this.m_cheatSentLoadoutMsg = true;
+        if (!this.cheatSentLoadoutMsg && this.map._r && this.map.U) {
+            this.cheatSentLoadoutMsg = true;
             const me = new net.LoadoutMsg();
             me.emotes = [];
             for (
@@ -819,7 +820,7 @@ export class Game {
         }
         this.emoteBarn.newEmotes = [];
         this.render(dt, debug);
-        if (++this.m_frame % 30 == 0) {
+        if (++this.frame % 30 == 0) {
             const fe = mapHelpers.ct;
             for (let _e = 0; _e < smokeParticles.length; _e++) {
                 const be = smokeParticles[_e];
@@ -834,9 +835,9 @@ export class Game {
                 }
             }
             if (a) {
-                this.m_cheatDetected = true;
+                this.cheatDetected = true;
             }
-            if (a && this.m_validateAlpha) {
+            if (a && this.validateAlpha) {
                 helpers.cheatDetected(this);
             }
         }
@@ -851,11 +852,11 @@ export class Game {
         this.playerBarn.render(this.camera, debug);
         this.bulletBarn.render(this.camera, debug);
         this.flareBarn.render(this.camera);
-        this.decalBarn.render(this.camera, debug, this.m_activePlayer.layer);
+        this.decalBarn.render(this.camera, debug, this.activePlayer.layer);
         this.map.render(this.camera);
         this.gas.render(this.camera);
         this.uiManager.render(
-            this.m_activePlayer.pos,
+            this.activePlayer.pos,
             this.gas,
             this.camera,
             this.map,
@@ -867,7 +868,7 @@ export class Game {
     }
 
     updateAmbience() {
-        const e = this.m_activePlayer.pos;
+        const e = this.activePlayer.pos;
         let t = 0;
         let r = 0;
         let a = 1;
@@ -893,7 +894,7 @@ export class Game {
                 const u = math.clamp(s.waterWidth / 8, 0.25, 1);
                 r = math.max(d * u, r);
             }
-            if (this.m_activePlayer.layer == 1) {
+            if (this.activePlayer.layer == 1) {
                 r = 0;
             }
             a = 1;
@@ -924,7 +925,7 @@ export class Game {
         };
         // Update active playerId
         if (msg.activePlayerIdDirty) {
-            this.m_activeId = msg.activePlayerId;
+            this.activeId = msg.activePlayerId;
         }
         // Update player infos
         for (let i = 0; i < msg.playerInfos.length; i++) {
@@ -943,13 +944,13 @@ export class Game {
         }
         // Update player status
         if (msg.playerStatusDirty) {
-            const teamId = this.playerBarn.qe(this.m_activeId).teamId;
+            const teamId = this.playerBarn.qe(this.activeId).teamId;
             this.playerBarn.updatePlayerStatus(teamId, msg.playerStatus, this.map.factionMode);
         }
 
         // Update group status
         if (msg.groupStatusDirty) {
-            const groupId = this.playerBarn.qe(this.m_activeId).groupId;
+            const groupId = this.playerBarn.qe(this.activeId).groupId;
             this.playerBarn.updateGroupStatus(groupId, msg.groupStatus);
         }
 
@@ -969,25 +970,25 @@ export class Game {
             const obj = msg.partObjects[i];
             this.objectCreator.updateObjPart(obj.__id, obj, ctx);
         }
-        this.spectating = this.m_activeId != this.m_localId;
-        this.m_activePlayer = this.playerBarn.u(this.m_activeId);
-        this.m_activePlayer.setLocalData(msg.activePlayerData, this.playerBarn);
+        this.spectating = this.activeId != this.localId;
+        this.activePlayer = this.playerBarn.u(this.activeId);
+        this.activePlayer.setLocalData(msg.activePlayerData, this.playerBarn);
         if (msg.activePlayerData.weapsDirty) {
             this.uiManager.weapsDirty = true;
         }
         if (this.spectating) {
             this.uiManager.setSpectateTarget(
-                this.m_activeId,
-                this.m_localId,
+                this.activeId,
+                this.localId,
                 this.teamMode,
                 this.playerBarn
             );
             this.touch.hideAll();
         }
-        this.m_activePlayer.layer = this.m_activePlayer.netData.pe;
-        this.renderer.setActiveLayer(this.m_activePlayer.layer);
-        this.audioManager.activeLayer = this.m_activePlayer.layer;
-        const underground = this.m_activePlayer.isUnderground(this.map);
+        this.activePlayer.layer = this.activePlayer.netData.pe;
+        this.renderer.setActiveLayer(this.activePlayer.layer);
+        this.audioManager.activeLayer = this.activePlayer.layer;
+        const underground = this.activePlayer.isUnderground(this.map);
         this.renderer.setUnderground(underground);
         this.audioManager.underground = underground;
 
@@ -1042,7 +1043,7 @@ export class Game {
         // Update kill leader
         if (msg.killLeaderDirty) {
             const leaderNameText = helpers.htmlEscape(
-                this.playerBarn.getPlayerName(msg.killLeaderId, this.m_activeId, true)
+                this.playerBarn.getPlayerName(msg.killLeaderId, this.activeId, true)
             );
             this.uiManager.updateKillLeader(
                 msg.killLeaderId,
@@ -1067,8 +1068,8 @@ export class Game {
             msg.deserialize(stream);
             this.onJoin();
             this.teamMode = msg.teamMode;
-            this.m_localId = msg.playerId;
-            this.m_validateAlpha = true;
+            this.localId = msg.playerId;
+            this.validateAlpha = true;
             this.emoteBarn.updateEmoteWheel(msg.emotes);
             if (!msg.started) {
                 this.uiManager.setWaitingForPlayers(true);
@@ -1087,7 +1088,7 @@ export class Game {
 
             // Update cheat detection
             if (helpers.detectCheatWindowVars() || helpers.detectCheatScripts()) {
-                this.m_cheatDetected = true;
+                this.cheatDetected = true;
             }
             break;
         }
@@ -1135,7 +1136,7 @@ export class Game {
             const msg = new net.KillMsg();
             msg.deserialize(stream);
             const sourceType = msg.itemSourceType || msg.mapSourceType;
-            const activeTeamId = this.playerBarn.qe(this.m_activeId).teamId;
+            const activeTeamId = this.playerBarn.qe(this.activeId).teamId;
             const useKillerInfoInFeed =
                     (msg.downed && !msg.killed) ||
                     msg.damageType == GameConfig.DamageType.Gas ||
@@ -1146,25 +1147,25 @@ export class Game {
             const killfeedKillerInfo = useKillerInfoInFeed ? killerInfo : this.playerBarn.qe(msg.killerId);
             let targetName = this.playerBarn.getPlayerName(
                 targetInfo.playerId,
-                this.m_activeId,
+                this.activeId,
                 true
             );
             let killerName = this.playerBarn.getPlayerName(
                 killerInfo.playerId,
-                this.m_activeId,
+                this.activeId,
                 true
             );
             let killfeedKillerName = this.playerBarn.getPlayerName(
                 killfeedKillerInfo.playerId,
-                this.m_activeId,
+                this.activeId,
                 true
             );
             targetName = helpers.htmlEscape(targetName);
             killerName = helpers.htmlEscape(killerName);
             killfeedKillerName = helpers.htmlEscape(killfeedKillerName);
             // Display the kill / downed notification for the active player
-            if (msg.killCreditId == this.m_activeId) {
-                const completeKill = msg.killerId == this.m_activeId;
+            if (msg.killCreditId == this.activeId) {
+                const completeKill = msg.killerId == this.activeId;
                 const suicide =
                         msg.killerId == msg.targetId ||
                         msg.killCreditId == msg.targetId;
@@ -1187,7 +1188,7 @@ export class Game {
                             : "";
                 this.ui2Manager.displayKillMessage(killText, killCountText);
             } else if (
-                msg.targetId == this.m_activeId &&
+                msg.targetId == this.activeId &&
                     msg.downed &&
                     !msg.killed
             ) {
@@ -1202,7 +1203,7 @@ export class Game {
             }
 
             // Update local kill counter
-            if (msg.killCreditId == this.m_localId && msg.killed) {
+            if (msg.killCreditId == this.localId && msg.killed) {
                 this.uiManager.setLocalKills(msg.killerKills);
             }
 
@@ -1250,7 +1251,7 @@ export class Game {
             }
             const playerInfo = this.playerBarn.qe(msg.playerId);
             const nameText = helpers.htmlEscape(
-                this.playerBarn.getPlayerName(msg.playerId, this.m_activeId, true)
+                this.playerBarn.getPlayerName(msg.playerId, this.activeId, true)
             );
             if (msg.assigned) {
                 if (roleDef.sound?.assign) {
@@ -1270,14 +1271,14 @@ export class Game {
                     // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
                         msg.role == "kill_leader" ||
                             !this.map.perkMode ||
-                            this.m_localId == msg.playerId
+                            this.localId == msg.playerId
                     ) {
                         this.audioManager.playSound(roleDef.sound.assign, {
                             channel: "ui"
                         });
                     }
                 }
-                if (this.map.perkMode && this.m_localId == msg.playerId) {
+                if (this.map.perkMode && this.localId == msg.playerId) {
                     this.uiManager.setRoleMenuActive(false);
                 }
                 if (roleDef.killFeed?.assign) {
@@ -1296,7 +1297,7 @@ export class Game {
                     this.ui2Manager.addKillFeedMessage(killText, killColor);
                 }
                 // Show an announcement if you've been assigned a role
-                if (roleDef.announce && this.m_localId == msg.playerId) {
+                if (roleDef.announce && this.localId == msg.playerId) {
                     const assignText = this.ui2Manager.getRoleAnnouncementText(
                         msg.role,
                         playerInfo.teamId
@@ -1310,7 +1311,7 @@ export class Game {
                     let killerName = helpers.htmlEscape(
                         this.playerBarn.getPlayerName(
                             msg.killerId,
-                            this.m_activeId,
+                            this.activeId,
                             true
                         )
                     );
@@ -1364,7 +1365,7 @@ export class Game {
             const msg = new net.GameOverMsg();
             msg.deserialize(stream);
             this.gameOver = msg.gameOver;
-            const localTeamId = this.playerBarn.qe(this.m_localId).teamId;
+            const localTeamId = this.playerBarn.qe(this.localId).teamId;
 
             // Set local stats based on final results.
             // This is necessary because the last person on a team to die
@@ -1372,7 +1373,7 @@ export class Game {
             // the GameOver message.
             for (let j = 0; j < msg.playerStats.length; j++) {
                 const stats = msg.playerStats[j];
-                if (stats.playerId == this.m_localId) {
+                if (stats.playerId == this.localId) {
                     this.uiManager.setLocalStats(stats);
                     break;
                 }
@@ -1408,7 +1409,7 @@ export class Game {
             const msg = new net.PickupMsg();
             msg.deserialize(stream);
             if (msg.type == net.PickupMsgType.Success && msg.item) {
-                this.m_activePlayer.playItemPickupSound(msg.item, this.audioManager);
+                this.activePlayer.playItemPickupSound(msg.item, this.audioManager);
                 const itemDef = GameObjectDefs[msg.item];
                 if (itemDef && itemDef.type == "xp") {
                     this.ui2Manager.addRareLootMessage(msg.item, true);
@@ -1457,7 +1458,7 @@ export class Game {
     }
 
     sendMessageImpl(msgStream) {
-        // Separate function call so m_sendMessage can be optimized;
+        // Separate function call so sendMessage can be optimized;
         // v8 won't optimize functions containing a try/catch
         if (this.ws && this.ws.readyState == this.ws.OPEN) {
             try {
