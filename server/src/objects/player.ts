@@ -393,20 +393,14 @@ export class Player extends BaseGameObject {
             }
             case GameConfig.Action.UseItem: {
                 switch (this.scheduledAction.item) {
-                case "bandage": {
-                    this.useBandage();
-                    break;
-                }
+                case "bandage":
                 case "healthkit": {
-                    this.useHealthkit();
+                    this.useHealingItem(this.scheduledAction.item);
                     break;
                 }
-                case "soda": {
-                    this.useSoda();
-                    break;
-                }
+                case "soda":
                 case "painkiller": {
-                    this.usePainkiller();
+                    this.useAdrenItem(this.scheduledAction.item);
                     break;
                 }
                 }
@@ -819,65 +813,34 @@ export class Player extends BaseGameObject {
         }
     }
 
-    useBandage(): void {
-        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
+    useHealingItem(item: string): void {
+        if (this.health == (GameObjectDefs[item] as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("bandage", GameConfig.Action.UseItem);
+            this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
 
         this.cancelAction();
-        this.doAction("bandage", GameConfig.Action.UseItem, 3);
+        this.doAction(item, GameConfig.Action.UseItem, 3);
     }
 
-    useHealthkit(): void {
-        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
-            return;
-        }
-
-        // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("healthkit", GameConfig.Action.UseItem);
-            return;
-        }
-
-        this.cancelAction();
-        this.doAction("healthkit", GameConfig.Action.UseItem, 6);
-    }
-
-    useSoda(): void {
+    useAdrenItem(item: string): void {
         if (this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("soda", GameConfig.Action.UseItem);
+            this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
 
         this.cancelAction();
-        this.doAction("soda", GameConfig.Action.UseItem, 3);
-    }
-
-    usePainkiller(): void {
-        if (this.actionType == GameConfig.Action.UseItem) {
-            return;
-        }
-
-        // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
-            this.cancelAction();
-            this.scheduleAction("painkiller", GameConfig.Action.UseItem);
-            return;
-        }
-
-        this.cancelAction();
-        this.doAction("painkiller", GameConfig.Action.UseItem, 5);
+        this.doAction(item, GameConfig.Action.UseItem, 3);
     }
 
     /**
@@ -971,16 +934,16 @@ export class Player extends BaseGameObject {
                 this.weaponManager.reload();
                 break;
             case GameConfig.Input.UseBandage:
-                this.useBandage();
+                this.useHealingItem("bandage");
                 break;
             case GameConfig.Input.UseHealthKit:
-                this.useHealthkit();
+                this.useHealingItem("healthkit");
                 break;
             case GameConfig.Input.UsePainkiller:
-                this.useSoda();
+                this.useAdrenItem("soda");
                 break;
             case GameConfig.Input.UseSoda:
-                this.usePainkiller();
+                this.useAdrenItem("painkiller");
                 break;
             case GameConfig.Input.Cancel:
                 this.cancelAction();
@@ -1007,22 +970,14 @@ export class Player extends BaseGameObject {
         }
 
         switch (msg.useItem) {
-        case "bandage": {
-            this.useBandage();
+        case "bandage":
+        case "healthkit":
+            this.useHealingItem(msg.useItem);
             break;
-        }
-        case "healthkit": {
-            this.useHealthkit();
+        case "soda":
+        case "painkiller":
+            this.useAdrenItem(msg.useItem);
             break;
-        }
-        case "soda": {
-            this.useSoda();
-            break;
-        }
-        case "painkiller": {
-            this.usePainkiller();
-            break;
-        }
         case "1xscope": case "2xscope": case "4xscope": case "8xscope": case "15xscope":
             this.scope = msg.useItem;
             break;
