@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";

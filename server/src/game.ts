@@ -7,7 +7,7 @@ import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
 import { GameConfig } from "../../shared/gameConfig";
-import net from "../../shared/net";
+import * as net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";

@@ -3,7 +3,7 @@ import { GameConfig } from "../../shared/gameConfig";
 import GameObject from "../../shared/utils/gameObject";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
-import net from "../../shared/net";
+import * as net from "../../shared/net";
 import { v2 } from "../../shared/utils/v2";
 import { device } from "./device";
 import { helpers } from "./helpers";

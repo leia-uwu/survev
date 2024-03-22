@@ -11,7 +11,7 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Building } from "./building";
 import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
 import { type Player } from "./player";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 import { Explosion } from "./explosion";
 
 export class Obstacle extends BaseGameObject {

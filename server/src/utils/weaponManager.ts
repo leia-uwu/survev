@@ -11,7 +11,7 @@ import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 
 export class WeaponManager {
     player: Player;

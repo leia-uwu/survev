@@ -13,15 +13,25 @@ const DEV_MODE = false;
 //
 
 class ConfigTypeMap {
+    /**
+     * @param {number} typeBits
+     */
     constructor(typeBits) {
+        /** * @type {Record<string,number>} */
         this._typeToId = {};
+        /** * @type {Record<number,string>} */
         this._idToType = {};
+        /** * @type number */
         this.nextId = 0;
+        /** * @type number */
         this.maxId = 2 ** typeBits;
 
         this.addType("");
     }
 
+    /**
+     * @param {string} type
+     */
     addType(type) {
         // assert(this._typeToId[type] === undefined, `Type ${type} has already been defined!`);
         // assert(this.nextId < this.maxId);
@@ -30,12 +40,18 @@ class ConfigTypeMap {
         this.nextId++;
     }
 
+    /**
+      * @param {string} type
+      */
     typeToId(type) {
         const id = this._typeToId[type];
         // assert(id !== undefined, `Invalid type ${type}`);
         return id;
     }
 
+    /**
+      * @param {number} id
+      */
     idToType(id) {
         const type = this._idToType[id];
         if (type === undefined) {
@@ -45,6 +61,11 @@ class ConfigTypeMap {
     }
 }
 
+/**
+ * @param {string} type
+ * @param {Record<string, unknown>} typeList
+ * @param {number} bitsPerType
+ */
 function createTypeSerialization(type, typeList, bitsPerType) {
     const typeMap = new ConfigTypeMap(bitsPerType);
 
@@ -75,14 +96,14 @@ const mapTypeSerialization = createTypeSerialization("Map", MapObjectDefs, 12);
 export class BitStream extends bb.BitStream {
     /**
      * @param {string} str
-     * @param {number?} len
+     * @param {number} [len]
      */
     writeString(str, len) {
         this.writeASCIIString(str, len);
     }
 
     /**
-     * @param {number?} len
+     * @param {number} [len]
      */
     readString(len) {
         return this.readASCIIString(len);
@@ -231,7 +252,10 @@ export class BitStream extends bb.BitStream {
 // MsgStream
 //
 
-class MsgStream {
+export class MsgStream {
+    /**
+     * @param {ArrayBuffer | Uint8Array} buf
+     */
     constructor(buf) {
         let arrayBuf = buf instanceof ArrayBuffer ? buf : null;
         if (arrayBuf == null) {
@@ -259,7 +283,7 @@ class MsgStream {
 
     /**
      * @param {MsgType} type
-     * @param {import("./netTypings").Msg msg
+     * @param {import("./netTypings").Msg} msg
     **/
     serializeMsg(type, msg) {
         // assert(this.stream.index % 8 == 0);
@@ -268,6 +292,10 @@ class MsgStream {
         // assert(this.stream.index % 8 == 0);
     }
 
+    /**
+     * @param {number} type
+     * @param {BitStream} stream
+     */
     serializeMsgStream(type, stream) {
         // assert(this.stream.index % 8 == 0 && stream.index % 8 == 0);
         this.stream.writeUint8(type);
@@ -282,7 +310,7 @@ class MsgStream {
     }
 }
 
-const Constants = {
+export const Constants = {
     MapNameMaxLen: 24,
     PlayerNameMaxLen: 16,
     MouseMaxDist: 64,
@@ -586,27 +614,27 @@ setSerializeFns(
      * @param {BitStream} s
      * @param {import("../server/src/objects/structure").Structure} data
     **/
-    (s, t) => {
-        s.writeVec(t.pos, 0, 0, 1024, 1024, 16);
-        s.writeMapType(t.type);
-        s.writeBits(t.ori, 2);
-        s.writeBoolean(t.interiorSoundEnabled);
-        s.writeBoolean(t.interiorSoundAlt);
+    (s, data) => {
+        s.writeVec(data.pos, 0, 0, 1024, 1024, 16);
+        s.writeMapType(data.type);
+        s.writeBits(data.ori, 2);
+        s.writeBoolean(data.interiorSoundEnabled);
+        s.writeBoolean(data.interiorSoundAlt);
         for (let r = 0; r < GameConfig.structureLayerCount; r++) {
-            s.writeUint16(t.layerObjIds[r]);
+            s.writeUint16(data.layerObjIds[r]);
         }
     },
     (_s, _t) => { },
-    (s, t) => {
-        t.pos = s.readVec(0, 0, 1024, 1024, 16);
-        t.type = s.readMapType();
-        t.ori = s.readBits(2);
-        t.interiorSoundEnabled = s.readBoolean();
-        t.interiorSoundAlt = s.readBoolean();
-        t.layerObjIds = [];
+    (s, data) => {
+        data.pos = s.readVec(0, 0, 1024, 1024, 16);
+        data.type = s.readMapType();
+        data.ori = s.readBits(2);
+        data.interiorSoundEnabled = s.readBoolean();
+        data.interiorSoundAlt = s.readBoolean();
+        data.layerObjIds = [];
         for (let r = 0; r < GameConfig.structureLayerCount; r++) {
             const a = s.readUint16();
-            t.layerObjIds.push(a);
+            data.layerObjIds.push(a);
         }
     }
 );
@@ -819,9 +847,9 @@ setSerializeFns(
 );
 
 /**
- * @enum {number}
+ * @enum
  */
-const MsgType = {
+export const MsgType = {
     None: 0,
     Join: 1,
     Disconnect: 2,
@@ -846,43 +874,25 @@ const MsgType = {
     PerkModeRoleSelect: 21
 };
 
-class JoinMsg {
+export class JoinMsg {
     constructor() {
-        /**
-         * @type {number}
-         */
+        /** * @type {number} */
         this.protocol = 0;
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.matchPriv = "";
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.loadoutPriv = "";
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.questPriv = "";
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.name = "";
-        /**
-         * @type {boolean}
-         */
+        /** * @type {boolean} */
         this.useTouch = false;
-        /**
-         * @type {boolean}
-         */
+        /** * @type {boolean} */
         this.isMobile = false;
-        /**
-         * @type {boolean}
-         */
+        /** * @type {boolean} */
         this.bot = false;
-        /**
-         * @type {string[]}
-         */
+        /** * @type {string[]} */
         this.emotes = [];
     }
 
@@ -929,11 +939,9 @@ class JoinMsg {
     }
 }
 
-class DisconnectMsg {
+export class DisconnectMsg {
     constructor() {
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.reason = "";
     }
 
@@ -1061,13 +1069,9 @@ export class InputMsg {
 
 export class DropItemMsg {
     constructor() {
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.item = "";
-        /**
-         * @type {number}
-         */
+        /** * @type {number} */
         this.weapIdx = 0;
     }
 
@@ -1090,11 +1094,9 @@ export class DropItemMsg {
     }
 }
 
-class PerkModeRoleSelectMsg {
+export class PerkModeRoleSelectMsg {
     constructor() {
-        /**
-         * @type {string}
-         */
+        /** * @type {string} */
         this.role = "";
     }
 
@@ -1115,11 +1117,9 @@ class PerkModeRoleSelectMsg {
     }
 }
 
-class EmoteMsg {
+export class EmoteMsg {
     constructor() {
-        /**
-         * @type {import("./utils/v2").Vec2}
-         */
+        /** * @type {import("./utils/v2").Vec2} */
         this.pos = v2.create(0, 0);
         /** @type {string} */
         this.type = "";
@@ -1148,7 +1148,7 @@ class EmoteMsg {
     }
 }
 
-class JoinedMsg {
+export class JoinedMsg {
     constructor() {
         /** @type {number} */
         this.teamMode = 0;
@@ -1281,14 +1281,21 @@ function deserializeMapObj(s, data) {
     s.readBits(2);
 }
 
-class MapMsg {
+export class MapMsg {
     constructor() {
+        /** * @type {string} */
         this.mapName = "";
+        /** * @type {number} */
         this.seed = 0;
+        /** * @type {number} */
         this.width = 0;
+        /** * @type {number} */
         this.height = 0;
+        /** * @type {number} */
         this.shoreInset = 0;
+        /** * @type {number} */
         this.grassInset = 0;
+        /** * @type {import("./utils/terrainGen").MapRiverData[]} */
         this.rivers = [];
         this.places = [];
         this.objects = [];
@@ -1557,7 +1564,7 @@ function serializeGasData(s, data) {
     s.writeFloat(data.radNew, 0, 2048, 16);
 }
 
-function deserializeGasData(s, data) {
+export function deserializeGasData(s, data) {
     data.mode = s.readUint8();
     data.duration = s.readFloat32();
     data.posOld = s.readVec(0, 0, 1024, 1024, 16);
@@ -1585,7 +1592,7 @@ const UpdateExtFlags = {
     KillLeader: 1 << 15
 };
 
-class UpdateMsg {
+export class UpdateMsg {
     constructor() {
         this.serializedObjectCache = null;
         this.objectReg = null;
@@ -1597,7 +1604,9 @@ class UpdateMsg {
         this.gas = null;
         this.map = null;
         this.delObjIds = [];
+        /** * @type {import("../server/src/objects/gameObject").BaseGameObject[]} */
         this.fullObjects = [];
+        /** * @type {import("../server/src/objects/gameObject").BaseGameObject[]} */
         this.partObjects = [];
         this.activePlayerId = 0;
         this.activePlayerIdDirty = false;
@@ -1614,11 +1623,11 @@ class UpdateMsg {
         this.playerStatusDirty = false;
         this.groupStatus = {};
         this.groupStatusDirty = false;
+        /** * @type {import("../server/src/objects/bullet").Bullet[]} */
         this.bullets = [];
+        /** * @type {import("../server/src/objects/explosion").Explosion[]} */
         this.explosions = [];
-        /**
-        * @type {Emote[]}
-        */
+        /** * @type {import("../server/src/objects/player").Emote[]} */
         this.emotes = [];
         this.planes = [];
         this.airstrikeZones = [];
@@ -2024,16 +2033,25 @@ class UpdateMsg {
     }
 }
 
-class KillMsg {
+export class KillMsg {
     constructor() {
+        /** * @type {string} */
         this.itemSourceType = "";
+        /** * @type {string} */
         this.mapSourceType = "";
+        /** * @type {number} */
         this.damageType = 0;
+        /** * @type {number} */
         this.targetId = 0;
+        /** * @type {number} */
         this.killerId = 0;
+        /** * @type {number} */
         this.killCreditId = 0;
+        /** * @type {number} */
         this.killerKills = 0;
+        /** * @type {boolean} */
         this.downed = false;
+        /** * @type {boolean} */
         this.killed = false;
     }
 
@@ -2070,8 +2088,9 @@ class KillMsg {
     }
 }
 
-class PlayerStatsMsg {
+export class PlayerStatsMsg {
     constructor() {
+        /** * @type {number} */
         this.playerId = 0;
         this.playerStats = {
             playerId: 0,
@@ -2110,12 +2129,17 @@ class PlayerStatsMsg {
     }
 }
 
-class GameOverMsg {
+export class GameOverMsg {
     constructor() {
+        /** * @type {number} */
         this.teamId = 0;
+        /** * @type {number} */
         this.teamRank = 0;
+        /** * @type {boolean} */
         this.gameOver = false;
+        /** * @type {number} */
         this.winningTeamId = 0;
+        /** * @type {PlayerStatsMsg[]} */
         this.playerStats = [];
     }
 
@@ -2153,7 +2177,7 @@ class GameOverMsg {
     }
 }
 
-const PickupMsgType = {
+export const PickupMsgType = {
     Full: 0,
     AlreadyOwned: 1,
     AlreadyEquipped: 2,
@@ -2162,10 +2186,13 @@ const PickupMsgType = {
     GunCannotFire: 5
 };
 
-class PickupMsg {
+export class PickupMsg {
     constructor() {
+        /** * @type {number} */
         this.type = 0;
+        /** * @type {string} */
         this.item = "";
+        /** * @type {number} */
         this.count = 0;
     }
 
@@ -2190,11 +2217,15 @@ class PickupMsg {
     }
 }
 
-class SpectateMsg {
+export class SpectateMsg {
     constructor() {
+        /** * @type {boolean} */
         this.specBegin = false;
+        /** * @type {boolean} */
         this.specNext = false;
+        /** * @type {boolean} */
         this.specPrev = false;
+        /** * @type {boolean} */
         this.specForce = false;
     }
 
@@ -2221,12 +2252,17 @@ class SpectateMsg {
     }
 }
 
-class RoleAnnouncementMsg {
+export class RoleAnnouncementMsg {
     constructor() {
+        /** * @type {number} */
         this.playerId = 0;
+        /** * @type {number} */
         this.killerId = 0;
+        /** * @type {string} */
         this.role = "";
+        /** * @type {boolean} */
         this.assigned = false;
+        /** * @type {boolean} */
         this.killed = false;
     }
 
@@ -2255,9 +2291,11 @@ class RoleAnnouncementMsg {
     }
 }
 
-class LoadoutMsg {
+export class LoadoutMsg {
     constructor() {
+        /** * @type {string} */
         this.emotes = [];
+        /** * @type {boolean} */
         this.custom = false;
     }
 
@@ -2284,8 +2322,9 @@ class LoadoutMsg {
     }
 }
 
-class StatsMsg {
+export class StatsMsg {
     constructor() {
+        /** * @type {string} */
         this.data = "";
     }
 
@@ -2304,8 +2343,9 @@ class StatsMsg {
     }
 }
 
-class AliveCountsMsg {
+export class AliveCountsMsg {
     constructor() {
+        /** * @type {number[]} */
         this.teamAliveCounts = [];
     }
 
@@ -2331,43 +2371,18 @@ class AliveCountsMsg {
     }
 }
 
-class UpdatePassMsg {
+export class UpdatePassMsg {
     serialize(_e) { }
     deserialize(_e) { }
 }
 
-function getPlayerStatusUpdateRate(factionMode) {
+/**
+ * @param {boolean} factionMode
+ */
+export function getPlayerStatusUpdateRate(factionMode) {
     if (factionMode) {
         return 0.5;
     } else {
         return 0.25;
     }
 }
-
-export default {
-    BitStream,
-    Constants,
-    getPlayerStatusUpdateRate,
-    MsgStream,
-    MsgType,
-    JoinMsg,
-    DisconnectMsg,
-    InputMsg,
-    DropItemMsg,
-    JoinedMsg,
-    UpdateMsg,
-    MapMsg,
-    KillMsg,
-    PlayerStatsMsg,
-    GameOverMsg,
-    PickupMsgType,
-    PickupMsg,
-    SpectateMsg,
-    PerkModeRoleSelectMsg,
-    EmoteMsg,
-    RoleAnnouncementMsg,
-    LoadoutMsg,
-    StatsMsg,
-    UpdatePassMsg,
-    AliveCountsMsg
-};

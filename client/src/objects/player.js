@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { math } from "../../../shared/utils/math";

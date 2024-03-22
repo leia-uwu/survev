@@ -13,11 +13,11 @@ import { DeadBody } from "./deadBody";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type AmmoDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
-import net, { type DropItemMsg, type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
+import { AliveCountsMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, UpdateMsg } from "../../../shared/net";
 
 export class Emote {
     playerId: number;
@@ -342,7 +342,7 @@ export class Player extends BaseGameObject {
 
     visibleObjects = new Set<GameObject>();
 
-    lastInputMsg = new net.InputMsg();
+    lastInputMsg = new InputMsg();
 
     update(): void {
         if (this.dead) return;
@@ -571,14 +571,14 @@ export class Player extends BaseGameObject {
     secondsSinceLastUpdate = 0;
 
     sendMsgs(): void {
-        const msgStream = new net.MsgStream(new ArrayBuffer(65536));
+        const msgStream = new MsgStream(new ArrayBuffer(65536));
 
         if (this._firstUpdate) {
-            const joinedMsg = new net.JoinedMsg();
+            const joinedMsg = new JoinedMsg();
             joinedMsg.teamMode = 1;
             joinedMsg.playerId = this.id;
             joinedMsg.emotes = this.loadout.emotes;
-            this.sendMsg(net.MsgType.Joined, joinedMsg);
+            this.sendMsg(MsgType.Joined, joinedMsg);
 
             const mapStream = this.game.map.mapStream.stream;
 
@@ -586,12 +586,12 @@ export class Player extends BaseGameObject {
         }
 
         if (this.game.aliveCountDirty) {
-            const aliveMsg = new net.AliveCountsMsg();
+            const aliveMsg = new AliveCountsMsg();
             aliveMsg.teamAliveCounts.push(this.game.aliveCount);
-            msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
+            msgStream.serializeMsg(MsgType.AliveCounts, aliveMsg);
         }
 
-        const updateMsg = new net.UpdateMsg();
+        const updateMsg = new UpdateMsg();
         // updateMsg.serializationCache = this.game.serializationCache;
 
         const player = this.spectating ?? this;
@@ -680,7 +680,7 @@ export class Player extends BaseGameObject {
             updateMsg.explosions = updateMsg.explosions.slice(0, 255);
         }
 
-        msgStream.serializeMsg(net.MsgType.Update, updateMsg);
+        msgStream.serializeMsg(MsgType.Update, updateMsg);
 
         for (const msg of this.msgsToSend) {
             msgStream.serializeMsg(msg.type, msg.msg);
@@ -740,7 +740,7 @@ export class Player extends BaseGameObject {
         this.game.aliveCountDirty = true;
         this.game.livingPlayers.delete(this);
 
-        const killMsg = new net.KillMsg();
+        const killMsg = new KillMsg();
         killMsg.damageType = damageType;
         killMsg.itemSourceType = GameObjectDefs[sourceType] ? sourceType : "";
         killMsg.mapSourceType = MapObjectDefs[sourceType] ? sourceType : "";
@@ -754,9 +754,9 @@ export class Player extends BaseGameObject {
             killMsg.killerKills = source.kills;
         }
 
-        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: killMsg });
+        this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
 
-        const gameOverMsg = new net.GameOverMsg();
+        const gameOverMsg = new GameOverMsg();
 
         gameOverMsg.teamRank = this.game.aliveCount;
         gameOverMsg.playerStats = [{
@@ -765,7 +765,7 @@ export class Player extends BaseGameObject {
         }];
         gameOverMsg.teamId = this.teamId;
         gameOverMsg.winningTeamId = -1;
-        this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });
+        this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
 
         const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
         this.game.grid.addObject(deadBody);
@@ -1404,7 +1404,7 @@ export class Player extends BaseGameObject {
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
-        const stream = new net.MsgStream(new ArrayBuffer(bytes));
+        const stream = new MsgStream(new ArrayBuffer(bytes));
         stream.serializeMsg(type, msg);
         this.sendData(stream.getBuffer());
     }
