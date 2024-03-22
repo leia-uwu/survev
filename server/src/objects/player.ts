@@ -17,7 +17,7 @@ import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
-import { AliveCountsMsg, type DropItemMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, PlayerStatsMsg, UpdateMsg } from "../../../shared/net";
+import { AliveCountsMsg, type DropItemMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, UpdateMsg } from "../../../shared/net";
 
 export class Emote {
     playerId: number;
@@ -759,17 +759,7 @@ export class Player extends BaseGameObject {
         const gameOverMsg = new GameOverMsg();
 
         gameOverMsg.teamRank = this.game.aliveCount;
-        const statsMsg = new PlayerStatsMsg();
-        statsMsg.playerId = this.id;
-        statsMsg.playerStats = {
-            playerId: this.id,
-            timeAlive: this.timeAlive,
-            kills: this.kills,
-            dead: this.dead,
-            damageDealt: this.damageDealt,
-            damageTaken: this.damageTaken
-        };
-        gameOverMsg.playerStats.push(statsMsg);
+        gameOverMsg.playerStats.push(this);
         gameOverMsg.teamId = this.teamId;
         gameOverMsg.winningTeamId = -1;
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });

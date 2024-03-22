@@ -2092,6 +2092,9 @@ export class PlayerStatsMsg {
     constructor() {
         /** * @type {number} */
         this.playerId = 0;
+        /**
+         * @type {{ timeAlive: number, kills: number, dead: boolean, damageDealt: number, damageTaken: number }}
+         */
         this.playerStats = {
             playerId: 0,
             timeAlive: 0,
@@ -2139,7 +2142,9 @@ export class GameOverMsg {
         this.gameOver = false;
         /** * @type {number} */
         this.winningTeamId = 0;
-        /** * @type {PlayerStatsMsg[]} */
+        /**
+         * @type {PlayerStatsMsg["playerStats"][]}
+         */
         this.playerStats = [];
     }
 
