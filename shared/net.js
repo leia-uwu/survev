@@ -1634,33 +1634,18 @@ class UpdateMsg {
     **/
     serialize(s) {
         let flags = 0;
-        if (this.delObjIds.length) flags += UpdateExtFlags.DeletedObjects;
-        if (this.fullObjects.length) flags += UpdateExtFlags.FullObjects;
-        if (this.activePlayerIdDirty) flags += UpdateExtFlags.ActivePlayerId;
-        if (this.gasDirty) flags += UpdateExtFlags.Gas;
-        if (this.gasTDirty) flags += UpdateExtFlags.GasCircle;
-        if (this.playerInfos.length) flags += UpdateExtFlags.PlayerInfos;
-        if (this.deletedPlayerIds.length) flags += UpdateExtFlags.DeletePlayerIds;
-        if (this.playerStatusDirty) flags += UpdateExtFlags.PlayerStatus;
-        if (this.groupStatusDirty) flags += UpdateExtFlags.GroupStatus;
-        if (this.bullets.length) flags += UpdateExtFlags.Bullets;
-        if (this.explosions.length) flags += UpdateExtFlags.Explosions;
-        if (this.emotes.length) flags += UpdateExtFlags.Emotes;
-        if (this.planes.length) flags += UpdateExtFlags.Planes;
-        if (this.airstrikeZones.length) flags += UpdateExtFlags.AirstrikeZones;
-        if (this.mapIndicators.length) flags += UpdateExtFlags.MapIndicators;
-        if (this.killLeaderDirty) flags += UpdateExtFlags.KillLeader;
-
+        const flagsIdx = s.byteIndex;
         s.writeUint16(flags);
 
-        if ((flags & UpdateExtFlags.DeletedObjects) !== 0) {
+        if (this.delObjIds.length) {
             s.writeUint16(this.delObjIds.length);
             for (const id of this.delObjIds) {
                 s.writeUint16(id);
             }
+            flags |= UpdateExtFlags.DeletedObjects;
         }
 
-        if ((flags & UpdateExtFlags.FullObjects) !== 0) {
+        if (this.fullObjects.length) {
             s.writeUint16(this.fullObjects.length);
             for (const obj of this.fullObjects) {
                 s.writeUint8(obj.__type);
@@ -1668,6 +1653,7 @@ class UpdateMsg {
                 ObjectSerializeFns[obj.__type].serializePart(s, obj);
                 ObjectSerializeFns[obj.__type].serializeFull(s, obj);
             }
+            flags |= UpdateExtFlags.FullObjects;
         }
 
         s.writeUint16(this.partObjects.length);
@@ -1676,43 +1662,50 @@ class UpdateMsg {
             ObjectSerializeFns[obj.__type].serializePart(s, obj);
         }
 
-        if ((flags & UpdateExtFlags.ActivePlayerId) !== 0) {
+        if (this.activePlayerIdDirty) {
             s.writeUint16(this.activePlayerId);
+            flags |= UpdateExtFlags.ActivePlayerId;
         }
 
         serializeActivePlayer(s, this.activePlayerData);
 
-        if ((flags & UpdateExtFlags.Gas) !== 0) {
+        if (this.gasDirty) {
             serializeGasData(s, this.gas);
+            flags |= UpdateExtFlags.Gas;
         }
 
-        if ((flags & UpdateExtFlags.GasCircle) !== 0) {
+        if (this.gasTDirty) {
             s.writeFloat(this.gasT, 0, 1, 16);
+            flags |= UpdateExtFlags.GasCircle;
         }
 
-        if ((flags & UpdateExtFlags.PlayerInfos) !== 0) {
+        if (this.playerInfos.length) {
             s.writeUint8(this.playerInfos.length);
             for (const info of this.playerInfos) {
                 serializePlayerInfo(s, info);
             }
+            flags |= UpdateExtFlags.PlayerInfos;
         }
 
-        if ((flags & UpdateExtFlags.DeletePlayerIds) !== 0) {
+        if (this.deletedPlayerIds.length) {
             s.writeUint8(this.deletedPlayerIds.length);
             for (const id of this.deletedPlayerIds) {
                 s.writeUint16(id);
             }
+            flags |= UpdateExtFlags.DeletePlayerIds;
         }
 
-        if ((flags & UpdateExtFlags.PlayerStatus) !== 0) {
+        if (this.playerStatusDirty) {
             serializePlayerStatus(s, this.playerStatus);
+            flags |= UpdateExtFlags.PlayerStatus;
         }
 
-        if ((flags & UpdateExtFlags.GroupStatus) !== 0) {
+        if (this.groupStatusDirty) {
             serializeGroupStatus(s, this.groupStatus);
+            flags |= UpdateExtFlags.GroupStatus;
         }
 
-        if ((flags & UpdateExtFlags.Bullets) !== 0) {
+        if (this.bullets.length) {
             s.writeUint8(this.bullets.length);
 
             for (const bullet of this.bullets) {
@@ -1751,9 +1744,10 @@ class UpdateMsg {
             }
 
             s.writeAlignToNextByte();
+            flags |= UpdateExtFlags.Bullets;
         }
 
-        if ((flags & UpdateExtFlags.Explosions) !== 0) {
+        if (this.explosions.length) {
             s.writeUint8(this.explosions.length);
             for (const explosion of this.explosions) {
                 s.writeVec(explosion.pos, 0, 0, 1024, 1024, 16);
@@ -1761,9 +1755,10 @@ class UpdateMsg {
                 s.writeBits(explosion.layer, 2);
                 s.writeAlignToNextByte();
             }
+            flags |= UpdateExtFlags.Explosions;
         }
 
-        if ((flags & UpdateExtFlags.Emotes) !== 0) {
+        if (this.emotes.length) {
             s.writeUint8(this.emotes.length);
             for (const emote of this.emotes) {
                 s.writeUint16(emote.playerId);
@@ -1774,9 +1769,10 @@ class UpdateMsg {
                 if (emote.isPing) s.writeVec(emote.pos, 0, 0, 1024, 1024, 16);
                 s.writeAlignToNextByte();
             }
+            flags |= UpdateExtFlags.Emotes;
         }
 
-        if ((flags & UpdateExtFlags.Planes) !== 0) {
+        if (this.planes.length) {
             s.writeUint8(this.planes.length);
             for (const plane of this.planes) {
                 s.writeUint8(plane.id);
@@ -1785,18 +1781,20 @@ class UpdateMsg {
                 s.writeBoolean(plane.actionComplete);
                 s.writeBits(plane.action, 3);
             }
+            flags |= UpdateExtFlags.Planes;
         }
 
-        if ((flags & UpdateExtFlags.AirstrikeZones) !== 0) {
+        if (this.airstrikeZones.length) {
             s.writeUint8(this.airstrikeZones.length);
             for (const zone of this.airstrikeZones) {
                 s.writeVec(zone.pos, 0, 0, 1024, 1024, 12);
                 s.writeFloat(zone.rad, 0, Constants.AirstrikeZoneMaxRad, 8);
                 s.writeFloat(zone.duration, 0, Constants.AirstrikeZoneMaxDuration, 8);
             }
+            flags |= UpdateExtFlags.AirstrikeZones;
         }
 
-        if ((flags & UpdateExtFlags.MapIndicators) !== 0) {
+        if (this.mapIndicators.length) {
             s.writeUint8(this.mapIndicators.length);
             for (const indicator of this.mapIndicators) {
                 s.writeBits(indicator.id, 4);
@@ -1806,14 +1804,20 @@ class UpdateMsg {
                 s.writeVec(indicator.pos, 0, 0, 1024, 1024, 16);
             }
             s.writeAlignToNextByte();
+            flags |= UpdateExtFlags.MapIndicators;
         }
 
-        if ((flags & UpdateExtFlags.KillLeader) !== 0) {
+        if (this.killLeaderDirty) {
             s.writeUint16(this.killLeaderId);
             s.writeUint8(this.killLeaderKills);
+            flags |= UpdateExtFlags.KillLeader;
         }
 
         s.writeUint8(this.ack);
+        const idx = s.byteIndex;
+        s.byteIndex = flagsIdx;
+        s.writeUint16(flags);
+        s.byteIndex = idx;
     }
 
     /**

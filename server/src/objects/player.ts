@@ -885,21 +885,18 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
                 this.curWeapIdx = 2;
-                this.cancelAction();
                 break;
             case GameConfig.Input.EquipPrimary:
                 this.curWeapIdx = 0;
                 break;
             case GameConfig.Input.EquipSecondary:
                 this.curWeapIdx = 1;
-                this.cancelAction();
                 break;
             case GameConfig.Input.EquipThrowable:
                 if (this.curWeapIdx === 3) {
                     this.weaponManager.showNextThrowable();
                 } else {
                     this.curWeapIdx = 3;
-                    this.cancelAction();
                 }
                 break;
             case GameConfig.Input.EquipLastWeap:

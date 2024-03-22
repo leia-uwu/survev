@@ -19,18 +19,19 @@ export class Explosion {
         public source?: GameObject
     ) {
         this.rad = (GameObjectDefs[this.type] as ExplosionDef).rad.max;
-    }
+        const def = GameObjectDefs[this.type] as ExplosionDef;
 
-    explode(game: Game): void {
-        // List of all near objects
-
-        const def = GameObjectDefs[this.type];
         if (def.type !== "explosion") {
             throw new Error(`Invalid explosion with type ${this.type}`);
         }
+    }
+
+    explode(game: Game): void {
+        const def = GameObjectDefs[this.type] as ExplosionDef;
 
         const coll = collider.createCircle(this.pos, this.rad);
 
+        // List of all near objects
         const objects = game.grid.intersectCollider(coll);
         const damagedObjects = new Map<number, boolean>();
 
