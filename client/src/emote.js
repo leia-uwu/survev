@@ -48,11 +48,11 @@ function isAngleBetween(target, angle1, angle2) {
 export class EmoteBarn {
     /**
      * @param {import("./audioManager").AudioManager} audioManager
+     * @param {import("./objects/player").PlayerBarn} playerBarn
      * @param {import("./camera").Camera} camera
      * @param {import("./map").Map} map
      */
     constructor(audioManager, uiManager, playerBarn, camera, map) {
-        const _this = this;
         this.audioManager = audioManager;
         this.uiManager = uiManager;
         this.gameElem = $("#ui-game");
@@ -86,56 +86,56 @@ export class EmoteBarn {
         this.emoteMouseTriggered = false;
         this.emoteScreenPos = v2.create(0, 0);
 
-        this.triggerPing = function() {
-            if (_this.dr) {
+        this.triggerPing = () => {
+            if (this.dr) {
                 let worldPos;
                 // Determine if this is going to be a team ping or an emote
-                if (_this.emoteSelector.ping && !_this.emoteWheelsGreyed) {
-                    const pingData = PingDefs[_this.emoteSelector.ping];
+                if (this.emoteSelector.ping &&  this.emoteWheelsGreyed) {
+                    const pingData = PingDefs[this.emoteSelector.ping];
                     if (pingData?.pingMap) {
                         // Where on the world do we ping?
-                        worldPos = _this.uiManager.getWorldPosFromMapPos(
-                            _this.bigmapPingPos || _this.emoteScreenPos,
-                            _this.map,
-                            _this.camera
+                        worldPos = this.uiManager.getWorldPosFromMapPos(
+                            this.bigmapPingPos || this.emoteScreenPos,
+                            this.map,
+                            this.camera
                         );
-                        worldPos ||= _this.camera.screenToPoint(_this.emoteScreenPos);
-                        worldPos.x = math.clamp(worldPos.x, 0, _this.map.width);
-                        worldPos.y = math.clamp(worldPos.y, 0, _this.map.height);
-                        _this.sendPing({
-                            type: _this.emoteSelector.ping,
+                        worldPos ||= this.camera.screenToPoint(this.emoteScreenPos);
+                        worldPos.x = math.clamp(worldPos.x, 0, this.map.width);
+                        worldPos.y = math.clamp(worldPos.y, 0, this.map.height);
+                        this.sendPing({
+                            type: this.emoteSelector.ping,
                             pos: worldPos
                         });
                     }
                 } else if (
-                    _this.emoteSelector.emote &&
-                    !_this.emoteWheelsGreyed
+                    this.emoteSelector.emote &&
+                    !this.emoteWheelsGreyed
                 ) {
-                    worldPos = _this.dr.pos;
-                    _this.sendEmote({
-                        type: _this.emoteSelector.emote,
+                    worldPos = Thithiss.dr.pos;
+                    this.sendEmote({
+                        type: this.emoteSelector.emote,
                         pos: worldPos
                     });
-                    _this.uiManager.displayMapLarge(true);
+                    this.uiManager.displayMapLarge(true);
                 }
-                _this.inputReset();
-                _this.pingKeyTriggered = _this.pingKeyDown;
+                this.inputReset();
+                this.pingKeyTriggered = this.pingKeyDown;
             }
         };
 
-        this.triggerEmote = function() {
-            if (_this.dr) {
+        this.triggerEmote = () => {
+            if (this.dr) {
                 let worldPos;
-                if (_this.emoteSelector.emote && !_this.emoteWheelsGreyed) {
-                    worldPos = _this.dr.pos;
+                if (this.emoteSelector.emote && !this.emoteWheelsGreyed) {
+                    worldPos = this.dr.pos;
 
                     // Send the emote to the server
-                    _this.sendEmote({
-                        type: _this.emoteSelector.emote,
+                    this.sendEmote({
+                        type: this.emoteSelector.emote,
                         pos: worldPos
                     });
                 }
-                _this.inputReset();
+                this.inputReset();
             }
         };
 
@@ -143,27 +143,28 @@ export class EmoteBarn {
         this.emoteTouchedPos = null;
         this.bigmapPingPos = null;
 
-        this.onTouchStart = function(event) {
-            if (_this.wheelDisplayed) {
+        this.onTouchStart = (event) => {
+            if (this.wheelDisplayed) {
                 event.stopPropagation();
-                _this.inputReset();
+                this.inputReset();
             }
         };
+
         if (device.touch) {
             this.emoteElems = $(".ui-emote");
             this.emoteElems.css("pointer-events", "auto");
             this.bigmapCollision = $("#big-map-collision");
             this.bigmapCollision.on("touchend", (e) => {
                 e.stopPropagation();
-                _this.bigmapPingPos = {
+                this.bigmapPingPos = {
                     x: e.originalEvent.changedTouches[0].pageX,
                     y: e.originalEvent.changedTouches[0].pageY
                 };
-                _this.emoteScreenPos = v2.create(
-                    _this.camera.screenWidth / 2,
-                    _this.camera.screenHeight / 2
+                this.emoteScreenPos = v2.create(
+                    this.camera.screenWidth / 2,
+                    this.camera.screenHeight / 2
                 );
-                _this.pingMouseTriggered = true;
+                this.pingMouseTriggered = true;
             });
 
             // Dragging Emote button
@@ -171,17 +172,17 @@ export class EmoteBarn {
             this.emoteButtonElem.css("pointer-events", "auto");
             this.emoteButtonElem.on("touchstart", (event) => {
                 event.stopPropagation();
-                _this.emoteScreenPos = v2.create(
-                    _this.camera.screenWidth / 2,
-                    _this.camera.screenHeight / 2
+                this.emoteScreenPos = v2.create(
+                    this.camera.screenWidth / 2,
+                    this.camera.screenHeight / 2
                 );
-                _this.emoteMouseTriggered = true;
+                this.emoteMouseTriggered = true;
             });
 
             // Listen for an emote wheel touch
             this.emoteElems.on("touchstart", (e) => {
                 e.stopPropagation();
-                _this.emoteTouchedPos = {
+                this.emoteTouchedPos = {
                     x: e.originalEvent.changedTouches[0].pageX,
                     y: e.originalEvent.changedTouches[0].pageY
                 };

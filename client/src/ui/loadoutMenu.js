@@ -166,18 +166,17 @@ export class LoadoutMenu {
     }
 
     init() {
-        const _this = this;
         if (!this.initialized) {
             for (
-                let t = 0;
-                t < this.categories.length;
-                t++
+                let i = 0;
+                i < this.categories.length;
+                i++
             ) {
                 const r = $("<div/>", {
                     class: "modal-customize-cat",
-                    "data-idx": t
+                    "data-idx": i
                 });
-                if (t == this.categories.length - 1) {
+                if (i == this.categories.length - 1) {
                     r.attr(
                         "id",
                         "modal-customize-cat-standalone"
@@ -187,7 +186,7 @@ export class LoadoutMenu {
                     $("<div/>", {
                         class: "modal-customize-cat-image",
                         css: {
-                            "background-image": `url(${this.categories[t].categoryImage})`
+                            "background-image": `url(${this.categories[i].categoryImage})`
                         }
                     })
                 );
@@ -215,13 +214,13 @@ export class LoadoutMenu {
             this.selectableCats.on("mouseup", (e) => {
                 const selector = $(e.currentTarget);
                 const newCategoryIdx = selector.data("idx");
-                if (_this.selectedCatIdx != newCategoryIdx) {
-                    _this.selectCat(newCategoryIdx);
+                if (this.selectedCatIdx != newCategoryIdx) {
+                    this.selectCat(newCategoryIdx);
                 }
             });
             this.itemSort = $("#modal-customize-sort");
             this.itemSort.on("change", (e) => {
-                _this.sortItems(e.target.value);
+                this.sortItems(e.target.value);
             });
             this.modalCustomizeItemName.on("click", () => {
                 const elements = document.getElementsByClassName(
@@ -236,10 +235,10 @@ export class LoadoutMenu {
                 }
             });
             $("#crosshair-size").on("input", () => {
-                _this.updateLoadoutFromDOM();
+                this.updateLoadoutFromDOM();
             });
             $("#crosshair-stroke").on("input", () => {
-                _this.updateLoadoutFromDOM();
+                this.updateLoadoutFromDOM();
             });
             this.container =
                 document.getElementById("color-picker");
@@ -252,26 +251,26 @@ export class LoadoutMenu {
 
             this.picker.on("change", (color) => {
                 $("#color-picker-hex").val(color);
-                if (_this.loadout?.crosshair) {
-                    _this.updateLoadoutFromDOM();
+                if (this.loadout?.crosshair) {
+                    this.updateLoadoutFromDOM();
                 }
             });
 
             this.colorCode =
                 document.getElementById("color-picker-hex");
             const updateColor = function() {
-                const value = _this.colorCode.value;
+                const value = this.colorCode.value;
                 if (value.length) {
                     // Only accept 6 digit hex or 7 digit with a hash
                     if (value.length == 6) {
-                        _this.picker.set(`#${value}`);
-                        _this.picker.fire("change", [value]);
+                        this.picker.set(`#${value}`);
+                        this.picker.fire("change", [value]);
                     } else if (
                         value.length == 7 &&
                         value[0] == "#"
                     ) {
-                        _this.picker.set(value);
-                        _this.picker.fire("change", [
+                        this.picker.set(value);
+                        this.picker.fire("change", [
                             value.slice(1)
                         ]);
                     } else {
@@ -549,90 +548,88 @@ export class LoadoutMenu {
     }
 
     setItemListeners(loadoutType) {
-        const _this = this;
-
         // listen for ui modifications
-        this.selectableSlots.on("mouseup", function() {
+        this.selectableSlots.on("mouseup", () => {
             if (
                 !$(this).hasClass(
                     "customize-list-item-locked"
                 )
             ) {
                 if (
-                    _this.itemSelected &&
+                    this.itemSelected &&
                     !$(this).hasClass("customize-list-item")
                 ) {
-                    _this.itemSelected = false;
+                    this.itemSelected = false;
                     return;
                 }
-                _this.selectItem($(this));
-                _this.updateLoadoutFromDOM();
+                this.selectItem($(this));
+                this.updateLoadoutFromDOM();
             }
         });
 
         if (loadoutType == "emote") {
-            this.setEmoteDraggable(this.selectableSlots, _this);
+            this.setEmoteDraggable(this.selectableSlots, this);
 
             // Only do this once, assuming the wheel is only used for emotes
             if (!this.emotesLoaded) {
                 this.setEmoteDraggable(
                     this.droppableSlots,
-                    _this
+                    this
                 );
                 this.droppableSlots.on(
                     "mouseup",
-                    function() {
+                    () => {
                         if (
                             !$(this).hasClass(
                                 "customize-list-item-locked"
                             )
                         ) {
                             if (
-                                _this.itemSelected &&
+                                this.itemSelected &&
                                 !$(this).hasClass(
                                     "customize-list-item"
                                 )
                             ) {
-                                _this.deselectItem();
+                                this.deselectItem();
                                 return;
                             }
-                            _this.selectItem($(this));
-                            _this.updateLoadoutFromDOM();
+                            this.selectItem($(this));
+                            this.updateLoadoutFromDOM();
                         }
                     }
                 );
                 this.droppableSlots.on(
                     "drop",
-                    function(e) {
+                    (e) => {
                         e.originalEvent.preventDefault();
                         const parent = $(this).parent();
-                        _this.updateSlot(
+                        this.updateSlot(
                             parent,
-                            _this.selectedItem.img,
-                            _this.selectedItem.type
+                            this.selectedItem.img,
+                            this.selectedItem.type
                         );
-                        _this.updateLoadoutFromDOM();
-                        _this.deselectItem();
+                        this.updateLoadoutFromDOM();
+                        this.deselectItem();
                     }
                 );
                 this.droppableSlots.on(
                     "mousedown",
-                    function(e) {
-                        if (_this.itemSelected) {
+                    (e) => {
+                        if (this.itemSelected) {
                             e.stopPropagation();
                             const parent = $(this).parent();
-                            _this.updateSlot(
+                            this.updateSlot(
                                 parent,
-                                _this.selectedItem.img,
-                                _this.selectedItem.type
+                                this.selectedItem.img,
+                                this.selectedItem.type
                             );
-                            _this.updateLoadoutFromDOM();
+                            this.updateLoadoutFromDOM();
                         }
                     }
                 );
                 this.droppableSlots.on(
                     "dragover",
-                    function(e) {
+                    (e) => {
                         e.originalEvent.preventDefault();
                         $(this)
                             .parent()
@@ -642,28 +639,28 @@ export class LoadoutMenu {
                 );
                 this.droppableSlots.on(
                     "dragleave",
-                    function(e) {
+                    (e) => {
                         e.originalEvent.preventDefault();
                         $(this)
                             .parent()
                             .find(".ui-emote-hl")
                             .css(
                                 "opacity",
-                                _this.highlightOpacityMin
+                                this.highlightOpacityMin
                             );
                     }
                 );
                 this.droppableSlots.on("dragend", (e) => {
                     e.originalEvent.preventDefault();
-                    _this.deselectItem();
+                    this.deselectItem();
                 });
 
                 // Trash auto emotes
                 $(".ui-emote-auto-trash").click(
-                    function() {
+                    () => {
                         const e = $(this).parent();
-                        _this.updateSlot(e, "", "");
-                        _this.updateLoadoutFromDOM();
+                        this.updateSlot(e, "", "");
+                        this.updateLoadoutFromDOM();
                     }
                 );
                 this.emotesLoaded = true;
@@ -728,7 +725,6 @@ export class LoadoutMenu {
     }
 
     selectItem(selector) {
-        const _this = this;
         const deselect =
             arguments.length <= 1 ||
             arguments[1] === undefined ||
@@ -871,7 +867,7 @@ export class LoadoutMenu {
 
         // Mark item as ackd
         const itemIdx = this.localAckItems.findIndex((x) => {
-            return x.type == _this.selectedItem.type;
+            return x.type == this.selectedItem.type;
         });
         if (itemIdx !== -1) {
             selector.find(".account-alert").removeClass(
@@ -936,7 +932,6 @@ export class LoadoutMenu {
     }
 
     selectCat(e) {
-        const _this = this;
         const r = this.selectedCatIdx;
         this.selectedCatIdx = e;
         this.setItemsAckd(this.selectedCatIdx);
@@ -1081,7 +1076,7 @@ export class LoadoutMenu {
 
             // Notification pulse
             if (
-                _this.localAckItems.findIndex((x) => {
+                this.localAckItems.findIndex((x) => {
                     return x.type == item.type;
                 }) !== -1
             ) {
@@ -1110,17 +1105,17 @@ export class LoadoutMenu {
 
             // Add the itemInfo to the currently selected items array
             itemInfo.outerDiv = outerDiv;
-            _this.selectedCatItems.push(itemInfo);
+            this.selectedCatItems.push(itemInfo);
 
             if (!loadoutItemDiv) {
                 if (
                     category.loadoutType == "crosshair" &&
-                        itemInfo.type == _this.loadout.crosshair.type
+                        itemInfo.type == this.loadout.crosshair.type
                 ) {
                     loadoutItemDiv = itemInfo.outerDiv;
                 } else if (
                     category.loadoutType != "emote" &&
-                        itemInfo.type == _this.loadout[category.loadoutType]
+                        itemInfo.type == this.loadout[category.loadoutType]
                 ) {
                     loadoutItemDiv = itemInfo.outerDiv;
                 }
@@ -1204,11 +1199,10 @@ export class LoadoutMenu {
     }
 
     setCategoryAlerts() {
-        const _this = this;
         // Display alerts on each category that has new items
         for (let i = 0; i < this.categories.length; i++) {
-            const category = _this.categories[i];
-            const unackdItems = _this.localAckItems.filter((x) => {
+            const category = this.categories[i];
+            const unackdItems = this.localAckItems.filter((x) => {
                 const gameTypeDef = GameObjectDefs[x.type];
                 return gameTypeDef && gameTypeDef.type == category.gameType;
             });

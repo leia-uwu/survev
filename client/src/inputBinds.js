@@ -283,13 +283,11 @@ export class InputBindUi {
     }
 
     refresh() {
-        const _this = this;
         const defKeys = Object.keys(BindDefs);
         const binds = this.inputBinds.binds;
         const container = $(".js-keybind-list");
         container.empty();
         for (let i = 0; i < defKeys.length; i++) {
-            (function(i) {
                 const key = defKeys[i];
                 const bindDef = BindDefs[key];
                 const bind = binds[key];
@@ -304,7 +302,7 @@ export class InputBindUi {
                 btn.on("click", (event) => {
                     const targetElem = $(event.target);
                     targetElem.addClass("btn-keybind-desc-selected");
-                    _this.input.captureNextInput((event, inputValue) => {
+                    this.input.captureNextInput((event, inputValue) => {
                         event.preventDefault();
                         event.stopPropagation();
                         const disallowKeys = [
@@ -340,12 +338,12 @@ export class InputBindUi {
                             if (inputValue.equals(inputKey(Key.Backspace))) {
                                 bindValue = null;
                             }
-                            _this.inputBinds.setBind(
+                            this.inputBinds.setBind(
                                 parseInt(key),
                                 bindValue
                             );
-                            _this.inputBinds.saveBinds();
-                            _this.refresh();
+                            this.inputBinds.saveBinds();
+                            this.refresh();
                         }
                         return true;
                     });
@@ -357,7 +355,6 @@ export class InputBindUi {
                         .append(btn)
                         .append(val)
                 );
-            })(i);
         }
         $("#keybind-link").html(this.inputBinds.toBase64());
     }

@@ -70,7 +70,6 @@ export class Localization {
     }
 
     setLocale(locale) {
-        const _this = this;
         const newLocale = this.acceptedLocales.includes(locale) ? locale : "en";
         if (newLocale != this.locale) {
             if (this.translations[locale] === undefined) {
@@ -81,8 +80,8 @@ export class Localization {
                         );
                         return;
                     }
-                    _this.translations[locale] = data;
-                    _this.setLocale(locale);
+                    this.translations[locale] = data;
+                    this.setLocale(locale);
                 });
             } else {
                 this.locale = newLocale;
@@ -104,7 +103,6 @@ export class Localization {
     }
 
     localizeIndex() {
-        const _this = this;
         const localizedElements = $("*[data-l10n]");
         localizedElements.each((idx, el) => {
             const el$ = $(el);
@@ -112,7 +110,7 @@ export class Localization {
             if (el$.hasClass("help-control") && device.touch) {
                 datal10n += "-touch";
             }
-            const localizedText = _this.translate(datal10n);
+            const localizedText = this.translate(datal10n);
             if (localizedText) {
                 if (el$.attr("label")) {
                     el$.attr("label", localizedText);

@@ -35,7 +35,6 @@ export class LoadoutDisplay {
     }
 
     o() {
-        const This = this;
         this.canvasMode =
             this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.camera = new Camera();
@@ -163,7 +162,7 @@ export class LoadoutDisplay {
 
         this.hide();
         this.account.addEventListener("loadout", (e) => {
-            This.setLoadout(e, true);
+            this.setLoadout(e, true);
         });
 
         this.setLoadout(this.account.loadout, true);

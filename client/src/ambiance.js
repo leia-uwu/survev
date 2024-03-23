@@ -2,13 +2,12 @@ import { math } from "../../shared/utils/math";
 
 export class Ambiance {
     constructor() {
-        const _this = this;
         this.introMusic = true;
         this.soundUpdateThrottle = 0;
         this.tracks = [];
         this.trackToIdx = {};
-        const addTrack = function(name, sound, channel, immediateMode) {
-            _this.tracks.push({
+        const addTrack = (name, sound, channel, immediateMode) => {
+            this.tracks.push({
                 name,
                 sound,
                 channel,
@@ -19,7 +18,7 @@ export class Ambiance {
                 weight: 0,
                 volume: 0
             });
-            _this.trackToIdx[name] = _this.tracks.length - 1;
+            this.trackToIdx[name] = this.tracks.length - 1;
         };
         // Added in order of weight from least to greatest
         addTrack("music", "menu_music", "music", false);
