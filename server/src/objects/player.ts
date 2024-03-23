@@ -1381,8 +1381,12 @@ export class Player extends BaseGameObject {
 
         // if melee is selected increase speed
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-        if (weaponDef.speed.equip && this.weaponManager.meleeCooldown < this.game.now) {
+        if (weaponDef.speed.equip && this.weapons[this.curWeapIdx].cooldown < this.game.now) {
             this.speed += weaponDef.speed.equip;
+        }
+
+        if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
+            this.speed += weaponDef.speed.attack + weaponDef.speed.equip + -3;
         }
 
         // if player is on water decrease speed
@@ -1403,9 +1407,6 @@ export class Player extends BaseGameObject {
             this.speed -= 8;
         }
 
-        if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
-            this.speed -= weaponDef.speed.attack || 6;
-        }
         this.speed = math.max(this.speed, 1);
     }
 

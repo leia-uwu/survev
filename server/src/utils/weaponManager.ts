@@ -67,8 +67,6 @@ export class WeaponManager {
         return this.weapons[this.curWeapIdx].type;
     }
 
-    meleeCooldown = 0;
-
     timeouts: NodeJS.Timeout[] = [];
 
     clearTimeouts(): void {
@@ -329,13 +327,13 @@ export class WeaponManager {
     }
 
     meleeAttack(skipCooldownCheck = false): void {
-        if (this.player.game.now < this.meleeCooldown && !skipCooldownCheck) return;
+        if (this.player.game.now < this.weapons[this.curWeapIdx].cooldown && !skipCooldownCheck) return;
         if (this.player.animType === GameConfig.Anim.Melee) return;
 
         const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
 
         this.player.animType = GameConfig.Anim.Melee;
-        this.meleeCooldown = this.player.game.now + (meleeDef.attack.cooldownTime * 1000);
+        this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (meleeDef.attack.cooldownTime * 1000);
 
         this.timeouts.push(setTimeout(() => {
             this.player.animType = GameConfig.Anim.None;
