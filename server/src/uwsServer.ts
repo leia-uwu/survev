@@ -2,7 +2,6 @@ import { Config } from "./config";
 
 import {
     App,
-    DEDICATED_COMPRESSOR_256KB,
     type HttpResponse,
     SSLApp,
     type WebSocket,
@@ -85,7 +84,7 @@ class UWSSocket extends ServerSocket {
     }
 
     send(message: ArrayBuffer): void {
-        this._socket.send(message, true, true);
+        this._socket.send(message, true, false);
     }
 
     close(): void {
@@ -140,7 +139,6 @@ class UWSServer extends AbstractServer {
         const This = this;
 
         app.ws("/play", {
-            compression: DEDICATED_COMPRESSOR_256KB,
             idleTimeout: 30,
             /**
             * Upgrade the connection to WebSocket.
