@@ -560,7 +560,6 @@ export class Player {
     }
 
     updatePerks(isActivePlayer, isSpectating, ui2Manager) {
-        const _this = this;
         for (let i = 0; i < this.perks.length; i++) {
             this.perks[i].isNew = false;
         }
@@ -568,9 +567,9 @@ export class Player {
             if (isActivePlayer && !isSpectating) {
                 // Create Ui notifications for newly added perks
                 for (let i = 0; i < this.netData.Me.length; i++) {
-                    const perk = _this.netData.Me[i];
+                    const perk = this.netData.Me[i];
                     if (
-                        _this.perks.findIndex((x) => {
+                        this.perks.findIndex((x) => {
                             return x.type == perk.type;
                         }) === -1
                     ) {
@@ -580,9 +579,9 @@ export class Player {
 
                 // Remove active Ui messages for perks we no longer have
                 for (let i = 0; i < this.perks.length; i++) {
-                    const perk = _this.perks[i];
+                    const perk = this.perks[i];
                     if (
-                        _this.netData.Me.findIndex((x) => {
+                        this.netData.Me.findIndex((x) => {
                             return x.type == perk.type;
                         }) === -1
                     ) {
@@ -595,15 +594,15 @@ export class Player {
             // this is used by the Ui to animate the perk icon.
             const perks = [];
             for (let i = 0; i < this.netData.Me.length; i++) {
-                const perk = _this.netData.Me[i];
+                const perk = this.netData.Me[i];
                 const isNew =
-                        _this.perks.findIndex((x) => {
+                        this.perks.findIndex((x) => {
                             return x.type == perk.type;
                         }) === -1;
                 perks.push({
                     type: perk.type,
                     droppable: perk.droppable,
-                    isNew: isNew && !_this.isNew
+                    isNew: isNew && !this.isNew
                 });
             }
 

@@ -71,7 +71,6 @@ export class Game {
     }
 
     tryJoinGame(url, matchPriv, loadoutPriv, questPriv, onConnectFail) {
-        const _this = this;
         if (
             !this.connecting &&
             !this.connected &&
@@ -90,13 +89,13 @@ export class Game {
             try {
                 this.ws = new WebSocket(url);
                 this.ws.binaryType = "arraybuffer";
-                this.ws.onerror = function(_err) {
-                    _this.ws?.close();
+                this.ws.onerror = (_err) => {
+                    this.ws?.close();
                 };
-                this.ws.onopen = function() {
-                    _this.connecting = false;
-                    _this.connected = true;
-                    const name = _this.config.get("playerName");
+                this.ws.onopen = () => {
+                    this.connecting = false;
+                    this.connected = true;
+                    const name = this.config.get("playerName");
                     const joinMessage = new net.JoinMsg();
                     joinMessage.protocol = GameConfig.protocolVersion;
                     joinMessage.matchPriv = matchPriv;
@@ -106,32 +105,32 @@ export class Game {
                     joinMessage.useTouch = device.touch;
                     joinMessage.isMobile = device.mobile || window.mobile;
                     joinMessage.bot = false;
-                    joinMessage.emotes = _this.config.get("loadout").emotes;
+                    joinMessage.emotes = this.config.get("loadout").emotes;
 
-                    _this.sendMessage(net.MsgType.Join, joinMessage, 8192);
+                    this.sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };
-                this.ws.onmessage = function(e) {
+                this.ws.onmessage = (e) => {
                     const msgStream = new net.MsgStream(e.data);
                     while (true) {
                         const type = msgStream.deserializeMsgType();
                         if (type == net.MsgType.None) {
                             break;
                         }
-                        _this.onMsg(type, msgStream.getStream());
+                        this.onMsg(type, msgStream.getStream());
                     }
                 };
-                this.ws.onclose = function() {
-                    const displayingStats = _this.uiManager?.displayingStats;
-                    const connecting = _this.connecting;
-                    const connected = _this.connected;
-                    _this.connecting = false;
-                    _this.connected = false;
+                this.ws.onclose = () => {
+                    const displayingStats = this.uiManager?.displayingStats;
+                    const connecting = this.connecting;
+                    const connected = this.connected;
+                    this.connecting = false;
+                    this.connected = false;
                     if (connecting) {
                         onConnectFail();
-                    } else if (connected && !_this.gameOver && !displayingStats) {
+                    } else if (connected && !this.gameOver && !displayingStats) {
                         const errMsg =
-                            _this.disconnectMsg || "index-host-closed";
-                        _this.onQuit(errMsg);
+                            this.disconnectMsg || "index-host-closed";
+                        this.onQuit(errMsg);
                     }
                 };
             } catch (err) {
