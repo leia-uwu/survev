@@ -13,11 +13,11 @@ import { DeadBody } from "./deadBody";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type AmmoDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
-import net, { type DropItemMsg, type InputMsg } from "../../../shared/net";
 import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
+import { AliveCountsMsg, type DropItemMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, UpdateMsg } from "../../../shared/net";
 
 export class Emote {
     playerId: number;
@@ -342,7 +342,7 @@ export class Player extends BaseGameObject {
 
     visibleObjects = new Set<GameObject>();
 
-    lastInputMsg = new net.InputMsg();
+    lastInputMsg = new InputMsg();
 
     update(): void {
         if (this.dead) return;
@@ -393,20 +393,14 @@ export class Player extends BaseGameObject {
             }
             case GameConfig.Action.UseItem: {
                 switch (this.scheduledAction.item) {
-                case "bandage": {
-                    this.useBandage();
-                    break;
-                }
+                case "bandage":
                 case "healthkit": {
-                    this.useHealthkit();
+                    this.useHealingItem(this.scheduledAction.item);
                     break;
                 }
-                case "soda": {
-                    this.useSoda();
-                    break;
-                }
+                case "soda":
                 case "painkiller": {
-                    this.usePainkiller();
+                    this.useBoostItem(this.scheduledAction.item);
                     break;
                 }
                 }
@@ -577,14 +571,14 @@ export class Player extends BaseGameObject {
     secondsSinceLastUpdate = 0;
 
     sendMsgs(): void {
-        const msgStream = new net.MsgStream(new ArrayBuffer(65536));
+        const msgStream = new MsgStream(new ArrayBuffer(65536));
 
         if (this._firstUpdate) {
-            const joinedMsg = new net.JoinedMsg();
+            const joinedMsg = new JoinedMsg();
             joinedMsg.teamMode = 1;
             joinedMsg.playerId = this.id;
             joinedMsg.emotes = this.loadout.emotes;
-            this.sendMsg(net.MsgType.Joined, joinedMsg);
+            this.sendMsg(MsgType.Joined, joinedMsg);
 
             const mapStream = this.game.map.mapStream.stream;
 
@@ -592,12 +586,12 @@ export class Player extends BaseGameObject {
         }
 
         if (this.game.aliveCountDirty) {
-            const aliveMsg = new net.AliveCountsMsg();
+            const aliveMsg = new AliveCountsMsg();
             aliveMsg.teamAliveCounts.push(this.game.aliveCount);
-            msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
+            msgStream.serializeMsg(MsgType.AliveCounts, aliveMsg);
         }
 
-        const updateMsg = new net.UpdateMsg();
+        const updateMsg = new UpdateMsg();
         // updateMsg.serializationCache = this.game.serializationCache;
 
         const player = this.spectating ?? this;
@@ -686,7 +680,7 @@ export class Player extends BaseGameObject {
             updateMsg.explosions = updateMsg.explosions.slice(0, 255);
         }
 
-        msgStream.serializeMsg(net.MsgType.Update, updateMsg);
+        msgStream.serializeMsg(MsgType.Update, updateMsg);
 
         for (const msg of this.msgsToSend) {
             msgStream.serializeMsg(msg.type, msg.msg);
@@ -746,7 +740,7 @@ export class Player extends BaseGameObject {
         this.game.aliveCountDirty = true;
         this.game.livingPlayers.delete(this);
 
-        const killMsg = new net.KillMsg();
+        const killMsg = new KillMsg();
         killMsg.damageType = damageType;
         killMsg.itemSourceType = GameObjectDefs[sourceType] ? sourceType : "";
         killMsg.mapSourceType = MapObjectDefs[sourceType] ? sourceType : "";
@@ -760,18 +754,15 @@ export class Player extends BaseGameObject {
             killMsg.killerKills = source.kills;
         }
 
-        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: killMsg });
+        this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
 
-        const gameOverMsg = new net.GameOverMsg();
+        const gameOverMsg = new GameOverMsg();
 
         gameOverMsg.teamRank = this.game.aliveCount;
-        gameOverMsg.playerStats = [{
-            ...this,
-            playerId: this.id
-        }];
+        gameOverMsg.playerStats.push(this);
         gameOverMsg.teamId = this.teamId;
         gameOverMsg.winningTeamId = -1;
-        this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });
+        this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
 
         const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
         this.game.grid.addObject(deadBody);
@@ -819,65 +810,43 @@ export class Player extends BaseGameObject {
         }
     }
 
-    useBandage(): void {
-        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
+    useHealingItem(item: string): void {
+        const itemDef = GameObjectDefs[item];
+        if (itemDef.type !== "heal") {
+            throw new Error(`Invalid heal item ${item}`);
+        }
+        if (this.health == itemDef.maxHeal || this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("bandage", GameConfig.Action.UseItem);
+            this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
 
         this.cancelAction();
-        this.doAction("bandage", GameConfig.Action.UseItem, 3);
+        this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
-    useHealthkit(): void {
-        if (this.health == (GameObjectDefs.bandage as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
-            return;
+    useBoostItem(item: string): void {
+        const itemDef = GameObjectDefs[item];
+        if (itemDef.type !== "boost") {
+            throw new Error(`Invalid boost item ${item}`);
         }
 
-        // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("healthkit", GameConfig.Action.UseItem);
-            return;
-        }
-
-        this.cancelAction();
-        this.doAction("healthkit", GameConfig.Action.UseItem, 6);
-    }
-
-    useSoda(): void {
         if (this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
-            this.scheduleAction("soda", GameConfig.Action.UseItem);
+            this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
 
         this.cancelAction();
-        this.doAction("soda", GameConfig.Action.UseItem, 3);
-    }
-
-    usePainkiller(): void {
-        if (this.actionType == GameConfig.Action.UseItem) {
-            return;
-        }
-
-        // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
-            this.cancelAction();
-            this.scheduleAction("painkiller", GameConfig.Action.UseItem);
-            return;
-        }
-
-        this.cancelAction();
-        this.doAction("painkiller", GameConfig.Action.UseItem, 5);
+        this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
     /**
@@ -922,21 +891,18 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
                 this.curWeapIdx = 2;
-                this.cancelAction();
                 break;
             case GameConfig.Input.EquipPrimary:
                 this.curWeapIdx = 0;
                 break;
             case GameConfig.Input.EquipSecondary:
                 this.curWeapIdx = 1;
-                this.cancelAction();
                 break;
             case GameConfig.Input.EquipThrowable:
                 if (this.curWeapIdx === 3) {
                     this.weaponManager.showNextThrowable();
                 } else {
                     this.curWeapIdx = 3;
-                    this.cancelAction();
                 }
                 break;
             case GameConfig.Input.EquipLastWeap:
@@ -971,16 +937,16 @@ export class Player extends BaseGameObject {
                 this.weaponManager.reload();
                 break;
             case GameConfig.Input.UseBandage:
-                this.useBandage();
+                this.useHealingItem("bandage");
                 break;
             case GameConfig.Input.UseHealthKit:
-                this.useHealthkit();
+                this.useHealingItem("healthkit");
                 break;
             case GameConfig.Input.UsePainkiller:
-                this.useSoda();
+                this.useBoostItem("soda");
                 break;
             case GameConfig.Input.UseSoda:
-                this.usePainkiller();
+                this.useBoostItem("painkiller");
                 break;
             case GameConfig.Input.Cancel:
                 this.cancelAction();
@@ -1007,22 +973,14 @@ export class Player extends BaseGameObject {
         }
 
         switch (msg.useItem) {
-        case "bandage": {
-            this.useBandage();
+        case "bandage":
+        case "healthkit":
+            this.useHealingItem(msg.useItem);
             break;
-        }
-        case "healthkit": {
-            this.useHealthkit();
+        case "soda":
+        case "painkiller":
+            this.useBoostItem(msg.useItem);
             break;
-        }
-        case "soda": {
-            this.useSoda();
-            break;
-        }
-        case "painkiller": {
-            this.usePainkiller();
-            break;
-        }
         case "1xscope": case "2xscope": case "4xscope": case "8xscope": case "15xscope":
             this.scope = msg.useItem;
             break;
@@ -1438,16 +1396,21 @@ export class Player extends BaseGameObject {
 
         // decrease speed if popping adren or heals
         if (this.actionType == GameConfig.Action.UseItem) {
-            this.speed *= 0.5;
+            this.speed -= 6;
         }
 
-        if (this.shotSlowdownTimer != -1) {
-            this.speed *= 0.5;
+        if (this.downed) {
+            this.speed -= 8;
         }
+
+        if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
+            this.speed -= weaponDef.speed.attack || 6;
+        }
+        this.speed = math.max(this.speed, 1);
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
-        const stream = new net.MsgStream(new ArrayBuffer(bytes));
+        const stream = new MsgStream(new ArrayBuffer(bytes));
         stream.serializeMsg(type, msg);
         this.sendData(stream.getBuffer());
     }

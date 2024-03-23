@@ -11,7 +11,7 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Building } from "./building";
 import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
 import { type Player } from "./player";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 import { Explosion } from "./explosion";
 
 export class Obstacle extends BaseGameObject {
@@ -195,7 +195,7 @@ export class Obstacle extends BaseGameObject {
 
     checkLayer(): void {
         // @hack this door shouldn't switch layers
-        if (this.type === "saloon_door_secret") return;
+        if (this.type === "saloon_door_secret" || this.type === "house_door_01") return;
         let newLayer = this.originalLayer;
         const def = MapObjectDefs[this.type] as ObstacleDef;
         const coll = collider.createCircle(this.pos, def.door!.interactionRad + 1);

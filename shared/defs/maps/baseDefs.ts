@@ -180,7 +180,10 @@ export const Main: MapDef = {
         ],
         tier_chrys_02: [{ name: "katana", count: 1, weight: 1 }],
         tier_chrys_03: [
-            { name: "outfitImperial", count: 1, weight: 1 }
+            { name: "2xscope", count: 1, weight: 1 },
+            { name: "4xscope", count: 1, weight: 0.3 },
+            { name: "8xscope", count: 1, weight: 0.05 },
+            { name: "15xscope", count: 1, weight: 0.001 }
         ],
         tier_chrys_chest: [
             { name: "", count: 1, weight: 1 },

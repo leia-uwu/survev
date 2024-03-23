@@ -14,6 +14,8 @@ const mapDef = {
     assets: {
         audio: [
             { name: "vault_change_02", channel: "sfx" },
+            { name: "log_01", channel: "sfx" },
+            { name: "log_02", channel: "sfx" },
             { name: "footstep_08", channel: "sfx" },
             { name: "footstep_09", channel: "sfx" }
         ],

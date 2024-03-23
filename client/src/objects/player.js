@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { math } from "../../../shared/utils/math";
@@ -421,7 +421,7 @@ export class Player {
             }
 
             this.netData.Me = data.perks;
-            if (data.ye != this.anim.seq) {
+            if (data.animSeq != this.anim.seq) {
                 this.playAnim(data.animType, data.animSeq);
             }
             this.action.type = data.actionType;
@@ -1867,14 +1867,14 @@ export class Player {
         }
     }
 
-    selectAnim(e) {
+    selectAnim(type) {
         const t = function(e, t) {
             return {
                 type: e,
                 mirror: !!t && Math.random() < 0.5
             };
         };
-        switch (e) {
+        switch (type) {
         case Anim.None:
             return t("none", false);
         case Anim.Cook:
@@ -1906,10 +1906,10 @@ export class Player {
         return this.anim.type;
     }
 
-    playAnim(e, t) {
-        this.anim.type = e;
-        this.anim.data = this.selectAnim(e);
-        this.anim.seq = t;
+    playAnim(type, seq) {
+        this.anim.type = type;
+        this.anim.data = this.selectAnim(type);
+        this.anim.seq = seq;
         this.anim.ticker = 0;
         for (let r = 0; r < this.bones.length; r++) {
             const a = this.anim.bones[r];

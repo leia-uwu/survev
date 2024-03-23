@@ -16,7 +16,7 @@ import { type River } from "../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import net from "../../shared/net";
+import { MapMsg, MsgStream, MsgType } from "../../shared/net";
 
 export class GameMap {
     game: Game;
@@ -24,8 +24,8 @@ export class GameMap {
     width: number;
     height: number;
 
-    msg = new net.MapMsg();
-    mapStream = new net.MsgStream(new ArrayBuffer(1 << 14));
+    msg = new MapMsg();
+    mapStream = new MsgStream(new ArrayBuffer(1 << 14));
     seed = util.randomInt(0, 2 ** 31);
 
     bounds: AABB;
@@ -83,7 +83,7 @@ export class GameMap {
 
         this.generateObjects();
 
-        this.mapStream.serializeMsg(net.MsgType.Map, this.msg);
+        this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
 
     generateTerrain(): void {

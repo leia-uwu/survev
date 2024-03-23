@@ -1,5 +1,5 @@
 import $ from "jquery";
-import net from "../../shared/net";
+import * as net from "../../shared/net";
 import { device } from "./device";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 

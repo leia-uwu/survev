@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
-import net from "../../../shared/net";
+import * as net from "../../../shared/net";
 import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";

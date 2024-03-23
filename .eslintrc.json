@@ -6,7 +6,7 @@
     "extends": [
         "plugin:@typescript-eslint/recommended",
         "eslint:recommended",
-        "standard-with-typescript"
+        "love"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -45,6 +45,8 @@
         "@typescript-eslint/no-floating-promises": 0,
         "@typescript-eslint/no-dynamic-delete": 0,
         "@typescript-eslint/no-extraneous-class": 0,
+        "@typescript-eslint/no-unsafe-argument": 0,
+        "@typescript-eslint/unbound-method": 0,
         "n/no-deprecated-api": 0
     }
 }

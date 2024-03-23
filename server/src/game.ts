@@ -7,12 +7,13 @@ import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
 import { GameConfig } from "../../shared/gameConfig";
-import net from "../../shared/net";
+import * as net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
+import NanoTimer from "nanotimer";
 
 export class Game {
     stopped = false;
@@ -51,7 +52,7 @@ export class Game {
 
     grid: Grid;
 
-    tickInterval: NodeJS.Timeout;
+    timer: NanoTimer;
 
     /**
      * for stuff based on ms
@@ -90,7 +91,11 @@ export class Game {
 
         this.realDt = 1000 / config.tps;
         this.dt = this.realDt / 1000;
-        this.tickInterval = setInterval(() => this.tick(), this.realDt);
+
+        this.timer = new NanoTimer();
+
+        this.timer.setInterval(() => { this.tick(); }, "", `${this.realDt}m`);
+
         this.allowJoin = true;
 
         this.logger.log(`Created in ${Date.now() - start} ms`);
@@ -255,7 +260,7 @@ export class Game {
     end(): void {
         this.stopped = true;
         this.allowJoin = false;
-        clearInterval(this.tickInterval);
+        this.timer.clearInterval();
         for (const player of this.players) {
             player.socket.close();
         }
