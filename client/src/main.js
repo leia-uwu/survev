@@ -10,7 +10,6 @@ import { Ambiance } from "./ambiance";
 import { AudioManager } from "./audioManager";
 import { device } from "./device";
 import { ConfigManager } from "./config";
-import "./ui/webview";
 import { Game } from "./game";
 import Input from "./input";
 import { InputBinds, InputBindUi } from "./inputBinds";
@@ -105,59 +104,17 @@ class Application {
         const onLoadComplete = () => {
             this.config.load(() => {
                 this.configLoaded = true;
-                this.m_tryLoad();
+                this.tryLoad();
             });
         };
-        if (device.webview && device.version > "1.0.0") {
-            this.loadWebviewDeps(onLoadComplete);
-        } else {
-            this.loadBrowserDeps(onLoadComplete);
-        }
+        this.loadBrowserDeps(onLoadComplete);
     }
 
     loadBrowserDeps(onLoadCompleteCb) {
         onLoadCompleteCb();
     }
 
-    loadWebviewDeps(e) {
-        const t = this;
-
-        // 'deviceready' is fired when cordova.js finishes loading
-        document.addEventListener(
-            "deviceready",
-            () => {
-                document.addEventListener("pause", () => {
-                    t.onPause();
-                });
-                document.addEventListener("resume", () => {
-                    t.onResume();
-                });
-                e();
-            },
-            false
-        );
-
-        // Load cordova.js
-        (function(e, t, r) {
-            let a;
-            const i =
-                device.version >= "1.0.8"
-                    ? `cordova/${device.version}`
-                    : "cordova";
-            const o = `${i}/${device.os}/cordova.js`;
-            const s = e.getElementsByTagName(t)[0];
-            if (!e.getElementById(r)) {
-                a = e.createElement(t);
-                a.id = r;
-                a.onload = function() { };
-                a.src = o;
-                s.parentNode.insertBefore(a, s);
-            }
-        })(document, "script", "cordova-js");
-    }
-
-    m_tryLoad() {
-        const This = this;
+    tryLoad() {
         if (
             this.domContentLoaded &&
             this.configLoaded &&
@@ -165,9 +122,7 @@ class Application {
         ) {
             this.initialized = true;
             this.config.teamAutoFill = true;
-            if (device.webview) {
-                Menu.applyWebviewStyling(device.tablet);
-            } else if (device.mobile) {
+            if (device.mobile) {
                 Menu.applyMobileBrowserStyling(device.tablet);
             }
             const t =
@@ -183,25 +138,25 @@ class Application {
 
             this.nameInput.maxLength = net.Constants.PlayerNameMaxLen;
             this.playMode0Btn.on("click", () => {
-                This.tryQuickStartGame(0);
+                this.tryQuickStartGame(0);
             });
             this.playMode1Btn.on("click", () => {
-                This.tryQuickStartGame(1);
+                this.tryQuickStartGame(1);
             });
             this.playMode2Btn.on("click", () => {
-                This.tryQuickStartGame(2);
+                this.tryQuickStartGame(2);
             });
             this.serverSelect.change(() => {
-                const t = This.serverSelect.find(":selected").val();
-                This.config.set("region", t);
+                const t = this.serverSelect.find(":selected").val();
+                this.config.set("region", t);
             });
             this.nameInput.on("blur", (t) => {
-                This.setConfigFromDOM();
+                this.setConfigFromDOM();
             });
             this.muteBtns.on("click", (t) => {
-                This.config.set(
+                this.config.set(
                     "muteAudio",
-                    !This.config.get("muteAudio")
+                    !this.config.get("muteAudio")
                 );
             });
             this.muteBtns.on("mousedown", (e) => {
@@ -218,29 +173,29 @@ class Application {
             });
             this.masterSliders.on("input", (t) => {
                 const r = $(t.target).val() / 100;
-                This.audioManager.setMasterVolume(r);
-                This.config.set("masterVolume", r);
+                this.audioManager.setMasterVolume(r);
+                this.config.set("masterVolume", r);
             });
             this.soundSliders.on("input", (t) => {
                 const r = $(t.target).val() / 100;
-                This.audioManager.setSoundVolume(r);
-                This.config.set("soundVolume", r);
+                this.audioManager.setSoundVolume(r);
+                this.config.set("soundVolume", r);
             });
             this.musicSliders.on("input", (t) => {
                 const r = $(t.target).val() / 100;
-                This.audioManager.setMusicVolume(r);
-                This.config.set("musicVolume", r);
+                this.audioManager.setMusicVolume(r);
+                this.config.set("musicVolume", r);
             });
             $(".modal-settings-item")
                 .children("input")
                 .each((t, r) => {
                     const a = $(r);
-                    a.prop("checked", This.config.get(a.prop("id")));
+                    a.prop("checked", this.config.get(a.prop("id")));
                 });
             $(".modal-settings-item > input:checkbox").change(
                 (t) => {
                     const r = $(t.target);
-                    This.config.set(r.prop("id"), r.is(":checked"));
+                    this.config.set(r.prop("id"), r.is(":checked"));
                 }
             );
             $(".btn-fullscreen-toggle").on("click", () => {
@@ -249,11 +204,11 @@ class Application {
             this.languageSelect.on("change", (t) => {
                 const r = t.target.value;
                 if (r) {
-                    This.config.set("language", r);
+                    this.config.set("language", r);
                 }
             });
             $("#btn-create-team").on("click", () => {
-                This.tryJoinTeam(true);
+                this.tryJoinTeam(true);
             });
             $("#btn-team-mobile-link-join").on("click", () => {
                 let t = $("#team-link-input").val().trim();
@@ -263,7 +218,7 @@ class Application {
                 }
                 if (t.length > 0) {
                     $("#team-mobile-link").css("display", "none");
-                    This.tryJoinTeam(false, t);
+                    this.tryJoinTeam(false, t);
                 } else {
                     $("#team-mobile-link-desc").css(
                         "display",
@@ -278,24 +233,24 @@ class Application {
                 if (window.history) {
                     window.history.replaceState("", "", "/");
                 }
-                This.game?.free();
-                This.teamMenu.leave();
+                this.game?.free();
+                this.teamMenu.leave();
             });
             const r = $("#news-current").data("date");
             const a = new Date(r).getTime();
             $(".right-column-toggle").on("click", () => {
-                if (This.newsDisplayed) {
+                if (this.newsDisplayed) {
                     $("#news-wrapper").fadeOut(250);
                     $("#pass-wrapper").fadeIn(250);
                 } else {
-                    This.config.set("lastNewsTimestamp", a);
+                    this.config.set("lastNewsTimestamp", a);
                     $(".news-toggle")
                         .find(".account-alert")
                         .css("display", "none");
                     $("#news-wrapper").fadeIn(250);
                     $("#pass-wrapper").fadeOut(250);
                 }
-                This.newsDisplayed = !This.newsDisplayed;
+                this.newsDisplayed = !this.newsDisplayed;
             });
             const i = this.config.get("lastNewsTimestamp");
             if (a > i) {
@@ -351,27 +306,27 @@ class Application {
                 this.input,
                 this.inputBinds
             );
-            const onJoin = function() {
-                This.loadoutDisplay.n();
-                This.game.init();
-                This.onResize();
-                This.findGameAttempts = 0;
-                This.ambience.onGameStart();
+            const onJoin = () => {
+                this.loadoutDisplay.n();
+                this.game.init();
+                this.onResize();
+                this.findGameAttempts = 0;
+                this.ambience.onGameStart();
             };
-            const onQuit = function(t) {
-                if (This.game.updatePass) {
-                    This.pass.scheduleUpdatePass(
-                        This.game.updatePassDelay
+            const onQuit = (t) => {
+                if (this.game.updatePass) {
+                    this.pass.scheduleUpdatePass(
+                        this.game.updatePassDelay
                     );
                 }
-                This.game.free();
-                This.errorMessage = This.localization.translate(t || "");
-                This.teamMenu.onGameComplete();
-                This.ambience.onGameComplete(This.audioManager);
-                This.setAppActive(true);
-                This.setPlayLockout(false);
+                this.game.free();
+                this.errorMessage = this.localization.translate(t || "");
+                this.teamMenu.onGameComplete();
+                this.ambience.onGameComplete(this.audioManager);
+                this.setAppActive(true);
+                this.setPlayLockout(false);
                 if (t == "index-invalid-protocol") {
-                    This.showInvalidProtocolModal();
+                    this.showInvalidProtocolModal();
                 }
             };
             this.game = new Game(
@@ -422,41 +377,6 @@ class Application {
             this.loadoutDisplay.resize();
         }
         this.refreshUi();
-    }
-
-    onPause() {
-        if (device.webview) {
-            this.pauseTime = Date.now();
-            this.audioManager.setMute(true);
-            if (device.os == "ios") {
-                this.pixi?.ticker.remove(
-                    this.pixi.render,
-                    this.pixi
-                );
-            }
-        }
-    }
-
-    onResume() {
-        if (device.webview) {
-            if (
-                this.game?.playing &&
-                Date.now() - this.pauseTime > 30000
-            ) {
-                window.location.reload(true);
-            } else {
-                this.audioManager.setMute(
-                    this.config.get("muteAudio")
-                );
-            }
-            if (device.os == "ios") {
-                this.pixi?.ticker.add(
-                    this.pixi.render,
-                    this.pixi,
-                    PIXI.UPDATE_PRIORITY.LOW
-                );
-            }
-        }
     }
 
     startPingTest() {
@@ -776,11 +696,9 @@ class Application {
     }
 
     joinGame(matchData) {
-        const _this = this;
-
         if (!this.game) {
             setTimeout(() => {
-                _this.joinGame(matchData);
+                this.joinGame(matchData);
             }, 250);
             return;
         }
@@ -791,24 +709,22 @@ class Application {
                 `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId}`
             );
         }
-        (function joinGameImpl(urls, matchData) {
-            const url = urls.shift();
-            if (!url) {
-                _this.onJoinGameError("join_game_failed");
-                return;
-            }
-            console.log("Joining", url, matchData.zone);
-            const onFailure = function() {
-                joinGameImpl(urls, matchData);
-            };
-            _this.game.tryJoinGame(
-                url,
-                matchData.data,
-                _this.account.loadoutPriv,
-                _this.account.questPriv,
-                onFailure
-            );
-        })(urls, matchData);
+        const url = urls.shift();
+        if (!url) {
+            this.onJoinGameError("join_game_failed");
+            return;
+        }
+        console.log("Joining", url, matchData.zone);
+        const onFailure = function() {
+            joinGameImpl(urls, matchData);
+        };
+        this.game.tryJoinGame(
+            url,
+            matchData.data,
+            this.account.loadoutPriv,
+            this.account.questPriv,
+            onFailure
+        );
     }
 
     onJoinGameError(err) {
@@ -899,7 +815,7 @@ const App = new Application();
 
 function onPageLoad() {
     App.domContentLoaded = true;
-    App.m_tryLoad();
+    App.tryLoad();
 }
 
 document.addEventListener("DOMContentLoaded", onPageLoad);
@@ -921,7 +837,7 @@ window.addEventListener("hashchange", () => {
     App.tryJoinTeam(false);
 });
 window.addEventListener("beforeunload", (e) => {
-    if (App.game?.warnPageReload() && !device.webview) {
+    if (App.game?.warnPageReload()) {
         // In new browsers, dialogText is overridden by a generic string
         const dialogText = "Do you want to reload the game?";
         e.returnValue = dialogText;

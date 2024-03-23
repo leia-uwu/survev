@@ -336,8 +336,6 @@ class Reverb {
 
 class WebAudioEngine {
     constructor() {
-        const _this = this;
-
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         // Fix for iOS bug: https://bugs.webkit.org/show_bug.cgi?id=168165
         if (isIOS) {
@@ -370,12 +368,12 @@ class WebAudioEngine {
             club: [[20.0, 2.8284 / 2.0, -6.0, "lowshelf"], [63.0, 2.8284 / 2.0, -3.0, "lowshelf"], [125.0, 2.8284 / 2.0, -3.0, "lowshelf"], [250.0, 2.8284 / 2.0, -6.0, "lowshelf"], [500.0, 2.8284 / 2.0, -18.0, "peaking"], [1000.0, 2.8284 / 2.0, -36.0, "peaking"], [2000.0, 2.8284 / 2.0, -48.0, "peaking"], [4000.0, 2.8284 / 2.0, -50.0, "highshelf"], [8000.0, 2.8284 / 2.0, -50.0, "highshelf"], [16000.0, 2.8284 / 2.0, -50.0, "highshelf"]]
         };
         Object.keys(eqTypes).forEach((item) => {
-            const eqNode = _this.ctx.createGain();
+            const eqNode = this.ctx.createGain();
             eqNode.gain.setValueAtTime(16.0, 0.0);
             const peaks = eqTypes[item];
             let previousNode = eqNode;
             for (let i = 0; i < peaks.length; i++) {
-                const peakingNode = _this.ctx.createBiquadFilter();
+                const peakingNode = this.ctx.createBiquadFilter();
                 previousNode.connect(peakingNode);
                 previousNode = peakingNode;
                 peakingNode.frequency.setValueAtTime(peaks[i][0], 0.0);
@@ -383,8 +381,8 @@ class WebAudioEngine {
                 peakingNode.gain.setValueAtTime(peaks[i][2], 0.0);
                 peakingNode.type = peaks[i][3];
             }
-            previousNode.connect(_this.reverbNode);
-            _this.eqNodes[item] = eqNode;
+            previousNode.connect(this.reverbNode);
+            this.eqNodes[item] = eqNode;
         });
 
         this.files = {};
@@ -413,14 +411,14 @@ class WebAudioEngine {
         // iOS starts the sound context suspended, and can only un-suspend
         // by playing sound from mousedown or touchend events
         if (this.ctx.state == "suspended") {
-            const tryResume = function tryResume() {
-                _this.ctx.resume();
-                const source = _this.ctx.createBufferSource();
-                source.buffer = _this.ctx.createBuffer(1, 1, 22050);
-                source.connect(_this.ctx.destination);
+            const tryResume = () => {
+                this.ctx.resume();
+                const source = this.ctx.createBufferSource();
+                source.buffer = this.ctx.createBuffer(1, 1, 22050);
+                source.connect(this.ctx.destination);
                 source.start();
                 setTimeout(() => {
-                    if (_this.ctx.state == "running") {
+                    if (this.ctx.state == "running") {
                         document.body.removeEventListener("mousedown", tryResume, false);
                         document.body.removeEventListener("touchend", tryResume, false);
                     }
@@ -447,8 +445,6 @@ class WebAudioEngine {
     }
 
     loadFile(path, onfileload) {
-        const _this2 = this;
-
         if (this.files[path] != undefined) {
             onfileload(path);
             return this.files[path];
@@ -468,9 +464,9 @@ class WebAudioEngine {
                 onfailure(event);
                 return;
             }
-            _this2.ctx.decodeAudioData(arrayBuffer, (audioBuffer) => {
+            this.ctx.decodeAudioData(arrayBuffer, (audioBuffer) => {
                 // let memorySize = 4 * audioBuffer.length * audioBuffer.numberOfChannels;
-                _this2.files[path].buffer = audioBuffer;
+                this.files[path].buffer = audioBuffer;
                 onfileload(path);
             }, () => {
                 console.error(`Failed decoding sound: ${path}`);
@@ -599,13 +595,11 @@ class WebAudioEngine {
     }
 
     registerReverb(path, name, params) {
-        const _this3 = this;
-
         const reverb = new Reverb(this.ctx, this.reverbNode, this.masterGainNode, name, params);
 
         this.loadFile(path, (path) => {
-            reverb.convolverNode.buffer = _this3.files[path].buffer;
-            _this3.onfileload(path);
+            reverb.convolverNode.buffer = this.files[path].buffer;
+            this.onfileload(path);
         });
 
         this.reverbs[name] = reverb;
@@ -641,9 +635,7 @@ class WebAudioEngine {
         }
     }
 
-    stop() {
-        const retainAmbient = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-
+    stop(retainAmbient = true) {
         // Stops all sounds, despite what the symmetry with play() would
         // have you think
         for (let i = 0; i < kMaxInstances; i++) {
@@ -755,8 +747,6 @@ class WebAudioEngine {
     // characteristics of various WebAudio nodes
 
     updatePerformanceTest() {
-        const _this4 = this;
-
         this.runningOfflineTest = this.runningOfflineTest != undefined ? this.runningOfflineTest : false;
         if (this.runningOfflineTest) {
             return;
@@ -848,16 +838,16 @@ class WebAudioEngine {
 
         soundNode.start();
         this.startTime = performance.now();
-        this.offlineCtx.oncomplete = function(e) {
+        this.offlineCtx.oncomplete = (e) => {
             const endTime = performance.now();
-            console.log("Offline render time: ", endTime - _this4.startTime);
+            console.log("Offline render time: ", endTime - this.startTime);
 
             // let offlineBuffer = this.ctx.createBufferSource();
             // offlineBuffer.buffer = e.renderedBuffer;
             // offlineBuffer.connect(this.ctx.destination);
             // offlineBuffer.start();
 
-            _this4.runningOfflineTest = false;
+            this.runningOfflineTest = false;
         };
         this.offlineCtx.startRendering();
     }

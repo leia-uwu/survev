@@ -64,7 +64,6 @@ export class PingTest {
     }
 
     update(dt) {
-        const _this = this;
         const completeTest = (test) => {
             test.active = false;
             test.complete = true;
@@ -84,7 +83,7 @@ export class PingTest {
         };
 
         for (let i = 0; i < this.tests.length; i++) {
-            const test = _this.tests[i];
+            const test = this.tests[i];
             if (!test.active) {
                 return "continue";
             }
@@ -122,7 +121,7 @@ export class PingTest {
                     test.sendTime = Date.now();
                     test.sendCount++;
                     try {
-                        test.ws.send(_this.ptcDataBuf);
+                        test.ws.send(this.ptcDataBuf);
                     } catch (e) {
                         test.ws.close();
                     }

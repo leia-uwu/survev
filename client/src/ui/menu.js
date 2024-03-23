@@ -253,31 +253,7 @@ function onResize() {
         device.mobile ? "none" : "inline-block"
     );
 }
-function applyWebviewStyling(isTablet) {
-    // For webviews, we only want to display the team code, not the url.
-    // We'll reuse the copy-url element to display the code.
-    const hamburgerMenu = $("#modal-hamburger-bottom");
-    hamburgerMenu.children().slice(-3).remove();
-    hamburgerMenu.children().last().removeClass("footer-after");
-    $("#invite-link-text").attr("data-l10n", "index-invite-code");
-    $("#team-code-text").css("display", "none");
-    $("#invite-code-text").css("display", "none");
-    $("#team-hide-url").css("display", "none");
-    $(".btn-download-ios").css("display", "none");
-    $(".btn-download-android").css("display", "none");
-    $("#mobile-download-app").css("display", "none");
-    $("#start-bottom-middle").css("display", "none");
-    if (!isTablet) {
-        $("#btn-help").css("display", "none");
-        $("#news-block, #start-menu").css({
-            height: 186
-        });
-        $("#team-menu").css({
-            height: 186,
-            padding: 10
-        });
-    }
-}
+
 function applyMobileBrowserStyling(isTablet) {
     $("#team-hide-url").css("display", "none");
     if (isTablet) {
@@ -298,6 +274,5 @@ function applyMobileBrowserStyling(isTablet) {
 export default {
     setupModals,
     onResize,
-    applyWebviewStyling,
     applyMobileBrowserStyling
 };

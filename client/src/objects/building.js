@@ -70,7 +70,6 @@ export class Building {
     }
 
     updateData(data, fullUpdate, isNew, ctx) {
-        const _this = this;
         if (fullUpdate) {
             this.type = data.type;
             this.pos = v2.copy(data.pos);
@@ -101,10 +100,10 @@ export class Building {
             this.playedSolvedPuzzleFx =
                 this.hasPuzzle &&
                 ctx.map.solvedPuzzleIds.indexOf(this.__id) != -1;
-            const createSpriteFromDef = function(imgDef) {
+            const createSpriteFromDef = (imgDef) => {
                 const posOffset = imgDef.pos || v2.create(0, 0);
                 const rotOffset = math.oriToRad(imgDef.rot || 0);
-                const sprite = _this.allocSprite();
+                const sprite = this.allocSprite();
                 if (imgDef.sprite && imgDef.sprite != "none") {
                     sprite.texture = PIXI.Texture.from(imgDef.sprite);
                 } else {
@@ -117,7 +116,7 @@ export class Building {
                     sprite.tint = util.adjustValue(sprite.tint, valueAdjust);
                 }
 
-                sprite.posOffset = v2.rotate(posOffset, _this.rot);
+                sprite.posOffset = v2.rotate(posOffset, this.rot);
                 sprite.rotOffset = rotOffset;
                 sprite.imgAlpha = imgDef.alpha;
                 sprite.alpha = sprite.imgAlpha;

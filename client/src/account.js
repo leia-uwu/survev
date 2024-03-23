@@ -154,25 +154,24 @@ export class Account {
     }
 
     loginWithAccessToken(authUrl, requestTokenFn, extractTokenFn) {
-        const _this = this;
         requestTokenFn((err, data) => {
             if (err) {
-                _this.emit("error", "login_failed");
+                this.emit("error", "login_failed");
                 return;
             }
             const token = extractTokenFn(data);
-            _this.ajaxRequest(
+            this.ajaxRequest(
                 `${authUrl}?access_token=${token}`,
                 (err, res) => {
                     if (err) {
-                        _this.emit("error", "login_failed");
+                        this.emit("error", "login_failed");
                     } else {
-                        _this.config.set(
+                        this.config.set(
                             "sessionCookie",
                             res.cookie
                         );
-                        _this.setSessionCookies();
-                        _this.login();
+                        this.setSessionCookies();
+                        this.login();
                     }
                 }
             );
@@ -250,15 +249,14 @@ export class Account {
     }
 
     deleteAccount() {
-        const _this = this;
         this.ajaxRequest("/api/user/delete", (err, res) => {
             if (err) {
                 console.error("account", "delete_error");
-                _this.emit("error", "server_error");
+                this.emit("error", "server_error");
                 return;
             }
-            _this.config.set("profile", null);
-            _this.config.set("sessionCookie", null);
+            this.config.set("profile", null);
+            this.config.set("sessionCookie", null);
             window.location.reload();
         });
     }
@@ -320,18 +318,15 @@ export class Account {
     }
 
     setItemStatus(status, itemTypes) {
-        const _this = this;
         if (itemTypes.length != 0) {
             // Preemptively mark the item status as modified on our local copy
             for (let i = 0; i < itemTypes.length; i++) {
-                (function(a) {
-                    const item = _this.items.find((e) => {
-                        return e.type == itemTypes[a];
-                    });
-                    if (item) {
-                        item.status = Math.max(item.status, status);
-                    }
-                })(i);
+                const item = this.items.find((e) => {
+                    return e.type == itemTypes[i];
+                });
+                if (item) {
+                    item.status = Math.max(item.status, status);
+                }
             }
             this.emit("items", this.items);
             this.ajaxRequest(
@@ -375,31 +370,31 @@ export class Account {
     }
 
     getPass(tryRefreshQuests) {
-        /* const _this = this;
+        /* const This = this;
         this.ajaxRequest(
             "/api/user/get_pass",
             {
                 tryRefreshQuests
             },
             (err, res) => {
-                _this.pass = {};
-                _this.quests = [];
-                _this.questPriv = "";
+                This.pass = {};
+                This.quests = [];
+                This.questPriv = "";
                 if (err || !res.success) {
                     console.error(
                         "account",
                         "get_pass_error"
                     );
                 } else {
-                    _this.pass = res.pass || {};
-                    _this.quests = res.quests || [];
-                    _this.questPriv = res.questPriv || "";
-                    _this.quests.sort((a, b) => {
+                    This.pass = res.pass || {};
+                    This.quests = res.quests || [];
+                    This.questPriv = res.questPriv || "";
+                    This.quests.sort((a, b) => {
                         return a.idx - b.idx;
                     });
-                    _this.emit("pass", _this.pass, _this.quests, true);
-                    if (_this.pass.newItems) {
-                        _this.loadProfile();
+                    This.emit("pass", This.pass, This.quests, true);
+                    if (This.pass.newItems) {
+                        This.loadProfile();
                     }
                 }
             }
@@ -407,7 +402,6 @@ export class Account {
     }
 
     setPassUnlock(unlockType) {
-        const _this = this;
         this.ajaxRequest(
             "/api/user/set_pass_unlock",
             {
@@ -420,7 +414,7 @@ export class Account {
                         "set_pass_unlock_error"
                     );
                 } else {
-                    _this.getPass(false);
+                    this.getPass(false);
                 }
             }
         );

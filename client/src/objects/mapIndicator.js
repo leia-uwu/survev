@@ -5,19 +5,22 @@ import { math } from "../../../shared/utils/math";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 
 export class MapIndicatorBarn {
-    constructor(e) {
-        this.ht = e;
-        this.dt = [];
+    /**
+     * @param {import("./mapSprite").MapSpriteBarn} mapSpriteBarn
+     */
+    constructor(mapSpriteBarn) {
+        this.mapSpriteBarn = mapSpriteBarn;
+        this.mapIndicators = [];
         this.idToMapIdicator = {};
     }
 
-    Ne(indicatorData) {
+    updateIndicatorData(indicatorData) {
         for (let i = 0; i < indicatorData.length; i++) {
             const data = indicatorData[i];
             if (data.dead) {
-                this.gt(data.id);
+                this.removeIndicator(data.id);
             } else {
-                this.yt(data);
+                this.updateIndicator(data);
             }
         }
     }
@@ -28,8 +31,8 @@ export class MapIndicatorBarn {
             type: data.type,
             pos: v2.copy(data.pos),
             equipped: data.equipped,
-            mapSprite: this.ht.addSprite(),
-            pulseSprite: this.ht.addSprite(),
+            mapSprite: this.mapSpriteBarn.addSprite(),
+            pulseSprite: this.mapSpriteBarn.addSprite(),
             pulseScale: 0.5,
             pulseScaleMin: 0.5,
             pulseScaleMax: 1,
@@ -37,25 +40,25 @@ export class MapIndicatorBarn {
             pulseDir: 1,
             pulseSpeed: 0.3
         };
-        this.dt.push(indicator);
+        this.mapIndicators.push(indicator);
         this.idToMapIdicator[data.id] = indicator;
         return indicator;
     }
 
-    gt(id) {
-        for (let i = 0; i < this.dt.length; i++) {
-            const indicator = this.dt[i];
+    removeIndicator(id) {
+        for (let i = 0; i < this.mapIndicators.length; i++) {
+            const indicator = this.mapIndicators[i];
             if (indicator.id == id) {
                 indicator.mapSprite.free();
                 indicator.pulseSprite.free();
-                this.dt.splice(i, 1);
+                this.mapIndicators.splice(i, 1);
                 delete this.idToMapIdicator[id];
                 break;
             }
         }
     }
 
-    yt(data) {
+    updateIndicator(data) {
         let indicator = this.idToMapIdicator[data.id];
         indicator ||= this.wt(data);
 
@@ -78,20 +81,20 @@ export class MapIndicatorBarn {
 
         mapSprite.sprite.tint = objDef.mapIndicator.tint;
         if (objDef.mapIndicator.pulse) {
-            const m = indicator.pulseSprite;
-            m.pos = v2.copy(indicator.pos);
-            m.scale = 1;
-            m.zOrder = zOrder - 1;
-            m.visible = true;
-            m.sprite.texture =
+            const pulseSprite = indicator.pulseSprite;
+            pulseSprite.pos = v2.copy(indicator.pos);
+            pulseSprite.scale = 1;
+            pulseSprite.zOrder = zOrder - 1;
+            pulseSprite.visible = true;
+            pulseSprite.sprite.texture =
                 PIXI.Texture.from("part-pulse-01.img");
-            m.sprite.tint = objDef.mapIndicator.pulseTint;
+            pulseSprite.sprite.tint = objDef.mapIndicator.pulseTint;
         }
     }
 
-    Ee(dt) {
-        for (let i = 0; i < this.dt.length; i++) {
-            const indicator = this.dt[i];
+    updateIndicatorPulses(dt) {
+        for (let i = 0; i < this.mapIndicators.length; i++) {
+            const indicator = this.mapIndicators[i];
             indicator.pulseTicker = math.clamp(
                 indicator.pulseTicker + dt * indicator.pulseDir * indicator.pulseSpeed,
                 indicator.pulseScaleMin,

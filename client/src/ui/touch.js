@@ -363,11 +363,6 @@ export class Touch {
                 o.x = o.x - 56;
                 a.y = a.y * 0.9;
                 o.y = o.y * 0.9;
-            } else if (device.webview) {
-                if (device.tablet && device.webview) {
-                    a.y = a.y * 1.1;
-                    o.y = o.y * 1.1;
-                }
             } else {
                 let n =
                     this.lockedPadOffsetYLandscapeSafari;
@@ -465,21 +460,12 @@ export class Touch {
         if (device.tablet) {
             if (e) {
                 if (device.os == "ios") {
-                    if (device.webview) {
-                        $("#ui-bottom-right").addClass(
-                            "ui-bottom-right-tablet-ipad-webview"
-                        );
-                        $("#ui-right-center").addClass(
-                            "ui-right-center-tablet"
-                        );
-                    } else {
-                        $("#ui-bottom-right").addClass(
-                            "ui-bottom-right-tablet-ipad-browser"
-                        );
-                        $("#ui-right-center").addClass(
-                            "ui-right-center-tablet-ipad-browser"
-                        );
-                    }
+                    $("#ui-bottom-right").addClass(
+                        "ui-bottom-right-tablet-ipad-browser"
+                    );
+                    $("#ui-right-center").addClass(
+                        "ui-right-center-tablet-ipad-browser"
+                    );
                 } else {
                     $("#ui-bottom-right").addClass(
                         "ui-bottom-right-tablet"
@@ -570,13 +556,11 @@ export class Touch {
                 let a = device.isLandscape ? "86%" : "82%";
                 if (device.tablet) {
                     a = "100%";
-                } else if (device.webview) {
-                    a = "98%";
                 }
                 $("#ui-game").css({
                     height: a
                 });
-                const i = device.webview && !device.tablet ? 0 : 6;
+                const i = 6;
                 const s = $(
                     "#ui-right-center, #ui-top-center-scopes-wrapper, #ui-top-center, #ui-menu-display"
                 );

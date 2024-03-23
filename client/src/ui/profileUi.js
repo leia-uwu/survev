@@ -96,8 +96,6 @@ export class ProfileUi {
     }
 
     initUi() {
-        const _this = this;
-
         // Set username
         const clearNamePrompt = function() {
             $("#modal-body-warning").css("display", "none");
@@ -111,7 +109,7 @@ export class ProfileUi {
         $("#modal-account-name-finish").click((t) => {
             t.stopPropagation();
             const r = $("#modal-account-name-input").val();
-            _this.account.setUsername(r, (error) => {
+            this.account.setUsername(r, (error) => {
                 if (error) {
                     const ERROR_CODE_TO_LOCALIZATION = {
                         failed: "Failed setting username.",
@@ -125,7 +123,7 @@ export class ProfileUi {
                     $("#modal-body-warning").html(message);
                     $("#modal-body-warning").fadeIn();
                 } else {
-                    _this.setNameModal.hide();
+                    this.setNameModal.hide();
                 }
             });
         });
@@ -146,7 +144,7 @@ export class ProfileUi {
         );
         this.resetStatsModal.onShow(() => {
             $("#modal-account-reset-stats-input").val("");
-            _this.modalMobileAccount.hide();
+            this.modalMobileAccount.hide();
         });
         $("#modal-account-reset-stats-finish").click(
             (t) => {
@@ -156,8 +154,8 @@ export class ProfileUi {
                         "#modal-account-reset-stats-input"
                     ).val() == "RESET STATS"
                 ) {
-                    _this.account.resetStats();
-                    _this.resetStatsModal.hide();
+                    this.account.resetStats();
+                    this.resetStatsModal.hide();
                 }
             }
         );
@@ -177,7 +175,7 @@ export class ProfileUi {
         );
         this.deleteAccountModal.onShow(() => {
             $("#modal-account-delete-input").val("");
-            _this.modalMobileAccount.hide();
+            this.modalMobileAccount.hide();
         });
         $("#modal-account-delete-finish").click((t) => {
             t.stopPropagation();
@@ -185,8 +183,8 @@ export class ProfileUi {
                 $("#modal-account-delete-input").val() ==
                 "DELETE"
             ) {
-                _this.account.deleteAccount();
-                _this.deleteAccountModal.hide();
+                this.account.deleteAccount();
+                this.deleteAccountModal.hide();
             }
         });
         $("#modal-account-delete-input").on(
@@ -262,7 +260,7 @@ export class ProfileUi {
             $("#modal-create-account-INVALID_ID")
         );
         this.createAccountModal.onHide(() => {
-            _this.loadoutMenu.hide();
+            this.loadoutMenu.hide();
         });
 
         // Mobile Accounts Modal
@@ -282,7 +280,7 @@ export class ProfileUi {
                 "display",
                 "block"
             );
-            _this.userSettingsModal.hide();
+            this.userSettingsModal.hide();
         });
 
         //
@@ -295,20 +293,20 @@ export class ProfileUi {
             return false;
         });
         $(".account-stats-link").click((t) => {
-            _this.waitOnLogin(() => {
-                if (_this.account.loggedIn) {
-                    if (_this.account.profile.usernameSet) {
+            this.waitOnLogin(() => {
+                if (this.account.loggedIn) {
+                    if (this.account.profile.usernameSet) {
                         const t =
-                            _this.account.profile.slug || "";
+                            this.account.profile.slug || "";
                         window.open(
                             `/stats/${t}`,
                             "_blank"
                         );
                     } else {
-                        _this.setNameModal.show(true);
+                        this.setNameModal.show(true);
                     }
                 } else {
-                    _this.showLoginMenu({
+                    this.showLoginMenu({
                         modal: true
                     });
                 }
@@ -317,10 +315,10 @@ export class ProfileUi {
         });
         $(".account-loadout-link, #btn-customize").click(
             () => {
-                _this.loadoutMenu.show();
-                _this.waitOnLogin(() => {
-                    if (!_this.account.loggedIn) {
-                        _this.showLoginMenu({
+                this.loadoutMenu.show();
+                this.waitOnLogin(() => {
+                    if (!this.account.loggedIn) {
+                        this.showLoginMenu({
                             modal: true
                         });
                     }
@@ -330,21 +328,21 @@ export class ProfileUi {
         );
         $(".account-details-user").click(() => {
             if (
-                _this.userSettingsModal.isVisible() ||
-                _this.loginOptionsModal.isVisible()
+                this.userSettingsModal.isVisible() ||
+                this.loginOptionsModal.isVisible()
             ) {
-                _this.userSettingsModal.hide();
-                _this.loginOptionsModal.hide();
+                this.userSettingsModal.hide();
+                this.loginOptionsModal.hide();
             } else {
-                _this.waitOnLogin(() => {
+                this.waitOnLogin(() => {
                     if (device.mobile) {
-                        _this.modalMobileAccount.show();
+                        this.modalMobileAccount.show();
                     }
-                    if (_this.account.loggedIn) {
-                        _this.loginOptionsModal.hide();
-                        _this.userSettingsModal.show();
+                    if (this.account.loggedIn) {
+                        this.loginOptionsModal.hide();
+                        this.userSettingsModal.show();
                     } else {
-                        _this.showLoginMenu({
+                        this.showLoginMenu({
                             modal: false
                         });
                     }
@@ -353,42 +351,42 @@ export class ProfileUi {
             return false;
         });
         $(".btn-account-link").click(() => {
-            _this.userSettingsModal.hide();
-            _this.showLoginMenu({
+            this.userSettingsModal.hide();
+            this.showLoginMenu({
                 modal: false,
                 link: true
             });
             return false;
         });
         $(".btn-account-change-name").click(() => {
-            if (_this.account.profile.usernameChangeTime <= 0) {
-                _this.userSettingsModal.hide();
-                _this.modalMobileAccount.hide();
+            if (this.account.profile.usernameChangeTime <= 0) {
+                this.userSettingsModal.hide();
+                this.modalMobileAccount.hide();
                 $("#modal-account-name-title").html(
-                    _this.localization.translate(
+                    this.localization.translate(
                         "index-change-account-name"
                     )
                 );
-                _this.setNameModal.show();
+                this.setNameModal.show();
             }
             return false;
         });
         $(".btn-account-reset-stats").click(() => {
-            _this.userSettingsModal.hide();
-            _this.resetStatsModal.show();
+            this.userSettingsModal.hide();
+            this.resetStatsModal.show();
             return false;
         });
         $(".btn-account-delete").click(() => {
-            _this.userSettingsModal.hide();
-            _this.deleteAccountModal.show();
+            this.userSettingsModal.hide();
+            this.deleteAccountModal.show();
             return false;
         });
         $(".btn-account-logout").click(() => {
-            _this.account.logout();
+            this.account.logout();
             return false;
         });
         $("#btn-pass-locked").click(() => {
-            _this.showLoginMenu({
+            this.showLoginMenu({
                 modal: true
             });
             return false;

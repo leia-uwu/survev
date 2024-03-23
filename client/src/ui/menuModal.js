@@ -1,47 +1,48 @@
 import $ from "jquery";
 
 export class MenuModal {
-    constructor(t) {
-        const r = this;
-        this.selector = t;
+    constructor(selector) {
+        this.selector = selector;
         this.checkSelector = true;
         this.skipFade = false;
         this.visible = false;
         this.onShowFn = function() { };
         this.onHideFn = function() { };
-        t.find(".close").click((e) => {
-            r.hide();
+
+        selector.find(".close").click((e) => {
+            this.hide();
         });
-        this.modalCloseListener = function(e) {
+
+        this.modalCloseListener = (e) => {
             if (
                 $(e.target).closest(".modal-close").length == 0 &&
-                (!!$(e.target).is(t) || !r.checkSelector)
+                (!!$(e.target).is(selector) || !this.checkSelector)
             ) {
                 e.stopPropagation();
-                r.hide();
+                this.hide();
             }
         };
     }
 
-    onShow(e) {
-        this.onShowFn = e;
+    onShow(fn) {
+        this.onShowFn = fn;
     }
 
-    onHide(e) {
-        this.onHideFn = e;
+    onHide(fn) {
+        this.onHideFn = fn;
     }
 
     isVisible() {
         return this.visible;
     }
 
-    show(e) {
+    show(isModal) {
         if (!this.visible) {
             this.visible = true;
             this.selector.finish();
             this.selector.css("display", "block");
             this.onShowFn();
-            if (!e) {
+            if (!isModal) {
                 $(document).on(
                     "click touchend",
                     this.modalCloseListener

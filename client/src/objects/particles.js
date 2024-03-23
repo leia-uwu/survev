@@ -4,9 +4,9 @@ import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 
 class Range {
-    constructor(e, t) {
-        this.min = e;
-        this.max = t;
+    constructor(min, max) {
+        this.min = min;
+        this.max = max;
     }
 
     getRandom() {
@@ -37,45 +37,45 @@ class Particle {
         this.hasParent = false;
     }
 
-    o(e, t, r, a, s, n, l, m, p, u) {
-        const g = ParticleDefs[t];
+    o(renderer, type, r, a, s, scale, rot, parent, p, u) {
+        const def = ParticleDefs[type];
         this.active = true;
         this.ticker = 0;
-        if (m) {
+        if (parent) {
             this.hasParent = true;
-            m.addChild(this.sprite);
+            parent.addChild(this.sprite);
         } else {
             this.hasParent = false;
-            e.addPIXIObj(this.sprite, r, p);
+            renderer.addPIXIObj(this.sprite, r, p);
         }
         this.pos = v2.copy(a);
         this.vel = v2.copy(s);
-        this.rot = l;
-        this.def = g;
+        this.rot = rot;
+        this.def = def;
         this.delay = 0;
-        this.life = getRangeValue(g.life);
-        this.drag = getRangeValue(g.drag);
-        this.rotVel = getRangeValue(g.rotVel) * (Math.random() < 0.5 ? -1 : 1);
-        this.rotDrag = getRangeValue(g.drag) / 2;
-        this.scaleUseExp = g.scale.exp !== undefined;
-        this.scale = getRangeValue(g.scale.start) * n;
-        this.scaleEnd = this.scaleUseExp ? 0 : getRangeValue(g.scale.end) * n;
-        this.scaleExp = this.scaleUseExp ? g.scale.exp : 0;
-        this.alphaUseExp = g.alpha.exp !== undefined;
-        this.alpha = getRangeValue(g.alpha.start);
-        this.alphaEnd = this.alphaUseExp ? 0 : getRangeValue(g.alpha.end);
-        this.alphaExp = this.alphaUseExp ? g.alpha.exp : 0;
-        this.alphaIn = g.alphaIn !== undefined;
-        this.alphaInStart = this.alphaIn ? getRangeValue(g.alphaIn.start) : 0;
-        this.alphaInEnd = this.alphaIn ? getRangeValue(g.alphaIn.end) : 0;
+        this.life = getRangeValue(def.life);
+        this.drag = getRangeValue(def.drag);
+        this.rotVel = getRangeValue(def.rotVel) * (Math.random() < 0.5 ? -1 : 1);
+        this.rotDrag = getRangeValue(def.drag) / 2;
+        this.scaleUseExp = def.scale.exp !== undefined;
+        this.scale = getRangeValue(def.scale.start) * scale;
+        this.scaleEnd = this.scaleUseExp ? 0 : getRangeValue(def.scale.end) * scale;
+        this.scaleExp = this.scaleUseExp ? def.scale.exp : 0;
+        this.alphaUseExp = def.alpha.exp !== undefined;
+        this.alpha = getRangeValue(def.alpha.start);
+        this.alphaEnd = this.alphaUseExp ? 0 : getRangeValue(def.alpha.end);
+        this.alphaExp = this.alphaUseExp ? def.alpha.exp : 0;
+        this.alphaIn = def.alphaIn !== undefined;
+        this.alphaInStart = this.alphaIn ? getRangeValue(def.alphaIn.start) : 0;
+        this.alphaInEnd = this.alphaIn ? getRangeValue(def.alphaIn.end) : 0;
         this.emitterIdx = -1;
-        const y = Array.isArray(g.image)
-            ? g.image[Math.floor(Math.random() * g.image.length)]
-            : g.image;
-        this.sprite.texture = PIXI.Texture.from(y);
+        const tex = Array.isArray(def.image)
+            ? def.image[Math.floor(Math.random() * def.image.length)]
+            : def.image;
+        this.sprite.texture = PIXI.Texture.from(tex);
         this.sprite.visible = false;
-        this.valueAdjust = g.ignoreValueAdjust ? 1 : u;
-        this.setColor(getColorValue(g.color));
+        this.valueAdjust = def.ignoreValueAdjust ? 1 : u;
+        this.setColor(getColorValue(def.color));
     }
 
     n() {
@@ -83,15 +83,15 @@ class Particle {
         this.sprite.visible = false;
     }
 
-    setDelay(e) {
-        this.delay = e;
+    setDelay(delay) {
+        this.delay = delay;
     }
 
-    setColor(e) {
+    setColor(color) {
         if (this.valueAdjust < 1) {
-            e = util.adjustValue(e, this.valueAdjust);
+            color = util.adjustValue(color, this.valueAdjust);
         }
-        this.sprite.tint = e;
+        this.sprite.tint = color;
     }
 }
 
@@ -100,32 +100,32 @@ class Emitter {
         this.active = false;
     }
 
-    o(e, t = {}) {
-        const r = EmitterDefs[e];
+    o(type, options = {}) {
+        const def = EmitterDefs[type];
         this.active = true;
         this.enabled = true;
-        this.type = e;
-        this.pos = t.pos ? v2.copy(t.pos) : v2.create(0, 0);
-        this.dir = t.dir ? v2.copy(t.dir) : v2.create(0, 1);
-        this.scale = t.scale !== undefined ? t.scale : 1;
-        this.layer = t.layer || 0;
+        this.type = type;
+        this.pos = options.pos ? v2.copy(options.pos) : v2.create(0, 0);
+        this.dir = options.dir ? v2.copy(options.dir) : v2.create(0, 1);
+        this.scale = options.scale !== undefined ? options.scale : 1;
+        this.layer = options.layer || 0;
         this.duration =
-            t.duration !== undefined
-                ? t.duration
+            options.duration !== undefined
+                ? options.duration
                 : Number.MAX_VALUE;
-        this.radius = t.radius !== undefined ? t.radius : r.radius;
+        this.radius = options.radius !== undefined ? options.radius : def.radius;
         this.ticker = 0;
         this.nextSpawn = 0;
         this.spawnCount = 0;
-        this.parent = t.parent || null;
+        this.parent = options.parent || null;
         this.alpha = 1;
-        this.rateMult = t.rateMult !== undefined ? t.rateMult : 1;
-        const a = ParticleDefs[r.particle];
+        this.rateMult = options.rateMult !== undefined ? options.rateMult : 1;
+        const partDef = ParticleDefs[def.particle];
         this.zOrd =
-            r.zOrd !== undefined
-                ? r.zOrd
-                : a.zOrd !== undefined
-                    ? a.zOrd
+            def.zOrd !== undefined
+                ? def.zOrd
+                : partDef.zOrd !== undefined
+                    ? partDef.zOrd
                     : 20;
     }
 
@@ -149,188 +149,200 @@ export class ParticleBarn {
         this.valueAdjust = 1;
     }
 
-    onMapLoad(e) {
-        this.valueAdjust = e.getMapDef().biome.valueAdjust;
+    onMapLoad(map) {
+        this.valueAdjust = map.getMapDef().biome.valueAdjust;
     }
 
     free() {
-        for (let e = 0; e < this.particles.length; e++) {
-            const t = this.particles[e].sprite;
-            t.parent?.removeChild(t);
-            t.destroy({
+        for (let i = 0; i < this.particles.length; i++) {
+            const sprite = this.particles[i].sprite;
+            sprite.parent?.removeChild(sprite);
+            sprite.destroy({
                 children: true
             });
         }
     }
 
-    addParticle(e, t, r, a, i, o, n, l) {
-        let c = null;
-        for (let m = 0; m < this.particles.length; m++) {
-            if (!this.particles[m].active) {
-                c = this.particles[m];
+    addParticle(type, layer, pos, vel, scale, rot, parent, zOrd) {
+        let particle = null;
+        for (let i = 0; i < this.particles.length; i++) {
+            if (!this.particles[i].active) {
+                particle = this.particles[i];
                 break;
             }
         }
-        if (!c) {
-            c = new Particle();
-            this.particles.push(c);
+        if (!particle) {
+            particle = new Particle();
+            this.particles.push(particle);
         }
-        i = i !== undefined ? i : 1;
-        o = o !== undefined ? o : Math.random() * Math.PI * 2;
-        l = l !== undefined ? l : ParticleDefs[e].zOrd || 20;
-        c.o(
+        scale = scale !== undefined ? scale : 1;
+        rot = rot !== undefined ? rot : Math.random() * Math.PI * 2;
+        zOrd = zOrd !== undefined ? zOrd : ParticleDefs[type].zOrd || 20;
+
+        particle.o(
             this.renderer,
-            e,
-            t,
-            r,
-            a,
-            i,
-            o,
-            n,
-            l,
+            type,
+            layer,
+            pos,
+            vel,
+            scale,
+            rot,
+            parent,
+            zOrd,
             this.valueAdjust
         );
-        return c;
+        return particle;
     }
 
-    addRippleParticle(e, t, r) {
-        const a = this.addParticle(
+    addRippleParticle(pos, layer, color) {
+        const particle = this.addParticle(
             "waterRipple",
-            t,
-            e,
+            layer,
+            pos,
             v2.create(0, 0),
             1,
             0,
             null
         );
-        a.setColor(r);
-        return a;
+        particle.setColor(color);
+        return particle;
     }
 
-    addEmitter(e, t = {}) {
-        let r = null;
-        for (let a = 0; a < this.emitters.length; a++) {
-            if (!this.emitters[a].active) {
-                r = this.emitters[a];
+    addEmitter(type, options = {}) {
+        let emitter = null;
+
+        for (let i = 0; i < this.emitters.length; i++) {
+            if (!this.emitters[i].active) {
+                emitter = this.emitters[i];
                 break;
             }
         }
-        if (!r) {
-            r = new Emitter();
-            this.emitters.push(r);
+
+        if (!emitter) {
+            emitter = new Emitter();
+            this.emitters.push(emitter);
         }
-        r.o(e, t);
-        return r;
+
+        emitter.o(type, options);
+        return emitter;
     }
 
-    update(e, t, r) {
-        for (let a = 0; a < this.emitters.length; a++) {
-            const o = this.emitters[a];
-            if (o.active && o.enabled) {
-                o.ticker += e;
-                o.nextSpawn -= e;
-                for (
-                    let s = EmitterDefs[o.type];
-                    o.nextSpawn <= 0 && o.spawnCount < s.maxCount;
+    update(dt, camera, debug) {
+        // Update emitters
+        for (let i = 0; i < this.emitters.length; i++) {
+            const e = this.emitters[i];
+            if (e.active && e.enabled) {
+                e.ticker += dt;
+                e.nextSpawn -= dt;
+                const def = EmitterDefs[e.type];
+                while (
+                    e.nextSpawn <= 0 && e.spawnCount < def.maxCount
 
                 ) {
-                    const n = o.scale * o.radius;
-                    const l = v2.add(
-                        o.pos,
-                        util.randomPointInCircle(n)
+                    const rad = e.scale * e.radius;
+                    const pos = v2.add(
+                        e.pos,
+                        util.randomPointInCircle(rad)
                     );
-                    const c = v2.rotate(
-                        o.dir,
-                        (Math.random() - 0.5) * s.angle
+                    const dir = v2.rotate(
+                        e.dir,
+                        (Math.random() - 0.5) * def.angle
                     );
-                    const d = v2.mul(c, getRangeValue(s.speed));
-                    const g = getRangeValue(s.rot);
-                    this.addParticle(
-                        s.particle,
-                        o.layer,
-                        l,
-                        d,
-                        o.scale,
-                        g,
-                        o.parent,
-                        o.zOrd
-                    ).emitterIdx = a;
-                    let y = getRangeValue(s.rate);
-                    if (s.maxRate) {
+                    const vel = v2.mul(dir, getRangeValue(def.speed));
+                    const rot = getRangeValue(def.rot);
+                    const particle = this.addParticle(
+                        def.particle,
+                        e.layer,
+                        pos,
+                        vel,
+                        e.scale,
+                        rot,
+                        e.parent,
+                        e.zOrd
+                    );
+                    particle.emitterIdx = i;
+                    let rate = getRangeValue(def.rate);
+                    if (def.maxRate) {
                         const w = math.easeInExpo(
-                            math.min(1, o.ticker / s.maxElapsed)
+                            math.min(1, e.ticker / def.maxElapsed)
                         );
-                        const f = getRangeValue(s.maxRate);
-                        y = math.lerp(w, y, f);
+                        const maxRate = getRangeValue(def.maxRate);
+                        rate = math.lerp(w, rate, maxRate);
                     }
-                    o.nextSpawn += y * o.rateMult;
-                    o.spawnCount++;
+                    e.nextSpawn += rate * e.rateMult;
+                    e.spawnCount++;
                 }
-                if (o.ticker >= o.duration) {
-                    o.n();
+                if (e.ticker >= e.duration) {
+                    e.n();
                 }
             }
         }
-        for (let _ = 0; _ < this.particles.length; _++) {
-            const b = this.particles[_];
+
+        // Update particles
+        for (let i = 0; i < this.particles.length; i++) {
+            const p = this.particles[i];
             if (
-                b.active &&
-                ((b.ticker += e), b.ticker >= b.delay)
+                p.active &&
+                ((p.ticker += dt), p.ticker >= p.delay)
             ) {
-                const x = math.min((b.ticker - b.delay) / b.life, 1);
-                b.vel = v2.mul(b.vel, 1 / (1 + e * b.drag));
-                b.pos = v2.add(b.pos, v2.mul(b.vel, e));
-                b.rotVel *= 1 / (1 + e * b.rotDrag);
-                b.rot += b.rotVel * e;
-                if (b.scaleUseExp) {
-                    b.scale += e * b.scaleExp;
+                const t = math.min((p.ticker - p.delay) / p.life, 1);
+                p.vel = v2.mul(p.vel, 1 / (1 + dt * p.drag));
+                p.pos = v2.add(p.pos, v2.mul(p.vel, dt));
+                p.rotVel *= 1 / (1 + dt * p.rotDrag);
+                p.rot += p.rotVel * dt;
+                if (p.scaleUseExp) {
+                    p.scale += dt * p.scaleExp;
                 }
-                if (b.alphaUseExp) {
-                    b.alpha = math.max(b.alpha + e * b.alphaExp, 0);
+                if (p.alphaUseExp) {
+                    p.alpha = math.max(p.alpha + dt * p.alphaExp, 0);
                 }
-                const S = b.hasParent
-                    ? b.pos
-                    : t.pointToScreen(b.pos);
-                let v = b.scaleUseExp
-                    ? b.scale
+                const pos = p.hasParent
+                    ? p.pos
+                    : camera.pointToScreen(p.pos);
+                let scale = p.scaleUseExp
+                    ? p.scale
                     : math.remap(
-                        x,
-                        b.def.scale.lerp.min,
-                        b.def.scale.lerp.max,
-                        b.scale,
-                        b.scaleEnd
+                        t,
+                        p.def.scale.lerp.min,
+                        p.def.scale.lerp.max,
+                        p.scale,
+                        p.scaleEnd
                     );
-                let k = b.alphaUseExp
-                    ? b.alpha
+                let alpha = p.alphaUseExp
+                    ? p.alpha
                     : math.remap(
-                        x,
-                        b.def.alpha.lerp.min,
-                        b.def.alpha.lerp.max,
-                        b.alpha,
-                        b.alphaEnd
+                        t,
+                        p.def.alpha.lerp.min,
+                        p.def.alpha.lerp.max,
+                        p.alpha,
+                        p.alphaEnd
                     );
-                if (b.alphaIn && x < b.def.alphaIn.lerp.max) {
-                    k = math.remap(
-                        x,
-                        b.def.alphaIn.lerp.min,
-                        b.def.alphaIn.lerp.max,
-                        b.alphaInStart,
-                        b.alphaInEnd
+                if (p.alphaIn && t < p.def.alphaIn.lerp.max) {
+                    alpha = math.remap(
+                        t,
+                        p.def.alphaIn.lerp.min,
+                        p.def.alphaIn.lerp.max,
+                        p.alphaInStart,
+                        p.alphaInEnd
                     );
                 }
-                if (b.emitterIdx >= 0) {
-                    k *= this.emitters[b.emitterIdx].alpha;
+
+                // @HACK
+                if (p.emitterIdx >= 0) {
+                    alpha *= this.emitters[p.emitterIdx].alpha;
                 }
-                if (!b.hasParent) {
-                    v = t.pixels(v);
+                if (!p.hasParent) {
+                    scale = camera.pixels(scale);
                 }
-                b.sprite.position.set(S.x, S.y);
-                b.sprite.scale.set(v, v);
-                b.sprite.rotation = b.rot;
-                b.sprite.alpha = k;
-                b.sprite.visible = true;
-                if (x >= 1) {
-                    b.n();
+                p.sprite.position.set(pos.x, pos.y);
+                p.sprite.scale.set(scale, scale);
+                p.sprite.rotation = p.rot;
+                p.sprite.alpha = alpha;
+                p.sprite.visible = true;
+
+                // Die if it's time
+                if (t >= 1) {
+                    p.n();
                 }
             }
         }
