@@ -548,8 +548,9 @@ export class LoadoutMenu {
     }
 
     setItemListeners(loadoutType) {
+        const This = this;
         // listen for ui modifications
-        this.selectableSlots.on("mouseup", () => {
+        this.selectableSlots.on("mouseup", function() {
             if (
                 !$(this).hasClass(
                     "customize-list-item-locked"
@@ -559,11 +560,11 @@ export class LoadoutMenu {
                     this.itemSelected &&
                     !$(this).hasClass("customize-list-item")
                 ) {
-                    this.itemSelected = false;
+                    This.itemSelected = false;
                     return;
                 }
-                this.selectItem($(this));
-                this.updateLoadoutFromDOM();
+                This.selectItem($(this));
+                This.updateLoadoutFromDOM();
             }
         });
 
