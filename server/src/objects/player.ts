@@ -400,7 +400,7 @@ export class Player extends BaseGameObject {
                 }
                 case "soda":
                 case "painkiller": {
-                    this.useAdrenItem(this.scheduledAction.item);
+                    this.useBoostItem(this.scheduledAction.item);
                     break;
                 }
                 }
@@ -811,7 +811,11 @@ export class Player extends BaseGameObject {
     }
 
     useHealingItem(item: string): void {
-        if (this.health == (GameObjectDefs[item] as HealDef).maxHeal || this.actionType == GameConfig.Action.UseItem) {
+        const itemDef = GameObjectDefs[item];
+        if (itemDef.type !== "heal") {
+            throw new Error(`Invalid heal item ${item}`);
+        }
+        if (this.health == itemDef.maxHeal || this.actionType == GameConfig.Action.UseItem) {
             return;
         }
 
@@ -822,10 +826,15 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
-        this.doAction(item, GameConfig.Action.UseItem, 3);
+        this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
-    useAdrenItem(item: string): void {
+    useBoostItem(item: string): void {
+        const itemDef = GameObjectDefs[item];
+        if (itemDef.type !== "boost") {
+            throw new Error(`Invalid boost item ${item}`);
+        }
+
         if (this.actionType == GameConfig.Action.UseItem) {
             return;
         }
@@ -837,7 +846,7 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
-        this.doAction(item, GameConfig.Action.UseItem, 3);
+        this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
     /**
@@ -934,10 +943,10 @@ export class Player extends BaseGameObject {
                 this.useHealingItem("healthkit");
                 break;
             case GameConfig.Input.UsePainkiller:
-                this.useAdrenItem("soda");
+                this.useBoostItem("soda");
                 break;
             case GameConfig.Input.UseSoda:
-                this.useAdrenItem("painkiller");
+                this.useBoostItem("painkiller");
                 break;
             case GameConfig.Input.Cancel:
                 this.cancelAction();
@@ -970,7 +979,7 @@ export class Player extends BaseGameObject {
             break;
         case "soda":
         case "painkiller":
-            this.useAdrenItem(msg.useItem);
+            this.useBoostItem(msg.useItem);
             break;
         case "1xscope": case "2xscope": case "4xscope": case "8xscope": case "15xscope":
             this.scope = msg.useItem;
