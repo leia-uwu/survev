@@ -10,7 +10,6 @@ import { Ambiance } from "./ambiance";
 import { AudioManager } from "./audioManager";
 import { device } from "./device";
 import { ConfigManager } from "./config";
-import "./ui/webview";
 import { Game } from "./game";
 import Input from "./input";
 import { InputBinds, InputBindUi } from "./inputBinds";
@@ -108,53 +107,11 @@ class Application {
                 this.tryLoad();
             });
         };
-        if (device.webview && device.version > "1.0.0") {
-            this.loadWebviewDeps(onLoadComplete);
-        } else {
-            this.loadBrowserDeps(onLoadComplete);
-        }
+        this.loadBrowserDeps(onLoadComplete);
     }
 
     loadBrowserDeps(onLoadCompleteCb) {
         onLoadCompleteCb();
-    }
-
-    loadWebviewDeps(e) {
-        const t = this;
-
-        // 'deviceready' is fired when cordova.js finishes loading
-        document.addEventListener(
-            "deviceready",
-            () => {
-                document.addEventListener("pause", () => {
-                    t.onPause();
-                });
-                document.addEventListener("resume", () => {
-                    t.onResume();
-                });
-                e();
-            },
-            false
-        );
-
-        // Load cordova.js
-        (function(e, t, r) {
-            let a;
-            const i =
-                device.version >= "1.0.8"
-                    ? `cordova/${device.version}`
-                    : "cordova";
-            const o = `${i}/${device.os}/cordova.js`;
-
-            const s = e.getElementsByTagName(t)[0];
-            if (!e.getElementById(r)) {
-                a = e.createElement(t);
-                a.id = r;
-                a.onload = function() { };
-                a.src = o;
-                s.parentNode.insertBefore(a, s);
-            }
-        })(document, "script", "cordova-js");
     }
 
     tryLoad() {
@@ -165,9 +122,7 @@ class Application {
         ) {
             this.initialized = true;
             this.config.teamAutoFill = true;
-            if (device.webview) {
-                Menu.applyWebviewStyling(device.tablet);
-            } else if (device.mobile) {
+            if (device.mobile) {
                 Menu.applyMobileBrowserStyling(device.tablet);
             }
             const t =
@@ -422,41 +377,6 @@ class Application {
             this.loadoutDisplay.resize();
         }
         this.refreshUi();
-    }
-
-    onPause() {
-        if (device.webview) {
-            this.pauseTime = Date.now();
-            this.audioManager.setMute(true);
-            if (device.os == "ios") {
-                this.pixi?.ticker.remove(
-                    this.pixi.render,
-                    this.pixi
-                );
-            }
-        }
-    }
-
-    onResume() {
-        if (device.webview) {
-            if (
-                this.game?.playing &&
-                Date.now() - this.pauseTime > 30000
-            ) {
-                window.location.reload(true);
-            } else {
-                this.audioManager.setMute(
-                    this.config.get("muteAudio")
-                );
-            }
-            if (device.os == "ios") {
-                this.pixi?.ticker.add(
-                    this.pixi.render,
-                    this.pixi,
-                    PIXI.UPDATE_PRIORITY.LOW
-                );
-            }
-        }
     }
 
     startPingTest() {
@@ -917,7 +837,7 @@ window.addEventListener("hashchange", () => {
     App.tryJoinTeam(false);
 });
 window.addEventListener("beforeunload", (e) => {
-    if (App.game?.warnPageReload() && !device.webview) {
+    if (App.game?.warnPageReload()) {
         // In new browsers, dialogText is overridden by a generic string
         const dialogText = "Do you want to reload the game?";
         e.returnValue = dialogText;

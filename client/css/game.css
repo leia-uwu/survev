@@ -675,14 +675,6 @@ img {
     -webkit-transform-origin: right !important;
     transform-origin: right !important;
 }
-.ui-bottom-right-tablet-ipad-webview {
-    bottom: 25% !important;
-    right: 6px !important;
-    -webkit-transform: scale(0.75) !important;
-    transform: scale(0.75) !important;
-    -webkit-transform-origin: right !important;
-    transform-origin: right !important;
-}
 .ui-bottom-right-tablet-ipad-browser {
     bottom: 30% !important;
     right: 6px !important;
@@ -692,13 +684,6 @@ img {
     transform-origin: right !important;
 }
 @media (max-height: 600px) {
-    .ui-bottom-right-tablet-webview {
-        bottom: 25% !important;
-        -webkit-transform: scale(0.65) !important;
-        transform: scale(0.65) !important;
-        -webkit-transform-origin: right !important;
-        transform-origin: right !important;
-    }
     .ui-bottom-right-tablet-browser {
         bottom: 30% !important;
         -webkit-transform: scale(0.6) !important;

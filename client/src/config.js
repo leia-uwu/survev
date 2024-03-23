@@ -1,7 +1,5 @@
 import { util } from "../../shared/utils/util";
-import { device } from "./device";
 import loadout from "./ui/loadouts";
-import webview from "./ui/webview";
 
 const defaultConfig = {
     muteAudio: false,
@@ -50,35 +48,18 @@ export class ConfigManager {
             this.loaded = true;
             onLoadCompleteCb();
         };
-        if (device.webview && webview.hasNativeStorage()) {
-            webview.storageGetItem("surviv_config", (err, data) => {
-                if (err) {
-                    console.log("Failed loading config");
-                    onLoaded({});
-                } else {
-                    onLoaded(data);
-                }
-            });
-        } else {
-            let storedConfig = {};
-            try {
-                storedConfig = localStorage.getItem("surviv_config");
-            } catch (err) {
-                this.localStorageAvailable = false;
-            }
-            onLoaded(storedConfig);
+        let storedConfig = {};
+        try {
+            storedConfig = localStorage.getItem("surviv_config");
+        } catch (err) {
+            this.localStorageAvailable = false;
         }
+        onLoaded(storedConfig);
     }
 
     store() {
         const strData = JSON.stringify(this.config);
-        if (device.webview && webview.hasNativeStorage()) {
-            webview.storageSetItem("surviv_config", strData, (err, t) => {
-                if (err) {
-                    console.log("Failed storing config");
-                }
-            });
-        } else if (this.localStorageAvailable) {
+        if (this.localStorageAvailable) {
             // In browsers, like Safari, localStorage setItem is
             // disabled in private browsing mode.
             // This try/catch is here to handle that situation.

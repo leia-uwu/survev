@@ -288,73 +288,73 @@ export class InputBindUi {
         const container = $(".js-keybind-list");
         container.empty();
         for (let i = 0; i < defKeys.length; i++) {
-                const key = defKeys[i];
-                const bindDef = BindDefs[key];
-                const bind = binds[key];
-                const btn = $("<a/>", {
-                    class: "btn-game-menu btn-darken btn-keybind-desc",
-                    text: bindDef.name
-                });
-                const val = $("<div/>", {
-                    class: "btn-keybind-display",
-                    text: bind ? bind.toString() : ""
-                });
-                btn.on("click", (event) => {
-                    const targetElem = $(event.target);
-                    targetElem.addClass("btn-keybind-desc-selected");
-                    this.input.captureNextInput((event, inputValue) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        const disallowKeys = [
-                            Key.Control,
-                            Key.Shift,
-                            Key.Alt,
-                            Key.Windows,
-                            Key.ContextMenu,
-                            Key.F1,
-                            Key.F2,
-                            Key.F3,
-                            Key.F4,
-                            Key.F5,
-                            Key.F6,
-                            Key.F7,
-                            Key.F8,
-                            Key.F9,
-                            Key.F10,
-                            Key.F11,
-                            Key.F12
-                        ];
-                        if (
-                            inputValue.type == InputType.Key &&
+            const key = defKeys[i];
+            const bindDef = BindDefs[key];
+            const bind = binds[key];
+            const btn = $("<a/>", {
+                class: "btn-game-menu btn-darken btn-keybind-desc",
+                text: bindDef.name
+            });
+            const val = $("<div/>", {
+                class: "btn-keybind-display",
+                text: bind ? bind.toString() : ""
+            });
+            btn.on("click", (event) => {
+                const targetElem = $(event.target);
+                targetElem.addClass("btn-keybind-desc-selected");
+                this.input.captureNextInput((event, inputValue) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const disallowKeys = [
+                        Key.Control,
+                        Key.Shift,
+                        Key.Alt,
+                        Key.Windows,
+                        Key.ContextMenu,
+                        Key.F1,
+                        Key.F2,
+                        Key.F3,
+                        Key.F4,
+                        Key.F5,
+                        Key.F6,
+                        Key.F7,
+                        Key.F8,
+                        Key.F9,
+                        Key.F10,
+                        Key.F11,
+                        Key.F12
+                    ];
+                    if (
+                        inputValue.type == InputType.Key &&
                             disallowKeys.includes(inputValue.code)
-                        ) {
-                            return false;
+                    ) {
+                        return false;
+                    }
+                    targetElem.removeClass(
+                        "btn-keybind-desc-selected"
+                    );
+                    if (!inputValue.equals(inputKey(Key.Escape))) {
+                        let bindValue = inputValue;
+                        if (inputValue.equals(inputKey(Key.Backspace))) {
+                            bindValue = null;
                         }
-                        targetElem.removeClass(
-                            "btn-keybind-desc-selected"
+                        this.inputBinds.setBind(
+                            parseInt(key),
+                            bindValue
                         );
-                        if (!inputValue.equals(inputKey(Key.Escape))) {
-                            let bindValue = inputValue;
-                            if (inputValue.equals(inputKey(Key.Backspace))) {
-                                bindValue = null;
-                            }
-                            this.inputBinds.setBind(
-                                parseInt(key),
-                                bindValue
-                            );
-                            this.inputBinds.saveBinds();
-                            this.refresh();
-                        }
-                        return true;
-                    });
+                        this.inputBinds.saveBinds();
+                        this.refresh();
+                    }
+                    return true;
                 });
-                container.append(
-                    $("<div/>", {
-                        class: "ui-keybind-container"
-                    })
-                        .append(btn)
-                        .append(val)
-                );
+            });
+            container.append(
+                $("<div/>", {
+                    class: "ui-keybind-container"
+                })
+                    .append(btn)
+                    .append(val)
+            );
         }
         $("#keybind-link").html(this.inputBinds.toBase64());
     }

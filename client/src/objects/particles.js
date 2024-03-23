@@ -234,7 +234,7 @@ export class ParticleBarn {
             if (e.active && e.enabled) {
                 e.ticker += dt;
                 e.nextSpawn -= dt;
-                let def = EmitterDefs[e.type];
+                const def = EmitterDefs[e.type];
                 while (
                     e.nextSpawn <= 0 && e.spawnCount < def.maxCount
 

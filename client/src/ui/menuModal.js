@@ -8,7 +8,7 @@ export class MenuModal {
         this.visible = false;
         this.onShowFn = function() { };
         this.onHideFn = function() { };
-        
+
         selector.find(".close").click((e) => {
             this.hide();
         });

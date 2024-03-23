@@ -73,11 +73,6 @@ class Device {
     constructor() {
         this.os = getOs();
         this.browser = getBrowser();
-        const webviewParam = getParameterByName("webview") == "true";
-        if (webviewParam) {
-            setItem("surviv_webview", "true");
-        }
-        this.webview = webviewParam || getItem("surviv_webview");
         this.model = detectiPhoneX() ? "iphonex" : "unknown";
         const versionParam = getParameterByName("version");
         if (versionParam) {

@@ -321,12 +321,12 @@ export class Account {
         if (itemTypes.length != 0) {
             // Preemptively mark the item status as modified on our local copy
             for (let i = 0; i < itemTypes.length; i++) {
-                    const item = this.items.find((e) => {
-                        return e.type == itemTypes[i];
-                    });
-                    if (item) {
-                        item.status = Math.max(item.status, status);
-                    }
+                const item = this.items.find((e) => {
+                    return e.type == itemTypes[i];
+                });
+                if (item) {
+                    item.status = Math.max(item.status, status);
+                }
             }
             this.emit("items", this.items);
             this.ajaxRequest(

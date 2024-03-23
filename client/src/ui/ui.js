@@ -240,7 +240,7 @@ export class UiManager {
 
         // Display full screen
         let showFullScreen = device.os == "ios" ? "none" : "block";
-        if (device.webview || device.touch) {
+        if (device.touch) {
             showFullScreen = "none";
         }
         $("#btn-game-fullscreen").css("display", showFullScreen);
@@ -823,11 +823,7 @@ export class UiManager {
                                     transform += " scale(0.5)";
                                 }
                                 hideIndicator = false;
-                                const heightAdjust =
-                                    device.model == "iphonex" &&
-                                        device.webview
-                                        ? 20
-                                        : 0;
+                                const heightAdjust = 0;
                                 elem.css({
                                     left: math.clamp(
                                         screenEdge.x,
@@ -1336,7 +1332,6 @@ export class UiManager {
     }
 
     showStats(playerStats, teamId, r, winningTeamId, o, localTeamId, teamMode, c, m, p, h, d) {
-
         // If we're spectating a team that's not our own, and the game isn't over yet,
         // don't display the stats screen again.
         if (!c || teamId == localTeamId || o) {

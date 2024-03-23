@@ -25,7 +25,6 @@ function errorTypeToString(type, localization) {
 
 export class TeamMenu {
     constructor(config, pingTest, siteInfo, localization, audioManager, joinGameCb, leaveCb) {
-
         // Jquery elems
         this.playBtn = $("#btn-start-team");
         this.serverWarning = $("#server-warning");
@@ -113,7 +112,7 @@ export class TeamMenu {
             const r = $("#team-url").html();
             helpers.copyTextToClipboard(r);
         });
-        if (!device.webview && !device.mobile) {
+        if (!device.mobile) {
             // Hide invite link
             this.hideUrl = false;
             $("#team-hide-url").click((e) => {
@@ -488,12 +487,9 @@ export class TeamMenu {
                 const roomUrl = `${window.location.origin}/${this.roomData.roomUrl}`;
                 const roomCode =
                     this.roomData.roomUrl.substring(1);
-                if (device.webview) {
-                    $("#team-url").html(roomCode);
-                } else {
-                    $("#team-url").html(roomUrl);
-                    $("#team-code").html(roomCode);
-                }
+
+                $("#team-url").html(roomUrl);
+                $("#team-code").html(roomCode);
 
                 if (window.history) {
                     window.history.replaceState(
@@ -585,125 +581,125 @@ export class TeamMenu {
                 t < this.roomData.maxPlayers;
                 t++
             ) {
-                    let playerStatus = {
-                        name: "",
-                        playerId: 0,
-                        isLeader: false,
-                        inGame: false,
-                        self: false
-                    };
-                    if (t < this.players.length) {
-                        const player = this.players[t];
-                        playerStatus = {
-                            name: player.name,
-                            playerId: player.playerId,
-                            isLeader: player.isLeader,
-                            inGame: player.inGame,
-                            self:
+                let playerStatus = {
+                    name: "",
+                    playerId: 0,
+                    isLeader: false,
+                    inGame: false,
+                    self: false
+                };
+                if (t < this.players.length) {
+                    const player = this.players[t];
+                    playerStatus = {
+                        name: player.name,
+                        playerId: player.playerId,
+                        isLeader: player.isLeader,
+                        inGame: player.inGame,
+                        self:
                                 player.playerId ==
                                 this.localPlayerId
-                        };
-                    }
+                    };
+                }
 
-                    const member = $("<div/>", {
-                        class: "team-menu-member"
-                    });
+                const member = $("<div/>", {
+                    class: "team-menu-member"
+                });
 
-                    // Left-side icon
-                    let iconClass = "";
-                    if (playerStatus.isLeader) {
-                        iconClass = " icon-leader";
-                    } else if (
-                        this.isLeader &&
+                // Left-side icon
+                let iconClass = "";
+                if (playerStatus.isLeader) {
+                    iconClass = " icon-leader";
+                } else if (
+                    this.isLeader &&
                         playerStatus.playerId != 0
-                    ) {
-                        iconClass = " icon-kick";
-                    }
+                ) {
+                    iconClass = " icon-kick";
+                }
 
+                member.append(
+                    $("<div/>", {
+                        class: `icon${iconClass}`,
+                        "data-playerid": playerStatus.playerId
+                    })
+                );
+                let n = null;
+                let c = null;
+                if (this.editingName && playerStatus.self) {
+                    n = $("<input/>", {
+                        type: "text",
+                        tabindex: 0,
+                        class: "name menu-option name-text name-self-input",
+                        maxLength:
+                                net.Constants.PlayerNameMaxLen
+                    });
+                    n.val(playerStatus.name);
+                    const m = (t) => {
+                        const a = helpers.sanitizeNameInput(
+                            n.val()
+                        );
+                        playerStatus.name = a;
+                        this.config.set("playerName", a);
+                        this.sendMessage("changeName", {
+                            name: a
+                        });
+                        this.editingName = false;
+                        this.refreshUi();
+                    };
+                    const h = (t) => {
+                        this.editingName = false;
+                        this.refreshUi();
+                    };
+                    n.keypress((e) => {
+                        if (e.which === 13) {
+                            m();
+                            return false;
+                        }
+                    });
+                    n.on("blur", h);
+                    member.append(n);
+                    c = $("<div/>", {
+                        class: "icon icon-submit-name-change"
+                    });
+                    c.on("click", m);
+                    c.on("mousedown", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
+                } else {
+                    let d = "name-text";
+                    if (playerStatus.self) {
+                        d += " name-self";
+                    }
+                    if (playerStatus.inGame) {
+                        d += " name-in-game";
+                    }
+                    const u = $("<div/>", {
+                        class: `name menu-option ${d}`,
+                        html: helpers.htmlEscape(playerStatus.name)
+                    });
+                    if (playerStatus.self) {
+                        u.on("click", () => {
+                            console.log("editing name");
+                            this.editingName = true;
+                            this.refreshUi();
+                        });
+                    }
+                    member.append(u);
+                }
+                if (c) {
+                    member.append(c);
+                } else {
                     member.append(
                         $("<div/>", {
-                            class: `icon${iconClass}`,
-                            "data-playerid": playerStatus.playerId
+                            class: `icon ${playerStatus.inGame
+                                ? "icon-in-game"
+                                : ""
+                            }`
                         })
                     );
-                    let n = null;
-                    let c = null;
-                    if (this.editingName && playerStatus.self) {
-                        n = $("<input/>", {
-                            type: "text",
-                            tabindex: 0,
-                            class: "name menu-option name-text name-self-input",
-                            maxLength:
-                                net.Constants.PlayerNameMaxLen
-                        });
-                        n.val(playerStatus.name);
-                        const m = (t) => {
-                            const a = helpers.sanitizeNameInput(
-                                n.val()
-                            );
-                            playerStatus.name = a;
-                            this.config.set("playerName", a);
-                            this.sendMessage("changeName", {
-                                name: a
-                            });
-                            this.editingName = false;
-                            this.refreshUi();
-                        };
-                        const h = (t) => {
-                            this.editingName = false;
-                            this.refreshUi();
-                        };
-                        n.keypress((e) => {
-                            if (e.which === 13) {
-                                m();
-                                return false;
-                            }
-                        });
-                        n.on("blur", h);
-                        member.append(n);
-                        c = $("<div/>", {
-                            class: "icon icon-submit-name-change"
-                        });
-                        c.on("click", m);
-                        c.on("mousedown", (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        });
-                    } else {
-                        let d = "name-text";
-                        if (playerStatus.self) {
-                            d += " name-self";
-                        }
-                        if (playerStatus.inGame) {
-                            d += " name-in-game";
-                        }
-                        const u = $("<div/>", {
-                            class: `name menu-option ${d}`,
-                            html: helpers.htmlEscape(playerStatus.name)
-                        });
-                        if (playerStatus.self) {
-                            u.on("click", () => {
-                                console.log("editing name");
-                                this.editingName = true;
-                                this.refreshUi();
-                            });
-                        }
-                        member.append(u);
-                    }
-                    if (c) {
-                        member.append(c);
-                    } else {
-                        member.append(
-                            $("<div/>", {
-                                class: `icon ${playerStatus.inGame
-                                    ? "icon-in-game"
-                                    : ""
-                                }`
-                            })
-                        );
-                    }
-                    teamMembers.append(member);
-                    n?.focus();
+                }
+                teamMembers.append(member);
+                n?.focus();
             }
 
             $(".icon-kick", teamMembers).click((e) => {

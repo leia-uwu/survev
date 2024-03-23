@@ -90,7 +90,7 @@ export class EmoteBarn {
             if (this.dr) {
                 let worldPos;
                 // Determine if this is going to be a team ping or an emote
-                if (this.emoteSelector.ping &&  this.emoteWheelsGreyed) {
+                if (this.emoteSelector.ping && this.emoteWheelsGreyed) {
                     const pingData = PingDefs[this.emoteSelector.ping];
                     if (pingData?.pingMap) {
                         // Where on the world do we ping?
