@@ -354,10 +354,11 @@ export class UiManager {
             }
         };
         if (!device.touch) {
-            this.weapSwitches.on("mousedown", (e) => {
+            const This = this;
+            this.weapSwitches.on("mousedown", function(e) {
                 if (e.button == 0) {
-                    this.weapDraggedDiv = $(this);
-                    this.weapDraggedId = $(this).data("slot");
+                    This.weapDraggedDiv = $(this);
+                    This.weapDraggedId = $(this).data("slot");
                 }
             });
             $("#ui-game").on("mousemove", (e) => {
@@ -379,25 +380,23 @@ export class UiManager {
                     }
                 }
             });
-            $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on(
-                "mouseup",
-                (e) => {
-                    if (e.button == 0 && this.weapDraggedDiv != null) {
-                        this.weapSwitches.each(function() {
-                            const e = $(this).data("slot");
-                            if (
-                                $(this).is(":hover") &&
-                                this.weapDraggedId != e
-                            ) {
-                                this.swapWeapSlots = true;
-                                this.weapDropped = true;
-                            }
-                        });
-                        if (!this.swapWeapSlots) {
-                            this.resetWeapSlotStyling();
+            $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on("mouseup", (e) => {
+                if (e.button == 0 && This.weapDraggedDiv != null) {
+                    This.weapSwitches.each(function() {
+                        const e = $(this).data("slot");
+                        if (
+                            $(this).is(":hover") &&
+                            This.weapDraggedId != e
+                        ) {
+                            This.swapWeapSlots = true;
+                            This.weapDropped = true;
                         }
+                    });
+                    if (!This.swapWeapSlots) {
+                        This.resetWeapSlotStyling();
                     }
                 }
+            }
             );
         }
         this.mapSpriteBarn = new MapSpriteBarn();
@@ -1098,7 +1097,7 @@ export class UiManager {
                 // Map-event pings free themselves after they are finished;
                 // there's no limit to the number that an occur simultaneously.
                 const scale = (device.uiLayout == device.UiLayout.Sm ? 0.15 : 0.2) *
-                1.5;
+                    1.5;
                 createPingSprite(
                     scale,
                     pingDef.tint
