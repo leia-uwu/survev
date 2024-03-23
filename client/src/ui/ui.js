@@ -1744,11 +1744,7 @@ export class UiManager {
         }
     }
 
-    toggleLocalStats() {
-        const hide =
-            arguments.length > 0 &&
-            arguments[0] !== undefined &&
-            arguments[0];
+    toggleLocalStats(hide = false) {
         const display =
             this.spectateModeStats.css("display") == "none" && !hide;
         this.spectateModeStats.css(
@@ -2222,11 +2218,7 @@ export class UiManager {
         }
     }
 
-    toggleEscMenu() {
-        const clear =
-            arguments.length > 0 &&
-            arguments[0] !== undefined &&
-            arguments[0];
+    toggleEscMenu(clear = false) {
         if (!this.displayingStats) {
             if (this.escMenuDisplayed || clear) {
                 this.escMenuDisplayed = false;

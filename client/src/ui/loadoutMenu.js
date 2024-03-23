@@ -725,11 +725,7 @@ export class LoadoutMenu {
         }
     }
 
-    selectItem(selector) {
-        const deselect =
-            arguments.length <= 1 ||
-            arguments[1] === undefined ||
-            arguments[1];
+    selectItem(selector, deselect = true) {
         const isListItem = selector.hasClass("customize-list-item");
         const parent = isListItem ? selector : selector.parent();
         const image = parent.find(".customize-item-image");

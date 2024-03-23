@@ -635,9 +635,7 @@ class WebAudioEngine {
         }
     }
 
-    stop() {
-        const retainAmbient = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-
+    stop(retainAmbient = true) {
         // Stops all sounds, despite what the symmetry with play() would
         // have you think
         for (let i = 0; i < kMaxInstances; i++) {
