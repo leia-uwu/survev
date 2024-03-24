@@ -774,7 +774,8 @@ export class Player extends BaseGameObject {
             if (!weapon.type) continue;
             const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
 
-            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists") {
+            //inventory drop logic already handles throwables, don't drop them here
+            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists" && def.type != "throwable") {
                 this.game.lootBarn.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
             }
         }
