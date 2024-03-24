@@ -1137,14 +1137,14 @@ export class Player extends BaseGameObject {
     }
 
     pickupGun(obj: Loot): void {
-        // if player tries to pick up a gun they're already holding, return early
-        if (this.activeWeapon == obj.type) {
+        // if player tries to pick up a gun they're already holding and there is no empty slots, return early
+        if (this.activeWeapon == obj.type && this.weapons[0].type && this.weapons[1].type) {
             return;
         }
 
         if (this.curWeapIdx == 0 || this.curWeapIdx == 1) { // holding gun
             const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
-            const backpackLevel = Number(this.backpack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+            const backpackLevel = (GameObjectDefs[this.backpack] as BackpackDef).level;
 
             const bagCapacityAmmo = GameConfig.bagSizes[weaponInfo.ammo][backpackLevel];
             const weaponAmmo = this.weapons[this.curWeapIdx].ammo;
@@ -1182,17 +1182,13 @@ export class Player extends BaseGameObject {
                 return;
             }
 
-            if (!this.weapons[0].type) { // always give gun to first slot if it's open
-                this.weapons[0].type = obj.type;
-                this.weapons[0].ammo = 0;
-                this.weapons[0].cooldown = 0;
-                this.curWeapIdx = 0;
-            } else { // else just give it to the second slot
-                this.weapons[1].type = obj.type;
-                this.weapons[1].ammo = 0;
-                this.weapons[1].cooldown = 0;
-                this.curWeapIdx = 1;
-            }
+            // determine the slot where the weapon should be placed
+            const weapIdx = this.weapons[0].type ? 1 : 0;
+
+            this.weapons[weapIdx].type = obj.type;
+            this.weapons[weapIdx].ammo = 0;
+            this.weapons[weapIdx].cooldown = 0;
+            this.curWeapIdx = weapIdx;
         }
 
         const newWeaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;// info for the picked up gun
@@ -1280,7 +1276,7 @@ export class Player extends BaseGameObject {
                 this.curWeapIdx = 2;
             }
 
-            const backpackLevel = Number(this.backpack.at(-1));// backpack00, backpack01, etc ------- at(-1) => 0, 1, etc
+            const backpackLevel = (GameObjectDefs[this.backpack] as BackpackDef).level;
             const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
             if (this.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
                 this.inventory[weaponAmmoType] += weaponAmmoCount;

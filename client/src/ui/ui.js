@@ -354,11 +354,11 @@ export class UiManager {
             }
         };
         if (!device.touch) {
-            const This = this;
-            this.weapSwitches.on("mousedown", function(e) {
+            this.weapSwitches.on("mousedown", (e) => {
+                const elem = e.currentTarget;
                 if (e.button == 0) {
-                    This.weapDraggedDiv = $(this);
-                    This.weapDraggedId = $(this).data("slot");
+                    this.weapDraggedDiv = $(elem);
+                    this.weapDraggedId = $(elem).data("slot");
                 }
             });
             $("#ui-game").on("mousemove", (e) => {
@@ -381,19 +381,19 @@ export class UiManager {
                 }
             });
             $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on("mouseup", (e) => {
-                if (e.button == 0 && This.weapDraggedDiv != null) {
-                    This.weapSwitches.each(function() {
-                        const e = $(this).data("slot");
+                if (e.button == 0 && this.weapDraggedDiv != null) {
+                    this.weapSwitches.each(() => {
+                        const id = $(e.currentTarget).data("slot");
                         if (
-                            $(this).is(":hover") &&
-                            This.weapDraggedId != e
+                            $(e.currentTarget).is(":hover") &&
+                            this.weapDraggedId != id
                         ) {
-                            This.swapWeapSlots = true;
-                            This.weapDropped = true;
+                            this.swapWeapSlots = true;
+                            this.weapDropped = true;
                         }
                     });
-                    if (!This.swapWeapSlots) {
-                        This.resetWeapSlotStyling();
+                    if (!this.swapWeapSlots) {
+                        this.resetWeapSlotStyling();
                     }
                 }
             }
