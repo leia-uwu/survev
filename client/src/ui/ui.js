@@ -354,7 +354,6 @@ export class UiManager {
             }
         };
         if (!device.touch) {
-            const This = this;
             this.weapSwitches.on("mousedown", (e) => {
                 const elem = e.currentTarget;
                 if (e.button == 0) {

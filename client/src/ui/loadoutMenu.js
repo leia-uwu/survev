@@ -551,7 +551,7 @@ export class LoadoutMenu {
         // listen for ui modifications
         this.selectableSlots.on("mouseup", (e) => {
             const elem = e.currentTarget;
-            
+
             if (
                 !$(elem).hasClass(
                     "customize-list-item-locked"
