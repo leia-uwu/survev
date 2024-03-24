@@ -86,6 +86,12 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
+
+        this.weapons[0].type = "m870";
+        this.weapons[0].ammo = 5;
+
+        this.weapons[1].type = "mp5";
+        this.weapons[1].ammo = 30;
     }
 
     shootStart(): void {

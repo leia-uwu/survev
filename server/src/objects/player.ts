@@ -337,6 +337,8 @@ export class Player extends BaseGameObject {
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
 
+        this.game.lootBarn.addLoot("frag", this.pos, this.layer, 1);
+
         this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
@@ -909,13 +911,23 @@ export class Player extends BaseGameObject {
                 this.curWeapIdx = this.weaponManager.lastWeaponIdx;
                 break;
             case GameConfig.Input.EquipOtherGun:
-                for (let i = 0; i < this.weapons.length; i++) {
-                    if (GameConfig.WeaponType[i] === "gun" &&
-                            this.weapons[i] !== this.weapons[this.curWeapIdx]) {
-                        this.curWeapIdx = i;
-                        break;
-                    }
+                // for (let i = 0; i < this.weapons.length; i++) {
+                //     if (GameConfig.WeaponType[i] === "gun" &&
+                //             this.weapons[i] !== this.weapons[this.curWeapIdx]) {
+                //         this.curWeapIdx = i;
+                //         break;
+                //     }
+                // }
+
+                // completely unreadable but optimized weapon swapping code since leia apparently values fewer lines of code over readability
+                if (this.curWeapIdx == 0 || this.curWeapIdx == 1) {
+                    const otherGunSlotIdx = this.curWeapIdx ^ 1;
+                    const isOtherGunSlotFull: number = +!!this.weapons[otherGunSlotIdx].type;//! ! converts string to boolean, + coerces boolean to number
+                    this.curWeapIdx = isOtherGunSlotFull ? otherGunSlotIdx : 2;
+                } else if (this.curWeapIdx == 2 && (this.weapons[0].type || this.weapons[1].type)) {
+                    this.curWeapIdx = +!(this.weapons[0].type);
                 }
+
                 break;
             case GameConfig.Input.Interact: {
                 const coll = collider.createCircle(this.pos, this.rad);
