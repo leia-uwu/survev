@@ -258,7 +258,7 @@ export class LoadoutMenu {
 
             this.colorCode =
                 document.getElementById("color-picker-hex");
-            const updateColor = function() {
+            const updateColor = () => {
                 const value = this.colorCode.value;
                 if (value.length) {
                     // Only accept 6 digit hex or 7 digit with a hash
@@ -548,23 +548,24 @@ export class LoadoutMenu {
     }
 
     setItemListeners(loadoutType) {
-        const This = this;
         // listen for ui modifications
-        this.selectableSlots.on("mouseup", function() {
+        this.selectableSlots.on("mouseup", (e) => {
+            const elem = e.currentTarget;
+
             if (
-                !$(this).hasClass(
+                !$(elem).hasClass(
                     "customize-list-item-locked"
                 )
             ) {
                 if (
                     this.itemSelected &&
-                    !$(this).hasClass("customize-list-item")
+                    !$(elem).hasClass("customize-list-item")
                 ) {
-                    This.itemSelected = false;
+                    this.itemSelected = false;
                     return;
                 }
-                This.selectItem($(this));
-                This.updateLoadoutFromDOM();
+                this.selectItem($(elem));
+                this.updateLoadoutFromDOM();
             }
         });
 
@@ -579,22 +580,23 @@ export class LoadoutMenu {
                 );
                 this.droppableSlots.on(
                     "mouseup",
-                    () => {
+                    (e) => {
+                        const elem = e.currentTarget;
                         if (
-                            !$(this).hasClass(
+                            !$(elem).hasClass(
                                 "customize-list-item-locked"
                             )
                         ) {
                             if (
                                 this.itemSelected &&
-                                !$(this).hasClass(
+                                !$(elem).hasClass(
                                     "customize-list-item"
                                 )
                             ) {
                                 this.deselectItem();
                                 return;
                             }
-                            this.selectItem($(this));
+                            this.selectItem($(elem));
                             this.updateLoadoutFromDOM();
                         }
                     }
@@ -603,7 +605,8 @@ export class LoadoutMenu {
                     "drop",
                     (e) => {
                         e.originalEvent.preventDefault();
-                        const parent = $(this).parent();
+                        const elem = e.currentTarget;
+                        const parent = $(elem).parent();
                         this.updateSlot(
                             parent,
                             this.selectedItem.img,
@@ -618,7 +621,7 @@ export class LoadoutMenu {
                     (e) => {
                         if (this.itemSelected) {
                             e.stopPropagation();
-                            const parent = $(this).parent();
+                            const parent = $(e.currentTarget).parent();
                             this.updateSlot(
                                 parent,
                                 this.selectedItem.img,
@@ -630,7 +633,7 @@ export class LoadoutMenu {
                 );
                 this.droppableSlots.on(
                     "dragover",
-                    (e) => {
+                    function(e) {
                         e.originalEvent.preventDefault();
                         $(this)
                             .parent()
@@ -642,7 +645,7 @@ export class LoadoutMenu {
                     "dragleave",
                     (e) => {
                         e.originalEvent.preventDefault();
-                        $(this)
+                        $(e.currentTarget)
                             .parent()
                             .find(".ui-emote-hl")
                             .css(
@@ -658,9 +661,9 @@ export class LoadoutMenu {
 
                 // Trash auto emotes
                 $(".ui-emote-auto-trash").click(
-                    () => {
-                        const e = $(this).parent();
-                        this.updateSlot(e, "", "");
+                    (e) => {
+                        const parent = $(e.currentTarget).parent();
+                        this.updateSlot(parent, "", "");
                         this.updateLoadoutFromDOM();
                     }
                 );
