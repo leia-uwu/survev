@@ -363,7 +363,6 @@ export class Pass {
     }
 
     animatePassLevelUp() {
-        const e = this;
         const t = $("#pass-progress-bar-fill");
         const r = $("#pass-progress-level");
         const a = $("#pass-progress-unlock-wrapper");
@@ -393,10 +392,10 @@ export class Pass {
             .delay(250)
             .queue((t) => {
                 const r = i(
-                    e.pass.data.type,
-                    e.pass.currentLevel
+                    this.pass.data.type,
+                    this.pass.currentLevel
                 );
-                e.setPassUnlockImage(r);
+                this.setPassUnlockImage(r);
                 a.removeClass("pass-unlock-pulse");
                 o.animate(
                     {
