@@ -381,7 +381,7 @@ export class UiManager {
                     }
                 }
             });
-            $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on("mouseup", (e) =>  {
+            $("#ui-game, #ui-weapon-id-1, #ui-weapon-id-2").on("mouseup", (e) => {
                 if (e.button == 0 && this.weapDraggedDiv != null) {
                     this.weapSwitches.each(() => {
                         const id = $(e.currentTarget).data("slot");
