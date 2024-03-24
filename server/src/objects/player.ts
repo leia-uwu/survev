@@ -1240,23 +1240,21 @@ export class Player extends BaseGameObject {
             break;
         }
         case "scope": {
-            const level = item.level;
-            if (level === 1) break;
+            if (item.level === 1) break;
+            const scopeLevel = `${item.level}xscope`;
 
-            const availableScopeLevels = [15, 8, 4, 2, 1];
-            let targetScopeIndex = availableScopeLevels.indexOf(level);
+            const availableScopes = Object.keys(ScopeDefs).reverse();
+            const targetScopeIndex = availableScopes.indexOf(scopeLevel);
+
             this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
-            this.inventory[`${level}xscope`] = 0;
+            this.inventory[scopeLevel] = 0;
 
-            if (this.scope === `${level}xscope`) {
-                for (let i = targetScopeIndex; i < availableScopeLevels.length; i++) {
-                    if (this.inventory[`${availableScopeLevels[i]}xscope`]) {
-                        targetScopeIndex = availableScopeLevels[i];
+            if (this.scope === scopeLevel) {
+                for (let i = targetScopeIndex; i < availableScopes.length; i++) {
+                    if (!this.inventory[availableScopes[i]]) continue;
+                    this.scope = availableScopes[i];
                         break;
                     }
-                }
-
-                this.scope = `${targetScopeIndex}xscope`;
             }
 
             this.dirty.inventory = true;
