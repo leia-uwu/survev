@@ -18,6 +18,7 @@ import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
 import { AliveCountsMsg, type DropItemMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, UpdateMsg } from "../../../shared/net";
+import { ScopeDefs } from "../../../shared/defs/gameObjects/gearDefs";
 
 export class Emote {
     playerId: number;
@@ -951,10 +952,24 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.Cancel:
                 this.cancelAction();
                 break;
-            case GameConfig.Input.EquipNextScope:// low priority but will do eventually
+            case GameConfig.Input.EquipNextScope: {
+                const availableScopes = Object.keys(ScopeDefs);
+                const nextScopeIdx = availableScopes.indexOf(this.scope) + 1;
+                const nextScope = availableScopes[nextScopeIdx];
+                if (nextScope != undefined && this.inventory[nextScope]) {
+                    this.scope = nextScope;
+                } 
                 break;
-            case GameConfig.Input.EquipPrevScope:// low priority but will do eventually
+            }
+            case GameConfig.Input.EquipPrevScope: {
+                const availableScopes = Object.keys(ScopeDefs);
+                const prevScopeIdx = availableScopes.indexOf(this.scope) - 1;
+                const prevScope = availableScopes[prevScopeIdx];
+                if (prevScope != undefined && this.inventory[prevScope]) {
+                    this.scope = prevScope;
+                } 
                 break;
+            }
             case GameConfig.Input.SwapWeapSlots: {
                 const firstSlotWeaponType = this.weapons[0].type;
                 const firstSlotWeaponAmmo = this.weapons[0].ammo;

@@ -462,7 +462,10 @@ const BaseDefs = {
         sound: {
             pickup: "chest_pickup_01"
         }
-    },
+    }
+};
+
+export const ScopeDefs = {
     "1xscope": {
         name: "1x Scope",
         type: "scope",
@@ -753,7 +756,9 @@ const SkinDefs = {
         }
     })
 };
+
 export const GearDefs = {
     ...BaseDefs,
+    ...ScopeDefs,
     ...SkinDefs
 };
