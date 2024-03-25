@@ -57,7 +57,7 @@ export class BulletBarn {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     addBullet(params, playerBarn, renderer) {
         let bullet = null;
@@ -474,7 +474,7 @@ export class BulletBarn {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     createBulletHit(playerBarn, targetId, audioManager) {
         const player = playerBarn.getPlayerById(targetId);

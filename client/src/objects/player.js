@@ -621,7 +621,7 @@ export class Player {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     m(dt, playerBarn, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating) {
         const curWeapDef = GameObjectDefs[this.netData.me];
@@ -1143,7 +1143,7 @@ export class Player {
     }
 
     /**
-     * @param {import("../map").Map} map 
+     * @param {import("../map").Map} map
      */
     updateRenderLayer(isActivePlayer, activePlayer, map) {
         // Give the player a larger stairs collision radius.
@@ -1235,8 +1235,8 @@ export class Player {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
-     * @param {import("../map").Map} map 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+     * @param {import("../map").Map} map
     */
     updateVisuals(playerBarn, map) {
         const outfitDef = GameObjectDefs[this.netData.se];

@@ -12,7 +12,7 @@ export class FlareBarn {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     addFlare(bullet, playerBarn, renderer) {
         let b = null;

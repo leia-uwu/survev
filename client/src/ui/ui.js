@@ -937,7 +937,7 @@ export class UiManager {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
     */
     updatePlayerMapSprites(e, activePlayer, playerBarn, map) {
         const activePlayerInfo = playerBarn.getPlayerInfo(activePlayer.__id);
@@ -1333,7 +1333,7 @@ export class UiManager {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
     */
     showStats(playerStats, teamId, r, winningTeamId, gameOver, localTeamId, teamMode, spectating, playerBarn, p, h, d) {
         // If we're spectating a team that's not our own, and the game isn't over yet,

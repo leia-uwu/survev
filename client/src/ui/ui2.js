@@ -163,7 +163,7 @@ class UiState {
         };
 
         this.scopes = [];
-        
+
         for (let r = c(), a = 0; a < r.length; a++) {
             this.scopes.push({
                 type: r[a],
@@ -210,7 +210,6 @@ class UiState {
     }
 }
 export class UiManager2 {
-
     /**
      * @param {import("./localization")} localization
      * @param {import("../inputBinds").InputBinds} inputBinds
@@ -297,7 +296,7 @@ export class UiManager2 {
             }
 
             this.dom.killFeed.lines.push({
-                line: line,
+                line,
                 text: line.firstElementChild
             });
         }
@@ -367,9 +366,9 @@ export class UiManager2 {
         this.eventListeners = [];
         const setEventListener = function(event, elem, fn) {
             itemAction.eventListeners.push({
-                event: event,
-                elem: elem,
-                fn: fn
+                event,
+                elem,
+                fn
             });
             elem.addEventListener(event, fn);
         };
@@ -590,7 +589,7 @@ export class UiManager2 {
                 math.smoothstep(E, 0, 0.25) *
                 (1 - math.smoothstep(E, 6, 6.5));
             offset += math.min(E / 0.25, 1);
-            
+
             // Shorter animation on mobile
             if (device.mobile) {
                 line.opacity = E < 6.5 ? 1 : 0;
@@ -601,7 +600,7 @@ export class UiManager2 {
         state.health = activePlayer.netData.he ? 0 : math.max(activePlayer.Re.Lr, 1);
         state.boost = activePlayer.Re.qr;
         state.downed = activePlayer.netData.ue;
-        
+
         // Interaction
         let interactionType = InteractionType.None;
         let interactionObject = null;
@@ -611,7 +610,7 @@ export class UiManager2 {
             // Usable obstacles
             let closestObj = null;
             let closestPen = 0;
-            let obstacles = map.Ve.getPool();
+            const obstacles = map.Ve.getPool();
 
             for (let i = 0; i < obstacles.length; i++) {
                 const obstacle = obstacles[i];
@@ -640,7 +639,7 @@ export class UiManager2 {
                 interactionUsable = true;
             }
 
-             // Loot
+            // Loot
             const loot = lootBarn.getClosestLoot();
             if (loot && !activePlayer.netData.ue) {
                 // Ignore if it's a gun and we have full guns w/ fists out...
@@ -683,8 +682,8 @@ export class UiManager2 {
             const canSelfRevive = activePlayer.hasPerk("self_revive");
 
             if (activePlayer.action.type == Action.None && (!activePlayer.netData.ue || canSelfRevive)) {
-                let ourTeamId = playerBarn.getPlayerInfo(activePlayer.__id).teamId;
-                let players = playerBarn.playerPool.getPool();
+                const ourTeamId = playerBarn.getPlayerInfo(activePlayer.__id).teamId;
+                const players = playerBarn.playerPool.getPool();
 
                 for (
                     let i = 0;
@@ -953,7 +952,7 @@ export class UiManager2 {
         if (patch.pickupMessage.opacity) {
             dom.pickupMessage.style.opacity = state.pickupMessage.opacity;
         }
-        
+
         // Kill message
         if (patch.killMessage.text || patch.killMessage.count) {
             dom.killMessage.text.innerHTML = state.killMessage.text;

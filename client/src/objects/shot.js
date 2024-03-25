@@ -70,7 +70,7 @@ export class ShotBarn {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
     */
     update(dt, activePlayerId, playerBarn, particleBarn, audioManager) {
         for (let i = 0; i < this.shots.length; i++) {

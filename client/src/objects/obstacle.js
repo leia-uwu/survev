@@ -224,7 +224,7 @@ export class Obstacle {
     }
 
     /**
-     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     m(dt, map, playerBarn, particleBarn, audioManager, activePlayer, renderer) {
         if (this.isButton) {
