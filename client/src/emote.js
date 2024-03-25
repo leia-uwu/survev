@@ -57,7 +57,7 @@ export class EmoteBarn {
         this.uiManager = uiManager;
         this.gameElem = $("#ui-game");
         this.disable = false;
-        this.dr = null;
+        this.activePlayer = null;
         this.playerBarn = playerBarn;
         this.camera = camera;
         this.map = map;
@@ -87,10 +87,10 @@ export class EmoteBarn {
         this.emoteScreenPos = v2.create(0, 0);
 
         this.triggerPing = () => {
-            if (this.dr) {
+            if (this.activePlayer) {
                 let worldPos;
                 // Determine if this is going to be a team ping or an emote
-                if (this.emoteSelector.ping && this.emoteWheelsGreyed) {
+                if (this.emoteSelector.ping && !this.emoteWheelsGreyed) {
                     const pingData = PingDefs[this.emoteSelector.ping];
                     if (pingData?.pingMap) {
                         // Where on the world do we ping?
@@ -111,7 +111,7 @@ export class EmoteBarn {
                     this.emoteSelector.emote &&
                     !this.emoteWheelsGreyed
                 ) {
-                    worldPos = Thithiss.dr.pos;
+                    worldPos = this.activePlayer.pos;
                     this.sendEmote({
                         type: this.emoteSelector.emote,
                         pos: worldPos
@@ -124,10 +124,10 @@ export class EmoteBarn {
         };
 
         this.triggerEmote = () => {
-            if (this.dr) {
+            if (this.activePlayer) {
                 let worldPos;
                 if (this.emoteSelector.emote && !this.emoteWheelsGreyed) {
-                    worldPos = this.dr.pos;
+                    worldPos = this.activePlayer.pos;
 
                     // Send the emote to the server
                     this.sendEmote({
@@ -487,14 +487,14 @@ export class EmoteBarn {
 
     addPing(ping, factionMode) {
         // Given the ping position, create an indicator on the map and make a sound
-        if (this.dr) {
+        if (this.activePlayer) {
             const pingData = PingDefs[ping.type];
             if (pingData) {
                 this.uiManager.createPing(
                     ping.type,
                     ping.pos,
                     ping.playerId,
-                    this.dr.__id,
+                    this.activePlayer.__id,
                     this.playerBarn,
                     factionMode
                 );
@@ -505,10 +505,10 @@ export class EmoteBarn {
                 } else if (ping.type == "ping_airstrike") {
                     indicator = this.pingIndicators[airstrikeIdx].ping;
                 } else {
-                    const playerInfo = this.playerBarn.qe(ping.playerId);
+                    const playerInfo = this.playerBarn.getPlayerInfo(ping.playerId);
                     if (playerInfo) {
-                        const activeGroupId = this.playerBarn.qe(
-                            this.dr.__id
+                        const activeGroupId = this.playerBarn.getPlayerInfo(
+                            this.activePlayer.__id
                         ).groupId;
                         const groupId = playerInfo.groupId;
                         if (activeGroupId == groupId) {
@@ -704,7 +704,7 @@ export class EmoteBarn {
         }
     }
 
-    update(e, t, r, s, n, m, p, input, inputBinds, x) {
+    update(dt, t, player, s, n, m, p, input, inputBinds, x) {
         const playerBarn = this.playerBarn;
         const camera = this.camera;
         let mousePos = v2.create(input.Ue.x, input.Ue.y);
@@ -759,21 +759,23 @@ export class EmoteBarn {
                 this.triggerEmote();
             }
         }
-        this.dr = r;
-        if ((t != r.__id || !!r.netData.he) && !this.disable) {
+
+        // Update local emote wheels
+        this.activePlayer = player;
+        if ((t != player.__id || !!player.netData.he) && !this.disable) {
             this.free();
             this.disable = true;
         }
-        const z = m.perkMode && !r.netData.Te;
+        const z = m.perkMode && !player.netData.Te;
         if (
             !this.disable &&
             !z &&
             ((this.wheelKeyTriggered =
                 this.pingKeyTriggered || this.emoteMouseTriggered),
-            (this.emoteSoftTicker -= e),
+            (this.emoteSoftTicker -= dt),
             this.emoteCounter >= GameConfig.player.emoteThreshold &&
                     this.emoteHardTicker > 0
-                ? ((this.emoteHardTicker -= e),
+                ? ((this.emoteHardTicker -= dt),
                 this.emoteHardTicker < 0 &&
                         (this.emoteCounter = 0))
                 : this.emoteSoftTicker < 0 &&
@@ -800,7 +802,7 @@ export class EmoteBarn {
                 (this.worldPos = camera.screenToPoint(this.emoteScreenPos))),
             this.wheelDisplayed)
         ) {
-            this.emoteTimeoutTicker += e;
+            this.emoteTimeoutTicker += dt;
             if (this.emoteTimeoutTicker > 10) {
                 this.inputReset();
             } else {
@@ -833,7 +835,7 @@ export class EmoteBarn {
                     T.y *= -1;
                     const M = v2.length(T);
                     const P = vectorToDegreeAngle(T);
-                    const C = r.Re.tt[r.Re.rt];
+                    const C = player.Re.tt[player.Re.rt];
                     const A = GameObjectDefs[C.type];
                     let O = "";
                     if (A?.ammo) {
@@ -923,7 +925,7 @@ export class EmoteBarn {
                 let W = false;
                 let G = v2.create(0, 0);
                 let X = 0;
-                const K = playerBarn.u(U.playerId);
+                const K = playerBarn.getPlayerById(U.playerId);
                 if (K && !K.netData.he) {
                     G = v2.copy(K.pos);
                     X = K.layer;
@@ -948,13 +950,13 @@ export class EmoteBarn {
                     U.isNew = false;
                     U.pos = G;
                     if (U.lifeIn > 0) {
-                        U.lifeIn -= e;
+                        U.lifeIn -= dt;
                     } else if (U.life > 0) {
-                        U.life -= e;
+                        U.life -= dt;
                     } else if (U.lifeOut > 0) {
-                        U.lifeOut -= e;
+                        U.lifeOut -= dt;
                     }
-                    const Y = util.sameLayer(X, this.dr.layer) ? 3 : X;
+                    const Y = util.sameLayer(X, this.activePlayer.layer) ? 3 : X;
                     p.addPIXIObj(U.container, Y, 50000, U.zIdx);
                     U.alive = U.alive && U.lifeOut > 0;
                 } else {
@@ -971,7 +973,7 @@ export class EmoteBarn {
                     min: v2.sub(camera.pos, J),
                     max: v2.add(camera.pos, J)
                 },
-                $ = playerBarn.qe(r.__id).groupId,
+                $ = playerBarn.getPlayerInfo(player.__id).groupId,
                 ee = playerBarn.getGroupInfo($),
                 te = (ee.playerIds.length, 0);
             te < this.pingIndicators.length;
@@ -982,17 +984,17 @@ export class EmoteBarn {
             const indContainer = indicator.indContainer;
             const pingContainer = indicator.pingContainer;
             if (ae != undefined || indicator.mapEvent) {
-                playerBarn.qe(ae);
-                const isActivePlayer = ae == this.dr.__id;
+                playerBarn.getPlayerInfo(ae);
+                const isActivePlayer = ae == this.activePlayer.__id;
                 const ne = playerBarn.getPlayerStatus(ae);
                 const le = indicator.borderSprite.sprite;
                 const ce = indicator.pingSprite.sprite;
                 const me = indicator.indSpriteOuter.sprite;
                 const indSpriteInner = indicator.indSpriteInner.sprite;
                 let he = true;
-                indicator.fadeIn -= e;
-                indicator.life -= e;
-                indicator.fadeOut -= indicator.life > 0 ? 0 : e;
+                indicator.fadeIn -= dt;
+                indicator.life -= dt;
+                indicator.fadeOut -= indicator.life > 0 ? 0 : dt;
                 if (indicator.fadeOut > 0) {
                     const de = indicator.pos;
                     const ue = v2.normalizeSafe(
@@ -1039,7 +1041,7 @@ export class EmoteBarn {
                     me.rotation = ye;
                     indSpriteInner.position.x = xe;
                     indSpriteInner.position.y = Se;
-                    const pulseAlpha = le.alpha <= 0 ? 1 : le.alpha - e;
+                    const pulseAlpha = le.alpha <= 0 ? 1 : le.alpha - dt;
                     le.alpha = pulseAlpha;
                     const pulseScale = camera.pixels(
                         indicator.borderSprite.baseScale * (2 - pulseAlpha)

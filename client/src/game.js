@@ -943,13 +943,13 @@ export class Game {
         }
         // Update player status
         if (msg.playerStatusDirty) {
-            const teamId = this.playerBarn.qe(this.activeId).teamId;
+            const teamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
             this.playerBarn.updatePlayerStatus(teamId, msg.playerStatus, this.map.factionMode);
         }
 
         // Update group status
         if (msg.groupStatusDirty) {
-            const groupId = this.playerBarn.qe(this.activeId).groupId;
+            const groupId = this.playerBarn.getPlayerInfo(this.activeId).groupId;
             this.playerBarn.updateGroupStatus(groupId, msg.groupStatus);
         }
 
@@ -970,7 +970,7 @@ export class Game {
             this.objectCreator.updateObjPart(obj.__id, obj, ctx);
         }
         this.spectating = this.activeId != this.localId;
-        this.activePlayer = this.playerBarn.u(this.activeId);
+        this.activePlayer = this.playerBarn.getPlayerById(this.activeId);
         this.activePlayer.setLocalData(msg.activePlayerData, this.playerBarn);
         if (msg.activePlayerData.weapsDirty) {
             this.uiManager.weapsDirty = true;
@@ -1135,15 +1135,15 @@ export class Game {
             const msg = new net.KillMsg();
             msg.deserialize(stream);
             const sourceType = msg.itemSourceType || msg.mapSourceType;
-            const activeTeamId = this.playerBarn.qe(this.activeId).teamId;
+            const activeTeamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
             const useKillerInfoInFeed =
                     (msg.downed && !msg.killed) ||
                     msg.damageType == GameConfig.DamageType.Gas ||
                     msg.damageType == GameConfig.DamageType.Bleeding ||
                     msg.damageType == GameConfig.DamageType.Airdrop;
-            const targetInfo = this.playerBarn.qe(msg.targetId);
-            const killerInfo = this.playerBarn.qe(msg.killCreditId);
-            const killfeedKillerInfo = useKillerInfoInFeed ? killerInfo : this.playerBarn.qe(msg.killerId);
+            const targetInfo = this.playerBarn.getPlayerInfo(msg.targetId);
+            const killerInfo = this.playerBarn.getPlayerInfo(msg.killCreditId);
+            const killfeedKillerInfo = useKillerInfoInFeed ? killerInfo : this.playerBarn.getPlayerInfo(msg.killerId);
             let targetName = this.playerBarn.getPlayerName(
                 targetInfo.playerId,
                 this.activeId,
@@ -1248,7 +1248,7 @@ export class Game {
             if (!roleDef) {
                 break;
             }
-            const playerInfo = this.playerBarn.qe(msg.playerId);
+            const playerInfo = this.playerBarn.getPlayerInfo(msg.playerId);
             const nameText = helpers.htmlEscape(
                 this.playerBarn.getPlayerName(msg.playerId, this.activeId, true)
             );
@@ -1364,7 +1364,7 @@ export class Game {
             const msg = new net.GameOverMsg();
             msg.deserialize(stream);
             this.gameOver = msg.gameOver;
-            const localTeamId = this.playerBarn.qe(this.localId).teamId;
+            const localTeamId = this.playerBarn.getPlayerInfo(this.localId).teamId;
 
             // Set local stats based on final results.
             // This is necessary because the last person on a team to die

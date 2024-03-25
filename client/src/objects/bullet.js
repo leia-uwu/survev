@@ -56,7 +56,10 @@ export class BulletBarn {
         );
     }
 
-    addBullet(params, t, renderer) {
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     */
+    addBullet(params, playerBarn, renderer) {
         let bullet = null;
 
         for (let i = 0; i < this.bullets.length; i++) {
@@ -113,7 +116,7 @@ export class BulletBarn {
         bullet.container.rotation = angleRadians - Math.PI / 2;
 
         bullet.layer = params.layer;
-        const player = t.u(bullet.playerId);
+        const player = playerBarn.getPlayerById(bullet.playerId);
         if (player && player.layer & 2) {
             bullet.layer |= 2;
         }
@@ -331,7 +334,7 @@ export class BulletBarn {
                 });
 
                 let shooterDead = false;
-                const W = playerBarn.u(b.playerId);
+                const W = playerBarn.getPlayerById(b.playerId);
                 if (W && (W.netData.he || W.netData.ue)) {
                     shooterDead = true;
                 }
@@ -470,8 +473,11 @@ export class BulletBarn {
         }
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     */
     createBulletHit(playerBarn, targetId, audioManager) {
-        const player = playerBarn.u(targetId);
+        const player = playerBarn.getPlayerById(targetId);
         if (player) {
             audioManager.playGroup("player_bullet_hit", {
                 soundPos: player.pos,

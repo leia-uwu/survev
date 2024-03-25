@@ -116,7 +116,7 @@ export class LoadoutDisplay {
         );
 
         this.activeId = 98;
-        this.dr = this.playerBarn.u(this.activeId);
+        this.dr = this.playerBarn.getPlayerById(this.activeId);
         this.dr.setLocalData(
             {
                 boost: 100,

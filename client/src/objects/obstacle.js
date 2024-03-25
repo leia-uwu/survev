@@ -223,6 +223,9 @@ export class Obstacle {
         }
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     */
     m(dt, map, playerBarn, particleBarn, audioManager, activePlayer, renderer) {
         if (this.isButton) {
             const button = this.button;
@@ -379,7 +382,7 @@ export class Obstacle {
             }
 
             if (!this.dead && this.isSkin) {
-                const skinPlayer = playerBarn.u(this.skinPlayerId);
+                const skinPlayer = playerBarn.getPlayerById(this.skinPlayerId);
                 if (skinPlayer) {
                     zOrd = math.max(math.max(zOrd, skinPlayer.renderZOrd), 21);
                     if (skinPlayer.renderLayer != 0) {

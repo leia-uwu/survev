@@ -620,10 +620,13 @@ export class Player {
         return this.perkTypes.includes(type);
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     */
     m(dt, playerBarn, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating) {
         const curWeapDef = GameObjectDefs[this.netData.me];
         const isActivePlayer = this.__id == activeId;
-        const activePlayer = playerBarn.u(activeId);
+        const activePlayer = playerBarn.getPlayerById(activeId);
         this.posOld = v2.copy(this.pos);
         this.dirOld = v2.copy(this.dir);
         this.pos = v2.copy(this.netData.ie);
@@ -662,8 +665,8 @@ export class Player {
         this.noCeilingRevealTicker -= dt;
 
         // Update nameTex
-        const activeGroupId = playerBarn.qe(activeId).groupId;
-        const playerInfo = playerBarn.qe(this.__id);
+        const activeGroupId = playerBarn.getPlayerInfo(activeId).groupId;
+        const playerInfo = playerBarn.getPlayerInfo(this.__id);
         const inSameGroup = playerInfo.groupId == activeGroupId;
         this.nameText.text = playerInfo.name;
         this.nameText.visible = !isActivePlayer && inSameGroup;
@@ -1139,6 +1142,9 @@ export class Player {
         this.auraContainer.scale.set(screenScale, screenScale);
     }
 
+    /**
+     * @param {import("../map").Map} map 
+     */
     updateRenderLayer(isActivePlayer, activePlayer, map) {
         // Give the player a larger stairs collision radius.
         // This is a hack to reduce popping when emerging from below,
@@ -1228,6 +1234,10 @@ export class Player {
         this.renderZIdx = renderZIdx;
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn 
+     * @param {import("../map").Map} map 
+    */
     updateVisuals(playerBarn, map) {
         const outfitDef = GameObjectDefs[this.netData.se];
         const outfitImg = outfitDef.skinImg;
@@ -1258,7 +1268,7 @@ export class Player {
         }
 
         if (map.factionMode && !outfitDef.ghillie) {
-            const playerInfo = playerBarn.qe(this.__id);
+            const playerInfo = playerBarn.getPlayerInfo(this.__id);
             const teamId = playerInfo.teamId;
             const teamSprites = [
                 "player-patch-01.img",
@@ -1367,7 +1377,7 @@ export class Player {
             let helmetTint = helmetSkin.baseTint;
             if (map.factionMode) {
                 helmetTint =
-                    playerBarn.qe(this.__id).teamId == 1
+                    playerBarn.getPlayerInfo(this.__id).teamId == 1
                         ? helmetSkin.baseTintRed
                         : helmetSkin.baseTintBlue;
             }
@@ -2095,7 +2105,7 @@ export class Player {
                     }
                 }
             }
-            const ourTeamId = animCtx.playerBarn.qe(this.__id).teamId;
+            const ourTeamId = animCtx.playerBarn.getPlayerInfo(this.__id).teamId;
             const players = animCtx.playerBarn.playerPool.getPool();
             for (
                 let i = 0;
@@ -2134,7 +2144,7 @@ export class Player {
                             )
                         )
                     ) {
-                        const teamId = animCtx.playerBarn.qe(playerCol.__id).teamId;
+                        const teamId = animCtx.playerBarn.getPlayerInfo(playerCol.__id).teamId;
                         const vel = v2.rotate(
                             meleeDir,
                             ((Math.random() - 0.5) * Math.PI) / 3
@@ -2327,13 +2337,13 @@ export class PlayerBarn {
 
     onMapLoad(e) { }
 
-    m(dt, activeId, r, a, i, o, map, n, l, c, m, p, h) {
+    m(dt, activeId, r, renderer, particleBarn, camera, map, inputBinds, audioManager, ui2Manager, preventInput, displayingStats, isSpectating) {
         // Update players
         const players = this.playerPool.getPool();
-        for (let u = 0; u < players.length; u++) {
-            const p = players[u];
+        for (let i = 0; i < players.length; i++) {
+            const p = players[i];
             if (p.active) {
-                p.m(dt, this, map, l, i, n, o, a, c, activeId, m, p, h);
+                p.m(dt, this, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating);
             }
         }
 
@@ -2344,8 +2354,8 @@ export class PlayerBarn {
         // send status updates when not in solo-mode. We may also
         // have not yet received an update for ourselves yet, but
         // we always expect the local data to be available.
-        const activeInfo = this.qe(activeId);
-        const activePlayer = this.u(activeId);
+        const activeInfo = this.getPlayerInfo(activeId);
+        const activePlayer = this.getPlayerById(activeId);
 
         this.setPlayerStatus(activeId, {
             pos: v2.copy(activePlayer.netData.ie),
@@ -2366,9 +2376,9 @@ export class PlayerBarn {
         ) {
             const status = this.playerStatus[keys[i]];
             const playerId = status.playerId;
-            const playerInfo = this.qe(playerId);
+            const playerInfo = this.getPlayerInfo(playerId);
 
-            const player = this.u(playerId);
+            const player = this.getPlayerById(playerId);
             if (player) {
                 // Update data with latest position if on screen
                 status.posDelta = v2.length(v2.sub(player.netData.ie, status.pos));
@@ -2428,11 +2438,11 @@ export class PlayerBarn {
         }
     }
 
-    u(e) {
+    getPlayerById(id) {
         const pool = this.playerPool.getPool();
         for (let i = 0; i < pool.length; i++) {
             const p = pool[i];
-            if (p.active && p.__id === e) {
+            if (p.active && p.__id === id) {
                 return p;
             }
         }
@@ -2468,7 +2478,7 @@ export class PlayerBarn {
         delete this.playerStatus[id];
     }
 
-    qe(id) {
+    getPlayerInfo(id) {
         return (
             this.playerInfo[id] || {
                 playerId: 0,
@@ -2634,7 +2644,7 @@ export class PlayerBarn {
     }
 
     getGroupColor(playerId) {
-        const playerInfo = this.qe(playerId);
+        const playerInfo = this.getPlayerInfo(playerId);
         const group = this.getGroupInfo(playerInfo.groupId);
         const groupIdx = group ? group.playerIds.indexOf(playerId) : 0;
         if (groupIdx >= 0 && groupIdx < GameConfig.groupColors.length) {
@@ -2654,7 +2664,7 @@ export class PlayerBarn {
     }
 
     getPlayerName(playerId, activePlayerId, truncateForKillfeed) {
-        const info = this.qe(playerId);
+        const info = this.getPlayerInfo(playerId);
         if (!info) {
             return "";
         }
@@ -2667,7 +2677,7 @@ export class PlayerBarn {
         // Anonymize player name if they aren't in the active player's group
         if (
             this.anonPlayerNames &&
-            this.qe(activePlayerId).groupId != info.groupId
+            this.getPlayerInfo(activePlayerId).groupId != info.groupId
         ) {
             name = info.anonName;
         }
@@ -2675,8 +2685,8 @@ export class PlayerBarn {
     }
 
     addDeathEffect(targetId, killerId, r, audioManager, particleBarn) {
-        const target = this.u(targetId);
-        const killer = this.u(killerId);
+        const target = this.getPlayerById(targetId);
+        const killer = this.getPlayerById(killerId);
         if (target && killer?.hasPerk("turkey_shoot")) {
             audioManager.playGroup("cluck", {
                 soundPos: target.pos,
