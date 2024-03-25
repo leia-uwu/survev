@@ -90,7 +90,7 @@ export class EmoteBarn {
             if (this.dr) {
                 let worldPos;
                 // Determine if this is going to be a team ping or an emote
-                if (this.emoteSelector.ping && !this.emoteWheelsGreyed) {
+                if (this.emoteSelector.ping && this.emoteWheelsGreyed) {
                     const pingData = PingDefs[this.emoteSelector.ping];
                     if (pingData?.pingMap) {
                         // Where on the world do we ping?
@@ -111,7 +111,7 @@ export class EmoteBarn {
                     this.emoteSelector.emote &&
                     !this.emoteWheelsGreyed
                 ) {
-                    worldPos = this.dr.pos;
+                    worldPos = Thithiss.dr.pos;
                     this.sendEmote({
                         type: this.emoteSelector.emote,
                         pos: worldPos
@@ -149,7 +149,7 @@ export class EmoteBarn {
                 this.inputReset();
             }
         };
-        
+
         if (device.touch) {
             this.emoteElems = $(".ui-emote");
             this.emoteElems.css("pointer-events", "auto");
