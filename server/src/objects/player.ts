@@ -921,12 +921,15 @@ export class Player extends BaseGameObject {
                 // }
 
                 // completely unreadable but optimized weapon swapping code since leia apparently values fewer lines of code over readability
-                if (this.curWeapIdx == 0 || this.curWeapIdx == 1) {
+                if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
                     const otherGunSlotIdx = this.curWeapIdx ^ 1;
                     const isOtherGunSlotFull: number = +!!this.weapons[otherGunSlotIdx].type;//! ! converts string to boolean, + coerces boolean to number
-                    this.curWeapIdx = isOtherGunSlotFull ? otherGunSlotIdx : 2;
-                } else if (this.curWeapIdx == 2 && (this.weapons[0].type || this.weapons[1].type)) {
-                    this.curWeapIdx = +!(this.weapons[0].type);
+                    this.curWeapIdx = isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee;
+                } else if (this.curWeapIdx == GameConfig.WeaponSlot.Melee && (this.weapons[GameConfig.WeaponSlot.Primary].type || this.weapons[GameConfig.WeaponSlot.Secondary].type)) {
+                    this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
+                } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
+                    const bothSlotsEmpty = !this.weapons[GameConfig.WeaponSlot.Primary].type && !this.weapons[GameConfig.WeaponSlot.Secondary].type;
+                    this.curWeapIdx = bothSlotsEmpty ? GameConfig.WeaponSlot.Melee : this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
                 }
 
                 break;
@@ -969,17 +972,21 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.EquipPrevScope:// low priority but will do eventually
                 break;
             case GameConfig.Input.SwapWeapSlots: {
-                const firstSlotWeaponType = this.weapons[0].type;
-                const firstSlotWeaponAmmo = this.weapons[0].ammo;
+                const firstSlotWeaponType = this.weapons[GameConfig.WeaponSlot.Primary].type;
+                const firstSlotWeaponAmmo = this.weapons[GameConfig.WeaponSlot.Primary].ammo;
 
-                this.weapons[0].type = this.weapons[1].type;
-                this.weapons[0].ammo = this.weapons[1].ammo;
+                this.weapons[GameConfig.WeaponSlot.Primary].type = this.weapons[GameConfig.WeaponSlot.Secondary].type;
+                this.weapons[GameConfig.WeaponSlot.Primary].ammo = this.weapons[GameConfig.WeaponSlot.Secondary].ammo;
 
-                this.weapons[1].type = firstSlotWeaponType;
-                this.weapons[1].ammo = firstSlotWeaponAmmo;
+                this.weapons[GameConfig.WeaponSlot.Secondary].type = firstSlotWeaponType;
+                this.weapons[GameConfig.WeaponSlot.Secondary].ammo = firstSlotWeaponAmmo;
 
-                this.curWeapIdx ^= 1;
-                this.dirty.weapons = true;
+                // curWeapIdx's setter method already sets dirty.weapons
+                if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
+                    this.curWeapIdx ^= 1;
+                } else {
+                    this.dirty.weapons = true;
+                }
                 break;
             }
             }
