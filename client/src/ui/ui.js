@@ -76,7 +76,7 @@ export class UiManager {
         this.touch = touch;
         this.inputBinds = inputBinds;
         this.inputBindUi = inputBindUi;
-        this.Pe = new PieTimer();
+        this.pieTimer = new PieTimer();
         this.gameElem = $("#ui-game");
         this.statsMain = $("#ui-stats");
         this.statsElem = $("#ui-stats-bg");
@@ -562,7 +562,7 @@ export class UiManager {
             this.cycleHud();
         }
 
-        this.Pe.destroy();
+        this.pieTimer.destroy();
         this.clearStatsElems();
         this.setRoleMenuActive(false);
         this.o();
@@ -653,7 +653,7 @@ export class UiManager {
 
         if (player.netData.dead && !this.dead) {
             this.dead = true;
-            this.Pe.stop();
+            this.pieTimer.stop();
         }
 
         if (localPlayer.downed || this.dead) {
@@ -664,7 +664,7 @@ export class UiManager {
         if (
             this.actionSeq != player.action.seq &&
             ((this.actionSeq = player.action.seq),
-            this.Pe.stop(),
+            this.pieTimer.stop(),
             player.action.type != Action.None && !this.displayingStats)
         ) {
             let desc = "";
@@ -717,7 +717,7 @@ export class UiManager {
                     desc += actionTxt2 ? `${actionTxt2} ` : "";
                     desc += actionTxt1 ? ` ${actionTxt1}` : "";
                 }
-                this.Pe.start(desc, player.action.time, player.action.duration);
+                this.pieTimer.start(desc, player.action.time, player.action.duration);
             }
         }
 
@@ -903,7 +903,7 @@ export class UiManager {
         }
         this.updatePlayerMapSprites(dt, player, playerBarn, map);
         this.mapSpriteBarn.update(dt, this, map);
-        this.Pe.update(dt, camera);
+        this.pieTimer.update(dt, camera);
 
         // Update role selection menu
         if (this.roleMenuActive) {
@@ -1244,7 +1244,7 @@ export class UiManager {
     }
 
     clearUI() {
-        this.Pe.stop();
+        this.pieTimer.stop();
         this.curAction = {
             type: Action.None
         };
@@ -1343,7 +1343,7 @@ export class UiManager {
         if (!spectating || teamId == localTeamId || gameOver) {
             this.toggleEscMenu(true);
             this.displayingStats = true;
-            this.Pe.stop();
+            this.pieTimer.stop();
             this.displayMapLarge(true);
             this.clearStatsElems();
             this.setSpectating(false, teamMode);
@@ -1611,7 +1611,7 @@ export class UiManager {
         this.clearStatsElems();
         this.statsMain.css("display", "block");
         this.statsLogo.css("display", "none");
-        this.Pe.stop();
+        this.pieTimer.stop();
         this.displayingStats = true;
         this.statsHeader.html(
             (function() {
@@ -1702,7 +1702,7 @@ export class UiManager {
                 .find("#spectate-player")
                 .html(this.spectatedPlayerName);
             this.actionSeq = -1;
-            this.Pe.stop();
+            this.pieTimer.stop();
         }
     }
 
@@ -2111,7 +2111,7 @@ export class UiManager {
                     math.clamp(camera.screenWidth / 1280, 0.75, 1) *
                     math.clamp(camera.screenHeight / 1024, 0.75, 1)
                 );
-        this.Pe.resize(this.touch, this.screenScaleFactor);
+        this.pieTimer.resize(this.touch, this.screenScaleFactor);
 
         this.gasRenderer.resize();
 

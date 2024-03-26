@@ -1,6 +1,6 @@
 export const api = {
-    resolveUrl: function(e) {
-        return e;
+    resolveUrl: function(url) {
+        return url;
     },
     resolveRoomHost: function() {
         return window.location.hostname;

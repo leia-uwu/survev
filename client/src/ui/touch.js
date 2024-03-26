@@ -645,81 +645,102 @@ class LineSprites {
 
     /**
      * @param {import("../objects/player").Player} activePlayer
+     * @param {import("../map").Map} map
+     * @param {import("../camera").Camera} camera
+     * @param {import("../renderer").Renderer} renderer
      */
-    update(e, activePlayer, r, a, i) {
-        const o =
-            device.touch && e.touchingAim && e.touchAimLine;
-        if (o) {
-            const s = activePlayer.netData.activeWeapon;
-            const g = GameObjectDefs[s];
-            let y = 30;
-            if (g.type == "gun") {
-                const w = BulletDefs[g.bulletType].distance;
-                y = g.barrelLength + w;
+    update(touch, activePlayer, map, camera, renderer) {
+        const visible =
+            device.touch && touch.touchingAim && touch.touchAimLine;
+
+        if (visible) {
+            const curWeap = activePlayer.netData.activeWeapon;
+            const curWeapDef = GameObjectDefs[curWeap];
+
+            // Determine max range of the aim line
+            let maxRange = 30;
+            if (curWeapDef.type == "gun") {
+                const bulletDist = BulletDefs[curWeapDef.bulletType].distance;
+                maxRange = curWeapDef.barrelLength + bulletDist;
             }
-            const f = activePlayer.getZoom();
-            const _ = Math.sqrt(f * 1.414 * f);
-            y = math.min(y, _);
-            const b = v2.copy(activePlayer.pos);
-            let x = v2.add(b, v2.mul(activePlayer.dir, y));
+
+            // Clamp max range to be within the camera radius
+            const cameraZoom = activePlayer.getZoom();
+            const cameraRad = Math.sqrt(cameraZoom * 1.414 * cameraZoom);
+            maxRange = math.min(maxRange, cameraRad);
+            const start = v2.copy(activePlayer.pos);
+            let end = v2.add(start, v2.mul(activePlayer.dir, maxRange));
+
+            // Compute the nearest intersecting obstacle
+            const obstacles = map.obstaclePool.getPool();
             for (
-                let S = r.Ve.getPool(), v = 0;
-                v < S.length;
-                v++
+                let i = 0;
+                i < obstacles.length;
+                i++
             ) {
-                const k = S[v];
+                const obstacle = obstacles[i];
                 if (
-                    !!k.active &&
-                    !k.dead &&
-                    k.height >= GameConfig.bullet.height &&
-                    !!k.collidable &&
-                    !k.isWindow &&
-                    util.sameLayer(activePlayer.layer, k.layer) &&
-                    (g.type != "throwable" ||
-                        k.height > GameConfig.projectile.maxHeight)
+                    !!obstacle.active &&
+                    !obstacle.dead &&
+                    obstacle.height >= GameConfig.bullet.height &&
+                    !!obstacle.collidable &&
+                    !obstacle.isWindow &&
+                    util.sameLayer(activePlayer.layer, obstacle.layer) &&
+                    (curWeapDef.type != "throwable" ||
+                        obstacle.height > GameConfig.projectile.maxHeight)
                 ) {
-                    const z = collider.intersectSegment(
-                        k.collider,
-                        b,
-                        x
+                    const res = collider.intersectSegment(
+                        obstacle.collider,
+                        start,
+                        end
                     );
-                    if (z) {
-                        const I = v2.length(
-                            v2.sub(z.point, b)
+                    if (res) {
+                        const dist = v2.length(
+                            v2.sub(res.point, start)
                         );
-                        if (I < y) {
-                            y = I;
-                            x = z.point;
+                        if (dist < maxRange) {
+                            maxRange = dist;
+                            end = res.point;
                         }
                     }
                 }
             }
-            const T = v2.length(v2.sub(x, b));
-            const M = Math.max(
-                Math.ceil((T - 3.5) / 1.5),
+
+            const startOffset = 3.5;
+            const increment = 1.5;
+
+            // Allocate enough dots
+            const dist = v2.length(v2.sub(end, start));
+            const dotCount = Math.max(
+                Math.ceil((dist - startOffset) / increment),
                 0
             );
-            for (; this.dots.length < M;) {
-                const P = this.createDot();
-                this.container.addChild(P);
-                this.dots.push(P);
+
+            while (this.dots.length < dotCount) {
+                const dot = this.createDot();
+                this.container.addChild(dot);
+                this.dots.push(dot);
             }
-            for (let C = 0; C < this.dots.length; C++) {
-                const A = this.dots[C];
-                const O = 3.5 + C * 1.5;
-                const D = v2.add(activePlayer.pos, v2.mul(activePlayer.dir, O));
-                A.position.set(D.x, D.y);
-                A.scale.set(0.01171875, 0.01171875);
-                A.visible = C < M;
+
+            for (let i = 0; i < this.dots.length; i++) {
+                const dot = this.dots[i];
+                const offset = 3.5 + i * 1.5;
+                const pos = v2.add(activePlayer.pos, v2.mul(activePlayer.dir, offset));
+                dot.position.set(pos.x, pos.y);
+                dot.scale.set(0.01171875, 0.01171875);
+                dot.visible = i < dotCount;
             }
-            const E = a.pointToScreen(v2.create(0, 0));
-            const B = a.pointToScreen(v2.create(1, 1));
-            const R = v2.sub(B, E);
-            this.container.position.set(E.x, E.y);
-            this.container.scale.set(R.x, R.y);
+
+            // Position dot container
+            const p0 = camera.pointToScreen(v2.create(0, 0));
+            const p1 = camera.pointToScreen(v2.create(1, 1));
+
+            const s = v2.sub(p1, p0);
+            this.container.position.set(p0.x, p0.y);
+            this.container.scale.set(s.x, s.y);
             this.container.alpha = 0.3;
-            i.addPIXIObj(this.container, activePlayer.layer, 19, 0);
+            renderer.addPIXIObj(this.container, activePlayer.layer, 19, 0);
         }
-        this.container.visible = o;
+        this.container.visible = visible;
     }
 }

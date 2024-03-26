@@ -622,6 +622,13 @@ export class Player {
 
     /**
      * @param {import("../objects/player").PlayerBarn} playerBarn
+     * @param {import("./player").PlayerBarn} player
+     * @param {import("../map").Map} map
+     * @param {import("../audioManager").AudioManager} audioManager
+     * @param {import("./particles").ParticleBarn} particleBarn
+     * @param {import("../inputBinds").InputBinds} inputBinds
+     * @param {import("../camera").Camera} camera
+     * @param {import("../renderer").Renderer} renderer
      */
     m(dt, playerBarn, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating) {
         const curWeapDef = GameObjectDefs[this.netData.activeWeapon];
@@ -674,7 +681,7 @@ export class Player {
         // Locate nearby obstacles that may play interaction effects
         let insideObstacle = null;
         let doorErrorObstacle = null;
-        const obstacles = map.Ve.getPool();
+        const obstacles = map.obstaclePool.getPool();
         for (let N = 0; N < obstacles.length; N++) {
             const H = obstacles[N];
             if (H.active && !H.dead && H.layer == this.netData.layer) {
@@ -1154,7 +1161,7 @@ export class Player {
         let onMask = false;
         let onStairs = false;
         let occluded = false;
-        const structures = map.lr.getPool();
+        const structures = map.structurePool.getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active) {
@@ -1176,7 +1183,7 @@ export class Player {
                                 : v2.create(1, 0);
                         occluded =
                             collisionHelpers.intersectSegmentDist(
-                                map.Ve.getPool(),
+                                map.obstaclePool.getPool(),
                                 this.pos,
                                 dir,
                                 dist,
@@ -2045,7 +2052,7 @@ export class Player {
             const hits = [];
 
             // Obstacles
-            const obstacles = animCtx.map.Ve.getPool();
+            const obstacles = animCtx.map.obstaclePool.getPool();
             for (let n = 0; n < obstacles.length; n++) {
                 const l = obstacles[n];
                 if (
@@ -2069,7 +2076,7 @@ export class Player {
                             v2.create(1, 0)
                         );
                         const wallCheck = collisionHelpers.intersectSegment(
-                            animCtx.map.Ve.getPool(),
+                            animCtx.map.obstaclePool.getPool(),
                             this.pos,
                             meleeDir,
                             meleeDist,
@@ -2134,7 +2141,7 @@ export class Player {
                         math.eqAbs(
                             meleeDist,
                             collisionHelpers.intersectSegmentDist(
-                                animCtx.map.Ve.getPool(),
+                                animCtx.map.obstaclePool.getPool(),
                                 this.pos,
                                 meleeDir,
                                 meleeDist,
@@ -2300,11 +2307,15 @@ export class Player {
         }
     }
 
+    /**
+     * @param {import("../map").Map} map
+     */
     isUnderground(map) {
         if (this.layer != 1) {
             return false;
         }
-        const structures = map.lr.getPool();
+        const structures = map.structurePool.getPool();
+
         for (let i = 0; i < structures.length; i++) {
             const s = structures[i];
             if (s.layers.length >= 2) {

@@ -35,26 +35,26 @@ export class Building {
     }
 
     free() {
-        for (let e = 0; e < this.sprites.length; e++) {
-            const t = this.sprites[e];
+        for (let i = 0; i < this.sprites.length; i++) {
+            const t = this.sprites[i];
             t.active = false;
             t.sprite.visible = false;
             t.sprite.parent?.removeChild(t.sprite);
             t.sprite.removeChildren();
         }
-        for (let r = 0; r < this.particleEmitters.length; r++) {
-            this.particleEmitters[r].stop();
+        for (let i = 0; i < this.particleEmitters.length; i++) {
+            this.particleEmitters[i].stop();
         }
         this.particleEmitters = [];
-        for (let a = 0; a < this.soundEmitters.length; a++) {
-            this.soundEmitters[a].instance?.stop();
+        for (let i = 0; i < this.soundEmitters.length; i++) {
+            this.soundEmitters[i].instance?.stop();
         }
         this.soundEmitters = [];
     }
 
     allocSprite() {
-        for (let e = 0; e < this.sprites.length; e++) {
-            const s = this.sprites[e];
+        for (let i = 0; i < this.sprites.length; i++) {
+            const s = this.sprites[i];
             if (!s.active) {
                 s.active = true;
                 return s.sprite;
@@ -286,6 +286,16 @@ export class Building {
         }
     }
 
+    /**
+     * @param {number} dt
+     * @param {import("../map").Map} map
+     * @param {import("./particles").ParticleBarn} particleBarn
+     * @param {import("../audioManager").AudioManager} audioManager
+     * @param {import("./player").Player} activePlayer
+     * @param {import("../renderer").Renderer} renderer
+     * @param {import("../camera").Camera} camera
+     * @param {import("./resources").ResourceManager} resourceManager
+    */
     m(dt, map, particleBarn, audioManager, ambience, activePlayer, renderer, camera) {
         // Puzzle effects
         if (this.hasPuzzle) {
@@ -300,7 +310,7 @@ export class Building {
                 // if none can be found.
                 let nearestObj = this;
                 let nearestDist = v2.length(v2.sub(activePlayer.pos, nearestObj.pos));
-                const obstacles = map.Ve.getPool();
+                const obstacles = map.obstaclePool.getPool();
                 for (let i = 0; i < obstacles.length; i++) {
                     const o = obstacles[i];
                     if (
@@ -381,7 +391,7 @@ export class Building {
                 (this.layer == activePlayer.layer || activePlayer.layer & 2) &&
                 collisionHelpers.scanCollider(
                     zoomIn,
-                    map.Ve.getPool(),
+                    map.obstaclePool.getPool(),
                     activePlayer.pos,
                     activePlayer.layer,
                     0.5,

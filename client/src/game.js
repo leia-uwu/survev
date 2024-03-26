@@ -47,7 +47,7 @@ export class Game {
      * @param {import("./inputBinds").InputBindUi} inputBindUi
      * @param {import("./ambiance").Ambiance} ambience
      * @param {import("./resources").ResourceManager} resourceManager
-     */
+    */
     constructor(pixi, audioManager, localization, config, input, inputBinds, inputBindUi, ambience, resourceManager, onJoin, onQuit) {
         this.initialized = false;
         this.teamMode = 0;
@@ -192,11 +192,11 @@ export class Game {
         // Register types
         const TypeToPool = {
             [GameObject.Type.Player]: this.playerBarn.playerPool,
-            [GameObject.Type.Obstacle]: this.map.Ve,
+            [GameObject.Type.Obstacle]: this.map.obstaclePool,
             [GameObject.Type.Loot]: this.lootBarn.sr,
             [GameObject.Type.DeadBody]: this.deadBodyBarn.ot,
-            [GameObject.Type.Building]: this.map.nr,
-            [GameObject.Type.Structure]: this.map.lr,
+            [GameObject.Type.Building]: this.map.buildingPool,
+            [GameObject.Type.Structure]: this.map.structurePool,
             [GameObject.Type.Decal]: this.decalBarn._,
             [GameObject.Type.Projectile]: this.projectileBarn.cr,
             [GameObject.Type.Smoke]: this.smokeBarn.e,
@@ -222,7 +222,7 @@ export class Game {
             this.touch.container,
             this.emoteBarn.container,
             this.uiManager.container,
-            this.uiManager.Pe.container,
+            this.uiManager.pieTimer.container,
             this.emoteBarn.indContainer
         ];
         for (
@@ -315,8 +315,8 @@ export class Game {
 
     update(dt) {
         const smokeParticles = this.smokeBarn.particles;
-        const obstacles = this.map.Ve.getPool();
-        let a = 0;
+        const obstacles = this.map.obstaclePool.getPool();
+        let cheatDetected = 0;
         // End anti-cheat hacking
         this.m_mangle = true;
         const debug = {};
@@ -354,13 +354,13 @@ export class Game {
         const zoomLerp = this.camera.targetZoom > this.camera.zoom ? zoomLerpIn : zoomLerpOut;
         this.camera.zoom = math.lerp(dt * zoomLerp, this.camera.zoom, this.camera.targetZoom);
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
-        if (this.input.We(input.Key.Escape)) {
+        if (this.input.keyPressed(input.Key.Escape)) {
             this.uiManager.toggleEscMenu();
         }
         // Large Map
         if (
             this.inputBinds.isBindPressed(Input.ToggleMap) ||
-            (this.input.We(input.Key.G) && !this.inputBinds.isKeyBound(input.Key.G))
+            (this.input.keyPressed(input.Key.G) && !this.inputBinds.isKeyBound(input.Key.G))
         ) {
             this.uiManager.displayMapLarge(false);
         }
@@ -371,7 +371,7 @@ export class Game {
         // Hide UI
         if (
             this.inputBinds.isBindPressed(Input.HideUI) ||
-            (this.input.We(input.Key.Escape) && !this.uiManager.hudVisible)
+            (this.input.keyPressed(input.Key.Escape) && !this.uiManager.hudVisible)
         ) {
             this.uiManager.cycleHud();
         }
@@ -434,19 +434,19 @@ export class Game {
                 // Only use arrow keys if they are unbound
                 inputMsg.moveLeft =
                     this.inputBinds.isBindDown(Input.MoveLeft) ||
-                    (this.input.Ye(input.Key.Left) &&
+                    (this.input.keyDown(input.Key.Left) &&
                         !this.inputBinds.isKeyBound(input.Key.Left));
                 inputMsg.moveRight =
                     this.inputBinds.isBindDown(Input.MoveRight) ||
-                    (this.input.Ye(input.Key.Right) &&
+                    (this.input.keyDown(input.Key.Right) &&
                         !this.inputBinds.isKeyBound(input.Key.Right));
                 inputMsg.moveUp =
                     this.inputBinds.isBindDown(Input.MoveUp) ||
-                    (this.input.Ye(input.Key.Up) &&
+                    (this.input.keyDown(input.Key.Up) &&
                         !this.inputBinds.isKeyBound(input.Key.Up));
                 inputMsg.moveDown =
                     this.inputBinds.isBindDown(Input.MoveDown) ||
-                    (this.input.Ye(input.Key.Down) &&
+                    (this.input.keyDown(input.Key.Down) &&
                         !this.inputBinds.isKeyBound(input.Key.Down));
                 inputMsg.toMouseDir = v2.copy(toMouseDir);
                 inputMsg.toMouseLen = toMouseLen;
@@ -616,12 +616,12 @@ export class Game {
         const specBegin = this.uiManager.specBegin;
         const specNext =
             this.uiManager.specNext ||
-            (this.spectating && this.input.We(input.Key.Right));
+            (this.spectating && this.input.keyPressed(input.Key.Right));
         const specPrev =
             this.uiManager.specPrev ||
-            (this.spectating && this.input.We(input.Key.Left));
+            (this.spectating && this.input.keyPressed(input.Key.Left));
         const specForce =
-            this.input.We(input.Key.Right) || this.input.We(input.Key.Left);
+            this.input.keyPressed(input.Key.Right) || this.input.keyPressed(input.Key.Left);
         if (specBegin || (this.spectating && specNext) || specPrev) {
             const specMsg = new net.SpectateMsg();
             specMsg.specBegin = specBegin;
@@ -786,57 +786,64 @@ export class Game {
         this.touch.update(dt, this.activePlayer, this.map, this.camera, this.renderer);
         this.renderer.update(dt, this.camera, this.map, debug);
 
-        if (!this.cheatSentLoadoutMsg && this.map._r && this.map.U) {
+        if (!this.cheatSentLoadoutMsg && this.map.cheatRanDetection && this.map.cheatDetected) {
             this.cheatSentLoadoutMsg = true;
-            const me = new net.LoadoutMsg();
-            me.emotes = [];
+            const msg = new net.LoadoutMsg();
+            msg.emotes = [];
             for (
-                let pe = 0;
-                pe < this.emoteBarn.emoteLoadout.length;
-                pe++
+                let i = 0;
+                i < this.emoteBarn.emoteLoadout.length;
+                i++
             ) {
-                me.emotes.push(this.emoteBarn.emoteLoadout[pe]);
+                msg.emotes.push(this.emoteBarn.emoteLoadout[i]);
             }
-            me.custom = this.emoteBarn.hasCustomEmotes();
-            this.sendMessage(net.MsgType.Loadout, me, 128);
+            msg.custom = this.emoteBarn.hasCustomEmotes();
+            this.sendMessage(net.MsgType.Loadout, msg, 128);
         }
-        for (let he = 0; he < this.emoteBarn.newPings.length; he++) {
-            const de = this.emoteBarn.newPings[he];
-            const ue = new net.EmoteMsg();
-            ue.type = de.type;
-            ue.pos = de.pos;
-            ue.isPing = true;
-            this.sendMessage(net.MsgType.Emote, ue, 128);
+        for (let i = 0; i < this.emoteBarn.newPings.length; i++) {
+            const ping = this.emoteBarn.newPings[i];
+            const msg = new net.EmoteMsg();
+            msg.type = ping.type;
+            msg.pos = ping.pos;
+            msg.isPing = true;
+            this.sendMessage(net.MsgType.Emote, msg, 128);
         }
         this.emoteBarn.newPings = [];
-        for (let ge = 0; ge < this.emoteBarn.newEmotes.length; ge++) {
-            const ye = this.emoteBarn.newEmotes[ge];
-            const we = new net.EmoteMsg();
-            we.type = ye.type;
-            we.pos = ye.pos;
-            we.isPing = false;
-            this.sendMessage(net.MsgType.Emote, we, 128);
+        for (let i = 0; i < this.emoteBarn.newEmotes.length; i++) {
+            const emote = this.emoteBarn.newEmotes[i];
+            const msg = new net.EmoteMsg();
+            msg.type = emote.type;
+            msg.pos = emote.pos;
+            msg.isPing = false;
+            this.sendMessage(net.MsgType.Emote, msg, 128);
         }
         this.emoteBarn.newEmotes = [];
+
+        // Verify the integrity of smoke alphas as a crude anti-cheat
         this.render(dt, debug);
-        if (++this.frame % 30 == 0) {
-            const fe = mapHelpers.ct;
-            for (let _e = 0; _e < smokeParticles.length; _e++) {
-                const be = smokeParticles[_e];
-                if (be.active && !be.fade && fe(be, mapHelpers.nt)) {
-                    a++;
+        this.frame++;
+
+        if (this.frame % 30 == 0) {
+            const detectCheatAlphaFn = mapHelpers.validateSpriteAlpha;
+            // Verify smoke particle alpha integrity
+            for (let i = 0; i < smokeParticles.length; i++) {
+                const be = smokeParticles[i];
+                if (be.active && !be.fade && detectCheatAlphaFn(be, mapHelpers.nt)) {
+                    cheatDetected++;
                 }
             }
+
+            // Verify obstacle alpha integrity
             for (let i = 0; i < obstacles.length; i++) {
                 const Se = obstacles[i];
-                if (Se.active && !Se.dead && fe(Se, mapHelpers.lt)) {
-                    a++;
+                if (Se.active && !Se.dead && detectCheatAlphaFn(Se, mapHelpers.lt)) {
+                    cheatDetected++;
                 }
             }
-            if (a) {
+            if (cheatDetected) {
                 this.cheatDetected = true;
             }
-            if (a && this.validateAlpha) {
+            if (cheatDetected && this.validateAlpha) {
                 helpers.cheatDetected(this);
             }
         }
@@ -1110,9 +1117,9 @@ export class Game {
             this.particleBarn.onMapLoad(this.map);
             this.uiManager.onMapLoad(this.map, this.camera);
             if (this.map.perkMode) {
-                const i = this.config.get("perkModeRole");
+                const role = this.config.get("perkModeRole");
                 this.uiManager.setRoleMenuOptions(
-                    i,
+                    role,
                     this.map.getMapDef().gameMode.perkModeRoles
                 );
                 this.uiManager.setRoleMenuActive(true);

@@ -154,8 +154,9 @@ export class BulletBarn {
 
     /**
      * @param {import("../objects/player").PlayerBarn} playerBarn
+     * @param {import("../map").Map} map
     */
-    update(dt, playerBarn, r, i, s, n, u, w) {
+    update(dt, playerBarn, map, i, s, n, u, w) {
         for (
             let f = playerBarn.playerPool.getPool(), _ = 0;
             _ < this.bullets.length;
@@ -203,7 +204,7 @@ export class BulletBarn {
                 const colObjs = [];
 
                 // Obstacles
-                const obstacles = r.Ve.getPool();
+                const obstacles = map.obstaclePool.getPool();
                 for (let i = 0; i < obstacles.length; i++) {
                     const obstacle = obstacles[i];
                     if (
@@ -362,7 +363,7 @@ export class BulletBarn {
                         if (!shooterDead) {
                             const Y = col.player;
                             if (
-                                r.turkeyMode &&
+                                map.turkeyMode &&
                                 W?.hasPerk("turkey_shoot")
                             ) {
                                 const J = v2.mul(
@@ -413,7 +414,7 @@ export class BulletBarn {
                     }
                 }
                 if (!(b.layer & 2)) {
-                    const $ = r.lr.getPool();
+                    const $ = map.structurePool.getPool();
                     let ee = b.layer;
                     for (let te = 0; te < $.length; te++) {
                         const re = $[te];

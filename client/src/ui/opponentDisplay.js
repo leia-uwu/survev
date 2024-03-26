@@ -49,9 +49,9 @@ export class LoadoutDisplay {
         // Register types
         const TypeToPool = {
             [gameObject.Type.Player]: this.playerBarn.playerPool,
-            [gameObject.Type.Obstacle]: this.map.Ve,
-            [gameObject.Type.Building]: this.map.nr,
-            [gameObject.Type.Structure]: this.map.lr,
+            [gameObject.Type.Obstacle]: this.map.obstaclePool,
+            [gameObject.Type.Building]: this.map.buildingPool,
+            [gameObject.Type.Structure]: this.map.structurePool,
             [gameObject.Type.Decal]: this.decalBarn._,
             [gameObject.Type.Smoke]: this.smokeBarn.e
         };
