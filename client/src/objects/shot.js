@@ -69,6 +69,9 @@ export class ShotBarn {
         shot.trailSaturated = bullet.trailSaturated;
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+    */
     update(dt, activePlayerId, playerBarn, particleBarn, audioManager) {
         for (let i = 0; i < this.shots.length; i++) {
             const shot = this.shots[i];
@@ -77,12 +80,12 @@ export class ShotBarn {
 
                 // New shot
                 if (shot.ticker == 0) {
-                    const player = playerBarn.u(shot.playerId);
+                    const player = playerBarn.getPlayerById(shot.playerId);
 
                     // Play shot sound
                     let shotSound = weaponDef.sound.shoot;
                     if (weaponDef.sound.shootTeam) {
-                        const teamId = playerBarn.qe(shot.playerId).teamId;
+                        const teamId = playerBarn.getPlayerInfo(shot.playerId).teamId;
                         if (weaponDef.sound.shootTeam[teamId]) {
                             shotSound = weaponDef.sound.shootTeam[teamId];
                         }
@@ -142,7 +145,7 @@ export class ShotBarn {
                             weaponDef.fireMode == "single" &&
                             weaponDef.pullDelay
                         ) {
-                            const ammoLeft = player.Re.tt[player.Re.rt].ammo;
+                            const ammoLeft = player.localData.weapons[player.localData.curWeapIdx].ammo;
                             const soundName =
                                 ammoLeft > 0
                                     ? weaponDef.sound.cycle
@@ -163,19 +166,19 @@ export class ShotBarn {
 
                 shot.ticker += dt;
                 if (shot.ticker >= shot.pullDelay) {
-                    const player = playerBarn.u(shot.playerId);
+                    const player = playerBarn.getPlayerById(shot.playerId);
                     if (
                         player &&
-                        !player.netData.he &&
-                        player.netData.me == shot.weaponType &&
+                        !player.netData.dead &&
+                        player.netData.activeWeapon == shot.weaponType &&
                         weaponDef.caseTiming == "shoot"
                     ) {
                         createCasingParticle(
                             shot.weaponType,
                             (Math.PI / 2) * -1,
                             1,
-                            player.netData.ie,
-                            player.netData.oe,
+                            player.netData.pos,
+                            player.netData.dir,
                             player.renderLayer,
                             player.renderZOrd + 1,
                             particleBarn

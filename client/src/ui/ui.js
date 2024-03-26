@@ -603,7 +603,9 @@ export class UiManager {
     }
 
     /** *
+     * @param {import("../objects/player").Player} player
      * @param {import("../objects/player").PlayerBarn} playerBarn
+     * @param {import("../camera").Camera} camera
      */
     update(dt, player, map, gas, i, playerBarn, camera, teamMode, factionMode) {
         const localPlayer = player;
@@ -646,10 +648,10 @@ export class UiManager {
         }
 
         // Spectator count display
-        this.spectatorCount = player.Re.Be;
+        this.spectatorCount = player.localData.spectatorCount;
         this.updateSpectatorCountDisplay(false);
 
-        if (player.netData.he && !this.dead) {
+        if (player.netData.dead && !this.dead) {
             this.dead = true;
             this.Pe.stop();
         }
@@ -690,7 +692,7 @@ export class UiManager {
                 }
                 break;
             case Action.Revive: {
-                const targetName = playerBarn.qe(player.action.targetId).name;
+                const targetName = playerBarn.getPlayerInfo(player.action.targetId).name;
                 actionTxt1 =
                         this.localization.translate(
                             "game-reviving"
@@ -740,7 +742,7 @@ export class UiManager {
         };
 
         // Update team UI elements
-        const groupId = playerBarn.qe(player.__id).groupId;
+        const groupId = playerBarn.getPlayerInfo(player.__id).groupId;
         const groupInfo = playerBarn.getGroupInfo(groupId);
 
         if (!groupInfo) {
@@ -760,7 +762,7 @@ export class UiManager {
         for (let L = 0; L < groupPlayerCount; L++) {
             const teamElems = this.teamSelectors[L];
             const playerId = groupInfo.playerIds[L];
-            const playerInfo = playerBarn.qe(playerId);
+            const playerInfo = playerBarn.getPlayerInfo(playerId);
             const isLocalPlayer = playerId == localPlayer.__id;
             const playerStatus = playerBarn.getPlayerStatus(playerId);
             if (playerStatus && teamMode > 1) {
@@ -870,7 +872,7 @@ export class UiManager {
 
         // Faction specific rendering
         if (map.factionMode) {
-            const localPlayerInfo = playerBarn.qe(localPlayer.__id);
+            const localPlayerInfo = playerBarn.getPlayerInfo(localPlayer.__id);
             if (this.flairId != localPlayerInfo.teamId) {
                 this.flairId = localPlayerInfo.teamId;
                 // Assume red or blue for now
@@ -936,8 +938,11 @@ export class UiManager {
         }
     }
 
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+    */
     updatePlayerMapSprites(e, activePlayer, playerBarn, map) {
-        const activePlayerInfo = playerBarn.qe(activePlayer.__id);
+        const activePlayerInfo = playerBarn.getPlayerInfo(activePlayer.__id);
 
         let spriteIdx = 0;
         const addSprite = (e, t, alpha, visible, zOrder, texture, tint) => {
@@ -962,7 +967,7 @@ export class UiManager {
         ) {
             const playerStatus = playerBarn.playerStatus[keys[i]];
             const playerId = playerStatus.playerId;
-            const playerInfo = playerBarn.qe(playerId);
+            const playerInfo = playerBarn.getPlayerInfo(playerId);
             const sameGroup = playerInfo.groupId == activePlayerInfo.groupId;
             let zOrder = 65535 + playerId * 2;
             if (playerId == activePlayerInfo.playerId) {
@@ -1062,8 +1067,7 @@ export class UiManager {
     }
 
     /**
-     * @param {import("../objects/player
-     * ").playerBarn} playerBarn
+     * @param {import("../objects/player").PlayerBarn} playerBarn
     */
     createPing(pingType, pos, playerId, activePlayerId, playerBarn, o) {
         const pingDef = PingDefs[pingType];
@@ -1114,8 +1118,8 @@ export class UiManager {
                 // Otherwise, use their team color.
                 // Faction leaders get a special color.
                 let tint = 0xffffff;
-                const activePlayerInfo = playerBarn.qe(activePlayerId);
-                const playerInfo = playerBarn.qe(playerId);
+                const activePlayerInfo = playerBarn.getPlayerInfo(activePlayerId);
+                const playerInfo = playerBarn.getPlayerInfo(playerId);
                 const playerStatus = playerBarn.getPlayerStatus(playerId);
                 if (activePlayerInfo && playerInfo && playerStatus) {
                     if (playerStatus.role == "leader") {
@@ -1330,10 +1334,13 @@ export class UiManager {
         this.game.onQuit();
     }
 
-    showStats(playerStats, teamId, r, winningTeamId, o, localTeamId, teamMode, c, m, p, h, d) {
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+    */
+    showStats(playerStats, teamId, r, winningTeamId, gameOver, localTeamId, teamMode, spectating, playerBarn, p, h, d) {
         // If we're spectating a team that's not our own, and the game isn't over yet,
         // don't display the stats screen again.
-        if (!c || teamId == localTeamId || o) {
+        if (!spectating || teamId == localTeamId || gameOver) {
             this.toggleEscMenu(true);
             this.displayingStats = true;
             this.Pe.stop();
@@ -1353,8 +1360,8 @@ export class UiManager {
 
             const victory = localTeamId == winningTeamId;
             const statsDelay = victory ? 1750 : 2500;
-            const _ = localTeamId == winningTeamId || (c && winningTeamId == teamId);
-            const b = c && localTeamId != teamId;
+            const _ = localTeamId == winningTeamId || (spectating && winningTeamId == teamId);
+            const b = spectating && localTeamId != teamId;
             const S = _
                 ? this.getTitleVictoryText(
                     b,
@@ -1407,7 +1414,7 @@ export class UiManager {
             P -= (playerStats.length - 1) * 10;
             for (let C = 0; C < playerStats.length; C++) {
                 const A = playerStats[C];
-                const O = m.qe(A.playerId);
+                const O = playerBarn.getPlayerInfo(A.playerId);
                 const D = humanizeTime(A.timeAlive);
                 let E = "ui-stats-info-player";
                 E += A.dead ? " ui-stats-info-status" : "";
@@ -1453,7 +1460,7 @@ export class UiManager {
                             D
                         )
                     );
-                if (h.getMapDef().gameMode.factionMode && o) {
+                if (h.getMapDef().gameMode.factionMode && gameOver) {
                     switch (C) {
                     case 1:
                         B.append(
@@ -1495,7 +1502,7 @@ export class UiManager {
                 this.quitGame();
             });
             this.statsOptions.append(restartButton);
-            if (o || this.waitingForPlayers) {
+            if (gameOver || this.waitingForPlayers) {
                 restartButton.css({
                     width:
                         device.uiLayout != device.UiLayout.Sm || device.tablet

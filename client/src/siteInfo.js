@@ -36,11 +36,11 @@ export class SiteInfo {
         const availableModes = [];
         const modes = this.info.modes || [];
         for (
-            let a = 0;
-            a < modes.length;
-            a++
+            let i = 0;
+            i < modes.length;
+            i++
         ) {
-            const mode = modes[a];
+            const mode = modes[i];
             const mapDef = (MapDefs[mode.mapName] || MapDefs.main).desc;
             const buttonText = mapDef.buttonText ? mapDef.buttonText : modeTypes[mode.teamMode];
             availableModes.push({

@@ -11,7 +11,10 @@ export class FlareBarn {
         this.bullets = [];
     }
 
-    addFlare(bullet, playerBarn, r) {
+    /**
+     * @param {import("../objects/player").PlayerBarn} playerBarn
+     */
+    addFlare(bullet, playerBarn, renderer) {
         let b = null;
         for (let i = 0; i < this.bullets.length; i++) {
             if (
@@ -65,7 +68,7 @@ export class FlareBarn {
         b.trailContainer.rotation = angleRadians - Math.PI / 2;
         b.layer = bullet.layer;
 
-        const player = playerBarn.u(b.playerId);
+        const player = playerBarn.getPlayerById(b.playerId);
         if (player && player.layer & 2) {
             b.layer |= 2;
         }
