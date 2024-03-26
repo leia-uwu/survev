@@ -117,6 +117,15 @@ export class ProjectileBarn {
         this.cr = new Pool(Projectile);
     }
 
+    /**
+     * @param {number} dt
+     * @param {import("./particles").ParticleBarn} inputBinds
+     * @param {import("./audioManager").AudioManager} audioManager
+     * @param {import("./player").Player} activePlayer
+     * @param {import("../map").Map} map
+     * @param {import("../renderer").Renderer} renderer
+     * @param {import("../camera").Camera} camera
+     */
     update(dt, particleBarn, audioManager, activePlayer, map, renderer, camera) {
         const projectiles = this.cr.getPool();
         for (let i = 0; i < projectiles.length; i++) {
