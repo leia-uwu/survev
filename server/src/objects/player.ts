@@ -954,19 +954,27 @@ export class Player extends BaseGameObject {
                 break;
             case GameConfig.Input.EquipNextScope: {
                 const availableScopes = Object.keys(ScopeDefs);
-                const nextScopeIdx = availableScopes.indexOf(this.scope) + 1;
-                const nextScope = availableScopes[nextScopeIdx];
-                if (nextScope != undefined && this.inventory[nextScope]) {
-                    this.scope = nextScope;
+                const scopeIdx = availableScopes.indexOf(this.scope);
+
+                for (let i = scopeIdx; i < availableScopes.length; i++) {
+                    const nextScope = availableScopes[i + 1];
+                    if (nextScope != undefined && this.inventory[nextScope]) {
+                        this.scope = nextScope;
+                        break;
+                    }
                 }
                 break;
             }
             case GameConfig.Input.EquipPrevScope: {
-                const availableScopes = Object.keys(ScopeDefs);
-                const prevScopeIdx = availableScopes.indexOf(this.scope) - 1;
-                const prevScope = availableScopes[prevScopeIdx];
-                if (prevScope != undefined && this.inventory[prevScope]) {
-                    this.scope = prevScope;
+                const availableScopes = Object.keys(ScopeDefs).reverse();
+                const scopeIdx = availableScopes.indexOf(this.scope);
+
+                for (let i = scopeIdx; i < availableScopes.length; i++) {
+                    const prevScope = availableScopes[i + 1];
+                    if (prevScope != undefined && this.inventory[prevScope]) {
+                        this.scope = prevScope;
+                        break;
+                    }
                 }
                 break;
             }
@@ -1244,13 +1252,13 @@ export class Player extends BaseGameObject {
             const scopeLevel = `${item.level}xscope`;
 
             const availableScopes = Object.keys(ScopeDefs).reverse();
-            const targetScopeIndex = availableScopes.indexOf(scopeLevel);
+            const scopeIdx = availableScopes.indexOf(scopeLevel);
 
             this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
             this.inventory[scopeLevel] = 0;
 
             if (this.scope === scopeLevel) {
-                for (let i = targetScopeIndex; i < availableScopes.length; i++) {
+                for (let i = scopeIdx; i < availableScopes.length; i++) {
                     if (!this.inventory[availableScopes[i]]) continue;
                     this.scope = availableScopes[i];
                     break;
