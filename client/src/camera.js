@@ -6,8 +6,8 @@ export class Camera {
         this.I = 0;
         this.pos = v2.create(0, 0);
         this.ppu = 16;
-        this.O = 1.5;
-        this.q = 1.5;
+        this.zoom = 1.5;
+        this.targetZoom = 1.5;
         this.screenWidth = 1;
         this.screenHeight = 1;
         this.shakeEnabled = true;
@@ -15,7 +15,7 @@ export class Camera {
     }
 
     z() {
-        return this.ppu * this.O;
+        return this.ppu * this.zoom;
     }
 
     pointToScreen(point) {
@@ -41,7 +41,7 @@ export class Camera {
     }
 
     pixels(p) {
-        return p * this.O;
+        return p * this.zoom;
     }
 
     scaleToScreen(s) {

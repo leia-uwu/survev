@@ -19,15 +19,16 @@ import { Creator } from "../objects/objectPool";
 
 export class LoadoutDisplay {
     /**
+     * @param {PIXI.Application} pixi
      * @param {import("../audioManager").AudioManager} audioManager
      * @param {import("../config").ConfigManager} config
      * @param {import("../inputBinds").InputBinds} inputBinds
      * @param {import("../inputBinds").InputBindUi} inputBindUi
     */
-    constructor(e, audioManager, config, inputBinds, account) {
+    constructor(pixi, audioManager, config, inputBinds, account) {
         this.active = false;
         this.initialized = false;
-        this.pixi = e;
+        this.pixi = pixi;
         this.audioManager = audioManager;
         this.config = config;
         this.inputBinds = inputBinds;
@@ -75,11 +76,11 @@ export class LoadoutDisplay {
             this.debugDisplay
         ];
         for (
-            let n = 0;
-            n < pixiContainers.length;
-            n++
+            let i = 0;
+            i < pixiContainers.length;
+            i++
         ) {
-            const container = pixiContainers[n];
+            const container = pixiContainers[i];
             if (container) {
                 container.interactiveChildren = false;
                 this.pixi.stage.addChild(container);
@@ -116,7 +117,7 @@ export class LoadoutDisplay {
         );
 
         this.activeId = 98;
-        this.dr = this.playerBarn.u(this.activeId);
+        this.dr = this.playerBarn.getPlayerById(this.activeId);
         this.dr.setLocalData(
             {
                 boost: 100,
@@ -150,7 +151,7 @@ export class LoadoutDisplay {
             this.playerBarn
         );
 
-        this.dr.layer = this.dr.netData.pe;
+        this.dr.layer = this.dr.netData.layer;
         this.dr.isLoadoutAvatar = true;
         this.renderer.setActiveLayer(this.dr.layer);
         this.audioManager.activeLayer = this.dr.layer;
@@ -278,10 +279,10 @@ export class LoadoutDisplay {
     }
 
     getCameraLoadoutOffset() {
-        const zoomPrev = this.camera.O;
+        const zoomPrev = this.camera.zoom;
 
         const targetZoom = this.getCameraTargetZoom();
-        this.camera.O = targetZoom;
+        this.camera.zoom = targetZoom;
 
         const modal = document.getElementById("modal-content-left");
         const modalBound = modal.getBoundingClientRect();
@@ -304,7 +305,7 @@ export class LoadoutDisplay {
         const offsetX = math.clamp(viewWidth * 0.5, 2.5, 6);
         const offsetY = 0.33;
         const offset = v2.create(modalOffset.x + modalExt.x + offsetX, modalOffset.y + offsetY);
-        this.camera.O = zoomPrev;
+        this.camera.zoom = zoomPrev;
         return offset;
     }
 
@@ -318,7 +319,7 @@ export class LoadoutDisplay {
     hide() {
         if (this.active) {
             this.active = false;
-            this.camera.O = 2;
+            this.camera.zoom = 2;
         }
     }
 
@@ -328,7 +329,7 @@ export class LoadoutDisplay {
 
         // Camera
         this.camera.pos = v2.sub(this.dr.pos, this.cameraOffset);
-        this.camera.O = math.lerp(dt * 5, this.camera.O, this.camera.q);
+        this.camera.zoom = math.lerp(dt * 5, this.camera.zoom, this.camera.targetZoom);
 
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
 
@@ -430,7 +431,7 @@ export class LoadoutDisplay {
             this.camera.screenHeight = device.screenHeight;
             this.map.resize(this.pixi.renderer, this.canvasMode);
             this.renderer.resize(this.map, this.camera);
-            this.camera.q = this.getCameraTargetZoom();
+            this.camera.targetZoom = this.getCameraTargetZoom();
             this.cameraOffset = this.getCameraLoadoutOffset();
         }
     }

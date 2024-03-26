@@ -95,9 +95,12 @@ export class Touch {
         return this.getMovement(e);
     }
 
-    getAimMovement(e, t) {
-        const r = e.Re.rt == GameConfig.WeaponSlot.Throwable;
-        return this.getAim(r, t);
+    /**
+     * @param {import("../objects/player.js").Player} activePlayer
+     */
+    getAimMovement(activePlayer, camera) {
+        const isHoldingThrowable = activePlayer.localData.curWeapIdx == GameConfig.WeaponSlot.Throwable;
+        return this.getAim(isHoldingThrowable, camera);
     }
 
     setAimDir(e) {
@@ -647,7 +650,7 @@ class LineSprites {
         const o =
             device.touch && e.touchingAim && e.touchAimLine;
         if (o) {
-            const s = activePlayer.netData.me;
+            const s = activePlayer.netData.activeWeapon;
             const g = GameObjectDefs[s];
             let y = 30;
             if (g.type == "gun") {

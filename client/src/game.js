@@ -348,11 +348,11 @@ export class Game {
         const minDim = math.min(this.camera.screenWidth, this.camera.screenHeight);
         const maxDim = math.max(this.camera.screenWidth, this.camera.screenHeight);
         const maxScreenDim = math.max(minDim * (16 / 9), maxDim);
-        this.camera.q = (maxScreenDim * 0.5) / (zoom * this.camera.ppu);
+        this.camera.targetZoom = (maxScreenDim * 0.5) / (zoom * this.camera.ppu);
         const zoomLerpIn = this.activePlayer.zoomFast ? 3 : 2;
         const zoomLerpOut = this.activePlayer.zoomFast ? 3 : 1.4;
-        const zoomLerp = this.camera.q > this.camera.O ? zoomLerpIn : zoomLerpOut;
-        this.camera.O = math.lerp(dt * zoomLerp, this.camera.O, this.camera.q);
+        const zoomLerp = this.camera.targetZoom > this.camera.zoom ? zoomLerpIn : zoomLerpOut;
+        this.camera.zoom = math.lerp(dt * zoomLerp, this.camera.zoom, this.camera.targetZoom);
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
         if (this.input.We(input.Key.Escape)) {
             this.uiManager.toggleEscMenu();
@@ -573,11 +573,11 @@ export class Game {
                 if (e.action == "drop") {
                     const dropMsg = new net.DropItemMsg();
                     if (e.type == "weapon") {
-                        const Y = this.activePlayer.Re.tt;
+                        const Y = this.activePlayer.localData.weapons;
                         dropMsg.item = Y[e.data].type;
                         dropMsg.weapIdx = e.data;
                     } else if (e.type == "perk") {
-                        const J = this.activePlayer.netData.Me;
+                        const J = this.activePlayer.netData.perks;
                         const Q =
                             J.length > e.data ? J[e.data] : null;
                         if (Q?.droppable) {
@@ -587,9 +587,9 @@ export class Game {
                         let $ = "";
                         $ =
                             e.data == "helmet"
-                                ? this.activePlayer.netData.le
+                                ? this.activePlayer.netData.helmet
                                 : e.data == "chest"
-                                    ? this.activePlayer.netData.ce
+                                    ? this.activePlayer.netData.chest
                                     : e.data;
                         dropMsg.item = $;
                     }
@@ -943,13 +943,13 @@ export class Game {
         }
         // Update player status
         if (msg.playerStatusDirty) {
-            const teamId = this.playerBarn.qe(this.activeId).teamId;
+            const teamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
             this.playerBarn.updatePlayerStatus(teamId, msg.playerStatus, this.map.factionMode);
         }
 
         // Update group status
         if (msg.groupStatusDirty) {
-            const groupId = this.playerBarn.qe(this.activeId).groupId;
+            const groupId = this.playerBarn.getPlayerInfo(this.activeId).groupId;
             this.playerBarn.updateGroupStatus(groupId, msg.groupStatus);
         }
 
@@ -970,7 +970,7 @@ export class Game {
             this.objectCreator.updateObjPart(obj.__id, obj, ctx);
         }
         this.spectating = this.activeId != this.localId;
-        this.activePlayer = this.playerBarn.u(this.activeId);
+        this.activePlayer = this.playerBarn.getPlayerById(this.activeId);
         this.activePlayer.setLocalData(msg.activePlayerData, this.playerBarn);
         if (msg.activePlayerData.weapsDirty) {
             this.uiManager.weapsDirty = true;
@@ -984,7 +984,7 @@ export class Game {
             );
             this.touch.hideAll();
         }
-        this.activePlayer.layer = this.activePlayer.netData.pe;
+        this.activePlayer.layer = this.activePlayer.netData.layer;
         this.renderer.setActiveLayer(this.activePlayer.layer);
         this.audioManager.activeLayer = this.activePlayer.layer;
         const underground = this.activePlayer.isUnderground(this.map);
@@ -1135,15 +1135,15 @@ export class Game {
             const msg = new net.KillMsg();
             msg.deserialize(stream);
             const sourceType = msg.itemSourceType || msg.mapSourceType;
-            const activeTeamId = this.playerBarn.qe(this.activeId).teamId;
+            const activeTeamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
             const useKillerInfoInFeed =
                     (msg.downed && !msg.killed) ||
                     msg.damageType == GameConfig.DamageType.Gas ||
                     msg.damageType == GameConfig.DamageType.Bleeding ||
                     msg.damageType == GameConfig.DamageType.Airdrop;
-            const targetInfo = this.playerBarn.qe(msg.targetId);
-            const killerInfo = this.playerBarn.qe(msg.killCreditId);
-            const killfeedKillerInfo = useKillerInfoInFeed ? killerInfo : this.playerBarn.qe(msg.killerId);
+            const targetInfo = this.playerBarn.getPlayerInfo(msg.targetId);
+            const killerInfo = this.playerBarn.getPlayerInfo(msg.killCreditId);
+            const killfeedKillerInfo = useKillerInfoInFeed ? killerInfo : this.playerBarn.getPlayerInfo(msg.killerId);
             let targetName = this.playerBarn.getPlayerName(
                 targetInfo.playerId,
                 this.activeId,
@@ -1248,7 +1248,7 @@ export class Game {
             if (!roleDef) {
                 break;
             }
-            const playerInfo = this.playerBarn.qe(msg.playerId);
+            const playerInfo = this.playerBarn.getPlayerInfo(msg.playerId);
             const nameText = helpers.htmlEscape(
                 this.playerBarn.getPlayerName(msg.playerId, this.activeId, true)
             );
@@ -1364,7 +1364,7 @@ export class Game {
             const msg = new net.GameOverMsg();
             msg.deserialize(stream);
             this.gameOver = msg.gameOver;
-            const localTeamId = this.playerBarn.qe(this.localId).teamId;
+            const localTeamId = this.playerBarn.getPlayerInfo(this.localId).teamId;
 
             // Set local stats based on final results.
             // This is necessary because the last person on a team to die

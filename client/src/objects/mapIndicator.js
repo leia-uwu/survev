@@ -25,7 +25,7 @@ export class MapIndicatorBarn {
         }
     }
 
-    wt(data) {
+    addIndicator(data) {
         const indicator = {
             id: data.id,
             type: data.type,
@@ -60,7 +60,7 @@ export class MapIndicatorBarn {
 
     updateIndicator(data) {
         let indicator = this.idToMapIdicator[data.id];
-        indicator ||= this.wt(data);
+        indicator ||= this.addIndicator(data);
 
         indicator.pos = v2.copy(data.pos);
         indicator.equipped = data.equipped;
