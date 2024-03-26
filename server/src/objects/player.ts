@@ -337,8 +337,6 @@ export class Player extends BaseGameObject {
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
 
-        this.game.lootBarn.addLoot("frag", this.pos, this.layer, 1);
-
         this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
