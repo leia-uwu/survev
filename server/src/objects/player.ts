@@ -958,7 +958,7 @@ export class Player extends BaseGameObject {
                 const nextScope = availableScopes[nextScopeIdx];
                 if (nextScope != undefined && this.inventory[nextScope]) {
                     this.scope = nextScope;
-                } 
+                }
                 break;
             }
             case GameConfig.Input.EquipPrevScope: {
@@ -967,7 +967,7 @@ export class Player extends BaseGameObject {
                 const prevScope = availableScopes[prevScopeIdx];
                 if (prevScope != undefined && this.inventory[prevScope]) {
                     this.scope = prevScope;
-                } 
+                }
                 break;
             }
             case GameConfig.Input.SwapWeapSlots: {
@@ -1253,8 +1253,8 @@ export class Player extends BaseGameObject {
                 for (let i = targetScopeIndex; i < availableScopes.length; i++) {
                     if (!this.inventory[availableScopes[i]]) continue;
                     this.scope = availableScopes[i];
-                        break;
-                    }
+                    break;
+                }
             }
 
             this.dirty.inventory = true;
