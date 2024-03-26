@@ -348,11 +348,11 @@ export class Game {
         const minDim = math.min(this.camera.screenWidth, this.camera.screenHeight);
         const maxDim = math.max(this.camera.screenWidth, this.camera.screenHeight);
         const maxScreenDim = math.max(minDim * (16 / 9), maxDim);
-        this.camera.q = (maxScreenDim * 0.5) / (zoom * this.camera.ppu);
+        this.camera.targetZoom = (maxScreenDim * 0.5) / (zoom * this.camera.ppu);
         const zoomLerpIn = this.activePlayer.zoomFast ? 3 : 2;
         const zoomLerpOut = this.activePlayer.zoomFast ? 3 : 1.4;
-        const zoomLerp = this.camera.q > this.camera.O ? zoomLerpIn : zoomLerpOut;
-        this.camera.O = math.lerp(dt * zoomLerp, this.camera.O, this.camera.q);
+        const zoomLerp = this.camera.targetZoom > this.camera.zoom ? zoomLerpIn : zoomLerpOut;
+        this.camera.zoom = math.lerp(dt * zoomLerp, this.camera.zoom, this.camera.targetZoom);
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
         if (this.input.We(input.Key.Escape)) {
             this.uiManager.toggleEscMenu();
@@ -573,11 +573,11 @@ export class Game {
                 if (e.action == "drop") {
                     const dropMsg = new net.DropItemMsg();
                     if (e.type == "weapon") {
-                        const Y = this.activePlayer.Re.tt;
+                        const Y = this.activePlayer.localData.weapons;
                         dropMsg.item = Y[e.data].type;
                         dropMsg.weapIdx = e.data;
                     } else if (e.type == "perk") {
-                        const J = this.activePlayer.netData.Me;
+                        const J = this.activePlayer.netData.perks;
                         const Q =
                             J.length > e.data ? J[e.data] : null;
                         if (Q?.droppable) {
@@ -587,9 +587,9 @@ export class Game {
                         let $ = "";
                         $ =
                             e.data == "helmet"
-                                ? this.activePlayer.netData.le
+                                ? this.activePlayer.netData.helmet
                                 : e.data == "chest"
-                                    ? this.activePlayer.netData.ce
+                                    ? this.activePlayer.netData.chest
                                     : e.data;
                         dropMsg.item = $;
                     }
@@ -984,7 +984,7 @@ export class Game {
             );
             this.touch.hideAll();
         }
-        this.activePlayer.layer = this.activePlayer.netData.pe;
+        this.activePlayer.layer = this.activePlayer.netData.layer;
         this.renderer.setActiveLayer(this.activePlayer.layer);
         this.audioManager.activeLayer = this.activePlayer.layer;
         const underground = this.activePlayer.isUnderground(this.map);

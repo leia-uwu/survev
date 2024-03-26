@@ -143,7 +143,7 @@ export class LootBarn {
             if (loot.active) {
                 if (
                     util.sameLayer(loot.layer, activePlayer.layer) &&
-                    !activePlayer.netData.he &&
+                    !activePlayer.netData.dead &&
                     (loot.ownerId == 0 || loot.ownerId == activePlayer.__id)
                 ) {
                     const pos = loot.pos;

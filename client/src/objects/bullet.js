@@ -177,7 +177,7 @@ export class BulletBarn {
                 b.pos = v2.add(b.pos, v2.mul(b.dir, distTravel));
 
                 if (
-                    !s.netData.he &&
+                    !s.netData.dead &&
                     util.sameAudioLayer(s.layer, b.layer) &&
                     v2.length(v2.sub(i.pos, b.pos)) < 7.5 &&
                     !b.whizHeard &&
@@ -231,17 +231,17 @@ export class BulletBarn {
                     }
                 }
                 for (let C = 0; C < f.length; C++) {
-                    const A = f[C];
+                    const player = f[C];
                     if (
-                        A.active &&
-                        !A.netData.he &&
-                        (util.sameLayer(A.netData.pe, b.layer) ||
-                            A.netData.pe & 2) &&
-                        (A.__id != b.playerId || b.damageSelf)
+                        player.active &&
+                        !player.netData.dead &&
+                        (util.sameLayer(player.netData.layer, b.layer) ||
+                            player.netData.layer & 2) &&
+                        (player.__id != b.playerId || b.damageSelf)
                     ) {
                         let O = null;
-                        if (A.hasActivePan()) {
-                            const D = A;
+                        if (player.hasActivePan()) {
+                            const D = player;
                             const E = D.getPanSegment();
                             const B = transformSegment(
                                 E.p0,
@@ -276,8 +276,8 @@ export class BulletBarn {
                         const N = coldet.intersectSegmentCircle(
                             posOld,
                             b.pos,
-                            A.pos,
-                            A.rad
+                            player.pos,
+                            player.rad
                         );
                         if (
                             N &&
@@ -291,13 +291,13 @@ export class BulletBarn {
                         ) {
                             colObjs.push({
                                 type: "player",
-                                player: A,
+                                player,
                                 point: N.point,
                                 normal: N.normal,
-                                layer: A.layer,
+                                layer: player.layer,
                                 collidable: true
                             });
-                            if (A.hasPerk("steelskin")) {
+                            if (player.hasPerk("steelskin")) {
                                 colObjs.push({
                                     type: "pan",
                                     point: v2.add(
@@ -305,7 +305,7 @@ export class BulletBarn {
                                         v2.mul(N.normal, 0.1)
                                     ),
                                     normal: N.normal,
-                                    layer: A.layer,
+                                    layer: player.layer,
                                     collidable: false
                                 });
                             }
@@ -314,7 +314,7 @@ export class BulletBarn {
                                 type: "pan",
                                 point: O.point,
                                 normal: O.normal,
-                                layer: A.layer,
+                                layer: player.layer,
                                 collidable: true
                             });
                         }
@@ -335,7 +335,7 @@ export class BulletBarn {
 
                 let shooterDead = false;
                 const W = playerBarn.getPlayerById(b.playerId);
-                if (W && (W.netData.he || W.netData.ue)) {
+                if (W && (W.netData.dead || W.netData.downed)) {
                     shooterDead = true;
                 }
                 let hit = false;

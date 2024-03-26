@@ -597,9 +597,9 @@ export class UiManager2 {
         }
 
         // Player status
-        state.health = activePlayer.netData.he ? 0 : math.max(activePlayer.Re.Lr, 1);
-        state.boost = activePlayer.Re.qr;
-        state.downed = activePlayer.netData.ue;
+        state.health = activePlayer.netData.dead ? 0 : math.max(activePlayer.localData.health, 1);
+        state.boost = activePlayer.localData.boost;
+        state.downed = activePlayer.netData.downed;
 
         // Interaction
         let interactionType = InteractionType.None;
@@ -623,7 +623,7 @@ export class UiManager2 {
                     if (interact) {
                         const res = collider.intersectCircle(
                             obstacle.collider,
-                            activePlayer.netData.ie,
+                            activePlayer.netData.pos,
                             interact.rad + activePlayer.rad
                         );
                         if (res && res.pen >= closestPen) {
@@ -641,7 +641,7 @@ export class UiManager2 {
 
             // Loot
             const loot = lootBarn.getClosestLoot();
-            if (loot && !activePlayer.netData.ue) {
+            if (loot && !activePlayer.netData.downed) {
                 // Ignore if it's a gun and we have full guns w/ fists out...
                 // unless we're on a small screen
                 const itemDef = GameObjectDefs[loot.type];
@@ -655,11 +655,11 @@ export class UiManager2 {
                 if (
                     (state.touch &&
                         itemDef.type == "helmet" &&
-                        activePlayer.Nr() == itemDef.level &&
-                        loot.type != activePlayer.netData.le) ||
+                        activePlayer.getHelmetLevel() == itemDef.level &&
+                        loot.type != activePlayer.netData.helmet) ||
                     (itemDef.type == "chest" &&
-                        activePlayer.Hr() == itemDef.level &&
-                        loot.type != activePlayer.netData.ce)
+                        activePlayer.getChestLevel() == itemDef.level &&
+                        loot.type != activePlayer.netData.chest)
                 ) {
                     J = true;
                 }
@@ -681,7 +681,7 @@ export class UiManager2 {
             // Reviving
             const canSelfRevive = activePlayer.hasPerk("self_revive");
 
-            if (activePlayer.action.type == Action.None && (!activePlayer.netData.ue || canSelfRevive)) {
+            if (activePlayer.action.type == Action.None && (!activePlayer.netData.downed || canSelfRevive)) {
                 const ourTeamId = playerBarn.getPlayerInfo(activePlayer.__id).teamId;
                 const players = playerBarn.playerPool.getPool();
 
@@ -696,12 +696,12 @@ export class UiManager2 {
                         if (
                             (p.__id != activePlayer.__id || canSelfRevive) &&
                             ourTeamId == theirTeamId &&
-                            p.netData.ue &&
-                            !p.netData.he &&
+                            p.netData.downed &&
+                            !p.netData.dead &&
                             p.action.type != Action.Revive
                         ) {
                             const dist = v2.length(
-                                v2.sub(p.netData.ie, activePlayer.netData.ie)
+                                v2.sub(p.netData.pos, activePlayer.netData.pos)
                             );
                             if (
                                 dist < GameConfig.player.reviveRange &&
@@ -716,7 +716,7 @@ export class UiManager2 {
                 }
             }
 
-            if (activePlayer.action.type == Action.Revive && activePlayer.netData.ue && !canSelfRevive) {
+            if (activePlayer.action.type == Action.Revive && activePlayer.netData.downed && !canSelfRevive) {
                 interactionType = InteractionType.None;
                 interactionObject = null;
                 interactionUsable = false;
@@ -725,7 +725,7 @@ export class UiManager2 {
             if (
                 (activePlayer.action.type == Action.UseItem ||
                     (activePlayer.action.type == Action.Revive &&
-                        (!activePlayer.netData.ue || !!canSelfRevive))) &&
+                        (!activePlayer.netData.downed || !!canSelfRevive))) &&
                 !spectating
             ) {
                 interactionType = InteractionType.Cancel;
@@ -737,16 +737,16 @@ export class UiManager2 {
         state.interaction.text = this.getInteractionText(interactionType, interactionObject, activePlayer);
         state.interaction.key = this.getInteractionKey(interactionType);
         state.interaction.usable = interactionUsable && !spectating;
-        for (let oe = 0; oe < activePlayer.Re.tt.length; oe++) {
-            const se = activePlayer.Re.tt[oe];
+        for (let oe = 0; oe < activePlayer.localData.weapons.length; oe++) {
+            const se = activePlayer.localData.weapons[oe];
             const ne = state.weapons[oe];
             ne.type = se.type;
             ne.ammo = se.ammo;
             if (oe == GameConfig.WeaponSlot.Throwable) {
-                ne.ammo = activePlayer.Re.jr[se.type] || 0;
+                ne.ammo = activePlayer.localData.inventory[se.type] || 0;
             }
             const le = ne.equipped;
-            ne.equipped = oe == activePlayer.Re.rt;
+            ne.equipped = oe == activePlayer.localData.curWeapIdx;
             ne.selectable =
                 (se.type != "" || oe == 0 || oe == 1) && !spectating;
             const ce = ne.equipped ? 1 : 0.6;
@@ -775,7 +775,7 @@ export class UiManager2 {
             const ue = inputBinds.getBind(ne.bind);
             ne.bindStr = ue ? ue.toString() : "";
         }
-        const ge = state.weapons[activePlayer.Re.rt];
+        const ge = state.weapons[activePlayer.localData.curWeapIdx];
         const ye = GameObjectDefs[ge.type];
         const we = ge.ammo;
         const fe =
@@ -784,7 +784,7 @@ export class UiManager2 {
                     (activePlayer.hasPerk("endless_ammo") &&
                         !ye.ignoreEndlessAmmo)
                     ? Number.MAX_VALUE
-                    : activePlayer.Re.jr[ye.ammo]
+                    : activePlayer.localData.inventory[ye.ammo]
                 : 0;
         state.ammo.current = we;
         state.ammo.remaining = fe;
@@ -792,14 +792,14 @@ export class UiManager2 {
         state.ammo.displayRemaining = fe > 0;
         for (let _e = 0; _e < state.scopes.length; _e++) {
             const be = state.scopes[_e];
-            be.visible = activePlayer.Re.jr[be.type] > 0;
-            be.equipped = be.visible && activePlayer.Re.Fr == be.type;
+            be.visible = activePlayer.localData.inventory[be.type] > 0;
+            be.equipped = be.visible && activePlayer.localData.scope == be.type;
             be.selectable = be.visible && !spectating;
         }
         for (let xe = activePlayer.getBagLevel(), Se = 0; Se < state.loot.length; Se++) {
             const ve = state.loot[Se];
             const ke = ve.count;
-            ve.count = activePlayer.Re.jr[ve.type] || 0;
+            ve.count = activePlayer.localData.inventory[ve.type] || 0;
             ve.maximum = GameConfig.bagSizes[ve.type][xe];
             ve.selectable = ve.count > 0 && !spectating;
             if (ve.count > ke) {
@@ -820,12 +820,12 @@ export class UiManager2 {
             const Me = state.gear[Te];
             let Pe = "";
             if (Me.type == "chest") {
-                Pe = activePlayer.netData.ce;
+                Pe = activePlayer.netData.chest;
             } else if (Me.type == "helmet") {
-                Pe = activePlayer.netData.le;
+                Pe = activePlayer.netData.helmet;
             } else if (
                 Me.type == "backpack" &&
-                (Pe = activePlayer.netData.ne) == "backpack00"
+                (Pe = activePlayer.netData.backpack) == "backpack00"
             ) {
                 Pe = "";
             }

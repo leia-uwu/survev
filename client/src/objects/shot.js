@@ -145,7 +145,7 @@ export class ShotBarn {
                             weaponDef.fireMode == "single" &&
                             weaponDef.pullDelay
                         ) {
-                            const ammoLeft = player.Re.tt[player.Re.rt].ammo;
+                            const ammoLeft = player.localData.weapons[player.localData.curWeapIdx].ammo;
                             const soundName =
                                 ammoLeft > 0
                                     ? weaponDef.sound.cycle
@@ -169,16 +169,16 @@ export class ShotBarn {
                     const player = playerBarn.getPlayerById(shot.playerId);
                     if (
                         player &&
-                        !player.netData.he &&
-                        player.netData.me == shot.weaponType &&
+                        !player.netData.dead &&
+                        player.netData.activeWeapon == shot.weaponType &&
                         weaponDef.caseTiming == "shoot"
                     ) {
                         createCasingParticle(
                             shot.weaponType,
                             (Math.PI / 2) * -1,
                             1,
-                            player.netData.ie,
-                            player.netData.oe,
+                            player.netData.pos,
+                            player.netData.dir,
                             player.renderLayer,
                             player.renderZOrd + 1,
                             particleBarn

@@ -603,7 +603,9 @@ export class UiManager {
     }
 
     /** *
+     * @param {import("../objects/player").Player} player
      * @param {import("../objects/player").PlayerBarn} playerBarn
+     * @param {import("../camera").Camera} camera
      */
     update(dt, player, map, gas, i, playerBarn, camera, teamMode, factionMode) {
         const localPlayer = player;
@@ -646,10 +648,10 @@ export class UiManager {
         }
 
         // Spectator count display
-        this.spectatorCount = player.Re.Be;
+        this.spectatorCount = player.localData.spectatorCount;
         this.updateSpectatorCountDisplay(false);
 
-        if (player.netData.he && !this.dead) {
+        if (player.netData.dead && !this.dead) {
             this.dead = true;
             this.Pe.stop();
         }
@@ -1065,7 +1067,7 @@ export class UiManager {
     }
 
     /**
-     * @param {import("../objects/player").playerBarn} playerBarn
+     * @param {import("../objects/player").PlayerBarn} playerBarn
     */
     createPing(pingType, pos, playerId, activePlayerId, playerBarn, o) {
         const pingDef = PingDefs[pingType];
