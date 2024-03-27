@@ -757,6 +757,9 @@ const SkinDefs = {
     })
 };
 
+export const GEAR_TYPES = /** @type {const} */ (["chest", "helmet", "backpack"]);
+export const SCOPE_LEVELS = Object.keys(ScopeDefs);
+
 export const GearDefs = {
     ...BaseDefs,
     ...ScopeDefs,

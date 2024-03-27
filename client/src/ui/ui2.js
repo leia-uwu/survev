@@ -1,4 +1,5 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net";
@@ -67,18 +68,6 @@ function diff(a, b, all) {
     return a != b || all;
 }
 
-function c() {
-    const e = Object.keys(GameObjectDefs);
-    const t = [];
-    for (let i = 0; i < e.length; i++) {
-        const a = e[i];
-        if (GameObjectDefs[a].type == "scope") {
-            t.push(a);
-        }
-    }
-    return t;
-}
-
 function m() {
     const e = Object.keys(GameObjectDefs);
     const t = [];
@@ -95,10 +84,6 @@ function m() {
         }
     }
     return t;
-}
-
-function p() {
-    return ["chest", "helmet", "backpack"];
 }
 
 class UiState {
@@ -164,9 +149,9 @@ class UiState {
 
         this.scopes = [];
 
-        for (let r = c(), a = 0; a < r.length; a++) {
+        for (let i = 0; i < SCOPE_LEVELS.length; i++) {
             this.scopes.push({
-                type: r[a],
+                type: SCOPE_LEVELS[i],
                 visible: false,
                 equipped: false,
                 selectable: false
@@ -184,9 +169,9 @@ class UiState {
             });
         }
         this.gear = [];
-        for (let s = p(), n = 0; n < s.length; n++) {
+        for (let i = 0; i < GEAR_TYPES.length; i++) {
             this.gear.push({
-                type: s[n],
+                type: GEAR_TYPES[i],
                 item: "",
                 selectable: false,
                 width: 0,
@@ -316,11 +301,11 @@ export class UiManager2 {
             this.dom.weapons.push(weaponData);
         }
 
-        for (let w = c(), _ = 0; _ < w.length; _++) {
-            const b = w[_];
+        for (let i = 0; i < SCOPE_LEVELS.length; i++) {
+            const scopeType = SCOPE_LEVELS[i];
             const x = {
-                scopeType: b,
-                div: domElemById(`ui-scope-${b}`)
+                scopeType,
+                div: domElemById(`ui-scope-${scopeType}`)
             };
             this.dom.scopes.push(x);
         }
@@ -339,14 +324,14 @@ export class UiManager2 {
                 this.dom.loot.push(P);
             }
         }
-        for (let D = p(), E = 0; E < D.length; E++) {
-            const B = D[E];
-            const R = domElemById(`ui-armor-${B}`);
+        for (let i = 0; i < GEAR_TYPES.length; i++) {
+            const gearType = GEAR_TYPES[i];
+            const div = domElemById(`ui-armor-${gearType}`);
             const L = {
-                gearType: B,
-                div: R,
-                level: R.getElementsByClassName("ui-armor-level")[0],
-                image: R.getElementsByClassName("ui-armor-image")[0]
+                gearType,
+                div,
+                level: div.getElementsByClassName("ui-armor-level")[0],
+                image: div.getElementsByClassName("ui-armor-image")[0]
             };
             this.dom.gear.push(L);
         }
