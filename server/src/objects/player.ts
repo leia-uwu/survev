@@ -18,6 +18,7 @@ import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
 import { AliveCountsMsg, type DropItemMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, UpdateMsg } from "../../../shared/net";
+import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
 
 export class Emote {
     playerId: number;
@@ -789,7 +790,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        for (const item of ["helmet", "chest", "backpack"] as const) {
+        for (const item of GEAR_TYPES) {
             const type = this[item];
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
@@ -805,7 +806,6 @@ export class Player extends BaseGameObject {
         }
 
         // death emote
-
         if (this.loadout.emotes[5] != "") {
             this.game.emotes.add(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
         }
@@ -965,10 +965,30 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.Cancel:
                 this.cancelAction();
                 break;
-            case GameConfig.Input.EquipNextScope:// low priority but will do eventually
+            case GameConfig.Input.EquipNextScope: {
+                const scopeIdx = SCOPE_LEVELS.indexOf(this.scope);
+
+                for (let i = scopeIdx + 1; i < SCOPE_LEVELS.length; i++) {
+                    const nextScope = SCOPE_LEVELS[i];
+
+                    if (!this.inventory[nextScope]) continue;
+                        this.scope = nextScope;
+                        break;
+                }
                 break;
-            case GameConfig.Input.EquipPrevScope:// low priority but will do eventually
+            }
+            case GameConfig.Input.EquipPrevScope: {
+                const scopeIdx = SCOPE_LEVELS.indexOf(this.scope);
+
+                for (let i = scopeIdx - 1; i >= 0; i--) {
+                    const prevScope = SCOPE_LEVELS[i];
+
+                    if (!this.inventory[prevScope]) continue;
+                        this.scope = prevScope;
+                        break;
+                }
                 break;
+            }
             case GameConfig.Input.SwapWeapSlots: {
                 const firstSlotWeaponType = this.weapons[GameConfig.WeaponSlot.Primary].type;
                 const firstSlotWeaponAmmo = this.weapons[GameConfig.WeaponSlot.Primary].ammo;
@@ -1012,7 +1032,7 @@ export class Player extends BaseGameObject {
                 this.pickupInventoryItems(obj);
             } else if (lootType == "gun") {
                 this.pickupGun(obj);
-            } else if (["helmet", "chest", "backpack"].includes(lootType)) {
+            } else if (GEAR_TYPES.includes(lootType as typeof GEAR_TYPES[number])) {
                 this.pickupGear(obj);
             } else if (lootType == "outfit") {
                 this.pickupOutfit(obj);
@@ -1061,7 +1081,7 @@ export class Player extends BaseGameObject {
         const chestLevel = this.getGearLevel(this.chest);
         const backpackLevel = this.getGearLevel(this.backpack);
 
-        const objName = GameObjectDefs[obj.type].type as "helmet" | "chest" | "backpack";
+        const objName = GameObjectDefs[obj.type].type as typeof GEAR_TYPES[number];
         const gearNameToLevel = {
             helmet: helmetLevel,
             chest: chestLevel,
@@ -1243,23 +1263,19 @@ export class Player extends BaseGameObject {
             break;
         }
         case "scope": {
-            const level = item.level;
-            if (level === 1) break;
+            if (item.level === 1) break;
+            const scopeLevel = `${item.level}xscope`;
+            const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
 
-            const availableScopeLevels = [15, 8, 4, 2, 1];
-            let targetScopeIndex = availableScopeLevels.indexOf(level);
             this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
-            this.inventory[`${level}xscope`] = 0;
+            this.inventory[scopeLevel] = 0;
 
-            if (this.scope === `${level}xscope`) {
-                for (let i = targetScopeIndex; i < availableScopeLevels.length; i++) {
-                    if (this.inventory[`${availableScopeLevels[i]}xscope`]) {
-                        targetScopeIndex = availableScopeLevels[i];
-                        break;
-                    }
+            if (this.scope === scopeLevel) {
+                for (let i = scopeIdx; i >= 0; i--) {
+                    if (!this.inventory[SCOPE_LEVELS[i]]) continue;
+                    this.scope = SCOPE_LEVELS[i];
+                    break;
                 }
-
-                this.scope = `${targetScopeIndex}xscope`;
             }
 
             this.dirty.inventory = true;

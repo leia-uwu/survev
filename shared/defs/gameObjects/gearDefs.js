@@ -462,7 +462,10 @@ const BaseDefs = {
         sound: {
             pickup: "chest_pickup_01"
         }
-    },
+    }
+};
+
+export const ScopeDefs = {
     "1xscope": {
         name: "1x Scope",
         type: "scope",
@@ -753,7 +756,12 @@ const SkinDefs = {
         }
     })
 };
+
+export const GEAR_TYPES = /** @type {const} */ (["chest", "helmet", "backpack"]);
+export const SCOPE_LEVELS = Object.keys(ScopeDefs);
+
 export const GearDefs = {
     ...BaseDefs,
+    ...ScopeDefs,
     ...SkinDefs
 };
