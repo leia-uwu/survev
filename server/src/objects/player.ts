@@ -972,8 +972,8 @@ export class Player extends BaseGameObject {
                     const nextScope = SCOPE_LEVELS[i];
 
                     if (!this.inventory[nextScope]) continue;
-                        this.scope = nextScope;
-                        break;
+                    this.scope = nextScope;
+                    break;
                 }
                 break;
             }
@@ -984,8 +984,8 @@ export class Player extends BaseGameObject {
                     const prevScope = SCOPE_LEVELS[i];
 
                     if (!this.inventory[prevScope]) continue;
-                        this.scope = prevScope;
-                        break;
+                    this.scope = prevScope;
+                    break;
                 }
                 break;
             }
