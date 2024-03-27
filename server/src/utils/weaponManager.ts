@@ -52,7 +52,9 @@ export class WeaponManager {
 
         this.lastWeaponIdx = this._curWeapIdx;
         this._curWeapIdx = idx;
-        this.player.cancelAction();
+        if (this.player.actionType != GameConfig.Action.Reload) {
+            this.player.cancelAction();
+        }
         this.player.setDirty();
         this.player.dirty.weapons = true;
     }
@@ -86,6 +88,12 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
+
+        this.weapons[0].type = "m870";
+        this.weapons[0].ammo = 5;
+
+        this.weapons[1].type = "mp5";
+        this.weapons[1].ammo = 30;
     }
 
     shootStart(): void {

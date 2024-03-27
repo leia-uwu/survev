@@ -772,7 +772,8 @@ export class Player extends BaseGameObject {
             if (!weapon.type) continue;
             const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
 
-            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists") {
+            // inventory drop logic already handles throwables, don't drop them here
+            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists" && def.type != "throwable") {
                 this.game.lootBarn.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
             }
         }
@@ -909,13 +910,26 @@ export class Player extends BaseGameObject {
                 this.curWeapIdx = this.weaponManager.lastWeaponIdx;
                 break;
             case GameConfig.Input.EquipOtherGun:
-                for (let i = 0; i < this.weapons.length; i++) {
-                    if (GameConfig.WeaponType[i] === "gun" &&
-                            this.weapons[i] !== this.weapons[this.curWeapIdx]) {
-                        this.curWeapIdx = i;
-                        break;
-                    }
+                // for (let i = 0; i < this.weapons.length; i++) {
+                //     if (GameConfig.WeaponType[i] === "gun" &&
+                //             this.weapons[i] !== this.weapons[this.curWeapIdx]) {
+                //         this.curWeapIdx = i;
+                //         break;
+                //     }
+                // }
+
+                // completely unreadable but optimized weapon swapping code since leia apparently values fewer lines of code over readability
+                if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
+                    const otherGunSlotIdx = this.curWeapIdx ^ 1;
+                    const isOtherGunSlotFull: number = +!!this.weapons[otherGunSlotIdx].type;//! ! converts string to boolean, + coerces boolean to number
+                    this.curWeapIdx = isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee;
+                } else if (this.curWeapIdx == GameConfig.WeaponSlot.Melee && (this.weapons[GameConfig.WeaponSlot.Primary].type || this.weapons[GameConfig.WeaponSlot.Secondary].type)) {
+                    this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
+                } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
+                    const bothSlotsEmpty = !this.weapons[GameConfig.WeaponSlot.Primary].type && !this.weapons[GameConfig.WeaponSlot.Secondary].type;
+                    this.curWeapIdx = bothSlotsEmpty ? GameConfig.WeaponSlot.Melee : this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
                 }
+
                 break;
             case GameConfig.Input.Interact: {
                 const coll = collider.createCircle(this.pos, this.rad);
@@ -956,17 +970,21 @@ export class Player extends BaseGameObject {
             case GameConfig.Input.EquipPrevScope:// low priority but will do eventually
                 break;
             case GameConfig.Input.SwapWeapSlots: {
-                const firstSlotWeaponType = this.weapons[0].type;
-                const firstSlotWeaponAmmo = this.weapons[0].ammo;
+                const firstSlotWeaponType = this.weapons[GameConfig.WeaponSlot.Primary].type;
+                const firstSlotWeaponAmmo = this.weapons[GameConfig.WeaponSlot.Primary].ammo;
 
-                this.weapons[0].type = this.weapons[1].type;
-                this.weapons[0].ammo = this.weapons[1].ammo;
+                this.weapons[GameConfig.WeaponSlot.Primary].type = this.weapons[GameConfig.WeaponSlot.Secondary].type;
+                this.weapons[GameConfig.WeaponSlot.Primary].ammo = this.weapons[GameConfig.WeaponSlot.Secondary].ammo;
 
-                this.weapons[1].type = firstSlotWeaponType;
-                this.weapons[1].ammo = firstSlotWeaponAmmo;
+                this.weapons[GameConfig.WeaponSlot.Secondary].type = firstSlotWeaponType;
+                this.weapons[GameConfig.WeaponSlot.Secondary].ammo = firstSlotWeaponAmmo;
 
-                this.curWeapIdx ^= 1;
-                this.dirty.weapons = true;
+                // curWeapIdx's setter method already sets dirty.weapons
+                if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
+                    this.curWeapIdx ^= 1;
+                } else {
+                    this.dirty.weapons = true;
+                }
                 break;
             }
             }
