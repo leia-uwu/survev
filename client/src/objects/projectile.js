@@ -149,7 +149,7 @@ export class ProjectileBarn {
                     pen: 0
                 };
                 const projCollider = collider.createCircle(p.pos, p.rad);
-                const obstacles = map.Ve.getPool();
+                const obstacles = map.obstaclePool.getPool();
                 for (let j = 0; j < obstacles.length; j++) {
                     const o = obstacles[j];
                     if (

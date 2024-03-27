@@ -156,7 +156,7 @@ export const mapHelpers = {
     },
     nt: 0.8,
     lt: 0.9,
-    ct: function(e: any, t: number) {
+    validateSpriteAlpha: function(e: any, t: number) {
         return e.sprite?.visible && e.sprite.alpha < t;
     }
 };

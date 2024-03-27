@@ -157,29 +157,24 @@ class InputHandler {
     isInputValuePressed(inputValue) {
         switch (inputValue.type) {
         case InputType.Key:
-            return this.We(inputValue.code);
+            return this.keyPressed(inputValue.code);
         case InputType.MouseButton:
-            return this.Ge(inputValue.code);
+            return this.mousePressed(inputValue.code);
         case InputType.MouseWheel:
-            return this.Xe() == inputValue.code;
+            return this.mouseWheel() == inputValue.code;
         default:
             return false;
         }
     }
 
-    /* used by editor.js */
-    m_keyPressed(key) {
-        return !this.keysOld[key] && !!this.keys[key];
-    }
-
     isInputValueReleased(inputValue) {
         switch (inputValue.type) {
         case InputType.Key:
-            return this.Ke(inputValue.code);
+            return this.keyReleased(inputValue.code);
         case InputType.MouseButton:
-            return this.Ze(inputValue.code);
+            return this.mouseReleased(inputValue.code);
         case InputType.MouseWheel:
-            return this.Xe() == inputValue.code;
+            return this.mouseWheel() == inputValue.code;
         default:
             return false;
         }
@@ -188,11 +183,11 @@ class InputHandler {
     isInputValueDown(inputValue) {
         switch (inputValue.type) {
         case InputType.Key:
-            return this.Ye(inputValue.code);
+            return this.keyDown(inputValue.code);
         case InputType.MouseButton:
-            return this.Je(inputValue.code);
+            return this.mouseDown(inputValue.code);
         case InputType.MouseWheel:
-            return this.Xe() == inputValue.code;
+            return this.mouseWheel() == inputValue.code;
         default:
             return false;
         }
@@ -215,15 +210,15 @@ class InputHandler {
         this.keys[e.keyCode] = false;
     }
 
-    Ye(e) {
-        return !!this.keys[e];
+    keyDown(key) {
+        return !!this.keys[key];
     }
 
-    We(e) {
-        return !this.keysOld[e] && !!this.keys[e];
+    keyPressed(key) {
+        return !this.keysOld[key] && !!this.keys[key];
     }
 
-    Ke(e) {
+    keyReleased(e) {
         return !!this.keysOld[e] && !this.keys[e];
     }
 
@@ -264,19 +259,19 @@ class InputHandler {
         this.mouseWheelState = wheel;
     }
 
-    Je(e) {
-        return !!this.mouseButtons[e];
+    mouseDown(button) {
+        return !!this.mouseButtons[button];
     }
 
-    Ge(e) {
-        return !this.mouseButtonsOld[e] && !!this.mouseButtons[e];
+    mousePressed(button) {
+        return !this.mouseButtonsOld[button] && !!this.mouseButtons[button];
     }
 
-    Ze(e) {
-        return !!this.mouseButtonsOld[e] && !this.mouseButtons[e];
+    mouseReleased(button) {
+        return !!this.mouseButtonsOld[button] && !this.mouseButtons[button];
     }
 
-    Xe() {
+    mouseWheel() {
         return this.mouseWheelState;
     }
 

@@ -610,7 +610,7 @@ export class UiManager2 {
             // Usable obstacles
             let closestObj = null;
             let closestPen = 0;
-            const obstacles = map.Ve.getPool();
+            const obstacles = map.obstaclePool.getPool();
 
             for (let i = 0; i < obstacles.length; i++) {
                 const obstacle = obstacles[i];

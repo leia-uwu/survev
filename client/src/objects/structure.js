@@ -106,10 +106,16 @@ export class Structure {
         }
     }
 
+    /**
+     * @param {number} dt
+     * @param {import("../map").Map} map
+     * @param {import("./player").Player} activePlayer
+     * @param {import("./ambiance").Ambiance} ambience
+    */
     updateInteriorSounds(dt, map, activePlayer, ambience) {
         const def = MapObjectDefs[this.type];
         collider.createCircle(activePlayer.pos, 0.001);
-        map.nr.getPool();
+        map.buildingPool.getPool();
         const building0 =
             this.layers.length > 0
                 ? map.getBuildingById(this.layers[0].objId)

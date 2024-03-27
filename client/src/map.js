@@ -71,9 +71,9 @@ export class Map {
         };
         this.mapLoaded = false;
         this.mapTexture = null;
-        this.Ve = new Pool(Obstacle);
-        this.nr = new Pool(Building);
-        this.lr = new Pool(Structure);
+        this.obstaclePool = new Pool(Obstacle);
+        this.buildingPool = new Pool(Building);
+        this.structurePool = new Pool(Structure);
         this.deadObstacleIds = [];
         this.deadCeilingIds = [];
         this.solvedPuzzleIds = [];
@@ -82,14 +82,14 @@ export class Map {
         this.cameraEmitter = null;
 
         // Anti-cheat
-        this.ea = 0;
-        this._r = false;
-        this.U = false;
+        this.cheatDetectFrame = 0;
+        this.cheatRanDetection = false;
+        this.cheatDetected = false;
     }
 
     free() {
         // Buildings need to stop sound emitters
-        const buildings = this.nr.getPool();
+        const buildings = this.buildingPool.getPool();
         for (
             let i = 0; i < buildings.length; i++) {
             buildings[i].free();
@@ -171,7 +171,7 @@ export class Map {
     update(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
         this.I = true;
         this.Br = true;
-        const obstacles = this.Ve.getPool();
+        const obstacles = this.obstaclePool.getPool();
         for (let h = 0; h < obstacles.length; h++) {
             const u = obstacles[h];
             if (u.active) {
@@ -179,14 +179,14 @@ export class Map {
                 u.render(camera, c, activePlayer.layer);
             }
         }
-        for (let y = this.nr.getPool(), f = 0; f < y.length; f++) {
+        for (let y = this.buildingPool.getPool(), f = 0; f < y.length; f++) {
             const _ = y[f];
             if (_.active) {
                 _.m(dt, this, a, i, o, activePlayer, s, camera);
                 _.render(camera, c, activePlayer.layer);
             }
         }
-        for (let b = this.lr.getPool(), x = 0; x < b.length; x++) {
+        for (let b = this.structurePool.getPool(), x = 0; x < b.length; x++) {
             const S = b[x];
             if (S.active) {
                 S.update(dt, this, activePlayer, o);
@@ -211,11 +211,11 @@ export class Map {
                 alphaTarget
             );
         }
-        this.ea++;
-        if (this.ea % 180 == 0) {
-            this._r = true;
+        this.cheatDetectFrame++;
+        if (this.cheatDetectFrame % 180 == 0) {
+            this.cheatRanDetection = true;
             let cheatDetected = 0;
-            const detectCheatAlphaFn = mapHelpers.ct;
+            const detectCheatAlphaFn = mapHelpers.validateSpriteAlpha;
 
             // Verify smoke particle alpha integrity
             for (let i = 0; i < smokeParticles.length; i++) {
@@ -233,7 +233,7 @@ export class Map {
                 }
             }
             if (cheatDetected) {
-                this.U = true;
+                this.cheatDetected = true;
             }
         }
     }
@@ -620,7 +620,7 @@ export class Map {
         let surface = null;
         let zIdx = 0;
         const onStairs = layer & 2;
-        const buildings = this.nr.getPool();
+        const buildings = this.buildingPool.getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (
@@ -699,7 +699,7 @@ export class Map {
     }
 
     insideStructureStairs(collision) {
-        const structures = this.lr.getPool();
+        const structures = this.structurePool.getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active && structure.insideStairs(collision)) {
@@ -710,7 +710,7 @@ export class Map {
     }
 
     getBuildingById(objId) {
-        const buildings = this.nr.getPool();
+        const buildings = this.buildingPool.getPool();
         for (let r = 0; r < buildings.length; r++) {
             const building = buildings[r];
             if (building.active && building.__id == objId) {
@@ -721,7 +721,7 @@ export class Map {
     }
 
     insideStructureMask(collision) {
-        const structures = this.lr.getPool();
+        const structures = this.structurePool.getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active && structure.insideMask(collision)) {
@@ -732,7 +732,7 @@ export class Map {
     }
 
     insideBuildingCeiling(collision, checkVisible) {
-        const buildings = this.nr.getPool();
+        const buildings = this.buildingPool.getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (

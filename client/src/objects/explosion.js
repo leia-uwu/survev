@@ -20,6 +20,8 @@ class PhysicsParticle {
     }
 
     /**
+     * @param {number} dt
+     * @param {import("../map").Map} map
      * @param {import("../objects/player").PlayerBarn} playerBarn
      */
     update(dt, map, playerBarn) {
@@ -30,7 +32,7 @@ class PhysicsParticle {
 
         // Gather colliders
         const colliders = [];
-        const obstacles = map.Ve.getPool();
+        const obstacles = map.obstaclePool.getPool();
         for (let n = 0; n < obstacles.length; n++) {
             const obstacle = obstacles[n];
             if (
