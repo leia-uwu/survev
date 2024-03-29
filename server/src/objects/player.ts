@@ -1407,7 +1407,7 @@ export class Player extends BaseGameObject {
     }
 
     recalculateSpeed(): void {
-        this.speed = this.game.config.movementSpeed;
+        this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
 
         // if melee is selected increase speed
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
@@ -1421,20 +1421,16 @@ export class Player extends BaseGameObject {
 
         // if player is on water decrease speed
         const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
-        if (isOnWater) this.speed -= 3;
+        if (isOnWater) this.speed -= GameConfig.player.waterSpeedPenalty;
 
         // increase speed when adrenaline is above 50%
         if (this.boost >= 50) {
-            this.speed += 1.85;
+            this.speed += GameConfig.player.boostMoveSpeed;
         }
 
         // decrease speed if popping adren or heals
         if (this.actionType == GameConfig.Action.UseItem) {
             this.speed -= 6;
-        }
-
-        if (this.downed) {
-            this.speed -= 8;
         }
 
         this.speed = math.max(this.speed, 1);

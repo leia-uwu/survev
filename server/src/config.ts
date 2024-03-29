@@ -32,7 +32,6 @@ export const Config = {
 
     maxGames: 1,
 
-    movementSpeed: 12,
     tps: 30
 
 } satisfies ConfigType as ConfigType;
@@ -78,7 +77,6 @@ export interface ConfigType {
      */
     readonly maxGames: number
 
-    readonly movementSpeed: number
     /**
      * Server tick rate
      */

@@ -489,7 +489,7 @@ export class Bullet {
                 let isHeadShot = false;
                 // headshots >:3
                 const sourceDef = GameObjectDefs[this.sourceType] as GunDef;
-                if ((sourceDef?.headshotMult ?? 1) > 1 && Math.random() < 0.15) {
+                if ((sourceDef?.headshotMult ?? 1) > 1 && Math.random() < GameConfig.player.headshotChance) {
                     finalDamage *= (GameObjectDefs[this.sourceType] as GunDef).headshotMult;
                     isHeadShot = true;
                 }
