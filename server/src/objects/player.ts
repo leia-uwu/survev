@@ -106,7 +106,7 @@ export class Player extends BaseGameObject {
         this.dirty.boost = true;
     }
 
-    speed: number = this.game.config.movementSpeed;
+    speed: number = 0;
 
     shotSlowdownTimer: number = -1;
 
