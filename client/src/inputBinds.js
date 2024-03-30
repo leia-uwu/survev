@@ -1,16 +1,11 @@
 import $ from "jquery";
 import BitBuffer from "bit-buffer";
 import { GameConfig } from "../../shared/gameConfig";
-import input from "./input";
+import { InputValue, MouseButton, MouseWheel, Key, InputType } from "./input";
 import { crc16 } from "./crc";
 import base64 from "base64-js";
 
 const GameInput = GameConfig.Input;
-const InputType = input.InputType;
-const InputValue = input.InputValue;
-const Key = input.Key;
-const MouseButton = input.MouseButton;
-const MouseWheel = input.MouseWheel;
 
 function def(name, defaultValue) {
     return {
@@ -66,9 +61,13 @@ const BindDefs = {
 };
 
 export class InputBinds {
-    constructor(t, r) {
-        this.input = t;
-        this.config = r;
+    /**
+     * @param {import("./input").InputHandler} input
+     * @param {import("./config").ConfigManager} confi
+     */
+    constructor(input, config) {
+        this.input = input;
+        this.config = config;
         this.binds = [];
         this.boundKeys = {};
         this.menuHovered = false;
@@ -193,9 +192,9 @@ export class InputBinds {
 
     setBind(bind, inputValue) {
         if (inputValue) {
-            for (let r = 0; r < this.binds.length; r++) {
-                if (this.binds[r]?.equals(inputValue)) {
-                    this.binds[r] = null;
+            for (let i = 0; i < this.binds.length; i++) {
+                if (this.binds[i]?.equals(inputValue)) {
+                    this.binds[i] = null;
                 }
             }
         }
@@ -255,11 +254,7 @@ export class InputBinds {
     loadDefaultBinds() {
         this.clearAllBinds();
         const defKeys = Object.keys(BindDefs);
-        for (
-            let i = 0;
-            i < defKeys.length;
-            i++
-        ) {
+        for (let i = 0; i < defKeys.length; i++) {
             const key = defKeys[i];
             const def = BindDefs[key];
             this.setBind(parseInt(key), def.defaultValue);

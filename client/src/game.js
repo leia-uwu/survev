@@ -19,7 +19,7 @@ import { EmoteBarn } from "./emote";
 import { ExplosionBarn } from "./objects/explosion";
 import { FlareBarn } from "./objects/flare";
 import { Gas } from "./gas";
-import input from "./input";
+import { Key } from "./input";
 import { LootBarn } from "./objects/loot";
 import { Map } from "./map";
 import { Creator } from "./objects/objectPool";
@@ -42,7 +42,7 @@ export class Game {
      * @param {import("./audioManager").AudioManager} audioManager
      * @param {import("./ui/localization")} localization
      * @param {import("./config").ConfigManager} config
-     * @param {import("./input")} input
+     * @param {import("./input").InputHandler} input
      * @param {import("./inputBinds").InputBinds} inputBinds
      * @param {import("./inputBinds").InputBindUi} inputBindUi
      * @param {import("./ambiance").Ambiance} ambience
@@ -354,13 +354,13 @@ export class Game {
         const zoomLerp = this.camera.targetZoom > this.camera.zoom ? zoomLerpIn : zoomLerpOut;
         this.camera.zoom = math.lerp(dt * zoomLerp, this.camera.zoom, this.camera.targetZoom);
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
-        if (this.input.keyPressed(input.Key.Escape)) {
+        if (this.input.keyPressed(Key.Escape)) {
             this.uiManager.toggleEscMenu();
         }
         // Large Map
         if (
             this.inputBinds.isBindPressed(Input.ToggleMap) ||
-            (this.input.keyPressed(input.Key.G) && !this.inputBinds.isKeyBound(input.Key.G))
+            (this.input.keyPressed(Key.G) && !this.inputBinds.isKeyBound(Key.G))
         ) {
             this.uiManager.displayMapLarge(false);
         }
@@ -371,13 +371,13 @@ export class Game {
         // Hide UI
         if (
             this.inputBinds.isBindPressed(Input.HideUI) ||
-            (this.input.keyPressed(input.Key.Escape) && !this.uiManager.hudVisible)
+            (this.input.keyPressed(Key.Escape) && !this.uiManager.hudVisible)
         ) {
             this.uiManager.cycleHud();
         }
         // Update facing direction
         const playerPos = this.activePlayer.pos;
-        const mousePos = this.camera.screenToPoint(this.input.Ue);
+        const mousePos = this.camera.screenToPoint(this.input.mousePos);
         const toMousePos = v2.sub(mousePos, playerPos);
         let toMouseLen = v2.length(toMousePos);
         let toMouseDir = toMouseLen > 0.00001 ? v2.div(toMousePos, toMouseLen) : v2.create(1, 0);
@@ -434,20 +434,20 @@ export class Game {
                 // Only use arrow keys if they are unbound
                 inputMsg.moveLeft =
                     this.inputBinds.isBindDown(Input.MoveLeft) ||
-                    (this.input.keyDown(input.Key.Left) &&
-                        !this.inputBinds.isKeyBound(input.Key.Left));
+                    (this.input.keyDown(Key.Left) &&
+                        !this.inputBinds.isKeyBound(Key.Left));
                 inputMsg.moveRight =
                     this.inputBinds.isBindDown(Input.MoveRight) ||
-                    (this.input.keyDown(input.Key.Right) &&
-                        !this.inputBinds.isKeyBound(input.Key.Right));
+                    (this.input.keyDown(Key.Right) &&
+                        !this.inputBinds.isKeyBound(Key.Right));
                 inputMsg.moveUp =
                     this.inputBinds.isBindDown(Input.MoveUp) ||
-                    (this.input.keyDown(input.Key.Up) &&
-                        !this.inputBinds.isKeyBound(input.Key.Up));
+                    (this.input.keyDown(Key.Up) &&
+                        !this.inputBinds.isKeyBound(Key.Up));
                 inputMsg.moveDown =
                     this.inputBinds.isBindDown(Input.MoveDown) ||
-                    (this.input.keyDown(input.Key.Down) &&
-                        !this.inputBinds.isKeyBound(input.Key.Down));
+                    (this.input.keyDown(Key.Down) &&
+                        !this.inputBinds.isKeyBound(Key.Down));
                 inputMsg.toMouseDir = v2.copy(toMouseDir);
                 inputMsg.toMouseLen = toMouseLen;
             }
@@ -616,12 +616,12 @@ export class Game {
         const specBegin = this.uiManager.specBegin;
         const specNext =
             this.uiManager.specNext ||
-            (this.spectating && this.input.keyPressed(input.Key.Right));
+            (this.spectating && this.input.keyPressed(Key.Right));
         const specPrev =
             this.uiManager.specPrev ||
-            (this.spectating && this.input.keyPressed(input.Key.Left));
+            (this.spectating && this.input.keyPressed(Key.Left));
         const specForce =
-            this.input.keyPressed(input.Key.Right) || this.input.keyPressed(input.Key.Left);
+            this.input.keyPressed(Key.Right) || this.input.keyPressed(Key.Left);
         if (specBegin || (this.spectating && specNext) || specPrev) {
             const specMsg = new net.SpectateMsg();
             specMsg.specBegin = specBegin;

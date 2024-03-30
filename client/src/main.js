@@ -11,7 +11,7 @@ import { AudioManager } from "./audioManager";
 import { device } from "./device";
 import { ConfigManager } from "./config";
 import { Game } from "./game";
-import Input from "./input";
+import { InputHandler } from "./input";
 import { InputBinds, InputBindUi } from "./inputBinds";
 import { loadStaticDomImages } from "./ui/ui2";
 import { LoadoutDisplay } from "./ui/opponentDisplay";
@@ -295,7 +295,7 @@ class Application {
                 this.config
             );
             this.resourceManager.loadMapAssets("main");
-            this.input = new Input.InputHandler(
+            this.input = new InputHandler(
                 document.getElementById("game-touch-area")
             );
             this.inputBinds = new InputBinds(
