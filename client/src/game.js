@@ -134,7 +134,7 @@ export class Game {
                     }
                 };
             } catch (err) {
-                console.error(errMsg);
+                console.error(err);
                 this.connecting = false;
                 this.connected = false;
                 onConnectFail();
@@ -193,15 +193,16 @@ export class Game {
         const TypeToPool = {
             [GameObject.Type.Player]: this.playerBarn.playerPool,
             [GameObject.Type.Obstacle]: this.map.obstaclePool,
-            [GameObject.Type.Loot]: this.lootBarn.sr,
-            [GameObject.Type.DeadBody]: this.deadBodyBarn.ot,
+            [GameObject.Type.Loot]: this.lootBarn.lootPool,
+            [GameObject.Type.DeadBody]: this.deadBodyBarn.airdropPool,
             [GameObject.Type.Building]: this.map.buildingPool,
             [GameObject.Type.Structure]: this.map.structurePool,
-            [GameObject.Type.Decal]: this.decalBarn._,
-            [GameObject.Type.Projectile]: this.projectileBarn.cr,
-            [GameObject.Type.Smoke]: this.smokeBarn.e,
-            [GameObject.Type.Airdrop]: this.airdropBarn.re
+            [GameObject.Type.Decal]: this.decalBarn.decalPool,
+            [GameObject.Type.Projectile]: this.projectileBarn.projectilePool,
+            [GameObject.Type.Smoke]: this.smokeBarn.smokePool,
+            [GameObject.Type.Airdrop]: this.airdropBarn.airdropPool
         };
+
         this.objectCreator = new Creator();
         for (const type in TypeToPool) {
             if (TypeToPool.hasOwnProperty(type)) {
@@ -325,7 +326,7 @@ export class Game {
         if (this.playing) {
             this.playingTicker += dt;
         }
-        this.playerBarn.m(
+        this.playerBarn.update(
             dt,
             this.activeId,
             this.teamMode,
@@ -466,8 +467,8 @@ export class Game {
                 net.Constants.MouseMaxDist
             );
             inputMsg.shootStart =
-                this.inputBinds.isBindPressed(Input.Fire) || this.touch.wr;
-            inputMsg.shootHold = this.inputBinds.isBindDown(Input.Fire) || this.touch.wr;
+                this.inputBinds.isBindPressed(Input.Fire) || this.touch.shotDetected;
+            inputMsg.shootHold = this.inputBinds.isBindDown(Input.Fire) || this.touch.shotDetected;
             inputMsg.portrait = this.camera.screenWidth < this.camera.screenHeight;
             const checkInputs = [
                 Input.Reload,

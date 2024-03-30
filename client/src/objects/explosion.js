@@ -119,7 +119,7 @@ class Explosion {
         this.active = false;
     }
 
-    m(dt, explosionBarn, particleBarn, audioManager, map, camera) {
+    update(dt, explosionBarn, particleBarn, audioManager, map, camera) {
         const expType = ExplosionDefs[this.type].explosionEffectType;
         const def = ExplosionEffectDefs[expType];
 
@@ -275,7 +275,7 @@ export class ExplosionBarn {
         for (let i = 0; i < this.explosions.length; i++) {
             const e = this.explosions[i];
             if (e.active) {
-                e.m(dt, this, particleBarn, audioManager, map, camera);
+                e.update(dt, this, particleBarn, audioManager, map, camera);
                 if (!e.active) {
                     e.n();
                 }

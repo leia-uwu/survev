@@ -52,8 +52,8 @@ export class LoadoutDisplay {
             [gameObject.Type.Obstacle]: this.map.obstaclePool,
             [gameObject.Type.Building]: this.map.buildingPool,
             [gameObject.Type.Structure]: this.map.structurePool,
-            [gameObject.Type.Decal]: this.decalBarn._,
-            [gameObject.Type.Smoke]: this.smokeBarn.e
+            [gameObject.Type.Decal]: this.decalBarn.decalPool,
+            [gameObject.Type.Smoke]: this.smokeBarn.smokePool
         };
 
         this.objectCreator = new Creator();
@@ -323,7 +323,7 @@ export class LoadoutDisplay {
         }
     }
 
-    m(dt, hasFocus) {
+    update(dt, hasFocus) {
         const debug = {};
         debug.render = debug.render || {};
 
@@ -388,7 +388,7 @@ export class LoadoutDisplay {
                 });
             }
         }
-        this.playerBarn.m(
+        this.playerBarn.update(
             dt,
             this.activeId,
             this.teamMode,

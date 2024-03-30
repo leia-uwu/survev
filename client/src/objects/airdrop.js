@@ -45,18 +45,18 @@ class AirDrop {
 }
 export class AirdropBarn {
     constructor() {
-        this.re = new Pool(AirDrop);
+        this.airdropPool = new Pool(AirDrop);
     }
 
     free() {
-        const airdrops = this.re.getPool();
+        const airdrops = this.airdropPool.getPool();
         for (let i = 0; i < airdrops.length; i++) {
             airdrops[i].free();
         }
     }
 
     update(dt, activePlayer, camera, map, particleBarn, renderer, audioManager) {
-        const airdrops = this.re.getPool();
+        const airdrops = this.airdropPool.getPool();
         for (let i = 0; i < airdrops.length; i++) {
             const airdrop = airdrops[i];
             if (airdrop.active) {

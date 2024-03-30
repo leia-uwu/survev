@@ -122,7 +122,7 @@ class Loot {
 
 export class LootBarn {
     constructor() {
-        this.sr = new Pool(Loot);
+        this.lootPool = new Pool(Loot);
         this.closestLoot = null;
     }
 
@@ -136,7 +136,7 @@ export class LootBarn {
     update(dt, activePlayer, map, audioManager, camera, debug) {
         this.closestLoot = null;
         let closestDist = Number.MAX_VALUE;
-        const loots = this.sr.getPool();
+        const loots = this.lootPool.getPool();
         for (let i = 0; i < loots.length; i++) {
             /** @type {Loot} */
             const loot = loots[i];

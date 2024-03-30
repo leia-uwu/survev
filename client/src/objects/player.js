@@ -630,7 +630,7 @@ export class Player {
      * @param {import("../camera").Camera} camera
      * @param {import("../renderer").Renderer} renderer
      */
-    m(dt, playerBarn, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating) {
+    update(dt, playerBarn, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating) {
         const curWeapDef = GameObjectDefs[this.netData.activeWeapon];
         const isActivePlayer = this.__id == activeId;
         const activePlayer = playerBarn.getPlayerById(activeId);
@@ -2348,13 +2348,13 @@ export class PlayerBarn {
 
     onMapLoad(e) { }
 
-    m(dt, activeId, r, renderer, particleBarn, camera, map, inputBinds, audioManager, ui2Manager, preventInput, displayingStats, isSpectating) {
+    update(dt, activeId, r, renderer, particleBarn, camera, map, inputBinds, audioManager, ui2Manager, preventInput, displayingStats, isSpectating) {
         // Update players
         const players = this.playerPool.getPool();
         for (let i = 0; i < players.length; i++) {
             const p = players[i];
             if (p.active) {
-                p.m(dt, this, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating);
+                p.update(dt, this, map, audioManager, particleBarn, inputBinds, camera, renderer, ui2Manager, activeId, preventInput, displayingStats, isSpectating);
             }
         }
 

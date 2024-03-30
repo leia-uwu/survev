@@ -401,7 +401,6 @@ class Application {
     }
 
     setPlayLockout(lock) {
-        const t = this;
         const delay = lock ? 0 : 1000;
         this.playButtons
             .stop()
@@ -421,8 +420,8 @@ class Application {
                 },
                 {
                     duration: 250,
-                    start: function() {
-                        t.playLoading.css({
+                    start: () => {
+                        this.playLoading.css({
                             "pointer-events": lock ? "initial" : "none"
                         });
                     }
@@ -709,22 +708,25 @@ class Application {
                 `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId}`
             );
         }
-        const url = urls.shift();
-        if (!url) {
-            this.onJoinGameError("join_game_failed");
-            return;
-        }
-        console.log("Joining", url, matchData.zone);
-        const onFailure = function() {
-            joinGameImpl(urls, matchData);
+        const joinGameImpl = (urls, matchData) => {
+            const url = urls.shift();
+            if (!url) {
+                this.onJoinGameError("join_game_failed");
+                return;
+            }
+            console.log("Joining", url, matchData.zone);
+            const onFailure = function() {
+                joinGameImpl(urls, matchData);
+            };
+            this.game.tryJoinGame(
+                url,
+                matchData.data,
+                this.account.loadoutPriv,
+                this.account.questPriv,
+                onFailure
+            );
         };
-        this.game.tryJoinGame(
-            url,
-            matchData.data,
-            this.account.loadoutPriv,
-            this.account.questPriv,
-            onFailure
-        );
+        joinGameImpl(urls, matchData);
     }
 
     onJoinGameError(err) {
@@ -771,7 +773,7 @@ class Application {
             this.checkedPingTest = true;
         }
         this.resourceManager.update(dt);
-        this.audioManager.m(dt);
+        this.audioManager.update(dt);
         this.ambience.update(dt, this.audioManager, !this.active);
         this.teamMenu.update(dt);
 
@@ -796,7 +798,7 @@ class Application {
                     this.loadoutDisplay.o();
                 }
                 this.loadoutDisplay.show();
-                this.loadoutDisplay.m(dt, this.hasFocus);
+                this.loadoutDisplay.update(dt, this.hasFocus);
             } else {
                 this.loadoutDisplay.hide();
             }

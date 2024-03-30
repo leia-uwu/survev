@@ -114,7 +114,7 @@ const groundSounds = {
 
 export class ProjectileBarn {
     constructor() {
-        this.cr = new Pool(Projectile);
+        this.projectilePool = new Pool(Projectile);
     }
 
     /**
@@ -127,7 +127,7 @@ export class ProjectileBarn {
      * @param {import("../camera").Camera} camera
      */
     update(dt, particleBarn, audioManager, activePlayer, map, renderer, camera) {
-        const projectiles = this.cr.getPool();
+        const projectiles = this.projectilePool.getPool();
         for (let i = 0; i < projectiles.length; i++) {
             const p = projectiles[i];
             if (p.active) {
