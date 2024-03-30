@@ -69,6 +69,10 @@ export class PieTimer {
         this.active = false;
     }
 
+    /**
+    * @param {import("./touch").Touch} touch
+    * @param {number} screenScaleFactor
+    */
     resize(touch, screenScaleFactor) {
         this.screenScaleFactor = screenScaleFactor;
 
@@ -85,6 +89,10 @@ export class PieTimer {
         }
     }
 
+    /**
+    * @param {number} dt
+    * @param {import("../camera").Camera} camera
+    */
     update(dt, camera) {
         if (!this.active) {
             this.container.visible = false;

@@ -38,9 +38,9 @@ const Input = GameConfig.Input;
 
 export class Game {
     /**
-     * @param {PIXI.Application} PIXI
+     * @param {PIXI.Application} pixi
      * @param {import("./audioManager").AudioManager} audioManager
-     * @param {import("./ui/localization")} localization
+     * @param {import("./ui/localization").Localization} localization
      * @param {import("./config").ConfigManager} config
      * @param {import("./input").InputHandler} input
      * @param {import("./inputBinds").InputBinds} inputBinds
