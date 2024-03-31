@@ -80,7 +80,7 @@ class Device {
         }
         this.version = getItem("surviv_version") || "1.0.0";
         this.mobile = detectMobile();
-        this.tablet = isMobile.tablet;
+        this.tablet = isMobile.tablet || isIpad();
         this.touch = this.mobile || this.tablet;
         this.pixelRatio = window.devicePixelRatio;
         this.debug = false;
