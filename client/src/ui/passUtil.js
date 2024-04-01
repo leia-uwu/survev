@@ -1,38 +1,40 @@
 import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
 
+const passMaxLevel = 99;
+
 export const passUtil = {
     getPassMaxLevel: function() {
-        return 99;
+        return passMaxLevel;
     },
-    getPassLevelXp: function(e, t) {
-        const r = PassDefs[e];
-        const i = t - 1;
-        if (i < r.xp.length) {
-            return r.xp[i];
+    getPassLevelXp: function(passType, level) {
+        const passDef = PassDefs[passType];
+        const levelIdx = level - 1;
+        if (levelIdx < passDef.xp.length) {
+            return passDef.xp[levelIdx];
         } else {
-            return r.xp[r.xp.length - 1];
+            return passDef.xp[passDef.xp.length - 1];
         }
     },
-    getPassLevelAndXp: function(e, t) {
-        let r = t;
-        let a = 1;
-        for (;a < 99;) {
-            const o = passUtil.getPassLevelXp(e, a);
-            if (r < o) {
+    getPassLevelAndXp: function(passType, passXp) {
+        let xp = passXp;
+        let level = 1;
+        while (level < passMaxLevel) {
+            const levelXp = passUtil.getPassLevelXp(passType, level);
+            if (xp < levelXp) {
                 break;
             }
-            r -= o;
-            a++;
+            xp -= levelXp;
+            level++;
         }
         return {
-            level: a,
-            xp: r,
-            nextLevelXp: passUtil.getPassLevelXp(e, a)
+            level,
+            xp,
+            nextLevelXp: passUtil.getPassLevelXp(passType, level)
         };
     },
-    timeUntilQuestRefresh: function(e) {
+    timeUntilQuestRefresh: function(timeAcquired) {
         return (
-            Math.floor((e - 25200000 + 86400000 - 1) / 86400000) *
+            Math.floor((timeAcquired - 25200000 + 86400000 - 1) / 86400000) *
             86400000 +
             25200000 -
             Date.now()

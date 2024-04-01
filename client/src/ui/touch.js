@@ -9,44 +9,49 @@ import { device } from "../device";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 
+const deadZone = 2;
+const sensitivityThereshold = 0.00001;
 export class Touch {
-    constructor(t, r) {
-        const i = this;
-        this.input = t;
-        this.config = r;
+    /**
+     * @param {import("../input").InputHandler} input
+     * @param {import("../config").ConfigManager} config
+     */
+    constructor(input, config) {
+        this.input = input;
+        this.config = config;
         this.container = new PIXI.Container();
-        this.ta = new LineSprites();
+        this.lineSprites = new LineSprites();
         this.padScaleBase = 1;
         this.padScaleDown = 0.6;
         this.padScalePos = 0.25;
         this.moveDetected = false;
-        this.wr = false;
-        this.ra = false;
+        this.shotDetected = false;
+        this.shotDetectedOld = false;
         this.touchingAim = false;
         this.display = true;
         this.moveStyle = "locked";
         this.aimStyle = "locked";
         this.touchAimLine = true;
-        const o = function(e, t) {
-            const r = PIXI.Sprite.from("pad.img");
-            r.anchor.set(0.5, 0.5);
-            r.scale.set(1, 1);
-            r.alpha = 0.2;
-            r.visible = false;
-            r.tint = t;
-            e.addChild(r);
-            return r;
+        const createPadSprite = function(parent, tint) {
+            const pad = PIXI.Sprite.from("pad.img");
+            pad.anchor.set(0.5, 0.5);
+            pad.scale.set(1, 1);
+            pad.alpha = 0.2;
+            pad.visible = false;
+            pad.tint = tint;
+            parent.addChild(pad);
+            return pad;
         };
-        const n = function() {
+        const createPad = () => {
             return {
                 touched: false,
                 centerPos: v2.create(0, 0),
                 touchPos: v2.create(0, 0),
-                centerSprite: o(i.container, 0),
-                touchSprite: o(i.container, 16777215)
+                centerSprite: createPadSprite(this.container, 0),
+                touchSprite: createPadSprite(this.container, 16777215)
             };
         };
-        this.touchPads = [n(), n()];
+        this.touchPads = [createPad(), createPad()];
         this.playerMovement = {
             left: false,
             right: false,
@@ -76,98 +81,109 @@ export class Touch {
         this.lockedPadOffsetPortrait = v2.create(96, 160);
         this.lockedPadOffsetYLandscapeSafari = 120;
         this.lockedPadOffsetYPortraitSafari = 240;
-        const l = function(e) {
-            if (!["locked", "anywhere"].includes(e)) {
+        const validateTouchStyle = function(style) {
+            if (!["locked", "anywhere"].includes(style)) {
                 return "anywhere";
             } else {
-                return e;
+                return style;
             }
         };
-        const c = l(r.get("touchMoveStyle"));
-        const m = l(r.get("touchAimStyle"));
-        this.setMoveStyle(c);
-        this.setAimStyle(m);
-        this.setTouchAimLine(!!r.get("touchAimLine"));
+        const moveStyle = validateTouchStyle(config.get("touchMoveStyle"));
+        const aimStyle = validateTouchStyle(config.get("touchAimStyle"));
+        this.setMoveStyle(moveStyle);
+        this.setAimStyle(aimStyle);
+        this.setTouchAimLine(!!config.get("touchAimLine"));
         this.init();
     }
 
-    getTouchMovement(e) {
-        return this.getMovement(e);
+    /**
+    * @param {import("../camera").Camera} camera
+    */
+    getTouchMovement(camera) {
+        return this.getMovement(camera);
     }
 
     /**
      * @param {import("../objects/player.js").Player} activePlayer
+     * @param {import("../camera").Camera} camera
      */
     getAimMovement(activePlayer, camera) {
         const isHoldingThrowable = activePlayer.localData.curWeapIdx == GameConfig.WeaponSlot.Throwable;
         return this.getAim(isHoldingThrowable, camera);
     }
 
-    setAimDir(e) {
-        this.aimMovement.toAimDir = v2.copy(e);
+    setAimDir(dir) {
+        this.aimMovement.toAimDir = v2.copy(dir);
     }
 
-    getMovement(e) {
-        let t = null;
-        let r = null;
-        let a = false;
-        let i;
+    /**
+    * @param {import("../camera").Camera} camera
+    */
+    getMovement(camera) {
+        let posDown = null;
+        let pos = null;
+        let touched = false;
+        let toMoveDir;
         this.moveDetected = false;
         for (
-            let o = 0;
-            o < this.input.touches.length;
-            o++
+            let i = 0;
+            i < this.input.touches.length;
+            i++
         ) {
-            const s = this.input.touches[o];
+            const t = this.input.touches[i];
             if (
-                !s.isDead &&
-                this.isLeftSideTouch(s.posDown.x, e)
+                !t.isDead &&
+                this.isLeftSideTouch(t.posDown.x, camera)
             ) {
-                const n =
+                const center =
                     this.moveStyle == "anywhere"
-                        ? s.posDown
+                        ? t.posDown
                         : this.leftLockedPadCenter;
-                const l = v2.sub(s.pos, n);
-                const c = v2.length(l);
-                if (c > 2) {
-                    const m =
-                        (c - 2) /
+                const pull = v2.sub(t.pos, center);
+                const dist = v2.length(pull);
+
+                if (dist > deadZone) {
+                    const toMoveLen =
+                        (dist - deadZone) /
                         (this.padPosRange /
                             this.movePadDetectMult -
-                            2);
-                    i =
-                        m > 0.00001
-                            ? v2.div(l, m)
+                            deadZone);
+                    toMoveDir =
+                        toMoveLen > sensitivityThereshold
+                            ? v2.div(pull, toMoveLen)
                             : this.analogMovement.toMoveDir;
                     this.analogMovement = {
-                        toMoveDir: v2.create(i.x, i.y * -1),
-                        toMoveLen: m
+                        toMoveDir: v2.create(toMoveDir.x, toMoveDir.y * -1),
+                        toMoveLen
                     };
                     this.moveDetected = true;
                 }
-                r = this.getConstrainedPos(n, s.pos, c);
-                t = n;
-                a = true;
+                pos = this.getConstrainedPos(center, t.pos, dist);
+                posDown = center;
+                touched = true;
                 break;
             }
         }
-        const h = this.touchPads[0];
-        h.touched = a;
-        if (a && this.moveStyle == "anywhere") {
-            h.centerPos = v2.copy(t);
+
+        const pad = this.touchPads[0];
+        pad.touched = touched;
+
+        if (touched && this.moveStyle == "anywhere") {
+            pad.centerPos = v2.copy(posDown);
         } else {
-            h.centerPos = v2.copy(this.leftLockedPadCenter);
+            pad.centerPos = v2.copy(this.leftLockedPadCenter);
         }
-        h.touchPos.x = a ? r.x : this.leftLockedPadCenter.x;
-        h.touchPos.y = a ? r.y : this.leftLockedPadCenter.y;
+
+        pad.touchPos.x = touched ? pos.x : this.leftLockedPadCenter.x;
+        pad.touchPos.y = touched ? pos.y : this.leftLockedPadCenter.y;
         return this.analogMovement;
     }
 
-    getAim(e, t) {
-        let r = false;
-        let a = null;
-        let i = null;
-        let o;
+    getAim(isHoldingThrowable, t) {
+        let touched = false;
+        let posDown = null;
+        let pos = null;
+        let toAimDir;
         for (
             let s = 0;
             s < this.input.touches.length;
@@ -178,104 +194,116 @@ export class Touch {
                 !n.isDead &&
                 !this.isLeftSideTouch(n.posDown.x, t)
             ) {
-                const l =
+                const center =
                     this.aimStyle == "anywhere"
                         ? n.posDown
                         : this.rightLockedPadCenter;
-                const c = v2.sub(n.pos, l);
-                const m = v2.length(c);
-                if (m > 2) {
-                    const h = v2.sub(n.pos, l);
-                    const d = v2.length(h);
-                    o =
-                        d > 0.00001
-                            ? v2.div(h, d)
+                const pull = v2.sub(n.pos, center);
+                const dist = v2.length(pull);
+
+                if (dist > deadZone) {
+                    const toAimPos = v2.sub(n.pos, center);
+                    const toAimLen = v2.length(toAimPos);
+                    toAimDir =
+                        toAimLen > sensitivityThereshold
+                            ? v2.div(toAimPos, toAimLen)
                             : this.aimMovement.toAimDir;
                     this.aimMovement = {
-                        toAimDir: v2.create(o.x, o.y * -1),
-                        toAimLen: d
+                        toAimDir: v2.create(toAimDir.x, toAimDir.y * -1),
+                        toAimLen
                     };
                 } else {
                     this.aimMovement.toAimLen = 0;
                 }
-                i = this.getConstrainedPos(l, n.pos, m);
-                a = l;
-                r = true;
+
+                pos = this.getConstrainedPos(center, n.pos, dist);
+                posDown = center;
+                touched = true;
                 break;
             }
         }
-        this.ra = this.wr;
-        this.wr =
+
+        // Detect if user has moved far enough from center to shoot
+        this.shotDetectedOld = this.shotDetected;
+        this.shotDetected =
             this.aimMovement.toAimLen >
             this.padPosRange / this.shotPadDetectMult &&
-            r;
-        this.touchingAim = r;
-        if (e && this.ra && r) {
-            this.wr = true;
+            touched;
+        this.touchingAim = touched;
+
+        // Special-case throwable logic: once the player begins priming
+        // the grenade, dragging back into aim circle will not release
+        // it. Only lifting the finger will throw the grenade.
+        if (isHoldingThrowable && this.shotDetectedOld && touched) {
+            this.shotDetected = true;
         }
-        const u = this.touchPads[1];
-        u.touched = r;
-        if (r && this.aimStyle == "anywhere") {
-            u.centerPos = v2.copy(a);
+
+        const pad = this.touchPads[1];
+
+        pad.touched = touched;
+        if (touched && this.aimStyle == "anywhere") {
+            pad.centerPos = v2.copy(posDown);
         } else {
-            u.centerPos = v2.copy(this.rightLockedPadCenter);
+            pad.centerPos = v2.copy(this.rightLockedPadCenter);
         }
-        u.touchPos.x = r
-            ? i.x
+        pad.touchPos.x = touched
+            ? pos.x
             : this.rightLockedPadCenter.x;
-        u.touchPos.y = r
-            ? i.y
+        pad.touchPos.y = touched
+            ? pos.y
             : this.rightLockedPadCenter.y;
+
         return {
             aimMovement: this.aimMovement,
-            touched: u.touched
+            touched: pad.touched
         };
     }
 
-    update(e, t, r, a, i) {
+    update(e, activePlayer, map, camera, renderer) {
         for (let o = 0; o < this.touchPads.length; o++) {
-            const s = this.touchPads[o];
-            s.centerSprite.position.x = s.centerPos.x;
-            s.centerSprite.position.y = s.centerPos.y;
-            s.centerSprite.scale.x =
+            const pad = this.touchPads[o];
+            pad.centerSprite.position.x = pad.centerPos.x;
+            pad.centerSprite.position.y = pad.centerPos.y;
+            pad.centerSprite.scale.x =
                 this.padScaleBase * this.padScaleDown;
-            s.centerSprite.scale.y =
+            pad.centerSprite.scale.y =
                 this.padScaleBase * this.padScaleDown;
-            s.centerSprite.visible =
+            pad.centerSprite.visible =
                 device.touch && this.display;
-            s.touchSprite.position.x = s.touchPos.x;
-            s.touchSprite.position.y = s.touchPos.y;
-            s.touchSprite.scale.x =
+            pad.touchSprite.position.x = pad.touchPos.x;
+            pad.touchSprite.position.y = pad.touchPos.y;
+            pad.touchSprite.scale.x =
                 this.padScaleBase * this.padScalePos;
-            s.touchSprite.scale.y =
+            pad.touchSprite.scale.y =
                 this.padScaleBase * this.padScalePos;
-            s.touchSprite.visible = device.touch && this.display;
+            pad.touchSprite.visible = device.touch && this.display;
         }
-        this.ta.update(this, t, r, a, i);
+
+        this.lineSprites.update(this, activePlayer, map, camera, renderer);
     }
 
-    isLeftSideTouch(e, t) {
-        return e < t.screenWidth * 0.5;
+    isLeftSideTouch(posX, camera) {
+        return posX < camera.screenWidth * 0.5;
     }
 
-    getConstrainedPos(e, t, r) {
-        if (r <= this.padPosRange) {
-            return t;
+    getConstrainedPos(posDown, pos, dist) {
+        if (dist <= this.padPosRange) {
+            return pos;
         }
-        const a = t.x - e.x;
-        const i = t.y - e.y;
-        const o = Math.atan2(i, a);
+        const x = pos.x - posDown.x;
+        const y = pos.y - posDown.y;
+        const radians = Math.atan2(y, x);
         return v2.create(
-            Math.cos(o) * this.padPosRange + e.x,
-            Math.sin(o) * this.padPosRange + e.y
+            Math.cos(radians) * this.padPosRange + posDown.x,
+            Math.sin(radians) * this.padPosRange + posDown.y
         );
     }
 
-    getConstrainedPosDown(e, t, r) {
-        const a = v2.normalizeSafe(t);
+    getConstrainedPosDown(posDown, dir, dist) {
+        const normalDir = v2.normalizeSafe(dir);
         return v2.add(
-            e,
-            v2.mul(a, Math.max(0, r - this.padPosRange))
+            posDown,
+            v2.mul(normalDir, Math.max(0, dist - this.padPosRange))
         );
     }
 
@@ -287,19 +315,20 @@ export class Touch {
         );
     }
 
-    setMoveStyle(e) {
-        this.moveStyle = e;
-        this.config.set("touchMoveStyle", e);
-        const t = document.getElementById(
+    setMoveStyle(style) {
+        this.moveStyle = style;
+        this.config.set("touchMoveStyle", style);
+        const elem = document.getElementById(
             "btn-game-move-style"
         );
-        if (t) {
+
+        if (elem) {
             if (this.moveStyle == "locked") {
-                t.classList.remove("unlocked-on-icon");
-                t.classList.add("locked-on-icon");
+                elem.classList.remove("unlocked-on-icon");
+                elem.classList.add("locked-on-icon");
             } else {
-                t.classList.remove("locked-on-icon");
-                t.classList.add("unlocked-on-icon");
+                elem.classList.remove("locked-on-icon");
+                elem.classList.add("unlocked-on-icon");
             }
         }
     }
@@ -312,17 +341,18 @@ export class Touch {
         );
     }
 
-    setAimStyle(e) {
-        this.aimStyle = e;
-        this.config.set("touchAimStyle", e);
-        const t =
+    setAimStyle(style) {
+        this.aimStyle = style;
+        this.config.set("touchAimStyle", style);
+
+        const elem =
             document.getElementById("btn-game-aim-style");
         if (this.aimStyle == "locked") {
-            t.classList.remove("unlocked-on-icon");
-            t.classList.add("locked-on-icon");
+            elem.classList.remove("unlocked-on-icon");
+            elem.classList.add("locked-on-icon");
         } else {
-            t.classList.remove("locked-on-icon");
-            t.classList.add("unlocked-on-icon");
+            elem.classList.remove("locked-on-icon");
+            elem.classList.add("unlocked-on-icon");
         }
     }
 
@@ -330,17 +360,17 @@ export class Touch {
         this.setTouchAimLine(!this.touchAimLine);
     }
 
-    setTouchAimLine(e) {
-        this.touchAimLine = e;
+    setTouchAimLine(isOn) {
+        this.touchAimLine = isOn;
         this.config.set("touchAimLine", this.touchAimLine);
-        const t =
+        const elem =
             document.getElementById("btn-game-aim-line");
         if (this.touchAimLine) {
-            t.classList.remove("aim-line-off-icon");
-            t.classList.add("aim-line-on-icon");
+            elem.classList.remove("aim-line-off-icon");
+            elem.classList.add("aim-line-on-icon");
         } else {
-            t.classList.remove("aim-line-on-icon");
-            t.classList.add("aim-line-off-icon");
+            elem.classList.remove("aim-line-on-icon");
+            elem.classList.add("aim-line-off-icon");
         }
     }
 
@@ -349,54 +379,61 @@ export class Touch {
     }
 
     resize() {
-        const e = device.isLandscape;
-        const t = this.lockedPadOffsetLandscape;
-        const r = this.lockedPadOffsetPortrait;
+        const isLandscape = device.isLandscape;
+        const lockedPadOffsetLandscape = this.lockedPadOffsetLandscape;
+        const lockedPadOffsetPortrait = this.lockedPadOffsetPortrait;
+
+        // Scale the x offsets on all tablets to bring them closer to the middle
         if (device.tablet) {
-            t.x = t.x * 1;
-            r.x = r.x * 1.25;
+            lockedPadOffsetLandscape.x = lockedPadOffsetLandscape.x * 1;
+            lockedPadOffsetPortrait.x = lockedPadOffsetPortrait.x * 1.25;
         }
-        const a = v2.create(t.x, t.y);
-        const i = v2.create(r.x, r.y);
-        const o = v2.create(device.screenWidth - t.x, t.y);
-        const s = v2.create(device.screenWidth - r.x, r.y);
+        const leftLockedPadOffsetLandscape = v2.create(lockedPadOffsetLandscape.x, lockedPadOffsetLandscape.y);
+        const leftLockedPadOffsetPortrait = v2.create(lockedPadOffsetPortrait.x, lockedPadOffsetPortrait.y);
+        const rightLockedPadOffsetLandscape = v2.create(device.screenWidth - lockedPadOffsetLandscape.x, lockedPadOffsetLandscape.y);
+        const rightLockedPadOffsetPortrait = v2.create(device.screenWidth - lockedPadOffsetPortrait.x, lockedPadOffsetPortrait.y);
+
         if (device.os == "ios") {
+            // Adjust the bottom offset on iPhoneX (web app and native app)
             if (device.model == "iphonex") {
-                a.x = a.x + 56;
-                o.x = o.x - 56;
-                a.y = a.y * 0.9;
-                o.y = o.y * 0.9;
+                leftLockedPadOffsetLandscape.x = leftLockedPadOffsetLandscape.x + 56;
+                rightLockedPadOffsetLandscape.x = rightLockedPadOffsetLandscape.x - 56;
+                leftLockedPadOffsetLandscape.y = leftLockedPadOffsetLandscape.y * 0.9;
+                rightLockedPadOffsetLandscape.y = rightLockedPadOffsetLandscape.y * 0.9;
             } else {
-                let n =
+                let lockedPadOffsetYLandscapeSafari =
                     this.lockedPadOffsetYLandscapeSafari;
-                let l = this.lockedPadOffsetYPortraitSafari;
+                let lockedPadOffsetYPortraitSafari = this.lockedPadOffsetYPortraitSafari;
+
                 if (device.tablet) {
-                    n *= 1;
-                    l *= 1;
+                    lockedPadOffsetYLandscapeSafari *= 1;
+                    lockedPadOffsetYPortraitSafari *= 1;
                 }
-                a.y = n;
-                i.y = l;
-                o.y = n;
-                s.y = l;
+
+                leftLockedPadOffsetLandscape.y = lockedPadOffsetYLandscapeSafari;
+                leftLockedPadOffsetPortrait.y = lockedPadOffsetYPortraitSafari;
+                rightLockedPadOffsetLandscape.y = lockedPadOffsetYLandscapeSafari;
+                rightLockedPadOffsetPortrait.y = lockedPadOffsetYPortraitSafari;
             }
         }
-        this.padScaleBase = e ? 1 : 0.8;
+        this.padScaleBase = isLandscape ? 1 : 0.8;
         this.padPosRange =
             this.padPosBase * this.padScaleBase;
-        const c = e ? a : i;
+        const leftOffset = isLandscape ? leftLockedPadOffsetLandscape : leftLockedPadOffsetPortrait;
         this.leftLockedPadCenter = v2.create(
-            c.x,
-            device.screenHeight - c.y
+            leftOffset.x,
+            device.screenHeight - leftOffset.y
         );
-        const m = e ? o : s;
+        const rightOffset = isLandscape ? rightLockedPadOffsetLandscape : rightLockedPadOffsetPortrait;
         this.rightLockedPadCenter = v2.create(
-            m.x,
-            device.screenHeight - m.y
+            rightOffset.x,
+            device.screenHeight - rightOffset.y
         );
-        this.setMobileStyling(e);
+
+        this.setMobileStyling(isLandscape);
     }
 
-    setMobileStyling(e) {
+    setMobileStyling(isLandscape) {
         if (device.touch) {
             $("#btn-touch-styles")
                 .find(".btn-game-container")
@@ -461,7 +498,7 @@ export class Touch {
             $(".ui-ability-key").css("display", "block");
         }
         if (device.tablet) {
-            if (e) {
+            if (isLandscape) {
                 if (device.os == "ios") {
                     $("#ui-bottom-right").addClass(
                         "ui-bottom-right-tablet-ipad-browser"
@@ -524,18 +561,18 @@ export class Touch {
         }
         if (device.os == "ios") {
             if (device.model == "iphonex") {
-                const t = device.isLandscape ? "99%" : "90%";
-                const r = device.isLandscape ? 0 : 32;
+                const gameHeight = device.isLandscape ? "99%" : "90%";
+                const topOffset = device.isLandscape ? 0 : 32;
                 $("#ui-game").css({
-                    height: t,
-                    top: r
+                    height: gameHeight,
+                    top: topOffset
                 });
                 $("#ui-stats-contents").css({
                     transform:
                         "translate(-50%) scale(0.95)",
                     "transform-origin": "top"
                 });
-                if (e) {
+                if (isLandscape) {
                     $("#ui-game").css({
                         left: "50%",
                         transform: "translateX(-50%)",
@@ -556,23 +593,25 @@ export class Touch {
                     height: "95%"
                 });
             } else {
-                let a = device.isLandscape ? "86%" : "82%";
+                let marginBottom = device.isLandscape ? "86%" : "82%";
                 if (device.tablet) {
-                    a = "100%";
+                    marginBottom = "100%";
                 }
                 $("#ui-game").css({
-                    height: a
+                    height: marginBottom
                 });
-                const i = 6;
-                const s = $(
+                const gameMarginTop = 6;
+                const gameMarginElems = $(
                     "#ui-right-center, #ui-top-center-scopes-wrapper, #ui-top-center, #ui-menu-display"
                 );
-                s.css({
-                    "margin-top": i
+                gameMarginElems.css({
+                    "margin-top": gameMarginTop
                 });
             }
         }
-        if (device.tablet || e) {
+
+        // Reorder ammo for mobile
+        if (device.tablet || isLandscape) {
             $("#ui-loot-50AE").insertBefore(
                 "#ui-loot-556mm"
             );
@@ -632,15 +671,15 @@ class LineSprites {
     }
 
     createDot() {
-        const e = new PIXI.Sprite();
-        e.texture = PIXI.Texture.from("dot.img");
-        e.anchor.set(0.5, 0.5);
-        e.position.set(0, 0);
-        e.scale.set(1, 1);
-        e.tint = 16777215;
-        e.alpha = 1;
-        e.visible = false;
-        return e;
+        const dotSprite = new PIXI.Sprite();
+        dotSprite.texture = PIXI.Texture.from("dot.img");
+        dotSprite.anchor.set(0.5, 0.5);
+        dotSprite.position.set(0, 0);
+        dotSprite.scale.set(1, 1);
+        dotSprite.tint = 0xffffff;
+        dotSprite.alpha = 1;
+        dotSprite.visible = false;
+        return dotSprite;
     }
 
     /**
@@ -668,6 +707,7 @@ class LineSprites {
             const cameraZoom = activePlayer.getZoom();
             const cameraRad = Math.sqrt(cameraZoom * 1.414 * cameraZoom);
             maxRange = math.min(maxRange, cameraRad);
+
             const start = v2.copy(activePlayer.pos);
             let end = v2.add(start, v2.mul(activePlayer.dir, maxRange));
 
@@ -694,6 +734,7 @@ class LineSprites {
                         start,
                         end
                     );
+
                     if (res) {
                         const dist = v2.length(
                             v2.sub(res.point, start)
@@ -708,7 +749,6 @@ class LineSprites {
 
             const startOffset = 3.5;
             const increment = 1.5;
-
             // Allocate enough dots
             const dist = v2.length(v2.sub(end, start));
             const dotCount = Math.max(
@@ -722,22 +762,22 @@ class LineSprites {
                 this.dots.push(dot);
             }
 
+            // Position dots
             for (let i = 0; i < this.dots.length; i++) {
                 const dot = this.dots[i];
-                const offset = 3.5 + i * 1.5;
+                const offset = startOffset + i * increment;
                 const pos = v2.add(activePlayer.pos, v2.mul(activePlayer.dir, offset));
+                const scale = 1.0 / 32.0 * 0.375;
                 dot.position.set(pos.x, pos.y);
-                dot.scale.set(0.01171875, 0.01171875);
+                dot.scale.set(scale, scale);
                 dot.visible = i < dotCount;
             }
 
-            // Position dot container
             const p0 = camera.pointToScreen(v2.create(0, 0));
             const p1 = camera.pointToScreen(v2.create(1, 1));
-
-            const s = v2.sub(p1, p0);
+            const R = v2.sub(p1, p0);
             this.container.position.set(p0.x, p0.y);
-            this.container.scale.set(s.x, s.y);
+            this.container.scale.set(R.x, R.y);
             this.container.alpha = 0.3;
             renderer.addPIXIObj(this.container, activePlayer.layer, 19, 0);
         }

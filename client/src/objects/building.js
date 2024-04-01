@@ -292,11 +292,11 @@ export class Building {
      * @param {import("./particles").ParticleBarn} particleBarn
      * @param {import("../audioManager").AudioManager} audioManager
      * @param {import("./player").Player} activePlayer
+     * @param {import("../ambiance").Ambiance} ambience
      * @param {import("../renderer").Renderer} renderer
      * @param {import("../camera").Camera} camera
-     * @param {import("./resources").ResourceManager} resourceManager
-    */
-    m(dt, map, particleBarn, audioManager, ambience, activePlayer, renderer, camera) {
+     */
+    update(dt, map, particleBarn, audioManager, ambience, activePlayer, renderer, camera) {
         // Puzzle effects
         if (this.hasPuzzle) {
             const def = MapObjectDefs[this.type];
@@ -575,6 +575,10 @@ export class Building {
         });
     }
 
+    /**
+     * @param {number} alpha
+     * @param {import("../camera").Camera} camera
+     */
     positionSprite(sprite, alpha, camera) {
         const screenPos = camera.pointToScreen(v2.add(this.pos, sprite.posOffset));
         const screenScale = camera.pixels(this.scale * sprite.defScale);

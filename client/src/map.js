@@ -168,31 +168,36 @@ export class Map {
     /**
      * @param {import("./objects/player").Player} activePlayer
     */
-    update(dt, activePlayer, r, a, i, o, s, camera, smokeParticles, c) {
+    update(dt, activePlayer, playerBarn, particleBarn, audioManager, ambience, renderer, camera, smokeParticles, debug) {
         this.I = true;
         this.Br = true;
+
         const obstacles = this.obstaclePool.getPool();
-        for (let h = 0; h < obstacles.length; h++) {
-            const u = obstacles[h];
-            if (u.active) {
-                u.m(dt, this, r, a, i, activePlayer, s);
-                u.render(camera, c, activePlayer.layer);
+        for (let i = 0; i < obstacles.length; i++) {
+            const obstacle = obstacles[i];
+            if (obstacle.active) {
+                obstacle.update(dt, this, playerBarn, particleBarn, audioManager, activePlayer, renderer);
+                obstacle.render(camera, debug, activePlayer.layer);
             }
         }
-        for (let y = this.buildingPool.getPool(), f = 0; f < y.length; f++) {
-            const _ = y[f];
-            if (_.active) {
-                _.m(dt, this, a, i, o, activePlayer, s, camera);
-                _.render(camera, c, activePlayer.layer);
+
+        const buildings = this.buildingPool.getPool();
+        for (let i = 0; i < buildings.length; i++) {
+            const building = buildings[i];
+            if (building.active) {
+                building.update(dt, this, particleBarn, audioManager, ambience, activePlayer, renderer, camera);
+                building.render(camera, debug, activePlayer.layer);
             }
         }
-        for (let b = this.structurePool.getPool(), x = 0; x < b.length; x++) {
-            const S = b[x];
-            if (S.active) {
-                S.update(dt, this, activePlayer, o);
-                S.render(camera, c, activePlayer.layer);
+
+        for (let structures = this.structurePool.getPool(), x = 0; x < structures.length; x++) {
+            const structure = structures[x];
+            if (structure.active) {
+                structure.update(dt, this, activePlayer, ambience);
+                structure.render(camera, debug, activePlayer.layer);
             }
         }
+
         if (this.cameraEmitter) {
             this.cameraEmitter.pos = v2.copy(camera.pos);
             this.cameraEmitter.enabled = true;
@@ -211,6 +216,7 @@ export class Map {
                 alphaTarget
             );
         }
+
         this.cheatDetectFrame++;
         if (this.cheatDetectFrame % 180 == 0) {
             this.cheatRanDetection = true;
@@ -599,7 +605,7 @@ export class Map {
         };
 
         // Check decals
-        const decals = this.decalBarn._.getPool();
+        const decals = this.decalBarn.decalPool.getPool();
         for (
             let i = 0;
             i < decals.length;

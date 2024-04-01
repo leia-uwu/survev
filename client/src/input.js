@@ -23,16 +23,16 @@ class Touch {
         this.osId = 0;
     }
 }
-/**
- *
- * @param {HTMLElement} touchElem
- */
-class InputHandler {
+
+export class InputHandler {
+    /**
+    * @param {HTMLElement} touchElem
+    */
     constructor(touchElem) {
         this.touchElem = touchElem;
         this.keys = {};
         this.keysOld = {};
-        this.Ue = v2.create(0, 0);
+        this.mousePos = v2.create(0, 0);
         this.mouseButtons = {};
         this.mouseButtonsOld = {};
         this.mouseWheelState = 0;
@@ -224,8 +224,8 @@ class InputHandler {
 
     // Mouse
     onMouseMove(event) {
-        this.Ue.x = event.clientX;
-        this.Ue.y = event.clientY;
+        this.mousePos.x = event.clientX;
+        this.mousePos.y = event.clientY;
     }
 
     onMouseDown(event) {
@@ -360,7 +360,11 @@ class InputHandler {
         return null;
     }
 }
-const Key = Object.freeze({
+
+/**
+ * @enum { number }
+ */
+export const Key = Object.freeze({
     Backspace: 8,
     Enter: 13,
     Shift: 16,
@@ -419,24 +423,37 @@ const Key = Object.freeze({
     FwdSlash: 191,
     Tilde: 192
 });
-const MouseButton = Object.freeze({
+
+/**
+ * @enum { number }
+ */
+export const MouseButton = Object.freeze({
     Left: 0,
     Middle: 1,
     Right: 2,
     Thumb1: 3,
     Thumb2: 4
 });
-const MouseWheel = Object.freeze({
+
+/**
+ * @enum { number }
+ */
+export const MouseWheel = Object.freeze({
     None: 0,
     Up: 1,
     Down: 2
 });
-const InputType = {
+
+/**
+ * @enum { number }
+ */
+export const InputType = Object.freeze({
     None: 0,
     Key: 1,
     MouseButton: 2,
     MouseWheel: 3
-};
+});
+
 const KeyNames = [
     "",
     "",
@@ -704,7 +721,7 @@ const MouseButtonNames = [
 ];
 const MouseWheelNames = ["", "Mouse Wheel Up", "Mouse Wheel Down"];
 
-class InputValue {
+export class InputValue {
     constructor(type, code) {
         this.type = type;
         this.code = code;
@@ -729,19 +746,12 @@ class InputValue {
     }
 }
 
+/**
+ * @enum { number }
+ */
 const TouchEvent = Object.freeze({
     Move: 0,
     Start: 1,
     End: 2,
     Cancel: 3
 });
-
-export default {
-    InputHandler,
-    InputType,
-    InputValue,
-    Key,
-    MouseButton,
-    MouseWheel,
-    Touch
-};

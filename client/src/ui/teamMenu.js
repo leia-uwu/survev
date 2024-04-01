@@ -666,25 +666,27 @@ export class TeamMenu {
                         e.stopPropagation();
                     });
                 } else {
-                    let d = "name-text";
+                    // Name
+                    let nameClass = "name-text";
+
                     if (playerStatus.self) {
-                        d += " name-self";
+                        nameClass += " name-self";
                     }
                     if (playerStatus.inGame) {
-                        d += " name-in-game";
+                        nameClass += " name-in-game";
                     }
-                    const u = $("<div/>", {
-                        class: `name menu-option ${d}`,
+                    const nameDiv = $("<div/>", {
+                        class: `name menu-option ${nameClass}`,
                         html: helpers.htmlEscape(playerStatus.name)
                     });
                     if (playerStatus.self) {
-                        u.on("click", () => {
+                        nameDiv.on("click", () => {
                             console.log("editing name");
                             this.editingName = true;
                             this.refreshUi();
                         });
                     }
-                    member.append(u);
+                    member.append(nameDiv);
                 }
                 if (c) {
                     member.append(c);

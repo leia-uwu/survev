@@ -2298,7 +2298,7 @@ export class RoleAnnouncementMsg {
 
 export class LoadoutMsg {
     constructor() {
-        /** * @type {string} */
+        /** * @type {string[]} */
         this.emotes = [];
         /** * @type {boolean} */
         this.custom = false;

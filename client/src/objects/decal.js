@@ -61,7 +61,7 @@ class Decal {
         }
     }
 
-    m(dt, t) {
+    update(dt, t) {
         if (this.hasGore) {
             const def = MapObjectDefs[this.type];
             let goreTarget = math.delerp(
@@ -166,7 +166,7 @@ class DecalRender {
         this.sprite.tint = color;
     }
 
-    m(dt, camera, renderer) {
+    update(dt, camera, renderer) {
         if (this.deactivated && this.fadeout) {
             this.fadeAlpha = math.lerp(dt * 3, this.fadeAlpha, 0);
             if (this.fadeAlpha < 0.01) {
@@ -215,7 +215,7 @@ class DecalRender {
 }
 export class DecalBarn {
     constructor() {
-        this._ = new Pool(Decal);
+        this.decalPool = new Pool(Decal);
         this.decalRenders = [];
     }
 
@@ -235,18 +235,23 @@ export class DecalBarn {
         return decalRender;
     }
 
+    /**
+     * @param {number} dt
+     * @param {import("../camera").Camera} camera
+     * @param {import("../renderer").Renderer} renderer
+     */
     update(dt, camera, renderer) {
-        const decals = this._.getPool();
+        const decals = this.decalPool.getPool();
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
             if (decal.active) {
-                decal.m(dt);
+                decal.update(dt);
             }
         }
         for (let i = 0; i < this.decalRenders.length; i++) {
             const decalRender = this.decalRenders[i];
             if (decalRender.active) {
-                decalRender.m(dt, camera, renderer);
+                decalRender.update(dt, camera, renderer);
             }
         }
     }

@@ -226,7 +226,7 @@ export class Obstacle {
     /**
      * @param {import("../objects/player").PlayerBarn} playerBarn
      */
-    m(dt, map, playerBarn, particleBarn, audioManager, activePlayer, renderer) {
+    update(dt, map, playerBarn, particleBarn, audioManager, activePlayer, renderer) {
         if (this.isButton) {
             const button = this.button;
             if (button.seq != button.seqOld) {

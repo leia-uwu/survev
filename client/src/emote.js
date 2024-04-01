@@ -706,18 +706,25 @@ export class EmoteBarn {
     }
 
     /**
+     * @param { number } dt
      * @param {import("./objects/player").Player} player
+     * @param {import("./objects/deadBody").DeadBodyBarn} deadBodyBarn
+     * @param {import("./map").Map} map
+     * @param {import("./renderer").Renderer} renderer
+     * @param {import("./input").InputHandler} input
+     * @param {import("./inputBinds").InputBinds} inputBinds
+     * @param {boolean} spectating
      */
-    update(dt, t, player, teamMode, n, m, p, input, inputBinds, x) {
+    update(dt, localId, player, teamMode, deadBodyBarn, map, renderer, input, inputBinds, spectating) {
         const playerBarn = this.playerBarn;
         const camera = this.camera;
-        let mousePos = v2.create(input.Ue.x, input.Ue.y);
+        let mousePos = v2.create(input.mousePos.x, input.mousePos.y);
 
         if (input.lostFocus) {
             this.inputReset();
         }
         if (inputBinds.isBindPressed(Input.TeamPingMenu)) {
-            if (!this.pingKeyDown && !x) {
+            if (!this.pingKeyDown && !spectating) {
                 this.pingKeyDown = true;
                 this.pingKeyTriggered = true;
             }
@@ -766,14 +773,16 @@ export class EmoteBarn {
 
         // Update local emote wheels
         this.activePlayer = player;
-        if ((t != player.__id || !!player.netData.dead) && !this.disable) {
+        if ((localId != player.__id || !!player.netData.dead) && !this.disable) {
             this.free();
             this.disable = true;
         }
-        const z = m.perkMode && !player.netData.role;
+
+        const perkModeDisable = map.perkMode && !player.netData.role;
+
         if (
             !this.disable &&
-            !z &&
+            !perkModeDisable &&
             ((this.wheelKeyTriggered =
                 this.pingKeyTriggered || this.emoteMouseTriggered),
             (this.emoteSoftTicker -= dt),
@@ -944,7 +953,7 @@ export class EmoteBarn {
                 }
 
                 if (!hasTarget) {
-                    const body = n.getDeadBodyById(emote.playerId);
+                    const body = deadBodyBarn.getDeadBodyById(emote.playerId);
                     if (body) {
                         targetPos = v2.copy(body.pos);
                         targetLayer = body.layer;
@@ -975,7 +984,7 @@ export class EmoteBarn {
 
                     // Always add to the top layer if visible
                     const layer = util.sameLayer(targetLayer, this.activePlayer.layer) ? 3 : targetLayer;
-                    p.addPIXIObj(emote.container, layer, 50000, emote.zIdx);
+                    renderer.addPIXIObj(emote.container, layer, 50000, emote.zIdx);
                     emote.alive = emote.alive && emote.lifeOut > 0;
                 } else {
                     emote.alive = false;

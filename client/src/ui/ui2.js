@@ -196,7 +196,7 @@ class UiState {
 }
 export class UiManager2 {
     /**
-     * @param {import("./localization")} localization
+     * @param {import("./localization").Localization} localization
      * @param {import("../inputBinds").InputBinds} inputBinds
      */
     constructor(localization, inputBinds) {
@@ -512,7 +512,7 @@ export class UiManager2 {
      * @param {import("../objects/player").PlayerBarn} playerBarn
      * @param {import("../objects/loot").LootBarn} lootBarn
      * @param {import("../map").Map} map
-     * @param {import("../inputBinds")} inputBinds
+     * @param {import("../inputBinds").InputBinds} inputBinds
      */
     update(dt, activePlayer, spectating, playerBarn, lootBarn, map, inputBinds) {
         const state = this.newState;

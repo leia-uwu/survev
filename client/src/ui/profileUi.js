@@ -67,9 +67,9 @@ function createLoginOptions(parentElem, linkAccount, account, localization) {
 export class ProfileUi {
     /**
      *
-     * @param {import('./account')} account
-     * @param {import('./localization')} localization
-     * @param {import('./loadout-menu')} loadoutMenu
+     * @param {import('../account').Account} account
+     * @param {import('./localization').Localization} localization
+     * @param {import('./loadoutMenu').LoadoutMenu} loadoutMenu
      * @param {*} errorModal
     */
     constructor(account, localization, loadoutMenu, errorModal) {

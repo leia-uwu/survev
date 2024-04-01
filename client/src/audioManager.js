@@ -127,7 +127,7 @@ export class AudioManager {
         this.loadedFiles[path] = true;
     }
 
-    m(dt) {
+    update(dt) {
         // Clear out finished sounds from stored instances
         for (let i = this.soundInstances.length - 1; i >= 0; i--) {
             const inst = this.soundInstances[i];

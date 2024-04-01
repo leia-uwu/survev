@@ -92,7 +92,7 @@ class AirstrikeZone {
         this.gfx.visible = true;
     }
 
-    m(dt, map, uiManager) {
+    update(dt, map, uiManager) {
         this.ticker += dt;
         this.gfx.visible = true;
         if (this.ticker >= this.duration) {
@@ -349,7 +349,7 @@ export class PlaneBarn {
         for (let i = 0; i < this.airstrikeZones.length; i++) {
             const zone = this.airstrikeZones[i];
             if (zone.active) {
-                zone.m(dt);
+                zone.update(dt);
             }
         }
     }
