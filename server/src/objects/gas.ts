@@ -22,7 +22,7 @@ export class Gas {
     radOld: number;
     radNew: number;
     currentRad: number;
-    
+
     posOld: Vec2;
     posNew: Vec2;
     currentPos: Vec2;
@@ -68,7 +68,7 @@ export class Gas {
         this.damage = firstStage.damage;
         this.duration = firstStage.duration;
 
-        this.posOld = v2.create(game.map.width / 2, game.map.height / 2)
+        this.posOld = v2.create(game.map.width / 2, game.map.height / 2);
         this.posNew = v2.copy(this.posOld);
         this.currentPos = v2.copy(this.posOld);
 
@@ -125,7 +125,7 @@ export class Gas {
         if (currentStage.duration !== 0) {
             this.game.timeouts.push(
                 setTimeout(() => this.advanceGasStage(), currentStage.duration * 1000)
-            )
+            );
         }
     }
 
