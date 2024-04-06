@@ -14,8 +14,10 @@ import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import NanoTimer from "nanotimer";
+import { Gas } from "./objects/gas";
 
 export class Game {
+    started = false;
     stopped = false;
     allowJoin = true;
     over = false;
@@ -76,6 +78,8 @@ export class Game {
 
     logger: Logger;
 
+    gas: Gas;
+
     emotes = new Set<Emote>();
 
     constructor(id: number, config: ConfigType) {
@@ -88,6 +92,8 @@ export class Game {
 
         this.grid = new Grid(1024, 1024);
         this.map = new GameMap(this);
+
+        this.gas = new Gas(this);
 
         this.realDt = 1000 / config.tps;
         this.dt = this.realDt / 1000;
@@ -105,6 +111,8 @@ export class Game {
         this.now = Date.now();
 
         this.bulletManager.update();
+        
+        this.gas.update();
 
         for (const loot of this.grid.categories[ObjectType.Loot]) {
             loot.update();
@@ -144,6 +152,9 @@ export class Game {
 
         this.emotes.clear();
 
+        this.gas.dirty = false;
+        this.gas.timeDirty = false;
+
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
         // It measures the time it takes to calculate a tick, not the time between ticks.
@@ -177,6 +188,17 @@ export class Game {
             this,
             position,
             socket);
+
+        // @HACK send help
+        if ( this.started ) {
+            this.gas.dirty = true;
+            this.gas.timeDirty = true;
+        }
+
+        if (!this.started) {
+            this.started = true;
+            this.gas.advanceGasStage();
+        }
 
         return player;
     }

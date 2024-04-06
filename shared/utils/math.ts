@@ -10,6 +10,15 @@ export const math = {
         return a < max ? a > min ? a : min : max;
     },
 
+    /**
+     * Generate a random floating-point value.
+     * @param min The minimum value that can be generated.
+     * @param max The maximum value that can be generated.
+    */
+    randomFloat(min: number, max: number): number {
+        return (Math.random() * (max - min) + min);
+    },
+
     v2Clamp(vector: Vec2, minV2: Vec2, maxV2: Vec2) {
         let minX: number;
         let minY: number;
@@ -229,6 +238,31 @@ export const math = {
             }
         }
         return inside;
+    },
+
+    /**
+     * Calculate the distance between two points.
+     * @param v1 The first point.
+     * @param v2 The second point.
+     */
+   distanceBetween(v1: Vec2, v2: Vec2): number {
+        return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
+    },
+
+    /**
+     * Generate a random point inside of a circle.
+     * @param position The center of the circle.
+     * @param maxRadius The maximum radius of the circle.
+     * @param minRadius The minimum radius of the circle. Defaults to 0.
+     * @returns A vector representation of the randomized point.
+    */
+    randomPointInsideCircle(position: Vec2, maxRadius: number, minRadius?: number): Vec2 {
+        const angle = math.randomFloat(0, Math.PI * 2);
+        const length = math.randomFloat(minRadius ?? 0, maxRadius);
+        return {
+            x: position.x + (Math.cos(angle) * length),
+            y: position.y + (Math.sin(angle) * length)
+        };
     },
 
     distToSegmentSq(p: Vec2, a: Vec2, b: Vec2) {
