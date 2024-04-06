@@ -111,7 +111,7 @@ export class Game {
         this.now = Date.now();
 
         this.bulletManager.update();
-        
+
         this.gas.update();
 
         for (const loot of this.grid.categories[ObjectType.Loot]) {
@@ -190,7 +190,7 @@ export class Game {
             socket);
 
         // @HACK send help
-        if ( this.started ) {
+        if (this.started) {
             this.gas.dirty = true;
             this.gas.timeDirty = true;
         }

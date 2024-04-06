@@ -379,7 +379,7 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * this.game.dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * this.game.dt;
 
-        if ( this.game.gas.doDamge && this.game.gas.isInGas(this.pos)  ) {
+        if (this.game.gas.doDamge && this.game.gas.isInGas(this.pos)) {
             // not implemented
         }
 
@@ -600,13 +600,12 @@ export class Player extends BaseGameObject {
         const updateMsg = new UpdateMsg();
         // updateMsg.serializationCache = this.game.serializationCache;
 
-        
-        if ( this.game.gas.dirty ) {
+        if (this.game.gas.dirty) {
             updateMsg.gasDirty = true;
-            updateMsg.gasData =  this.game.gas.data;
+            updateMsg.gasData = this.game.gas.data;
         }
 
-        if ( this.game.gas.timeDirty ) {
+        if (this.game.gas.timeDirty) {
             updateMsg.gasTDirty = true;
             updateMsg.gasT = this.game.gas.gasT;
         }

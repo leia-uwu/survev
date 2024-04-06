@@ -245,7 +245,7 @@ export const math = {
      * @param v1 The first point.
      * @param v2 The second point.
      */
-   distanceBetween(v1: Vec2, v2: Vec2): number {
+    distanceBetween(v1: Vec2, v2: Vec2): number {
         return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
     },
 
