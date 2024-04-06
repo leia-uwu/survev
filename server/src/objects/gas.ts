@@ -21,11 +21,11 @@ export class Gas {
 
     radOld: number;
     radNew: number;
-    currentRad = 534.6;
-
-    posOld = v2.create(360, 360);
-    posNew = v2.create(360, 360);
-    currentPos = v2.create(360, 360);
+    currentRad: number;
+    
+    posOld: Vec2;
+    posNew: Vec2;
+    currentPos: Vec2;
 
     countdownStart = 0;
 
@@ -54,19 +54,27 @@ export class Gas {
     }
 
     readonly game: Game;
+    readonly mapSize: number;
 
     constructor(
         game: Game
     ) {
         this.game = game;
+        this.mapSize = (game.map.width + game.map.height) / 2;
         this._lastDamageTimestamp = this.game.now;
 
         const firstStage = GasStages[this.stage];
         this.mode = firstStage.mode;
         this.damage = firstStage.damage;
-        this.radNew = firstStage.radNew;
-        this.radOld = firstStage.radOld;
         this.duration = firstStage.duration;
+
+        this.posOld = v2.create(game.map.width / 2, game.map.height / 2)
+        this.posNew = v2.copy(this.posOld);
+        this.currentPos = v2.copy(this.posOld);
+
+        this.radNew = firstStage.radNew * this.mapSize;
+        this.radOld = firstStage.radOld * this.mapSize;
+        this.currentRad = firstStage.radOld * this.mapSize;
     }
 
     update() {
@@ -115,7 +123,9 @@ export class Gas {
         this.timeDirty = true;
 
         if (currentStage.duration !== 0) {
-            setTimeout(() => this.advanceGasStage(), currentStage.duration * 1000);
+            this.game.timeouts.push(
+                setTimeout(() => this.advanceGasStage(), currentStage.duration * 1000)
+            )
         }
     }
 

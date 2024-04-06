@@ -72,6 +72,8 @@ export class Game {
 
     tickTimes: number[] = [];
 
+    timeouts: NodeJS.Timeout[] = [];
+
     bulletManager = new BulletManager(this);
 
     // serializationCache = new SerializationCache();
