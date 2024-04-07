@@ -762,7 +762,6 @@ export class Player extends BaseGameObject {
         killMsg.mapSourceType = MapObjectDefs[sourceType] ? sourceType : "";
         killMsg.targetId = this.id;
         killMsg.killed = true;
-        console.log(killMsg);
 
         if (source instanceof Player) {
             if (source !== this) source.kills++;
