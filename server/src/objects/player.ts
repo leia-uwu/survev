@@ -380,7 +380,7 @@ export class Player extends BaseGameObject {
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * this.game.dt;
 
         if (this.game.gas.doDamge && this.game.gas.isInGas(this.pos)) {
-            // not implemented
+            this.damage(this.game.gas.damage, "", GameConfig.DamageType.Gas, undefined)
         }
 
         if (this.performActionAgain) {
@@ -762,6 +762,7 @@ export class Player extends BaseGameObject {
         killMsg.mapSourceType = MapObjectDefs[sourceType] ? sourceType : "";
         killMsg.targetId = this.id;
         killMsg.killed = true;
+        console.log(killMsg)
 
         if (source instanceof Player) {
             if (source !== this) source.kills++;
