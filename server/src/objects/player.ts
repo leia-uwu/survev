@@ -947,19 +947,25 @@ export class Player extends BaseGameObject {
 
                 break;
             case GameConfig.Input.Interact: {
-                const coll = collider.createCircle(this.pos, this.rad);
-                const objs = this.game.grid.intersectCollider(coll);
-                for (const o of objs) {
-                    // if object is not loot or if not on the same layer as the player, ignore it
-                    if (o.__type != ObjectType.Loot || !util.sameLayer(this.layer, o.layer)) {
-                        continue;
-                    }
-
-                    if (v2.distance(this.pos, o.pos) < 1.5) {
-                        this.interactWith(o);
-                        break; // only interact with 1 obj at a time
-                    }
+                const loot = this.getClosestLoot();
+                if (loot) {
+                    this.interactWith(loot);
+                } else {
+                    const obstacle = this.getClosestObstacle();
+                    if (obstacle) this.interactWith(obstacle);
                 }
+                break;
+            }
+            case GameConfig.Input.Loot: {
+                const loot = this.getClosestLoot();
+                if (loot) {
+                    this.interactWith(loot);
+                }
+                break;
+            }
+            case GameConfig.Input.Use: {
+                const obstacle = this.getClosestObstacle();
+                if (obstacle) obstacle.interact(this);
                 break;
             }
             case GameConfig.Input.Reload:
@@ -1040,9 +1046,72 @@ export class Player extends BaseGameObject {
         }
     }
 
+    getClosestLoot(): Loot | undefined {
+        const objs = this.game.grid.intersectCollider(collider.createCircle(this.pos, this.rad + 5));
+
+        let closestLoot: Loot | undefined;
+        let closestDist = Number.MAX_VALUE;
+
+        for (let i = 0; i < objs.length; i++) {
+            const loot = objs[i];
+            if (loot.__type !== ObjectType.Loot) continue;
+            if (
+                util.sameLayer(loot.layer, this.layer) &&
+                (loot.ownerId == 0 || loot.ownerId == this.id)
+            ) {
+                const pos = loot.pos;
+                const rad = this.isMobile
+                    ? this.rad + loot.rad * GameConfig.player.touchLootRadMult
+                    : this.rad + loot.rad;
+                const toPlayer = v2.sub(this.pos, pos);
+                const distSq = v2.lengthSqr(toPlayer);
+                if (distSq < rad * rad && distSq < closestDist) {
+                    closestDist = distSq;
+                    closestLoot = loot;
+                }
+            }
+        }
+
+        return closestLoot;
+    }
+
+    getClosestObstacle(): Obstacle | undefined {
+        const objs = this.game.grid.intersectCollider(collider.createCircle(this.pos, this.rad + 5));
+
+        let closestObj: Obstacle | undefined;
+        let closestPen = 0;
+
+        for (let i = 0; i < objs.length; i++) {
+            const obstacle = objs[i];
+            if (obstacle.__type !== ObjectType.Obstacle) continue;
+            if (
+                !obstacle.dead &&
+                util.sameLayer(obstacle.layer, this.layer)
+            ) {
+                if (obstacle.interactionRad > 0) {
+                    const res = collider.intersectCircle(
+                        obstacle.collider,
+                        this.pos,
+                        obstacle.interactionRad + this.rad
+                    );
+                    if (res && res.pen >= closestPen) {
+                        closestObj = obstacle;
+                        closestPen = res.pen;
+                    }
+                }
+            }
+        }
+        return closestObj;
+    }
+
     interactWith(obj: GameObject): void {
-        if (obj.__type == ObjectType.Loot) {
+        switch (obj.__type) {
+        case ObjectType.Loot:
             this.pickupLoot(obj);
+            break;
+        case ObjectType.Obstacle:
+            obj.interact(this);
+            break;
         }
     }
 
@@ -1110,20 +1179,16 @@ export class Player extends BaseGameObject {
             // automatically reloads gun if inventory has 0 ammo and ammo is picked up
             const weaponInfo = GameObjectDefs[this.activeWeapon];
             if (def.type == "ammo" &&
-                weaponInfo.type === "gun" &&
-                this.weapons[this.curWeapIdx].ammo == 0 &&
-                weaponInfo.ammo == obj.type) {
+                    weaponInfo.type === "gun" &&
+                    this.weapons[this.curWeapIdx].ammo == 0 &&
+                    weaponInfo.ammo == obj.type) {
                 this.weaponManager.reload();
             }
         }
             break;
         case "melee":
             this.weaponManager.dropMelee();
-            this.weapons[GameConfig.WeaponSlot.Melee] = {
-                type: obj.type,
-                cooldown: 0,
-                ammo: 0
-            };
+            this.weapons[GameConfig.WeaponSlot.Melee].type = obj.type;
             this.dirty.weapons = true;
             if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
             break;

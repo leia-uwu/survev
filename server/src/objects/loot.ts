@@ -105,6 +105,7 @@ export class Loot extends BaseGameObject {
     oldPos = v2.create(0, 0);
 
     collider: Circle;
+    rad: number;
 
     dragConstant: number;
 
@@ -131,6 +132,8 @@ export class Loot extends BaseGameObject {
         this.count = count;
 
         this.collider = collider.createCircle(pos, GameConfig.lootRadius[def.type]);
+
+        this.rad = this.collider.rad;
 
         this.dragConstant = Math.exp(-3.69 / game.config.tps);
 

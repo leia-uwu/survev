@@ -36,6 +36,8 @@ export class Obstacle extends BaseGameObject {
     dead = false;
     isDoor = false;
 
+    interactionRad = 0;
+
     door!: {
         open: boolean
         canUse: boolean
@@ -155,6 +157,7 @@ export class Obstacle extends BaseGameObject {
                 closedPosition: v2.copy(this.pos),
                 openPosition: v2.create(0, 0)
             };
+            this.interactionRad = def.door.interactionRad;
 
             if (!this.door.slideToOpen) {
                 switch (ori) {
@@ -190,6 +193,7 @@ export class Obstacle extends BaseGameObject {
                 useDelay: def.button.useDelay,
                 useDir: def.button.useDir
             };
+            this.interactionRad = def.button.interactionRad;
         }
     }
 
