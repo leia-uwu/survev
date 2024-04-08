@@ -600,12 +600,12 @@ export class Player extends BaseGameObject {
         const updateMsg = new UpdateMsg();
         // updateMsg.serializationCache = this.game.serializationCache;
 
-        if (this.game.gas.dirty) {
+        if (this.game.gas.dirty || this._firstUpdate) {
             updateMsg.gasDirty = true;
             updateMsg.gasData = this.game.gas;
         }
 
-        if (this.game.gas.timeDirty) {
+        if (this.game.gas.timeDirty || this._firstUpdate) {
             updateMsg.gasTDirty = true;
             updateMsg.gasT = this.game.gas.gasT;
         }
