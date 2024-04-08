@@ -233,15 +233,6 @@ export const math = {
     },
 
     /**
-     * Calculate the distance between two points.
-     * @param v1 The first point.
-     * @param v2 The second point.
-     */
-    distanceBetween(v1: Vec2, v2: Vec2): number {
-        return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
-    },
-
-    /**
      * Generate a random point inside of a circle.
      * @param position The center of the circle.
      * @param maxRadius The maximum radius of the circle.

@@ -119,7 +119,7 @@ export class Gas {
     }
 
     isInGas(pos: Vec2) {
-        return math.distanceBetween(pos, this.currentPos) >= this.currentRad;
+        return v2.distance(pos, this.currentPos) >= this.currentRad;
     }
 }
 
