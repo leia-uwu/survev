@@ -306,37 +306,37 @@ export class Obstacle extends BaseGameObject {
     interact(player?: Player, auto = false): void {
         if (this.dead) return;
 
-        if (this.door.autoOpen && !auto) return;
-        clearTimeout(this.closeTimeout);
+        if (this.isDoor) {
+            if (this.door.autoOpen && !auto) return;
+            clearTimeout(this.closeTimeout);
 
-        if (this.door.autoClose) {
-            this.closeTimeout = setTimeout(() => {
-                if (this.door.open) {
+            if (this.door.autoClose) {
+                this.closeTimeout = setTimeout(() => {
+                    if (this.door.open) {
+                        this.toggleDoor(player);
+                    }
+                }, this.door.autoCloseDelay * 1000);
+            }
+
+            if (this.door.autoOpen && this.door.open) return;
+
+            if (this.door.canUse && (player?.isOnOtherSide(this) || !(this.door.openOneWay === true))) {
+                this.door.seq++;
+                if (this.door.openOnce) {
+                    this.door.canUse = false;
+                }
+
+                this.setDirty();
+                if (this.door.openDelay > 0) {
+                    setTimeout(() => {
+                        this.toggleDoor(player);
+                    }, this.door.openDelay * 1000, this);
+                } else {
                     this.toggleDoor(player);
                 }
-            }, this.door.autoCloseDelay * 1000);
-        }
-
-        if (this.door.autoOpen && this.door.open) return;
-
-        if (this.isDoor &&
-            this.door.canUse &&
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-            (player?.isOnOtherSide(this) || !(this.door.openOneWay === true))) {
-            this.door.seq++;
-            if (this.door.openOnce) {
-                this.door.canUse = false;
-            }
-
-            this.setDirty();
-            if (this.door.openDelay > 0) {
-                setTimeout(() => {
-                    this.toggleDoor(player);
-                }, this.door.openDelay * 1000, this);
-            } else {
-                this.toggleDoor(player);
             }
         }
+
         if (this.isButton && this.button.canUse) {
             this.useButton();
         }
