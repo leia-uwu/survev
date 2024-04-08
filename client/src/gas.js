@@ -132,7 +132,7 @@ export class GasSafeZoneRenderer {
             if (safeRadChanged) {
                 this.circleGfx.clear();
                 this.circleGfx.lineStyle(1.5, 16777215);
-                is.circleGfx.drawCircle(0, 0, safeRad);
+                this.circleGfx.drawCircle(0, 0, safeRad);
             }
             // Update line?
             if (safePosChanged || safeRadChanged || playerPosChanged) {

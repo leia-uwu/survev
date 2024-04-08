@@ -1555,15 +1555,23 @@ function deserializePlayerInfo(s, data) {
     s.readAlignToNextByte();
 }
 
+/**
+ * @param {BitStream} s
+ * @param { import("../server/src/objects/gas").GasData } data
+**/
 function serializeGasData(s, data) {
     s.writeUint8(data.mode);
     s.writeFloat32(data.duration);
-    s.writeVec(data.posNew, 0, 0, 1024, 1024, 16);
+    s.writeVec(data.posOld, 0, 0, 1024, 1024, 16);
     s.writeVec(data.posNew, 0, 0, 1024, 1024, 16);
     s.writeFloat(data.radOld, 0, 2048, 16);
     s.writeFloat(data.radNew, 0, 2048, 16);
 }
 
+/**
+ * @param {BitStream} s
+ * @param { import("../server/src/objects/gas").GasData } data
+**/
 export function deserializeGasData(s, data) {
     data.mode = s.readUint8();
     data.duration = s.readFloat32();
@@ -1679,7 +1687,7 @@ export class UpdateMsg {
         serializeActivePlayer(s, this.activePlayerData);
 
         if (this.gasDirty) {
-            serializeGasData(s, this.gas);
+            serializeGasData(s, this.gasData);
             flags |= UpdateExtFlags.Gas;
         }
 

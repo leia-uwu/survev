@@ -1,4 +1,5 @@
 import { earcut } from "./earcut";
+import { util } from "./util";
 import { v2, type Vec2 } from "./v2";
 
 const kEpsilon = 0.000001;
@@ -229,6 +230,22 @@ export const math = {
             }
         }
         return inside;
+    },
+
+    /**
+     * Generate a random point inside of a circle.
+     * @param position The center of the circle.
+     * @param maxRadius The maximum radius of the circle.
+     * @param minRadius The minimum radius of the circle. Defaults to 0.
+     * @returns A vector representation of the randomized point.
+    */
+    randomPointInsideCircle(position: Vec2, maxRadius: number, minRadius?: number): Vec2 {
+        const angle = util.random(0, Math.PI * 2);
+        const length = util.random(minRadius ?? 0, maxRadius);
+        return {
+            x: position.x + (Math.cos(angle) * length),
+            y: position.y + (Math.sin(angle) * length)
+        };
     },
 
     distToSegmentSq(p: Vec2, a: Vec2, b: Vec2) {
