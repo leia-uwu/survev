@@ -23,6 +23,7 @@
  - [x] Firing delays
  - [x] Ammo
  - [x] Reloading
+ - [ ] Burst guns
 
 
 ### Bullets
@@ -41,7 +42,7 @@
  - [x] Windows
  - [x] Doors
  - [x] Sliding doors
- - [ ] Auto opening doors
+ - [x] Auto opening doors
  - [x] Door layer on stairs
  - [x] Buttons
  - [x] Loot

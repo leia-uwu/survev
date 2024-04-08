@@ -549,6 +549,14 @@ export class Player extends BaseGameObject {
 
                     if (this.indoors) zoom = zoomRegion.zoom ?? zoom;
                 }
+            } else if (obj.__type === ObjectType.Obstacle) {
+                if (!util.sameLayer(this.layer, obj.layer)) continue;
+                if (!(obj.isDoor && obj.door.autoOpen)) continue;
+
+                const res = collider.intersectCircle(obj.collider, this.pos, this.rad + obj.interactionRad);
+                if (res) {
+                    obj.interact(this, true);
+                }
             }
         }
 
