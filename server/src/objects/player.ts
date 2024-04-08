@@ -1171,6 +1171,9 @@ export class Player extends BaseGameObject {
 
                 if (amountToAdd <= 0) {
                     pickupMsg.type = PickupMsgType.Full;
+                    if (def.type === "scope") {
+                        pickupMsg.type = PickupMsgType.AlreadyOwned;
+                    }
                 } else {
                     this.inventory[obj.type] += amountToAdd;
                     this.dirty.inventory = true;
