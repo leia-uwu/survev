@@ -1209,20 +1209,27 @@ export class Player extends BaseGameObject {
             for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
                 const slotType = GameConfig.WeaponType[i];
                 if (slotType !== def.type) continue;
+                const slotDef = GameObjectDefs[this.weapons[i].type] as GunDef | undefined;
 
-                if (!this.weapons[i].type || i === this.curWeapIdx) {
-                    if (obj.type === this.weapons[this.curWeapIdx].type && i === this.curWeapIdx) {
+                const dualWield = slotDef?.dualWieldType && obj.type === this.weapons[i].type;
+
+                if (!this.weapons[i].type || i === this.curWeapIdx || dualWield) {
+                    if ((obj.type === this.weapons[this.curWeapIdx].type && !dualWield) && i === this.curWeapIdx) {
                         pickupMsg.type = PickupMsgType.AlreadyOwned;
                         break;
                     }
 
                     if (this.weapons[i].type === "") {
                         amountLeft = 0;
-                    } else {
+                    } else if (!dualWield) {
                         this.weaponManager.dropGun(i, false);
                     }
 
-                    this.weapons[i].type = obj.type;
+                    if (dualWield) {
+                        this.weapons[i].type = slotDef.dualWieldType!;
+                    } else {
+                        this.weapons[i].type = obj.type;
+                    }
                     this.weapons[i].cooldown = 0;
                     if (this.weapons[i].ammo <= 0 && i === this.curWeapIdx) {
                         this.cancelAction();
