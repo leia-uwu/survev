@@ -602,7 +602,7 @@ export class Player extends BaseGameObject {
 
         if (this.game.gas.dirty) {
             updateMsg.gasDirty = true;
-            updateMsg.gasData = this.game.gas.data;
+            updateMsg.gasData = this.game.gas;
         }
 
         if (this.game.gas.timeDirty) {

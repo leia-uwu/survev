@@ -1,4 +1,5 @@
 import { earcut } from "./earcut";
+import { util } from "./util";
 import { v2, type Vec2 } from "./v2";
 
 const kEpsilon = 0.000001;
@@ -8,15 +9,6 @@ const kEpsilon = 0.000001;
 export const math = {
     clamp(a: number, min: number, max: number) {
         return a < max ? a > min ? a : min : max;
-    },
-
-    /**
-     * Generate a random floating-point value.
-     * @param min The minimum value that can be generated.
-     * @param max The maximum value that can be generated.
-    */
-    randomFloat(min: number, max: number): number {
-        return (Math.random() * (max - min) + min);
     },
 
     v2Clamp(vector: Vec2, minV2: Vec2, maxV2: Vec2) {
@@ -257,8 +249,8 @@ export const math = {
      * @returns A vector representation of the randomized point.
     */
     randomPointInsideCircle(position: Vec2, maxRadius: number, minRadius?: number): Vec2 {
-        const angle = math.randomFloat(0, Math.PI * 2);
-        const length = math.randomFloat(minRadius ?? 0, maxRadius);
+        const angle = util.random(0, Math.PI * 2);
+        const length = util.random(minRadius ?? 0, maxRadius);
         return {
             x: position.x + (Math.cos(angle) * length),
             y: position.y + (Math.sin(angle) * length)

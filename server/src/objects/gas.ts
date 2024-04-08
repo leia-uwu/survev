@@ -35,17 +35,6 @@ export class Gas {
     dirty = true;
     timeDirty = true;
 
-    get data(): GasData {
-        return {
-            duration: this.duration,
-            mode: this.mode,
-            posNew: this.posNew,
-            posOld: this.posOld,
-            radNew: this.radNew,
-            radOld: this.radOld
-        };
-    }
-
     private _lastDamageTimestamp = 0;
 
     private _doDamage = false;
@@ -108,16 +97,16 @@ export class Gas {
         if (currentStage.mode === GasMode.Waiting) {
             this.posOld = v2.copy(this.posNew);
             if (currentStage.radNew !== 0) {
-                this.posNew = math.randomPointInsideCircle(this.posOld, currentStage.radOld - currentStage.radNew);
+                this.posNew = math.randomPointInsideCircle(this.posOld, (currentStage.radOld - currentStage.radNew) * this.mapSize);
             } else {
                 this.posNew = v2.copy(this.posOld);
             }
             this.currentPos = v2.copy(this.posOld);
-            this.currentRad = currentStage.radOld;
+            this.currentRad = currentStage.radOld * this.mapSize;
         }
 
-        this.radOld = currentStage.radOld;
-        this.radNew = currentStage.radNew;
+        this.radOld = currentStage.radOld * this.mapSize;
+        this.radNew = currentStage.radNew * this.mapSize;
         this.damage = currentStage.damage;
         this.dirty = true;
         this.timeDirty = true;
@@ -138,119 +127,119 @@ const GasStages = [
     {
         mode: GasMode.Inactive,
         duration: 0,
-        radOld: 534.6,
-        radNew: 534.6,
+        radOld: 0.7,
+        radNew: 0.7,
         damage: 0
     },
     {
         mode: GasMode.Waiting,
         duration: 80,
-        radOld: 534.6,
-        radNew: 324,
+        radOld: 0.8,
+        radNew: 0.31,
         damage: 0
     },
     {
         mode: GasMode.Moving,
         duration: 30,
-        radOld: 534.6,
-        radNew: 324,
+        radOld: 0.8,
+        radNew: 0.31,
         damage: 1.57
     },
     {
         mode: GasMode.Waiting,
         duration: 65,
-        radOld: 324,
-        radNew: 225,
+        radOld: 0.31,
+        radNew: 0.14,
         damage: 2.35
     },
     {
         mode: GasMode.Moving,
         duration: 25,
-        radOld: 324,
-        radNew: 225,
+        radOld: 0.31,
+        radNew: 0.14,
         damage: 2.35
     },
     {
         mode: GasMode.Waiting,
         duration: 50,
-        radOld: 225,
-        radNew: 153,
+        radOld: 0.14,
+        radNew: 0.06,
         damage: 3.53
     },
     {
         mode: GasMode.Moving,
         duration: 20,
-        radOld: 225,
-        radNew: 153,
+        radOld: 0.14,
+        radNew: 0.06,
         damage: 3.53
     },
     {
         mode: GasMode.Waiting,
         duration: 40,
-        radOld: 153,
-        radNew: 99,
+        radOld: 0.06,
+        radNew: 0.018,
         damage: 7.45
     },
     {
         mode: GasMode.Moving,
         duration: 15,
-        radOld: 153,
-        radNew: 99,
+        radOld: 0.06,
+        radNew: 0.018,
         damage: 7.45
     },
     {
         mode: GasMode.Waiting,
         duration: 30,
-        radOld: 99,
-        radNew: 54,
+        radOld: 0.018,
+        radNew: 0.006,
         damage: 9.8
     },
     {
         mode: GasMode.Moving,
         duration: 10,
-        radOld: 99,
-        radNew: 54,
+        radOld: 0.018,
+        radNew: 0.006,
         damage: 9.8
     },
     {
         mode: GasMode.Waiting,
         duration: 25,
-        radOld: 54,
-        radNew: 32.4,
+        radOld: 0.006,
+        radNew: 0.0015,
         damage: 14.12
     },
     {
         mode: GasMode.Moving,
         duration: 5,
-        radOld: 54,
-        radNew: 32.4,
+        radOld: 0.006,
+        radNew: 0.0015,
         damage: 14.12
     },
     {
         mode: GasMode.Waiting,
         duration: 20,
-        radOld: 32.4,
-        radNew: 16.2,
+        radOld: 0.0015,
+        radNew: 0.008,
         damage: 22
     },
     {
         mode: GasMode.Moving,
         duration: 6,
-        radOld: 32.4,
-        radNew: 16.2,
+        radOld: 0.0015,
+        radNew: 0.008,
         damage: 22
     },
     {
         mode: GasMode.Waiting,
         duration: 15,
-        radOld: 16.2,
+        radOld: 0.008,
         radNew: 0,
         damage: 22
     },
     {
         mode: GasMode.Moving,
         duration: 15,
-        radOld: 16.2,
+        radOld: 0.008,
         radNew: 0,
         damage: 22
     }
