@@ -97,7 +97,7 @@ export class Gas {
         if (currentStage.mode === GasMode.Waiting) {
             this.posOld = v2.copy(this.posNew);
             if (currentStage.radNew !== 0) {
-                this.posNew = math.randomPointInsideCircle(this.posOld, (currentStage.radOld - currentStage.radNew) * this.mapSize);
+                this.posNew = math.randomPointInsideCircle(this.posOld, currentStage.radNew * this.mapSize);
             } else {
                 this.posNew = v2.copy(this.posOld);
             }
