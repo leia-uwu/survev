@@ -920,7 +920,7 @@ export class JoinMsg {
         this.useTouch = s.readBoolean();
         this.isMobile = s.readBoolean();
         this.bot = s.readBoolean();
-        
+
         this.loadout.outfit = s.readString();
         this.loadout.melee = s.readString();
         this.loadout.heal = s.readString();
@@ -948,10 +948,10 @@ export class JoinMsg {
         s.writeBoolean(this.isMobile);
         s.writeBoolean(this.bot);
 
-        s.writeString(this.loadout.outfit)
-        s.writeString(this.loadout.melee)
-        s.writeString(this.loadout.heal)
-        s.writeString(this.loadout.boost)
+        s.writeString(this.loadout.outfit);
+        s.writeString(this.loadout.melee);
+        s.writeString(this.loadout.heal);
+        s.writeString(this.loadout.boost);
 
         s.writeUint8(this.loadout.emotes.length);
         for (const emote of this.loadout.emotes) {

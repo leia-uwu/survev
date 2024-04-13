@@ -242,17 +242,17 @@ export class Game {
 
             player.isMobile = joinMsg.isMobile;
 
-            if ( joinMsg.loadout.outfit in OutfitDefs) {
+            if (joinMsg.loadout.outfit in OutfitDefs) {
                 player.outfit = joinMsg.loadout.outfit;
             }
 
-            if ( joinMsg.loadout.heal.startsWith("heal_") && joinMsg.loadout.heal in HealEffectDefs ) {
+            if (joinMsg.loadout.heal.startsWith("heal_") && joinMsg.loadout.heal in HealEffectDefs) {
                 player.loadout.heal = joinMsg.loadout.heal;
-            } 
-            if ( joinMsg.loadout.heal.startsWith("boost_") && joinMsg.loadout.heal in HealEffectDefs ) {
+            }
+            if (joinMsg.loadout.heal.startsWith("boost_") && joinMsg.loadout.heal in HealEffectDefs) {
                 player.loadout.boost = joinMsg.loadout.boost;
             }
-            
+
             const emotes = joinMsg.loadout.emotes;
             for (let i = 0; i < emotes.length; i++) {
                 const emote = emotes[i];
