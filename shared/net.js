@@ -894,8 +894,18 @@ export class JoinMsg {
         this.isMobile = false;
         /** * @type {boolean} */
         this.bot = false;
-        /** * @type {string[]} */
-        this.emotes = [];
+        /**
+            @typedef Loadout
+            @type {Object}
+            @property {string} outfit
+            @property {string} melee
+            @property {string} heal
+            @property {string} boost
+            @property {string[]} emotes
+        */
+
+        /** @type { Loadout } */
+        this.loadout = {};
     }
 
     /**
@@ -910,12 +920,17 @@ export class JoinMsg {
         this.useTouch = s.readBoolean();
         this.isMobile = s.readBoolean();
         this.bot = s.readBoolean();
-        this.emotes = [];
+        
+        this.loadout.outfit = s.readString();
+        this.loadout.melee = s.readString();
+        this.loadout.heal = s.readString();
+        this.loadout.boost = s.readString();
+        this.loadout.emotes = [];
         const count = s.readUint8();
 
         for (let i = 0; i < count; i++) {
             const emote = s.readGameType();
-            this.emotes.push(emote);
+            this.loadout.emotes.push(emote);
         }
         s.readAlignToNextByte();
     }
@@ -933,8 +948,13 @@ export class JoinMsg {
         s.writeBoolean(this.isMobile);
         s.writeBoolean(this.bot);
 
-        s.writeUint8(this.emotes.length);
-        for (const emote of this.emotes) {
+        s.writeString(this.loadout.outfit)
+        s.writeString(this.loadout.melee)
+        s.writeString(this.loadout.heal)
+        s.writeString(this.loadout.boost)
+
+        s.writeUint8(this.loadout.emotes.length);
+        for (const emote of this.loadout.emotes) {
             s.writeGameType(emote);
         }
         s.writeAlignToNextByte();

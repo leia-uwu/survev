@@ -105,7 +105,7 @@ export class Game {
                     joinMessage.useTouch = device.touch;
                     joinMessage.isMobile = device.mobile || window.mobile;
                     joinMessage.bot = false;
-                    joinMessage.emotes = this.config.get("loadout").emotes;
+                    joinMessage.loadout = this.config.get("loadout");
 
                     this.sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };

@@ -15,6 +15,8 @@ import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import NanoTimer from "nanotimer";
 import { Gas } from "./objects/gas";
+import { HealEffectDefs } from "../../shared/defs/gameObjects/healEffectDefs";
+import { OutfitDefs } from "../../shared/defs/gameObjects/outfitDefs";
 
 export class Game {
     started = false;
@@ -240,7 +242,18 @@ export class Game {
 
             player.isMobile = joinMsg.isMobile;
 
-            const emotes = joinMsg.emotes;
+            if ( joinMsg.loadout.outfit in OutfitDefs) {
+                player.outfit = joinMsg.loadout.outfit;
+            }
+
+            if ( joinMsg.loadout.heal.startsWith("heal_") && joinMsg.loadout.heal in HealEffectDefs ) {
+                player.loadout.heal = joinMsg.loadout.heal;
+            } 
+            if ( joinMsg.loadout.heal.startsWith("boost_") && joinMsg.loadout.heal in HealEffectDefs ) {
+                player.loadout.boost = joinMsg.loadout.boost;
+            }
+            
+            const emotes = joinMsg.loadout.emotes;
             for (let i = 0; i < emotes.length; i++) {
                 const emote = emotes[i];
                 if ((i < 4 && emote === "")) {
