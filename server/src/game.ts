@@ -15,8 +15,7 @@ import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import NanoTimer from "nanotimer";
 import { Gas } from "./objects/gas";
-import { HealEffectDefs } from "../../shared/defs/gameObjects/healEffectDefs";
-import { OutfitDefs } from "../../shared/defs/gameObjects/outfitDefs";
+import { isItemInLoadout } from "../../shared/defs/gameObjects/unlockDefs";
 
 export class Game {
     started = false;
@@ -242,29 +241,31 @@ export class Game {
 
             player.isMobile = joinMsg.isMobile;
 
-            if (joinMsg.loadout.outfit in OutfitDefs) {
+            if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
                 player.outfit = joinMsg.loadout.outfit;
             }
 
-            if (joinMsg.loadout.heal.startsWith("heal_") && joinMsg.loadout.heal in HealEffectDefs) {
+            if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
+                player.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
+            }
+
+            if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
                 player.loadout.heal = joinMsg.loadout.heal;
             }
-            if (joinMsg.loadout.heal.startsWith("boost_") && joinMsg.loadout.heal in HealEffectDefs) {
+            if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
                 player.loadout.boost = joinMsg.loadout.boost;
             }
 
             const emotes = joinMsg.loadout.emotes;
             for (let i = 0; i < emotes.length; i++) {
                 const emote = emotes[i];
-                if ((i < 4 && emote === "")) {
+
+                if ((i < 4 && emote === "") || (!isItemInLoadout(emote, "emote") && emote !== "")) {
                     player.loadout.emotes.push("emote_logoswine");
                     continue;
                 }
 
-                if (EmotesDefs[emote as keyof typeof EmotesDefs] === undefined &&
-                    emote != "") {
-                    player.loadout.emotes.push("emote_logoswine");
-                } else player.loadout.emotes.push(emote);
+                player.loadout.emotes.push(emote);
             }
 
             this.newPlayers.push(player);
