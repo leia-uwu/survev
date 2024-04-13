@@ -10,7 +10,6 @@ import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net";
 import { type Explosion } from "./objects/explosion";
 import { type Msg } from "../../shared/netTypings";
-import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import NanoTimer from "nanotimer";
