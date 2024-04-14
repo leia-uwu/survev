@@ -948,10 +948,10 @@ export class JoinMsg {
         s.writeBoolean(this.isMobile);
         s.writeBoolean(this.bot);
 
-        s.writeString(this.loadout.outfit);
-        s.writeString(this.loadout.melee);
-        s.writeString(this.loadout.heal);
-        s.writeString(this.loadout.boost);
+        s.writeGameType(this.loadout.outfit);
+        s.writeGameType(this.loadout.melee);
+        s.writeGameType(this.loadout.heal);
+        s.writeGameType(this.loadout.boost);
 
         s.writeUint8(this.loadout.emotes.length);
         for (const emote of this.loadout.emotes) {
