@@ -921,10 +921,10 @@ export class JoinMsg {
         this.isMobile = s.readBoolean();
         this.bot = s.readBoolean();
 
-        this.loadout.outfit = s.readString();
-        this.loadout.melee = s.readString();
-        this.loadout.heal = s.readString();
-        this.loadout.boost = s.readString();
+        this.loadout.outfit = s.readGameType();
+        this.loadout.melee = s.readGameType();
+        this.loadout.heal = s.readGameType();
+        this.loadout.boost = s.readGameType();
         this.loadout.emotes = [];
         const count = s.readUint8();
 
