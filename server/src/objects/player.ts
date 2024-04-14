@@ -838,7 +838,7 @@ export class Player extends BaseGameObject {
 
         // death emote
         if (this.loadout.emotes[5] != "") {
-            this.game.emotes.add(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
+            this.game.emotes.push(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
         }
     }
 

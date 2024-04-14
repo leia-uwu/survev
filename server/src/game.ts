@@ -82,7 +82,7 @@ export class Game {
 
     gas: Gas;
 
-    emotes = new Set<Emote>();
+    emotes: Emote[] =[];
 
     constructor(id: number, config: ConfigType) {
         this.id = id;
@@ -149,10 +149,9 @@ export class Game {
         this.bulletManager.reset();
         this.msgsToSend.length = 0;
         this.explosions.length = 0;
+        this.emotes.length = 0;
         this.grid.updateObjects = false;
         this.aliveCountDirty = false;
-
-        this.emotes.clear();
 
         this.gas.dirty = false;
         this.gas.timeDirty = false;
