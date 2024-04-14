@@ -799,13 +799,13 @@ export class Player extends BaseGameObject {
             const weap = this.weapons[i];
             if (!weap.type) continue;
             const def = GameObjectDefs[weap.type];
-            switch(def.type) {
+            switch (def.type) {
             case "gun":
-                this.weaponManager.dropGun(i)
+                this.weaponManager.dropGun(i);
                 break;
             case "melee":
                 if (def.noDrop || def.noDropOnDeath || weap.type === "fists") break;
-                this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1)
+                this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
                 break;
             }
         }

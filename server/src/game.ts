@@ -82,7 +82,7 @@ export class Game {
 
     gas: Gas;
 
-    emotes: Emote[] =[];
+    emotes: Emote[] = [];
 
     constructor(id: number, config: ConfigType) {
         this.id = id;
@@ -265,7 +265,7 @@ export class Game {
             const emoteMsg = new net.EmoteMsg();
             emoteMsg.deserialize(stream);
 
-            this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
+            this.emotes.push(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
             break;
         }
         case net.MsgType.DropItem: {
