@@ -33,6 +33,7 @@ import { Renderer } from "./renderer";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
 import { UiManager2 } from "./ui/ui2";
+import { ObjectType } from "../../server/src/objects/gameObject";
 
 const Input = GameConfig.Input;
 
@@ -191,16 +192,16 @@ export class Game {
 
         // Register types
         const TypeToPool = {
-            [GameObject.Type.Player]: this.playerBarn.playerPool,
-            [GameObject.Type.Obstacle]: this.map.obstaclePool,
-            [GameObject.Type.Loot]: this.lootBarn.lootPool,
-            [GameObject.Type.DeadBody]: this.deadBodyBarn.airdropPool,
-            [GameObject.Type.Building]: this.map.buildingPool,
-            [GameObject.Type.Structure]: this.map.structurePool,
-            [GameObject.Type.Decal]: this.decalBarn.decalPool,
-            [GameObject.Type.Projectile]: this.projectileBarn.projectilePool,
-            [GameObject.Type.Smoke]: this.smokeBarn.smokePool,
-            [GameObject.Type.Airdrop]: this.airdropBarn.airdropPool
+            [ObjectType.Player]: this.playerBarn.playerPool,
+            [ObjectType.Obstacle]: this.map.obstaclePool,
+            [ObjectType.Loot]: this.lootBarn.lootPool,
+            [ObjectType.DeadBody]: this.deadBodyBarn.airdropPool,
+            [ObjectType.Building]: this.map.buildingPool,
+            [ObjectType.Structure]: this.map.structurePool,
+            [ObjectType.Decal]: this.decalBarn.decalPool,
+            [ObjectType.Projectile]: this.projectileBarn.projectilePool,
+            [ObjectType.Smoke]: this.smokeBarn.smokePool,
+            [ObjectType.Airdrop]: this.airdropBarn.airdropPool
         };
 
         this.objectCreator = new Creator();
