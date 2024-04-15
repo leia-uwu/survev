@@ -931,6 +931,28 @@ export class Player extends BaseGameObject {
                     this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Throwable);
                 }
                 break;
+            case GameConfig.Input.EquipPrevWeap: {
+                const curIdx = this.curWeapIdx;
+
+                for (let i = curIdx; i < curIdx + GameConfig.WeaponSlot.Count; i++) {
+                    const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                    if (this.weapons[idx].type) {
+                        this.weaponManager.setCurWeapIndex(idx);
+                    }
+                }
+            }
+                break;
+            case GameConfig.Input.EquipNextWeap: {
+                const curIdx = this.curWeapIdx;
+
+                for (let i = curIdx; i > curIdx - GameConfig.WeaponSlot.Count; i--) {
+                    const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                    if (this.weapons[idx].type) {
+                        this.weaponManager.setCurWeapIndex(idx);
+                    }
+                }
+            }
+                break;
             case GameConfig.Input.EquipLastWeap:
                 this.weaponManager.setCurWeapIndex(this.weaponManager.lastWeaponIdx);
                 break;
