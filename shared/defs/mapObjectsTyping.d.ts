@@ -4,6 +4,7 @@ import { type Vec2 } from "../utils/v2";
 interface TerrainSpawnDef {
     grass?: boolean
     beach?: boolean
+    riverShore?: boolean
     bridge?: {
         nearbyWidthMult: number
     }
@@ -11,6 +12,9 @@ interface TerrainSpawnDef {
         dir: Vec2
         distMin: number
         distMax: number
+    }
+    river?: {
+        centerWeight: number
     }
 }
 
@@ -92,6 +96,8 @@ interface BuildingDef {
     }
     terrain: TerrainSpawnDef
     zIdx?: number
+    ori?: number
+    oris?: number[]
     floor: {
         surfaces: Array<{
             type: "string"
@@ -188,6 +194,7 @@ interface DecalDef {
     type: "decal"
     collision: Circle
     height: number
+    terrain?: TerrainSpawnDef
     surface?: {
         type: string
     }

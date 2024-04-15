@@ -63,13 +63,17 @@ export class Building extends BaseGameObject {
         pos: Vec2,
         ori: number,
         layer: number,
-        parentStructure?: Structure
+        parentStructureId?: number
     ) {
         super(game, pos);
         this.layer = layer;
         this.ori = ori;
         this.type = type;
-        this.parentStructure = parentStructure;
+
+        const parentStructure = this.game.grid.getById(parentStructureId ?? 0);
+        if (parentStructure?.__type === ObjectType.Structure) {
+            this.parentStructure = parentStructure;
+        }
         const def = MapObjectDefs[this.type] as BuildingDef;
 
         this.rot = math.oriToRad(ori);

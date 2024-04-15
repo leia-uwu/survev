@@ -22,6 +22,8 @@ export class Obstacle extends BaseGameObject {
 
     collider: Collider;
 
+    mapObstacleBounds: Collider[];
+
     type: string;
     ori: number;
     scale: number;
@@ -76,6 +78,7 @@ export class Obstacle extends BaseGameObject {
     isPuzzlePiece = false;
     puzzlePiece?: string;
     parentBuildingId?: number;
+    parentBuilding?: Building;
     isSkin = false;
     skinPlayerId?: number;
 
@@ -105,6 +108,12 @@ export class Obstacle extends BaseGameObject {
         this.layer = layer;
         this.originalLayer = layer;
         this.parentBuildingId = parentBuildingId;
+
+        const building = this.game.grid.getById(this.parentBuildingId ?? 0);
+        if (building?.__type === ObjectType.Building) {
+            this.parentBuilding = building;
+        }
+
         this.isPuzzlePiece = !!puzzlePiece;
         this.puzzlePiece = puzzlePiece;
         const def = MapObjectDefs[type];
@@ -135,6 +144,8 @@ export class Obstacle extends BaseGameObject {
         this.minScale = def.scale.destroy;
 
         this.collider = collider.transform(def.collision, pos, this.rot, scale);
+
+        this.mapObstacleBounds = [this.collider];
 
         this.destructible = !!def.destructible;
 
@@ -298,10 +309,7 @@ export class Obstacle extends BaseGameObject {
             this.game.explosions.push(explosion);
         }
 
-        if (this.parentBuildingId) {
-            const building = this.game.grid.getById(this.parentBuildingId) as Building;
-            building.obstacleDestroyed(this);
-        }
+        this.parentBuilding?.obstacleDestroyed(this);
     }
 
     interact(player?: Player, auto = false): void {
@@ -351,9 +359,8 @@ export class Obstacle extends BaseGameObject {
             this.button.canUse = false;
         }
 
-        const parentBuilding = this.game.grid.getById(this.parentBuildingId ?? -1) as Building | undefined;
-        if (this.button.useType && parentBuilding) {
-            for (const obj of (parentBuilding).childObjects) {
+        if (this.button.useType && this.parentBuilding) {
+            for (const obj of this.parentBuilding.childObjects) {
                 if (obj instanceof Obstacle && obj.type === this.button.useType) {
                     setTimeout(() => {
                         obj.toggleDoor(undefined, this.button.useDir);
@@ -362,7 +369,7 @@ export class Obstacle extends BaseGameObject {
             }
         }
         if (this.button.onOff && this.isPuzzlePiece) {
-            parentBuilding?.puzzlePieceToggled(this);
+            this.parentBuilding?.puzzlePieceToggled(this);
         }
         this.setDirty();
     }

@@ -4,8 +4,13 @@ import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
+<<<<<<< HEAD
 import { Decal } from "./objects/decal";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
+=======
+import { type Decal } from "./objects/decal";
+import { ObjectType } from "./objects/gameObject";
+>>>>>>> 00de211 (wip map generation fixes and refactors)
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "../../shared/utils/coldet";
@@ -38,7 +43,7 @@ export class GameMap {
     grassInset: number;
     shoreInset: number;
 
-    terrain!: ReturnType<typeof generateTerrain>;
+    terrain: ReturnType<typeof generateTerrain>;
 
     mapDef: MapDef;
 
@@ -85,60 +90,6 @@ export class GameMap {
         } */
 
         this.generateTerrain();
-        this.generateObjects();
-
-        this.mapStream.serializeMsg(MsgType.Map, this.msg);
-    }
-
-    generateTerrain(): void {
-        const mapConfig = this.mapDef.mapGen.map;
-        const riverWeights: number[] = [];
-        const weightedWidths: number[][] = [];
-
-        for (const weightedRiver of mapConfig.rivers.weights) {
-            riverWeights.push(weightedRiver.weight);
-            weightedWidths.push(weightedRiver.widths);
-        }
-        const randomGenerator = util.seededRand(this.seed);
-
-        const widths = util.weightedRandom(weightedWidths, riverWeights);
-        const halfWidth = this.width / 2;
-        const halfHeight = this.height / 2;
-
-        const riverRect = collider.createAabb(
-            v2.create(1, 1),
-            v2.create(this.width - 1, this.height - 1)
-        );
-        const center = v2.create(halfWidth, halfHeight);
-        const mapWidth = this.width - 1;
-        const mapHeight = this.height - 1;
-
-        while (this.riverDescs.length < widths.length) {
-            let start: Vec2;
-
-            const horizontal = !!randomGenerator();
-            const reverse = !!randomGenerator();
-
-            if (horizontal) {
-                const topHalf = randomGenerator(1, halfHeight);
-                const bottomHalf = randomGenerator(halfHeight, mapHeight);
-                start = v2.create(1, reverse ? bottomHalf : topHalf);
-            } else {
-                const leftHalf = randomGenerator(1, halfWidth);
-                const rightHalf = randomGenerator(halfWidth, mapWidth);
-                start = v2.create(reverse ? rightHalf : leftHalf, 1);
-            }
-
-            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI);
-
-            this.generateRiver(
-                start,
-                startAngle,
-                widths[this.riverDescs.length],
-                riverRect,
-                randomGenerator
-            );
-        }
 
         this.terrain = generateTerrain(
             this.width,
@@ -148,12 +99,19 @@ export class GameMap {
             this.riverDescs,
             this.seed
         );
+
+        this.generateObjects();
+
+        // const data =  require("../../reference/mapMsgData.json")
+        // this.msg.objects = data.objects;
+        // this.msg.groundPatches = data.groundPatches;
+        // this.msg.rivers = data.rivers
+
+        this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
 
-    generateObjects(): void {
-        const mapDef = this.mapDef;
-        const mapConfig = mapDef.mapGen.map;
-
+    generateTerrain(): void {
+        const mapConfig = this.mapDef.mapGen.map;
         const riverWeights: number[] = [];
         const weightedWidths: number[][] = [];
 
@@ -201,15 +159,10 @@ export class GameMap {
                 randomGenerator
             );
         }
+    }
 
-        this.terrain = generateTerrain(
-            this.width,
-            this.height,
-            this.shoreInset,
-            this.grassInset,
-            this.riverDescs,
-            this.seed
-        );
+    generateObjects(): void {
+        const mapDef = this.mapDef;
 
         for (const river of this.terrain.rivers) {
             for (let i = 0.2; i < 0.8; i += 0.05) {
@@ -250,12 +203,24 @@ export class GameMap {
         }
 
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
-            const pos = v2.add(
-                util.randomPointInCircle(customSpawnRule.rad),
-                v2.mulElems(customSpawnRule.pos,
-                    v2.create(this.width, this.height)));
+            let pos: Vec2 | undefined;
+            let ori: number | undefined;
 
-            this.genAuto(customSpawnRule.type, 1, pos);
+            let attempts = 0;
+            while (attempts++ < 200) {
+                ori = util.randomInt(0, 3);
+                pos = v2.add(
+                    util.randomPointInCircle(customSpawnRule.rad),
+                    v2.mulElems(customSpawnRule.pos,
+                        v2.create(this.width, this.height)));
+
+                if (this.canSpawn(customSpawnRule.type, pos, ori)) {
+                    break;
+                }
+            }
+            if (pos && ori) {
+                this.genAuto(customSpawnRule.type, pos);
+            }
         }
 
         // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
@@ -270,7 +235,7 @@ export class GameMap {
                 }
             }
             if ((this.objectCount[type] ?? 0) < count) {
-                this.genAuto(type, count);
+                this.genFromMapDef(type, count);
             }
         }
 
@@ -281,14 +246,14 @@ export class GameMap {
             for (let i = 0; i < randomSpawns.choose; i++) {
                 const idx = util.randomInt(0, spawns.length - 1);
                 const spawn = spawns.splice(idx, 1)[0];
-                this.genAuto(spawn);
+                this.genFromMapDef(spawn, 1);
             }
         }
 
         const densitySpawns = mapDef.mapGen.densitySpawns[0];
         for (const type in densitySpawns) {
             const count = densitySpawns[type];
-            this.genAuto(type, count);
+            this.genFromMapDef(type, count);
         }
 
         for (const place of mapDef.mapGen.places) {
@@ -296,39 +261,153 @@ export class GameMap {
         }
     }
 
-    genAuto(type: string, count = 1, pos?: Vec2, ori?: number, scale?: number): void {
-        const def = MapObjectDefs[type];
-
+    genFromMapDef(type: string, count: number): void {
         for (let i = 0; i < count; i++) {
-            const finalPos = pos ?? this.getRandomPositionFor(type);
-            switch (def.type) {
-            case "obstacle":
-                this.genObstacle(
-                    type,
-                    finalPos,
-                    0,
-                    ori ?? 0,
-                    scale ?? util.random(def.scale.createMax, def.scale.createMin)
-                );
+            const def = MapObjectDefs[type];
 
-                break;
-            case "building":
-                this.genBuilding(type, finalPos);
-                break;
-            case "structure":
-                this.genStructure(type, finalPos, 0, ori ?? 0);
-                break;
-            case "loot_spawner":
-                for (const tier of def.loot) {
-                    const items = this.game.lootBarn.getLootTable(tier.tier);
-
-                    for (const item of items) {
-                        this.game.lootBarn.addLoot(item.name, finalPos, 0, item.count);
-                    }
-                }
-                break;
+            if (def.terrain?.waterEdge) {
+                this.genOnWaterEdge(type);
+            } else {
+                this.genAuto(type, this.getRandPosInGrass(type));
             }
         }
+    }
+
+    genAuto(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, parentId?: number, puzzlePiece?: string) {
+        const def = MapObjectDefs[type];
+
+        switch (def.type) {
+        case "obstacle":
+            return this.genObstacle(
+                type,
+                pos,
+                layer,
+                ori,
+                scale,
+                parentId,
+                puzzlePiece
+            );
+        case "building":
+            return this.genBuilding(type, pos, layer, ori, parentId);
+        case "structure":
+            return this.genStructure(type, pos, layer, ori);
+        case "loot_spawner":
+            for (const tier of def.loot) {
+                const items = this.game.lootBarn.getLootTable(tier.tier);
+
+                for (const item of items) {
+                    this.game.lootBarn.addLoot(item.name, pos, layer, item.count);
+                }
+            }
+            break;
+        }
+    }
+
+    genOnWaterEdge(type: string): void {
+        const def = MapObjectDefs[type] as BuildingDef | StructureDef;
+        // safety check + makes ts shut up about it being possibly undefined
+        const waterEdge = def.terrain.waterEdge;
+        if (!waterEdge) return;
+
+        const aabb = collider.toAabb(mapHelpers.getBoundingCollider(type));
+        // const width = aabb.max.x - aabb.min.x;
+        const height = aabb.max.y - aabb.min.y;
+
+        let ori: number;
+        let pos: Vec2 | undefined;
+
+        let attempts = 0;
+        let collided = true;
+
+        const edgeRot = Math.atan2(waterEdge.dir.y, waterEdge.dir.x);
+
+        while (attempts++ < 200 && collided) {
+            collided = false;
+
+            const side = util.randomInt(0, 3);
+
+            const rot = math.oriToRad(side);
+
+            ori = math.radToOri(rot - edgeRot);
+
+            const dist = util.random(waterEdge.distMin, waterEdge.distMax);
+
+            const min = v2.create(dist + 6.5, this.shoreInset);
+            const max = v2.create(min.x, this.height - this.shoreInset - height);
+
+            // generate a position and rotate it based on the orientation and map center
+            const tempPos = {
+                x: util.random(min.x, max.x),
+                y: util.random(min.y, max.y)
+            };
+            const offset = v2.sub(this.center, tempPos);
+            pos = v2.add(this.center, v2.rotate(offset, rot));
+
+            if (!this.canSpawn(type, pos, ori!, 1)) {
+                collided = true;
+            }
+        }
+
+        if (pos) {
+            this.genAuto(type, pos, 0, ori!, 1);
+        }
+    }
+
+    static collidableTypes = [ObjectType.Obstacle, ObjectType.Building, ObjectType.Structure];
+
+    /**
+     * Checks if a map object can spawn at a given position, orientation and scale
+     */
+    canSpawn(type: string, pos: Vec2, ori: number, scale = 1): boolean {
+        const bound = collider.transform(mapHelpers.getBoundingCollider(type), pos, math.oriToRad(ori), scale);
+
+        const objs = this.game.grid.intersectCollider(bound);
+
+        for (let i = 0; i < objs.length; i++) {
+            if (!GameMap.collidableTypes.includes(objs[i].__type)) continue;
+
+            const obj = objs[i] as Obstacle | Building | Structure;
+
+            for (let j = 0; j < obj.mapObstacleBounds.length; j++) {
+                const otherBound = obj.mapObstacleBounds[j];
+                if (coldet.test(bound, otherBound)) {
+                    return false;
+                }
+            }
+
+            if (obj.__type === ObjectType.Building) {
+                for (let j = 0; j < obj.surfaces.length; j++) {
+                    const colls = obj.surfaces[j].colliders;
+                    for (let k = 0; k < colls.length; k++) {
+                        if (coldet.test(bound, colls[k])) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        const def = MapObjectDefs[type];
+
+        if (!def.terrain?.river &&
+            !def.terrain?.bridge
+        ) {
+            const aabb = collider.toAabb(bound);
+            for (let i = 0; i < this.terrain.rivers.length; i++) {
+                const river = this.terrain.rivers[i];
+
+                if (!coldet.test(bound, river.aabb)) continue;
+
+                if (!def.terrain?.riverShore &&
+                    coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly)) return false;
+
+                if (math.pointInsidePolygon(pos, river.waterPoly)) return false;
+
+                if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly)) return false;
+            }
+        }
+
+        return true;
     }
 
     generateRiver(
@@ -383,7 +462,11 @@ export class GameMap {
         this.riverDescs.push({ width, points: riverPoints, looped: false });
     }
 
-    genObstacle(type: string, pos: Vec2, layer: number, ori: number, scale = 1, buildingId?: number, puzzlePiece?: string): Obstacle {
+    genObstacle(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, buildingId?: number, puzzlePiece?: string): Obstacle {
+        const def = MapObjectDefs[type] as ObstacleDef;
+
+        scale = scale ?? util.random(def.scale.createMin, def.scale.createMax);
+
         const obstacle = new Obstacle(
             this.game,
             pos,
@@ -396,21 +479,18 @@ export class GameMap {
         );
         this.game.grid.addObject(obstacle);
 
-        const def = MapObjectDefs[type] as ObstacleDef;
         if (def.map?.display && layer === 0) this.msg.objects.push(obstacle);
         this.objectCount[type]++;
         return obstacle;
     }
 
-    genBuilding(type: string, pos?: Vec2, layer = 0, ori?: number, parentStructure?: Structure): Building {
-        ori = ori ?? util.randomInt(0, 3);
-
-        pos = pos ?? this.getRandomPositionFor(type, ori);
-
-        const building = new Building(this.game, type, pos, ori, layer, parentStructure);
-        this.game.grid.addObject(building);
-
+    genBuilding(type: string, pos: Vec2, layer = 0, ori?: number, parentId?: number): Building {
         const def = MapObjectDefs[type] as BuildingDef;
+
+        ori = ori ?? def.ori ?? util.randomInt(0, 3);
+
+        const building = new Building(this.game, type, pos, ori, layer, parentId);
+        this.game.grid.addObject(building);
 
         if (def.map?.display && layer === 0) this.msg.objects.push(building);
 
@@ -422,59 +502,21 @@ export class GameMap {
             }
             if (!partType) continue;
 
-            const part = MapObjectDefs[partType];
+            let partOri: number;
+            if (mapObject.inheritOri === false) partOri = mapObject.ori;
+            else partOri = (mapObject.ori + ori) % 4;
 
-            let partOrientation: number;
-            if (mapObject.inheritOri === false) partOrientation = mapObject.ori;
-            else partOrientation = (mapObject.ori + ori) % 4;
+            const partPos = math.addAdjust(pos, mapObject.pos, ori);
 
-            const partPosition = math.addAdjust(pos, mapObject.pos, ori);
-
-            switch (part.type) {
-            case "structure":
-                building.childObjects.push(
-                    this.genStructure(partType, partPosition, layer, partOrientation)
-                );
-                break;
-            case "building":
-                building.childObjects.push(
-                    this.genBuilding(partType, partPosition, layer, partOrientation)
-                );
-                break;
-            case "obstacle":
-                building.childObjects.push(this.genObstacle(
-                    partType,
-                    partPosition,
-                    layer,
-                    partOrientation,
-                    mapObject.scale,
-                    building.__id,
-                    mapObject.puzzlePiece
-                ));
-                break;
-            case "decal": {
-                const decal = new Decal(
-                    this.game,
-                    partType,
-                    partPosition,
-                    layer,
-                    partOrientation,
-                    mapObject.scale
-                );
-                building.childObjects.push(decal);
-                this.game.grid.addObject(decal);
-                break;
-            }
-            case "loot_spawner": {
-                for (const tier of part.loot) {
-                    const items = this.game.lootBarn.getLootTable(tier.tier);
-
-                    for (const item of items) {
-                        this.game.lootBarn.addLoot(item.name, partPosition, layer, item.count);
-                    }
-                }
-            }
-            }
+            const obj = this.genAuto(partType,
+                partPos,
+                layer,
+                partOri,
+                mapObject.scale,
+                building.__id,
+                mapObject.puzzlePiece
+            );
+            if (obj) building.childObjects.push(obj);
         }
 
         for (const patch of def.mapGroundPatches ?? []) {
@@ -493,8 +535,10 @@ export class GameMap {
         return building;
     }
 
-    genStructure(type: string, pos: Vec2, layer: number, ori: number): Structure {
+    genStructure(type: string, pos: Vec2, layer = 0, ori?: number): Structure {
         const def = MapObjectDefs[type] as StructureDef;
+
+        ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
         const structure = new Structure(this.game, type, pos, layer, ori);
         this.game.grid.addObject(structure);
@@ -506,7 +550,7 @@ export class GameMap {
                 math.addAdjust(pos, layerDef.pos, ori),
                 layer,
                 (layerDef.ori + ori) % 4,
-                structure
+                structure.__id
             );
             layer++;
             structure.layerObjIds.push(building.__id);
@@ -516,11 +560,7 @@ export class GameMap {
         return structure;
     }
 
-    getRandomPositionFor(type: string, ori = 0, scale = 1): Vec2 {
-        const colliders = mapHelpers.getColliders(type);
-
-        const rot = math.oriToRad(ori);
-
+    getRandPosInGrass(type: string, ori = 0, scale = 1): Vec2 {
         const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
 
         const width = bounds.max.x - bounds.min.x;
@@ -528,8 +568,8 @@ export class GameMap {
 
         const getPos = () => {
             return {
-                x: util.random(this.msg.shoreInset + width, this.width - this.msg.shoreInset - width),
-                y: util.random(this.msg.shoreInset + height, this.height - this.msg.shoreInset - height)
+                x: util.random(this.shoreInset + width, this.width - this.shoreInset - width),
+                y: util.random(this.shoreInset + height, this.height - this.shoreInset - height)
             };
         };
 
@@ -542,32 +582,8 @@ export class GameMap {
             collided = false;
             pos = getPos();
 
-            // if (this.getGroundSurface(pos, 0).type === "water") {
-            //     collided = true;
-            //     continue;
-            // }
-
-            for (const coll of colliders) {
-                const newCollider = collider.transform(coll, pos, rot, scale);
-                const objs = this.game.grid.intersectCollider(newCollider);
-
-                for (const obj of objs) {
-                    if (obj.layer !== 0) continue;
-                    if (obj instanceof Obstacle && coldet.test(obj.collider, newCollider)) {
-                        collided = true;
-                        break;
-                    }
-
-                    if (obj instanceof Building || obj instanceof Structure) {
-                        for (const bound of obj.mapObstacleBounds) {
-                            if (coldet.test(bound, newCollider)) {
-                                collided = true;
-                                break;
-                            }
-                        }
-                        if (collided) break;
-                    }
-                }
+            if (!this.canSpawn(type, pos, ori, scale)) {
+                collided = true;
             }
         }
 
@@ -577,8 +593,8 @@ export class GameMap {
     getRandomSpawnPos(): Vec2 {
         const getPos = () => {
             return {
-                x: util.random(this.msg.shoreInset, this.width - this.msg.shoreInset),
-                y: util.random(this.msg.shoreInset, this.height - this.msg.shoreInset)
+                x: util.random(this.shoreInset, this.width - this.shoreInset),
+                y: util.random(this.shoreInset, this.height - this.shoreInset)
             };
         };
 
