@@ -1,5 +1,4 @@
-import { AbstractMsg, BitStream } from "../net";
-
+import { AbstractMsg, type BitStream } from "../net";
 
 export class RoleAnnouncementMsg extends AbstractMsg {
     playerId = 0;
@@ -16,7 +15,6 @@ export class RoleAnnouncementMsg extends AbstractMsg {
         s.writeBoolean(this.killed);
         s.writeAlignToNextByte();
     }
-
 
     override deserialize(s: BitStream) {
         this.playerId = s.readUint16();

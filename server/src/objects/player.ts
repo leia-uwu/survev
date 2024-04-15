@@ -604,7 +604,7 @@ export class Player extends BaseGameObject {
 
             const mapStream = this.game.map.mapStream.stream;
 
-            msgStream.stream!.writeBytes(mapStream!, 0, mapStream!.byteIndex);
+            msgStream.stream.writeBytes(mapStream, 0, mapStream.byteIndex);
         }
 
         if (this.game.aliveCountDirty) {

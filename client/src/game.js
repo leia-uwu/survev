@@ -8,7 +8,7 @@ import { PlayerStatsMsg } from "../../shared/msgs/playerStatsMsg";
 import { MapMsg } from "../../shared/msgs/mapMsg";
 import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
 import { UpdateMsg } from "../../shared/msgs/updateMsg";
-import { PerkModeRoleSelectMsg }  from "../../shared/msgs/perkModeRoleSelectMsg";
+import { PerkModeRoleSelectMsg } from "../../shared/msgs/perkModeRoleSelectMsg";
 import { KillMsg } from "../../shared/msgs/killMsg";
 import { AliveCountsMsg } from "../../shared/msgs/aliveCountsMsg";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";

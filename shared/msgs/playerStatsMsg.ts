@@ -1,5 +1,4 @@
-import { AbstractMsg, BitStream } from "../net";
-
+import { AbstractMsg, type BitStream } from "../net";
 
 export class PlayerStatsMsg extends AbstractMsg {
     playerId = 0;

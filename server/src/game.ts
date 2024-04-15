@@ -214,7 +214,7 @@ export class Game {
     handleMsg(buff: ArrayBuffer, player: Player): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
-        const stream = msgStream.stream!;
+        const stream = msgStream.stream;
         switch (type) {
         case net.MsgType.Input: {
             const inputMsg = new InputMsg();

@@ -1,5 +1,4 @@
-import { AbstractMsg, BitStream, Constants } from "../net";
-
+import { AbstractMsg, type BitStream, Constants } from "../net";
 
 export class JoinMsg extends AbstractMsg {
     protocol = 0;
@@ -15,7 +14,7 @@ export class JoinMsg extends AbstractMsg {
         melee: "",
         heal: "",
         boost: "",
-        emotes: [] as string[],
+        emotes: [] as string[]
     };
 
     override deserialize(s: BitStream) {

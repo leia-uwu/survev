@@ -1,7 +1,7 @@
 import { math } from "./math";
 import { GameConfig } from "../gameConfig";
 import { ObjectType } from "../../server/src/objects/gameObject";
-import { BitStream, Constants } from "../net";
+import { type BitStream, Constants } from "../net";
 import type { Player } from "../../server/src/objects/player";
 import type { Obstacle } from "../../server/src/objects/obstacle";
 import type { Loot } from "../../server/src/objects/loot";
@@ -13,29 +13,29 @@ import type { Decal } from "../../server/src/objects/decal";
 import type { Smoke } from "../../server/src/objects/smoke";
 import type { Airdrop } from "../../server/src/objects/airdrop";
 
-type GameObjectTypeMap = {
-    [ObjectType.Player]: Player,
-    [ObjectType.Obstacle]: Obstacle,
-    [ObjectType.Loot]: Loot,
-    [ObjectType.LootSpawner]: Obstacle,
-    [ObjectType.DeadBody]: DeadBody,
-    [ObjectType.Building]: Building,
-    [ObjectType.Structure]: Structure,
-    [ObjectType.Decal]: Decal,
-    [ObjectType.Projectile]: Projectile,
-    [ObjectType.Smoke]: Smoke,
-    [ObjectType.Airdrop]: Airdrop,
-    
-    [ObjectType.Invalid]: () => {},
+interface GameObjectTypeMap {
+    [ObjectType.Player]: Player
+    [ObjectType.Obstacle]: Obstacle
+    [ObjectType.Loot]: Loot
+    [ObjectType.LootSpawner]: Obstacle
+    [ObjectType.DeadBody]: DeadBody
+    [ObjectType.Building]: Building
+    [ObjectType.Structure]: Structure
+    [ObjectType.Decal]: Decal
+    [ObjectType.Projectile]: Projectile
+    [ObjectType.Smoke]: Smoke
+    [ObjectType.Airdrop]: Airdrop
+
+    [ObjectType.Invalid]: () => {}
 }
 
 export const ObjectSerializeFns: {
     [K in ObjectType]: {
-        serializedFullSize: number;
-        serializePart: (s: BitStream, data: GameObjectTypeMap[K]) => void;
-        serializeFull: (s: BitStream, data: GameObjectTypeMap[K]) => void;
-        deserializePart: (s: BitStream, data: GameObjectTypeMap[K]) => void;
-        deserializeFull: (s: BitStream, data: GameObjectTypeMap[K]) => void;
+        serializedFullSize: number
+        serializePart: (s: BitStream, data: GameObjectTypeMap[K]) => void
+        serializeFull: (s: BitStream, data: GameObjectTypeMap[K]) => void
+        deserializePart: (s: BitStream, data: GameObjectTypeMap[K]) => void
+        deserializeFull: (s: BitStream, data: GameObjectTypeMap[K]) => void
     };
 } = {
     [ObjectType.Player]: {
@@ -152,7 +152,7 @@ export const ObjectSerializeFns: {
                 }
             }
             s.readAlignToNextByte();
-        },
+        }
     },
     [ObjectType.Obstacle]: {
         serializedFullSize: 0,

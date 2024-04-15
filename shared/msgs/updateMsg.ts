@@ -1,13 +1,13 @@
-import { Creator } from "../../client/src/objects/objectPool";
+import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
-import { BaseGameObject } from "../../server/src/objects/gameObject";
+import { type BaseGameObject } from "../../server/src/objects/gameObject";
 import type { Gas } from "../../server/src/objects/gas";
 import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
-import { AbstractMsg, BitStream, Constants } from "../net";
+import { AbstractMsg, type BitStream, Constants } from "../net";
 import { ObjectSerializeFns } from "../utils/objectSerializeFns";
-import { Vec2, v2 } from "../utils/v2";
+import { type Vec2, v2 } from "../utils/v2";
 
 export const UpdateExtFlags = {
     DeletedObjects: 1 << 0,
@@ -148,7 +148,7 @@ export function serializePlayerStatus(s: BitStream, data) {
 
 export function deserializePlayerStatus(s: BitStream, data) {
     data.players = [];
-    let count = s.readUint8();
+    const count = s.readUint8();
     for (let i = 0; i < count; i++) {
         const p = {};
         p.hasData = s.readBoolean();
@@ -168,7 +168,7 @@ export function deserializePlayerStatus(s: BitStream, data) {
 }
 
 export function serializeGroupStatus(s: BitStream, data) {
-    s.writeUint8(data.length);  
+    s.writeUint8(data.length);
 
     for (const status of data) {
         s.writeFloat(status.health, 0, 100, 7);
@@ -455,7 +455,6 @@ export class UpdateMsg extends AbstractMsg {
         s.byteIndex = idx;
     }
 
-
     // @ts-expect-error
     override deserialize(s: BitStream, objectCreator: Creator) {
         const flags = s.readUint16();
@@ -509,7 +508,7 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         if ((flags & UpdateExtFlags.PlayerInfos) != 0) {
-            let count = s.readUint8();
+            const count = s.readUint8();
             for (let i = 0; i < count; i++) {
                 const x = {};
                 deserializePlayerInfo(s, x);
@@ -518,7 +517,7 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         if ((flags & UpdateExtFlags.DeletePlayerIds) != 0) {
-            let count = s.readUint8();
+            const count = s.readUint8();
             for (let i = 0; i < count; i++) {
                 const id = s.readUint16();
                 this.deletedPlayerIds.push(id);
@@ -667,10 +666,10 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
     }
 }
 
-type MapIndicator = {
-    id: number,
-    dead: boolean,
-    equipped: boolean,
-    type: string,
+interface MapIndicator {
+    id: number
+    dead: boolean
+    equipped: boolean
+    type: string
     pos: Vec2
 }

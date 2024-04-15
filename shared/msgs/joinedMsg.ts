@@ -1,4 +1,4 @@
-import { AbstractMsg, BitStream } from "../net";
+import { AbstractMsg, type BitStream } from "../net";
 
 export class JoinedMsg extends AbstractMsg {
     teamMode = 0;

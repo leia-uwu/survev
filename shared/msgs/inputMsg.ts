@@ -1,6 +1,5 @@
 import { v2 } from "../utils/v2";
-import { AbstractMsg, BitStream, Constants } from "../net";
-
+import { AbstractMsg, type BitStream, Constants } from "../net";
 
 export class InputMsg extends AbstractMsg {
     seq = 0;
