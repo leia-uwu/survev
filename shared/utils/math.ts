@@ -1,5 +1,4 @@
 import { earcut } from "./earcut";
-import { util } from "./util";
 import { v2, type Vec2 } from "./v2";
 
 const kEpsilon = 0.000001;

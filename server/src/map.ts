@@ -64,7 +64,7 @@ export class GameMap {
         this.msg.width = this.width;
         this.msg.height = this.height;
         this.msg.rivers = this.riverDescs;
-        this.center = v2.create(this.width / 2, this.height / 2)
+        this.center = v2.create(this.width / 2, this.height / 2);
         this.grassInset = this.msg.grassInset = mapConfig.grassInset;
         this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
 

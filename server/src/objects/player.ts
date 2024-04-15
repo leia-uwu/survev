@@ -152,12 +152,6 @@ export class Player extends BaseGameObject {
         return this.weaponManager.curWeapIdx;
     }
 
-    set curWeapIdx(idx: number) {
-        this.weaponManager.curWeapIdx = idx;
-        this.setDirty();
-        this.dirty.weapons = true;
-    }
-
     get weapons() {
         return this.weaponManager.weapons;
     }
@@ -922,43 +916,38 @@ export class Player extends BaseGameObject {
             switch (input) {
             case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
-                this.curWeapIdx = 2;
+                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
                 break;
             case GameConfig.Input.EquipPrimary:
-                this.curWeapIdx = 0;
+                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Primary);
                 break;
             case GameConfig.Input.EquipSecondary:
-                this.curWeapIdx = 1;
+                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Secondary);
                 break;
             case GameConfig.Input.EquipThrowable:
-                if (this.curWeapIdx === 3) {
+                if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
                     this.weaponManager.showNextThrowable();
                 } else {
-                    this.curWeapIdx = 3;
+                    this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Throwable);
                 }
                 break;
             case GameConfig.Input.EquipLastWeap:
-                this.curWeapIdx = this.weaponManager.lastWeaponIdx;
+                this.weaponManager.setCurWeapIndex(this.weaponManager.lastWeaponIdx);
                 break;
             case GameConfig.Input.EquipOtherGun:
-                // for (let i = 0; i < this.weapons.length; i++) {
-                //     if (GameConfig.WeaponType[i] === "gun" &&
-                //             this.weapons[i] !== this.weapons[this.curWeapIdx]) {
-                //         this.curWeapIdx = i;
-                //         break;
-                //     }
-                // }
-
-                // completely unreadable but optimized weapon swapping code since leia apparently values fewer lines of code over readability
                 if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
                     const otherGunSlotIdx = this.curWeapIdx ^ 1;
                     const isOtherGunSlotFull: number = +!!this.weapons[otherGunSlotIdx].type;//! ! converts string to boolean, + coerces boolean to number
-                    this.curWeapIdx = isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee;
+                    this.weaponManager.setCurWeapIndex(isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee);
                 } else if (this.curWeapIdx == GameConfig.WeaponSlot.Melee && (this.weapons[GameConfig.WeaponSlot.Primary].type || this.weapons[GameConfig.WeaponSlot.Secondary].type)) {
-                    this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
+                    this.weaponManager.setCurWeapIndex(+!(this.weapons[GameConfig.WeaponSlot.Primary].type));
                 } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
                     const bothSlotsEmpty = !this.weapons[GameConfig.WeaponSlot.Primary].type && !this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                    this.curWeapIdx = bothSlotsEmpty ? GameConfig.WeaponSlot.Melee : this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
+                    if (bothSlotsEmpty) {
+                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                    } else {
+                        this.weaponManager.setCurWeapIndex(this.curWeapIdx + (+(this.weapons[GameConfig.WeaponSlot.Primary].type)));
+                    }
                 }
 
                 break;
@@ -1038,7 +1027,7 @@ export class Player extends BaseGameObject {
 
                 // curWeapIdx's setter method already sets dirty.weapons
                 if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
-                    this.curWeapIdx ^= 1;
+                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
                 } else {
                     this.dirty.weapons = true;
                 }
