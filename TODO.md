@@ -12,7 +12,7 @@
  - [ ] Spectating
  - [x] Slowdown on water
  - [ ] Kill Leader
- - [ ] Loadouts
+ - [x] Loadouts
  - [x] Emotes
  - [ ] Roles and cobalt classes
 
