@@ -19,6 +19,6 @@ export class SpectateMsg extends AbstractMsg {
         this.specNext = s.readBoolean();
         this.specPrev = s.readBoolean();
         this.specForce = s.readBoolean();
-        s.readBits(0, 4);
+        s.readBits(4);
     }
 }
