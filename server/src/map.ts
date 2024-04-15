@@ -159,7 +159,7 @@ export class GameMap {
         }
         const randomGenerator = util.seededRand(this.seed);
 
-        const widths = util.weightedRandom(weightedWidths, riverWeights);
+        const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
 
