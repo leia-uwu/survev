@@ -16,7 +16,8 @@ import { type River } from "../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import { MapMsg, MsgStream, MsgType } from "../../shared/net";
+import { MsgStream, MsgType } from "../../shared/net";
+import { MapMsg } from "../../shared/msgs/mapMsg";
 
 export class GameMap {
     game: Game;

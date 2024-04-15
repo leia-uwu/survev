@@ -18,7 +18,15 @@ import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
 import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
-import { AliveCountsMsg, type DropItemMsg, GameOverMsg, InputMsg, JoinedMsg, KillMsg, MsgStream, MsgType, UpdateMsg, PickupMsg, PickupMsgType, Constants } from "../../../shared/net";
+import { MsgStream, MsgType, PickupMsgType, Constants } from "../../../shared/net";
+import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
+import { UpdateMsg } from "../../../shared/msgs/updateMsg";
+import { KillMsg } from "../../../shared/msgs/killMsg";
+import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
+import { PickupMsg } from "../../../shared/msgs/pickupMsg";
+import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
+import { InputMsg } from "../../../shared/msgs/inputMsg";
+import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 
 export class Emote {
     playerId: number;

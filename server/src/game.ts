@@ -8,8 +8,14 @@ import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net";
+import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
+import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
+import { SpectateMsg } from "../../shared/msgs/spectateMsg";
+import { EmoteMsg } from "../../shared/msgs/emoteMsg";
+import { RoleAnnouncementMsg } from "../../shared/msgs/roleAnnouncementMsg";
+import { JoinMsg } from "../../shared/msgs/joinMsg";
+import { InputMsg } from "../../shared/msgs/inputMsg";
 import { type Explosion } from "./objects/explosion";
-import { type Msg } from "../../shared/netTypings";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import NanoTimer from "nanotimer";
@@ -37,7 +43,7 @@ export class Game {
 
     aliveCountDirty = false;
 
-    msgsToSend: Array<{ type: number, msg: Msg }> = [];
+    msgsToSend: Array<{ type: number, msg: net.AbstractMsg }> = [];
 
     partialObjs = new Set<BaseGameObject>();
     fullObjs = new Set<BaseGameObject>();
@@ -211,17 +217,17 @@ export class Game {
         const stream = msgStream.stream!;
         switch (type) {
         case net.MsgType.Input: {
-            const inputMsg = new net.InputMsg();
+            const inputMsg = new InputMsg();
             inputMsg.deserialize(stream);
             player.handleInput(inputMsg);
             break;
         }
         case net.MsgType.Join: {
-            const joinMsg = new net.JoinMsg();
+            const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
-                const disconnectMsg = new net.DisconnectMsg();
+                const disconnectMsg = new DisconnectMsg();
                 disconnectMsg.reason = "index-invalid-protocol";
                 player.sendMsg(net.MsgType.Disconnect, disconnectMsg);
                 setTimeout(() => {
@@ -276,14 +282,14 @@ export class Game {
             break;
         }
         case net.MsgType.Emote: {
-            const emoteMsg = new net.EmoteMsg();
+            const emoteMsg = new EmoteMsg();
             emoteMsg.deserialize(stream);
 
             this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
             break;
         }
         case net.MsgType.DropItem: {
-            const dropMsg = new net.DropItemMsg();
+            const dropMsg = new DropItemMsg();
             dropMsg.deserialize(stream);
             player.dropItem(dropMsg);
         }

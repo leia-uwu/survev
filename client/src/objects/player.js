@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
-import * as net from "../../../shared/net";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { math } from "../../../shared/utils/math";
@@ -14,6 +13,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import animData from "../animData";
 import { createCasingParticle } from "./shot";
+import { getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
 
 const Action = GameConfig.Action;
 const Anim = GameConfig.Anim;
@@ -2378,7 +2378,7 @@ export class PlayerBarn {
             visible: true
         });
 
-        const statusUpdateRate = net.getPlayerStatusUpdateRate(map.factionMode);
+        const statusUpdateRate = getPlayerStatusUpdateRate(map.factionMode);
         const keys = Object.keys(this.playerStatus);
         for (
             let i = 0;

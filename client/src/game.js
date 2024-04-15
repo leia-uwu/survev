@@ -1,9 +1,24 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
-import GameObject from "../../shared/utils/gameObject";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import * as net from "../../shared/net";
+import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
+import { PlayerStatsMsg } from "../../shared/msgs/playerStatsMsg";
+import { MapMsg } from "../../shared/msgs/mapMsg";
+import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
+import { UpdateMsg } from "../../shared/msgs/updateMsg";
+import { PerkModeRoleSelectMsg }  from "../../shared/msgs/perkModeRoleSelectMsg";
+import { KillMsg } from "../../shared/msgs/killMsg";
+import { AliveCountsMsg } from "../../shared/msgs/aliveCountsMsg";
+import { SpectateMsg } from "../../shared/msgs/spectateMsg";
+import { EmoteMsg } from "../../shared/msgs/emoteMsg";
+import { PickupMsg } from "../../shared/msgs/pickupMsg";
+import { RoleAnnouncementMsg } from "../../shared/msgs/roleAnnouncementMsg";
+import { JoinMsg } from "../../shared/msgs/joinMsg";
+import { JoinedMsg } from "../../shared/msgs/joinedMsg";
+import { InputMsg } from "../../shared/msgs/inputMsg";
+import { GameOverMsg } from "../../shared/msgs/gameOverMsg";
 import { v2 } from "../../shared/utils/v2";
 import { device } from "./device";
 import { helpers } from "./helpers";
@@ -97,7 +112,7 @@ export class Game {
                     this.connecting = false;
                     this.connected = true;
                     const name = this.config.get("playerName");
-                    const joinMessage = new net.JoinMsg();
+                    const joinMessage = new JoinMsg();
                     joinMessage.protocol = GameConfig.protocolVersion;
                     joinMessage.matchPriv = matchPriv;
                     joinMessage.loadoutPriv = loadoutPriv;
@@ -244,7 +259,7 @@ export class Game {
         this.gameOver = false;
         this.spectating = false;
         this.inputMsgTimeout = 0;
-        this.prevInputMsg = new net.InputMsg();
+        this.prevInputMsg = new InputMsg();
         this.playingTicker = 0;
         this.updateRecvCount = 0;
         this.updatePass = false;
@@ -390,7 +405,7 @@ export class Game {
         }
 
         // Input
-        const inputMsg = new net.InputMsg();
+        const inputMsg = new InputMsg();
         inputMsg.seq = this.seq;
         if (!this.spectating) {
             if (device.touch) {
@@ -573,7 +588,7 @@ export class Game {
             for (let X = 0; X < this.ui2Manager.uiEvents.length; X++) {
                 const e = this.ui2Manager.uiEvents[X];
                 if (e.action == "drop") {
-                    const dropMsg = new net.DropItemMsg();
+                    const dropMsg = new DropItemMsg();
                     if (e.type == "weapon") {
                         const Y = this.activePlayer.localData.weapons;
                         dropMsg.item = Y[e.data].type;
@@ -609,7 +624,7 @@ export class Game {
                 });
             }
             if (this.uiManager.roleSelected) {
-                const roleSelectMessage = new net.PerkModeRoleSelectMsg();
+                const roleSelectMessage = new PerkModeRoleSelectMsg();
                 roleSelectMessage.role = this.uiManager.roleSelected;
                 this.sendMessage(net.MsgType.PerkModeRoleSelect, roleSelectMessage, 128);
                 this.config.set("perkModeRole", roleSelectMessage.role);
@@ -625,7 +640,7 @@ export class Game {
         const specForce =
             this.input.keyPressed(Key.Right) || this.input.keyPressed(Key.Left);
         if (specBegin || (this.spectating && specNext) || specPrev) {
-            const specMsg = new net.SpectateMsg();
+            const specMsg = new SpectateMsg();
             specMsg.specBegin = specBegin;
             specMsg.specNext = specNext;
             specMsg.specPrev = specPrev;
@@ -804,7 +819,7 @@ export class Game {
         }
         for (let i = 0; i < this.emoteBarn.newPings.length; i++) {
             const ping = this.emoteBarn.newPings[i];
-            const msg = new net.EmoteMsg();
+            const msg = new EmoteMsg();
             msg.type = ping.type;
             msg.pos = ping.pos;
             msg.isPing = true;
@@ -813,7 +828,7 @@ export class Game {
         this.emoteBarn.newPings = [];
         for (let i = 0; i < this.emoteBarn.newEmotes.length; i++) {
             const emote = this.emoteBarn.newEmotes[i];
-            const msg = new net.EmoteMsg();
+            const msg = new EmoteMsg();
             msg.type = emote.type;
             msg.pos = emote.pos;
             msg.isPing = false;
@@ -1072,7 +1087,7 @@ export class Game {
     onMsg(type, stream) {
         switch (type) {
         case net.MsgType.Joined: {
-            const msg = new net.JoinedMsg();
+            const msg = new JoinedMsg();
             msg.deserialize(stream);
             this.onJoin();
             this.teamMode = msg.teamMode;
@@ -1101,7 +1116,7 @@ export class Game {
             break;
         }
         case net.MsgType.Map: {
-            const msg = new net.MapMsg();
+            const msg = new MapMsg();
             msg.deserialize(stream);
             this.map.loadMap(
                 msg,
@@ -1131,7 +1146,7 @@ export class Game {
             break;
         }
         case net.MsgType.Update: {
-            const msg = new net.UpdateMsg();
+            const msg = new UpdateMsg();
             msg.deserialize(stream, this.objectCreator);
             /* if (o.partObjects.length) {
                                 console.log(o)
@@ -1141,7 +1156,7 @@ export class Game {
             break;
         }
         case net.MsgType.Kill: {
-            const msg = new net.KillMsg();
+            const msg = new KillMsg();
             msg.deserialize(stream);
             const sourceType = msg.itemSourceType || msg.mapSourceType;
             const activeTeamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
@@ -1251,7 +1266,7 @@ export class Game {
             break;
         }
         case net.MsgType.RoleAnnouncement: {
-            const msg = new net.RoleAnnouncementMsg();
+            const msg = new RoleAnnouncementMsg();
             msg.deserialize(stream);
             const roleDef = RoleDefs[msg.role];
             if (!roleDef) {
@@ -1357,7 +1372,7 @@ export class Game {
             break;
         }
         case net.MsgType.PlayerStats: {
-            const msg = new net.PlayerStatsMsg();
+            const msg = new PlayerStatsMsg();
             msg.deserialize(stream);
             this.uiManager.setLocalStats(msg.playerStats);
             this.uiManager.showTeamAd(msg.playerStats, this.ui2Manager);
@@ -1370,7 +1385,7 @@ export class Game {
             break;
         }
         case net.MsgType.GameOver: {
-            const msg = new net.GameOverMsg();
+            const msg = new GameOverMsg();
             msg.deserialize(stream);
             this.gameOver = msg.gameOver;
             const localTeamId = this.playerBarn.getPlayerInfo(this.localId).teamId;
@@ -1414,7 +1429,7 @@ export class Game {
             break;
         }
         case net.MsgType.Pickup: {
-            const msg = new net.PickupMsg();
+            const msg = new PickupMsg();
             msg.deserialize(stream);
             if (msg.type == net.PickupMsgType.Success && msg.item) {
                 this.activePlayer.playItemPickupSound(msg.item, this.audioManager);
@@ -1434,7 +1449,7 @@ export class Game {
             break;
         }
         case net.MsgType.AliveCounts: {
-            const msg = new net.AliveCountsMsg();
+            const msg = new AliveCountsMsg();
             msg.deserialize(stream);
             if (msg.teamAliveCounts.length == 1) {
                 this.uiManager.updatePlayersAlive(
@@ -1451,7 +1466,7 @@ export class Game {
             break;
         }
         case net.MsgType.Disconnect: {
-            const msg = new net.DisconnectMsg();
+            const msg = new DisconnectMsg();
             msg.deserialize(stream);
             this.disconnectMsg = msg.reason;
         }

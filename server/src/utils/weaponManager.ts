@@ -12,6 +12,7 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import * as net from "../../../shared/net";
+import { PickupMsg } from "../../../shared/msgs/pickupMsg";
 
 export class WeaponManager {
     player: Player;
@@ -203,7 +204,7 @@ export class WeaponManager {
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
-            const msg = new net.PickupMsg();
+            const msg = new PickupMsg();
             msg.type = net.PickupMsgType.GunCannotFire;
             this.player.msgsToSend.push({ type: net.MsgType.Pickup, msg });
             return;
