@@ -4,13 +4,8 @@ import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
-<<<<<<< HEAD
-import { Decal } from "./objects/decal";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
-=======
-import { type Decal } from "./objects/decal";
-import { ObjectType } from "./objects/gameObject";
->>>>>>> 00de211 (wip map generation fixes and refactors)
+import { Decal } from "./objects/decal";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "../../shared/utils/coldet";
@@ -291,6 +286,11 @@ export class GameMap {
             return this.genBuilding(type, pos, layer, ori, parentId);
         case "structure":
             return this.genStructure(type, pos, layer, ori);
+        case "decal": {
+            const decal = new Decal(this.game, type, pos, layer, ori, scale);
+            this.game.grid.addObject(decal);
+            return decal;
+        }
         case "loot_spawner":
             for (const tier of def.loot) {
                 const items = this.game.lootBarn.getLootTable(tier.tier);

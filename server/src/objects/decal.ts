@@ -23,13 +23,13 @@ export class Decal extends BaseGameObject {
     collider?: Circle;
     surface?: string;
 
-    constructor(game: Game, type: string, pos: Vec2, layer: number, ori: number, scale: number) {
+    constructor(game: Game, type: string, pos: Vec2, layer: number, ori?: number, scale?: number) {
         super(game, pos);
         this.layer = layer;
         this.type = type;
-        this.scale = scale;
-        this.ori = ori;
-        this.rot = math.oriToRad(ori);
+        this.scale = scale ?? 1;
+        this.ori = ori ?? 0;
+        this.rot = math.oriToRad(this.ori);
 
         const def = MapObjectDefs[type] as DecalDef;
 
