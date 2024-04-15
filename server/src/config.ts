@@ -67,7 +67,7 @@ export interface ConfigType {
         readonly mode: SpawnMode.Random
     } | {
         readonly mode: SpawnMode.Fixed
-        readonly position: Vec2
+        readonly pos: Vec2
     } | {
         readonly mode: SpawnMode.Center
     }

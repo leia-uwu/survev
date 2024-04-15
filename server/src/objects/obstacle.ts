@@ -55,8 +55,8 @@ export class Obstacle extends BaseGameObject {
         autoCloseDelay: number
         slideToOpen: boolean
         slideOffset: number
-        closedPosition: Vec2
-        openPosition: Vec2
+        closedPos: Vec2
+        openPos: Vec2
     };
 
     closeTimeout?: NodeJS.Timeout;
@@ -156,8 +156,8 @@ export class Obstacle extends BaseGameObject {
                 autoCloseDelay: def.door.autoCloseDelay ?? 0,
                 slideToOpen: def.door.slideToOpen ?? false,
                 slideOffset: def.door.slideOffset ?? 0,
-                closedPosition: v2.copy(this.pos),
-                openPosition: v2.create(0, 0)
+                closedPos: v2.copy(this.pos),
+                openPos: v2.create(0, 0)
             };
 
             this.interactionRad = def.door.interactionRad;
@@ -395,7 +395,7 @@ export class Obstacle extends BaseGameObject {
                         v2.create(0, -this.door.slideOffset), this.rot)
                 );
             } else {
-                this.pos = this.door.closedPosition;
+                this.pos = this.door.closedPos;
             }
         }
         this.rot = math.oriToRad(this.ori);

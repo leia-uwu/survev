@@ -317,23 +317,23 @@ export const math = {
     },
 
     // functions not copied from surviv
-    addAdjust(position1: Vec2, position2: Vec2, orientation: number): Vec2 {
-        if (orientation === 0) return v2.add(position1, position2);
+    addAdjust(pos1: Vec2, pos: Vec2, ori: number): Vec2 {
+        if (ori === 0) return v2.add(pos1, pos);
         let xOffset: number, yOffset: number;
-        switch (orientation) {
+        switch (ori) {
         case 1:
-            xOffset = -position2.y;
-            yOffset = position2.x;
+            xOffset = -pos.y;
+            yOffset = pos.x;
             break;
         case 2:
-            xOffset = -position2.x;
-            yOffset = -position2.y;
+            xOffset = -pos.x;
+            yOffset = -pos.y;
             break;
         case 3:
-            xOffset = position2.y;
-            yOffset = -position2.x;
+            xOffset = pos.y;
+            yOffset = -pos.x;
             break;
         }
-        return v2.add(position1, v2.create(xOffset!, yOffset!));
+        return v2.add(pos1, v2.create(xOffset!, yOffset!));
     }
 };

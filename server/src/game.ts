@@ -171,23 +171,23 @@ export class Game {
     }
 
     addPlayer(socket: ServerSocket): Player {
-        let position: Vec2;
+        let pos: Vec2;
 
         switch (this.config.spawn.mode) {
         case SpawnMode.Center:
-            position = v2.create(this.map.width / 2, this.map.height / 2);
+            pos = v2.copy(this.map.center);
             break;
         case SpawnMode.Fixed:
-            position = v2.copy(this.config.spawn.position);
+            pos = v2.copy(this.config.spawn.pos);
             break;
         case SpawnMode.Random:
-            position = this.map.getRandomSpawnPosition();
+            pos = this.map.getRandomSpawnPos();
             break;
         }
 
         const player = new Player(
             this,
-            position,
+            pos,
             socket);
 
         // @HACK send help
