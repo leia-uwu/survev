@@ -791,14 +791,22 @@ export class Player extends BaseGameObject {
         const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
         this.game.grid.addObject(deadBody);
 
+        //
         // drop loot
-        for (const weapon of this.weapons) {
-            if (!weapon.type) continue;
-            const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
+        //
 
-            // inventory drop logic already handles throwables, don't drop them here
-            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists" && def.type != "throwable") {
-                this.game.lootBarn.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
+        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
+            const weap = this.weapons[i];
+            if (!weap.type) continue;
+            const def = GameObjectDefs[weap.type];
+            switch (def.type) {
+            case "gun":
+                this.weaponManager.dropGun(i);
+                break;
+            case "melee":
+                if (def.noDrop || def.noDropOnDeath || weap.type === "fists") break;
+                this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                break;
             }
         }
 
@@ -830,7 +838,7 @@ export class Player extends BaseGameObject {
 
         // death emote
         if (this.loadout.emotes[5] != "") {
-            this.game.emotes.add(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
+            this.game.emotes.push(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
         }
     }
 

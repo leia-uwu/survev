@@ -232,22 +232,6 @@ export const math = {
         return inside;
     },
 
-    /**
-     * Generate a random point inside of a circle.
-     * @param position The center of the circle.
-     * @param maxRadius The maximum radius of the circle.
-     * @param minRadius The minimum radius of the circle. Defaults to 0.
-     * @returns A vector representation of the randomized point.
-    */
-    randomPointInsideCircle(position: Vec2, maxRadius: number, minRadius?: number): Vec2 {
-        const angle = util.random(0, Math.PI * 2);
-        const length = util.random(minRadius ?? 0, maxRadius);
-        return {
-            x: position.x + (Math.cos(angle) * length),
-            y: position.y + (Math.sin(angle) * length)
-        };
-    },
-
     distToSegmentSq(p: Vec2, a: Vec2, b: Vec2) {
         const ab = v2.sub(b, a);
         const c = v2.dot(v2.sub(p, a), ab) / v2.dot(ab, ab);
@@ -333,23 +317,23 @@ export const math = {
     },
 
     // functions not copied from surviv
-    addAdjust(position1: Vec2, position2: Vec2, orientation: number): Vec2 {
-        if (orientation === 0) return v2.add(position1, position2);
+    addAdjust(pos1: Vec2, pos: Vec2, ori: number): Vec2 {
+        if (ori === 0) return v2.add(pos1, pos);
         let xOffset: number, yOffset: number;
-        switch (orientation) {
+        switch (ori) {
         case 1:
-            xOffset = -position2.y;
-            yOffset = position2.x;
+            xOffset = -pos.y;
+            yOffset = pos.x;
             break;
         case 2:
-            xOffset = -position2.x;
-            yOffset = -position2.y;
+            xOffset = -pos.x;
+            yOffset = -pos.y;
             break;
         case 3:
-            xOffset = position2.y;
-            yOffset = -position2.x;
+            xOffset = pos.y;
+            yOffset = -pos.x;
             break;
         }
-        return v2.add(position1, v2.create(xOffset!, yOffset!));
+        return v2.add(pos1, v2.create(xOffset!, yOffset!));
     }
 };

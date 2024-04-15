@@ -24,6 +24,8 @@ export class GameMap {
     width: number;
     height: number;
 
+    center: Vec2;
+
     msg = new MapMsg();
     mapStream = new MsgStream(new ArrayBuffer(1 << 14));
     seed = util.randomInt(0, 2 ** 31);
@@ -62,6 +64,7 @@ export class GameMap {
         this.msg.width = this.width;
         this.msg.height = this.height;
         this.msg.rivers = this.riverDescs;
+        this.center = v2.create(this.width / 2, this.height / 2)
         this.grassInset = this.msg.grassInset = mapConfig.grassInset;
         this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
 
@@ -159,7 +162,7 @@ export class GameMap {
         }
         const randomGenerator = util.seededRand(this.seed);
 
-        const widths = util.weightedRandom(weightedWidths, riverWeights);
+        const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
 

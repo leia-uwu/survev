@@ -82,7 +82,7 @@ export class Game {
 
     gas: Gas;
 
-    emotes = new Set<Emote>();
+    emotes: Emote[] = [];
 
     constructor(id: number, config: ConfigType) {
         this.id = id;
@@ -149,10 +149,9 @@ export class Game {
         this.bulletManager.reset();
         this.msgsToSend.length = 0;
         this.explosions.length = 0;
+        this.emotes.length = 0;
         this.grid.updateObjects = false;
         this.aliveCountDirty = false;
-
-        this.emotes.clear();
 
         this.gas.dirty = false;
         this.gas.timeDirty = false;
@@ -172,23 +171,23 @@ export class Game {
     }
 
     addPlayer(socket: ServerSocket): Player {
-        let position: Vec2;
+        let pos: Vec2;
 
         switch (this.config.spawn.mode) {
         case SpawnMode.Center:
-            position = v2.create(this.map.width / 2, this.map.height / 2);
+            pos = v2.copy(this.map.center);
             break;
         case SpawnMode.Fixed:
-            position = v2.copy(this.config.spawn.position);
+            pos = v2.copy(this.config.spawn.pos);
             break;
         case SpawnMode.Random:
-            position = this.map.getRandomSpawnPosition();
+            pos = this.map.getRandomSpawnPos();
             break;
         }
 
         const player = new Player(
             this,
-            position,
+            pos,
             socket);
 
         // @HACK send help
@@ -279,7 +278,7 @@ export class Game {
             const emoteMsg = new net.EmoteMsg();
             emoteMsg.deserialize(stream);
 
-            this.emotes.add(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
+            this.emotes.push(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
             break;
         }
         case net.MsgType.DropItem: {

@@ -294,13 +294,14 @@ export const util = {
     * Pick a random element from a weighted series of elements.
     * @param items The elements to choose from.
     * @param weights A legend of the elements' relative weight.
+    * @param random The random number generator
     */
-    weightedRandom<T>(items: T[], weights: number[]): T {
+    weightedRandom<T>(items: T[], weights: number[], random = Math.random): T {
         let i: number;
         for (i = 1; i < weights.length; i++) weights[i] += weights[i - 1];
 
-        const random = Math.random() * weights[weights.length - 1];
-        for (i = 0; i < weights.length; i++) { if (weights[i] > random) break; }
+        const rand = random() * weights[weights.length - 1];
+        for (i = 0; i < weights.length; i++) { if (weights[i] > rand) break; }
         return items[i];
     }
 
