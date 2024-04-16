@@ -573,7 +573,7 @@ export class GameMap {
         return pos;
     }
 
-    getRandomSpawnPosition(): Vec2 {
+    getRandomSpawnPos(): Vec2 {
         const getPos = () => {
             return {
                 x: util.random(this.msg.shoreInset, this.width - this.msg.shoreInset),
