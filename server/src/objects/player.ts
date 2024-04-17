@@ -1252,7 +1252,7 @@ export class Player extends BaseGameObject {
                     this.weapons[i].cooldown = 0;
                     if (this.weapons[i].ammo <= 0 && i === this.curWeapIdx) {
                         this.cancelAction();
-                        this.weaponManager.reload();
+                        this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
                     }
                     this.dirty.weapons = true;
                     removeLoot = true;
