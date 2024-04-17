@@ -190,12 +190,6 @@ export class Game {
             pos,
             socket);
 
-        // @HACK send help
-        if (this.started) {
-            this.gas.dirty = true;
-            this.gas.timeDirty = true;
-        }
-
         if (!this.started) {
             this.started = true;
             this.gas.advanceGasStage();
