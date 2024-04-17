@@ -1139,7 +1139,7 @@ export class Player {
         this.isNew = false;
     }
 
-    br(camera, debug) {
+    render(camera, debug) {
         const screenPos = camera.pointToScreen(this.pos);
         const screenScale = camera.pixels(1);
         this.container.position.set(screenPos.x, screenPos.y);
@@ -2444,7 +2444,7 @@ export class PlayerBarn {
         for (let i = 0; i < players.length; i++) {
             const p = players[i];
             if (p.active) {
-                p.br(camera, debug);
+                p.render(camera, debug);
             }
         }
     }

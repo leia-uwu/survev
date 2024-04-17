@@ -196,13 +196,7 @@ export class Game {
             pos,
             socket);
 
-        // @HACK send help
-        if (this.started) {
-            this.gas.dirty = true;
-            this.gas.timeDirty = true;
-        }
-
-        if (!this.started) {
+        if (this.aliveCount >= 1 && !this.started) {
             this.started = true;
             this.gas.advanceGasStage();
         }
