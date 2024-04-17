@@ -26,6 +26,8 @@ export class GameOverMsg extends AbstractMsg {
     override deserialize(s: BitStream) {
         this.teamId = s.readUint8();
         this.teamRank = s.readUint8();
+        // !
+        // @ts-expect-error suppressed
         this.gameOver = s.readUint8();
         this.winningTeamId = s.readUint8();
         for (let count = s.readUint8(), i = 0; i < count; i++) {

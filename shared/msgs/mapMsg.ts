@@ -1,20 +1,14 @@
 import { type Building } from "../../server/src/objects/building";
 import { type Obstacle } from "../../server/src/objects/obstacle";
-import { AbstractMsg, type BitStream, Constants } from "../net";
 import type { MapDef } from "../defs/mapDefs";
-import type { BuildingDef } from "../defs/mapObjectsTyping";
+import { AbstractMsg, Constants, type BitStream } from "../net";
 import type { MapRiverData } from "../utils/terrainGen";
 import type { Vec2 } from "../utils/v2";
 
-type Place = MapDef["mapGen"]["places"][number];
-type GroundPatch = NonNullable<BuildingDef["mapGroundPatches"]>[number] & {
-    min: Vec2
-    max: Vec2
-};
-type Obj = (Obstacle | Building);
-
 function serializeMapRiver(s: BitStream, data: MapRiverData) {
     s.writeFloat32(data.width);
+    // !
+    // @ts-expect-error suppressed
     s.writeUint8(data.looped);
     s.writeUint8(data.points.length);
 
@@ -25,6 +19,8 @@ function serializeMapRiver(s: BitStream, data: MapRiverData) {
 
 function deserializeMapRiver(s: BitStream, data: MapRiverData) {
     data.width = s.readFloat32();
+    // !
+    // @ts-expect-error suppressed
     data.looped = s.readUint8();
     data.points = [];
 
@@ -36,6 +32,8 @@ function deserializeMapRiver(s: BitStream, data: MapRiverData) {
     }
 }
 
+type Place = MapDef["mapGen"]["places"][number];
+
 function serializeMapPlace(s: BitStream, place: Place) {
     s.writeString(place.name);
     s.writeVec(place.pos, 0, 0, 1024, 1024, 16);
@@ -44,6 +42,16 @@ function serializeMapPlace(s: BitStream, place: Place) {
 function deserializeMapPlaces(s: BitStream, place: Place) {
     place.name = s.readString();
     place.pos = s.readVec(0, 0, 1024, 1024, 16);
+}
+
+interface GroundPatch {
+    color: number
+    roughness: number
+    offsetDist: number
+    order?: number
+    useAsMapShape?: boolean
+    min: Vec2
+    max: Vec2
 }
 
 function serializeMapGroundPatch(s: BitStream, patch: GroundPatch) {
@@ -65,6 +73,8 @@ function deserializeMapGroundPatch(s: BitStream, patch: GroundPatch) {
     patch.order = s.readBits(7);
     patch.useAsMapShape = s.readBoolean();
 }
+
+type Obj = Obstacle | Building;
 
 function serializeMapObj(s: BitStream, obj: Obj) {
     s.writeVec(obj.pos, 0, 0, 1024, 1024, 16);
