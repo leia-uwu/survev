@@ -1,5 +1,9 @@
 import { isMobile } from "pixi.js-legacy";
-import { helpers } from "./helpers";
+
+function getParameterByName(name, url) {
+    const searchParams = new URLSearchParams(url || window.location.href || window.location.search);
+    return searchParams.get(name) || "";
+}
 
 function detectMobile() {
     return isMobile.android.device || isMobile.apple.device || isIpad();
@@ -70,7 +74,7 @@ class Device {
         this.os = getOs();
         this.browser = getBrowser();
         this.model = detectiPhoneX() ? "iphonex" : "unknown";
-        const versionParam = helpers.getParameterByName("version");
+        const versionParam = getParameterByName("version");
         if (versionParam) {
             setItem("surviv_version", versionParam);
         }
