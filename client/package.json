@@ -14,6 +14,6 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.29",
-    "vite": "^5.2.7"
+    "vite": "^5.2.9"
   }
 }
