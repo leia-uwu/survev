@@ -160,12 +160,6 @@ export class Player extends BaseGameObject {
         return this.weaponManager.curWeapIdx;
     }
 
-    set curWeapIdx(idx: number) {
-        this.weaponManager.curWeapIdx = idx;
-        this.setDirty();
-        this.dirty.weapons = true;
-    }
-
     get weapons() {
         return this.weaponManager.weapons;
     }
@@ -799,14 +793,22 @@ export class Player extends BaseGameObject {
         const deadBody = new DeadBody(this.game, this.pos, this.id, this.layer);
         this.game.grid.addObject(deadBody);
 
+        //
         // drop loot
-        for (const weapon of this.weapons) {
-            if (!weapon.type) continue;
-            const def = GameObjectDefs[weapon.type] as MeleeDef | GunDef | ThrowableDef;
+        //
 
-            // inventory drop logic already handles throwables, don't drop them here
-            if (!def.noDropOnDeath && !def.noDrop && weapon.type !== "fists" && def.type != "throwable") {
-                this.game.lootBarn.addLoot(weapon.type, this.pos, this.layer, weapon.ammo, true);
+        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
+            const weap = this.weapons[i];
+            if (!weap.type) continue;
+            const def = GameObjectDefs[weap.type];
+            switch (def.type) {
+            case "gun":
+                this.weaponManager.dropGun(i);
+                break;
+            case "melee":
+                if (def.noDrop || def.noDropOnDeath || weap.type === "fists") break;
+                this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                break;
             }
         }
 
@@ -838,7 +840,7 @@ export class Player extends BaseGameObject {
 
         // death emote
         if (this.loadout.emotes[5] != "") {
-            this.game.emotes.add(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
+            this.game.emotes.push(new Emote(this.id, this.pos, this.loadout.emotes[5], false));
         }
     }
 
@@ -922,43 +924,60 @@ export class Player extends BaseGameObject {
             switch (input) {
             case GameConfig.Input.StowWeapons:
             case GameConfig.Input.EquipMelee:
-                this.curWeapIdx = 2;
+                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
                 break;
             case GameConfig.Input.EquipPrimary:
-                this.curWeapIdx = 0;
+                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Primary);
                 break;
             case GameConfig.Input.EquipSecondary:
-                this.curWeapIdx = 1;
+                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Secondary);
                 break;
             case GameConfig.Input.EquipThrowable:
-                if (this.curWeapIdx === 3) {
+                if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
                     this.weaponManager.showNextThrowable();
                 } else {
-                    this.curWeapIdx = 3;
+                    this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Throwable);
                 }
                 break;
+            case GameConfig.Input.EquipPrevWeap: {
+                const curIdx = this.curWeapIdx;
+
+                for (let i = curIdx; i < curIdx + GameConfig.WeaponSlot.Count; i++) {
+                    const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                    if (this.weapons[idx].type) {
+                        this.weaponManager.setCurWeapIndex(idx);
+                    }
+                }
+            }
+                break;
+            case GameConfig.Input.EquipNextWeap: {
+                const curIdx = this.curWeapIdx;
+
+                for (let i = curIdx; i > curIdx - GameConfig.WeaponSlot.Count; i--) {
+                    const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                    if (this.weapons[idx].type) {
+                        this.weaponManager.setCurWeapIndex(idx);
+                    }
+                }
+            }
+                break;
             case GameConfig.Input.EquipLastWeap:
-                this.curWeapIdx = this.weaponManager.lastWeaponIdx;
+                this.weaponManager.setCurWeapIndex(this.weaponManager.lastWeaponIdx);
                 break;
             case GameConfig.Input.EquipOtherGun:
-                // for (let i = 0; i < this.weapons.length; i++) {
-                //     if (GameConfig.WeaponType[i] === "gun" &&
-                //             this.weapons[i] !== this.weapons[this.curWeapIdx]) {
-                //         this.curWeapIdx = i;
-                //         break;
-                //     }
-                // }
-
-                // completely unreadable but optimized weapon swapping code since leia apparently values fewer lines of code over readability
                 if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
                     const otherGunSlotIdx = this.curWeapIdx ^ 1;
                     const isOtherGunSlotFull: number = +!!this.weapons[otherGunSlotIdx].type;//! ! converts string to boolean, + coerces boolean to number
-                    this.curWeapIdx = isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee;
+                    this.weaponManager.setCurWeapIndex(isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee);
                 } else if (this.curWeapIdx == GameConfig.WeaponSlot.Melee && (this.weapons[GameConfig.WeaponSlot.Primary].type || this.weapons[GameConfig.WeaponSlot.Secondary].type)) {
-                    this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
+                    this.weaponManager.setCurWeapIndex(+!(this.weapons[GameConfig.WeaponSlot.Primary].type));
                 } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
                     const bothSlotsEmpty = !this.weapons[GameConfig.WeaponSlot.Primary].type && !this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                    this.curWeapIdx = bothSlotsEmpty ? GameConfig.WeaponSlot.Melee : this.curWeapIdx = +!(this.weapons[GameConfig.WeaponSlot.Primary].type);
+                    if (bothSlotsEmpty) {
+                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                    } else {
+                        this.weaponManager.setCurWeapIndex(this.curWeapIdx + (+(this.weapons[GameConfig.WeaponSlot.Primary].type)));
+                    }
                 }
 
                 break;
@@ -1038,7 +1057,7 @@ export class Player extends BaseGameObject {
 
                 // curWeapIdx's setter method already sets dirty.weapons
                 if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
-                    this.curWeapIdx ^= 1;
+                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
                 } else {
                     this.dirty.weapons = true;
                 }

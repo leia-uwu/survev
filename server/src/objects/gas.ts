@@ -2,6 +2,7 @@ import { type Vec2, v2 } from "./../../../shared/utils/v2";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { type Game } from "../game";
+import { util } from "../../../shared/utils/util";
 
 const GasMode = GameConfig.GasMode;
 export class Gas {
@@ -88,7 +89,7 @@ export class Gas {
         if (currentStage.mode === GasMode.Waiting) {
             this.posOld = v2.copy(this.posNew);
             if (currentStage.radNew !== 0) {
-                this.posNew = math.randomPointInsideCircle(this.posOld, currentStage.radNew * this.mapSize);
+                this.posNew = v2.add(this.posOld, util.randomPointInCircle((currentStage.radOld - currentStage.radNew) * this.mapSize));
             } else {
                 this.posNew = v2.copy(this.posOld);
             }

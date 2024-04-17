@@ -25,7 +25,7 @@ export class WeaponManager {
         return this._curWeapIdx;
     }
 
-    set curWeapIdx(idx: number) {
+    setCurWeapIndex(idx: number, cancelAction = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
@@ -53,7 +53,7 @@ export class WeaponManager {
 
         this.lastWeaponIdx = this._curWeapIdx;
         this._curWeapIdx = idx;
-        if (this.player.actionType != GameConfig.Action.Reload) {
+        if (cancelAction) {
             this.player.cancelAction();
         }
         this.player.setDirty();
@@ -144,7 +144,7 @@ export class WeaponManager {
         this.weapons[weapIdx].ammo = 0;
         this.weapons[weapIdx].cooldown = 0;
         if (this.curWeapIdx == weapIdx && switchToMelee) {
-            this.curWeapIdx = GameConfig.WeaponSlot.Melee;
+            this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
         }
 
         const backpackLevel = this.player.getGearLevel(this.player.backpack);
@@ -557,6 +557,7 @@ export class WeaponManager {
     showNextThrowable(): void {
         // TODO: use throwable def inventory order
         const throwables = ["frag", "smoke", "strobe", "mirv", "snowball", "potato"];
+        const slot = GameConfig.WeaponSlot.Throwable;
         const startingIndex = throwables.indexOf(this.weapons[3].type) + 1;
         for (let i = startingIndex; i < startingIndex + throwables.length; i++) {
             const arrayIndex = i % throwables.length;
@@ -564,19 +565,19 @@ export class WeaponManager {
             const amount = this.player.inventory[type];
 
             if (amount != 0) {
-                this.weapons[3].type = type;
-                this.weapons[3].ammo = amount;
+                this.weapons[slot].type = type;
+                this.weapons[slot].ammo = amount;
                 this.player.dirty.weapons = true;
                 this.player.setDirty();
                 return;
             }
         }
 
-        this.weapons[3].type = "";
-        this.weapons[3].ammo = 0;
-        this.weapons[3].cooldown = 0;
+        this.weapons[slot].type = "";
+        this.weapons[slot].ammo = 0;
+        this.weapons[slot].cooldown = 0;
         if (this.curWeapIdx == 3) { // set weapon index to melee if run out of grenades
-            this.curWeapIdx = 2;
+            this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
         }
     }
 }
