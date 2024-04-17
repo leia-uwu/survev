@@ -101,7 +101,7 @@ class AirstrikeZone {
         }
     }
 
-    br(uiManager, map, debug) {
+    render(uiManager, map, debug) {
         // uiManager.getMapPosFromWorldPos is only valid after
         // uiManager.update() is run, so this logic must be run
         // afterward; render() is a reasonable place to do it.
@@ -162,7 +162,10 @@ export class PlaneBarn {
         }
     }
 
-    updatePlanes(planeData, t) {
+    /**
+     * @param {import("../map").Map} map
+     */
+    updatePlanes(planeData, map) {
         // Mark existing planes as dirty
         for (let i = 0; i < this.planes.length; i++) {
             this.planes[i].dirty = true;
@@ -179,7 +182,7 @@ export class PlaneBarn {
                     break;
                 }
             }
-            plane ||= this.addPlane(data, t);
+            plane ||= this.addPlane(data, map);
             plane.dirty = false;
             plane.actionComplete = data.actionComplete;
         }
@@ -192,6 +195,9 @@ export class PlaneBarn {
         }
     }
 
+    /**
+     * @param {import("../map").Map} map
+     */
     addPlane(data, map) {
         let p = null;
         for (let i = 0; i < this.planes.length; i++) {
@@ -358,7 +364,7 @@ export class PlaneBarn {
         for (let i = 0; i < this.airstrikeZones.length; i++) {
             const zone = this.airstrikeZones[i];
             if (zone.active) {
-                zone.br(uiManager, map, debug);
+                zone.render(uiManager, map, debug);
             }
         }
     }
