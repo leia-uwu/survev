@@ -364,10 +364,10 @@ export class UiManager2 {
 
         const addItemAction = function(action, type, data, div) {
             itemAction.itemActions.push({
-                action: action,
-                type: type,
-                data: data,
-                div: div,
+                action,
+                type,
+                data,
+                div,
                 actionQueued: false,
                 actionTime: 0
             });
@@ -864,7 +864,7 @@ export class UiManager2 {
                 Ee.type = "";
             }
         }
-        
+
         // render state diff
         const patch = diff(
             this.oldState,
