@@ -7,6 +7,7 @@ import {
     type WebSocket,
     type TemplatedApp
 } from "uWebSockets.js";
+import NanoTimer from "nanotimer";
 
 import { URLSearchParams } from "node:url";
 import { AbstractServer, type PlayerContainer, ServerSocket } from "./abstractServer";
@@ -91,7 +92,7 @@ class UWSSocket extends ServerSocket {
         this._socket.close();
     }
 
-    getData() {
+    get data() {
         return this._socket.getUserData();
     }
 }
@@ -148,7 +149,7 @@ class UWSServer extends AbstractServer {
                 res.onAborted((): void => { });
 
                 const searchParams = new URLSearchParams(req.getQuery());
-                const gameID = This.onUpgrade(searchParams);
+                const gameID = This.getGameId(searchParams);
 
                 if (gameID !== false) {
                     res.upgrade(
@@ -196,6 +197,10 @@ class UWSServer extends AbstractServer {
 
         app.listen(Config.host, Config.port, (): void => {
             this.init();
+
+            const timer = new NanoTimer();
+
+            timer.setInterval(() => { this.tick(); }, "", `${1000 / Config.tps}m`);
         });
     }
 }

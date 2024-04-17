@@ -11,9 +11,9 @@ export interface PlayerContainer {
 }
 
 export abstract class ServerSocket {
-    abstract send(message: ArrayBuffer): void;
+    abstract send(message: ArrayBuffer | Uint8Array): void;
     abstract close(): void;
-    abstract getData(): PlayerContainer;
+    abstract get data(): PlayerContainer;
 }
 
 export abstract class AbstractServer {
@@ -35,6 +35,12 @@ export abstract class AbstractServer {
 
             this.logger.log(perfString);
         }, 60000);
+    }
+
+    tick(): void {
+        for (const game of this.games) {
+            if (game) game.tick();
+        }
     }
 
     newGame(id?: number): number {
@@ -145,7 +151,7 @@ export abstract class AbstractServer {
         return { res: [response] };
     }
 
-    onUpgrade(params: URLSearchParams): false | number {
+    getGameId(params: URLSearchParams): false | number {
         //
         // Validate game ID
         //
@@ -158,15 +164,15 @@ export abstract class AbstractServer {
     }
 
     onOpen(socket: ServerSocket): void {
-        const data = socket.getData();
+        const data = socket.data;
         const game = this.games[data.gameID];
         if (game === undefined) return;
         data.player = game.addPlayer(socket);
     }
 
-    onMessage(socket: ServerSocket, message: ArrayBuffer) {
+    onMessage(socket: ServerSocket, message: ArrayBuffer | Buffer) {
         try {
-            const player = socket.getData().player;
+            const player = socket.data.player;
             if (player === undefined) return;
             player.game.handleMsg(message, player);
         } catch (e) {
@@ -175,7 +181,7 @@ export abstract class AbstractServer {
     }
 
     onClose(socket: ServerSocket): void {
-        const data = socket.getData();
+        const data = socket.data;
         const game = this.games[data.gameID];
         const player = data.player;
         if (game === undefined || player === undefined) return;

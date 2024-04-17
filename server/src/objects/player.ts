@@ -1481,7 +1481,7 @@ export class Player extends BaseGameObject {
         this.sendData(stream.getBuffer());
     }
 
-    sendData(buffer: ArrayBuffer): void {
+    sendData(buffer: ArrayBuffer | Uint8Array): void {
         try {
             this.socket.send(buffer);
         } catch (e) {
