@@ -22,29 +22,45 @@ class BunServer extends AbstractServer {
 
                 switch (url.pathname) {
                 case "/api/site_info": {
-                    const res = new Response(JSON.stringify(This.getSiteInfo()));
-                    res.headers.set("Content-Type", "application/json");
-                    return res;
+                    return new Response(JSON.stringify(This.getSiteInfo()), {
+                        headers: { "Content-Type": "application/json" }
+                    });
                 }
                 case "/api/user/profile": {
-                    const res = new Response(JSON.stringify(This.getUserProfile()));
-                    res.headers.set("Content-Type", "application/json");
-                    return res;
+                    return new Response(JSON.stringify(This.getUserProfile()), {
+                        headers: { "Content-Type": "application/json" }
+                    });
                 }
                 case "/api/find_game": {
-                    const body = await request.json();
-                    const res = new Response(JSON.stringify(This.findGame(body.region)));
-                    res.headers.set("Content-Type", "application/json");
-                    return res;
+                    try {
+                        const body = await request.json();
+                        return new Response(JSON.stringify(This.findGame(body.region)), {
+                            headers: { "Content-Type": "application/json" }
+                        });
+                    } catch (error) {
+                        This.logger.log("/api/find_game: Error: ");
+                        console.error(error);
+                        return new Response("Error finding game", {
+                            status: 500
+                        });
+                    }
                 }
                 case "/play": {
                     const gameID = This.getGameId(url.searchParams);
-                    server.upgrade(request, {
-                        data: {
-                            gameID
-                        }
-                    });
-                    break;
+                    if (gameID !== false) {
+                        const sucess = server.upgrade(request, {
+                            data: {
+                                gameID
+                            }
+                        });
+
+                        if (sucess) return;
+                        return new Response("Upgrade failed", { status: 500 });
+                    } else {
+                        return new Response("Error joining game", {
+                            status: 500
+                        });
+                    }
                 }
                 }
             },
