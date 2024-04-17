@@ -1,13 +1,12 @@
 import bb from "bit-buffer";
 import { GameObjectDefs } from "./defs/gameObjectDefs";
 import { MapObjectDefs } from "./defs/mapObjectDefs";
-import { GameConfig } from "./gameConfig";
 import { math } from "./utils/math";
 import { type Vec2 } from "./utils/v2";
 
 const DEV_MODE = false;
 
-interface Msg {
+export interface Msg {
     serialize: (s: BitStream) => void
 }
 
@@ -275,26 +274,27 @@ export const PickupMsgType = {
     GunCannotFire: 5
 };
 
-export class LoadoutMsg extends AbstractMsg {
-    emotes: string[] = [];
-    custom = false;
+// * seem to be only used when cheats are detected
+// export class LoadoutMsg extends AbstractMsg {
+//     emotes: string[] = [];
+//     custom = false;
 
-    serialize(s: BitStream) {
-        for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
-            s.writeGameType(this.emotes[i]);
-        }
-        s.writeUint8(this.custom);
-        s.readAlignToNextByte();
-    }
+//     serialize(s: BitStream) {
+//         for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
+//             s.writeGameType(this.emotes[i]);
+//         }
+//         s.writeUint8(this.custom);
+//         s.readAlignToNextByte();
+//     }
 
-    override deserialize(s: BitStream) {
-        for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
-            this.emotes.push(s.readGameType());
-        }
-        this.custom = s.readUint8();
-        s.writeAlignToNextByte();
-    }
-}
+//     override deserialize(s: BitStream) {
+//         for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
+//             this.emotes.push(s.readGameType());
+//         }
+//         this.custom = s.readUint8();
+//         s.writeAlignToNextByte();
+//     }
+// }
 
 export class StatsMsg extends AbstractMsg {
     data = "";

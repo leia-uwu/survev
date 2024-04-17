@@ -803,20 +803,20 @@ export class Game {
         this.touch.update(dt, this.activePlayer, this.map, this.camera, this.renderer);
         this.renderer.update(dt, this.camera, this.map, debug);
 
-        if (!this.cheatSentLoadoutMsg && this.map.cheatRanDetection && this.map.cheatDetected) {
-            this.cheatSentLoadoutMsg = true;
-            const msg = new net.LoadoutMsg();
-            msg.emotes = [];
-            for (
-                let i = 0;
-                i < this.emoteBarn.emoteLoadout.length;
-                i++
-            ) {
-                msg.emotes.push(this.emoteBarn.emoteLoadout[i]);
-            }
-            msg.custom = this.emoteBarn.hasCustomEmotes();
-            this.sendMessage(net.MsgType.Loadout, msg, 128);
-        }
+        // if (!this.cheatSentLoadoutMsg && this.map.cheatRanDetection && this.map.cheatDetected) {
+        //     this.cheatSentLoadoutMsg = true;
+        //     const msg = new net.LoadoutMsg();
+        //     msg.emotes = [];
+        //     for (
+        //         let i = 0;
+        //         i < this.emoteBarn.emoteLoadout.length;
+        //         i++
+        //     ) {
+        //         msg.emotes.push(this.emoteBarn.emoteLoadout[i]);
+        //     }
+        //     msg.custom = this.emoteBarn.hasCustomEmotes();
+        //     this.sendMessage(net.MsgType.Loadout, msg, 128);
+        // }
         for (let i = 0; i < this.emoteBarn.newPings.length; i++) {
             const ping = this.emoteBarn.newPings[i];
             const msg = new EmoteMsg();
