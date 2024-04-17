@@ -287,7 +287,7 @@ export class UiManager2 {
         }
 
         // Weapon slot
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             const weapon = domElemById(`ui-weapon-id-${i + 1}`);
             const weaponData = {
                 div: weapon,
@@ -335,16 +335,16 @@ export class UiManager2 {
             };
             this.dom.gear.push(L);
         }
-        for (let q = 0; q < perkUiCount; q++) {
-            const F = domElemById(`ui-perk-${q}`);
-            const j = {
+        for (let i = 0; i < perkUiCount; i++) {
+            const perk = domElemById(`ui-perk-${i}`);
+            const perkData = {
                 perkType: "",
-                div: F,
-                divTitle: F.getElementsByClassName("tooltip-title")[0],
-                divDesc: F.getElementsByClassName("tooltip-desc")[0],
-                image: F.getElementsByClassName("ui-armor-image")[0]
+                div: perk,
+                divTitle: perk.getElementsByClassName("tooltip-title")[0],
+                divDesc: perk.getElementsByClassName("tooltip-desc")[0],
+                image: perk.getElementsByClassName("ui-armor-image")[0]
             };
-            this.dom.perks.push(j);
+            this.dom.perks.push(perkData);
         }
         this.rareLootMessageQueue = [];
         this.uiEvents = [];
@@ -362,12 +362,12 @@ export class UiManager2 {
         // left-click to use, and right-click to drop.
         this.itemActions = [];
 
-        const addItemAction = function(e, t, a, i) {
+        const addItemAction = function(action, type, data, div) {
             itemAction.itemActions.push({
-                action: e,
-                type: t,
-                data: a,
-                div: i,
+                action,
+                type,
+                data,
+                div,
                 actionQueued: false,
                 actionTime: 0
             });
@@ -384,68 +384,66 @@ export class UiManager2 {
                 addItemAction("drop", "loot", W.scopeType, W.div);
             }
         }
-        for (let G = 0; G < this.dom.loot.length; G++) {
-            const X = this.dom.loot[G];
-            const K = GameObjectDefs[X.lootType];
-            if (K.type == "heal" || K.type == "boost") {
-                addItemAction("use", "loot", X.lootType, X.div);
+        for (let i = 0; i < this.dom.loot.length; i++) {
+            const loot = this.dom.loot[i];
+            const def = GameObjectDefs[loot.lootType];
+            if (def.type == "heal" || def.type == "boost") {
+                addItemAction("use", "loot", loot.lootType, loot.div);
             }
-            addItemAction("drop", "loot", X.lootType, X.div);
+            addItemAction("drop", "loot", loot.lootType, loot.div);
         }
-        for (let Z = 0; Z < this.dom.gear.length; Z++) {
-            const Y = this.dom.gear[Z];
-            if (Y.gearType != "backpack") {
-                addItemAction("drop", "loot", Y.gearType, Y.div);
+        for (let i = 0; i < this.dom.gear.length; i++) {
+            const gear = this.dom.gear[i];
+            if (gear.gearType != "backpack") {
+                addItemAction("drop", "loot", gear.gearType, gear.div);
             }
         }
         for (let i = 0; i < this.dom.perks.length; i++) {
             addItemAction("drop", "perk", i, this.dom.perks[i].div);
         }
-        for (let Q = 0; Q < this.itemActions.length; Q++) {
-            (function(e) {
-                const item = itemAction.itemActions[e];
-                setEventListener("mousedown", item.div, (e) => {
-                    if (
-                        (item.action == "use" && isLmb(e)) ||
-                        (item.action == "drop" && isRmb(e))
-                    ) {
-                        e.stopPropagation();
-                        item.actionQueued = true;
-                    }
-                });
-                setEventListener("mouseup", item.div, (e) => {
-                    if (
-                        item.actionQueued &&
-                        ((item.action == "use" && isLmb(e)) ||
-                            (item.action == "drop" && isRmb(e)))
-                    ) {
-                        e.stopPropagation();
-                        itemAction.pushAction(item);
-                        item.actionQueued = false;
-                    }
-                });
-                setEventListener("touchstart", item.div, (e) => {
-                    if (e.changedTouches.length > 0) {
-                        e.stopPropagation();
-                        item.actionQueued = true;
-                        item.actionTime = new Date().getTime();
-                        item.touchOsId = e.changedTouches[0].identifier;
-                    }
-                });
-                setEventListener("touchend", item.div, (e) => {
-                    if (
-                        new Date().getTime() - item.actionTime < touchHoldDuration &&
-                        item.actionQueued &&
-                        item.action == "use"
-                    ) {
-                        itemAction.pushAction(item);
-                    }
+        for (let i = 0; i < this.itemActions.length; i++) {
+            const item = itemAction.itemActions[i];
+            setEventListener("mousedown", item.div, (e) => {
+                if (
+                    (item.action == "use" && isLmb(e)) ||
+                    (item.action == "drop" && isRmb(e))
+                ) {
+                    e.stopPropagation();
+                    item.actionQueued = true;
+                }
+            });
+            setEventListener("mouseup", item.div, (e) => {
+                if (
+                    item.actionQueued &&
+                    ((item.action == "use" && isLmb(e)) ||
+                        (item.action == "drop" && isRmb(e)))
+                ) {
+                    e.stopPropagation();
+                    itemAction.pushAction(item);
                     item.actionQueued = false;
-                });
-                setEventListener("touchcancel", item.div, (e) => {
-                    item.actionQueued = false;
-                });
-            })(Q);
+                }
+            });
+            setEventListener("touchstart", item.div, (e) => {
+                if (e.changedTouches.length > 0) {
+                    e.stopPropagation();
+                    item.actionQueued = true;
+                    item.actionTime = new Date().getTime();
+                    item.touchOsId = e.changedTouches[0].identifier;
+                }
+            });
+            setEventListener("touchend", item.div, (e) => {
+                if (
+                    new Date().getTime() - item.actionTime < touchHoldDuration &&
+                    item.actionQueued &&
+                    item.action == "use"
+                ) {
+                    itemAction.pushAction(item);
+                }
+                item.actionQueued = false;
+            });
+            setEventListener("touchcancel", item.div, (e) => {
+                item.actionQueued = false;
+            });
         }
 
         const canvas = document.getElementById("cvs");
@@ -516,39 +514,48 @@ export class UiManager2 {
      */
     update(dt, activePlayer, spectating, playerBarn, lootBarn, map, inputBinds) {
         const state = this.newState;
+
+        // Device
         state.mobile = device.mobile;
         state.touch = device.touch;
+        // Process touch-hold events
         if (state.touch) {
-            for (let m = 0; m < this.itemActions.length; m++) {
-                const p = this.itemActions[m];
-                if (p.actionQueued && p.action == "drop") {
-                    const h = new Date().getTime();
-                    const d = h - p.actionTime;
-                    if (d >= touchHoldDuration) {
-                        this.pushAction(p);
-                        p.actionTime = h;
-                        p.actionQueued = false;
+            for (let i = 0; i < this.itemActions.length; i++) {
+                const itemAction = this.itemActions[i];
+                if (itemAction.actionQueued && itemAction.action == "drop") {
+                    const time = new Date().getTime();
+                    const elapsed = time - itemAction.actionTime;
+                    if (elapsed >= touchHoldDuration) {
+                        this.pushAction(itemAction);
+                        itemAction.actionTime = time;
+                        itemAction.actionQueued = false;
                     }
                 }
             }
         }
+
+        // Perk message
         if (
             state.rareLootMessage.ticker >=
             state.rareLootMessage.duration &&
+            // Create a new message if we aren't displaying one
             this.rareLootMessageQueue.length > 0
         ) {
-            const u = this.rareLootMessageQueue.shift();
-            state.rareLootMessage.lootType = u;
+            const lootType = this.rareLootMessageQueue.shift();
+            state.rareLootMessage.lootType = lootType;
             state.rareLootMessage.ticker = 0;
             state.rareLootMessage.duration =
                 this.rareLootMessageQueue.length > 0 ? 2 : 4;
             state.rareLootMessage.opacity = 0;
         }
+
+        // Update displayed message message
         state.rareLootMessage.ticker += dt;
         const g = state.rareLootMessage.ticker;
         const f = state.rareLootMessage.duration;
         state.rareLootMessage.opacity = 1 - math.smoothstep(g, f - 0.2, f);
 
+        // Pickup message
         state.pickupMessage.ticker += dt;
         const x = state.pickupMessage.ticker;
         const z = state.pickupMessage.duration;
@@ -557,6 +564,7 @@ export class UiManager2 {
             (1 - math.smoothstep(x, z, z + 0.2)) *
             (1 - state.rareLootMessage.opacity);
 
+        // Kill message
         state.killMessage.ticker += dt;
         const I = state.killMessage.ticker;
         const T = state.killMessage.duration;
@@ -564,6 +572,7 @@ export class UiManager2 {
             (1 - math.smoothstep(I, T - 0.2, T)) *
             (1 - state.rareLootMessage.opacity);
 
+        // KillFeed
         let offset = 0;
         for (let i = 0; i < state.killFeed.length; i++) {
             const line = state.killFeed[i];
@@ -855,12 +864,14 @@ export class UiManager2 {
                 Ee.type = "";
             }
         }
-        const qe = diff(
+
+        // render state diff
+        const patch = diff(
             this.oldState,
             this.newState,
             this.frameCount++ == 0
         );
-        this.render(qe, this.newState);
+        this.render(patch, this.newState);
         copy(this.newState, this.oldState);
     }
 
@@ -948,10 +959,10 @@ export class UiManager2 {
         }
 
         // KillFeed
-        for (let c = 0; c < patch.killFeed.length; c++) {
-            const patchK = patch.killFeed[c];
-            const domK = dom.killFeed.lines[c];
-            const x = state.killFeed[c];
+        for (let i = 0; i < patch.killFeed.length; i++) {
+            const patchK = patch.killFeed[i];
+            const domK = dom.killFeed.lines[i];
+            const x = state.killFeed[i];
 
             if (patchK.text) {
                 domK.text.innerHTML = x.text;
@@ -1011,6 +1022,7 @@ export class UiManager2 {
             while (steps[endIdx].health > health && endIdx < steps.length - 1) {
                 endIdx++;
             }
+
             const stepA = steps[math.max(endIdx - 1, 0)];
             const stepB = steps[endIdx];
             const t = math.delerp(state.health, stepA.health, stepB.health);

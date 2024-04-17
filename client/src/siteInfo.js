@@ -95,11 +95,11 @@ export class SiteInfo {
             if (pops) {
                 const regions = Object.keys(pops);
                 for (
-                    let h = 0;
-                    h < regions.length;
-                    h++
+                    let i = 0;
+                    i < regions.length;
+                    i++
                 ) {
-                    const region = regions[h];
+                    const region = regions[i];
                     const count = pops[region];
                     const sel = $("#server-opts").children(
                         `option[value="${region}"]`

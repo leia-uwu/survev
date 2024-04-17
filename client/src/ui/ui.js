@@ -1969,7 +1969,12 @@ export class UiManager {
         this.waitingText.css("display", waiting ? "block" : "none");
     }
 
-    render(playerPos, gas, r, map, planeBarn, debug) {
+    /**
+     * @param {import("../gas").Gas} gas
+     * @param {import("../map").Map} map
+     * @param {import("../objects/plane").PlaneBarn} planeBarn
+     */
+    render(playerPos, gas, camera, map, planeBarn, debug) {
         // Gas
         const circle = gas.getCircle();
         const gasPos = this.getMapPosFromWorldPos(circle.pos, map);
