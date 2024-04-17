@@ -13,12 +13,11 @@ import { DeadBody } from "./deadBody";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type LootDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
-import { type Msg } from "../../../shared/netTypings";
 import { type Loot } from "./loot";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
 import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
-import { MsgStream, MsgType, PickupMsgType, Constants } from "../../../shared/net";
+import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
 import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
 import { UpdateMsg } from "../../../shared/msgs/updateMsg";
 import { KillMsg } from "../../../shared/msgs/killMsg";
@@ -33,6 +32,7 @@ export class Emote {
     pos: Vec2;
     type: string;
     isPing: boolean;
+    itemType!: string;
 
     constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
         this.playerId = playerId;

@@ -1,4 +1,3 @@
-import { type Vec2 } from "./../utils/v2";
 import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
@@ -6,8 +5,9 @@ import { type BaseGameObject } from "../../server/src/objects/gameObject";
 import type { Gas } from "../../server/src/objects/gas";
 import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
-import { AbstractMsg, type BitStream, Constants } from "../net";
+import { AbstractMsg, Constants, type BitStream } from "../net";
 import { ObjectSerializeFns } from "../utils/objectSerializeFns";
+import { v2, type Vec2 } from "./../utils/v2";
 
 export const UpdateExtFlags = {
     DeletedObjects: 1 << 0,
@@ -272,7 +272,7 @@ export class UpdateMsg extends AbstractMsg {
     activePlayerData!: ActiveData;
     aliveCounts = [];
     aliveDirty = false;
-    gasData = {} as Gas;
+    gasData!: Gas;
     gasDirty = false;
     gasT = 0;
     gasTDirty = false;
@@ -286,7 +286,7 @@ export class UpdateMsg extends AbstractMsg {
     explosions: Explosion[] = [];
     emotes: Emote[] = [];
     planes: Plane[] = [];
-    airstrikeZones = [];
+    airstrikeZones: Airstrike[] = [];
     mapIndicators: MapIndicator[] = [];
     killLeaderId = 0;
     killLeaderKills = 0;
@@ -633,7 +633,7 @@ export class UpdateMsg extends AbstractMsg {
 
         if ((flags & UpdateExtFlags.Planes) != 0) {
             for (let count = s.readUint8(), i = 0; i < count; i++) {
-                const plane = {};
+                const plane = {} as Plane;
                 plane.id = s.readUint8();
                 const V = s.readVec(0, 0, 2048, 2048, 10);
                 plane.pos = v2.create(V.x - 512, V.y - 512);
@@ -646,7 +646,7 @@ export class UpdateMsg extends AbstractMsg {
 
         if ((flags & UpdateExtFlags.AirstrikeZones) != 0) {
             for (let count = s.readUint8(), i = 0; i < count; i++) {
-                const airStrikeZone = {};
+                const airStrikeZone = {} as Airstrike;
                 airStrikeZone.pos = s.readVec(0, 0, 1024, 1024, 12);
                 airStrikeZone.rad = s.readFloat(
                     0,
@@ -690,6 +690,12 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
     } else {
         return 0.25;
     }
+}
+
+interface Airstrike {
+    pos: Vec2
+    duration: number
+    rad: number
 }
 
 interface Plane {
