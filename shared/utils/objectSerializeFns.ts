@@ -26,7 +26,7 @@ interface GameObjectTypeMap {
     [ObjectType.Smoke]: Smoke
     [ObjectType.Airdrop]: Airdrop
 
-    [ObjectType.Invalid]: () => {}
+    [ObjectType.Invalid]: () => void
 }
 
 export const ObjectSerializeFns: {

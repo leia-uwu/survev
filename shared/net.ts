@@ -7,6 +7,10 @@ import { type Vec2 } from "./utils/v2";
 
 const DEV_MODE = false;
 
+interface Msg {
+    serialize: (s: BitStream) => void
+}
+
 export abstract class AbstractMsg {
     abstract serialize(s: BitStream): void;
     abstract deserialize(s: BitStream): void;
@@ -200,7 +204,7 @@ export class MsgStream {
         return this.stream;
     }
 
-    serializeMsg(type: MsgType, msg: AbstractMsg) {
+    serializeMsg(type: MsgType, msg: Msg) {
         // assert(this.stream.index % 8 == 0);
         this.stream.writeUint8(type);
         msg.serialize(this.stream);

@@ -1,3 +1,4 @@
+import { type Vec2 } from "./../utils/v2";
 import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
@@ -7,7 +8,6 @@ import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
 import { AbstractMsg, type BitStream, Constants } from "../net";
 import { ObjectSerializeFns } from "../utils/objectSerializeFns";
-import { type Vec2, v2 } from "../utils/v2";
 
 export const UpdateExtFlags = {
     DeletedObjects: 1 << 0,
@@ -72,7 +72,33 @@ export function serializeActivePlayer(s: BitStream, data: Player) {
     s.writeAlignToNextByte();
 }
 
-export function deserializeActivePlayer(s: BitStream, data: Player) {
+interface ActiveData {
+    healthDirty: boolean
+    health: number
+    boostDirty: boolean
+    boost: number
+    zoomDirty: boolean
+    zoom: number
+    actionDirty: boolean
+    action: {
+        time: number
+        duration: number
+        targetId: number
+    }
+    spectatorCountDirty: boolean
+    spectatorCount: number
+    weapsDirty: boolean
+    curWeapIdx: number
+    weapons: Array<{
+        type: string
+        ammo: number
+    }>
+    inventoryDirty: boolean
+    scope: string
+    inventory: Record<string, number>
+}
+
+export function deserializeActivePlayer(s: BitStream, data: ActiveData) {
     data.healthDirty = s.readBoolean();
     if (data.healthDirty) {
         data.health = s.readFloat(0, 100, 8);
@@ -114,10 +140,10 @@ export function deserializeActivePlayer(s: BitStream, data: Player) {
         data.curWeapIdx = s.readBits(2);
         data.weapons = [];
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
-            const n = {};
-            n.type = s.readGameType();
-            n.ammo = s.readUint8();
-            data.weapons.push(n);
+            data.weapons.push({
+                type: s.readGameType(),
+                ammo: s.readUint8()
+            });
         }
     }
     data.spectatorCountDirty = s.readBoolean();
@@ -243,7 +269,7 @@ export class UpdateMsg extends AbstractMsg {
     partObjects: BaseGameObject[] = [];
     activePlayerId = 0;
     activePlayerIdDirty = false;
-    activePlayerData = {};
+    activePlayerData!: ActiveData;
     aliveCounts = [];
     aliveDirty = false;
     gasData = {} as Gas;
@@ -259,7 +285,7 @@ export class UpdateMsg extends AbstractMsg {
     bullets: Bullet[] = [];
     explosions: Explosion[] = [];
     emotes: Emote[] = [];
-    planes = [];
+    planes: Plane[] = [];
     airstrikeZones = [];
     mapIndicators: MapIndicator[] = [];
     killLeaderId = 0;
@@ -412,7 +438,7 @@ export class UpdateMsg extends AbstractMsg {
             for (const plane of this.planes) {
                 s.writeUint8(plane.id);
                 s.writeVec(plane.pos, 0, 0, 2048, 2048, 10);
-                s.writeUnitVec(plane.dir, 8);
+                s.writeUnitVec(plane.planeDir, 8);
                 s.writeBoolean(plane.actionComplete);
                 s.writeBits(plane.action, 3);
             }
@@ -455,7 +481,7 @@ export class UpdateMsg extends AbstractMsg {
         s.byteIndex = idx;
     }
 
-    // @ts-expect-error
+    // @ts-expect-error deserialize only accept one argument for now
     override deserialize(s: BitStream, objectCreator: Creator) {
         const flags = s.readUint16();
 
@@ -491,7 +517,7 @@ export class UpdateMsg extends AbstractMsg {
             this.activePlayerIdDirty = true;
         }
 
-        const activePlayerData = {} as Player;
+        const activePlayerData = {} as ActiveData;
         deserializeActivePlayer(s, activePlayerData);
         this.activePlayerData = activePlayerData;
 
@@ -664,6 +690,14 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
     } else {
         return 0.25;
     }
+}
+
+interface Plane {
+    planeDir: Vec2
+    pos: Vec2
+    actionComplete: boolean
+    action: number
+    id: number
 }
 
 interface MapIndicator {

@@ -11,7 +11,7 @@ type GroundPatch = NonNullable<BuildingDef["mapGroundPatches"]>[number] & {
     min: Vec2
     max: Vec2
 };
-type Object = (Obstacle | Building);
+type Obj = (Obstacle | Building);
 
 function serializeMapRiver(s: BitStream, data: MapRiverData) {
     s.writeFloat32(data.width);
@@ -66,7 +66,7 @@ function deserializeMapGroundPatch(s: BitStream, patch: GroundPatch) {
     patch.useAsMapShape = s.readBoolean();
 }
 
-function serializeMapObj(s: BitStream, obj: Object) {
+function serializeMapObj(s: BitStream, obj: Obj) {
     s.writeVec(obj.pos, 0, 0, 1024, 1024, 16);
     s.writeFloat(obj.scale, Constants.MapObjectMinScale, Constants.MapObjectMaxScale, 8);
     s.writeMapType(obj.type);
@@ -74,7 +74,7 @@ function serializeMapObj(s: BitStream, obj: Object) {
     s.writeBits(0, 2); // Padding
 }
 
-function deserializeMapObj(s: BitStream, data: Object) {
+function deserializeMapObj(s: BitStream, data: Obj) {
     data.pos = s.readVec(0, 0, 1024, 1024, 16);
     data.scale = s.readFloat(Constants.MapObjectMinScale, Constants.MapObjectMaxScale, 8);
     data.type = s.readMapType();
@@ -91,7 +91,7 @@ export class MapMsg extends AbstractMsg {
     grassInset = 0;
     rivers: MapRiverData[] = [];
     places: Place[] = [];
-    objects: Object[] = [];
+    objects: Obj[] = [];
     groundPatches: GroundPatch[] = [];
 
     override serialize(s: BitStream) {
@@ -151,7 +151,7 @@ export class MapMsg extends AbstractMsg {
 
         const objCount = s.readUint16();
         for (let i = 0; i < objCount; i++) {
-            const obj = {} as Object;
+            const obj = {} as Obj;
             deserializeMapObj(s, obj);
             this.objects.push(obj);
         }
