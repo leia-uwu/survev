@@ -1816,7 +1816,7 @@ export class UpdateMsg {
             for (const plane of this.planes) {
                 s.writeUint8(plane.id);
                 s.writeVec(plane.pos, 0, 0, 2048, 2048, 10);
-                s.writeUnitVec(plane.dir, 8);
+                s.writeUnitVec(plane.planeDir, 8);
                 s.writeBoolean(plane.actionComplete);
                 s.writeBits(plane.action, 3);
             }
@@ -2279,11 +2279,11 @@ export class SpectateMsg {
      * @param {BitStream} s
     **/
     deserialize(s) {
-        s.writeBoolean(this.specBegin);
-        s.writeBoolean(this.specNext);
-        s.writeBoolean(this.specPrev);
-        s.writeBoolean(this.specForce);
-        s.writeBits(0, 4);
+        this.specBegin = s.readBoolean();
+        this.specNext = s.readBoolean();
+        this.specPrev = s.readBoolean();
+        this.specForce = s.readBoolean();
+        s.readBits(4);
     }
 }
 
