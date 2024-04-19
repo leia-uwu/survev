@@ -8,9 +8,10 @@ import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Decal } from "./decal";
-import { BaseGameObject, ObjectType } from "./gameObject";
+import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { type Structure } from "./structure";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class Building extends BaseGameObject {
     bounds: Collider;

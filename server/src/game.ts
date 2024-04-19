@@ -1,19 +1,24 @@
 import { Emote, Player } from "./objects/player";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { Grid } from "./utils/grid";
-import { ObjectType, type BaseGameObject } from "./objects/gameObject";
+import { type BaseGameObject } from "./objects/gameObject";
 import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net";
+import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
+import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
+import { EmoteMsg } from "../../shared/msgs/emoteMsg";
+import { JoinMsg } from "../../shared/msgs/joinMsg";
+import { InputMsg } from "../../shared/msgs/inputMsg";
 import { type Explosion } from "./objects/explosion";
-import { type Msg } from "../../shared/netTypings";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
 import { isItemInLoadout } from "../../shared/defs/gameObjects/unlockDefs";
+import { ObjectType } from "../../shared/utils/objectSerializeFns";
 
 export class Game {
     started = false;
@@ -36,7 +41,7 @@ export class Game {
 
     aliveCountDirty = false;
 
-    msgsToSend: Array<{ type: number, msg: Msg }> = [];
+    msgsToSend: Array<{ type: number, msg: net.AbstractMsg }> = [];
 
     partialObjs = new Set<BaseGameObject>();
     fullObjs = new Set<BaseGameObject>();
@@ -67,8 +72,6 @@ export class Game {
     timeouts: Timer[] = [];
 
     bulletManager = new BulletManager(this);
-
-    // serializationCache = new SerializationCache();
 
     logger: Logger;
 
@@ -114,7 +117,16 @@ export class Game {
             player.update();
         }
 
-        // this.serializationCache.update(this);
+        for (const obj of this.partialObjs) {
+            if (this.fullObjs.has(obj)) {
+                this.partialObjs.delete(obj);
+                continue;
+            }
+            obj.serializePartial();
+        }
+        for (const obj of this.fullObjs) {
+            obj.serializeFull();
+        }
 
         for (const player of this.connectedPlayers) {
             player.sendMsgs();
@@ -124,9 +136,14 @@ export class Game {
         // reset stuff
         //
         for (const player of this.players) {
-            for (const key in player.dirty) {
-                player.dirty[key as keyof Player["dirty"]] = false;
-            }
+            player.healthDirty = false;
+            player.boostDirty = false;
+            player.zoomDirty = false;
+            player.actionDirty = false;
+            player.inventoryDirty = false;
+            player.weapsDirty = false;
+            player.spectatorCountDirty = false;
+            player.activeIdDirty = false;
         }
 
         this.fullObjs.clear();
@@ -187,20 +204,20 @@ export class Game {
     handleMsg(buff: ArrayBuffer | Buffer, player: Player): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
-        const stream = msgStream.stream!;
+        const stream = msgStream.stream;
         switch (type) {
         case net.MsgType.Input: {
-            const inputMsg = new net.InputMsg();
+            const inputMsg = new InputMsg();
             inputMsg.deserialize(stream);
             player.handleInput(inputMsg);
             break;
         }
         case net.MsgType.Join: {
-            const joinMsg = new net.JoinMsg();
+            const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
-                const disconnectMsg = new net.DisconnectMsg();
+                const disconnectMsg = new DisconnectMsg();
                 disconnectMsg.reason = "index-invalid-protocol";
                 player.sendMsg(net.MsgType.Disconnect, disconnectMsg);
                 setTimeout(() => {
@@ -255,14 +272,14 @@ export class Game {
             break;
         }
         case net.MsgType.Emote: {
-            const emoteMsg = new net.EmoteMsg();
+            const emoteMsg = new EmoteMsg();
             emoteMsg.deserialize(stream);
 
-            this.emotes.push(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
+            this.emotes.push(new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
             break;
         }
         case net.MsgType.DropItem: {
-            const dropMsg = new net.DropItemMsg();
+            const dropMsg = new DropItemMsg();
             dropMsg.deserialize(stream);
             player.dropItem(dropMsg);
         }

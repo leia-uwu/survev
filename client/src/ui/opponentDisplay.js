@@ -1,7 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
 import { collider } from "../../../shared/utils/collider";
 import { GameConfig } from "../../../shared/gameConfig";
-import gameObject from "../../../shared/utils/gameObject";
 import loadouts from "./loadouts";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
@@ -16,6 +15,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Creator } from "../objects/objectPool";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class LoadoutDisplay {
     /**
@@ -48,12 +48,12 @@ export class LoadoutDisplay {
 
         // Register types
         const TypeToPool = {
-            [gameObject.Type.Player]: this.playerBarn.playerPool,
-            [gameObject.Type.Obstacle]: this.map.obstaclePool,
-            [gameObject.Type.Building]: this.map.buildingPool,
-            [gameObject.Type.Structure]: this.map.structurePool,
-            [gameObject.Type.Decal]: this.decalBarn.decalPool,
-            [gameObject.Type.Smoke]: this.smokeBarn.smokePool
+            [ObjectType.Player]: this.playerBarn.playerPool,
+            [ObjectType.Obstacle]: this.map.obstaclePool,
+            [ObjectType.Building]: this.map.buildingPool,
+            [ObjectType.Structure]: this.map.structurePool,
+            [ObjectType.Decal]: this.decalBarn.decalPool,
+            [ObjectType.Smoke]: this.smokeBarn.smokePool
         };
 
         this.objectCreator = new Creator();

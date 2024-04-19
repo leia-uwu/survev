@@ -2,7 +2,7 @@ import { type DeadBody } from "../objects/deadBody";
 import { type Airdrop } from "../objects/airdrop";
 import { type Building } from "../objects/building";
 import { type Decal } from "../objects/decal";
-import { ObjectType, type GameObject } from "../objects/gameObject";
+import { type GameObject } from "../objects/gameObject";
 import { type Loot } from "../objects/loot";
 import { type Obstacle } from "../objects/obstacle";
 import { type Player } from "../objects/player";
@@ -13,6 +13,7 @@ import { coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 /**
  * A Grid to filter collision detection of game objects
@@ -64,10 +65,12 @@ export class Grid {
     }
 
     addObject(obj: GameObject): void {
-        this.objects.set(obj.id, obj);
+        if (this.objects.has(obj.__id)) return;
+        this.objects.set(obj.__id, obj);
         (this.categories[obj.__type] as Set<typeof obj>).add(obj);
         this.updateObjects = true;
         this.updateObject(obj);
+        obj.init();
     }
 
     /**
@@ -88,16 +91,16 @@ export class Grid {
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
-                xRow[y].set(obj.id, obj);
+                xRow[y].set(obj.__id, obj);
                 cells.push(v2.create(x, y));
             }
         }
         // Store the cells this object is occupying
-        this._objectsCells.set(obj.id, cells);
+        this._objectsCells.set(obj.__id, cells);
     }
 
     remove(obj: GameObject): void {
-        this.objects.delete(obj.id);
+        this.objects.delete(obj.__id);
         this.removeFromGrid(obj);
         this.updateObjects = true;
         (this.categories[obj.__type] as Set<typeof obj>).delete(obj);
@@ -107,13 +110,13 @@ export class Grid {
      * Remove an object from the grid system
      */
     removeFromGrid(obj: GameObject): void {
-        const cells = this._objectsCells.get(obj.id);
+        const cells = this._objectsCells.get(obj.__id);
         if (!cells) return;
 
         for (const cell of cells) {
-            this._grid[cell.x][cell.y].delete(obj.id);
+            this._grid[cell.x][cell.y].delete(obj.__id);
         }
-        this._objectsCells.delete(obj.id);
+        this._objectsCells.delete(obj.__id);
     }
 
     /**

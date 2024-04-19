@@ -1,3 +1,5 @@
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+
 export class Pool {
     constructor(classFn) {
         // assert(e !== undefined);
@@ -53,6 +55,7 @@ export class Pool {
 
 export class Creator {
     constructor() {
+        /** @type {Record<ObjectType, import("../../clientTypes").ClientObject} */
         this.idToObj = {};
         this.types = {};
         this.seenCount = 0;
@@ -62,10 +65,16 @@ export class Creator {
         this.types[type] = pool;
     }
 
+    /** @param { number } id */
     getObjById(id) {
         return this.idToObj[id];
     }
 
+    /**
+     * @param { number } id
+     * @param {import("../../../shared/net").BitStream} s
+     * @returns {ObjectType}
+     */
     getTypeById(id, s) {
         const obj = this.getObjById(id);
         if (!obj) {
@@ -75,7 +84,7 @@ export class Creator {
                 stream: s._view._view
             };
             console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
-            return 0;
+            return ObjectType.Invalid;
         }
         return obj.__type;
     }

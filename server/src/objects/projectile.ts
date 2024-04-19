@@ -4,7 +4,8 @@ import { type Game } from "../game";
 import { type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
-import { BaseGameObject, ObjectType } from "./gameObject";
+import { BaseGameObject } from "./gameObject";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class Projectile extends BaseGameObject {
     bounds: Collider;

@@ -1,11 +1,12 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type ExplosionDef } from "../../../shared/defs/objectsTypings";
 import { collider } from "../../../shared/utils/collider";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type Game } from "../game";
 import { Decal } from "./decal";
-import { ObjectType, type GameObject } from "./gameObject";
+import { type GameObject } from "./gameObject";
 
 export class Explosion {
     rad: number;
@@ -69,8 +70,8 @@ export class Explosion {
             for (const collision of lineCollisions) {
                 const object = collision.object;
 
-                if (!damagedObjects.has(object.id)) {
-                    damagedObjects.set(object.id, true);
+                if (!damagedObjects.has(object.__id)) {
+                    damagedObjects.set(object.__id, true);
                     const dist = collision.distance;
 
                     if (object.__type === ObjectType.Player || object.__type === ObjectType.Obstacle) {
@@ -102,7 +103,7 @@ export class Explosion {
                         pos: this.pos,
                         layer: this.layer,
                         damageType: this.damageType,
-                        playerId: this.source?.id ?? 0,
+                        playerId: this.source?.__id ?? 0,
                         shotFx: false,
                         damageMult: 1,
                         varianceT: Math.random(),

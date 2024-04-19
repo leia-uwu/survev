@@ -7,7 +7,7 @@ import { device } from "../device";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { Pool } from "./objectPool";
 
-class Loot {
+export class Loot {
     constructor() {
         this.ticker = 0;
         this.playDropSfx = false;

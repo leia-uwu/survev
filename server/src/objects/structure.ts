@@ -6,7 +6,8 @@ import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
-import { BaseGameObject, ObjectType } from "./gameObject";
+import { BaseGameObject } from "./gameObject";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 interface Stair {
     collision: AABB

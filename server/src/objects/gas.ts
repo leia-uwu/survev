@@ -4,15 +4,6 @@ import { math } from "../../../shared/utils/math";
 import { type Game } from "../game";
 import { util } from "../../../shared/utils/util";
 
-export interface GasData {
-    mode: number
-    duration: number
-    posOld: Vec2
-    posNew: Vec2
-    radOld: number
-    radNew: number
-}
-
 const GasMode = GameConfig.GasMode;
 export class Gas {
     stage = 0;

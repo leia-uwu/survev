@@ -6,6 +6,9 @@ export default defineConfig(() => {
         plugins: [
             splitVendorChunkPlugin()
         ],
+        resolve: {
+            extensions: ['.js', '.ts'],
+        },
         server: {
             port: 3000,
             strictPort: true,

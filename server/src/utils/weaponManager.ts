@@ -2,7 +2,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type ThrowableDef, type GunDef, type MeleeDef } from "../../../shared/defs/objectsTypings";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type BulletParams } from "../objects/bullet";
-import { ObjectType, type GameObject } from "../objects/gameObject";
+import { type GameObject } from "../objects/gameObject";
 import { type Obstacle } from "../objects/obstacle";
 import { type Player } from "../objects/player";
 import { coldet } from "../../../shared/utils/coldet";
@@ -12,6 +12,8 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import * as net from "../../../shared/net";
+import { PickupMsg } from "../../../shared/msgs/pickupMsg";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class WeaponManager {
     player: Player;
@@ -56,7 +58,7 @@ export class WeaponManager {
             this.player.cancelAction();
         }
         this.player.setDirty();
-        this.player.dirty.weapons = true;
+        this.player.weapsDirty = true;
     }
 
     weapons: Array<{
@@ -151,13 +153,13 @@ export class WeaponManager {
         let amountToDrop = 0;
         if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
             this.player.inventory[weaponAmmoType] += weaponAmmoCount;
-            this.player.dirty.inventory = true;
+            this.player.weapsDirty = true;
         } else {
             const spaceLeft = bagSpace - this.player.inventory[weaponAmmoType];
             const amountToAdd = spaceLeft;
 
             this.player.inventory[weaponAmmoType] += amountToAdd;
-            this.player.dirty.inventory = true;
+            this.player.inventoryDirty = true;
             amountToDrop = weaponAmmoCount - amountToAdd;
         }
 
@@ -166,7 +168,7 @@ export class WeaponManager {
             this.player.game.lootBarn.addLoot(item, this.player.pos, this.player.layer, 0, true);
         }
         this.player.game.lootBarn.addLoot(item, this.player.pos, this.player.layer, amountToDrop, true);
-        this.player.dirty.weapons = true;
+        this.player.weapsDirty = true;
         if (weapIdx === this.curWeapIdx) this.player.setDirty();
     }
 
@@ -177,7 +179,7 @@ export class WeaponManager {
             this.weapons[slot].type = "fists";
             this.weapons[slot].ammo = 0;
             this.weapons[slot].cooldown = 0;
-            this.player.dirty.weapons = true;
+            this.player.weapsDirty = true;
             if (slot === this.curWeapIdx) this.player.setDirty();
         }
     }
@@ -203,7 +205,7 @@ export class WeaponManager {
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
-            const msg = new net.PickupMsg();
+            const msg = new PickupMsg();
             msg.type = net.PickupMsgType.GunCannotFire;
             this.player.msgsToSend.push({ type: net.MsgType.Pickup, msg });
             return;
@@ -217,7 +219,7 @@ export class WeaponManager {
         this.player.cancelAction(false);
 
         this.weapons[this.curWeapIdx].ammo--;
-        this.player.dirty.weapons = true;
+        this.player.weapsDirty = true;
 
         const collisionLayer = util.toGroundLayer(this.player.layer);
         const bulletLayer = this.player.aimLayer;
@@ -318,7 +320,7 @@ export class WeaponManager {
             const damageMult = 1.0;
 
             const params: BulletParams = {
-                playerId: this.player.id,
+                playerId: this.player.__id,
                 bulletType: itemDef.bulletType,
                 sourceType: this.activeWeapon,
                 damageType: GameConfig.DamageType.Player,
@@ -458,7 +460,7 @@ export class WeaponManager {
                             this.player.layer,
                             false
                         );
-                        intersectedObstacle && intersectedObstacle.id !== obstacle.id && (collision = null);
+                        intersectedObstacle && intersectedObstacle.id !== obstacle.__id && (collision = null);
                     }
                     if (collision) {
                         const pos = v2.add(
@@ -478,7 +480,7 @@ export class WeaponManager {
                 }
             } else if (obj.__type === ObjectType.Player) {
                 const player = obj;
-                if (player.id !== this.player.id &&
+                if (player.__id !== this.player.__id &&
                     !player.dead &&
                     util.sameLayer(player.layer, this.player.layer)
                 ) {
@@ -566,7 +568,7 @@ export class WeaponManager {
             if (amount != 0) {
                 this.weapons[slot].type = type;
                 this.weapons[slot].ammo = amount;
-                this.player.dirty.weapons = true;
+                this.player.weapsDirty = true;
                 this.player.setDirty();
                 return;
             }
