@@ -16,7 +16,6 @@ import { InputMsg } from "../../shared/msgs/inputMsg";
 import { type Explosion } from "./objects/explosion";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
-import NanoTimer from "nanotimer";
 import { Gas } from "./objects/gas";
 import { isItemInLoadout } from "../../shared/defs/gameObjects/unlockDefs";
 
@@ -58,17 +57,10 @@ export class Game {
 
     grid: Grid;
 
-    timer: NanoTimer;
-
     /**
-     * for stuff based on ms
+     * Delta Time in seconds
      */
-    realDt: number;
-    /**
-     * realDt divided by 1000, used for physics since speed values are in unit/second.
-     * for stuff based on seconds
-     */
-    dt: number;
+    dt: number = 0;
 
     config: ConfigType;
 
@@ -76,7 +68,7 @@ export class Game {
 
     tickTimes: number[] = [];
 
-    timeouts: NodeJS.Timeout[] = [];
+    timeouts: Timer[] = [];
 
     bulletManager = new BulletManager(this);
 
@@ -101,19 +93,13 @@ export class Game {
 
         this.gas = new Gas(this);
 
-        this.realDt = 1000 / config.tps;
-        this.dt = this.realDt / 1000;
-
-        this.timer = new NanoTimer();
-
-        this.timer.setInterval(() => { this.tick(); }, "", `${this.realDt}m`);
-
         this.allowJoin = true;
 
         this.logger.log(`Created in ${Date.now() - start} ms`);
     }
 
     tick(): void {
+        this.dt = (Date.now() - this.now) / 1000;
         this.now = Date.now();
 
         this.bulletManager.update();
@@ -169,7 +155,7 @@ export class Game {
         if (this.tickTimes.length >= 200) {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / this.realDt) * 100).toFixed(1)}%`);
+            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / this.config.tps)) * 100).toFixed(1)}%`);
             this.tickTimes = [];
         }
     }
@@ -202,7 +188,7 @@ export class Game {
         return player;
     }
 
-    handleMsg(buff: ArrayBuffer, player: Player): void {
+    handleMsg(buff: ArrayBuffer | Buffer, player: Player): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
@@ -294,7 +280,6 @@ export class Game {
     end(): void {
         this.stopped = true;
         this.allowJoin = false;
-        this.timer.clearInterval();
         for (const player of this.players) {
             player.socket.close();
         }

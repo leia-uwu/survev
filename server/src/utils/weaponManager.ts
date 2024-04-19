@@ -70,7 +70,7 @@ export class WeaponManager {
         return this.weapons[this.curWeapIdx].type;
     }
 
-    timeouts: NodeJS.Timeout[] = [];
+    timeouts: Timer[] = [];
 
     clearTimeouts(): void {
         for (const timeout of this.timeouts) {

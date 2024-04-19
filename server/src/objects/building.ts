@@ -34,7 +34,7 @@ export class Building extends BaseGameObject {
     puzzleSolved = false;
     puzzleErrSeq = 0;
     puzzleOrder: string = "";
-    puzzleResetTimeout?: NodeJS.Timeout;
+    puzzleResetTimeout?: Timer;
 
     scale = 1;
 

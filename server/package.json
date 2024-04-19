@@ -2,25 +2,24 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start": "node --enable-source-maps dist/server/src/uwsServer.js",
-    "start:ws": "node --enable-source-maps dist/server/src/wsServer.js",
-    "dev": "ts-node-dev --respawn --rs --transpile-only src/uwsServer.ts",
-    "dev:ws": "ts-node-dev --respawn --rs --transpile-only src/wsServer.ts",
+    "start": "node --enable-source-maps dist/server/src/nodeServer.js",
+    "start:bun": "bun src/bunServer.ts",
+    "dev": "ts-node-dev --respawn --rs --transpile-only src/nodeServer.ts",
+    "dev:bun": "bun --watch src/bunServer.ts",
     "client": "cd client; pnpm dev",
     "lint": "eslint . --fix --ext .ts,.js",
     "lint:ci": "eslint . --ext .ts,.js"
   },
   "dependencies": {
-    "@types/node": "^20.12.3",
+    "@types/node": "^20.12.7",
     "bit-buffer": "^0.2.5",
     "nanotimer": "^0.3.15",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.3",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.43.0",
-    "ws": "^8.16.0"
+    "typescript": "^5.4.5",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.43.0"
   },
   "devDependencies": {
-    "@types/nanotimer": "^0.3.2",
-    "@types/ws": "^8.5.10"
+    "@types/bun": "^1.1.0",
+    "@types/nanotimer": "^0.3.2"
   }
 }
