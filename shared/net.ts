@@ -183,21 +183,17 @@ export class BitStream extends bb.BitStream {
 //
 
 export class MsgStream {
-    stream!: BitStream;
-    arrayBuf!: ArrayBuffer | Uint8Array;
+    stream: BitStream;
+    arrayBuf: ArrayBuffer;
 
     constructor(buf: ArrayBuffer | Uint8Array) {
         const arrayBuf = buf instanceof ArrayBuffer ? buf : buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 
-        if (arrayBuf != null) {
-            this.arrayBuf = arrayBuf;
-            this.stream = new BitStream(arrayBuf);
-        } else {
-            console.log("Invalid buf type", typeof buf === "undefined" ? "undefined" : typeof (buf));
-            if (typeof buf === "string") {
-                console.log(`String contents: ${(buf as string).substring(0, 1024)}`);
-            }
+        if (!(arrayBuf instanceof ArrayBuffer)) {
+            throw new Error(`Invalid buf type ${typeof buf === "undefined" ? "undefined" : typeof (buf)}`);
         }
+        this.arrayBuf = arrayBuf;
+        this.stream = new BitStream(arrayBuf);
     }
 
     getBuffer() {
