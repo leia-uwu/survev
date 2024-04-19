@@ -1,5 +1,9 @@
+import { ObjectType } from "../server/src/objects/gameObject";
 import { type GameConfig } from "../shared/gameConfig";
 import { type Vec2 } from "../shared/utils/v2";
+import { Loot } from "./src/objects/loot";
+import { Obstacle } from "./src/objects/obstacle";
+import { Player } from "./src/objects/player";
 
 export abstract class AbstractObject {
     abstract init(): void;
@@ -127,3 +131,10 @@ export interface Action {
     throttleCount: number
     throttleTicker: number
 }
+
+type Extended<T> = T & {
+    __type: ObjectType;
+    __id: number;
+};
+
+export type ClientObject = Extended<Loot> | Extended<Player> | Extended<Obstacle>;

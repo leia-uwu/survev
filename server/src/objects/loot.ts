@@ -94,6 +94,7 @@ export class Loot extends BaseGameObject {
     override readonly __type = ObjectType.Loot;
 
     isPreloadedGun = false;
+    hasOwner = false;
     ownerId = 0;
     isOld = false;
 

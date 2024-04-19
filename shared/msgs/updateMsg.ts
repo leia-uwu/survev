@@ -1,8 +1,7 @@
-import { type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
+import { ClientObject, type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
 import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
-import { type BaseGameObject } from "../../server/src/objects/gameObject";
 import type { Gas } from "../../server/src/objects/gas";
 import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
@@ -241,8 +240,8 @@ export class UpdateMsg extends AbstractMsg {
     gas = null;
     map = null;
     delObjIds: number[] = [];
-    fullObjects: BaseGameObject[] = [];
-    partObjects: BaseGameObject[] = [];
+    fullObjects: ClientObject[] = [];
+    partObjects: ClientObject[] = [];
     activePlayerId = 0;
     activePlayerIdDirty = false;
     activePlayerData!: LocalDataWithDirty;
@@ -471,7 +470,7 @@ export class UpdateMsg extends AbstractMsg {
         if ((flags & UpdateExtFlags.FullObjects) != 0) {
             const count = s.readUint16();
             for (let i = 0; i < count; i++) {
-                const data = {} as BaseGameObject;
+                const data = {} as ClientObject;
                 data.__type = s.readUint8();
                 data.__id = s.readUint16();
                 ObjectSerializeFns[data.__type].deserializePart(s, data);
@@ -481,7 +480,7 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         for (let count = s.readUint16(), i = 0; i < count; i++) {
-            const data = {};
+            const data = {} as ClientObject;
             data.__id = s.readUint16();
             const type = objectCreator.getTypeById(data.__id, s);
             ObjectSerializeFns[type].deserializePart(s, data);

@@ -188,10 +188,10 @@ export const ObjectSerializeFns: {
             }
 
             s.writeBoolean(data.isPuzzlePiece);
-            if (data.isPuzzlePiece) s.writeUint16(data.parentBuildingId);
+            if (data.isPuzzlePiece) s.writeUint16(data.parentBuildingId!);
 
             s.writeBoolean(data.isSkin);
-            if (data.isSkin) s.writeUint16(data.skinPlayerId);
+            if (data.isSkin) s.writeUint16(data.skinPlayerId!);
 
             s.writeBits(0, 5); // padding
         },
@@ -212,7 +212,7 @@ export const ObjectSerializeFns: {
             data.dead = s.readBoolean();
             data.isDoor = s.readBoolean();
             if (data.isDoor) {
-                data.door = {};
+                data.door = {} as Obstacle["door"];
                 data.door.open = s.readBoolean();
                 data.door.canUse = s.readBoolean();
                 data.door.locked = s.readBoolean();
@@ -220,7 +220,7 @@ export const ObjectSerializeFns: {
             }
             data.isButton = s.readBoolean();
             if (data.isButton) {
-                data.button = {};
+                data.button = {} as Obstacle["button"];
                 data.button.onOff = s.readBoolean();
                 data.button.canUse = s.readBoolean();
                 data.button.seq = s.readBits(6);
