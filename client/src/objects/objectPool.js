@@ -70,10 +70,10 @@ export class Creator {
         return this.idToObj[id];
     }
 
-    /** 
+    /**
      * @param { number } id
-     * @param {import("../../../shared/net").BitStream} s 
-     * @returns {ObjectType} 
+     * @param {import("../../../shared/net").BitStream} s
+     * @returns {ObjectType}
      */
     getTypeById(id, s) {
         const obj = this.getObjById(id);

@@ -1,4 +1,4 @@
-import { ClientObject, type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
+import { type ClientObject, type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
 import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
