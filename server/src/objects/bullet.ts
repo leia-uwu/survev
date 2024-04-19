@@ -9,10 +9,11 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { ObjectType, type GameObject } from "./gameObject";
+import { type GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
 import { Explosion } from "./explosion";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 // NOTE: most of this code was copied from surviv client and bit heroes arena client
 // to get bullet collision the most accurate possible
@@ -87,7 +88,7 @@ export class BulletManager {
                         // spawn the bullet a bit behind the bullet so it won't spawn inside obstacles
                         v2.sub(bullet.pos, v2.mul(bullet.dir, 0.01)),
                         bullet.layer,
-                        bullet.sourceType,
+                        bullet.shotSourceType,
                         bullet.damageType,
                         bullet.player
                     );
@@ -146,7 +147,7 @@ export class Bullet {
     distance: number;
     maxDistance: number;
     shotFx: boolean;
-    sourceType: string;
+    shotSourceType: string;
     shotOffhand: boolean;
     lastShot: boolean;
     reflectCount: number;
@@ -207,7 +208,7 @@ export class Bullet {
         // this.serialized = false;
         // this.sentToClient = false;
         // this.timeInactive = 0.0;
-        this.sourceType = params.sourceType;
+        this.shotSourceType = params.sourceType;
         this.damageType = params.damageType;
         this.damageMult = params.damageMult;
         this.shotFx = params.shotFx ?? false;
@@ -249,7 +250,7 @@ export class Bullet {
                 obj.dead ||
                 obj.height < GameConfig.bullet.height ||
                 !util.sameLayer(obj.layer, this.layer) ||
-                obj.id === this.reflectObjId)) {
+                obj.__id === this.reflectObjId)) {
                 continue;
             }
 
@@ -340,7 +341,7 @@ export class Bullet {
             if (!(obstacle.dead ||
                 !util.sameLayer(obstacle.layer, this.layer) ||
                 obstacle.height < GameConfig.bullet.height ||
-                (this.reflectCount > 0 && obstacle.id === this.reflectObjId))) {
+                (this.reflectCount > 0 && obstacle.__id === this.reflectObjId))) {
                 const collision = collider.intersectSegment(
                     obstacle.collider,
                     posOld,
@@ -359,7 +360,7 @@ export class Bullet {
         for (const player of players) {
             if (!player.dead &&
                 (util.sameLayer(player.layer, this.layer) || 2 & player.layer) &&
-                (player.id !== this.playerId || this.damageSelf)) {
+                (player.__id !== this.playerId || this.damageSelf)) {
                 let panCollision = null;
 
                 if (player.hasActivePan()) {
@@ -473,7 +474,7 @@ export class Bullet {
 
                 this.bulletManager.damages.push({
                     obj,
-                    sourceType: this.sourceType,
+                    sourceType: this.shotSourceType,
                     damageType: this.damageType,
                     killer: this.player,
                     damage: finalDamage * def.obstacleDamage
@@ -481,22 +482,22 @@ export class Bullet {
 
                 const obstacleDef = (MapObjectDefs[obj.type] as ObstacleDef);
                 if (obstacleDef.reflectBullets && this.onHitFx !== "explosion_rounds") {
-                    this.reflect(collision.point, collision.normal, obj.id);
+                    this.reflect(collision.point, collision.normal, obj.__id);
                 }
             } else if (obj instanceof Player) {
                 stopBullet = collision.collidable;
 
                 let isHeadShot = false;
                 // headshots >:3
-                const sourceDef = GameObjectDefs[this.sourceType] as GunDef;
+                const sourceDef = GameObjectDefs[this.shotSourceType] as GunDef;
                 if ((sourceDef?.headshotMult ?? 1) > 1 && Math.random() < GameConfig.player.headshotChance) {
-                    finalDamage *= (GameObjectDefs[this.sourceType] as GunDef).headshotMult;
+                    finalDamage *= (GameObjectDefs[this.shotSourceType] as GunDef).headshotMult;
                     isHeadShot = true;
                 }
 
                 this.bulletManager.damages.push({
                     obj,
-                    sourceType: this.sourceType,
+                    sourceType: this.shotSourceType,
                     killer: this.player,
                     damageType: this.damageType,
                     damage: finalDamage,
@@ -522,7 +523,7 @@ export class Bullet {
 
         this.bulletManager.fireBullet({
             bulletType: this.bulletType,
-            sourceType: this.sourceType,
+            sourceType: this.shotSourceType,
             pos,
             dir,
             layer: this.layer,

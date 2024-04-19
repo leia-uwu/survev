@@ -1,7 +1,7 @@
 import { Emote, Player } from "./objects/player";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { Grid } from "./utils/grid";
-import { ObjectType, type BaseGameObject } from "./objects/gameObject";
+import { type BaseGameObject } from "./objects/gameObject";
 import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
@@ -18,6 +18,7 @@ import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
 import { isItemInLoadout } from "../../shared/defs/gameObjects/unlockDefs";
+import { ObjectType } from "../../shared/utils/objectSerializeFns";
 
 export class Game {
     started = false;
@@ -72,8 +73,6 @@ export class Game {
 
     bulletManager = new BulletManager(this);
 
-    // serializationCache = new SerializationCache();
-
     logger: Logger;
 
     gas: Gas;
@@ -118,7 +117,16 @@ export class Game {
             player.update();
         }
 
-        // this.serializationCache.update(this);
+        for (const obj of this.partialObjs) {
+            if (this.fullObjs.has(obj)) {
+                this.partialObjs.delete(obj);
+                continue;
+            }
+            obj.serializePartial();
+        }
+        for (const obj of this.fullObjs) {
+            obj.serializeFull();
+        }
 
         for (const player of this.connectedPlayers) {
             player.sendMsgs();
@@ -128,9 +136,14 @@ export class Game {
         // reset stuff
         //
         for (const player of this.players) {
-            for (const key in player.dirty) {
-                player.dirty[key as keyof Player["dirty"]] = false;
-            }
+            player.healthDirty = false;
+            player.boostDirty = false;
+            player.zoomDirty = false;
+            player.actionDirty = false;
+            player.inventoryDirty = false;
+            player.weapsDirty = false;
+            player.spectatorCountDirty = false;
+            player.activeIdDirty = false;
         }
 
         this.fullObjs.clear();
@@ -262,7 +275,7 @@ export class Game {
             const emoteMsg = new EmoteMsg();
             emoteMsg.deserialize(stream);
 
-            this.emotes.push(new Emote(player.id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
+            this.emotes.push(new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
             break;
         }
         case net.MsgType.DropItem: {

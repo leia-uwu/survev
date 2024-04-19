@@ -1,41 +1,192 @@
 import { math } from "./math";
 import { GameConfig } from "../gameConfig";
-import { ObjectType } from "../../server/src/objects/gameObject";
 import { type BitStream, Constants } from "../net";
-import type { Player } from "../../server/src/objects/player";
-import type { Obstacle } from "../../server/src/objects/obstacle";
-import type { Loot } from "../../server/src/objects/loot";
-import type { DeadBody } from "../../server/src/objects/deadBody";
-import type { Building } from "../../server/src/objects/building";
-import type { Structure } from "../../server/src/objects/structure";
-import type { Projectile } from "../../server/src/objects/projectile";
-import type { Decal } from "../../server/src/objects/decal";
-import type { Smoke } from "../../server/src/objects/smoke";
-import type { Airdrop } from "../../server/src/objects/airdrop";
+import { type Vec2 } from "./v2";
 
-interface GameObjectTypeMap {
-    [ObjectType.Player]: Player
-    [ObjectType.Obstacle]: Obstacle
-    [ObjectType.Loot]: Loot
-    [ObjectType.LootSpawner]: Obstacle
-    [ObjectType.DeadBody]: DeadBody
-    [ObjectType.Building]: Building
-    [ObjectType.Structure]: Structure
-    [ObjectType.Decal]: Decal
-    [ObjectType.Projectile]: Projectile
-    [ObjectType.Smoke]: Smoke
-    [ObjectType.Airdrop]: Airdrop
+export enum ObjectType {
+    Invalid,
+    Player,
+    Obstacle,
+    Loot,
+    LootSpawner, // NOTE: unused
+    DeadBody,
+    Building,
+    Structure,
+    Decal,
+    Projectile,
+    Smoke,
+    Airdrop
+}
 
-    [ObjectType.Invalid]: () => void
+export interface ObjectsPartialData {
+    [ObjectType.Invalid]: null
+    [ObjectType.Player]: {
+        pos: Vec2
+        dir: Vec2
+    }
+    [ObjectType.Obstacle]: {
+        pos: Vec2
+        ori: number
+        scale: number
+    }
+    [ObjectType.Loot]: {
+        pos: Vec2
+    }
+    [ObjectType.LootSpawner]: {
+        pos: Vec2
+        layer: number
+        type: string
+    }
+    [ObjectType.DeadBody]: {
+        pos: Vec2
+    }
+    [ObjectType.Building]: {
+        ceilingDead: boolean
+        occupied: boolean
+        ceilingDamaged: boolean
+        hasPuzzle: boolean
+        puzzleSolved: boolean
+        puzzleErrSeq: number
+    }
+    [ObjectType.Structure]: null
+    [ObjectType.Decal]: null
+    [ObjectType.Projectile]: {
+        pos: Vec2
+        posZ: number
+        dir: Vec2
+    }
+    [ObjectType.Smoke]: {
+        pos: Vec2
+        rad: number
+    }
+    [ObjectType.Airdrop]: {
+        fallT: number
+        landed: boolean
+    }
+}
+
+export interface ObjectsFullData {
+    [ObjectType.Invalid]: null
+    [ObjectType.Player]: {
+        outfit: string
+        backpack: string
+        helmet: string
+        chest: string
+        activeWeapon: string
+        layer: number
+        dead: boolean
+        downed: boolean
+
+        animType: number
+        animSeq: number
+
+        actionType: number
+        actionSeq: number
+
+        wearingPan: boolean
+        healEffect: boolean
+
+        frozen: boolean
+        frozenOri: number
+
+        hasHaste: boolean
+        hasteType: number
+        hasteSeq: number
+
+        actionItem: string
+
+        hasScale: boolean
+        scale: number
+
+        hasRole: boolean
+        role: string
+
+        hasPerks: boolean
+        perks: Array<{
+            type: string
+            droppable: boolean
+        }>
+
+    }
+    [ObjectType.Obstacle]: {
+        healthT: number
+        type: string
+        layer: number
+        dead: boolean
+        isDoor: boolean
+        door?: {
+            open: boolean
+            canUse: boolean
+            locked: boolean
+            seq: number
+        }
+        isButton: boolean
+        button?: {
+            onOff: boolean
+            canUse: boolean
+            seq: number
+        }
+        isPuzzlePiece: boolean
+        parentBuildingId?: number
+        isSkin: boolean
+        skinPlayerId?: number
+    }
+    [ObjectType.Loot]: {
+        type: string
+        layer: number
+        isOld: boolean
+        isPreloadedGun: boolean
+        count: number
+        hasOwner: boolean
+        ownerId: number
+    }
+    [ObjectType.LootSpawner]: null
+    [ObjectType.DeadBody]: {
+        layer: number
+        playerId: number
+    }
+    [ObjectType.Building]: {
+        pos: Vec2
+        type: string
+        ori: number
+        layer: number
+    }
+    [ObjectType.Structure]: {
+        pos: Vec2
+        type: string
+        ori: number
+        interiorSoundEnabled: boolean
+        interiorSoundAlt: boolean
+        layerObjIds: number[]
+    }
+    [ObjectType.Decal]: {
+        pos: Vec2
+        scale: number
+        type: string
+        ori: number
+        layer: number
+        goreKills: number
+    }
+    [ObjectType.Projectile]: {
+        type: string
+        layer: number
+    }
+    [ObjectType.Smoke]: {
+        layer: number
+        interior: number
+    }
+    [ObjectType.Airdrop]: {
+        pos: Vec2
+    }
 }
 
 export const ObjectSerializeFns: {
     [K in ObjectType]: {
         serializedFullSize: number
-        serializePart: (s: BitStream, data: GameObjectTypeMap[K]) => void
-        serializeFull: (s: BitStream, data: GameObjectTypeMap[K]) => void
-        deserializePart: (s: BitStream, data: GameObjectTypeMap[K]) => void
-        deserializeFull: (s: BitStream, data: GameObjectTypeMap[K]) => void
+        serializePart: (s: BitStream, data: ObjectsPartialData[K]) => void
+        serializeFull: (s: BitStream, data: ObjectsFullData[K]) => void
+        deserializePart: (s: BitStream, data: ObjectsPartialData[K]) => void
+        deserializeFull: (s: BitStream, data: ObjectsFullData[K]) => void
     };
 } = {
     [ObjectType.Player]: {
@@ -174,17 +325,17 @@ export const ObjectSerializeFns: {
             s.writeBoolean(data.dead);
             s.writeBoolean(data.isDoor);
             if (data.isDoor) {
-                s.writeBoolean(data.door.open);
-                s.writeBoolean(data.door.canUse);
-                s.writeBoolean(data.door.locked);
-                s.writeBits(data.door.seq, 5);
+                s.writeBoolean(data.door!.open);
+                s.writeBoolean(data.door!.canUse);
+                s.writeBoolean(data.door!.locked);
+                s.writeBits(data.door!.seq, 5);
             }
 
             s.writeBoolean(data.isButton);
             if (data.isButton) {
-                s.writeBoolean(data.button.onOff);
-                s.writeBoolean(data.button.canUse);
-                s.writeBits(data.button.seq, 6);
+                s.writeBoolean(data.button!.onOff);
+                s.writeBoolean(data.button!.canUse);
+                s.writeBits(data.button!.seq, 6);
             }
 
             s.writeBoolean(data.isPuzzlePiece);
@@ -212,18 +363,18 @@ export const ObjectSerializeFns: {
             data.dead = s.readBoolean();
             data.isDoor = s.readBoolean();
             if (data.isDoor) {
-                data.door = {} as Obstacle["door"];
-                data.door.open = s.readBoolean();
-                data.door.canUse = s.readBoolean();
-                data.door.locked = s.readBoolean();
-                data.door.seq = s.readBits(5);
+                data.door = {} as ObjectsFullData[ObjectType.Obstacle]["door"];
+                data.door!.open = s.readBoolean();
+                data.door!.canUse = s.readBoolean();
+                data.door!.locked = s.readBoolean();
+                data.door!.seq = s.readBits(5);
             }
             data.isButton = s.readBoolean();
             if (data.isButton) {
-                data.button = {} as Obstacle["button"];
-                data.button.onOff = s.readBoolean();
-                data.button.canUse = s.readBoolean();
-                data.button.seq = s.readBits(6);
+                data.button = {} as ObjectsFullData[ObjectType.Obstacle]["button"];
+                data.button!.onOff = s.readBoolean();
+                data.button!.canUse = s.readBoolean();
+                data.button!.seq = s.readBits(6);
             }
             data.isPuzzlePiece = s.readBoolean();
             if (data.isPuzzlePiece) {

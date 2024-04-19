@@ -1,4 +1,4 @@
-import { ObjectType } from "../../../server/src/objects/gameObject";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class Pool {
     constructor(classFn) {

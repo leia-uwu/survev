@@ -1,52 +1,33 @@
-import { type ClientObject, type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
+import { type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
 import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
+import { type ObjectType, ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "../utils/objectSerializeFns";
 import type { Gas } from "../../server/src/objects/gas";
 import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
 import { AbstractMsg, Constants, type BitStream } from "../net";
-import { ObjectSerializeFns } from "../utils/objectSerializeFns";
 import { v2, type Vec2 } from "./../utils/v2";
 
-export const UpdateExtFlags = {
-    DeletedObjects: 1 << 0,
-    FullObjects: 1 << 1,
-    ActivePlayerId: 1 << 2,
-    Gas: 1 << 3,
-    GasCircle: 1 << 4,
-    PlayerInfos: 1 << 5,
-    DeletePlayerIds: 1 << 6,
-    PlayerStatus: 1 << 7,
-    GroupStatus: 1 << 8,
-    Bullets: 1 << 9,
-    Explosions: 1 << 10,
-    Emotes: 1 << 11,
-    Planes: 1 << 12,
-    AirstrikeZones: 1 << 13,
-    MapIndicators: 1 << 14,
-    KillLeader: 1 << 15
-};
+function serializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
+    s.writeBoolean(data.healthDirty);
+    if (data.healthDirty) s.writeFloat(data.health, 0, 100, 8);
 
-function serializeActivePlayer(s: BitStream, data: Player) {
-    s.writeBoolean(data.dirty.health);
-    if (data.dirty.health) s.writeFloat(data.health, 0, 100, 8);
+    s.writeBoolean(data.boostDirty);
+    if (data.boostDirty) s.writeFloat(data.boost, 0, 100, 8);
 
-    s.writeBoolean(data.dirty.boost);
-    if (data.dirty.boost) s.writeFloat(data.boost, 0, 100, 8);
+    s.writeBoolean(data.zoomDirty);
+    if (data.zoomDirty) s.writeUint8(data.zoom);
 
-    s.writeBoolean(data.dirty.zoom);
-    if (data.dirty.zoom) s.writeUint8(data.zoom);
-
-    s.writeBoolean(data.dirty.action);
-    if (data.dirty.action) {
+    s.writeBoolean(data.actionDirty);
+    if (data.actionDirty) {
         s.writeFloat(data.action.time, 0, Constants.ActionMaxDuration, 8);
         s.writeFloat(data.action.duration, 0, Constants.ActionMaxDuration, 8);
         s.writeUint16(data.action.targetId);
     }
 
-    s.writeBoolean(data.dirty.inventory);
-    if (data.dirty.inventory) {
+    s.writeBoolean(data.inventoryDirty);
+    if (data.inventoryDirty) {
         s.writeGameType(data.scope);
         for (const key of Object.keys(GameConfig.bagSizes)) {
             const hasItem = data.inventory[key] > 0;
@@ -55,8 +36,8 @@ function serializeActivePlayer(s: BitStream, data: Player) {
         }
     }
 
-    s.writeBoolean(data.dirty.weapons);
-    if (data.dirty.weapons) {
+    s.writeBoolean(data.weapsDirty);
+    if (data.weapsDirty) {
         s.writeBits(data.curWeapIdx, 2);
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             s.writeGameType(data.weapons[i].type);
@@ -64,8 +45,8 @@ function serializeActivePlayer(s: BitStream, data: Player) {
         }
     }
 
-    s.writeBoolean(data.dirty.spectatorCount);
-    if (data.dirty.spectatorCount) {
+    s.writeBoolean(data.spectatorCountDirty);
+    if (data.spectatorCountDirty) {
         s.writeUint8(data.spectatorCount);
     }
 
@@ -147,8 +128,8 @@ function serializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
     }
 }
 
-function deserializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) {
-    data.players = [];
+function deserializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
+    data = [];
     const count = s.readUint8();
     for (let i = 0; i < count; i++) {
         const p = {} as PlayerStatus & { hasData: boolean };
@@ -163,7 +144,7 @@ function deserializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }
                 p.role = s.readGameType();
             }
         }
-        data.players.push(p);
+        data.push(p);
     }
     s.readAlignToNextByte();
 }
@@ -177,19 +158,31 @@ function serializeGroupStatus(s: BitStream, data: GroupStatus[]) {
     }
 }
 
-function deserializeGroupStatus(s: BitStream, data: { players: GroupStatus[] }) {
-    data.players = [];
+function deserializeGroupStatus(s: BitStream, data: GroupStatus[]) {
+    data = [];
     const count = s.readUint8();
     for (let i = 0; i < count; i++) {
         const p = {} as GroupStatus;
         p.health = s.readFloat(0, 100, 7);
         p.disconnected = s.readBoolean();
-        data.players.push(p);
+        data.push(p);
     }
 }
 
-function serializePlayerInfo(s: BitStream, data: Player) {
-    s.writeUint16(data.id);
+export interface PlayerInfo {
+    playerId: number
+    teamId: number
+    groupId: number
+    name: string
+
+    loadout: {
+        heal: string
+        boost: string
+    }
+}
+
+function serializePlayerInfo(s: BitStream, data: PlayerInfo) {
+    s.writeUint16(data.playerId);
     s.writeUint8(data.teamId);
     s.writeUint8(data.groupId);
     s.writeString(data.name);
@@ -200,7 +193,7 @@ function serializePlayerInfo(s: BitStream, data: Player) {
     s.writeAlignToNextByte();
 }
 
-function deserializePlayerInfo(s: BitStream, data: Player) {
+function deserializePlayerInfo(s: BitStream, data: PlayerInfo) {
     data.playerId = s.readUint16();
     data.teamId = s.readUint8();
     data.groupId = s.readUint8();
@@ -229,40 +222,69 @@ function deserializeGasData(s: BitStream, data: Gas) {
     data.radNew = s.readFloat(0, 2048, 16);
 }
 
+export const UpdateExtFlags = {
+    DeletedObjects: 1 << 0,
+    FullObjects: 1 << 1,
+    ActivePlayerId: 1 << 2,
+    Gas: 1 << 3,
+    GasCircle: 1 << 4,
+    PlayerInfos: 1 << 5,
+    DeletePlayerIds: 1 << 6,
+    PlayerStatus: 1 << 7,
+    GroupStatus: 1 << 8,
+    Bullets: 1 << 9,
+    Explosions: 1 << 10,
+    Emotes: 1 << 11,
+    Planes: 1 << 12,
+    AirstrikeZones: 1 << 13,
+    MapIndicators: 1 << 14,
+    KillLeader: 1 << 15
+};
+
 export class UpdateMsg extends AbstractMsg {
-    serializedObjectCache = null;
-    objectReg = null;
-    clientPlayer = null;
-    activePlayer = null;
-    grid = null;
-    playerBarn = null;
-    bulletBarn = null;
-    gas = null;
-    map = null;
     delObjIds: number[] = [];
-    fullObjects: ClientObject[] = [];
-    partObjects: ClientObject[] = [];
+    fullObjects: Array<
+    ObjectsFullData[ObjectType] & ObjectsPartialData[ObjectType] & {
+        __id: number
+        __type: ObjectType
+        partialStream: BitStream
+        fullStream: BitStream
+    }> = [];
+
+    partObjects: Array<ObjectsPartialData[ObjectType] & {
+        __id: number
+        __type: ObjectType
+        partialStream: BitStream
+    }> = [];
+
     activePlayerId = 0;
     activePlayerIdDirty = false;
     activePlayerData!: LocalDataWithDirty;
+
     aliveCounts = [];
     aliveDirty = false;
+
     gasData!: Gas;
     gasDirty = false;
     gasT = 0;
     gasTDirty = false;
-    playerInfos: Player[] = [];
+
+    playerInfos: PlayerInfo[] = [];
     deletedPlayerIds: number[] = [];
-    playerStatus!: { players: PlayerStatus[] };
+
+    playerStatus!: PlayerStatus[];
     playerStatusDirty = false;
-    groupStatus = {};
+
+    groupStatus: GroupStatus[] = [];
     groupStatusDirty = false;
+
     bullets: Bullet[] = [];
     explosions: Explosion[] = [];
     emotes: Emote[] = [];
     planes: Plane[] = [];
     airstrikeZones: Airstrike[] = [];
     mapIndicators: MapIndicator[] = [];
+
     killLeaderId = 0;
     killLeaderKills = 0;
     killLeaderDirty = false;
@@ -285,17 +307,15 @@ export class UpdateMsg extends AbstractMsg {
             s.writeUint16(this.fullObjects.length);
             for (const obj of this.fullObjects) {
                 s.writeUint8(obj.__type);
-                s.writeUint16(obj.id);
-                ObjectSerializeFns[obj.__type].serializePart(s, obj);
-                ObjectSerializeFns[obj.__type].serializeFull(s, obj);
+                s.writeBytes(obj.partialStream, 0, obj.partialStream.byteIndex);
+                s.writeBytes(obj.fullStream, 0, obj.fullStream.byteIndex);
             }
             flags |= UpdateExtFlags.FullObjects;
         }
 
         s.writeUint16(this.partObjects.length);
         for (const obj of this.partObjects) {
-            s.writeUint16(obj.id);
-            ObjectSerializeFns[obj.__type].serializePart(s, obj);
+            s.writeBytes(obj.partialStream, 0, obj.partialStream.byteIndex);
         }
 
         if (this.activePlayerIdDirty) {
@@ -358,7 +378,7 @@ export class UpdateMsg extends AbstractMsg {
                 }
                 s.writeBoolean(bullet.shotFx);
                 if (bullet.shotFx) {
-                    s.writeGameType(bullet.sourceType);
+                    s.writeGameType(bullet.shotSourceType);
                     s.writeBoolean(bullet.shotOffhand);
                     s.writeBoolean(bullet.lastShot);
                 }
@@ -470,20 +490,20 @@ export class UpdateMsg extends AbstractMsg {
         if ((flags & UpdateExtFlags.FullObjects) != 0) {
             const count = s.readUint16();
             for (let i = 0; i < count; i++) {
-                const data = {} as ClientObject;
+                const data = {} as this["fullObjects"][0];
                 data.__type = s.readUint8();
                 data.__id = s.readUint16();
-                ObjectSerializeFns[data.__type].deserializePart(s, data);
-                ObjectSerializeFns[data.__type].deserializeFull(s, data);
+                (ObjectSerializeFns[data.__type].deserializePart as (s: BitStream, d: typeof data) => void)(s, data);
+                (ObjectSerializeFns[data.__type].deserializeFull as (s: BitStream, d: typeof data) => void)(s, data);
                 this.fullObjects.push(data);
             }
         }
 
         for (let count = s.readUint16(), i = 0; i < count; i++) {
-            const data = {} as ClientObject;
+            const data = {} as this["partObjects"][0];
             data.__id = s.readUint16();
             const type = objectCreator.getTypeById(data.__id, s);
-            ObjectSerializeFns[type].deserializePart(s, data);
+            (ObjectSerializeFns[type].deserializePart as (s: BitStream, d: typeof data) => void)(s, data);
             this.partObjects.push(data);
         }
 
@@ -511,7 +531,7 @@ export class UpdateMsg extends AbstractMsg {
         if ((flags & UpdateExtFlags.PlayerInfos) != 0) {
             const count = s.readUint8();
             for (let i = 0; i < count; i++) {
-                const x = {} as Player;
+                const x = {} as PlayerInfo;
                 deserializePlayerInfo(s, x);
                 this.playerInfos.push(x);
             }
@@ -526,14 +546,14 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         if ((flags & UpdateExtFlags.PlayerStatus) != 0) {
-            const playerStatus = {} as { players: PlayerStatus[] };
+            const playerStatus: PlayerStatus[] = [];
             deserializePlayerStatus(s, playerStatus);
             this.playerStatus = playerStatus;
             this.playerStatusDirty = true;
         }
 
         if ((flags & UpdateExtFlags.GroupStatus) != 0) {
-            const groupStatus = {} as { players: GroupStatus[] };
+            const groupStatus: GroupStatus[] = [];
             deserializeGroupStatus(s, groupStatus);
             this.groupStatus = groupStatus;
             this.groupStatusDirty = true;

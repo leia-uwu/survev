@@ -1,5 +1,5 @@
-import { type ObjectType } from "../server/src/objects/gameObject";
 import { type GameConfig } from "../shared/gameConfig";
+import { type ObjectType } from "../shared/utils/objectSerializeFns";
 import { type Vec2 } from "../shared/utils/v2";
 import { type Loot } from "./src/objects/loot";
 import { type Obstacle } from "./src/objects/obstacle";
@@ -99,7 +99,11 @@ export interface LocalDataWithDirty extends LocalData {
     boostDirty: boolean
     zoomDirty: boolean
     actionDirty: boolean
-    action: Action
+    action: {
+        time: number
+        duration: number
+        targetId: number
+    }
     inventoryDirty: boolean
     weapsDirty: boolean
     spectatorCountDirty: boolean

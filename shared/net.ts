@@ -139,8 +139,13 @@ export class BitStream extends bb.BitStream {
         };
     }
 
+    // private field L
+    declare _view: { _view: Uint8Array };
+
     writeBytes(src: BitStream, offset: number, length: number) {
-        // assert(this._index % 8 == 0);
+        if (this.index % 8 !== 0) {
+            throw new Error("writeBytes: stream not byte aligned");
+        }
         const data = new Uint8Array(src._view._view.buffer, offset, length);
         this._view._view.set(data, this.index / 8);
         this.index += length * 8;
@@ -204,14 +209,21 @@ export class MsgStream {
     }
 
     serializeMsg(type: MsgType, msg: Msg) {
-        // assert(this.stream.index % 8 == 0);
+        if (this.stream.index % 8 !== 0) {
+            throw new Error("SerializeMsg: stream not byte aligned");
+        }
         this.stream.writeUint8(type);
         msg.serialize(this.stream);
-        // assert(this.stream.index % 8 == 0);
+
+        if (this.stream.index % 8 !== 0) {
+            throw new Error("SerializeMsg: stream not byte aligned");
+        }
     }
 
     serializeMsgStream(type: number, stream: BitStream) {
-        // assert(this.stream.index % 8 == 0 && stream.index % 8 == 0);
+        if (this.stream.index % 8 !== 0) {
+            throw new Error("serializeMsgStream: stream not byte aligned");
+        }
         this.stream.writeUint8(type);
         this.stream.writeBytes(stream, 0, stream.index / 8);
     }
@@ -265,14 +277,14 @@ export enum MsgType {
     PerkModeRoleSelect
 }
 
-export const PickupMsgType = {
-    Full: 0,
-    AlreadyOwned: 1,
-    AlreadyEquipped: 2,
-    BetterItemEquipped: 3,
-    Success: 4,
-    GunCannotFire: 5
-};
+export enum PickupMsgType {
+    Full,
+    AlreadyOwned,
+    AlreadyEquipped,
+    BetterItemEquipped,
+    Success,
+    GunCannotFire
+}
 
 // * seem to be only used when cheats are detected
 // export class LoadoutMsg extends AbstractMsg {

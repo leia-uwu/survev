@@ -9,10 +9,11 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Building } from "./building";
-import { BaseGameObject, type GameObject, ObjectType } from "./gameObject";
+import { BaseGameObject, type GameObject } from "./gameObject";
 import { type Player } from "./player";
 import * as net from "../../../shared/net";
 import { Explosion } from "./explosion";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;

@@ -14,6 +14,7 @@ export class JoinedMsg extends AbstractMsg {
         for (const emote of this.emotes) {
             s.writeGameType(emote);
         }
+        s.writeAlignToNextByte();
     }
 
     override deserialize(s: BitStream) {

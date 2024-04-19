@@ -15,7 +15,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Creator } from "../objects/objectPool";
-import { ObjectType } from "../../../server/src/objects/gameObject";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class LoadoutDisplay {
     /**

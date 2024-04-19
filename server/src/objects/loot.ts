@@ -5,11 +5,12 @@ import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
-import { BaseGameObject, ObjectType } from "./gameObject";
+import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Structure } from "./structure";
 import { type Player } from "./player";
 import { MapDefs } from "../../../shared/defs/mapDefs";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class LootBarn {
     constructor(public game: Game) {

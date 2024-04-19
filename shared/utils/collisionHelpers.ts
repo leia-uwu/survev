@@ -52,7 +52,7 @@ export const collisionHelpers = {
             if (res) {
                 const dist = v2.length(v2.sub(res.point, pos));
                 cols.push({
-                    id: o.id,
+                    id: o.__id,
                     dist
                 });
             }

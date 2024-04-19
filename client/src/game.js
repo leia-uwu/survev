@@ -48,7 +48,7 @@ import { Renderer } from "./renderer";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
 import { UiManager2 } from "./ui/ui2";
-import { ObjectType } from "../../server/src/objects/gameObject";
+import { ObjectType } from "../../shared/utils/objectSerializeFns";
 
 const Input = GameConfig.Input;
 
@@ -1148,9 +1148,6 @@ export class Game {
         case net.MsgType.Update: {
             const msg = new UpdateMsg();
             msg.deserialize(stream, this.objectCreator);
-            /* if (o.partObjects.length) {
-                                console.log(o)
-                            } */
             this.playing = true;
             this.processGameUpdate(msg);
             break;

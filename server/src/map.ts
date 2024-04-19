@@ -5,7 +5,7 @@ import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
 import { Decal } from "./objects/decal";
-import { ObjectType } from "./objects/gameObject";
+import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { coldet, type AABB } from "../../shared/utils/coldet";
@@ -448,7 +448,7 @@ export class GameMap {
                     layer,
                     partOrientation,
                     mapObject.scale,
-                    building.id,
+                    building.__id,
                     mapObject.puzzlePiece
                 ));
                 break;
@@ -509,7 +509,7 @@ export class GameMap {
                 structure
             );
             layer++;
-            structure.layerObjIds.push(building.id);
+            structure.layerObjIds.push(building.__id);
         }
 
         this.objectCount[type]++;

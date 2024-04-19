@@ -15,19 +15,19 @@ export class PlayerStatsMsg extends AbstractMsg {
         s.writeUint16(this.playerId);
         s.writeUint16(this.playerStats.timeAlive);
         s.writeUint8(this.playerStats.kills);
-        s.writeUint8(this.playerStats.dead);
+        s.writeUint8(this.playerStats.dead as unknown as number);
         s.writeUint16(this.playerStats.damageDealt);
         s.writeUint16(this.playerStats.damageTaken);
     }
 
     override deserialize(s: BitStream) {
-        // const playerStats = {};
-        this.playerStats.playerId = s.readUint16();
-        this.playerStats.timeAlive = s.readUint16();
-        this.playerStats.kills = s.readUint8();
-        this.playerStats.dead = s.readUint8();
-        this.playerStats.damageDealt = s.readUint16();
-        this.playerStats.damageTaken = s.readUint16();
-        // this.playerStats = playerStats;
+        const playerStats = {} as this["playerStats"];
+        playerStats.playerId = s.readUint16();
+        playerStats.timeAlive = s.readUint16();
+        playerStats.kills = s.readUint8();
+        playerStats.dead = s.readUint8() as unknown as boolean;
+        playerStats.damageDealt = s.readUint16();
+        playerStats.damageTaken = s.readUint16();
+        this.playerStats = playerStats;
     }
 }

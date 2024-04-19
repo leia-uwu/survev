@@ -11,29 +11,16 @@ import { type Player } from "./player";
 import { type Projectile } from "./projectile";
 import { type Smoke } from "./smoke";
 import { type Structure } from "./structure";
-
-export enum ObjectType {
-    Invalid,
-    Player,
-    Obstacle,
-    Loot,
-    LootSpawner, // NOTE: unused
-    DeadBody,
-    Building,
-    Structure,
-    Decal,
-    Projectile,
-    Smoke,
-    Airdrop
-}
+import { ObjectSerializeFns, type ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { BitStream } from "../../../shared/net";
 
 export type GameObject = Player | Obstacle | Loot | DeadBody | Building | Structure | Decal | Projectile | Smoke | Airdrop;
 
 export abstract class BaseGameObject {
     abstract readonly __type: ObjectType;
+    readonly __id: number;
     abstract bounds: Collider;
 
-    readonly id: number;
     readonly game: Game;
 
     _pos: Vec2;
@@ -47,10 +34,31 @@ export abstract class BaseGameObject {
 
     abstract layer: number;
 
+    partialStream!: BitStream;
+    fullStream!: BitStream;
+
     constructor(game: Game, pos: Vec2) {
         this.game = game;
         this._pos = pos;
-        this.id = game.nextObjId++;
+        this.__id = game.nextObjId++;
+    }
+
+    init(): void {
+        this.partialStream = new BitStream(new ArrayBuffer(64));
+        this.fullStream = new BitStream(new ArrayBuffer(64));
+        this.serializeFull();
+    }
+
+    serializePartial(): void {
+        this.partialStream.index = 0;
+        this.partialStream.writeUint16(this.__id);
+        (ObjectSerializeFns[this.__type].serializePart as (s: BitStream, data: this) => void)(this.partialStream, this);
+    }
+
+    serializeFull(): void {
+        this.serializePartial();
+        this.fullStream.index = 0;
+        (ObjectSerializeFns[this.__type].serializeFull as (s: BitStream, data: this) => void)(this.fullStream, this);
     }
 
     setDirty() {
