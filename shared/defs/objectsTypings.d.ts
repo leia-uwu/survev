@@ -112,10 +112,13 @@ interface GunDef extends BaseLootDef {
     dualOffset?: number
     maxClip: number
     maxReload: number
+    maxReloadAlt?: number
     ammoInfinite?: boolean
     extendedClip: number
     extendedReload: number
+    extendedReloadAlt?: number
     reloadTime: number
+    reloadTimeAlt?: number
     fireDelay: number
     switchDelay: number
     barrelLength: number

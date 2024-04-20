@@ -210,12 +210,10 @@ export class Player extends BaseGameObject {
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
 
-    lastActionType: number = GameConfig.Action.None;
-
     /**
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
      */
-    performActionAgain: boolean = false;
+    reloadAgain = false;
     /**
      * specifically for things like buffering 2 actions trying to run simultaneously.
      * also for automatically reloading if switching to gun with 0 loaded ammo
@@ -248,7 +246,6 @@ export class Player extends BaseGameObject {
     hasteSeq = 0;
 
     actionItem = "";
-    lastActionItem = "";
 
     get hasRole(): boolean {
         return this.role !== "";
@@ -384,9 +381,9 @@ export class Player extends BaseGameObject {
             this.damage(this.game.gas.damage, "", GameConfig.DamageType.Gas, undefined);
         }
 
-        if (this.performActionAgain) {
-            this.performActionAgain = false;
-            this.doAction(this.lastActionItem, this.lastActionType, this.lastAction.duration);
+        if (this.reloadAgain) {
+            this.reloadAgain = false;
+            this.weaponManager.tryReload();
         }
 
         if (this.scheduledAction.perform && this.ticksSinceLastAction > 1) {
@@ -427,19 +424,20 @@ export class Player extends BaseGameObject {
             actionTimeThreshold = Date.now() + this.action.time * 1000 - this.action.duration * 1000;
         }
         if (actionTimeThreshold >= 0) {
-            if (this.actionType == GameConfig.Action.UseItem) {
+            if (this.actionType === GameConfig.Action.UseItem) {
                 const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
                 if ("heal" in itemDef) this.health += itemDef.heal;
                 if ("boost" in itemDef) this.boost += itemDef.boost;
                 this.inventory[this.actionItem]--;
                 this.inventoryDirty = true;
-            } else if (this.actionType == GameConfig.Action.Reload) {
+            } else if (
+                this.actionType === GameConfig.Action.Reload ||
+                this.actionType === GameConfig.Action.ReloadAlt
+            ) {
                 this.weaponManager.reload();
             }
-            if (this.performActionAgain) {
+            if (this.reloadAgain) {
                 this.lastAction = { ...this.action };// shallow copy so no references are kept
-                this.lastActionItem = this.actionItem;
-                this.lastActionType = this.actionType;
             }
             this.cancelAction();
         }
