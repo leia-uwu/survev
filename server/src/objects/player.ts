@@ -1237,6 +1237,10 @@ export class Player extends BaseGameObject {
                     this.weapsDirty = true;
                     removeLoot = true;
                     this.setDirty();
+
+                    if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) {
+                        this.weaponManager.setCurWeapIndex(i);
+                    }
                     break;
                 }
             }
