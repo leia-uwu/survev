@@ -65,7 +65,7 @@ export class Game {
 
     config: ConfigType;
 
-    now = Date.now();
+    now!: number;
 
     tickTimes: number[] = [];
 
@@ -98,8 +98,10 @@ export class Game {
     }
 
     tick(): void {
-        this.dt = (Date.now() - this.now) / 1000;
-        this.now = Date.now();
+        const now = Date.now();
+        if (!this.now) this.now = now;
+        this.dt = (now - this.now) / 1000;
+        this.now = now;
 
         this.bulletManager.update();
 
