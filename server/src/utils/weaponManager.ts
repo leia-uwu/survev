@@ -47,6 +47,7 @@ export class WeaponManager {
         }
 
         this.player.shotSlowdownTimer = -1;
+        this.burstCount = 0;
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
             this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
@@ -91,11 +92,11 @@ export class WeaponManager {
             });
         }
 
-        this.weapons[0].type = "m870";
-        this.weapons[0].ammo = 5;
+        this.weapons[0].type = "ump9";
+        this.weapons[0].ammo = 30;
 
-        this.weapons[1].type = "mp5";
-        this.weapons[1].ammo = 30;
+        this.weapons[1].type = "an94";
+        this.weapons[1].ammo = 45;
     }
 
     shootStart(): void {
@@ -115,7 +116,10 @@ export class WeaponManager {
         }
     }
 
-    reload() {
+    /**
+     * Try to schedule a reload action if all conditions are met
+     */
+    tryReload() {
         if (this.player.actionType == GameConfig.Action.Reload) {
             return;
         }
@@ -124,7 +128,7 @@ export class WeaponManager {
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponInfo.maxClip,
             this.player.inventory[weaponInfo.ammo] == 0,
-            this.curWeapIdx == 2 || this.curWeapIdx == 3
+            this.curWeapIdx == GameConfig.WeaponSlot.Melee || this.curWeapIdx == GameConfig.WeaponSlot.Throwable
         ];
         if (conditions.some(c => c)) {
             return;
@@ -133,6 +137,37 @@ export class WeaponManager {
         const duration = weaponInfo.reloadTime;
 
         this.player.doAction(this.activeWeapon, GameConfig.Action.Reload, duration);
+    }
+
+    reload(): void {
+        const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
+        const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
+        const spaceLeft = weaponInfo.maxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
+
+        const inv = this.player.inventory;
+
+        if (inv[weaponInfo.ammo] < spaceLeft) { // 27/30, inv = 2
+            if (weaponInfo.maxClip != weaponInfo.maxReload) { // m870, mosin, spas: only refill by one bullet at a time
+                this.weapons[this.curWeapIdx].ammo++;
+                inv[weaponInfo.ammo]--;
+            } else { // mp5, sv98, ak47: refill to as much as you have left in your inventory
+                this.weapons[this.curWeapIdx].ammo += inv[weaponInfo.ammo];
+                inv[weaponInfo.ammo] = 0;
+            }
+        } else { // 27/30, inv = 100
+            this.weapons[this.curWeapIdx].ammo += math.clamp(weaponInfo.maxReload, 0, spaceLeft);
+            inv[weaponInfo.ammo] -= math.clamp(weaponInfo.maxReload, 0, spaceLeft);
+        }
+
+        // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
+        const realMaxClip = inv[weaponInfo.ammo] == 0 ? this.weapons[this.curWeapIdx].ammo : weaponInfo.maxClip;
+        if (weaponInfo.maxClip != weaponInfo.maxReload && this.weapons[this.curWeapIdx].ammo != realMaxClip) {
+            this.player.performActionAgain = true;
+        }
+
+        this.player.inventoryDirty = true;
+        this.player.weapsDirty = true;
+        this.burstCount = 0;
     }
 
     dropGun(weapIdx: number, switchToMelee = true): void {
@@ -154,6 +189,7 @@ export class WeaponManager {
         if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
             this.player.inventory[weaponAmmoType] += weaponAmmoCount;
             this.player.weapsDirty = true;
+            this.player.inventoryDirty = true;
         } else {
             const spaceLeft = bagSpace - this.player.inventory[weaponAmmoType];
             const amountToAdd = spaceLeft;
@@ -185,6 +221,7 @@ export class WeaponManager {
     }
 
     offHand = false;
+    burstCount = 0;
 
     fireWeapon(skipDelayCheck = false) {
         if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now && !skipDelayCheck) return;
@@ -194,7 +231,20 @@ export class WeaponManager {
 
         this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
 
-        if (this.player.shootHold && itemDef.fireMode === "auto") {
+        if (this.player.shootHold && itemDef.fireMode === "burst") {
+            this.burstCount++;
+            if (this.burstCount < itemDef.burstCount!) {
+                this.timeouts.push(
+                    setTimeout(() => {
+                        this.fireWeapon(true);
+                    }, itemDef.burstDelay! * 1000));
+            }
+        }
+
+        if (this.player.shootHold &&
+            (itemDef.fireMode === "auto" || (itemDef.fireMode === "burst") && this.burstCount >= itemDef.burstCount!)) {
+            this.burstCount = 0;
+
             this.clearTimeouts();
             this.timeouts.push(
                 setTimeout(() => {
@@ -214,9 +264,9 @@ export class WeaponManager {
         const direction = this.player.dir;
         const toMouseLen = this.player.toMouseLen;
 
-        this.player.shotSlowdownTimer = this.player.game.now + itemDef.fireDelay * 700;// 700ms is approximation
+        this.player.shotSlowdownTimer = this.player.game.now + itemDef.fireDelay * 1000;
 
-        this.player.cancelAction(false);
+        this.player.cancelAction();
 
         this.weapons[this.curWeapIdx].ammo--;
         this.player.weapsDirty = true;

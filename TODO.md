@@ -23,7 +23,8 @@
  - [x] Firing delays
  - [x] Ammo
  - [x] Reloading
- - [ ] Burst guns
+ - [x] Burst guns
+ - [ ] Projectile guns (potato cannon and spud gun)
 
 
 ### Bullets

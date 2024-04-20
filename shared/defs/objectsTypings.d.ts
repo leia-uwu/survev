@@ -100,6 +100,8 @@ interface GunDef extends BaseLootDef {
     quality: number
     fireMode: "single" | "auto" | "burst"
     caseTiming: "shoot" | "reload"
+    burstCount?: number
+    burstDelay?: number
     ammo: string
     ammoSpawnCount: number
     dualWieldType?: string

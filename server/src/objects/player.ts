@@ -393,7 +393,7 @@ export class Player extends BaseGameObject {
             switch (this.scheduledAction.type) {
             case GameConfig.Action.Reload: {
                 if (GameConfig.WeaponType[this.curWeapIdx] === "gun" && this.weapons[this.curWeapIdx].ammo == 0) {
-                    this.weaponManager.reload();
+                    this.weaponManager.tryReload();
                 }
                 break;
             }
@@ -434,31 +434,7 @@ export class Player extends BaseGameObject {
                 this.inventory[this.actionItem]--;
                 this.inventoryDirty = true;
             } else if (this.actionType == GameConfig.Action.Reload) {
-                const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
-                const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
-                const spaceLeft = weaponInfo.maxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
-
-                if (this.inventory[weaponInfo.ammo] < spaceLeft) { // 27/30, inv = 2
-                    if (weaponInfo.maxClip != weaponInfo.maxReload) { // m870, mosin, spas: only refill by one bullet at a time
-                        this.weapons[this.curWeapIdx].ammo++;
-                        this.inventory[weaponInfo.ammo]--;
-                    } else { // mp5, sv98, ak47: refill to as much as you have left in your inventory
-                        this.weapons[this.curWeapIdx].ammo += this.inventory[weaponInfo.ammo];
-                        this.inventory[weaponInfo.ammo] = 0;
-                    }
-                } else { // 27/30, inv = 100
-                    this.weapons[this.curWeapIdx].ammo += math.clamp(weaponInfo.maxReload, 0, spaceLeft);
-                    this.inventory[weaponInfo.ammo] -= math.clamp(weaponInfo.maxReload, 0, spaceLeft);
-                }
-
-                // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
-                const realMaxClip = this.inventory[weaponInfo.ammo] == 0 ? this.weapons[this.curWeapIdx].ammo : weaponInfo.maxClip;
-                if (weaponInfo.maxClip != weaponInfo.maxReload && this.weapons[this.curWeapIdx].ammo != realMaxClip) {
-                    this.performActionAgain = true;
-                }
-
-                this.inventoryDirty = true;
-                this.weapsDirty = true;
+                this.weaponManager.reload();
             }
             if (this.performActionAgain) {
                 this.lastAction = { ...this.action };// shallow copy so no references are kept
@@ -1002,7 +978,7 @@ export class Player extends BaseGameObject {
                 break;
             }
             case GameConfig.Input.Reload:
-                this.weaponManager.reload();
+                this.weaponManager.tryReload();
                 break;
             case GameConfig.Input.UseBandage:
                 this.useHealingItem("bandage");
@@ -1218,7 +1194,7 @@ export class Player extends BaseGameObject {
                     weaponInfo.type === "gun" &&
                     this.weapons[this.curWeapIdx].ammo == 0 &&
                     weaponInfo.ammo == obj.type) {
-                this.weaponManager.reload();
+                this.weaponManager.tryReload();
             }
         }
             break;
@@ -1429,8 +1405,6 @@ export class Player extends BaseGameObject {
         this.action.duration = duration;
         const t = Date.now() + (duration * 1000);
         this.action.time = duration - (t / 1000);
-        // console.log(this.action.time);
-        // this.action.time = Date.now() + (duration * 1000);
 
         this.actionDirty = true;
         this.actionItem = actionItem;
@@ -1439,7 +1413,7 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
-    cancelAction(_?: boolean): void {
+    cancelAction(): void {
         this.action.duration = 0;
         this.action.targetId = 0;
         this.action.time = -1;
