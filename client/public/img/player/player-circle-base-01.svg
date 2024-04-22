@@ -1,1 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="74" height="74"><ellipse cx="-34.7" cy="39.166" transform="rotate(-86.539) skewX(.002)" stroke-miterlimit="10" rx="33.235" ry="33.244" fill="#fff" stroke="#333" stroke-width="5.507"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="148"
+   height="148"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="player-circle-base-01.svg"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+  <metadata
+     id="metadata10">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview6"
+     showgrid="false"
+     inkscape:zoom="3.1891892"
+     inkscape:cx="37"
+     inkscape:cy="37"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <ellipse
+     cx="-69.395813"
+     cy="78.328239"
+     transform="matrix(0.06031005,-0.99817969,0.99817466,0.06039336,0,0)"
+     stroke-miterlimit="10"
+     rx="66.51812"
+     ry="66.47126"
+     id="ellipse2"
+     style="fill:#ffffff;stroke:#333333;stroke-width:11.0165987;stroke-miterlimit:10" />
+</svg>
