@@ -811,8 +811,8 @@ export class Player extends BaseGameObject {
         }
 
         // death emote
-        if (this.loadout.emotes[5] != "") {
-            this.game.emotes.push(new Emote(this.__id, this.pos, this.loadout.emotes[5], false));
+        if (this.loadout.emotes[GameConfig.EmoteSlot.Death] != "") {
+            this.game.emotes.push(new Emote(this.__id, this.pos, this.loadout.emotes[GameConfig.EmoteSlot.Death], false));
         }
     }
 
