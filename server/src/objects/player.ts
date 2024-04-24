@@ -2,7 +2,7 @@ import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { BaseGameObject, type GameObject } from "./gameObject";
+import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
@@ -14,7 +14,6 @@ import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type Hel
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import { type Loot } from "./loot";
-import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ServerSocket } from "../abstractServer";
 import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
 import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
@@ -343,7 +342,7 @@ export class Player extends BaseGameObject {
 
     lastInputMsg = new InputMsg();
 
-    update(): void {
+    update(dt: number): void {
         if (this.dead) return;
         this.ticksSinceLastAction++;
         // console.log(this.weapons.slice(0, 1).map(w => w.cooldown - this.game.now));
@@ -370,15 +369,19 @@ export class Player extends BaseGameObject {
         }
 
         if (this.boost > 0) {
-            this.boost -= 0.375 * this.game.dt;
+            this.boost -= 0.375 * dt;
         }
-        if (this.boost > 0 && this.boost <= 25) this.health += 1 * this.game.dt;
-        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75 * this.game.dt;
-        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * this.game.dt;
-        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * this.game.dt;
+        if (this.boost > 0 && this.boost <= 25) this.health += 1 * dt;
+        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75 * dt;
+        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * dt;
+        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
 
         if (this.game.gas.doDamge && this.game.gas.isInGas(this.pos)) {
-            this.damage(this.game.gas.damage, "", GameConfig.DamageType.Gas, undefined);
+            this.damage({
+                amount: this.game.gas.damage,
+                damageType: GameConfig.DamageType.Gas,
+                dir: v2.randomUnit()
+            });
         }
 
         if (this.reloadAgain) {
@@ -444,7 +447,7 @@ export class Player extends BaseGameObject {
 
         this.recalculateSpeed();
 
-        this.pos = v2.add(this.pos, v2.mul(movement, this.speed * this.game.dt));
+        this.pos = v2.add(this.pos, v2.mul(movement, this.speed * dt));
 
         let collided = true;
         let step = 0;
@@ -558,7 +561,7 @@ export class Player extends BaseGameObject {
     fullUpdate = false;
     secondsSinceLastUpdate = 0;
 
-    sendMsgs(): void {
+    sendMsgs(dt: number): void {
         const msgStream = new MsgStream(new ArrayBuffer(65536));
 
         if (this._firstUpdate) {
@@ -597,7 +600,7 @@ export class Player extends BaseGameObject {
         const radius = player.zoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
 
-        this.secondsSinceLastUpdate += this.game.dt;
+        this.secondsSinceLastUpdate += dt;
         if (this.game.grid.updateObjects ||
             this._firstUpdate ||
             this.fullUpdate ||
@@ -694,11 +697,21 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
-    damage(amount: number, sourceType: string, damageType: number, source: GameObject | undefined, isHeadShot = false) {
+    damage(params: DamageParams) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
-        let finalDamage = amount;
+        let finalDamage = params.amount;
+        let isHeadShot = false;
+
+        const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
+
+        if (gameSourceDef && "headshotMult" in gameSourceDef) {
+            isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
+            if (isHeadShot) {
+                finalDamage *= gameSourceDef.headshotMult;
+            }
+        }
 
         const chest = GameObjectDefs[this.chest] as ChestDef;
 
@@ -714,16 +727,16 @@ export class Player extends BaseGameObject {
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
         this.damageTaken += finalDamage;
-        if (source instanceof Player) source.damageDealt += finalDamage;
+        if (params.source instanceof Player) params.source.damageDealt += finalDamage;
 
         this.health -= finalDamage;
 
         if (this._health === 0) {
-            this.kill(sourceType, damageType, source);
+            this.kill(params);
         }
     }
 
-    kill(sourceType: string, damageType: number, source?: GameObject): void {
+    kill(params: DamageParams): void {
         this.dead = true;
         this.boost = 0;
         this.actionType = this.actionSeq = 0;
@@ -731,38 +744,42 @@ export class Player extends BaseGameObject {
         this.setDirty();
 
         this.shootHold = false;
-        for (const timeout of this.weaponManager.timeouts) {
-            clearTimeout(timeout);
-        }
+        this.weaponManager.clearTimeouts();
 
         this.game.aliveCountDirty = true;
         this.game.livingPlayers.delete(this);
 
+        //
+        // Send kill msg
+        //
         const killMsg = new KillMsg();
-        killMsg.damageType = damageType;
-        killMsg.itemSourceType = GameObjectDefs[sourceType] ? sourceType : "";
-        killMsg.mapSourceType = MapObjectDefs[sourceType] ? sourceType : "";
+        killMsg.damageType = params.damageType;
+        killMsg.itemSourceType = params.gameSourceType ?? "";
+        killMsg.mapSourceType = params.mapSourceType ?? "";
         killMsg.targetId = this.__id;
         killMsg.killed = true;
 
-        if (source instanceof Player) {
-            if (source !== this) source.kills++;
-            killMsg.killerId = source.__id;
-            killMsg.killCreditId = source.__id;
-            killMsg.killerKills = source.kills;
+        if (params.source instanceof Player) {
+            if (params.source !== this) params.source.kills++;
+            killMsg.killerId = params.source.__id;
+            killMsg.killCreditId = params.source.__id;
+            killMsg.killerKills = params.source.kills;
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
 
-        const gameOverMsg = new GameOverMsg();
+        //
+        // Send game over message to player
+        //
 
+        const gameOverMsg = new GameOverMsg();
         gameOverMsg.teamRank = this.game.aliveCount;
         gameOverMsg.playerStats.push(this);
         gameOverMsg.teamId = this.teamId;
         gameOverMsg.winningTeamId = -1;
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
 
-        const deadBody = new DeadBody(this.game, this.pos, this.__id, this.layer);
+        const deadBody = new DeadBody(this.game, this.pos, this.__id, this.layer, params.dir);
         this.game.grid.addObject(deadBody);
 
         //

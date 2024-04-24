@@ -33,8 +33,8 @@ export class LootBarn {
         this.game.grid.addObject(loot);
     }
 
-    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean) {
-        const loot = new Loot(this.game, type, pos, layer, count);
+    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean, dir?: Vec2) {
+        const loot = new Loot(this.game, type, pos, layer, count, undefined, dir);
         this.game.grid.addObject(loot);
 
         const def = GameObjectDefs[type];
@@ -121,7 +121,7 @@ export class Loot extends BaseGameObject {
 
     ticks = 0;
 
-    constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2) {
+    constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2, dir?: Vec2) {
         super(game, pos);
 
         const def = GameObjectDefs[type];
@@ -139,12 +139,14 @@ export class Loot extends BaseGameObject {
 
         this.dragConstant = Math.exp(-3.69 / game.config.tps);
 
-        this.push(v2.randomUnit(), pushSpeed);
+        this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
 
-    update(): void {
-        if (this.ticks > 2) this.isOld = true;
-        else this.ticks++;
+    update(dt: number): void {
+        if (this.ticks > 2) {
+            this.isOld = true;
+            this.setDirty();
+        } else this.ticks++;
         const moving = Math.abs(this.vel.x) > 0.001 ||
             Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
@@ -153,7 +155,7 @@ export class Loot extends BaseGameObject {
 
         this.oldPos = v2.copy(this.pos);
 
-        const halfDt = this.game.dt / 2;
+        const halfDt = dt / 2;
 
         const calculateSafeDisplacement = (): Vec2 => {
             let displacement = v2.mul(this.vel, halfDt);
@@ -210,14 +212,14 @@ export class Loot extends BaseGameObject {
             const tangent = river.spline.getTangent(
                 river.spline.getClosestTtoPoint(this.pos)
             );
-            this.push(tangent, 0.5 * this.game.dt);
+            this.push(tangent, 0.5 * dt);
         }
 
         let onStair = false;
         const originalLayer = this.layer;
         const objs = this.game.grid.intersectCollider(this.collider);
         for (const obj of objs) {
-            if (obj instanceof Structure) {
+            if (obj.__type === ObjectType.Structure) {
                 for (const stair of obj.stairs) {
                     if (Structure.checkStairs(this.pos, stair, this)) {
                         onStair = true;

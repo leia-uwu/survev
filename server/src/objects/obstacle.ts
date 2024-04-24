@@ -9,7 +9,7 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { type Building } from "./building";
-import { BaseGameObject, type GameObject } from "./gameObject";
+import { BaseGameObject, type DamageParams } from "./gameObject";
 import { type Player } from "./player";
 import * as net from "../../../shared/net";
 import { Explosion } from "./explosion";
@@ -236,22 +236,29 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
-    damage(amount: number, sourceType: string, damageType: number, source?: GameObject): void {
+    damage(params: DamageParams): void {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
-        const sourceDef = GameObjectDefs[sourceType] as {
-            armorPiercing?: boolean
-            stonePiercing?: boolean
-        };
+        let armorPiercing = false;
+        let stonePiercing = false;
 
-        if (def.armorPlated && !sourceDef?.armorPiercing) return;
-        if (def.stonePlated && !sourceDef?.stonePiercing) return;
+        if (params.gameSourceType) {
+            const sourceDef = GameObjectDefs[params.gameSourceType] as {
+                armorPiercing?: boolean
+                stonePiercing?: boolean
+            } | undefined;
+            armorPiercing = sourceDef?.armorPiercing ?? false;
+            stonePiercing = sourceDef?.stonePiercing ?? false;
+        }
 
-        this.health -= amount;
+        if (def.armorPlated && !armorPiercing) return;
+        if (def.stonePlated && !stonePiercing) return;
+
+        this.health -= params.amount;
 
         if (this.health <= 0) {
-            this.kill(sourceType, damageType, source);
+            this.kill(params);
         } else {
             this.healthT = this.health / this.maxHealth;
             if (this.minScale < 1) {
@@ -267,7 +274,7 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
-    kill(_sourceType: string, damageType: number, source?: GameObject) {
+    kill(params: DamageParams) {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.health = this.healthT = 0;
         this.dead = true;
@@ -290,11 +297,25 @@ export class Obstacle extends BaseGameObject {
                     const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier);
 
                     for (const item of items) {
-                        this.game.lootBarn.addLoot(item.name, lootPos, this.layer, item.count);
+                        this.game.lootBarn.addLoot(
+                            item.name,
+                            lootPos,
+                            this.layer,
+                            item.count,
+                            undefined,
+                            params.dir
+                        );
                     }
                 }
             } else {
-                this.game.lootBarn.addLoot(lootTierOrItem.type, lootPos, this.layer, lootTierOrItem.count);
+                this.game.lootBarn.addLoot(
+                    lootTierOrItem.type,
+                    lootPos,
+                    this.layer,
+                    lootTierOrItem.count,
+                    undefined,
+                    params.dir
+                );
             }
         }
 
@@ -303,8 +324,8 @@ export class Obstacle extends BaseGameObject {
                 this.pos,
                 this.layer,
                 this.type,
-                damageType,
-                source
+                params.damageType,
+                params.source
             );
             this.game.explosions.push(explosion);
         }

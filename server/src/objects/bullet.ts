@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import { type GunDef, type BulletDef } from "../../../shared/defs/objectsTypings";
+import { type BulletDef } from "../../../shared/defs/objectsTypings";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { coldet } from "../../../shared/utils/coldet";
@@ -9,7 +9,7 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type GameObject } from "./gameObject";
+import { type DamageParams, type GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
 import { Explosion } from "./explosion";
@@ -67,16 +67,9 @@ export class BulletManager {
 
     constructor(public game: Game) { }
 
-    damages: Array<{
-        obj: Player | Obstacle
-        killer?: GameObject
-        damageType: number
-        sourceType: string
-        damage: number
-        isHeadShot?: boolean
-    }> = [];
+    damages: Array<DamageParams & { obj: GameObject }> = [];
 
-    update(): void {
+    update(dt: number): void {
         for (let i = 0; i < this.bullets.length; i++) {
             const bullet = this.bullets[i];
 
@@ -98,19 +91,12 @@ export class BulletManager {
                 continue;
             }
 
-            bullet.update();
+            bullet.update(dt);
         }
 
         for (let i = 0; i < this.damages.length; i++) {
             const damageRecord = this.damages[i];
-
-            damageRecord.obj.damage(
-                damageRecord.damage,
-                damageRecord.sourceType,
-                damageRecord.damageType,
-                damageRecord.killer,
-                damageRecord.isHeadShot
-            );
+            damageRecord.obj.damage(damageRecord);
         }
     }
 
@@ -300,10 +286,10 @@ export class Bullet {
         this.clientEndPos = v2.add(this.startPos, v2.mul(this.dir, maxDistance));
     }
 
-    update(): void {
+    update(dt: number): void {
         const posOld = v2.copy(this.pos);
         const distLeft = this.distance - v2.length(v2.sub(this.startPos, this.pos));
-        const moveDist = math.min(distLeft, this.bulletManager.game.dt * this.speed);
+        const moveDist = math.min(distLeft, dt * this.speed);
         this.distanceTraveled += moveDist;
 
         v2.set(this.pos, v2.add(this.pos, v2.mul(this.dir, moveDist)));
@@ -474,10 +460,12 @@ export class Bullet {
 
                 this.bulletManager.damages.push({
                     obj,
-                    sourceType: this.shotSourceType,
+                    gameSourceType: this.shotSourceType,
+                    mapSourceType: this.shotSourceType,
                     damageType: this.damageType,
-                    killer: this.player,
-                    damage: finalDamage * def.obstacleDamage
+                    source: this.player,
+                    amount: finalDamage * def.obstacleDamage,
+                    dir: this.dir
                 });
 
                 const obstacleDef = (MapObjectDefs[obj.type] as ObstacleDef);
@@ -487,21 +475,14 @@ export class Bullet {
             } else if (obj instanceof Player) {
                 stopBullet = collision.collidable;
 
-                let isHeadShot = false;
-                // headshots >:3
-                const sourceDef = GameObjectDefs[this.shotSourceType] as GunDef;
-                if ((sourceDef?.headshotMult ?? 1) > 1 && Math.random() < GameConfig.player.headshotChance) {
-                    finalDamage *= (GameObjectDefs[this.shotSourceType] as GunDef).headshotMult;
-                    isHeadShot = true;
-                }
-
                 this.bulletManager.damages.push({
                     obj,
-                    sourceType: this.shotSourceType,
-                    killer: this.player,
+                    gameSourceType: this.shotSourceType,
+                    mapSourceType: this.shotSourceType,
+                    source: this.player,
                     damageType: this.damageType,
-                    damage: finalDamage,
-                    isHeadShot
+                    amount: finalDamage,
+                    dir: this.dir
                 });
             }
             if (stopBullet) {

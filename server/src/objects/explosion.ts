@@ -1,6 +1,7 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type ExplosionDef } from "../../../shared/defs/objectsTypings";
 import { collider } from "../../../shared/utils/collider";
+import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -39,9 +40,10 @@ export class Explosion {
         for (let angle = -Math.PI; angle < Math.PI; angle += 0.1) {
             // All objects that collided with this line
             const lineCollisions: Array<{
-                readonly object: GameObject
-                readonly pos: Vec2
-                readonly distance: number
+                obj: GameObject
+                pos: Vec2
+                distance: number
+                dir: Vec2
             }> = [];
 
             const lineEnd = v2.add(this.pos, v2.rotate(v2.create(this.rad, 0), angle));
@@ -56,8 +58,9 @@ export class Explosion {
                     if (intersection) {
                         lineCollisions.push({
                             pos: intersection.point,
-                            object: obj,
-                            distance: v2.distance(this.pos, intersection.point)
+                            obj,
+                            distance: v2.distance(this.pos, intersection.point),
+                            dir: v2.neg(v2.normalize(v2.sub(this.pos, obj.pos)))
                         });
                     }
                 }
@@ -66,31 +69,40 @@ export class Explosion {
             // sort by closest to the explosion center to prevent damaging objects through walls
             lineCollisions.sort((a, b) => a.distance - b.distance);
 
-            const { min, max } = def.rad;
             for (const collision of lineCollisions) {
-                const object = collision.object;
+                const obj = collision.obj;
 
-                if (!damagedObjects.has(object.__id)) {
-                    damagedObjects.set(object.__id, true);
+                if (!damagedObjects.has(obj.__id)) {
+                    damagedObjects.set(obj.__id, true);
                     const dist = collision.distance;
 
-                    if (object.__type === ObjectType.Player || object.__type === ObjectType.Obstacle) {
-                        object.damage(
-                            def.damage *
-                            (object.__type === ObjectType.Obstacle ? def.obstacleDamage : 1) *
-                            ((dist > min) ? (max - dist) / (max - min) : 1),
-                            this.sourceType,
-                            this.damageType,
-                            this.source
-                        );
+                    if (obj.__type === ObjectType.Player || obj.__type === ObjectType.Obstacle) {
+                        let damage = def.damage;
+
+                        if (dist > def.rad.min) {
+                            damage = math.remap(dist, def.rad.min, def.rad.max, 0, damage);
+                        }
+
+                        if (obj.__type === ObjectType.Obstacle) {
+                            damage *= def.obstacleDamage;
+                        }
+
+                        obj.damage({
+                            amount: damage,
+                            gameSourceType: this.sourceType,
+                            mapSourceType: this.sourceType,
+                            source: this.source,
+                            damageType: this.damageType,
+                            dir: collision.dir
+                        });
                     }
 
-                    if (object.__type === ObjectType.Loot) {
-                        object.push(v2.normalize(v2.sub(collision.pos, this.pos)), (max - dist) * 4);
+                    if (obj.__type === ObjectType.Loot) {
+                        obj.push(v2.normalize(v2.sub(collision.pos, this.pos)), (def.rad.max - dist) * 4);
                     }
                 }
 
-                if (object.__type === ObjectType.Obstacle && object.collidable) break;
+                if (obj.__type === ObjectType.Obstacle && obj.collidable) break;
             }
         }
 

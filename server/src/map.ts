@@ -73,8 +73,8 @@ export class GameMap {
         for (const loot in GameObjectDefs) {
             const def = GameObjectDefs[loot];
             if ("lootImg" in def) {
-                this.game.grid.addObject(new Loot(this.game, loot, lootPos, 0, 1, 0));
-                this.game.grid.addObject(new Loot(this.game, loot, v2.add(lootPos, { x: 1, y: 1 }), 0, 1, 0));
+                this.game.grid.addObject(new Loot(this.game, loot, lootPos, 0, 100, 0));
+                // this.game.grid.addObject(new Loot(this.game, loot, v2.add(lootPos, { x: 1, y: 1 }), 0, 1, 0));
 
                 lootPos.x += 3.5;
                 if (lootPos.x > this.width / 2 + 80) {

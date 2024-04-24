@@ -7,7 +7,7 @@ export class IDAllocator {
     /**
      * A list of free ID's to be used once the main ID's run out
      */
-    private _freeList: number[] = [];
+    private readonly _freeList: number[] = [];
 
     constructor(bits: number) {
         this.maxId = 2 ** bits;
@@ -22,7 +22,7 @@ export class IDAllocator {
         let id: number | undefined = this._currentId;
         if (id > this.maxId) {
             id = this._freeList.shift();
-            if (id ) {
+            if (id) {
                 return id;
             } else {
                 throw new Error("Ran out of ID's");

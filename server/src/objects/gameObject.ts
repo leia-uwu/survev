@@ -16,6 +16,15 @@ import { BitStream } from "../../../shared/net";
 
 export type GameObject = Player | Obstacle | Loot | DeadBody | Building | Structure | Decal | Projectile | Smoke | Airdrop;
 
+export interface DamageParams {
+    amount: number
+    damageType: number
+    dir: Vec2
+    gameSourceType?: string
+    mapSourceType?: string
+    source?: GameObject
+}
+
 export abstract class BaseGameObject {
     abstract readonly __type: ObjectType;
     readonly __id: number;
@@ -42,6 +51,8 @@ export abstract class BaseGameObject {
         this._pos = pos;
         this.__id = game.objectIdAllocator.getNextId();
     }
+
+    damage(_params: DamageParams): void {}
 
     init(): void {
         this.partialStream = new BitStream(new ArrayBuffer(64));

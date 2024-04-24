@@ -27,6 +27,7 @@ export class Game {
     allowJoin = true;
     over = false;
     startedTime = 0;
+    id: number;
 
     objectIdAllocator = new IDAllocator(16);
     groupIdAllocator = new IDAllocator(8);
@@ -52,16 +53,9 @@ export class Game {
 
     explosions: Explosion[] = [];
 
-    id: number;
-
     map: GameMap;
 
     grid: Grid;
-
-    /**
-     * Delta Time in seconds
-     */
-    dt: number = 0;
 
     config: ConfigType;
 
@@ -100,15 +94,19 @@ export class Game {
     tick(): void {
         const now = Date.now();
         if (!this.now) this.now = now;
-        this.dt = (now - this.now) / 1000;
+        const dt = (now - this.now) / 1000;
         this.now = now;
 
-        this.bulletManager.update();
+        this.bulletManager.update(dt);
 
         this.gas.update();
 
         for (const loot of this.grid.categories[ObjectType.Loot]) {
-            loot.update();
+            loot.update(dt);
+        }
+
+        for (const deadBody of this.grid.categories[ObjectType.DeadBody]) {
+            deadBody.update(dt);
         }
 
         for (const explosion of this.explosions) {
@@ -116,7 +114,7 @@ export class Game {
         }
 
         for (const player of this.players) {
-            player.update();
+            player.update(dt);
         }
 
         for (const obj of this.partialObjs) {
@@ -131,7 +129,7 @@ export class Game {
         }
 
         for (const player of this.connectedPlayers) {
-            player.sendMsgs();
+            player.sendMsgs(dt);
         }
 
         //

@@ -489,6 +489,7 @@ export class WeaponManager {
             prio: number
             pos: Vec2
             pen: number
+            dir: Vec2
         }> = [];
 
         const objs = this.player.game.grid.intersectCollider(coll);
@@ -536,7 +537,8 @@ export class WeaponManager {
                             obj: obstacle,
                             pen: collision.pen,
                             prio: 1,
-                            pos
+                            pos,
+                            dir: collision.dir
                         });
                     }
                 }
@@ -574,7 +576,8 @@ export class WeaponManager {
                             obj: player,
                             pen: collision.pen,
                             prio: player.teamId === this.player.teamId ? 2 : 0,
-                            pos: v2.copy(player.pos)
+                            pos: v2.copy(player.pos),
+                            dir: collision.dir
                         });
                     }
                 }
@@ -595,20 +598,23 @@ export class WeaponManager {
             const obj = hit.obj;
 
             if (obj.__type === ObjectType.Obstacle) {
-                obj.damage(
-                    meleeDef.damage * meleeDef.obstacleDamage,
-                    this.activeWeapon,
-                    GameConfig.DamageType.Player,
-                    this.player
+                obj.damage({
+                    amount: meleeDef.damage * meleeDef.obstacleDamage,
+                    gameSourceType: this.activeWeapon,
+                    damageType: GameConfig.DamageType.Player,
+                    source: this.player,
+                    dir: hit.dir
+                }
                 );
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {
-                obj.damage(
-                    meleeDef.damage,
-                    this.activeWeapon,
-                    GameConfig.DamageType.Player,
-                    this.player
-                );
+                obj.damage({
+                    amount: meleeDef.damage,
+                    gameSourceType: this.activeWeapon,
+                    damageType: GameConfig.DamageType.Player,
+                    source: this.player,
+                    dir: hit.dir
+                });
             }
         }
     }
