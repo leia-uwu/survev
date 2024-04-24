@@ -1,34 +1,6 @@
 import { CrosshairDefs } from "./crosshairDefs";
 import { HealEffectDefs } from "./healEffectDefs";
-
-/**
- * Checks if an item is present in the player's loadout
- * @param {string} item
- * @param {"boost" | "heal" | "melee" | "emote" | "outfit"} category
- * @returns { boolean }
- */
-export function isItemInLoadout(item, category) {
-    switch (category) {
-    case "outfit": {
-        return allowedOutfits.includes(item);
-    }
-    case "melee": {
-        return allowedMeleeSkins.includes(item);
-    }
-    case "heal": {
-        return item.startsWith("heal_") && allowedHealEffects.includes(item);
-    }
-    case "boost": {
-        return item.startsWith("boost_") && allowedHealEffects.includes(item);
-    }
-    case "emote": {
-        return allowedEmotes.includes(item);
-    }
-    default: {
-        return false;
-    }
-    }
-}
+import { PassDefs } from "./passDefs";
 
 const allowedHealEffects = Object.keys(HealEffectDefs);
 const allowedMeleeSkins = [
@@ -45,13 +17,14 @@ export const UnlockDefs = {
     unlock_default: {
         type: "unlock",
         name: "standard-issue",
-        unlocks: [
+        unlocks: [...new Set([
             ...allowedOutfits,
             ...allowedMeleeSkins,
             ...allowedEmotes,
             ...allowedHealEffects,
-            ...Object.keys(CrosshairDefs)
-        ]
+            ...Object.keys(CrosshairDefs),
+            ...PassDefs.pass_survivr1.items.map((item) => item.item)
+        ])]
     },
     unlock_new_account: {
         type: "unlock",

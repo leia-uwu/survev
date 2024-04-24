@@ -17,9 +17,10 @@ import { type Explosion } from "./objects/explosion";
 import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
-import { isItemInLoadout } from "../../shared/defs/gameObjects/unlockDefs";
+import { UnlockDefs } from "../../shared/defs/gameObjects/unlockDefs";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { IDAllocator } from "./IDAllocator";
+import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 
 export class Game {
     started = false;
@@ -235,6 +236,18 @@ export class Game {
             player.joinedTime = Date.now();
 
             player.isMobile = joinMsg.isMobile;
+
+            /**
+            * Checks if an item is present in the player's loadout
+            */
+            const isItemInLoadout = (item: string, category: string) => {
+                if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
+
+                const def = GameObjectDefs[item];
+                if (!def || def.type !== category) return false;
+
+                return true;
+            };
 
             if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
                 player.outfit = joinMsg.loadout.outfit;
