@@ -40,7 +40,7 @@ export abstract class BaseGameObject {
     constructor(game: Game, pos: Vec2) {
         this.game = game;
         this._pos = pos;
-        this.__id = game.nextObjId++;
+        this.__id = game.objectIdAllocator.getNextId();
     }
 
     init(): void {

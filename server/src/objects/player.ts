@@ -327,7 +327,7 @@ export class Player extends BaseGameObject {
         this.collider = collider.createCircle(pos, this.rad);
 
         if (game.config.map !== "faction") {
-            this.groupId = this.teamId = ++this.game.nextGroupId;
+            this.groupId = this.teamId = this.game.groupIdAllocator.getNextId();
         }
 
         for (const item in GameConfig.bagSizes) {

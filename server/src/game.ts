@@ -19,6 +19,7 @@ import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
 import { isItemInLoadout } from "../../shared/defs/gameObjects/unlockDefs";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
+import { IDAllocator } from "./IDAllocator";
 
 export class Game {
     started = false;
@@ -27,9 +28,8 @@ export class Game {
     over = false;
     startedTime = 0;
 
-    nextObjId = 0;
-
-    nextGroupId = 0;
+    objectIdAllocator = new IDAllocator(16);
+    groupIdAllocator = new IDAllocator(8);
 
     players = new Set<Player>();
     connectedPlayers = new Set<Player>();

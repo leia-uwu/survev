@@ -103,6 +103,7 @@ export class Grid {
         this.objects.delete(obj.__id);
         this.removeFromGrid(obj);
         this.updateObjects = true;
+        obj.game.objectIdAllocator.give(obj.__id);
         (this.categories[obj.__type] as Set<typeof obj>).delete(obj);
     }
 
