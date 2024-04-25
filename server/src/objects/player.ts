@@ -841,6 +841,9 @@ export class Player extends BaseGameObject {
         if (this.health == itemDef.maxHeal || this.actionType == GameConfig.Action.UseItem) {
             return;
         }
+        if (!this.inventory[item]) {
+            return;
+        }
 
         // healing gets action priority over reloading
         if (this.actionType == GameConfig.Action.Reload) {
@@ -859,6 +862,9 @@ export class Player extends BaseGameObject {
         }
 
         if (this.actionType == GameConfig.Action.UseItem) {
+            return;
+        }
+        if (!this.inventory[item]) {
             return;
         }
 
