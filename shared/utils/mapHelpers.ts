@@ -105,6 +105,13 @@ function getColliders(type: string) {
                 return collider.transform(coll, v2.rotate(object.pos, rot), rot, 1);
             }));
         }
+
+        for (let i = 0; i < def.floor.surfaces.length; i++) {
+            const collisions = def.floor.surfaces[i].collision;
+            for (let j = 0; j < collisions.length; j++) {
+                colliders.push(collisions[j]);
+            }
+        }
         break;
     }
     }

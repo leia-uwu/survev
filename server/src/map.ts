@@ -146,7 +146,7 @@ export class GameMap {
 
             const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI);
 
-            this.generateRiver(
+            this.genRiver(
                 start,
                 startAngle,
                 widths[this.riverDescs.length],
@@ -262,8 +262,12 @@ export class GameMap {
 
             if (def.terrain?.waterEdge) {
                 this.genOnWaterEdge(type);
-            } else {
-                this.genAuto(type, this.getRandPosInGrass(type));
+            } else if (def.terrain?.bridge) {
+                this.genOnRiver(type);
+            } else if (def.terrain?.grass) {
+                this.genOnGrass(type);
+            } else if (def.terrain?.beach) {
+                this.genOnBeach(type);
             }
         }
     }
@@ -303,6 +307,77 @@ export class GameMap {
         }
     }
 
+    static collidableTypes = [ObjectType.Obstacle, ObjectType.Building, ObjectType.Structure];
+
+    /**
+     * Checks if a map object can spawn at a given position, orientation and scale
+     */
+    canSpawn(type: string, pos: Vec2, ori: number, scale = 1): boolean {
+        const def = MapObjectDefs[type];
+
+        const rot = math.oriToRad(ori);
+
+        const mapObstacleBounds = mapHelpers.getColliders(type)
+            .map(coll => collider.transform(coll, pos, rot, scale));
+
+        const boundCollider = collider.transform(mapHelpers.getBoundingCollider(type), pos, rot, scale);
+        const objs = this.game.grid.intersectCollider(boundCollider);
+
+        for (let i = 0; i < objs.length; i++) {
+            if (!GameMap.collidableTypes.includes(objs[i].__type)) continue;
+
+            const obj = objs[i] as Obstacle | Building | Structure;
+
+            for (let j = 0; j < obj.mapObstacleBounds.length; j++) {
+                const otherBound = obj.mapObstacleBounds[j];
+                for (let k = 0; k < mapObstacleBounds.length; k++) {
+                    if (coldet.test(mapObstacleBounds[k], otherBound)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (!def.terrain?.river &&
+            !def.terrain?.bridge
+        ) {
+            const aabb = collider.toAabb(boundCollider);
+            for (let i = 0; i < this.terrain.rivers.length; i++) {
+                const river = this.terrain.rivers[i];
+
+                if (!coldet.test(boundCollider, river.aabb)) continue;
+
+                if (!def.terrain?.riverShore &&
+                    coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly)) return false;
+
+                if (math.pointInsidePolygon(pos, river.waterPoly)) return false;
+
+                if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly)) return false;
+            }
+        }
+
+        return true;
+    }
+
+    getOriAndScale(type: string): { ori: number, scale: number } {
+        let ori = 0;
+        let scale = 1;
+
+        const def = MapObjectDefs[type];
+        if (def.type === "building" || def.type === "structure") {
+            ori = def.ori ?? util.randomInt(0, 3);
+            if ("oris" in def) {
+                ori = def.oris![util.randomInt(0, def.oris!.length - 1)];
+            }
+        } else if (def.type === "obstacle") {
+            scale = util.random(def.scale.createMin, def.scale.createMax);
+        }
+
+        return { ori, scale };
+    }
+
+    static MaxSpawnAttempts = 1000;
+
     genOnWaterEdge(type: string): void {
         const def = MapObjectDefs[type] as BuildingDef | StructureDef;
         // safety check + makes ts shut up about it being possibly undefined
@@ -321,7 +396,7 @@ export class GameMap {
 
         const edgeRot = Math.atan2(waterEdge.dir.y, waterEdge.dir.x);
 
-        while (attempts++ < 200 && collided) {
+        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
             collided = false;
 
             const side = util.randomInt(0, 3);
@@ -348,75 +423,125 @@ export class GameMap {
             }
         }
 
-        if (pos) {
+        if (pos && attempts < GameMap.MaxSpawnAttempts) {
             this.genAuto(type, pos, 0, ori!, 1);
         }
     }
 
-    static collidableTypes = [ObjectType.Obstacle, ObjectType.Building, ObjectType.Structure];
+    genOnGrass(type: string) {
+        const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
 
-    /**
-     * Checks if a map object can spawn at a given position, orientation and scale
-     */
-    canSpawn(type: string, pos: Vec2, ori: number, scale = 1): boolean {
-        const bound = collider.transform(mapHelpers.getBoundingCollider(type), pos, math.oriToRad(ori), scale);
+        const { ori, scale } = this.getOriAndScale(type);
 
-        const objs = this.game.grid.intersectCollider(bound);
-
-        for (let i = 0; i < objs.length; i++) {
-            if (!GameMap.collidableTypes.includes(objs[i].__type)) continue;
-
-            const obj = objs[i] as Obstacle | Building | Structure;
-
-            for (let j = 0; j < obj.mapObstacleBounds.length; j++) {
-                const otherBound = obj.mapObstacleBounds[j];
-                if (coldet.test(bound, otherBound)) {
-                    return false;
-                }
-            }
-
-            if (obj.__type === ObjectType.Building) {
-                for (let j = 0; j < obj.surfaces.length; j++) {
-                    const colls = obj.surfaces[j].colliders;
-                    for (let k = 0; k < colls.length; k++) {
-                        if (coldet.test(bound, colls[k])) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
+        let width = bounds.max.x - bounds.min.x;
+        let height = bounds.max.y - bounds.min.y;
 
         const def = MapObjectDefs[type];
+        if (!def.terrain?.beach) {
+            width += this.grassInset;
+            height += this.grassInset;
+        }
 
-        if (!def.terrain?.river &&
-            !def.terrain?.bridge
-        ) {
-            const aabb = collider.toAabb(bound);
-            for (let i = 0; i < this.terrain.rivers.length; i++) {
-                const river = this.terrain.rivers[i];
+        const getPos = () => {
+            return {
+                x: util.random(this.shoreInset + width, this.width - this.shoreInset - width),
+                y: util.random(this.shoreInset + height, this.height - this.shoreInset - height)
+            };
+        };
 
-                if (!coldet.test(bound, river.aabb)) continue;
+        let pos: Vec2 | undefined;
+        let attempts = 0;
+        let collided = true;
 
-                if (!def.terrain?.riverShore &&
-                    coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly)) return false;
+        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
+            collided = false;
+            pos = getPos();
 
-                if (math.pointInsidePolygon(pos, river.waterPoly)) return false;
-
-                if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly)) return false;
+            if (!this.canSpawn(type, pos, ori, scale)) {
+                collided = true;
             }
         }
 
-        return true;
+        if (pos && attempts < GameMap.MaxSpawnAttempts) {
+            this.genAuto(type, pos, 0, ori, scale);
+        }
     }
 
-    generateRiver(
+    genOnBeach(type: string) {
+        const aabb = collider.toAabb(mapHelpers.getBoundingCollider(type));
+        const width = aabb.max.x - aabb.min.x;
+        const height = aabb.max.y - aabb.min.y;
+        const { ori, scale } = this.getOriAndScale(type);
+
+        let pos: Vec2 | undefined;
+
+        let attempts = 0;
+        let collided = true;
+
+        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
+            collided = false;
+
+            const side = util.randomInt(0, 3);
+            const rot = math.oriToRad(side);
+
+            const min = v2.create(this.shoreInset + width, this.shoreInset + width + this.grassInset);
+            const max = v2.create(min.x, this.height - this.shoreInset - height);
+
+            // generate a position and rotate it based on the orientation and map center
+            const tempPos = {
+                x: util.random(min.x, max.x),
+                y: util.random(min.y, max.y)
+            };
+            const offset = v2.sub(this.center, tempPos);
+            pos = v2.add(this.center, v2.rotate(offset, rot));
+
+            if (!this.canSpawn(type, pos, ori, 1)) {
+                collided = true;
+            }
+        }
+
+        if (pos && attempts < GameMap.MaxSpawnAttempts) {
+            this.genAuto(type, pos, 0, ori, scale);
+        }
+    }
+
+    genOnRiver(type: string) {
+        const { ori, scale } = this.getOriAndScale(type);
+
+        const getPos = () => {
+            const river = this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+            const t = util.random(0.2, 0.8);
+            const pos = river.spline.getPos(t);
+            return pos;
+        };
+
+        let pos: Vec2 | undefined;
+        let attempts = 0;
+        let collided = true;
+
+        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
+            collided = false;
+            pos = getPos();
+
+            if (!this.canSpawn(type, pos, ori, scale)) {
+                collided = true;
+            }
+        }
+
+        if (pos && attempts < GameMap.MaxSpawnAttempts) {
+            this.genAuto(type, pos, 0, ori, scale);
+        } else {
+            console.warn(`Failed to generate ${type} on river`);
+        }
+    }
+
+    genRiver(
         startPos: Vec2,
         startAngle: number,
         width: number,
         bounds: AABB,
         randomGenerator: ReturnType<typeof util["seededRand"]>
-    ): void {
+    ) {
         const riverPoints: Vec2[] = [];
 
         riverPoints.push(startPos);
@@ -558,36 +683,6 @@ export class GameMap {
 
         this.objectCount[type]++;
         return structure;
-    }
-
-    getRandPosInGrass(type: string, ori = 0, scale = 1): Vec2 {
-        const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
-
-        const width = bounds.max.x - bounds.min.x;
-        const height = bounds.max.y - bounds.min.y;
-
-        const getPos = () => {
-            return {
-                x: util.random(this.shoreInset + width, this.width - this.shoreInset - width),
-                y: util.random(this.shoreInset + height, this.height - this.shoreInset - height)
-            };
-        };
-
-        let pos = getPos();
-
-        let attempts = 0;
-        let collided = true;
-
-        while (attempts++ < 200 && collided) {
-            collided = false;
-            pos = getPos();
-
-            if (!this.canSpawn(type, pos, ori, scale)) {
-                collided = true;
-            }
-        }
-
-        return pos;
     }
 
     getRandomSpawnPos(): Vec2 {

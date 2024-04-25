@@ -269,7 +269,7 @@ export class Game {
                 const emote = emotes[i];
 
                 if ((i < 4 && emote === "") || (!isItemInLoadout(emote, "emote") && emote !== "")) {
-                    player.loadout.emotes.push("emote_logoswine");
+                    player.loadout.emotes.push(GameConfig.defaultEmoteLoadout[i]);
                     continue;
                 }
 

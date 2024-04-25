@@ -608,6 +608,9 @@ export class Player extends BaseGameObject {
         ) {
             this.secondsSinceLastUpdate = 0;
             const newVisibleObjects = new Set(this.game.grid.intersectCollider(rect));
+            // client crashes if active player is not visible
+            // so make sure its always added to visible objects
+            newVisibleObjects.add(this);
 
             for (const obj of this.visibleObjects) {
                 if (!newVisibleObjects.has(obj)) {

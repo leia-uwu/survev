@@ -167,6 +167,7 @@ interface StructureDef {
         underground?: boolean
     }>
     bridgeLandBounds?: Collider[]
+    bridgeWaterBounds?: Collider[]
     stairs: Array<{
         collision: AABB
         downDir: Vec2
