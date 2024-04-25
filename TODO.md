@@ -105,7 +105,7 @@ Modes not in the leaked definitions (need map generation code):
 	 - [ ] Damage Reduction
  - [ ] Splinter
 	 - [ ] Damage reduction of main bullet
- - [x] Explosive Rounds (logic is done but requires explosions)
+ - [x] Explosive Rounds
 
 won't list all that need to be competently done because lazy
 
