@@ -49,7 +49,7 @@ export class WeaponManager {
         this.player.shotSlowdownTimer = -1;
         this.burstCount = 0;
 
-        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
+        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0 && this.player.actionType != GameConfig.Action.Reload) {
             this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
         }
 
