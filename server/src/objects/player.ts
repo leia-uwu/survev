@@ -442,9 +442,9 @@ export class Player extends BaseGameObject {
             this.cancelAction();
 
             if (
-                (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) && 
+                (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
                     this.weapons[this.curWeapIdx].ammo == 0
-                ) {
+            ) {
                 this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
             }
         }
@@ -840,7 +840,7 @@ export class Player extends BaseGameObject {
         }
     }
 
-    isReloading(){
+    isReloading() {
         return this.actionType == GameConfig.Action.Reload || this.actionType == GameConfig.Action.ReloadAlt;
     }
 
@@ -1450,7 +1450,7 @@ export class Player extends BaseGameObject {
     }
 
     cancelAction(): void {
-        if (this.actionSeq == 0){//no action is in progress
+        if (this.actionSeq == 0) { // no action is in progress
             return;
         }
         this.action.duration = 0;
