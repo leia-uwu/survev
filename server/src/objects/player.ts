@@ -433,16 +433,20 @@ export class Player extends BaseGameObject {
                 if ("boost" in itemDef) this.boost += itemDef.boost;
                 this.inventory[this.actionItem]--;
                 this.inventoryDirty = true;
-            } else if (
-                this.actionType === GameConfig.Action.Reload ||
-                this.actionType === GameConfig.Action.ReloadAlt
-            ) {
+            } else if (this.isReloading()) {
                 this.weaponManager.reload();
             }
             if (this.reloadAgain) {
                 this.lastAction = { ...this.action };// shallow copy so no references are kept
             }
             this.cancelAction();
+
+            if (
+                (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) && 
+                    this.weapons[this.curWeapIdx].ammo == 0
+                ) {
+                this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
+            }
         }
 
         this.recalculateSpeed();
@@ -836,6 +840,10 @@ export class Player extends BaseGameObject {
         }
     }
 
+    isReloading(){
+        return this.actionType == GameConfig.Action.Reload || this.actionType == GameConfig.Action.ReloadAlt;
+    }
+
     useHealingItem(item: string): void {
         const itemDef = GameObjectDefs[item];
         if (itemDef.type !== "heal") {
@@ -849,7 +857,7 @@ export class Player extends BaseGameObject {
         }
 
         // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
+        if (this.isReloading()) {
             this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
@@ -872,7 +880,7 @@ export class Player extends BaseGameObject {
         }
 
         // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
+        if (this.isReloading()) {
             this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
@@ -1442,6 +1450,9 @@ export class Player extends BaseGameObject {
     }
 
     cancelAction(): void {
+        if (this.actionSeq == 0){//no action is in progress
+            return;
+        }
         this.action.duration = 0;
         this.action.targetId = 0;
         this.action.time = -1;
