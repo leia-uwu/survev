@@ -26,6 +26,7 @@ import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { SpectateMsg } from "../../../shared/msgs/spectateMsg";
 
 export class Emote {
     playerId: number;
@@ -167,8 +168,20 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    spectatorCount = 0;
+    _spectatorCount = 0;
+    set spectatorCount(spectatorCount: number){
+        if (this._spectatorCount === spectatorCount) return;
+        this._spectatorCount = spectatorCount;
+        this._spectatorCount = math.clamp(this._spectatorCount, 0, 255); //byte size limit
+        this.spectatorCountDirty = true;
+    }
 
+    get spectatorCount(): number {
+        return this._spectatorCount;
+    }
+
+    /** true when player starts spectating new player, only stays true for that given tick */
+    startedSpectating: boolean = false;
     spectating?: Player;
 
     outfit = "outfitBase";
@@ -644,8 +657,22 @@ export class Player extends BaseGameObject {
         }
 
         updateMsg.activePlayerId = player.__id;
-        updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
-        updateMsg.activePlayerData = player;
+        if (this.startedSpectating){
+            updateMsg.activePlayerIdDirty = true;
+            updateMsg.activePlayerData = player;
+
+            updateMsg.activePlayerData.healthDirty = true;
+            updateMsg.activePlayerData.boostDirty = true;
+            updateMsg.activePlayerData.zoomDirty = true;
+            updateMsg.activePlayerData.inventoryDirty = true;
+            updateMsg.activePlayerData.weapsDirty = true;
+            updateMsg.activePlayerData.spectatorCountDirty = true;
+
+        }else{
+            updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
+            updateMsg.activePlayerData = player;
+        }
+
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
         for (const emote of this.game.emotes) {
@@ -702,6 +729,35 @@ export class Player extends BaseGameObject {
 
         this.sendData(msgStream.getBuffer());
         this._firstUpdate = false;
+        this.startedSpectating = false;
+    }
+
+    /**
+     * the main purpose of this function is to asynchronously set "startedSpectating" and "spectating"
+     * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
+     */
+    spectate(spectateMsg: SpectateMsg): void{
+        if (this.spectating && this.game.spectatablePlayers.length == 1){//only one person to spectate so cant switch
+            return;
+        }
+
+        this.startedSpectating = true;
+        let playerToSpec: Player;
+        if (spectateMsg.specBegin){
+            playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
+        }else if (spectateMsg.specNext && this.spectating){
+            this.spectating.spectatorCount--;
+            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+            const newIndex = (playerBeingSpecIndex+1) % this.game.spectatablePlayers.length;
+            playerToSpec = this.game.spectatablePlayers[newIndex];
+        }else if (spectateMsg.specPrev && this.spectating){
+            this.spectating.spectatorCount--;
+            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+            const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
+            playerToSpec = this.game.spectatablePlayers[newIndex];
+        }
+        playerToSpec!.spectatorCount++;
+        this.spectating = playerToSpec!;
     }
 
     damage(params: DamageParams) {
@@ -743,6 +799,8 @@ export class Player extends BaseGameObject {
         }
     }
 
+    killedBy: Player | undefined
+
     kill(params: DamageParams): void {
         this.dead = true;
         this.boost = 0;
@@ -755,6 +813,7 @@ export class Player extends BaseGameObject {
 
         this.game.aliveCountDirty = true;
         this.game.livingPlayers.delete(this);
+        this.game.spectatablePlayers.splice(this.game.spectatablePlayers.indexOf(this), 1);
 
         //
         // Send kill msg
@@ -767,6 +826,7 @@ export class Player extends BaseGameObject {
         killMsg.killed = true;
 
         if (params.source instanceof Player) {
+            this.killedBy = params.source;
             if (params.source !== this) params.source.kills++;
             killMsg.killerId = params.source.__id;
             killMsg.killCreditId = params.source.__id;
