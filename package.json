@@ -9,12 +9,13 @@
     "lint:ci": "eslint . --ext .ts,.js"
   },
   "engines": {
-    "node": ">=18.16.0"
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
   },
   "author": "Leia",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.11",
     "@typescript-eslint/eslint-plugin": "6.6.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.57.0",

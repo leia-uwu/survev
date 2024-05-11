@@ -11,7 +11,7 @@
     "lint:ci": "eslint . --ext .ts,.js"
   },
   "dependencies": {
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.11",
     "bit-buffer": "^0.2.5",
     "nanotimer": "^0.3.15",
     "ts-node-dev": "^2.0.0",
@@ -19,7 +19,7 @@
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.43.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.0",
+    "@types/bun": "^1.1.1",
     "@types/nanotimer": "^0.3.2"
   }
 }
