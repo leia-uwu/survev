@@ -1153,7 +1153,8 @@ export class Player extends BaseGameObject {
         let cause = PickupMsgType.Success;
         let indexOf = -1;
         let isDualWield = false;
-        for (const slot of GameConfig.GunSlots) {
+        const gunSlots = [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary];
+        for (const slot of gunSlots) {
             const slotDef = GameObjectDefs[this.weapons[slot].type] as GunDef | undefined;
             const dualWield = (slotDef?.dualWieldType) && (obj.type === this.weapons[slot].type);
             if (this.weapons[slot].type === obj.type) {
@@ -1164,7 +1165,7 @@ export class Player extends BaseGameObject {
                 isDualWield = dualWield || false;
                 break;
             }
-            if (this.weapons[slot].type === obj.type && !dualWield && slot as number == GameConfig.GunSlots.length - 1) {
+            if (this.weapons[slot].type === obj.type && !dualWield && slot as number == gunSlots.length - 1) {
                 cause = PickupMsgType.AlreadyOwned;
                 break;
             }
@@ -1247,7 +1248,7 @@ export class Player extends BaseGameObject {
                     weaponInfo.type === "gun" &&
                     this.weapons[this.curWeapIdx].ammo == 0 &&
                     weaponInfo.ammo == obj.type) {
-                this.weaponManager.tryReload();
+                this.weaponManager.tryReload(true);
             }
         }
             break;
@@ -1267,11 +1268,12 @@ export class Player extends BaseGameObject {
 
             if (freeGunSlot.availSlot == -1) {
                 newGunIdx = this.curWeapIdx;
-                if (this.curWeapIdx in GameConfig.GunSlots && obj.type != this.weapons[this.curWeapIdx].type) {
+                if (this.curWeapIdx in [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary] && obj.type != this.weapons[this.curWeapIdx].type) {
                     this.weaponManager.dropGun(this.curWeapIdx, false);
                     this.weapons[this.curWeapIdx].type = obj.type;
                 } else {
                     removeLoot = false;
+                    pickupMsg.type = PickupMsgType.Full;
                 }
             } else if (freeGunSlot.isDualWield) {
                 this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
@@ -1280,16 +1282,15 @@ export class Player extends BaseGameObject {
             }
 
             this.weapons[newGunIdx].cooldown = 0;
-            if (this.weapons[newGunIdx].ammo <= 0 && newGunIdx === this.curWeapIdx) {
-                this.cancelAction();
-                this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
-            }
-            this.weapsDirty = true;
-            this.setDirty();
-
             if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) {
                 this.weaponManager.setCurWeapIndex(newGunIdx);
             }
+            if (this.weapons[newGunIdx].ammo <= 0 && newGunIdx === this.curWeapIdx) {
+                this.cancelAction();
+                this.weaponManager.tryReload(true);
+            }
+            this.weapsDirty = true;
+            this.setDirty();
         } break;
         case "helmet":
         case "chest":

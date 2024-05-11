@@ -55,7 +55,6 @@ export const GameConfig = {
         Throwable: 3,
         Count: 4
     },
-    GunSlots: [0, 1],
     WeaponType: ["gun", "gun", "melee", "throwable"],
     DamageType: {
         Player: 0,
