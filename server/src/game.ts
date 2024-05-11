@@ -37,7 +37,7 @@ export class Game {
     players = new Set<Player>();
     connectedPlayers = new Set<Player>();
     livingPlayers = new Set<Player>();
-    spectatablePlayers: Player[] = []; //array version of livingPlayers since it needs to be ordered
+    spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -176,7 +176,7 @@ export class Game {
         }
     }
 
-    randomPlayer(){
+    randomPlayer() {
         return [...this.livingPlayers][Math.floor(Math.random() * this.livingPlayers.size)];
     }
 
@@ -302,11 +302,13 @@ export class Game {
             const dropMsg = new DropItemMsg();
             dropMsg.deserialize(stream);
             player.dropItem(dropMsg);
+            break;
         }
         case net.MsgType.Spectate: {
             const spectateMsg = new SpectateMsg();
             spectateMsg.deserialize(stream);
             player.spectate(spectateMsg);
+            break;
         }
         }
     }

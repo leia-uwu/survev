@@ -26,7 +26,7 @@ import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 
 export class Emote {
     playerId: number;
@@ -169,10 +169,10 @@ export class Player extends BaseGameObject {
     }
 
     _spectatorCount = 0;
-    set spectatorCount(spectatorCount: number){
+    set spectatorCount(spectatorCount: number) {
         if (this._spectatorCount === spectatorCount) return;
         this._spectatorCount = spectatorCount;
-        this._spectatorCount = math.clamp(this._spectatorCount, 0, 255); //byte size limit
+        this._spectatorCount = math.clamp(this._spectatorCount, 0, 255); // byte size limit
         this.spectatorCountDirty = true;
     }
 
@@ -657,7 +657,7 @@ export class Player extends BaseGameObject {
         }
 
         updateMsg.activePlayerId = player.__id;
-        if (this.startedSpectating){
+        if (this.startedSpectating) {
             updateMsg.activePlayerIdDirty = true;
             updateMsg.activePlayerData = player;
 
@@ -667,8 +667,7 @@ export class Player extends BaseGameObject {
             updateMsg.activePlayerData.inventoryDirty = true;
             updateMsg.activePlayerData.weapsDirty = true;
             updateMsg.activePlayerData.spectatorCountDirty = true;
-
-        }else{
+        } else {
             updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
             updateMsg.activePlayerData = player;
         }
@@ -736,21 +735,21 @@ export class Player extends BaseGameObject {
      * the main purpose of this function is to asynchronously set "startedSpectating" and "spectating"
      * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
      */
-    spectate(spectateMsg: SpectateMsg): void{
-        if (this.spectating && this.game.spectatablePlayers.length == 1){//only one person to spectate so cant switch
+    spectate(spectateMsg: SpectateMsg): void {
+        if (this.spectating && this.game.spectatablePlayers.length == 1) { // only one person to spectate so cant switch
             return;
         }
 
         this.startedSpectating = true;
         let playerToSpec: Player;
-        if (spectateMsg.specBegin){
+        if (spectateMsg.specBegin) {
             playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
-        }else if (spectateMsg.specNext && this.spectating){
+        } else if (spectateMsg.specNext && this.spectating) {
             this.spectating.spectatorCount--;
             const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
-            const newIndex = (playerBeingSpecIndex+1) % this.game.spectatablePlayers.length;
+            const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
             playerToSpec = this.game.spectatablePlayers[newIndex];
-        }else if (spectateMsg.specPrev && this.spectating){
+        } else if (spectateMsg.specPrev && this.spectating) {
             this.spectating.spectatorCount--;
             const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
             const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
@@ -799,7 +798,7 @@ export class Player extends BaseGameObject {
         }
     }
 
-    killedBy: Player | undefined
+    killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
         this.dead = true;
