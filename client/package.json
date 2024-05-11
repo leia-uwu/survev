@@ -13,7 +13,7 @@
     "pixi.js-legacy": "^7.4.2"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.29",
-    "vite": "^5.2.9"
+    "@types/jquery": "^3.5.30",
+    "vite": "^5.2.11"
   }
 }
