@@ -347,7 +347,14 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+        this.inventory["762mm"] = 100;
+        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
 
+        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
         this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
@@ -1122,7 +1129,7 @@ export class Player extends BaseGameObject {
 
                 // curWeapIdx's setter method already sets dirty.weapons
                 if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
-                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
+                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false, false);
                 } else {
                     this.weapsDirty = true;
                 }

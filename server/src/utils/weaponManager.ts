@@ -26,7 +26,14 @@ export class WeaponManager {
         return this._curWeapIdx;
     }
 
-    setCurWeapIndex(idx: number, cancelAction = true): void {
+    /**
+     *
+     * @param idx index being swapped to
+     * @param cancelAction cancels current action if true
+     * @param shouldReload will attempt automatic reload at 0 ammo if true
+     * @returns
+     */
+    setCurWeapIndex(idx: number, cancelAction = true, shouldReload = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
@@ -49,12 +56,13 @@ export class WeaponManager {
         this.player.shotSlowdownTimer = -1;
         this.burstCount = 0;
 
-        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0 && this.player.actionSeq == 0) {
+        this.lastWeaponIdx = this._curWeapIdx;
+        this._curWeapIdx = idx;
+
+        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0 && shouldReload) {
             this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
         }
 
-        this.lastWeaponIdx = this._curWeapIdx;
-        this._curWeapIdx = idx;
         if (cancelAction) {
             this.player.cancelAction();
         }
@@ -92,11 +100,11 @@ export class WeaponManager {
             });
         }
 
-        // this.weapons[0].type = "mosin";
-        // this.weapons[0].ammo = 5;
-        //
-        // this.weapons[1].type = "an94";
-        // this.weapons[1].ammo = 45;
+        this.weapons[0].type = "mosin";
+        this.weapons[0].ammo = 5;
+
+        this.weapons[1].type = "an94";
+        this.weapons[1].ammo = 45;
     }
 
     shootStart(): void {
