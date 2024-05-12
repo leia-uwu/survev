@@ -80,7 +80,7 @@ export class Explosion {
                         let damage = def.damage;
 
                         if (dist > def.rad.min) {
-                            damage = math.remap(dist, def.rad.min, def.rad.max, 0, damage);
+                            damage = math.remap(dist, def.rad.min, def.rad.max, damage, 0);
                         }
 
                         if (obj.__type === ObjectType.Obstacle) {
