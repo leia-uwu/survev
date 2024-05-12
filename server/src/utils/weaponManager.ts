@@ -33,7 +33,7 @@ export class WeaponManager {
      * @param shouldReload will attempt automatic reload at 0 ammo if true
      * @returns
      */
-    setCurWeapIndex(idx: number, cancelAction = true, shouldReload = true): void {
+    setCurWeapIndex(idx: number, cancelAction = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
@@ -56,6 +56,8 @@ export class WeaponManager {
         this.player.shotSlowdownTimer = -1;
         this.burstCount = 0;
 
+        this.lastWeaponIdx = this._curWeapIdx;
+        this._curWeapIdx = idx;
         if (cancelAction) {
             this.player.cancelAction();
         }

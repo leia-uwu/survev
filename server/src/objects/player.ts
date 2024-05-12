@@ -1129,7 +1129,7 @@ export class Player extends BaseGameObject {
 
                 // curWeapIdx's setter method already sets dirty.weapons
                 if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
-                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false, false);
+                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
                 } else {
                     this.weapsDirty = true;
                 }
