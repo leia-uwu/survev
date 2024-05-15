@@ -297,7 +297,7 @@ export class GameMap {
         }
         case "loot_spawner":
             for (const tier of def.loot) {
-                const items = this.game.lootBarn.getLootTable(tier.tier);
+                const items = this.game.lootBarn.getLootTable(tier.tier!);
 
                 for (const item of items) {
                     this.game.lootBarn.addLoot(item.name, pos, layer, item.count);
@@ -625,6 +625,7 @@ export class GameMap {
             if (typeof partType !== "string") {
                 partType = partType();
             }
+
             if (!partType) continue;
 
             let partOri: number;

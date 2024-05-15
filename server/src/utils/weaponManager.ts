@@ -480,7 +480,7 @@ export class WeaponManager {
     }
 
     meleeDamage(): void {
-        const meleeDef = GameObjectDefs[this.activeWeapon];
+        const meleeDef = GameObjectDefs[this.activeWeapon] as MeleeDef;
 
         if (meleeDef === undefined || meleeDef.type !== "melee" || this.player.dead) {
             return;

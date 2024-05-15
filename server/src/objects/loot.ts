@@ -11,6 +11,7 @@ import { Structure } from "./structure";
 import { type Player } from "./player";
 import { MapDefs } from "../../../shared/defs/mapDefs";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type LootDef } from "../../../shared/defs/objectsTypings";
 
 export class LootBarn {
     constructor(public game: Game) {
@@ -37,7 +38,7 @@ export class LootBarn {
         const loot = new Loot(this.game, type, pos, layer, count, undefined, dir);
         this.game.grid.addObject(loot);
 
-        const def = GameObjectDefs[type];
+        const def = GameObjectDefs[type] as LootDef;
 
         if (def.type === "gun" && GameObjectDefs[def.ammo]) {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;

@@ -1,5 +1,5 @@
 import { type Game } from "../game";
-import { GameConfig } from "../../../shared/gameConfig";
+import { type Action, GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
@@ -219,7 +219,7 @@ export class Player extends BaseGameObject {
      */
     scheduledAction: {
         perform: boolean
-        type: typeof GameConfig.Action[keyof typeof GameConfig.Action]
+        type: Action
         item: string
     } = {
             perform: false,
@@ -792,7 +792,7 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             const weap = this.weapons[i];
             if (!weap.type) continue;
-            const def = GameObjectDefs[weap.type];
+            const def = GameObjectDefs[weap.type] as GunDef | MeleeDef;
             switch (def.type) {
             case "gun":
                 this.weaponManager.dropGun(i);
@@ -837,7 +837,7 @@ export class Player extends BaseGameObject {
     }
 
     useHealingItem(item: string): void {
-        const itemDef = GameObjectDefs[item];
+        const itemDef = GameObjectDefs[item] as HealDef;
         if (itemDef.type !== "heal") {
             throw new Error(`Invalid heal item ${item}`);
         }
@@ -859,7 +859,7 @@ export class Player extends BaseGameObject {
     }
 
     useBoostItem(item: string): void {
-        const itemDef = GameObjectDefs[item];
+        const itemDef = GameObjectDefs[item] as BoostDef;
         if (itemDef.type !== "boost") {
             throw new Error(`Invalid boost item ${item}`);
         }
@@ -1179,7 +1179,7 @@ export class Player extends BaseGameObject {
     }
 
     pickupLoot(obj: Loot) {
-        const def = GameObjectDefs[obj.type];
+        const def = GameObjectDefs[obj.type] as LootDef;
 
         let amountLeft = 0;
         let lootToAdd = obj.type;
@@ -1243,7 +1243,7 @@ export class Player extends BaseGameObject {
             }
             // this is here because it needs to execute regardless of what happens above
             // automatically reloads gun if inventory has 0 ammo and ammo is picked up
-            const weaponInfo = GameObjectDefs[this.activeWeapon];
+            const weaponInfo = GameObjectDefs[this.activeWeapon] as GunDef;
             if (def.type == "ammo" &&
                     weaponInfo.type === "gun" &&
                     this.weapons[this.curWeapIdx].ammo == 0 &&
@@ -1332,7 +1332,7 @@ export class Player extends BaseGameObject {
             break;
         }
 
-        const lootToAddDef = GameObjectDefs[lootToAdd] as LootDef;
+        const lootToAddDef = GameObjectDefs[lootToAdd];
         if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !lootToAddDef.noDrop) {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
@@ -1484,7 +1484,7 @@ export class Player extends BaseGameObject {
         }
 
         if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
-            this.speed += weaponDef.speed.attack + weaponDef.speed.equip + -3;
+            this.speed += weaponDef.speed.attack! + weaponDef.speed.equip + -3;
         }
 
         // if player is on water decrease speed

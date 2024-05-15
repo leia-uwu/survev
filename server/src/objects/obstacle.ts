@@ -204,7 +204,7 @@ export class Obstacle extends BaseGameObject {
                 canUse: true,
                 seq: 1,
                 useOnce: def.button.useOnce,
-                useType: def.button.useType,
+                useType: def.button.useType!,
                 useDelay: def.button.useDelay,
                 useDir: def.button.useDir
             };
@@ -291,10 +291,10 @@ export class Obstacle extends BaseGameObject {
 
         for (const lootTierOrItem of def.loot) {
             if ("tier" in lootTierOrItem) {
-                const count = util.randomInt(lootTierOrItem.min, lootTierOrItem.max);
+                const count = util.randomInt(lootTierOrItem.min!, lootTierOrItem.max!);
 
                 for (let i = 0; i < count; i++) {
-                    const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier);
+                    const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier!);
 
                     for (const item of items) {
                         this.game.lootBarn.addLoot(
@@ -309,10 +309,10 @@ export class Obstacle extends BaseGameObject {
                 }
             } else {
                 this.game.lootBarn.addLoot(
-                    lootTierOrItem.type,
+                    lootTierOrItem.type!,
                     lootPos,
                     this.layer,
-                    lootTierOrItem.count,
+                    lootTierOrItem.count!,
                     undefined,
                     params.dir
                 );
