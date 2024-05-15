@@ -1,4 +1,14 @@
-export const QuestDefs = {
+
+type QuestDef = {
+    type: "quest";
+    category: string;
+    target: number;
+    xp: number;
+    timed?: boolean;
+    icon?: string;
+}
+
+export const QuestDefs: Record<string, QuestDef> = {
     quest_top_solo: {
         type: "quest",
         category: "top",

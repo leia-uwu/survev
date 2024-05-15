@@ -1,4 +1,13 @@
-export const CrosshairDefs = {
+export interface CrosshairDef {
+    type:    string;
+    name:    string;
+    rarity:  number;
+    cursor?: string;
+    texture: string;
+    code:    string;
+}
+
+export const CrosshairDefs: Record<string, CrosshairDef> = {
     crosshair_default: {
         type: "crosshair",
         name: "Default",

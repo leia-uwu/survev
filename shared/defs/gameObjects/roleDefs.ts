@@ -1,4 +1,36 @@
-export const RoleDefs = {
+export interface RoleDef {
+    type:          "role";
+    announce:      boolean;
+    killFeed?:     {
+        assign?: boolean;
+        dead?:   boolean;
+        color?:  string;
+    };
+    sound:         {
+        assign?: string;
+        dead?:   string;
+    }
+    ;
+    mapIcon?:      {
+        alive: string;
+        dead:  string;
+    };
+    perks?:        string[];
+    mapIndicator?: {
+        sprite:    string;
+        tint:      number;
+        pulse:     boolean;
+        pulseTint: number;
+    };
+    visorImg?:     {
+        baseSprite:  string;
+        spriteScale: number;
+    };
+    guiImg?:       string;
+    color?:        number;
+}
+
+export const RoleDefs: Record<string, RoleDef> = {
     leader: {
         type: "role",
         announce: true,

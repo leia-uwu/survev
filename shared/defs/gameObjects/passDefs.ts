@@ -1,4 +1,13 @@
-export const PassDefs = {
+type PassDef = {
+    type: string
+    xp: number[]
+    items: {
+        level: number
+        item: string
+    }[];
+};
+
+export const PassDefs: Record<string, PassDef> = {
     pass_survivr1: {
         type: "pass",
         xp: [50, 50, 50, 50, 50, 50, 50, 50, 75, 75, 75, 75, 75, 75, 100, 100, 100, 125, 125, 150, 75, 75, 75],

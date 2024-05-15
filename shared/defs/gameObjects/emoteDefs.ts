@@ -1,15 +1,27 @@
-const EmoteCategory = {
-    Locked: 0,
-    Faces: 1,
-    Food: 2,
-    Animals: 3,
-    Logos: 4,
-    Other: 5,
-    Flags: 6,
-    Default: 99
+enum EmoteCategory {
+    Locked,
+    Faces,
+    Food,
+    Animals,
+    Logos,
+    Other,
+    Flags,
+    Default
 };
 
-export const EmotesDefs = {
+export interface EmoteDef {
+    type:      string;
+    name?:     string;
+    rarity?:   number;
+    texture:   string;
+    sound:     string;
+    channel:   string;
+    teamOnly?: boolean;
+    category:  number;
+    noCustom?: boolean;
+}
+
+export const EmotesDefs: Record<string, EmoteDef> = {
     emote_medical: {
         type: "emote",
         texture: "emote-medical-healthkit.img",

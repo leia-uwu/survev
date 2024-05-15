@@ -1,4 +1,20 @@
-export const PerkDefs = {
+export interface PerkDef {
+    name: string;
+    type: "perk";
+    lootImg: {
+        sprite: string;
+        tint: number;
+        border: string;
+        borderTint: number;
+        scale: number;
+    };
+    sound: {
+        pickup: string;
+    };
+    emoteOnPickup?: string;
+}
+
+export const PerkDefs: Record<string, PerkDef> = {
     leadership: {
         name: "Leadership",
         type: "perk",

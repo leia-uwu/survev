@@ -1,4 +1,19 @@
-export const ExplosionDefs = {
+export interface ExplosionDef {
+    type?:                string;
+    damage?:              number;
+    obstacleDamage?:      number;
+    rad?:                 {
+        min: number;
+        max: number;
+    };
+    shrapnelCount?:       number;
+    shrapnelType?:        string;
+    explosionEffectType?: string;
+    decalType?:           string;
+    teamDamage?:          boolean;
+}
+
+export const ExplosionDefs: Record<string, ExplosionDef> = {
     explosion_frag: {
         type: "explosion",
         damage: 125,

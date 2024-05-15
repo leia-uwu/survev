@@ -1,12 +1,44 @@
 import { util } from "../../utils/util";
 
-function defineSkin(baseType, params) {
+function defineSkin(baseType: string, params: unknown) {
     return util.mergeDeep({}, BaseDefs[baseType], {
         baseType
     }, params);
 }
 
-const BaseDefs = {
+export interface OutfitDef {
+    name:           string;
+    type:           "outfit";
+    skinImg:        {
+        baseTint:       number;
+        baseSprite:     string;
+        handTint:       number;
+        handSprite:     string;
+        footTint:       number;
+        footSprite:     string;
+        backpackTint:   number;
+        backpackSprite: string;
+    };
+    lootImg:        {
+        sprite:     string;
+        tint:       number;
+        border:     string;
+        borderTint: number;
+        scale:      number;
+    };
+    sound:          {
+        pickup: string;
+    };
+    baseType?:       string;
+    noDropOnDeath?: boolean;
+    rarity?:        number;
+    lore?:          string;
+    noDrop?:        boolean;
+    obstacleType?:  string;
+    baseScale?:     number;
+}
+
+const BaseDefs: Record<string, OutfitDef> = {
     outfitBase: {
         name: "Basic Outfit",
         type: "outfit",
@@ -33,7 +65,7 @@ const BaseDefs = {
     }
 };
 
-const SkinDefs = {
+const SkinDefs: Record<string, OutfitDef> = {
     outfitBase: defineSkin("outfitBase", {
         noDropOnDeath: true,
         name: "Basic Outfit",

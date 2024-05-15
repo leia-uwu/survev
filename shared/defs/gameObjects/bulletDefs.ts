@@ -1,10 +1,30 @@
 import { util } from "../../utils/util";
 
-function defineSkin(baseType, params) {
-    return util.mergeDeep({}, BaseDefs[baseType], { baseType }, params);
+function defineSkin<T extends Partial<BulletDef>>(baseType: string, params: T) {
+    return util.mergeDeep({}, BaseDefs[baseType], { baseType }, params) as BulletDef;
 }
 
-export const BaseDefs = {
+export interface BulletDef {
+    type:           string;
+    damage:         number;
+    obstacleDamage: number;
+    falloff:        number;
+    distance:       number;
+    speed:          number;
+    variance:       number;
+    shrapnel:       boolean;
+    tracerColor:    string;
+    tracerWidth:    number;
+    tracerLength:   number;
+    suppressed?:    boolean;
+    flareColor?:    number;
+    addFlare?:      boolean;
+    maxFlareScale?: number;
+    skipCollision?: boolean;
+    onHit?:         string;
+}
+
+export const BaseDefs: Record<string, BulletDef> = {
     bullet_mp5: {
         type: "bullet",
         damage: 11,
@@ -788,7 +808,7 @@ export const BaseDefs = {
     }
 };
 
-const SkinDefs = {
+const SkinDefs: Record<string, BulletDef> = {
     bullet_mp5_bonus: defineSkin("bullet_mp5", {
         speed: 106.25,
         distance: 125

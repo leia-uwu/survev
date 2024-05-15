@@ -1,4 +1,12 @@
-export const HealEffectDefs = {
+type HealEffectDef = {
+    type: string,
+    name: string,
+    rarity: number;
+    texture: string;
+    emitter: string;
+}
+
+export const HealEffectDefs: Record<string, HealEffectDef> = {
     heal_basic: {
         type: "heal_effect",
         name: "Basic Healing",
