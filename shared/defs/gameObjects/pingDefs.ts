@@ -1,5 +1,5 @@
 export interface PingDef {
-    type?: string
+    type: "ping"
     texture?: string
     mapTexture?: string
     sound?: string

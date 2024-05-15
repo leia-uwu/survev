@@ -1,15 +1,15 @@
 export interface ExplosionDef {
-    type?: string
-    damage?: number
-    obstacleDamage?: number
-    rad?: {
+    type: "explosion"
+    damage: number
+    obstacleDamage: number
+    rad: {
         min: number
         max: number
     }
-    shrapnelCount?: number
-    shrapnelType?: string
-    explosionEffectType?: string
-    decalType?: string
+    shrapnelCount: number
+    shrapnelType: string
+    explosionEffectType: string
+    decalType: string
     teamDamage?: boolean
 }
 

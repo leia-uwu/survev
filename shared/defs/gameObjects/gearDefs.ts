@@ -107,6 +107,7 @@ const ChestDefs: Record<string, ChestDef> = {
 export interface HelmetDef {
     name: string
     type: "helmet"
+    noDrop?: boolean
     level: number
     damageReduction: number
     skinImg: {
@@ -361,7 +362,8 @@ export interface HealDef {
     name: string
     type: "heal"
     useTime: number
-    boost?: number
+    heal: number
+    maxHeal: number
     lootImg: LootImg
     sound: Sound
     emitter: string
@@ -369,8 +371,6 @@ export interface HealDef {
         sprite: string
         tint: number
     }
-    heal?: number
-    maxHeal?: number
 }
 
 // shared
