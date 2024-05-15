@@ -1,23 +1,28 @@
 import { collider } from "../utils/collider";
 import { util } from "../utils/util";
 import { v2 } from "../utils/v2";
+import { type BuildingDef, type MapObjectDef, type ObstacleDef, type StructureDef } from "./mapObjectsTyping";
+
+// some errors could be fixed by this but opted using Partial and casting instead to avoid choking the lsp server
+// type DeepPartial<T> = T extends object ? {
+//     [P in keyof T]?: DeepPartial<T[P]>;
+// } : T;
 
 // Helpers
-function tierLoot(tier, min, max, props) {
+function tierLoot(tier: string, min: number, max: number, props?: any) {
     props = props || {}; return {
         tier, min, max, props
     };
 }
-function autoLoot(type, count, props) {
+function autoLoot(type: string, count: number, props?: any) {
     props = props || {}; return { type, count, props };
 }
 
-function randomObstacleType(types) {
-    // types is a table of {
-    //   'mapObject1': weight1,
-    //   'mapObject2': weight2
-    // }, with '' representing no spawn
-    const arr = [];
+function randomObstacleType(types: Record<string, number>) {
+    const arr: Array<{
+        type: string
+        weight: number
+    }> = [];
     for (const key in types) {
         if (types[key]) {
             arr.push({ type: key, weight: types[key] });
@@ -37,13 +42,13 @@ function randomObstacleType(types) {
     };
 }
 
-function wallImg(img, tint = 0xffffff, alpha = 1, zIdx = 10) {
+function wallImg(img: string, tint = 0xffffff, alpha = 1, zIdx = 10) {
     return {
         sprite: img, scale: 0.5, alpha, tint, zIdx
     };
 }
 
-function createBarrel(params) {
+function createBarrel<T extends ObstacleDef>(params: Partial<T>): T {
     const baseDef = {
         type: "obstacle",
         obstacleType: "barrel",
@@ -76,7 +81,7 @@ function createBarrel(params) {
     };
     return util.mergeDeep(baseDef, params || {});
 }
-function createWoodBarrel(e) {
+function createWoodBarrel<T extends ObstacleDef>(params: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "barrel",
@@ -107,9 +112,9 @@ function createWoodBarrel(e) {
             enter: "none"
         }
     };
-    return util.mergeDeep(t, e || {});
+    return util.mergeDeep(t, params || {});
 }
-function createBed(e) {
+function createBed<T extends ObstacleDef>(params: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "furniture",
@@ -143,10 +148,10 @@ function createBed(e) {
             enter: "none"
         }
     };
-    return util.mergeDeep(t, e || {});
+    return util.mergeDeep(t, params || {});
 }
-function createBookShelf(e) {
-    const t = {
+function createBookShelf<T extends ObstacleDef>(params: Partial<T>): T {
+    const ObstacleDef = {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
@@ -179,9 +184,9 @@ function createBookShelf(e) {
             enter: "none"
         }
     };
-    return util.mergeDeep(t, e || {});
+    return util.mergeDeep(ObstacleDef, params || {});
 }
-function createBunkerStairs(e) {
+function createBunkerStairs<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -263,7 +268,7 @@ function createBunkerStairs(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createStatue(e) {
+function createStatue<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         ori: 0,
@@ -322,7 +327,7 @@ function createStatue(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createStatueUnderground(e) {
+function createStatueUnderground<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: false, color: 6707790, scale: 1 },
@@ -406,7 +411,7 @@ function createStatueUnderground(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBush(e) {
+function createBush<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1.05, createMax: 1.2, destroy: 1 },
@@ -439,7 +444,7 @@ function createBush(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createCache(e) {
+function createCache<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { displayType: "stone_02" },
@@ -475,7 +480,7 @@ function createCache(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createCase(e) {
+function createCase<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "crate",
@@ -511,7 +516,7 @@ function createCase(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createChest(e) {
+function createChest<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "crate",
@@ -547,7 +552,7 @@ function createChest(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createRiverChest(e) {
+function createRiverChest<T extends ObstacleDef>(e: Partial<T>): T {
     const t = createChest({
         collision: collider.createAabbExtents(
             v2.create(0, 0.8),
@@ -563,7 +568,8 @@ function createRiverChest(e) {
     });
     return util.mergeDeep(t, e || {});
 }
-function createContainer(e) {
+// !
+function createContainer(e: any) {
     const t = [
         {
             type: "container_wall_top",
@@ -692,9 +698,9 @@ function createContainer(e) {
             ]
         },
         mapObjects: e.open ? r : t
-    };
+    } satisfies BuildingDef;
 }
-function createCouch(e) {
+function createCouch<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "furniture",
@@ -730,7 +736,7 @@ function createCouch(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createCrate(e) {
+function createCrate<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "crate",
@@ -766,7 +772,7 @@ function createCrate(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createAirdrop(e) {
+function createAirdrop<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         obstacleType: "airdrop",
         dropCollision: collider.createAabbExtents(
@@ -802,10 +808,10 @@ function createAirdrop(e) {
             punch: "metal_punch",
             explode: "airdrop_open_02"
         }
-    };
+    } as unknown as Partial<ObstacleDef>;
     return util.mergeDeep(createCrate(t), e || {});
 }
-function createClassCrate(e) {
+function createClassCrate<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "crate",
@@ -838,7 +844,7 @@ function createClassCrate(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createDepositBox(e) {
+function createDepositBox<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "locker",
@@ -875,11 +881,11 @@ function createDepositBox(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createDoor(e) {
+function createDoor<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(e.hinge, e.extents),
+        collision: collider.createAabbExtents(e.hinge!, e.extents!),
         height: 10,
         collidable: true,
         destructible: true,
@@ -901,7 +907,9 @@ function createDoor(e) {
             slideOffset: 3.5,
             spriteAnchor: v2.create(0.5, 1),
             sound: {
+                // @ts-expect-error can't find any reference to this
                 open: e.soundOpen || "door_open_01",
+                // @ts-expect-error can't find any reference to this
                 close: e.soundClose || "door_close_01",
                 change: "",
                 error: ""
@@ -923,10 +931,11 @@ function createDoor(e) {
             enter: "none"
         }
     };
-    if (!MaterialDefs[e.material]) { throw new Error(`Invalid material ${e.material}`); }
-    return util.mergeDeep(t, MaterialDefs[e.material], e || {});
+    const material = e.material as keyof typeof MaterialDefs;
+    if (!MaterialDefs[material]) { throw new Error(`Invalid material ${e.material}`); }
+    return util.mergeDeep(t, MaterialDefs[material], e || {});
 }
-function createLabDoor(e) {
+function createLabDoor<T extends ObstacleDef>(e: Partial<T>): T {
     const t = createDoor({
         material: "concrete",
         hinge: v2.create(0, 2),
@@ -954,10 +963,10 @@ function createLabDoor(e) {
             }
         },
         img: { tint: 5373952 }
-    });
+    } as unknown as Partial<ObstacleDef>);
     return util.mergeDeep(t, e || {});
 }
-function createDrawer(e) {
+function createDrawer<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "furniture",
@@ -993,7 +1002,7 @@ function createDrawer(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createGunMount(e) {
+function createGunMount<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "furniture",
@@ -1030,7 +1039,7 @@ function createGunMount(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createLocker(e) {
+function createLocker<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "locker",
@@ -1067,7 +1076,7 @@ function createLocker(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createControlPanel(e) {
+function createControlPanel<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
@@ -1103,7 +1112,7 @@ function createControlPanel(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createOven(e) {
+function createOven<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "furniture",
@@ -1139,7 +1148,7 @@ function createOven(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createPlanter(e) {
+function createPlanter<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "pot",
@@ -1175,7 +1184,7 @@ function createPlanter(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBottle(e) {
+function createBottle<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "pot",
@@ -1208,7 +1217,7 @@ function createBottle(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBottle2(e) {
+function createBottle2<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
@@ -1256,7 +1265,7 @@ function createBottle2(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createPotato(e) {
+function createPotato<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
@@ -1291,7 +1300,7 @@ function createPotato(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createPumpkin(e) {
+function createPumpkin<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
@@ -1324,7 +1333,7 @@ function createPumpkin(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createRecorder(e) {
+function createRecorder<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
@@ -1370,7 +1379,7 @@ function createRecorder(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createRefrigerator(e) {
+function createRefrigerator<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
@@ -1405,7 +1414,7 @@ function createRefrigerator(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createSandBags(e) {
+function createSandBags<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         map: { display: true, color: 13278307, scale: 1 },
@@ -1438,7 +1447,7 @@ function createSandBags(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createSilo(e) {
+function createSilo<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
@@ -1469,7 +1478,7 @@ function createSilo(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createStone(e) {
+function createStone<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1.2, destroy: 0.5 },
@@ -1501,7 +1510,7 @@ function createStone(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createRiverStone(e) {
+function createRiverStone<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 0.8, createMax: 1.2, destroy: 0.5 },
@@ -1538,7 +1547,7 @@ function createRiverStone(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createTable(e) {
+function createTable<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "furniture",
@@ -1574,7 +1583,7 @@ function createTable(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createToilet(e) {
+function createToilet<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         obstacleType: "toilet",
@@ -1607,7 +1616,7 @@ function createToilet(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createTree(e) {
+function createTree<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 0.8, createMax: 1, destroy: 0.5 },
@@ -1644,7 +1653,7 @@ function createTree(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createTreeSwitch(e) {
+function createTreeSwitch<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
@@ -1693,13 +1702,13 @@ function createTreeSwitch(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createWall(e) {
+function createWall<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
         collision: collider.createAabbExtents(
             v2.create(0, 0),
-            v2.copy(e.extents)
+            v2.copy(e.extents!)
         ),
         height: 10,
         isWall: true,
@@ -1719,10 +1728,11 @@ function createWall(e) {
             enter: "none"
         }
     };
-    if (!MaterialDefs[e.material]) { throw new Error(`Invalid material ${e.material}`); }
-    return util.mergeDeep(t, MaterialDefs[e.material], e || {});
+    const material = e.material as keyof typeof MaterialDefs;
+    if (!MaterialDefs[material]) { throw new Error(`Invalid material ${e.material}`); }
+    return util.mergeDeep(t, MaterialDefs[material], e || {});
 }
-function createWheel(e) {
+function createWheel<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
@@ -1753,7 +1763,7 @@ function createWheel(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createWoodPile(e) {
+function createWoodPile<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
@@ -1793,7 +1803,7 @@ function createWoodPile(e) {
 // Buildings
 //
 
-function createBank(e) {
+function createBank<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -2226,7 +2236,7 @@ function createBank(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBankVault(e) {
+function createBankVault<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: false, color: 6707790, scale: 1 },
@@ -2396,7 +2406,7 @@ function createBankVault(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBarn(e) {
+function createBarn<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -2888,7 +2898,7 @@ function createBarn(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBarnBasement(e) {
+function createBarnBasement<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: false, color: 6707790, scale: 1 },
@@ -3028,7 +3038,7 @@ function createBarnBasement(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBridgeLarge(e) {
+function createBridgeLarge<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -3286,7 +3296,7 @@ function createBridgeLarge(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createCabin(e) {
+function createCabin<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -3525,21 +3535,22 @@ function createCabin(e) {
                 ori: 0
             },
             {
+                // @ts-expect-error um?
                 type: e.cabin_wall_int_5 || "cabin_wall_int_5",
                 pos: v2.create(-10.5, 9),
                 scale: 1,
                 ori: 0
             },
             {
-                type:
-                    e.cabin_wall_int_10 || "cabin_wall_int_10",
+                // @ts-expect-error um?
+                type: e.cabin_wall_int_10 || "cabin_wall_int_10",
                 pos: v2.create(-13, 2),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.cabin_wall_int_13 || "cabin_wall_int_13",
+                // @ts-expect-error um?
+                type: e.cabin_wall_int_13 || "cabin_wall_int_13",
                 pos: v2.create(-3.5, -4),
                 scale: 1,
                 ori: 0
@@ -3640,7 +3651,7 @@ function createCabin(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createHut(e) {
+function createHut<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -3806,7 +3817,7 @@ function createHut(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createShack3(e) {
+function createShack3<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -3999,7 +4010,7 @@ function createShack3(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createGreenhouse(e) {
+function createGreenhouse<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, color: 1995644, scale: 1 },
@@ -4317,7 +4328,7 @@ function createGreenhouse(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createBunkerChrys(e) {
+function createBunkerChrys<T extends StructureDef>(e: Partial<T>): T {
     const t = {
         type: "structure",
         terrain: { grass: true, beach: false },
@@ -4363,7 +4374,7 @@ function createBunkerChrys(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createLoggingComplex(e) {
+function createLoggingComplex<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, shapes: [] },
@@ -4760,7 +4771,7 @@ function createLoggingComplex(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createLoggingComplex2(e) {
+function createLoggingComplex2<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, shapes: [] },
@@ -4858,7 +4869,7 @@ function createLoggingComplex2(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createMansion(e) {
+function createMansion<T extends BuildingDef>(e: Partial<T & Record<string, string>>): T {
     const t = {
         type: "building",
         map: {
@@ -5670,7 +5681,9 @@ function createMansion(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createMansionCellar(e) {
+function createMansionCellar<T extends BuildingDef>(e: Partial<T & {
+    mansion_column_1?: string
+}>): T {
     const t = {
         type: "building",
         map: { display: false },
@@ -5950,7 +5963,7 @@ function createMansionCellar(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createOutHouse(e) {
+function createOutHouse<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, color: 8145976, scale: 1 },
@@ -6053,7 +6066,7 @@ function createOutHouse(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createTeaPavilion(e) {
+function createTeaPavilion<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -6216,7 +6229,7 @@ function createTeaPavilion(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createTeaHouseComplex(e) {
+function createTeaHouseComplex<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, shapes: [] },
@@ -6318,7 +6331,7 @@ function createTeaHouseComplex(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createGrassyCover(e) {
+function createGrassyCover<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, shapes: [] },
@@ -6346,7 +6359,7 @@ function createGrassyCover(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createPoliceStation(e) {
+function createPoliceStation<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -7062,7 +7075,7 @@ function createPoliceStation(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createHouseRed(e) {
+function createHouseRed<T extends BuildingDef>(e: Partial<T & Record<string, string>>): T {
     const t = {
         type: "building",
         map: { display: true, color: 6429724, scale: 1 },
@@ -7410,7 +7423,7 @@ function createHouseRed(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createHouseRed2(e) {
+function createHouseRed2<T extends BuildingDef>(e: Partial<T & Record<string, string>>): T {
     const t = {
         type: "building",
         map: { display: true, color: 4656911, scale: 1 },
@@ -7811,7 +7824,7 @@ function createHouseRed2(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createShack2(e) {
+function createShack2<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, color: 6707790, scale: 1 },
@@ -7929,7 +7942,7 @@ function createShack2(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createShack(e) {
+function createShack<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, color: 4014894, scale: 1 },
@@ -8037,7 +8050,7 @@ function createShack(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createWarehouse(e) {
+function createWarehouse<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -8279,7 +8292,7 @@ function createWarehouse(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createWarehouse2(e) {
+function createWarehouse2<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -8506,7 +8519,7 @@ function createWarehouse2(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createWindow(e) {
+function createWindow<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
@@ -8541,7 +8554,7 @@ function createWindow(e) {
     };
     return util.mergeDeep(t, e || {});
 }
-function createLowWall(e) {
+function createLowWall<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
@@ -8669,10 +8682,7 @@ const MaterialDefs = {
     }
 };
 
-/**
- * @type {Object.<string, import('./mapObjectsTyping.ts').MapObjectDef>}
- */
-export const MapObjectDefs = {
+export const MapObjectDefs: Record<string, MapObjectDef> = {
     barrel_01: createBarrel({}),
     barrel_01b: createBarrel({
         img: { tint: 13224393 },
@@ -8766,11 +8776,11 @@ export const MapObjectDefs = {
     bush_01cb: createBush({
         img: { sprite: "map-bush-01cb.img" },
         map: { color: 2518873 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_01f: createBush({
         img: { sprite: "map-bush-01f.img" },
         map: { color: 1793032 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_01sv: createBush({
         hitParticle: "leafPrickly",
         explodeParticle: "leafPrickly",
@@ -8779,7 +8789,7 @@ export const MapObjectDefs = {
             residue: "map-bush-res-01sv.img"
         },
         map: { color: 7569455 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     brush_01sv: createBush({
         scale: {
             createMin: 1.5,
@@ -8798,7 +8808,7 @@ export const MapObjectDefs = {
             residue: "map-brush-res-02sv.img"
         },
         map: { color: 5207588 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     brush_02sv: createBush({
         scale: {
             createMin: 1.5,
@@ -8817,11 +8827,11 @@ export const MapObjectDefs = {
             residue: "map-brush-res-02sv.img"
         },
         map: { color: 5207588 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_01x: createBush({
         map: { color: 4545840 },
         img: { sprite: "map-bush-01x.img" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_02: createBush({ img: { residue: "map-bush-res-02.img" } }),
     bush_03: createBush({
         img: { sprite: "map-bush-03.img", alpha: 1 }
@@ -8858,14 +8868,14 @@ export const MapObjectDefs = {
         },
         sound: { enter: "bush_enter_02" },
         map: { color: 2784099 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_05: createBush({
         img: {
             sprite: "map-bush-05.img",
             residue: "map-bush-res-05.img"
         },
         map: { color: 6971965 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_06: createBush({
         collision: collider.createCircle(v2.create(0, 0), 1.75),
         img: {
@@ -8883,7 +8893,7 @@ export const MapObjectDefs = {
             alpha: 1
         },
         map: { display: true, color: 14041344, scale: 1.5 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bush_07: createBush({
         hitParticle: "leafRiver",
         explodeParticle: "leafRiver",
@@ -9192,7 +9202,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02.img" },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_02sv: createCrate({
         health: 140,
         loot: [
@@ -9203,7 +9213,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02sv.img" },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_02sv_lake: createCrate({
         health: 140,
         loot: [tierLoot("tier_soviet", 5, 6)],
@@ -9211,7 +9221,7 @@ export const MapObjectDefs = {
         terrain: { lakeCenter: true },
         img: { sprite: "map-crate-02sv.img" },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_02x: createCrate({
         health: 140,
         loot: [tierLoot("tier_soviet", 3, 5)],
@@ -9219,7 +9229,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02x.img" },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_02f: createCrate({
         health: 140,
         loot: [
@@ -9231,7 +9241,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_02d: createCrate({
         health: 140,
         loot: [
@@ -9244,7 +9254,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_03: createCrate({
         health: 100,
         collision: collider.createAabbExtents(
@@ -9256,7 +9266,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-03.img", scale: 0.35 },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_03x: createCrate({
         health: 100,
         hitParticle: "glassChip",
@@ -9274,7 +9284,7 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-03x.img", scale: 0.35 },
         sound: { explode: "crate_break_02" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_04: createCrate({
         health: 225,
         destructible: true,
@@ -9407,7 +9417,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_11: createCrate({
         scale: { destroy: 0.75 },
         health: 200,
@@ -9427,7 +9437,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_11h: createCrate({
         collision: collider.createCircle(v2.create(0, 0), 2.25),
         isDecalAnchor: true,
@@ -9451,7 +9461,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_10sv: createCrate({
         health: 200,
         scale: { destroy: 0.75 },
@@ -9472,7 +9482,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_11sv: createCrate({
         scale: { destroy: 0.75 },
         health: 200,
@@ -9493,7 +9503,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_11de: createCrate({
         scale: { destroy: 0.75 },
         health: 200,
@@ -9514,7 +9524,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_11tr: createCrate({
         scale: { destroy: 0.75 },
         health: 200,
@@ -9535,7 +9545,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_12: createCrate({
         collision: collider.createAabbExtents(
             v2.create(0, 0),
@@ -9565,7 +9575,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_13: createCrate({
         collision: collider.createAabbExtents(
             v2.create(0, 0),
@@ -9598,7 +9608,7 @@ export const MapObjectDefs = {
             residue: "map-crate-res-03.img"
         },
         sound: { explode: "crate_break_01" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     crate_14: createCrate({
         explodeParticle: ["windowBreak", "woodPlank"],
         loot: [tierLoot("tier_throwables", 1, 1)],
@@ -9737,7 +9747,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_10",
         explodeParticle: "airdropCrate02"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02: createAirdrop({
         button: {
             useImg: "map-airdrop-02.img",
@@ -9750,7 +9760,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_11",
         explodeParticle: "airdropCrate02"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_03: createAirdrop({
         collision: collider.createAabbExtents(
             v2.create(0, 0),
@@ -9767,7 +9777,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_12",
         explodeParticle: "airdropCrate04"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_04: createAirdrop({
         collision: collider.createAabbExtents(
             v2.create(0, 0),
@@ -9784,7 +9794,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_13",
         explodeParticle: "airdropCrate04"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_01sv: createAirdrop({
         button: {
             useImg: "map-airdrop-02.img",
@@ -9797,7 +9807,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_10sv",
         explodeParticle: "airdropCrate02"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02sv: createAirdrop({
         button: {
             useImg: "map-airdrop-02.img",
@@ -9810,7 +9820,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_11sv",
         explodeParticle: "airdropCrate02"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02de: createAirdrop({
         button: {
             useImg: "map-airdrop-02.img",
@@ -9823,7 +9833,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_11de",
         explodeParticle: "airdropCrate02"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02h: createAirdrop({
         collision: collider.createCircle(v2.create(0, 0), 2.5),
         button: {
@@ -9837,7 +9847,7 @@ export const MapObjectDefs = {
         },
         destroyType: "cache_pumpkin_airdrop_02",
         explodeParticle: "airdropCrate02h"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02tr: createAirdrop({
         button: {
             useImg: "map-airdrop-02.img",
@@ -9850,7 +9860,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_11tr",
         explodeParticle: "airdropCrate02"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_01x: createAirdrop({
         button: {
             useImg: "map-crate-13x.img",
@@ -9863,7 +9873,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_10",
         explodeParticle: "airdropCrate02x"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02x: createAirdrop({
         button: {
             useImg: "map-crate-13x.img",
@@ -9876,7 +9886,7 @@ export const MapObjectDefs = {
         },
         destroyType: "crate_11",
         explodeParticle: "airdropCrate02x"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     class_shell_01: createAirdrop({
         collision: collider.createCircle(v2.create(0, 0), 2.25),
         button: {
@@ -9891,7 +9901,7 @@ export const MapObjectDefs = {
         destroyType: "class_crate_common",
         smartLoot: true,
         explodeParticle: "classShell01b"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     class_shell_02: createAirdrop({
         collision: collider.createCircle(v2.create(0, 0), 2.25),
         button: {
@@ -9906,7 +9916,7 @@ export const MapObjectDefs = {
         destroyType: "class_crate_rare",
         smartLoot: true,
         explodeParticle: "classShell02b"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     class_shell_03: createAirdrop({
         collision: collider.createCircle(v2.create(0, 0), 2.25),
         button: {
@@ -9921,7 +9931,7 @@ export const MapObjectDefs = {
         },
         destroyType: "class_crate_mythic",
         explodeParticle: "classShell03b"
-    }),
+    } as unknown as Partial<ObstacleDef>),
     class_crate_common_scout: createClassCrate({
         loot: [
             tierLoot("tier_guns_common_scout", 1, 1),
@@ -10340,7 +10350,7 @@ export const MapObjectDefs = {
         img: { sprite: "map-locker-03.img" },
         loot: [autoLoot("ak47", 1, 1), autoLoot("backpack02", 1, 1)]
     }),
-    oven_01: createOven(),
+    oven_01: createOven({}),
     piano_01: {
         type: "obstacle",
         scale: {
@@ -10450,7 +10460,7 @@ export const MapObjectDefs = {
     potato_01: createPotato({}),
     potato_02: createPotato({ img: { sprite: "map-potato-02.img" } }),
     potato_03: createPotato({ img: { sprite: "map-potato-03.img" } }),
-    power_box_01: createControlPanel(),
+    power_box_01: createControlPanel({}),
     pumpkin_01: createPumpkin({
         loot: [
             tierLoot("tier_outfits", 1, 1),
@@ -10492,29 +10502,21 @@ export const MapObjectDefs = {
             tierLoot("tier_fruit_xp", 1, 1)
         ]
     }),
-    refrigerator_01: createRefrigerator(),
+    refrigerator_01: createRefrigerator({}),
     refrigerator_01b: createRefrigerator({
         scale: { createMin: 1, createMax: 1, destroy: 1 },
         health: 250
     }),
-    recorder_01: createRecorder({ button: { sound: { on: "log_01" } } }),
-    recorder_02: createRecorder({ button: { sound: { on: "log_02" } } }),
-    recorder_03: createRecorder({ button: { sound: { on: "log_03" } } }),
-    recorder_04: createRecorder({ button: { sound: { on: "log_04" } } }),
-    recorder_05: createRecorder({ button: { sound: { on: "log_05" } } }),
-    recorder_06: createRecorder({ button: { sound: { on: "log_06" } } }),
-    recorder_07: createRecorder({
-        button: { sound: { on: "footstep_07" } }
-    }),
-    recorder_08: createRecorder({
-        button: { sound: { on: "footstep_08" } }
-    }),
-    recorder_09: createRecorder({
-        button: { sound: { on: "footstep_09" } }
-    }),
-    recorder_10: createRecorder({
-        button: { sound: { on: "cell_control_03" } }
-    }),
+    recorder_01: createRecorder({ button: { sound: { on: "log_01" } } } as unknown as Partial<ObstacleDef>),
+    recorder_02: createRecorder({ button: { sound: { on: "log_02" } } } as unknown as Partial<ObstacleDef>),
+    recorder_03: createRecorder({ button: { sound: { on: "log_03" } } } as unknown as Partial<ObstacleDef>),
+    recorder_04: createRecorder({ button: { sound: { on: "log_04" } } } as unknown as Partial<ObstacleDef>),
+    recorder_05: createRecorder({ button: { sound: { on: "log_05" } } } as unknown as Partial<ObstacleDef>),
+    recorder_06: createRecorder({ button: { sound: { on: "log_06" } } } as unknown as Partial<ObstacleDef>),
+    recorder_07: createRecorder({ button: { sound: { on: "footstep_07" } } } as unknown as Partial<ObstacleDef>),
+    recorder_08: createRecorder({ button: { sound: { on: "footstep_08" } } } as unknown as Partial<ObstacleDef>),
+    recorder_09: createRecorder({ button: { sound: { on: "footstep_09" } } } as unknown as Partial<ObstacleDef>),
+    recorder_10: createRecorder({ button: { sound: { on: "cell_control_03" } } } as unknown as Partial<ObstacleDef>),
     recorder_11: createRecorder({
         button: {
             sound: { on: "log_11" },
@@ -10525,7 +10527,7 @@ export const MapObjectDefs = {
             v2.create(0, 0),
             v2.create(0.75, 1.25)
         )
-    }),
+    } as unknown as Partial<ObstacleDef>),
     recorder_12: createRecorder({
         button: {
             sound: { on: "log_12" },
@@ -10536,7 +10538,7 @@ export const MapObjectDefs = {
             v2.create(0, 0),
             v2.create(0.75, 1.25)
         )
-    }),
+    } as unknown as Partial<ObstacleDef>),
     recorder_13: createRecorder({
         button: {
             sound: { on: "log_13" },
@@ -10547,7 +10549,7 @@ export const MapObjectDefs = {
             v2.create(0, 0),
             v2.create(0.75, 1.25)
         )
-    }),
+    } as unknown as Partial<ObstacleDef>),
     recorder_14: createRecorder({
         button: {
             sound: { on: "log_14" },
@@ -10558,7 +10560,7 @@ export const MapObjectDefs = {
             v2.create(0, 0),
             v2.create(0.75, 1.25)
         )
-    }),
+    } as unknown as Partial<ObstacleDef>),
     screen_01: {
         type: "obstacle",
         obstacleType: "furniture",
@@ -10854,7 +10856,7 @@ export const MapObjectDefs = {
             enter: "none"
         }
     }),
-    table_01: createTable(),
+    table_01: createTable({}),
     table_01x: createTable({ img: { sprite: "map-table-01x.img" } }),
     table_02: createTable({
         collision: collider.createAabbExtents(
@@ -10910,7 +10912,7 @@ export const MapObjectDefs = {
             zIdx: 60
         }
     }),
-    tire_01: (function(e) {
+    tire_01: (function<T extends ObstacleDef>(e: Partial<T>): T {
         const t = {
             type: "obstacle",
             scale: {
@@ -11001,7 +11003,7 @@ export const MapObjectDefs = {
         img: { sprite: "map-towelrack-01.img" },
         explodeParticle: ["woodPlank", "clothBreak"]
     }),
-    tree_01: createTree(),
+    tree_01: createTree({}),
     tree_01cb: createTree({
         scale: {
             createMin: 1.1,
@@ -11015,11 +11017,11 @@ export const MapObjectDefs = {
         ),
         map: { color: 2900834 },
         img: { sprite: "map-tree-03cb.img" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_01sv: createTree({
         map: { color: 4411673 },
         img: { sprite: "map-tree-03sv.img" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_interior_01: createTree({ img: { zIdx: 200 } }),
     tree_01x: createTree({ img: { sprite: "map-tree-01x.img" } }),
     tree_02: createTree({
@@ -11069,7 +11071,7 @@ export const MapObjectDefs = {
             tint: 11645361
         },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)]
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_05: createTree({
         collision: collider.createCircle(v2.create(0, 0), 2.3),
         aabb: collider.createAabbExtents(
@@ -11086,7 +11088,7 @@ export const MapObjectDefs = {
             scale: 0.7,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_05b: createTree({
         collision: collider.createCircle(v2.create(0, 0), 2.3),
         aabb: collider.createAabbExtents(
@@ -11108,7 +11110,7 @@ export const MapObjectDefs = {
             scale: 0.7,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_05c: createTree({
         collision: collider.createCircle(v2.create(0, 0), 1.05),
         aabb: collider.createAabbExtents(
@@ -11125,33 +11127,33 @@ export const MapObjectDefs = {
             scale: 0.35,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_06: createTree({
         img: { sprite: "map-tree-06.img" },
         map: { color: 7700520 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_07: createTree({
         scale: { createMin: 1, createMax: 1.2 },
         map: { color: 5199637, scale: 2.5 },
         img: { sprite: "map-tree-07.img" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_07sp: createTree({
         scale: { createMin: 1, createMax: 1.2 },
         map: { color: 16697057, scale: 2.5 },
         img: { sprite: "map-tree-07sp.img" },
         terrain: { grass: true, beach: false, riverShore: true }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_07spr: createTree({
         scale: { createMin: 1, createMax: 1.2 },
         map: { color: 16697057, scale: 2.5 },
         img: { sprite: "map-tree-07sp.img" },
         terrain: { grass: false, beach: false, riverShore: true }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_07su: createTree({
         scale: { createMin: 1, createMax: 1.2 },
         map: { color: 2185478, scale: 2.5 },
         img: { sprite: "map-tree-07su.img" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
@@ -11161,7 +11163,7 @@ export const MapObjectDefs = {
             residue: "map-tree-res-02.img",
             scale: 0.35
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08b: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 300,
@@ -11173,7 +11175,7 @@ export const MapObjectDefs = {
             scale: 0.35,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08c: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 500,
@@ -11190,7 +11192,7 @@ export const MapObjectDefs = {
             scale: 0.35,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08f: createTree({
         scale: { createMin: 1.2, createMax: 1.6 },
         health: 200,
@@ -11201,7 +11203,7 @@ export const MapObjectDefs = {
             scale: 0.35,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08sp: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
@@ -11212,7 +11214,7 @@ export const MapObjectDefs = {
             scale: 0.35
         },
         terrain: { grass: true, beach: false, riverShore: true }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08spb: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 300,
@@ -11225,7 +11227,7 @@ export const MapObjectDefs = {
             zIdx: 801
         },
         terrain: { grass: true, beach: false, riverShore: true }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08spc: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 500,
@@ -11242,7 +11244,7 @@ export const MapObjectDefs = {
             scale: 0.35,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08spr: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
@@ -11253,7 +11255,7 @@ export const MapObjectDefs = {
             scale: 0.35
         },
         terrain: { grass: false, beach: false, riverShore: true }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08su: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
@@ -11264,7 +11266,7 @@ export const MapObjectDefs = {
             scale: 0.35,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_08sub: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 300,
@@ -11277,7 +11279,7 @@ export const MapObjectDefs = {
             zIdx: 801
         },
         terrain: { grass: true, beach: false, riverShore: true }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_09: createTree({
         health: 120,
         collision: collider.createCircle(v2.create(0, 0), 1.6),
@@ -11304,7 +11306,7 @@ export const MapObjectDefs = {
         scale: { createMin: 0.9, createMax: 1.1 },
         map: { color: 7571807, scale: 2.5 },
         img: { sprite: "map-tree-10.img" }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_11: createTree({
         collision: collider.createCircle(v2.create(0, 0), 1.25),
         scale: { createMin: 1, createMax: 1 },
@@ -11314,7 +11316,7 @@ export const MapObjectDefs = {
             alpha: 0.92,
             zIdx: 201
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_12: createTree({
         map: { color: 8032292, scale: 7 },
         img: {
@@ -11323,7 +11325,7 @@ export const MapObjectDefs = {
             tint: 16777215,
             zIdx: 801
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     tree_13: createTree({
         img: {
             sprite: "map-tree-13.img",
@@ -11523,7 +11525,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 4934475 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     house_door_03: createDoor({
         material: "wood",
         hinge: v2.create(0, 2),
@@ -11555,7 +11557,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 3159362 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     cell_door_01: createDoor({
         material: "metal",
         hinge: v2.create(0, 2),
@@ -11569,7 +11571,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 1776411 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     eye_door_01: createDoor({
         material: "metal",
         hinge: v2.create(0, 2),
@@ -11584,7 +11586,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 921102 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     lab_door_01: createLabDoor({ img: { tint: 5373952 } }),
     lab_door_02: createLabDoor({
         door: {
@@ -11593,11 +11595,11 @@ export const MapObjectDefs = {
             casingImg: { pos: v2.create(6, 0) }
         },
         img: { tint: 5373952 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     lab_door_03: createLabDoor({
         door: { openOneWay: true },
         img: { tint: 5373952 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     lab_door_locked_01: createLabDoor({
         door: {
             locked: true,
@@ -11606,9 +11608,9 @@ export const MapObjectDefs = {
             sound: { error: "" }
         },
         img: { tint: 5373952 }
-    }),
-    house_window_01: createWindow(),
-    house_window_broken_01: createLowWall(),
+    } as unknown as Partial<ObstacleDef>),
+    house_window_01: createWindow({}),
+    house_window_broken_01: createLowWall({}),
     lab_window_01: createWindow({
         destroyType: "lab_window_broken_01"
     }),
@@ -11986,7 +11988,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 5373952 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bunker_chrys_sublevel_01: {
         type: "building",
         map: { display: false, color: 6707790, scale: 1 },
@@ -12387,7 +12389,7 @@ export const MapObjectDefs = {
                 change: "vault_change_01"
             }
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     vault_door_chrys_02: createDoor({
         material: "metal",
         hinge: v2.create(1, 3.5),
@@ -12397,7 +12399,7 @@ export const MapObjectDefs = {
             canUse: false,
             spriteAnchor: v2.create(0.2, 1)
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bunker_chrys_compartment_01: {
         type: "building",
         map: { display: false, color: 6707790, scale: 1 },
@@ -13636,7 +13638,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     hut_02: createHut({
         ceilingImg: "map-building-hut-ceiling-02.img",
         specialLoot: "pot_02"
@@ -13669,7 +13671,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     hut_03: createHut({
         map: {
             display: true,
@@ -13767,7 +13769,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     warehouse_02: createWarehouse2({}),
     warehouse_02x: createWarehouse2({
         ceiling: {
@@ -13804,7 +13806,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     warehouse_complex_01: {
         type: "building",
         map: {
@@ -14593,7 +14595,7 @@ export const MapObjectDefs = {
         tree_08c: "tree_08spc"
     }),
     logging_complex_02su: createLoggingComplex2({ groundTintDk: 5143827 }),
-    logging_complex_03: (function(e) {
+    logging_complex_03: (function<T extends BuildingDef>(e: Partial<T>): T {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
@@ -16379,7 +16381,7 @@ export const MapObjectDefs = {
         height: 10,
         img: wallImg("map-wall-shack-bot.img")
     }),
-    shack_01: createShack2(),
+    shack_01: createShack2({}),
     shack_01x: createShack2({
         ceiling: {
             imgs: [
@@ -16407,7 +16409,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     shack_02: createShack({}),
     shack_02x: createShack({
         ceiling: {
@@ -16428,8 +16430,8 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
-    shilo_01: (function(e) {
+    } as unknown as Partial<BuildingDef>),
+    shilo_01: (function<T extends BuildingDef>(e: Partial<T>): T {
         const t = {
             type: "building",
             map: { display: true, color: 3240224, scale: 1 },
@@ -16683,7 +16685,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     shack_03x: createShack3({
         terrain: {
             bridge: { nearbyWidthMult: 1 },
@@ -16712,7 +16714,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     outhouse_wall_top: createWall({
         material: "wood",
         extents: v2.create(3.2, 0.35),
@@ -16760,7 +16762,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     outhouse_02: createOutHouse({
         ceiling: {
             zoomRegions: [
@@ -17914,7 +17916,7 @@ export const MapObjectDefs = {
             ]
         },
         bonus_door: "house_door_02"
-    }),
+    } as unknown as Partial<BuildingDef>),
     barn_02: createBarn({
         bonus_room: "barn_basement_structure_01",
         bonus_door: "",
@@ -18005,7 +18007,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     vault_door_main: createDoor({
         material: "metal",
         hinge: v2.create(1, 3.5),
@@ -18024,7 +18026,7 @@ export const MapObjectDefs = {
                 change: "vault_change_01"
             }
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     vault_01: createBankVault({}),
     vault_01b: createBankVault({
         gold_box: 9,
@@ -18140,7 +18142,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     house_wall_int_4: createWall({
         material: "wood",
         extents: v2.create(0.5, 2),
@@ -18213,7 +18215,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef & Record<string, string>>),
     house_red_02: createHouseRed2({ stand: "stand_01" }),
     house_red_02h: createHouseRed2({
         porch_01: "cache_pumpkin_02",
@@ -18247,7 +18249,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef & Record<string, string>>),
     cabin_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
@@ -18318,7 +18320,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     cabin_02: createCabin({
         cabin_mount: "gun_mount_02",
         porch_01: "cache_pumpkin_02"
@@ -18630,7 +18632,7 @@ export const MapObjectDefs = {
         tree_scale: 1,
         tree_loot: "loot_tier_1",
         bush_chance: 999
-    }),
+    } as unknown as Partial<BuildingDef & Record<string, string>>),
     mansion_02: createMansion({
         decoration_01: "decal_web_01",
         decoration_02: "candle_lit_01",
@@ -18811,7 +18813,7 @@ export const MapObjectDefs = {
             tint: 16777215,
             zIdx: 9
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     wood_perm_wall_ext_5: createWall({
         material: "woodPerm",
         extents: v2.create(0.5, 2.5),
@@ -19702,7 +19704,7 @@ export const MapObjectDefs = {
                 tint: 3211264
             }
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     teahouse_window_open_01: createLowWall({
         img: { tint: 12216619 }
     }),
@@ -19920,7 +19922,7 @@ export const MapObjectDefs = {
         tree_small: "tree_08su",
         tree_large: "tree_08su"
     }),
-    savannah_patch_01: (function(e) {
+    savannah_patch_01: (function<T extends BuildingDef>(e: Partial<T>): T {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
@@ -20033,7 +20035,7 @@ export const MapObjectDefs = {
         grass_color: 15451700,
         terrain: { grass: true, beach: false, spawnPriority: 1 }
     }),
-    kopje_patch_01: (function(e) {
+    kopje_patch_01: (function<T extends BuildingDef>(e: Partial<T>): T {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
@@ -21179,7 +21181,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 5373952 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     bathhouse_column_1: createWall({
         material: "concrete",
         extents: v2.create(2, 2),
@@ -21228,7 +21230,7 @@ export const MapObjectDefs = {
             }
         },
         img: { tint: 4934475 }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     club_01: (function(e) {
         const t = {
             type: "building",
@@ -28233,7 +28235,7 @@ export const MapObjectDefs = {
                 change: "none"
             }
         }
-    }),
+    } as unknown as Partial<ObstacleDef>),
     metal_wall_column_4x8: createWall({
         material: "metal",
         extents: v2.create(2, 4)
@@ -29205,7 +29207,7 @@ export const MapObjectDefs = {
                 }
             ]
         }
-    }),
+    } as unknown as Partial<BuildingDef>),
     bridge_lg_under_01: {
         type: "building",
         map: { display: false },
