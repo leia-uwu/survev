@@ -1,10 +1,11 @@
-import { type Circle, type AABB, type Collider } from "../utils/coldet";
+import { type AABB, type Collider } from "../utils/coldet";
 import { type Vec2 } from "../utils/v2";
 
 interface TerrainSpawnDef {
     grass?: boolean
     beach?: boolean
     riverShore?: boolean
+    spawnPriority?: number
     bridge?: {
         nearbyWidthMult: number
     }
@@ -18,7 +19,7 @@ interface TerrainSpawnDef {
     }
 }
 
-type GoreRegion = AABB & { height: number };
+type AABBWithHeight = AABB & { height: number };
 
 //
 // ObstacleDef
@@ -81,15 +82,15 @@ export interface ObstacleDef {
         mirrorY?: boolean
     }
     sound: {
-        bullet: string
-        punch: string
-        explode: string
-        enter: string
+        bullet?: string
+        punch?: string
+        explode?: string
+        enter?: string
     }
     isWall?: boolean
     material?: string
     extents?: Vec2
-    mapObstacleBounds?: GoreRegion[]
+    mapObstacleBounds?: AABBWithHeight[]
     door?: {
         interactionRad: number
         canUse: boolean
@@ -122,7 +123,7 @@ export interface ObstacleDef {
     isWindow?: boolean
     destroyType?: string
     stonePlated?: boolean
-    aabb?: GoreRegion
+    aabb?: AABBWithHeight
     isTree?: boolean
     button?: {
         interactionRad: number
@@ -146,7 +147,7 @@ export interface ObstacleDef {
         offset: Vec2
         speedMult: number
     }
-    dropCollision?: GoreRegion
+    dropCollision?: AABBWithHeight
     airdropCrate?: boolean
     isBush?: boolean
     isDecalAnchor?: boolean
@@ -198,7 +199,7 @@ export interface BuildingDef {
     floor: {
         surfaces: Array<{
             type: string
-            collision: GoreRegion[]
+            collision: AABBWithHeight[]
             data?: {
                 isBright: boolean
             }
@@ -207,8 +208,8 @@ export interface BuildingDef {
     }
     ceiling: {
         zoomRegions: Array<{
-            zoomIn?: GoreRegion
-            zoomOut?: GoreRegion
+            zoomIn?: AABBWithHeight
+            zoomOut?: AABBWithHeight
             zoom?: number
         }>
         vision?: {
@@ -228,10 +229,10 @@ export interface BuildingDef {
             residue: string
             sound?: string
         }
-        collision?: GoreRegion[]
+        collision?: AABBWithHeight[]
     }
     mapObjects: Array<{
-        type?: string
+        type?: string | (() => string)
         pos: Vec2
         scale: number
         ori: number
@@ -275,20 +276,20 @@ export interface BuildingDef {
     botRightObs?: string
     ignoreMapSpawnReplacement?: boolean
     mapGroundPatches?: Array<{
-        bound: GoreRegion
+        bound: AABBWithHeight
         color: number
         order?: number
         roughness?: number
         offsetDist?: number
         useAsMapShape?: boolean
     }>
-    bridgeLandBounds?: GoreRegion[]
+    bridgeLandBounds?: AABBWithHeight[]
     groundTintLt?: number
     groundTintDk?: number
-    bridgeWaterBounds?: GoreRegion[]
+    bridgeWaterBounds?: AABBWithHeight[]
     bonus_room?: string
     bonus_door?: string
-    goreRegion?: GoreRegion
+    goreRegion?: AABBWithHeight
     tree_08c?: string
     crate?: string
     oris?: number[]
@@ -314,7 +315,7 @@ export interface BuildingDef {
         volume: number
     }>
     healRegions?: Array<{
-        collision: GoreRegion
+        collision: AABBWithHeight
         healRate: number
     }>
     center_loot?: string
@@ -348,14 +349,16 @@ interface FloorImage {
     mirrorY?: boolean
     mirrorX?: boolean
 }
-interface MapObstacleBound {
-    type: number
-    min?: Vec2
-    max?: Vec2
-    height: number
-    pos?: Vec2
-    rad?: number
-}
+
+type MapObstacleBound = Collider;
+// interface MapObstacleBound {
+//     type: number
+//     min?: Vec2
+//     max?: Vec2
+//     height: number
+//     pos?: Vec2
+//     rad?: number
+// }
 
 //
 // StructureDef
@@ -377,7 +380,7 @@ export interface StructureDef {
     //   };
     // };
     ori?: number
-    mapObstacleBounds?: GoreRegion[]
+    mapObstacleBounds?: AABBWithHeight[]
     layers: Array<{
         type: string
         pos: Vec2
@@ -385,12 +388,12 @@ export interface StructureDef {
         underground?: boolean
     }>
     stairs: Array<{
-        collision: GoreRegion
+        collision: AABBWithHeight
         downDir: Vec2
         noCeilingReveal?: boolean
         lootOnly?: boolean
     }>
-    mask: GoreRegion[]
+    mask: AABBWithHeight[]
     bunkerType?: string
     structureType?: string
     interiorSound?: {
@@ -404,8 +407,8 @@ export interface StructureDef {
         undergroundVolume?: number
         puzzle: string
     }
-    bridgeLandBounds?: GoreRegion[]
-    bridgeWaterBounds?: GoreRegion[]
+    bridgeLandBounds?: AABBWithHeight[]
+    bridgeWaterBounds?: AABBWithHeight[]
 }
 
 interface LootSpawnerDef {
@@ -423,16 +426,16 @@ interface LootSpawnerDef {
 
 export interface DecalDef {
     type: "decal"
-    collision: Circle
-    terrain: TerrainSpawnDef
+    collision: Collider
     // collision:   {
-    //   type:   number;
-    //   pos?:   Vec2;
-    //   rad?:   number;
-    //   height: number;
-    //   min?:   Vec2;
-    //   max?:   Vec2;
-    // };
+    //       type:   number;
+    //       pos?:   Vec2;
+    //       rad?:   number;
+    //       height: number;
+    //       min?:   Vec2;
+    //       max?:   Vec2;
+    //     };
+    terrain?: TerrainSpawnDef
     height: number
     img: {
         sprite: string

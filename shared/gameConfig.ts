@@ -48,19 +48,19 @@ export enum Anim {
     Revive
 }
 
-enum Plane {
+export enum Plane {
     Airdrop,
     Airstrike
 }
 
-enum HasteType {
+export enum HasteType {
     None,
     Windwalk,
     Takedown,
     Inspire
 }
 
-enum Input {
+export enum Input {
     MoveLeft,
     MoveRight,
     MoveUp,

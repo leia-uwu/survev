@@ -623,7 +623,7 @@ export class GameMap {
             let partType = mapObject.type;
 
             if (typeof partType !== "string") {
-                partType = partType();
+                partType = partType?.();
             }
 
             if (!partType) continue;

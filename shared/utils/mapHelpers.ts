@@ -50,7 +50,7 @@ function computeBoundingCollider(type: string): Collider {
         // Map objects
         for (let i = 0; i < def.mapObjects.length; i++) {
             const mapObj = def.mapObjects[i];
-            let mt = mapObj.type;
+            let mt = mapObj.type!;
             if (typeof mt === "function") {
                 mt = mt();
             }

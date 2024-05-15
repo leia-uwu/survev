@@ -1,9 +1,11 @@
-import { type GameConfig } from "../shared/gameConfig";
+import { type HasteType } from "../shared/gameConfig";
 import { type ObjectType } from "../shared/utils/objectSerializeFns";
 import { type Vec2 } from "../shared/utils/v2";
 import { type Loot } from "./src/objects/loot";
 import { type Obstacle } from "./src/objects/obstacle";
 import { type Player } from "./src/objects/player";
+
+// TEMPORARY FILE, WILL DELETE LATER
 
 export abstract class AbstractObject {
     abstract init(): void;
@@ -60,15 +62,15 @@ export interface NetData {
     layer: number
     dead: boolean
     downed: boolean
-    animType: ObjectValues<typeof GameConfig.Anim>
+    animType: Anim
     animSeq: number
-    actionType: ObjectValues<typeof GameConfig.Action>
+    actionType: Action
     actionSeq: number
     wearingPan: boolean
     healEffect: boolean
     frozen: boolean
     frozenOri: number
-    hasteType: ObjectValues<typeof GameConfig.HasteType>
+    hasteType: HasteType
     hasteSeq: number
     actionItem: string
     scale: number
@@ -108,13 +110,9 @@ export interface LocalDataWithDirty extends LocalData {
     weapsDirty: boolean
     spectatorCountDirty: boolean
 }
-// @HACK until I refactor gameConfig into enums
-type ObjectValues<T extends Record<string, number>> = {
-    [Key in keyof T]: T[Key];
-}[keyof T];
 
 export interface Anim {
-    type: ObjectValues<typeof GameConfig.Anim>
+    type: Anim
     data: {
         type: string
         mirror: false
@@ -124,7 +122,7 @@ export interface Anim {
     bones: unknown[]
 }
 export interface Action {
-    type: ObjectValues<typeof GameConfig.Action>
+    type: Action
     seq: number
     seqOld: number
     item: string
