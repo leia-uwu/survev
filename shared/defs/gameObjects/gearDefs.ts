@@ -1,6 +1,6 @@
 import { util } from "../../utils/util";
 
-function defineSkin(baseType, params) {
+function defineSkin(baseType: string, params: unknown) {
     return util.mergeDeep({}, BaseDefs[baseType], { baseType }, params);
 }
 
@@ -899,8 +899,6 @@ const SkinDefs = {
         }
     })
 };
-
-console.log(SkinDefs)
 
 // Shared with the client; move them somewhere
 export const GEAR_TYPES = ["chest", "helmet", "backpack"] as const;

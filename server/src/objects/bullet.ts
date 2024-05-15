@@ -350,7 +350,7 @@ export class Bullet {
                 let panCollision = null;
 
                 if (player.hasActivePan()) {
-                    const panSeg = player.getPanSegment();
+                    const panSeg = player.getPanSegment()!;
                     const oldSegment = transformSegment(
                         panSeg.p0,
                         panSeg.p1,

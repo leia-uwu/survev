@@ -288,7 +288,7 @@ export class Player extends BaseGameObject {
 
     getPanSegment() {
         const type = this.wearingPan ? "unequipped" : "equipped";
-        return MeleeDefs.pan.reflectSurface[type];
+        return MeleeDefs.pan.reflectSurface?.[type];
     }
 
     name = "Player";
