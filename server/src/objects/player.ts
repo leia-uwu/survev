@@ -819,7 +819,7 @@ export class Player extends BaseGameObject {
             const type = this[item];
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
-            if (!!def.noDrop || def.level < 1) continue;
+            if (!!(def as HelmetDef | ChestDef ).noDrop || def.level < 1) continue;
             this.game.lootBarn.addLoot(type, this.pos, this.layer, 1);
         }
 
@@ -1332,7 +1332,7 @@ export class Player extends BaseGameObject {
             break;
         }
 
-        const lootToAddDef = GameObjectDefs[lootToAdd];
+        const lootToAddDef = GameObjectDefs[lootToAdd] as LootDef;
         if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !lootToAddDef.noDrop) {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
