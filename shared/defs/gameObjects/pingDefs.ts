@@ -1,17 +1,16 @@
 export interface PingDef {
-    type?:         string;
-    texture?:      string;
-    mapTexture?:   string;
-    sound?:        string;
-    soundLeader?:  string;
-    pingMap?:      boolean;
-    pingLife?:     number;
-    mapLife?:      number;
-    mapEvent?:     boolean;
-    worldDisplay?: boolean;
-    tint?:         number;
+    type?: string
+    texture?: string
+    mapTexture?: string
+    sound?: string
+    soundLeader?: string
+    pingMap?: boolean
+    pingLife?: number
+    mapLife?: number
+    mapEvent?: boolean
+    worldDisplay?: boolean
+    tint?: number
 }
-
 
 export const PingDefs: Record<string, PingDef> = {
     ping_danger: {

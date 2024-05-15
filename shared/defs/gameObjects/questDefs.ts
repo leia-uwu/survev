@@ -1,11 +1,10 @@
-
-type QuestDef = {
-    type: "quest";
-    category: string;
-    target: number;
-    xp: number;
-    timed?: boolean;
-    icon?: string;
+interface QuestDef {
+    type: "quest"
+    category: string
+    target: number
+    xp: number
+    timed?: boolean
+    icon?: string
 }
 
 export const QuestDefs: Record<string, QuestDef> = {

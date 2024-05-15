@@ -1,9 +1,9 @@
-type HealEffectDef = {
-    type: string,
-    name: string,
-    rarity: number;
-    texture: string;
-    emitter: string;
+interface HealEffectDef {
+    type: string
+    name: string
+    rarity: number
+    texture: string
+    emitter: string
 }
 
 export const HealEffectDefs: Record<string, HealEffectDef> = {

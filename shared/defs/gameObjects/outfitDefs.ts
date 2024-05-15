@@ -7,35 +7,35 @@ function defineSkin(baseType: string, params: unknown) {
 }
 
 export interface OutfitDef {
-    name:           string;
-    type:           "outfit";
-    skinImg:        {
-        baseTint:       number;
-        baseSprite:     string;
-        handTint:       number;
-        handSprite:     string;
-        footTint:       number;
-        footSprite:     string;
-        backpackTint:   number;
-        backpackSprite: string;
-    };
-    lootImg:        {
-        sprite:     string;
-        tint:       number;
-        border:     string;
-        borderTint: number;
-        scale:      number;
-    };
-    sound:          {
-        pickup: string;
-    };
-    baseType?:       string;
-    noDropOnDeath?: boolean;
-    rarity?:        number;
-    lore?:          string;
-    noDrop?:        boolean;
-    obstacleType?:  string;
-    baseScale?:     number;
+    name: string
+    type: "outfit"
+    skinImg: {
+        baseTint: number
+        baseSprite: string
+        handTint: number
+        handSprite: string
+        footTint: number
+        footSprite: string
+        backpackTint: number
+        backpackSprite: string
+    }
+    lootImg: {
+        sprite: string
+        tint: number
+        border: string
+        borderTint: number
+        scale: number
+    }
+    sound: {
+        pickup: string
+    }
+    baseType?: string
+    noDropOnDeath?: boolean
+    rarity?: number
+    lore?: string
+    noDrop?: boolean
+    obstacleType?: string
+    baseScale?: number
 }
 
 const BaseDefs: Record<string, OutfitDef> = {

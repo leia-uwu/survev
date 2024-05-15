@@ -5,19 +5,19 @@ function defineSkin(baseType: string, params: unknown) {
 }
 
 export interface ChestDef {
-    name:            string;
-    type:            "chest";
-    noDrop?:         boolean;
-    level:           number;
-    damageReduction: number;
-    skinImg:         {
-        baseTint:   number;
-        baseSprite: string;
-    };
-    lootImg:         LootImg;
-    sound:           {
-        pickup: string;
-    };
+    name: string
+    type: "chest"
+    noDrop?: boolean
+    level: number
+    damageReduction: number
+    skinImg: {
+        baseTint: number
+        baseSprite: string
+    }
+    lootImg: LootImg
+    sound: {
+        pickup: string
+    }
 }
 
 const ChestDefs: Record<string, ChestDef> = {
@@ -102,27 +102,27 @@ const ChestDefs: Record<string, ChestDef> = {
             pickup: "chest_pickup_01"
         }
     }
-}
+};
 
 export interface HelmetDef {
-    name:            string;
-    type:            "helmet";
-    level:           number;
-    damageReduction: number;
-    skinImg:         {
-        baseTint:     number;
-        baseTintRed:  number;
-        baseTintBlue: number;
-        baseSprite:   string;
+    name: string
+    type: "helmet"
+    level: number
+    damageReduction: number
+    skinImg: {
+        baseTint: number
+        baseTintRed: number
+        baseTintBlue: number
+        baseSprite: string
     }
-    ;
-    lootImg:         LootImg;
-    sound:           {
-        pickup: string;
-    };
+
+    lootImg: LootImg
+    sound: {
+        pickup: string
+    }
 }
 
-const HelmetDefs:  Record<string, HelmetDef> = {
+const HelmetDefs: Record<string, HelmetDef> = {
     helmet01: {
         name: "Level 1 Helmet",
         type: "helmet",
@@ -210,19 +210,19 @@ const HelmetDefs:  Record<string, HelmetDef> = {
         sound: {
             pickup: "helmet_pickup_01"
         }
-    },
-}
+    }
+};
 
 export interface BackpackDef {
-    name:      string;
-    type:      "backpack";
-    level:     number;
-    playerRad: number;
-    tint:      number;
-    lootImg:   LootImg;
-    sound:     {
-        pickup: string;
-    };
+    name: string
+    type: "backpack"
+    level: number
+    playerRad: number
+    tint: number
+    lootImg: LootImg
+    sound: {
+        pickup: string
+    }
 }
 
 const BackpackDefs: Record<string, BackpackDef> = {
@@ -293,24 +293,24 @@ const BackpackDefs: Record<string, BackpackDef> = {
         sound: {
             pickup: "pack_pickup_01"
         }
-    },
-}
+    }
+};
 
 export interface BoostDef {
-    name:    string;
-    type:    "boost";
-    useTime: number;
-    boost:   number;
-    lootImg: LootImg;
-    sound:   Sound;
-    emitter: string;
-    aura:    {
-        sprite: string;
-        tint:   number;
-    };
+    name: string
+    type: "boost"
+    useTime: number
+    boost: number
+    lootImg: LootImg
+    sound: Sound
+    emitter: string
+    aura: {
+        sprite: string
+        tint: number
+    }
 }
 
-const BoostDefs: Record<string, BoostDef>  = {
+const BoostDefs: Record<string, BoostDef> = {
     soda: {
         name: "Soda",
         type: "boost",
@@ -354,39 +354,38 @@ const BoostDefs: Record<string, BoostDef>  = {
             sprite: "part-aura-circle-01.img",
             tint: 1676544
         }
-    },
-}
+    }
+};
 
 export interface HealDef {
-    name:     string;
-    type:     "heal";
-    useTime:  number;
-    boost?:   number;
-    lootImg:  LootImg;
-    sound:    Sound;
-    emitter:  string;
-    aura:     {
-        sprite: string;
-        tint:   number;
-    };
-    heal?:    number;
-    maxHeal?: number;
+    name: string
+    type: "heal"
+    useTime: number
+    boost?: number
+    lootImg: LootImg
+    sound: Sound
+    emitter: string
+    aura: {
+        sprite: string
+        tint: number
+    }
+    heal?: number
+    maxHeal?: number
 }
 
 // shared
 export interface LootImg {
-    sprite:     string;
-    tint:       number;
-    border:     string;
-    borderTint: number;
-    scale:      number;
+    sprite: string
+    tint: number
+    border: string
+    borderTint: number
+    scale: number
 }
 
 export interface Sound {
-    pickup: string;
-    use:    string;
+    pickup: string
+    use: string
 }
-
 
 const HealDefs: Record<string, HealDef> = {
     bandage: {
@@ -434,24 +433,24 @@ const HealDefs: Record<string, HealDef> = {
             sprite: "part-aura-circle-01.img",
             tint: 16711680
         }
-    },
-}
+    }
+};
 
 export interface AmmoDef {
-    name:         string;
-    type:         "ammo";
-    special?:     boolean;
-    minStackSize: number;
-    lootImg:      {
-        sprite:   string;
-        scale:    number;
-        tint:     number;
-        tintDark: number;
-    };
-    sound:        {
-        pickup: string;
-    };
-    hideUi?:      boolean;
+    name: string
+    type: "ammo"
+    special?: boolean
+    minStackSize: number
+    lootImg: {
+        sprite: string
+        scale: number
+        tint: number
+        tintDark: number
+    }
+    sound: {
+        pickup: string
+    }
+    hideUi?: boolean
 }
 
 const AmmoDefs: Record<string, AmmoDef> = {
@@ -586,8 +585,8 @@ const AmmoDefs: Record<string, AmmoDef> = {
         sound: {
             pickup: "ammo_pickup_01"
         }
-    },
-}
+    }
+};
 
 const BaseDefs = {
     ...AmmoDefs,
@@ -599,13 +598,13 @@ const BaseDefs = {
 };
 
 export interface ScopeDef {
-    name:    string;
-    type:    "scope";
-    level:   number;
-    lootImg: LootImg;
-    sound:   {
-        pickup: string;
-    };
+    name: string
+    type: "scope"
+    level: number
+    lootImg: LootImg
+    sound: {
+        pickup: string
+    }
 }
 
 const ScopeDefs: Record<string, ScopeDef> = {

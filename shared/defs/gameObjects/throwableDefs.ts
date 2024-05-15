@@ -1,91 +1,91 @@
-import { Vec2 } from "../../utils/v2";
+import { type Vec2 } from "../../utils/v2";
 
 export interface ThrowableDef {
-    name:                   string;
-    type:                   "throwable";
-    quality:                number;
-    explosionType:          string;
-    inventoryOrder:         number;
-    cookable:               boolean;
-    explodeOnImpact:        boolean;
-    playerCollision:        boolean;
-    fuseTime:               number;
-    aimDistance:            number;
-    rad:                    number;
-    throwPhysics:           {
-        playerVelMult:         number;
-        velZ:                  number;
-        speed:                 number;
-        spinVel:               number;
-        spinDrag:              number;
-        fixedCollisionHeight?: number;
-        randomizeSpinDir?:     boolean;
-    };
-    speed:                  {
-        equip:  number;
-        attack: number;
-    };
-    lootImg:                {
-        sprite:     string;
-        tint:       number;
-        border:     "loot-circle-outer-01.img";
-        borderTint: number;
-        scale:      number;
-    };
-    worldImg:               {
-        sprite: string;
-        scale:  number;
-        tint:   number;
-    };
-    handImg?:               {
-        equip?:    {
-            right: Cook;
-            left:  {
-                sprite: "none";
-            };
-        };
-        cook?:     {
-            right: Cook;
-            left:  Cook;
-        };
+    name: string
+    type: "throwable"
+    quality: number
+    explosionType: string
+    inventoryOrder: number
+    cookable: boolean
+    explodeOnImpact: boolean
+    playerCollision: boolean
+    fuseTime: number
+    aimDistance: number
+    rad: number
+    throwPhysics: {
+        playerVelMult: number
+        velZ: number
+        speed: number
+        spinVel: number
+        spinDrag: number
+        fixedCollisionHeight?: number
+        randomizeSpinDir?: boolean
+    }
+    speed: {
+        equip: number
+        attack: number
+    }
+    lootImg: {
+        sprite: string
+        tint: number
+        border: "loot-circle-outer-01.img"
+        borderTint: number
+        scale: number
+    }
+    worldImg: {
+        sprite: string
+        scale: number
+        tint: number
+    }
+    handImg?: {
+        equip?: {
+            right: Cook
+            left: {
+                sprite: "none"
+            }
+        }
+        cook?: {
+            right: Cook
+            left: Cook
+        }
         throwing?: {
             right: {
-                sprite: "none";
-            };
-            left:  {
-                sprite: "none";
-            };
-        };
-    };
-    useThrowParticles:      boolean;
-    sound:                  {
-        pullPin:  string;
-        throwing: string;
-        pickup:   string;
-        deploy:   string; 
-    };
-    strikeDelay?:           number;
-    freezeOnImpact?:        boolean;
-    heavyType?:             string;
-    forceMaxThrowDistance?: boolean;
-    emoteId?:               number;
-    noPotatoSwap?:          boolean;
-    destroyNonCollidables?: boolean;
-    trail?:                 {
-        maxLength: number;
-        width:     number;
-        alpha:     number;
-        tint:      number;
-    };
-    fuseVariance?:          number;
-    numSplit?:              number;
-    splitType?:             string;
+                sprite: "none"
+            }
+            left: {
+                sprite: "none"
+            }
+        }
+    }
+    useThrowParticles: boolean
+    sound: {
+        pullPin: string
+        throwing: string
+        pickup: string
+        deploy: string
+    }
+    strikeDelay?: number
+    freezeOnImpact?: boolean
+    heavyType?: string
+    forceMaxThrowDistance?: boolean
+    emoteId?: number
+    noPotatoSwap?: boolean
+    destroyNonCollidables?: boolean
+    trail?: {
+        maxLength: number
+        width: number
+        alpha: number
+        tint: number
+    }
+    fuseVariance?: number
+    numSplit?: number
+    splitType?: string
 }
 
 export interface Cook {
-    sprite: string;
-    pos?:   Vec2;
-    scale?: number;
+    sprite: string
+    pos?: Vec2
+    scale?: number
 }
 
 export const ThrowableDefs: Record<string, ThrowableDef> = {

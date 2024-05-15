@@ -14,10 +14,10 @@ const allowedEmotes = [
 ];
 
 export const UnlockDefs: Record<string, {
-    type: "unlock";
-    name: string;
-    unlocks: string[];
-    free?: boolean;
+    type: "unlock"
+    name: string
+    unlocks: string[]
+    free?: boolean
 }> = {
     unlock_default: {
         type: "unlock",

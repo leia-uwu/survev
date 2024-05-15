@@ -1,11 +1,11 @@
-type PassDef = {
+interface PassDef {
     type: string
     xp: number[]
-    items: {
+    items: Array<{
         level: number
         item: string
-    }[];
-};
+    }>
+}
 
 export const PassDefs: Record<string, PassDef> = {
     pass_survivr1: {

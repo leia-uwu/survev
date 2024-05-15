@@ -4,23 +4,23 @@ function defineSkin(baseType: keyof typeof BaseDefs, params: unknown) {
     return util.mergeDeep({}, BaseDefs[baseType], { baseType }, params);
 }
 
-type XpDef = {
-    name: string;
-    type: "xp",
-    xp: number;
+interface XpDef {
+    name: string
+    type: "xp"
+    xp: number
     lootImg: {
-        sprite: string;
-        tint: number;
-        border: string;
-        borderTint: number;
-        scale: number;
+        sprite: string
+        tint: number
+        border: string
+        borderTint: number
+        scale: number
     }
     sound: {
-        drop: string;
-        pickup: string;
+        drop: string
+        pickup: string
     }
-    emitter: string;
-};
+    emitter: string
+}
 
 const BaseDefs: Record<string, XpDef> = {
     xp_10: {
@@ -76,7 +76,7 @@ const BaseDefs: Record<string, XpDef> = {
     }
 };
 
-const SkinDefs: Record<string, XpDef>  = {
+const SkinDefs: Record<string, XpDef> = {
     xp_book_tallow: defineSkin("xp_10", {
         name: "Tallow's Journal",
         lootImg: {

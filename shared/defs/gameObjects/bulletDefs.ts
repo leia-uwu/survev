@@ -5,23 +5,23 @@ function defineSkin<T extends Partial<BulletDef>>(baseType: string, params: T) {
 }
 
 export interface BulletDef {
-    type:           string;
-    damage:         number;
-    obstacleDamage: number;
-    falloff:        number;
-    distance:       number;
-    speed:          number;
-    variance:       number;
-    shrapnel:       boolean;
-    tracerColor:    string;
-    tracerWidth:    number;
-    tracerLength:   number;
-    suppressed?:    boolean;
-    flareColor?:    number;
-    addFlare?:      boolean;
-    maxFlareScale?: number;
-    skipCollision?: boolean;
-    onHit?:         string;
+    type: string
+    damage: number
+    obstacleDamage: number
+    falloff: number
+    distance: number
+    speed: number
+    variance: number
+    shrapnel: boolean
+    tracerColor: string
+    tracerWidth: number
+    tracerLength: number
+    suppressed?: boolean
+    flareColor?: number
+    addFlare?: boolean
+    maxFlareScale?: number
+    skipCollision?: boolean
+    onHit?: string
 }
 
 export const BaseDefs: Record<string, BulletDef> = {

@@ -1,5 +1,5 @@
 import { util } from "../../utils/util";
-import { Vec2 } from "../../utils/v2";
+import { type Vec2 } from "../../utils/v2";
 
 function defineSkin(baseType: string, params: unknown) {
     return util.mergeDeep({}, BaseDefs[baseType], {
@@ -8,76 +8,76 @@ function defineSkin(baseType: string, params: unknown) {
 }
 
 export interface MeleeDef {
-    name: string;
-    type: "melee";
-    quality: number;
-    autoAttack: boolean;
-    switchDelay: number;
-    damage: number;
-    obstacleDamage: number;
-    cleave?: boolean;
-    headshotMult: number;
+    name: string
+    type: "melee"
+    quality: number
+    autoAttack: boolean
+    switchDelay: number
+    damage: number
+    obstacleDamage: number
+    cleave?: boolean
+    headshotMult: number
     attack: {
-        offset: Vec2;
-        rad: number;
-        damageTimes: number[];
-        cooldownTime: number;
-    };
+        offset: Vec2
+        rad: number
+        damageTimes: number[]
+        cooldownTime: number
+    }
     speed: {
-        equip: number;
-        attack?: number;
-    };
+        equip: number
+        attack?: number
+    }
     anim: {
-        idlePose: string;
-        attackAnims: string[];
-    };
+        idlePose: string
+        attackAnims: string[]
+    }
     sound: {
-        swing: string;
-        deploy: string;
-        playerHit: string;
-        playerHit2?: string;
-        pickup?: string;
-        bullet?: string;
-    };
+        swing: string
+        deploy: string
+        playerHit: string
+        playerHit2?: string
+        pickup?: string
+        bullet?: string
+    }
     lootImg: {
-        sprite: string;
-        scale: number;
-        rad?: number;
-        tint: number;
-        border?: string;
-        borderTint?: number;
-        rot?: number;
-        mirror?: boolean;
-    };
-    baseType?: string;
-    rarity?: number;
-    lore?: string;
-    noPotatoSwap?: boolean;
-    noDropOnDeath?: boolean;
-    worldImg?: Img;
-    hipImg?: Img;
+        sprite: string
+        scale: number
+        rad?: number
+        tint: number
+        border?: string
+        borderTint?: number
+        rot?: number
+        mirror?: boolean
+    }
+    baseType?: string
+    rarity?: number
+    lore?: string
+    noPotatoSwap?: boolean
+    noDropOnDeath?: boolean
+    worldImg?: Img
+    hipImg?: Img
     reflectSurface?: {
         equipped: {
-            p0: Vec2;
-            p1: Vec2;
-        };
+            p0: Vec2
+            p1: Vec2
+        }
         unequipped: {
-            p0: Vec2;
-            p1: Vec2;
-        };
-    };
-    armorPiercing?: boolean;
-    stonePiercing?: boolean;
+            p0: Vec2
+            p1: Vec2
+        }
+    }
+    armorPiercing?: boolean
+    stonePiercing?: boolean
 }
 
 export interface Img {
-    sprite: string;
-    pos: Vec2;
-    rot: number;
-    scale: Vec2;
-    tint: number;
-    leftHandOntop?: boolean;
-    renderOnHand?: boolean;
+    sprite: string
+    pos: Vec2
+    rot: number
+    scale: Vec2
+    tint: number
+    leftHandOntop?: boolean
+    renderOnHand?: boolean
 }
 
 const BaseDefs: Record<string, MeleeDef> = {
