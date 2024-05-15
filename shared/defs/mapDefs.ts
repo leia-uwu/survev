@@ -41,6 +41,7 @@ export interface MapDef {
         name: string
         icon: string
         buttonCss: string
+        buttonText?: string
     }
     assets: {
         audio: Array<{
@@ -68,32 +69,57 @@ export interface MapDef {
         particles: {
             camera: string
         }
-        tracerColors: Record<string, number>
+        tracerColors: Record<string, {
+            regular: number
+            saturated: number
+            alphaRate: number
+            alphaMin: number
+        }>
         airdrop: {
             planeImg: string
             planeSound: string
             airdropImg: string
         }
+        frozenSprites?: string[]
     }
-
     gameMode: {
         maxPlayers: number
         killLeaderEnabled: boolean
+        desertMode?: boolean
+        factionMode?: boolean
+        factions?: number
+        potatoMode?: boolean
+        woodsMode?: boolean
+        sniperMode?: boolean
+        perkMode?: boolean
+        perkModeRoles?: string[]
+        turkeyMode?: number
     }
     gameConfig: {
         planes: {
-            timings: Array<
-            {
+            timings: Array<{
                 circleIdx: number
                 wait: number
-                options: { type: number }
+                options: {
+                    type: number
+                    numPlanes?: Array<{
+                        count: number
+                        weight: number
+                    }>
+                    airstrikeZoneRad?: number
+                    wait?: number
+                    delay?: number
+                }
             }>
             crates: Array<{
                 name: string
                 weight: number
             }>
         }
-        bagSizes: Record<string, number>
+        bagSizes: {
+            frag?: number[]
+            smoke?: number[]
+        }
         bleedDamage: number
         bleedDamageMult: number
     }
@@ -106,7 +132,10 @@ export interface MapDef {
         map: {
             baseWidth: number
             baseHeight: number
-            scale: { small: number, large: number }
+            scale: {
+                small: number
+                large: number
+            }
             extension: number
             shoreInset: number
             grassInset: number
@@ -120,7 +149,10 @@ export interface MapDef {
                         rad: number
                     }
                 }>
-                weights: Array<{ weight: number, widths: number[] }>
+                weights: Array<{
+                    weight: number
+                    widths: number[]
+                }>
                 smoothness: number
                 masks: Array<{
                     pos: Vec2
@@ -128,7 +160,10 @@ export interface MapDef {
                 }>
             }
         }
-        places: Array<{ name: string, pos: Vec2 }>
+        places: Array<{
+            name: string
+            pos: Vec2
+        }>
         bridgeTypes: {
             medium: string
             large: string
@@ -144,11 +179,9 @@ export interface MapDef {
             placeSpawns: string[]
         }
         densitySpawns: Array<Record<string, number>>
-        fixedSpawns: Array<
-        Record<string,
+        fixedSpawns: Array<Record<string,
         number | { odds: number } | { small: number, large: number }
-        >
-        >
+        >>
         randomSpawns: Array<{
             spawns: string[]
             choose: number
