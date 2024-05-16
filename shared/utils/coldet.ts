@@ -1,4 +1,4 @@
-import { ColliderType, collider } from "./collider";
+import { type ColliderType, collider } from "./collider";
 import { math } from "./math";
 import { v2, type Vec2 } from "./v2";
 

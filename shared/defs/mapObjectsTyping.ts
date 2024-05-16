@@ -32,7 +32,7 @@ export interface ObstacleDef {
         createMax: number
         destroy: number
     }
-    collision: { height: number} & Collider
+    collision: { height: number } & Collider
     height: number
     collidable: boolean
     destructible: boolean
@@ -418,7 +418,7 @@ interface LootSpawnerDef {
 
 export interface DecalDef {
     type: "decal"
-    collision: { height: number} & Collider
+    collision: { height: number } & Collider
     // collision:   {
     //       type:   number;
     //       pos?:   Vec2;

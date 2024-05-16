@@ -5,7 +5,7 @@ import { v2, type Vec2 } from "./v2";
 //
 // collider
 //
-export enum ColliderType { 
+export enum ColliderType {
     Circle,
     Aabb
 }
