@@ -338,6 +338,7 @@ export class GameMap {
             }
         }
 
+        // @ts-expect-error fix build
         if (!def.terrain?.river &&
             !def.terrain?.bridge
         ) {

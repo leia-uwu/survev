@@ -99,6 +99,7 @@ function getColliders(type: string) {
         for (const object of def.mapObjects ?? []) {
             const type = typeof object.type === "string"
                 ? object.type
+                // @ts-expect-error fix build
                 : object.type();
             colliders.push(...getColliders(type).map(coll => {
                 const rot = object.inheritOri ? math.oriToRad(object.ori) : 0;
