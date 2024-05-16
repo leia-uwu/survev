@@ -5,8 +5,13 @@ import { v2, type Vec2 } from "./v2";
 //
 // collider
 //
+export enum ColliderType { 
+    Circle,
+    Aabb
+}
 
 export const collider = {
+    // Type: ColliderType,
     Type: {
         Circle: 0 as const,
         Aabb: 1 as const

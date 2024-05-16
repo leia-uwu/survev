@@ -7,9 +7,7 @@ import type { Vec2 } from "../utils/v2";
 
 function serializeMapRiver(s: BitStream, data: MapRiverData) {
     s.writeFloat32(data.width);
-    // !
-    // @ts-expect-error suppressed
-    s.writeUint8(data.looped);
+    s.writeUint8(data.looped as unknown as number);
     s.writeUint8(data.points.length);
 
     for (const point of data.points) {
@@ -19,9 +17,7 @@ function serializeMapRiver(s: BitStream, data: MapRiverData) {
 
 function deserializeMapRiver(s: BitStream, data: MapRiverData) {
     data.width = s.readFloat32();
-    // !
-    // @ts-expect-error suppressed
-    data.looped = s.readUint8();
+    data.looped = s.readUint8() as unknown as boolean;
     data.points = [];
 
     const count = s.readUint8();

@@ -1,17 +1,16 @@
-import { collider } from "./collider";
+import { ColliderType, collider } from "./collider";
 import { math } from "./math";
 import { v2, type Vec2 } from "./v2";
 
 /* eslint-disable no-mixed-operators */
 
 export interface Circle {
-    type: 0
+    type: ColliderType.Circle
     pos: Vec2
     rad: number
 }
-
 export interface AABB {
-    type: 1
+    type: ColliderType.Aabb
     min: Vec2
     max: Vec2
 }

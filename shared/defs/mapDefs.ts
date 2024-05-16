@@ -94,6 +94,7 @@ export interface MapDef {
         perkMode?: boolean
         perkModeRoles?: string[]
         turkeyMode?: number
+        spookyKillSounds?: boolean;
     }
     gameConfig: {
         planes: {

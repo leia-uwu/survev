@@ -32,15 +32,7 @@ export interface ObstacleDef {
         createMax: number
         destroy: number
     }
-    collision: Collider
-    // collision:                {
-    //   type:   number;
-    //   pos?:   Vec2;
-    //   rad?:   number;
-    //   height: number;
-    //   min?:   Vec2;
-    //   max?:   Vec2;
-    // };
+    collision: { height: number} & Collider
     height: number
     collidable: boolean
     destructible: boolean
@@ -426,7 +418,7 @@ interface LootSpawnerDef {
 
 export interface DecalDef {
     type: "decal"
-    collision: Collider
+    collision: { height: number} & Collider
     // collision:   {
     //       type:   number;
     //       pos?:   Vec2;
@@ -435,6 +427,7 @@ export interface DecalDef {
     //       min?:   Vec2;
     //       max?:   Vec2;
     //     };
+    // ! terrain doesn't exist
     terrain?: TerrainSpawnDef
     height: number
     img: {

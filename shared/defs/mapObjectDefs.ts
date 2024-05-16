@@ -3296,7 +3296,9 @@ function createBridgeLarge<T extends BuildingDef>(e: Partial<T>): T {
     };
     return util.mergeDeep(t, e || {});
 }
-function createCabin<T extends BuildingDef>(e: Partial<T>): T {
+
+type ExtendedBuildingDef = BuildingDef & Record<string, string>;
+function createCabin<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -3535,21 +3537,18 @@ function createCabin<T extends BuildingDef>(e: Partial<T>): T {
                 ori: 0
             },
             {
-                // @ts-expect-error um?
                 type: e.cabin_wall_int_5 || "cabin_wall_int_5",
                 pos: v2.create(-10.5, 9),
                 scale: 1,
                 ori: 0
             },
             {
-                // @ts-expect-error um?
                 type: e.cabin_wall_int_10 || "cabin_wall_int_10",
                 pos: v2.create(-13, 2),
                 scale: 1,
                 ori: 1
             },
             {
-                // @ts-expect-error um?
                 type: e.cabin_wall_int_13 || "cabin_wall_int_13",
                 pos: v2.create(-3.5, -4),
                 scale: 1,
@@ -4869,7 +4868,7 @@ function createLoggingComplex2<T extends BuildingDef>(e: Partial<T>): T {
     };
     return util.mergeDeep(t, e || {});
 }
-function createMansion<T extends BuildingDef>(e: Partial<T & Record<string, string>>): T {
+function createMansion<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: {
@@ -7075,7 +7074,7 @@ function createPoliceStation<T extends BuildingDef>(e: Partial<T>): T {
     };
     return util.mergeDeep(t, e || {});
 }
-function createHouseRed<T extends BuildingDef>(e: Partial<T & Record<string, string>>): T {
+function createHouseRed<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, color: 6429724, scale: 1 },
@@ -7423,7 +7422,7 @@ function createHouseRed<T extends BuildingDef>(e: Partial<T & Record<string, str
     };
     return util.mergeDeep(t, e || {});
 }
-function createHouseRed2<T extends BuildingDef>(e: Partial<T & Record<string, string>>): T {
+function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
         map: { display: true, color: 4656911, scale: 1 },
@@ -18215,7 +18214,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 }
             ]
         }
-    } as unknown as Partial<BuildingDef & Record<string, string>>),
+    } as unknown as Partial<ExtendedBuildingDef>),
     house_red_02: createHouseRed2({ stand: "stand_01" }),
     house_red_02h: createHouseRed2({
         porch_01: "cache_pumpkin_02",
@@ -18249,7 +18248,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 }
             ]
         }
-    } as unknown as Partial<BuildingDef & Record<string, string>>),
+    } as unknown as Partial<ExtendedBuildingDef>),
     cabin_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
@@ -18320,7 +18319,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 }
             ]
         }
-    } as unknown as Partial<BuildingDef>),
+    } as unknown as ExtendedBuildingDef),
     cabin_02: createCabin({
         cabin_mount: "gun_mount_02",
         porch_01: "cache_pumpkin_02"
@@ -18632,7 +18631,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         tree_scale: 1,
         tree_loot: "loot_tier_1",
         bush_chance: 999
-    } as unknown as Partial<BuildingDef & Record<string, string>>),
+    } as unknown as Partial<ExtendedBuildingDef>),
     mansion_02: createMansion({
         decoration_01: "decal_web_01",
         decoration_02: "candle_lit_01",
