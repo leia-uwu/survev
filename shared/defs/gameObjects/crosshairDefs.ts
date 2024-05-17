@@ -1,5 +1,5 @@
 export interface CrosshairDef {
-    type: string
+    type: "crosshair"
     name: string
     rarity: number
     cursor?: string

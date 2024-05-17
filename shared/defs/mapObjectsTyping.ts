@@ -161,7 +161,7 @@ export interface BuildingDef {
         color?: number
         scale?: number
         shapes?: Array<{
-            collider: MapObstacleBound
+            collider: Collider & { height: number }
             color: number
         }>
         displayType?: string
@@ -186,7 +186,7 @@ export interface BuildingDef {
             nearbyWidthMult: number
         }
     }
-    mapObstacleBounds?: MapObstacleBound[]
+    mapObstacleBounds?: Array<Collider & { height: number }>
     zIdx?: number
     floor: {
         surfaces: Array<{
@@ -342,16 +342,6 @@ interface FloorImage {
     mirrorX?: boolean
 }
 
-type MapObstacleBound = Collider;
-// interface MapObstacleBound {
-//     type: number
-//     min?: Vec2
-//     max?: Vec2
-//     height: number
-//     pos?: Vec2
-//     rad?: number
-// }
-
 //
 // StructureDef
 //
@@ -419,14 +409,6 @@ interface LootSpawnerDef {
 export interface DecalDef {
     type: "decal"
     collision: { height: number } & Collider
-    // collision:   {
-    //       type:   number;
-    //       pos?:   Vec2;
-    //       rad?:   number;
-    //       height: number;
-    //       min?:   Vec2;
-    //       max?:   Vec2;
-    //     };
     // ! terrain doesn't exist
     terrain?: TerrainSpawnDef
     height: number

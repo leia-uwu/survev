@@ -36,6 +36,7 @@ export interface OutfitDef {
     noDrop?: boolean
     obstacleType?: string
     baseScale?: number
+    ghillie?: boolean
 }
 
 const BaseDefs: Record<string, OutfitDef> = {

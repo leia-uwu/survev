@@ -69,12 +69,7 @@ export interface MapDef {
         particles: {
             camera: string
         }
-        tracerColors: Record<string, {
-            regular: number
-            saturated: number
-            alphaRate: number
-            alphaMin: number
-        }>
+        tracerColors: Record<string, Record<string, number>>
         airdrop: {
             planeImg: string
             planeSound: string
@@ -117,10 +112,7 @@ export interface MapDef {
                 weight: number
             }>
         }
-        bagSizes: {
-            frag?: number[]
-            smoke?: number[]
-        }
+        bagSizes: Record<string, number[]>
         bleedDamage: number
         bleedDamageMult: number
     }

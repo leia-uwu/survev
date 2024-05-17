@@ -5,7 +5,7 @@ function defineSkin<T extends Partial<BulletDef>>(baseType: string, params: T) {
 }
 
 export interface BulletDef {
-    type: string
+    type: "bullet"
     damage: number
     obstacleDamage: number
     falloff: number

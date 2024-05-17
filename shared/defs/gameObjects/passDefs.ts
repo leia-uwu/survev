@@ -1,5 +1,5 @@
 interface PassDef {
-    type: string
+    type: "pass"
     xp: number[]
     items: Array<{
         level: number

@@ -1,5 +1,5 @@
 interface HealEffectDef {
-    type: string
+    type: "heal_effect" | "boost_effect"
     name: string
     rarity: number
     texture: string

@@ -115,6 +115,7 @@ export interface HelmetDef {
         baseTintRed: number
         baseTintBlue: number
         baseSprite: string
+        spriteScale?: number
     }
 
     lootImg: LootImg

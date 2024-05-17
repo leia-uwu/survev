@@ -10,7 +10,7 @@ enum EmoteCategory {
 }
 
 export interface EmoteDef {
-    type: string
+    type: "emote"
     name?: string
     rarity?: number
     texture: string
