@@ -26,7 +26,7 @@ import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 
 export class Emote {
     playerId: number;
@@ -620,16 +620,16 @@ export class Player extends BaseGameObject {
         }
 
         let player: Player;
-        if (this.spectating == undefined){//not spectating anyone
+        if (this.spectating == undefined) { // not spectating anyone
             player = this;
-        }else if (this.spectating.dead){//was spectating someone but they died so find new player to spectate
+        } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
             this.spectating.spectatorCount--;
 
             this.startedSpectating = true;
             player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
             player.spectatorCount++;
             this.spectating = player;
-        }else{//spectating someone currently who is still alive
+        } else { // spectating someone currently who is still alive
             player = this.spectating;
         }
 
