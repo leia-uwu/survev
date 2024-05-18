@@ -100,11 +100,11 @@ export class WeaponManager {
             });
         }
 
-        this.weapons[0].type = "mosin";
-        this.weapons[0].ammo = 5;
+        // this.weapons[0].type = "mosin";
+        // this.weapons[0].ammo = 5;
 
-        this.weapons[1].type = "an94";
-        this.weapons[1].ammo = 45;
+        // this.weapons[1].type = "an94";
+        // this.weapons[1].ammo = 45;
     }
 
     shootStart(): void {

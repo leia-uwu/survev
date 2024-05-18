@@ -26,7 +26,7 @@ import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { SpectateMsg } from "../../../shared/msgs/spectateMsg";
 
 export class Emote {
     playerId: number;
@@ -347,14 +347,14 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.inventory["762mm"] = 100;
-        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
+        // this.inventory["762mm"] = 100;
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
 
-        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
         this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
@@ -619,7 +619,19 @@ export class Player extends BaseGameObject {
             updateMsg.gasT = this.game.gas.gasT;
         }
 
-        const player = this.spectating ?? this;
+        let player: Player;
+        if (this.spectating == undefined){//not spectating anyone
+            player = this;
+        }else if (this.spectating.dead){//was spectating someone but they died so find new player to spectate
+            this.spectating.spectatorCount--;
+
+            this.startedSpectating = true;
+            player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
+            player.spectatorCount++;
+            this.spectating = player;
+        }else{//spectating someone currently who is still alive
+            player = this.spectating;
+        }
 
         const radius = player.zoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
@@ -674,6 +686,7 @@ export class Player extends BaseGameObject {
             updateMsg.activePlayerData.inventoryDirty = true;
             updateMsg.activePlayerData.weapsDirty = true;
             updateMsg.activePlayerData.spectatorCountDirty = true;
+            this.startedSpectating = false;
         } else {
             updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
             updateMsg.activePlayerData = player;
@@ -735,7 +748,6 @@ export class Player extends BaseGameObject {
 
         this.sendData(msgStream.getBuffer());
         this._firstUpdate = false;
-        this.startedSpectating = false;
     }
 
     /**

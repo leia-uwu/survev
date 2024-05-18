@@ -177,7 +177,7 @@ export class Game {
     }
 
     randomPlayer() {
-        return [...this.livingPlayers][Math.floor(Math.random() * this.livingPlayers.size)];
+        return this.spectatablePlayers[Math.floor(Math.random() * this.aliveCount)];
     }
 
     addPlayer(socket: ServerSocket): Player {
