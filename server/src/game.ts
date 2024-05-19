@@ -21,6 +21,7 @@ import { UnlockDefs } from "../../shared/defs/gameObjects/unlockDefs";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { IDAllocator } from "./IDAllocator";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 
 export class Game {
     started = false;
@@ -36,6 +37,7 @@ export class Game {
     players = new Set<Player>();
     connectedPlayers = new Set<Player>();
     livingPlayers = new Set<Player>();
+    spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -174,6 +176,10 @@ export class Game {
         }
     }
 
+    randomPlayer() {
+        return this.spectatablePlayers[Math.floor(Math.random() * this.aliveCount)];
+    }
+
     addPlayer(socket: ServerSocket): Player {
         let pos: Vec2;
 
@@ -281,6 +287,7 @@ export class Game {
             this.connectedPlayers.add(player);
             this.players.add(player);
             this.livingPlayers.add(player);
+            this.spectatablePlayers.push(player);
             this.aliveCountDirty = true;
             break;
         }
@@ -295,6 +302,13 @@ export class Game {
             const dropMsg = new DropItemMsg();
             dropMsg.deserialize(stream);
             player.dropItem(dropMsg);
+            break;
+        }
+        case net.MsgType.Spectate: {
+            const spectateMsg = new SpectateMsg();
+            spectateMsg.deserialize(stream);
+            player.spectate(spectateMsg);
+            break;
         }
         }
     }

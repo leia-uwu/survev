@@ -26,6 +26,7 @@ import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 
 export class Emote {
     playerId: number;
@@ -167,8 +168,20 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    spectatorCount = 0;
+    _spectatorCount = 0;
+    set spectatorCount(spectatorCount: number) {
+        if (this._spectatorCount === spectatorCount) return;
+        this._spectatorCount = spectatorCount;
+        this._spectatorCount = math.clamp(this._spectatorCount, 0, 255); // byte size limit
+        this.spectatorCountDirty = true;
+    }
 
+    get spectatorCount(): number {
+        return this._spectatorCount;
+    }
+
+    /** true when player starts spectating new player, only stays true for that given tick */
+    startedSpectating: boolean = false;
     spectating?: Player;
 
     outfit = "outfitBase";
@@ -334,7 +347,14 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+        // this.inventory["762mm"] = 100;
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
 
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
+        // this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
         this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
@@ -433,16 +453,20 @@ export class Player extends BaseGameObject {
                 if ("boost" in itemDef) this.boost += itemDef.boost;
                 this.inventory[this.actionItem]--;
                 this.inventoryDirty = true;
-            } else if (
-                this.actionType === GameConfig.Action.Reload ||
-                this.actionType === GameConfig.Action.ReloadAlt
-            ) {
+            } else if (this.isReloading()) {
                 this.weaponManager.reload();
             }
             if (this.reloadAgain) {
                 this.lastAction = { ...this.action };// shallow copy so no references are kept
             }
             this.cancelAction();
+
+            if (
+                (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
+                    this.weapons[this.curWeapIdx].ammo == 0
+            ) {
+                this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
+            }
         }
 
         this.recalculateSpeed();
@@ -595,7 +619,19 @@ export class Player extends BaseGameObject {
             updateMsg.gasT = this.game.gas.gasT;
         }
 
-        const player = this.spectating ?? this;
+        let player: Player;
+        if (this.spectating == undefined) { // not spectating anyone
+            player = this;
+        } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
+            this.spectating.spectatorCount--;
+
+            this.startedSpectating = true;
+            player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
+            player.spectatorCount++;
+            this.spectating = player;
+        } else { // spectating someone currently who is still alive
+            player = this.spectating;
+        }
 
         const radius = player.zoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
@@ -640,8 +676,22 @@ export class Player extends BaseGameObject {
         }
 
         updateMsg.activePlayerId = player.__id;
-        updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
-        updateMsg.activePlayerData = player;
+        if (this.startedSpectating) {
+            updateMsg.activePlayerIdDirty = true;
+            updateMsg.activePlayerData = player;
+
+            updateMsg.activePlayerData.healthDirty = true;
+            updateMsg.activePlayerData.boostDirty = true;
+            updateMsg.activePlayerData.zoomDirty = true;
+            updateMsg.activePlayerData.inventoryDirty = true;
+            updateMsg.activePlayerData.weapsDirty = true;
+            updateMsg.activePlayerData.spectatorCountDirty = true;
+            this.startedSpectating = false;
+        } else {
+            updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
+            updateMsg.activePlayerData = player;
+        }
+
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
         for (const emote of this.game.emotes) {
@@ -700,6 +750,34 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
+    /**
+     * the main purpose of this function is to asynchronously set "startedSpectating" and "spectating"
+     * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
+     */
+    spectate(spectateMsg: SpectateMsg): void {
+        if (this.spectating && this.game.spectatablePlayers.length == 1) { // only one person to spectate so cant switch
+            return;
+        }
+
+        this.startedSpectating = true;
+        let playerToSpec: Player;
+        if (spectateMsg.specBegin) {
+            playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
+        } else if (spectateMsg.specNext && this.spectating) {
+            this.spectating.spectatorCount--;
+            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+            const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
+            playerToSpec = this.game.spectatablePlayers[newIndex];
+        } else if (spectateMsg.specPrev && this.spectating) {
+            this.spectating.spectatorCount--;
+            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+            const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
+            playerToSpec = this.game.spectatablePlayers[newIndex];
+        }
+        playerToSpec!.spectatorCount++;
+        this.spectating = playerToSpec!;
+    }
+
     damage(params: DamageParams) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
@@ -739,6 +817,8 @@ export class Player extends BaseGameObject {
         }
     }
 
+    killedBy: Player | undefined;
+
     kill(params: DamageParams): void {
         this.dead = true;
         this.boost = 0;
@@ -751,6 +831,7 @@ export class Player extends BaseGameObject {
 
         this.game.aliveCountDirty = true;
         this.game.livingPlayers.delete(this);
+        this.game.spectatablePlayers.splice(this.game.spectatablePlayers.indexOf(this), 1);
 
         //
         // Send kill msg
@@ -763,6 +844,7 @@ export class Player extends BaseGameObject {
         killMsg.killed = true;
 
         if (params.source instanceof Player) {
+            this.killedBy = params.source;
             if (params.source !== this) params.source.kills++;
             killMsg.killerId = params.source.__id;
             killMsg.killCreditId = params.source.__id;
@@ -836,6 +918,10 @@ export class Player extends BaseGameObject {
         }
     }
 
+    isReloading() {
+        return this.actionType == GameConfig.Action.Reload || this.actionType == GameConfig.Action.ReloadAlt;
+    }
+
     useHealingItem(item: string): void {
         const itemDef = GameObjectDefs[item];
         if (itemDef.type !== "heal") {
@@ -849,7 +935,7 @@ export class Player extends BaseGameObject {
         }
 
         // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
+        if (this.isReloading()) {
             this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
@@ -872,7 +958,7 @@ export class Player extends BaseGameObject {
         }
 
         // healing gets action priority over reloading
-        if (this.actionType == GameConfig.Action.Reload) {
+        if (this.isReloading()) {
             this.scheduleAction(item, GameConfig.Action.UseItem);
             return;
         }
@@ -1463,6 +1549,9 @@ export class Player extends BaseGameObject {
     }
 
     cancelAction(): void {
+        if (this.actionSeq == 0) { // no action is in progress
+            return;
+        }
         this.action.duration = 0;
         this.action.targetId = 0;
         this.action.time = -1;
