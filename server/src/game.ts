@@ -22,6 +22,7 @@ import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { IDAllocator } from "./IDAllocator";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
+import { util } from "../../shared/utils/util";
 
 export class Game {
     started = false;
@@ -177,7 +178,7 @@ export class Game {
     }
 
     randomPlayer() {
-        return this.spectatablePlayers[Math.floor(Math.random() * this.aliveCount)];
+        return this.spectatablePlayers[util.randomInt(0, this.spectatablePlayers.length - 1)];
     }
 
     addPlayer(socket: ServerSocket): Player {
@@ -220,6 +221,10 @@ export class Game {
             break;
         }
         case net.MsgType.Join: {
+            // Ignore joinMsgs from players that already joined
+            // I was too lazy to create a `joined` field so just check for that
+            // The initial value is 0 and its set to Date.now() on this code
+            if (player.joinedTime !== 0) return;
             const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
 
@@ -314,6 +319,8 @@ export class Game {
     }
 
     removePlayer(player: Player): void {
+        player.spectating = undefined;
+        this.spectatablePlayers.splice(this.spectatablePlayers.indexOf(player), 1);
         this.connectedPlayers.delete(player);
     }
 

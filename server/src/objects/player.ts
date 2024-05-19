@@ -190,6 +190,9 @@ export class Player extends BaseGameObject {
     }
 
     set spectating(player: Player | undefined) {
+        if (player === this) {
+            throw new Error(`Player ${player.name} tried spectate themselves (how tf did this happen?)`);
+        }
         if (this._spectating === player) return;
 
         if (this._spectating) {
@@ -200,6 +203,7 @@ export class Player extends BaseGameObject {
         }
 
         this._spectating = player;
+        this.startedSpectating = true;
     }
 
     outfit = "outfitBase";
@@ -586,8 +590,10 @@ export class Player extends BaseGameObject {
         if (this.spectating == undefined) { // not spectating anyone
             player = this;
         } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
-            this.startedSpectating = true;
             player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
+            if (player === this) {
+                player = this.game.randomPlayer();
+            }
             this.spectating = player;
         } else { // spectating someone currently who is still alive
             player = this.spectating;
@@ -599,6 +605,7 @@ export class Player extends BaseGameObject {
         this.secondsSinceLastUpdate += dt;
         if (this.game.grid.updateObjects ||
             this._firstUpdate ||
+            this.startedSpectating ||
             this.secondsSinceLastUpdate > 0.5
         ) {
             this.secondsSinceLastUpdate = 0;
@@ -723,18 +730,16 @@ export class Player extends BaseGameObject {
     }
 
     /**
-     * the main purpose of this function is to asynchronously set "startedSpectating" and "spectating"
+     * the main purpose of this function is to asynchronously set "spectating"
      * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
      */
     spectate(spectateMsg: SpectateMsg): void {
-        if (this.spectating && this.game.spectatablePlayers.length == 1) { // only one person to spectate so cant switch
-            return;
-        }
-
-        this.startedSpectating = true;
-        let playerToSpec: Player;
+        let playerToSpec: Player | undefined;
         if (spectateMsg.specBegin) {
             playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
+            if (playerToSpec === this) {
+                playerToSpec = this.game.randomPlayer();
+            }
         } else if (spectateMsg.specNext && this.spectating) {
             const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
             const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
@@ -744,7 +749,7 @@ export class Player extends BaseGameObject {
             const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
             playerToSpec = this.game.spectatablePlayers[newIndex];
         }
-        this.spectating = playerToSpec!;
+        this.spectating = playerToSpec;
     }
 
     damage(params: DamageParams) {
