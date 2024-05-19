@@ -63,7 +63,7 @@ export class WeaponManager {
         }
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
-            this.tryReload(true);
+            this.tryReload();
         }
 
         this.player.setDirty();
@@ -121,8 +121,8 @@ export class WeaponManager {
     /**
      * Try to schedule a reload action if all conditions are met
      */
-    tryReload(schedule = false) {
-        if (([GameConfig.Action.Reload, GameConfig.Action.ReloadAlt] as number[]).includes(this.player.actionSeq)) {
+    tryReload() {
+        if (([GameConfig.Action.Reload, GameConfig.Action.ReloadAlt] as number[]).includes(this.player.actionType)) {
             return;
         }
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
@@ -145,11 +145,7 @@ export class WeaponManager {
             action = GameConfig.Action.ReloadAlt;
         }
 
-        if (schedule) {
-            this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
-        } else {
-            this.player.doAction(this.activeWeapon, action, duration);
-        }
+        this.player.doAction(this.activeWeapon, action, duration);
     }
 
     reload(): void {
@@ -435,7 +431,7 @@ export class WeaponManager {
             }
         }
         if (this.weapons[this.curWeapIdx].ammo == 0) {
-            this.player.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
+            this.tryReload();
         }
         this.offHand = !this.offHand;
     }

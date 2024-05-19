@@ -244,21 +244,6 @@ export class Player extends BaseGameObject {
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
      */
     reloadAgain = false;
-    /**
-     * specifically for things like buffering 2 actions trying to run simultaneously.
-     * also for automatically reloading if switching to gun with 0 loaded ammo
-     */
-    scheduledAction: {
-        perform: boolean
-        type: typeof GameConfig.Action[keyof typeof GameConfig.Action]
-        item: string
-    } = {
-            perform: false,
-            type: GameConfig.Action.None,
-            item: ""
-        };
-
-    ticksSinceLastAction = 0;
 
     get wearingPan(): boolean {
         return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
@@ -375,8 +360,6 @@ export class Player extends BaseGameObject {
 
     update(dt: number): void {
         if (this.dead) return;
-        this.ticksSinceLastAction++;
-        // console.log(this.weapons.slice(0, 1).map(w => w.cooldown - this.game.now));
 
         const input = this.lastInputMsg;
 
@@ -420,36 +403,6 @@ export class Player extends BaseGameObject {
             this.weaponManager.tryReload();
         }
 
-        if (this.scheduledAction.perform && this.ticksSinceLastAction > 1) {
-            switch (this.scheduledAction.type) {
-            case GameConfig.Action.Reload: {
-                if (GameConfig.WeaponType[this.curWeapIdx] === "gun" && this.weapons[this.curWeapIdx].ammo == 0) {
-                    this.weaponManager.tryReload();
-                }
-                break;
-            }
-            case GameConfig.Action.UseItem: {
-                switch (this.scheduledAction.item) {
-                case "bandage":
-                case "healthkit": {
-                    this.useHealingItem(this.scheduledAction.item);
-                    break;
-                }
-                case "soda":
-                case "painkiller": {
-                    this.useBoostItem(this.scheduledAction.item);
-                    break;
-                }
-                }
-                break;
-            }
-            }
-            this.scheduledAction.type = GameConfig.Action.None;
-            this.scheduledAction.item = "";
-            this.scheduledAction.perform = false;
-            this.ticksSinceLastAction = 0;
-        }
-
         // handle heal and boost actions
         let actionTimeThreshold;// hacky but works, couldnt find a better way
         if (this.action.time == -1) {
@@ -476,7 +429,7 @@ export class Player extends BaseGameObject {
                 (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
                 this.weapons[this.curWeapIdx].ammo == 0
             ) {
-                this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
+                this.weaponManager.tryReload();
             }
         }
 
@@ -593,7 +546,6 @@ export class Player extends BaseGameObject {
     }
 
     private _firstUpdate = true;
-    fullUpdate = false;
     secondsSinceLastUpdate = 0;
 
     sendMsgs(dt: number): void {
@@ -951,12 +903,6 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        // healing gets action priority over reloading
-        if (this.isReloading()) {
-            this.scheduleAction(item, GameConfig.Action.UseItem);
-            return;
-        }
-
         this.cancelAction();
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
@@ -974,30 +920,8 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        // healing gets action priority over reloading
-        if (this.isReloading()) {
-            this.scheduleAction(item, GameConfig.Action.UseItem);
-            return;
-        }
-
         this.cancelAction();
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
-    }
-
-    /**
-     * schedules an action function to be called 1 tick after the current tick.
-     * @param actionItem name of gun for reload, name of healing item for useitem
-     * @param actionType reload, useitem, etc
-     * @param shouldCancel if true, calls cancelAction() before doing anything else
-     */
-    scheduleAction(actionItem: string, actionType: typeof this.scheduledAction.type, shouldCancel = true) {
-        if (shouldCancel) {
-            this.cancelAction();
-        }
-        this.scheduledAction.perform = true;
-        this.scheduledAction.item = actionItem;
-        this.scheduledAction.type = actionType;
-        this.ticksSinceLastAction = 0;
     }
 
     toMouseLen = 0;
@@ -1351,7 +1275,7 @@ export class Player extends BaseGameObject {
                     weaponInfo.type === "gun" &&
                     this.weapons[this.curWeapIdx].ammo == 0 &&
                     weaponInfo.ammo == obj.type) {
-                this.weaponManager.tryReload(true);
+                this.weaponManager.tryReload();
             }
         }
             break;
@@ -1390,7 +1314,7 @@ export class Player extends BaseGameObject {
             }
             if (this.weapons[newGunIdx].ammo <= 0 && newGunIdx === this.curWeapIdx) {
                 this.cancelAction();
-                this.weaponManager.tryReload(true);
+                this.weaponManager.tryReload();
             }
             this.weapsDirty = true;
             this.setDirty();
@@ -1561,12 +1485,12 @@ export class Player extends BaseGameObject {
         this.actionDirty = true;
         this.actionItem = actionItem;
         this.actionType = actionType;
-        this.actionSeq = 1;
+        this.actionSeq++;
         this.setDirty();
     }
 
     cancelAction(): void {
-        if (this.actionSeq == 0) { // no action is in progress
+        if (this.actionType === GameConfig.Action.None) {
             return;
         }
         this.action.duration = 0;
@@ -1575,7 +1499,7 @@ export class Player extends BaseGameObject {
 
         this.actionItem = "";
         this.actionType = 0;
-        this.actionSeq = 0;
+        this.actionSeq++;
         this.actionDirty = false;
         this.setDirty();
     }
