@@ -182,7 +182,25 @@ export class Player extends BaseGameObject {
 
     /** true when player starts spectating new player, only stays true for that given tick */
     startedSpectating: boolean = false;
-    spectating?: Player;
+
+    private _spectating?: Player;
+
+    get spectating(): Player | undefined {
+        return this._spectating;
+    }
+
+    set spectating(player: Player | undefined) {
+        if (this._spectating === player) return;
+
+        if (this._spectating) {
+            this._spectating.spectatorCount--;
+        }
+        if (player) {
+            player.spectatorCount++;
+        }
+
+        this._spectating = player;
+    }
 
     outfit = "outfitBase";
     /** "backpack00" is no backpack, "backpack03" is the max level backpack */
@@ -347,14 +365,7 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        // this.inventory["762mm"] = 100;
-        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        // this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
 
-        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        // this.game.lootBarn.addLootWithoutAmmo("deagle", this.pos, this.layer, 1);
-        // this.game.lootBarn.addLootWithoutAmmo("50AE", this.pos, this.layer, 40);
         this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
@@ -463,7 +474,7 @@ export class Player extends BaseGameObject {
 
             if (
                 (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
-                    this.weapons[this.curWeapIdx].ammo == 0
+                this.weapons[this.curWeapIdx].ammo == 0
             ) {
                 this.scheduleAction(this.activeWeapon, GameConfig.Action.Reload);
             }
@@ -623,11 +634,8 @@ export class Player extends BaseGameObject {
         if (this.spectating == undefined) { // not spectating anyone
             player = this;
         } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
-            this.spectating.spectatorCount--;
-
             this.startedSpectating = true;
             player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
-            player.spectatorCount++;
             this.spectating = player;
         } else { // spectating someone currently who is still alive
             player = this.spectating;
@@ -639,7 +647,6 @@ export class Player extends BaseGameObject {
         this.secondsSinceLastUpdate += dt;
         if (this.game.grid.updateObjects ||
             this._firstUpdate ||
-            this.fullUpdate ||
             this.secondsSinceLastUpdate > 0.5
         ) {
             this.secondsSinceLastUpdate = 0;
@@ -678,17 +685,30 @@ export class Player extends BaseGameObject {
         updateMsg.activePlayerId = player.__id;
         if (this.startedSpectating) {
             updateMsg.activePlayerIdDirty = true;
-            updateMsg.activePlayerData = player;
 
-            updateMsg.activePlayerData.healthDirty = true;
-            updateMsg.activePlayerData.boostDirty = true;
-            updateMsg.activePlayerData.zoomDirty = true;
-            updateMsg.activePlayerData.inventoryDirty = true;
-            updateMsg.activePlayerData.weapsDirty = true;
-            updateMsg.activePlayerData.spectatorCountDirty = true;
+            // build the active player data object manually
+            // To avoid setting the spectating player fields to dirty
+            updateMsg.activePlayerData = {
+                healthDirty: true,
+                health: player.health,
+                boostDirty: true,
+                boost: player.boost,
+                zoomDirty: true,
+                zoom: player.zoom,
+                actionDirty: true,
+                action: player.action,
+                inventoryDirty: true,
+                inventory: player.inventory,
+                scope: player.scope,
+                weapsDirty: true,
+                curWeapIdx: player.curWeapIdx,
+                weapons: player.weapons,
+                spectatorCountDirty: true,
+                spectatorCount: player.spectatorCount
+            };
             this.startedSpectating = false;
         } else {
-            updateMsg.activePlayerIdDirty = player.activeIdDirty || this.fullUpdate;
+            updateMsg.activePlayerIdDirty = player.activeIdDirty;
             updateMsg.activePlayerData = player;
         }
 
@@ -764,17 +784,14 @@ export class Player extends BaseGameObject {
         if (spectateMsg.specBegin) {
             playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
         } else if (spectateMsg.specNext && this.spectating) {
-            this.spectating.spectatorCount--;
             const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
             const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
             playerToSpec = this.game.spectatablePlayers[newIndex];
         } else if (spectateMsg.specPrev && this.spectating) {
-            this.spectating.spectatorCount--;
             const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
             const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
             playerToSpec = this.game.spectatablePlayers[newIndex];
         }
-        playerToSpec!.spectatorCount++;
         this.spectating = playerToSpec!;
     }
 
