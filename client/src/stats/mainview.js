@@ -96,7 +96,7 @@ export class MainView {
             gameModes: helpers.getGameModes()
         })),
         this.el.find(".leaderboard-opt").change(() => {
-            This.onChangedParams();
+            this.onChangedParams();
         });
     }
 

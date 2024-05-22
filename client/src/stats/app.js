@@ -33,7 +33,6 @@ class Router {
         const   route = this.routes.find((r) => {
             return location.match(new RegExp(r.url));
         });
-        console.log({ route: this.routes })
 
         route ? this.app.setView(route.name) : this.app.setView();
     }
