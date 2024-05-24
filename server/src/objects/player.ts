@@ -1017,9 +1017,9 @@ export class Player extends BaseGameObject {
                 if (loot && obstacle) {
                     this.interactWith(loot);
                     this.interactWith(obstacle);
-                } else if (loot){
+                } else if (loot) {
                     this.interactWith(loot);
-                }else if (obstacle){
+                } else if (obstacle) {
                     this.interactWith(obstacle);
                 }
                 break;
