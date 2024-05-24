@@ -1013,11 +1013,14 @@ export class Player extends BaseGameObject {
                 break;
             case GameConfig.Input.Interact: {
                 const loot = this.getClosestLoot();
-                if (loot) {
+                const obstacle = this.getClosestObstacle();
+                if (loot && obstacle) {
                     this.interactWith(loot);
-                } else {
-                    const obstacle = this.getClosestObstacle();
-                    if (obstacle) this.interactWith(obstacle);
+                    this.interactWith(obstacle);
+                } else if (loot){
+                    this.interactWith(loot);
+                }else if (obstacle){
+                    this.interactWith(obstacle);
                 }
                 break;
             }
