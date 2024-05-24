@@ -394,7 +394,7 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
 
-        if (this.game.gas.doDamge && this.game.gas.isInGas(this.pos)) {
+        if (this.game.gas.doDamage && this.game.gas.isInGas(this.pos)) {
             this.damage({
                 amount: this.game.gas.damage,
                 damageType: GameConfig.DamageType.Gas,

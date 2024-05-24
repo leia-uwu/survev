@@ -81,7 +81,10 @@ export class Game {
         this.id = id;
         this.logger = new Logger(`Game #${this.id}`);
         this.logger.log("Creating");
-        const start = Date.now();
+
+        const now = Date.now();
+        const start = now;
+        this.now = now;
 
         this.config = config;
 

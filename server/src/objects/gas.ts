@@ -30,7 +30,7 @@ export class Gas {
     private _lastDamageTimestamp = 0;
 
     private _doDamage = false;
-    get doDamge() {
+    get doDamage() {
         return this._doDamage;
     }
 
