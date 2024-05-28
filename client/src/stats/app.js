@@ -3,8 +3,9 @@ import { ConfigManager as Config } from "../config";
 import { Localization } from "../ui/localization";
 import { MainView } from "./mainview";
 import { PlayerView } from "./playerview";
-import { slugify } from "./slugify";
 import language from "./templates/language.jsx";
+import slugify from "slugify";
+
 const templates = {
     language
 };
