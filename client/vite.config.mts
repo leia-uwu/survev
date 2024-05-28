@@ -3,6 +3,10 @@ import { Config } from "../server/src/config";
 
 export default defineConfig(() => {
     return {
+        esbuild: {
+            jsxFactory: 'h',
+            jsxFragment: 'Fragment'
+        },
         plugins: [
             splitVendorChunkPlugin()
         ],

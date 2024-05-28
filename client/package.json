@@ -10,10 +10,12 @@
     "base64-js": "^1.5.1",
     "bit-buffer": "^0.2.5",
     "jquery": "^3.7.1",
+    "jsx-dom": "^8.1.4",
     "pixi.js-legacy": "^7.4.2"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.30",
-    "ejs": "^3.1.10"
+    "ejs": "^3.1.10",
+    "vite": "^5.2.11"
   }
 }
