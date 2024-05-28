@@ -1,21 +1,16 @@
 import $ from "jquery";
 import { ConfigManager as Config } from "../config";
-import { device } from "../device";
 import { Localization } from "../ui/localization";
 import { MainView } from "./mainview";
 import { PlayerView } from "./playerview";
 import { slugify } from "./slugify";
-
-import language from "./templates/language.js";
-import { helpers } from "../helpers";
-
+import language from "./templates/language.jsx";
 const templates = {
     language
 };
-
 class Router {
     constructor(app) {
-        this.app = app,
+        this.app = app;
         this.routes = [];
         const routeChange = this.onRouteChange.bind(this);
         window.addEventListener("load", routeChange);
@@ -30,48 +25,51 @@ class Router {
 
     onRouteChange() {
         const location = window.location.href;
-        const   route = this.routes.find((r) => {
+        const route = this.routes.find(r => {
             return location.match(new RegExp(r.url));
         });
-
-        route ? this.app.setView(route.name) : this.app.setView();
+        if (route) {
+            this.app.setView(route.name);
+        } else {
+            this.app.setView();
+        }
     }
 }
-
 export class App {
     constructor() {
-        this.el = $("#content"),
-        this.mainView = new MainView(this),
+        this.el = $("#content");
+        this.mainView = new MainView(this);
         this.playerView = new PlayerView(this);
         const router = new Router(this);
-        router.addRoute("player", "stats/([^/?#]+).*$"),
-        router.addRoute("main", "stats"),
-        $("#search-players").on("submit", (e) => {
+        router.addRoute("player", "stats/([^/?#]+).*$");
+        router.addRoute("main", "stats");
+        $("#search-players").on("submit", e => {
             e.preventDefault();
             const name = $("#search-players :input").val();
             const slug = slugify(name);
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             window.location.href = `/stats/${slug}`;
-        });
-
-        // Load slug for "My Profile" link
+        }); // Load slug for "My Profile" link
         try {
             const config = JSON.parse(localStorage.getItem("surviv_config"));
-            config.profile?.slug && $("#my-profile").css("display", "block").attr("href", `/stats/${config.profile.slug}`);
-        } catch (e) { }
+            if (config.profile?.slug) {
+                $("#my-profile").css("display", "block").attr("href", `/stats/${config.profile.slug}`);
+            }
+        } catch (e) {}
 
         // Load config
-        this.config = new Config(),
-        this.config.load(() => {}),
-        this.localization = new Localization(),
-        this.localization.setLocale(this.config.get("language")),
-        this.localization.localizeIndex();
-        // this.adManager = new h;
+        this.config = new Config();
+        this.config.load(() => {});
+        this.localization = new Localization();
+        this.localization.setLocale(this.config.get("language"));
+        this.localization.localizeIndex(); // this.adManager = new h;
     }
 
     setView(name) {
-        const phoneDetected = device.mobile && !device.tablet;
+        // const phoneDetected = device.mobile && !device.tablet;
         const elAdsLeaderboardTop = $("#adsLeaderBoardTop");
-        const elAdsLeaderboardBottom = $("#adsLeaderBoardBottom"); const elAdsPlayerTop = $("#adsPlayerTop");
+        const elAdsLeaderboardBottom = $("#adsLeaderBoardBottom");
+        const elAdsPlayerTop = $("#adsPlayerTop");
         const elAdsPlayerBottom = $("#adsPlayerBottom");
         const premiumPass = localStorage.getItem("premium");
         // name == "player"
@@ -92,31 +90,30 @@ export class App {
         //         elAdsLeaderboardBottom.css("display", "none")),
         //     this.view = this.mainView);
 
+        if (name == "player") {
+            // elAdsLeaderboardTop.css('display', 'none');
+            // elAdsLeaderboardBottom.css('display', 'none');
+            // if (phoneDetected) {
+            //     elAdsPlayerTop.css('display', 'none');
+            //     elAdsPlayerBottom.css('display', 'block');
+            // } else {
+            //     elAdsPlayerTop.css('display', 'block');
+            //     elAdsPlayerBottom.css('display', 'none');
+            // }
+            this.view = this.playerView;
+        } else {
+            // elAdsPlayerTop.css('display', 'none');
+            // elAdsPlayerBottom.css('display', 'none');
 
-            if (name == 'player') {
-                // elAdsLeaderboardTop.css('display', 'none');
-                // elAdsLeaderboardBottom.css('display', 'none');
-                // if (phoneDetected) {
-                //     elAdsPlayerTop.css('display', 'none');
-                //     elAdsPlayerBottom.css('display', 'block');
-                // } else {
-                //     elAdsPlayerTop.css('display', 'block');
-                //     elAdsPlayerBottom.css('display', 'none');
-                // }
-                this.view = this.playerView;
-            } else {
-                // elAdsPlayerTop.css('display', 'none');
-                // elAdsPlayerBottom.css('display', 'none');
-
-                // if (phoneDetected) {
-                //     elAdsLeaderboardTop.css('display', 'none');
-                //     elAdsLeaderboardBottom.css('display', 'block');
-                // } else {
-                //     elAdsLeaderboardTop.css('display', 'block');
-                //     elAdsLeaderboardBottom.css('display', 'none');
-                // }
-                this.view = this.mainView;
-            }
+            // if (phoneDetected) {
+            //     elAdsLeaderboardTop.css('display', 'none');
+            //     elAdsLeaderboardBottom.css('display', 'block');
+            // } else {
+            //     elAdsLeaderboardTop.css('display', 'block');
+            //     elAdsLeaderboardBottom.css('display', 'none');
+            // }
+            this.view = this.mainView;
+        }
 
         // show ads
         const slotIds = [];
@@ -124,36 +121,41 @@ export class App {
             slotIds.push("survivio_300x250_leaderboard_top");
             slotIds.push("survivio_728x90_leaderboard_top");
         }
-        elAdsLeaderboardBottom && elAdsLeaderboardBottom.css("display") != "none" && premiumPass == "false" && slotIds.push("survivio_300x250_leaderboard_bottom"),
-        elAdsPlayerTop && elAdsPlayerTop.css("display") != "none" && premiumPass == "false" && (slotIds.push("survivio_728x90_playerprofile_top"),
-        slotIds.push("survivio_300x250_playerprofile_top")),
-        elAdsPlayerBottom && elAdsPlayerBottom.css("display") != "none" && premiumPass == "false" && slotIds.push("survivio_300x250_playerprofile_bottom"),
+        if (elAdsLeaderboardBottom && elAdsLeaderboardBottom.css("display") != "none" && premiumPass == "false") {
+            slotIds.push("survivio_300x250_leaderboard_bottom");
+        }
+        if (elAdsPlayerTop && elAdsPlayerTop.css("display") != "none" && premiumPass == "false") {
+            slotIds.push("survivio_728x90_playerprofile_top");
+            slotIds.push("survivio_300x250_playerprofile_top");
+        }
+        if (elAdsPlayerBottom && elAdsPlayerBottom.css("display") != "none" && premiumPass == "false") {
+            slotIds.push("survivio_300x250_playerprofile_bottom");
+        }
         // this.adManager.showFreestarAds(slotIds, !1),
-        this.view.load(),
-        this.el.html(this.view.el),
+        this.view.load();
+        this.el.html(this.view.el);
         this.render();
     }
 
     render() {
-        const This = this;
         $("#language-select").html(templates.language({
             code: this.localization.getLocale()
         }));
 
         // Listen for changes in language select
-        $(".dropdown-language").off("click"),
-        $(".dropdown-language").on("click", (a) => {
-            const el = a.target; const code = $(el).attr("value");
+        $(".dropdown-language").off("click");
+        $(".dropdown-language").on("click", a => {
+            const el = a.target;
+            const code = $(el).attr("value");
             $(el).html();
             if (code) {
                 // Set the config language
-                $("#selected-language").html(code.toUpperCase()),
-                This.localization.setLocale(code),
-                This.localization.localizeIndex(),
-                This.config.set("language", code);
+                $("#selected-language").html(code.toUpperCase());
+                this.localization.setLocale(code);
+                this.localization.localizeIndex();
+                this.config.set("language", code);
             }
         });
     }
 }
-
 export const app = new App();

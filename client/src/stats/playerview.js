@@ -2,13 +2,11 @@ import { EmotesDefs as EmoteDefs } from "../../../shared/defs/gameObjects/emoteD
 import { device } from "../device";
 import $ from "jquery";
 import { battletagCensoring, helpers } from "./mainview";
-
-import loading from "./templates/loading.js";
-import player from "./templates/player.js";
+import loading from "./templates/loading.jsx";
+import player from "./templates/player.jsx";
 import playerCards from "./templates/playerCards.js";
-import matchData from "./templates/matchData.js";
-import matchHistory from "./templates/matchHistory.js";
-import ejs from "ejs";
+import matchData from "./templates/matchData.jsx";
+import matchHistory from "./templates/matchHistory.jsx";
 
 const templates = {
     loading,
@@ -33,7 +31,11 @@ function formatTime(time) {
     return timeSurv;
 }
 function emoteImgToSvg(img) {
-    return img && img.length > 4 ? `../img/emotes/${img.slice(0, -4)}.svg` : "";
+    if (img && img.length > 4) {
+        return `../img/emotes/${img.slice(0, -4)}.svg`;
+    } else {
+        return "";
+    }
 }
 function getPlayerCardData(userData, error, teamModeFilter) {
     // get_user_stats currently returns data rows for all teamModes;
@@ -45,7 +47,6 @@ function getPlayerCardData(userData, error, teamModeFilter) {
             error
         };
     }
-
     const emoteDef = EmoteDefs[userData.player_icon];
     const texture = emoteDef ? emoteImgToSvg(emoteDef.texture) : "../img/gui/player-gui.svg";
     let tmpSlug = userData.slug.toLowerCase();
@@ -69,23 +70,23 @@ function getPlayerCardData(userData, error, teamModeFilter) {
             name,
             val
         });
-    }; const teamModes = [];
+    };
+    const teamModes = [];
     for (let f = 0; f < userData.modes.length; f++) {
         const v = userData.modes[f];
         // Overall rank / rating not available yet
         const mid = [];
-        addStat(mid, "Rating", "-"),
+        addStat(mid, "Rating", "-");
         addStat(mid, "Rank", "-");
         const bot = [];
-        addStat(bot, "Wins", v.wins),
-        addStat(bot, "Win %", v.winPct),
-        addStat(bot, "Kills", v.kills),
-        addStat(bot, "Avg Survived", formatTime(v.avgTimeAlive)),
-        addStat(bot, "Most kills", v.mostKills),
-        addStat(bot, "K/G", v.kpg),
-        addStat(bot, "Most damage", v.mostDamage),
-        addStat(bot, "Avg Damage", v.avgDamage),
-
+        addStat(bot, "Wins", v.wins);
+        addStat(bot, "Win %", v.winPct);
+        addStat(bot, "Kills", v.kills);
+        addStat(bot, "Avg Survived", formatTime(v.avgTimeAlive));
+        addStat(bot, "Most kills", v.mostKills);
+        addStat(bot, "K/G", v.kpg);
+        addStat(bot, "Most damage", v.mostDamage);
+        addStat(bot, "Avg Damage", v.avgDamage);
         teamModes.push({
             teamMode: v.teamMode,
             games: v.games,
@@ -96,15 +97,17 @@ function getPlayerCardData(userData, error, teamModeFilter) {
     // Insert blank cards for all teammodes
     const keys = Object.keys(TeamModeToString);
     for (let x = 0; x < keys.length; x++) {
-        !(function(e) {
+        (function(e) {
             const teamMode = keys[e];
-            teamModes.find((x) => {
+            if (!teamModes.find(x => {
                 return x.teamMode == teamMode;
-            }) || teamModes.push({
-                teamMode,
-                games: 0
-            });
-        }(x));
+            })) {
+                teamModes.push({
+                    teamMode,
+                    games: 0
+                });
+            }
+        })(x);
     }
     teamModes.sort((e, a) => {
         return e.teamMode - a.teamMode;
@@ -134,40 +137,41 @@ const TeamModeToString = {
 };
 class Query {
     constructor() {
-        this.inProgress = !1,
-        this.dataValid = !1,
-        this.error = !1,
-        this.args = {},
+        this.inProgress = false;
+        this.dataValid = false;
+        this.error = false;
+        this.args = {};
         this.data = null;
     }
 
     query(url, args, debugTimeout, onComplete) {
         const This = this;
-        if (this.inProgress) return;
-
-        (this.inProgress = !0,
-        this.error = !1,
+        if (this.inProgress) {
+            return;
+        }
+        this.inProgress = true;
+        this.error = false;
         $.ajax({
             url,
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
-            timeout: 10 * 1000,
+            timeout: 10000,
             success: function(data) {
-                This.data = data,
+                This.data = data;
                 This.dataValid = !!data;
             },
             error: function() {
-                This.error = !0,
-                This.dataValid = !1;
+                This.error = true;
+                This.dataValid = false;
             },
             complete: function() {
                 setTimeout(() => {
-                    This.inProgress = !1,
+                    This.inProgress = false;
                     onComplete(This.error, This.data);
                 }, debugTimeout);
             }
-        }));
+        });
     }
 }
 
@@ -176,13 +180,13 @@ class Query {
 //
 export class PlayerView {
     constructor(app) {
-        this.app = app,
-        this.games = [],
-        this.moreGamesAvailable = !0,
-        this.teamModeFilter = 7,
-        this.userStats = new Query(),
-        this.matchHistory = new Query(),
-        this.matchData = new Query(),
+        this.app = app;
+        this.games = [];
+        this.moreGamesAvailable = true;
+        this.teamModeFilter = 7;
+        this.userStats = new Query();
+        this.matchHistory = new Query();
+        this.matchData = new Query();
         this.el = $(templates.player({
             phoneDetected: device.mobile && !device.tablet
         }));
@@ -190,8 +194,8 @@ export class PlayerView {
 
     getUrlParams() {
         const location = window.location.href;
-
-        const slug = (new RegExp("stats/([^/?#]+).*$").exec(location) || [])[1] || "";
+        // const slug = (new RegExp("stats/([^/?#]+).*$").exec(location) || [])[1] || "";
+        const slug = (location.match("stats/([^/?#]+).*$") || [])[1] || "";
         const interval = helpers.getParameterByName("t") || "all";
         const mapId = helpers.getParameterByName("mapId") || "-1";
         return {
@@ -204,20 +208,24 @@ export class PlayerView {
     }
 
     getGameByGameId(gameId) {
-        return this.games.find((x) => {
+        return this.games.find(x => {
             return x.summary.guid == gameId;
         });
     }
 
     load() {
-        const getUrlParams = this.getUrlParams(); const slug = getUrlParams.slug; const interval = getUrlParams.interval; const mapId = getUrlParams.mapId;
-        this.loadUserStats(slug, interval, mapId),
-        this.loadMatchHistory(slug, 0, 7),
+        const getUrlParams = this.getUrlParams();
+        const slug = getUrlParams.slug;
+        const interval = getUrlParams.interval;
+        const mapId = getUrlParams.mapId;
+        this.loadUserStats(slug, interval, mapId);
+        this.loadMatchHistory(slug, 0, 7);
         this.render();
     }
 
     loadUserStats(slug, interval, mapIdFilter) {
-        const This = this; const args = {
+        const This = this;
+        const args = {
             slug,
             interval,
             mapIdFilter
@@ -229,46 +237,46 @@ export class PlayerView {
     }
 
     loadMatchHistory(slug, offset, teamModeFilter) {
-        const This = this; const args = {
+        const This = this;
+        const args = {
             slug,
             offset,
             count: 10,
             teamModeFilter
         };
-        this.matchHistory.query("/api/match_history", args, 0, (err, data) => {
-            const gameModes = helpers.getGameModes(); const games = data || [];
+        this.matchHistory.query("/api/match_history", args, 0, (_, data) => {
+            const gameModes = helpers.getGameModes();
+            const games = data || [];
             for (let s = 0; s < games.length; s++) {
-                !(function(e) {
+                (function(e) {
                     games[e].team_mode = TeamModeToString[games[e].team_mode];
-                    const gameMode = gameModes.find((x) => {
+                    const gameMode = gameModes.find(x => {
                         return x.mapId == games[e].map_id;
                     });
-                    games[e].icon = gameMode ? gameMode.desc.icon : "",
+                    games[e].icon = gameMode ? gameMode.desc.icon : "";
                     This.games.push({
-                        expanded: !1,
+                        expanded: false,
                         summary: games[e],
                         data: null,
-                        dataError: !1
+                        dataError: false
                     });
-                }(s));
+                })(s);
             }
             This.moreGamesAvailable = games.length >= 10;
-
             This.render();
         });
     }
 
     loadMatchData(gameId) {
-        const This = this; const args = {
+        const This = this;
+        const args = {
             gameId
         };
         this.matchData.query("/api/match_data", args, 0, (err, data) => {
             const game = This.getGameByGameId(gameId);
             if (game) {
-                (
-                    game.data = data,
-                    game.dataError = err || !data
-                );
+                game.data = data;
+                game.dataError = err || !data;
             }
             This.render();
         });
@@ -276,28 +284,34 @@ export class PlayerView {
 
     toggleMatchData(e) {
         const game = this.getGameByGameId(e);
-        if (!game) return;
+        if (!game) {
+            return;
+        }
         const wasExpanded = game.expanded;
-        for (let n = 0; n < this.games.length; n++) { this.games[n].expanded = !1; }
+        for (let n = 0; n < this.games.length; n++) {
+            this.games[n].expanded = false;
+        }
         game.expanded = !wasExpanded;
         if (!game.data && !game.dataError) {
             this.loadMatchData(e);
         }
-
         this.render();
     }
 
     onChangedParams() {
-        const time = $("#player-time").val(); const mapId = $("#player-map-id").val();
+        const time = $("#player-time").val();
+        const mapId = $("#player-map-id").val();
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
         const params = this.getUrlParams();
         this.loadUserStats(params.slug, params.interval, params.mapId);
     }
 
     render() {
-        const This = this; var params = this.getUrlParams()
-      // User stats
-      ; let content = "";
+        const This = this;
+        const params = this.getUrlParams();
+        // User stats
+        let content = "";
         if (this.userStats.inProgress) {
             content = templates.loading({
                 type: "player"
@@ -307,23 +321,20 @@ export class PlayerView {
             content = templates.playerCards(cardData);
         }
         this.el.find(".content").html(content);
-
         const timeSelector = this.el.find("#player-time");
         if (timeSelector) {
-            timeSelector.val(params.interval),
+            timeSelector.val(params.interval);
             timeSelector.change(() => {
                 This.onChangedParams();
             });
         }
-
         const mapIdSelector = this.el.find("#player-map-id");
-        mapIdSelector && (mapIdSelector.val(params.mapId),
-        mapIdSelector.change(() => {
-            This.onChangedParams();
-        }));
-
-        // Match history
-
+        if (mapIdSelector) {
+            mapIdSelector.val(params.mapId);
+            mapIdSelector.change(() => {
+                This.onChangedParams();
+            });
+        } // Match history
         let historyContent = "";
         if (this.games.length == 0 && this.matchHistory.inProgress) {
             historyContent = templates.loading({
@@ -338,37 +349,36 @@ export class PlayerView {
             });
         }
         const historySelector = this.el.find("#match-history");
-
         if (historySelector) {
-            historySelector.html(historyContent),
-            $(".js-match-data").click((e) => {
+            historySelector.html(historyContent);
+            $(".js-match-data").click(e => {
                 if (!$(e.target).is("a")) {
                     This.toggleMatchData($(e.currentTarget).data("game-id"));
                 }
             });
-
-            $(".js-match-load-more").click((a) => {
+            $(".js-match-load-more").click(a => {
                 const params = This.getUrlParams();
-                This.loadMatchHistory(params.slug, This.games.length, This.teamModeFilter),
+                This.loadMatchHistory(params.slug, This.games.length, This.teamModeFilter);
                 This.render();
             });
-
-            $(".extra-team-mode-filter").click((e) => {
+            $(".extra-team-mode-filter").click(e => {
                 if (!This.matchHistory.inProgress) {
                     const params = This.getUrlParams();
-                    This.games = [],
-                    This.teamModeFilter = $(e.currentTarget).data("filter"),
-                    This.loadMatchHistory(params.slug, 0, This.teamModeFilter),
+                    This.games = [];
+                    This.teamModeFilter = $(e.currentTarget).data("filter");
+                    This.loadMatchHistory(params.slug, 0, This.teamModeFilter);
                     This.render();
                 }
             });
 
             // Match data
-            let matchDataContent = ""; const expandedGame = this.games.find((x) => {
+            let matchDataContent = "";
+            const expandedGame = this.games.find(x => {
                 return x.expanded;
             });
             if (expandedGame) {
-                var params = this.getUrlParams(); let localId = 0;
+                const params = this.getUrlParams();
+                let localId = 0;
                 // Get this player's player_id in this match
                 if (expandedGame.data) {
                     for (let h = 0; h < expandedGame.data.length; h++) {

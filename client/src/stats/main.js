@@ -1,4 +1,5 @@
 import { App } from "./app";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import ejs from "ejs";
 
-const app = new App();
-console.log(app);
+export const app = new App();
