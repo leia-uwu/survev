@@ -102,7 +102,6 @@ export class WeaponManager {
     }
 
     shootStart(): void {
-        this.player.cancelAction();
         const def = GameObjectDefs[this.activeWeapon];
 
         if (def) {
@@ -453,6 +452,7 @@ export class WeaponManager {
     meleeAttack(skipCooldownCheck = false): void {
         if (this.player.game.now < this.weapons[this.curWeapIdx].cooldown && !skipCooldownCheck) return;
         if (this.player.animType === GameConfig.Anim.Melee) return;
+        this.player.cancelAction();
 
         const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
 
