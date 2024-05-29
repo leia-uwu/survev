@@ -3,7 +3,6 @@ import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
 import { type ObjectType, ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "../utils/objectSerializeFns";
-import type { Gas } from "../../server/src/objects/gas";
 import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
 import { AbstractMsg, Constants, type BitStream } from "../net";
@@ -204,7 +203,16 @@ function deserializePlayerInfo(s: BitStream, data: PlayerInfo) {
     s.readAlignToNextByte();
 }
 
-function serializeGasData(s: BitStream, data: Gas) {
+interface GasData {
+    mode: number
+    duration: number
+    posOld: Vec2
+    posNew: Vec2
+    radOld: number
+    radNew: number
+}
+
+function serializeGasData(s: BitStream, data: GasData) {
     s.writeUint8(data.mode);
     s.writeFloat32(data.duration);
     s.writeVec(data.posOld, 0, 0, 1024, 1024, 16);
@@ -213,7 +221,7 @@ function serializeGasData(s: BitStream, data: Gas) {
     s.writeFloat(data.radNew, 0, 2048, 16);
 }
 
-function deserializeGasData(s: BitStream, data: Gas) {
+function deserializeGasData(s: BitStream, data: GasData) {
     data.mode = s.readUint8();
     data.duration = s.readFloat32();
     data.posOld = s.readVec(0, 0, 1024, 1024, 16);
@@ -264,7 +272,7 @@ export class UpdateMsg extends AbstractMsg {
     aliveCounts = [];
     aliveDirty = false;
 
-    gasData!: Gas;
+    gasData!: GasData;
     gasDirty = false;
     gasT = 0;
     gasTDirty = false;
@@ -517,9 +525,9 @@ export class UpdateMsg extends AbstractMsg {
         this.activePlayerData = activePlayerData;
 
         if ((flags & UpdateExtFlags.Gas) != 0) {
-            const f = {} as Gas;
-            deserializeGasData(s, f);
-            this.gasData = f;
+            const gasData = {} as GasData;
+            deserializeGasData(s, gasData);
+            this.gasData = gasData;
             this.gasDirty = true;
         }
 

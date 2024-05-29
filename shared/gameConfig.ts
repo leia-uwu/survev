@@ -93,10 +93,10 @@ export const GameConfig = {
         gasTimeMin: 5,
         initWidth: 0.75,
         widthDecay: 0.5,
-        widthMin: 0,
+        widthMin: 10,
         damageTickRate: 2,
-        damagePerTick: [
-            0.012, 0.02, 0.035, 0.075, 0.1, 0.14, 0.22, 0.22
+        damage: [
+            1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22
         ]
     },
     Plane: {

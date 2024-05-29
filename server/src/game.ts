@@ -103,7 +103,7 @@ export class Game {
 
         this.bulletManager.update(dt);
 
-        this.gas.update();
+        this.gas.update(dt);
 
         for (const loot of this.grid.categories[ObjectType.Loot]) {
             loot.update(dt);
