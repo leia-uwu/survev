@@ -320,3 +320,159 @@ export class UpdatePassMsg {
     serialize(_e: BitStream) { }
     deserialize(_e: BitStream) { }
 }
+
+//
+// /api/team_v2 websocket msg typings
+// TODO?: move to another file?
+//
+
+interface RoomData {
+    roomUrl: string
+    findingGame: boolean
+    lastError: string
+    region: string
+    autoFill: boolean
+    enabledGameModeIdxs: number[]
+    gameModeIdx: number
+    maxPlayers: number
+}
+
+//
+// Team msgs that the server sends to clients
+//
+
+/**
+ * send by the server to all clients to make them join the game
+ */
+export interface TeamJoinGameMsg {
+    readonly type: "joinGame"
+    data: {
+        zone: string
+        gameId: string
+        hosts: string[]
+        addrs: string[]
+        // server generated data that gets sent back to the server on `joinMsg.matchPriv`
+        data: string
+        useHttps: boolean
+    }
+}
+
+/**
+ * Send by the server to update the client team ui
+ */
+export interface TeamStateMsg {
+    readonly type: "state"
+    data: {
+        localPlayerId: number
+        room: RoomData
+        players: Array<{
+            playerId: number
+            name: string
+            isLeader: boolean
+            inGame: boolean
+        }>
+    }
+}
+
+/**
+ * Send by the server to keep the connection alive
+ */
+export interface TeamKeepAliveMsg {
+    readonly type: "keepAlive"
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    data: {}
+}
+
+/**
+ * Send by the server when the player gets kicked from the team room
+ */
+export interface TeamKickedMsg {
+    readonly type: "kicked"
+}
+
+export interface TeamErrorMsg {
+    readonly type: "error"
+    data: {
+        type: string
+    }
+}
+
+export type ServerToClientTeamMsg =
+    TeamJoinGameMsg |
+    TeamStateMsg |
+    TeamKeepAliveMsg |
+    TeamKickedMsg |
+    TeamErrorMsg;
+
+//
+// Team Msgs that the client sends to the server
+//
+
+/**
+ * send by the client to join a team room
+ */
+export interface TeamJoinMsg {
+    readonly type: "join"
+    data: {
+        roomUrl: string
+        playerData: {
+            name: string
+        }
+    }
+}
+
+/**
+ * Send by the client to change the player name
+ */
+export interface TeamChangeNameMsg {
+    readonly type: "changeName"
+    data: {
+        name: string
+    }
+}
+
+/**
+ * Send by the client to set the room properties
+ */
+export interface TeamSetRoomPropsMsg {
+    readonly type: "setRoomProps"
+    data: RoomData
+}
+
+/**
+ * Send by the client to create a room
+ */
+export interface TeamCreateMsg {
+    readonly type: "create"
+    data: {
+        roomData: RoomData
+        playerData: {
+            name: string
+        }
+    }
+}
+
+/**
+ * Send by the client when the team leader kicks someone from the team
+ */
+export interface TeamKickMsg {
+    readonly type: "kick"
+    data: {
+        playerId: number
+    }
+}
+
+/**
+ * Send by the client when the game is completed
+ */
+export interface TeamGameCompleteMsg {
+    readonly type: "gameComplete"
+}
+
+export type ClientToServerTeamMsg =
+    TeamJoinMsg |
+    TeamChangeNameMsg |
+    TeamSetRoomPropsMsg |
+    TeamCreateMsg |
+    TeamKickMsg |
+    TeamGameCompleteMsg;
