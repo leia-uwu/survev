@@ -102,6 +102,7 @@ export class WeaponManager {
     }
 
     shootStart(): void {
+        this.player.cancelAction();
         const def = GameObjectDefs[this.activeWeapon];
 
         if (def) {
