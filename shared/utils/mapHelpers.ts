@@ -3,6 +3,7 @@ import { type BuildingDef } from "../defs/mapObjectsTyping";
 import { type AABB, type Collider, coldet } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";
+import { assert } from "./util";
 import { type Vec2, v2 } from "./v2";
 
 // Memoize computed object colliders
@@ -67,6 +68,7 @@ function computeBoundingCollider(type: string): Collider {
     } if (def.type === "loot_spawner") {
         return collider.createCircle(v2.create(0.0, 0.0), 3.0);
     }
+    assert(def.collision);
     return def.collision;
 }
 

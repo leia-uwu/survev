@@ -3,6 +3,7 @@ import { GameObjectDefs } from "./defs/gameObjectDefs";
 import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { math } from "./utils/math";
 import { type Vec2 } from "./utils/v2";
+import { assert } from "./utils/util";
 
 const DEV_MODE = false;
 
@@ -30,8 +31,8 @@ class ConfigTypeMap {
     }
 
     addType(type: string) {
-        // assert(this._typeToId[type] === undefined, `Type ${type} has already been defined!`);
-        // assert(this.nextId < this.maxId);
+        assert(this._typeToId[type] === undefined, `Type ${type} has already been defined!`);
+        assert(this.nextId < this.maxId);
         this._typeToId[type] = this.nextId;
         this._idToType[this.nextId] = type;
         this.nextId++;
@@ -39,7 +40,7 @@ class ConfigTypeMap {
 
     typeToId(type: string) {
         const id = this._typeToId[type];
-        // assert(id !== undefined, `Invalid type ${type}`);
+        assert(id !== undefined, `Invalid type ${type}`);
         return id;
     }
 
@@ -56,7 +57,7 @@ function createTypeSerialization(type: string, typeList: Record<string, unknown>
     const typeMap = new ConfigTypeMap(bitsPerType);
 
     const types = Object.keys(typeList);
-    // assert(types.length <= typeMap.maxId, `${type} contains ${types.length} types, max ${typeMap.maxId}`);
+    assert(types.length <= typeMap.maxId, `${type} contains ${types.length} types, max ${typeMap.maxId}`);
     for (let i = 0; i < types.length; i++) {
         typeMap.addType(types[i]);
     }
@@ -89,8 +90,8 @@ export class BitStream extends bb.BitStream {
     }
 
     writeFloat(f: number, min: number, max: number, bits: number) {
-        // assert(bits > 0 && bits < 31);
-        // assert(f >= min && f <= max);
+        assert(bits > 0 && bits < 31);
+        assert(f >= min && f <= max, `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`);
         const range = (1 << bits) - 1;
         const x = math.clamp(f, min, max);
         const t = (x - min) / (max - min);
@@ -99,7 +100,7 @@ export class BitStream extends bb.BitStream {
     }
 
     readFloat(min: number, max: number, bits: number) {
-        // assert(bits > 0 && bits < 31);
+        assert(bits > 0 && bits < 31);
         const range = (1 << bits) - 1;
         const x = this.readBits(bits);
         const t = x / range;
@@ -143,9 +144,7 @@ export class BitStream extends bb.BitStream {
     declare _view: { _view: Uint8Array };
 
     writeBytes(src: BitStream, offset: number, length: number) {
-        if (this.index % 8 !== 0) {
-            throw new Error("writeBytes: stream not byte aligned");
-        }
+        assert(this.index % 8 == 0);
         const data = new Uint8Array(src._view._view.buffer, offset, length);
         this._view._view.set(data, this.index / 8);
         this.index += length * 8;
@@ -205,21 +204,14 @@ export class MsgStream {
     }
 
     serializeMsg(type: MsgType, msg: Msg) {
-        if (this.stream.index % 8 !== 0) {
-            throw new Error("SerializeMsg: stream not byte aligned");
-        }
+        assert(this.stream.index % 8 == 0);
         this.stream.writeUint8(type);
         msg.serialize(this.stream);
-
-        if (this.stream.index % 8 !== 0) {
-            throw new Error("SerializeMsg: stream not byte aligned");
-        }
+        assert(this.stream.index % 8 == 0);
     }
 
     serializeMsgStream(type: number, stream: BitStream) {
-        if (this.stream.index % 8 !== 0) {
-            throw new Error("serializeMsgStream: stream not byte aligned");
-        }
+        assert(this.stream.index % 8 == 0 && stream.index % 8 == 0);
         this.stream.writeUint8(type);
         this.stream.writeBytes(stream, 0, stream.index / 8);
     }

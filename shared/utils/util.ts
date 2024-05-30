@@ -2,6 +2,15 @@ import { type AABB } from "./coldet";
 import { math } from "./math";
 import { v2 } from "./v2";
 
+/**
+ * Custom function to not bundle nodejs assert polyfill with the client
+ */
+export function assert(condition: boolean | undefined, msg?: string) {
+    if (!condition) {
+        throw new Error(msg ?? "Assertion failed");
+    }
+}
+
 export const util = {
     //
     // Game objects can belong to the following layers:

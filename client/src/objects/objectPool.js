@@ -1,8 +1,9 @@
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { assert } from "../../../shared/utils/util";
 
 export class Pool {
     constructor(classFn) {
-        // assert(e !== undefined);
+        assert(classFn !== undefined);
         this.creator = {
             type: classFn
         };

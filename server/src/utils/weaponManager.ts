@@ -386,7 +386,7 @@ export class WeaponManager {
             const params: BulletParams = {
                 playerId: this.player.__id,
                 bulletType: itemDef.bulletType,
-                sourceType: this.activeWeapon,
+                gameSourceType: this.activeWeapon,
                 damageType: GameConfig.DamageType.Player,
                 pos: shotPos,
                 dir: shotDir,

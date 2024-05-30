@@ -274,6 +274,7 @@ export class GameMap {
 
     genAuto(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, parentId?: number, puzzlePiece?: string) {
         const def = MapObjectDefs[type];
+        pos = this.clampToMapBounds(pos);
 
         switch (def.type) {
         case "obstacle":
@@ -578,7 +579,7 @@ export class GameMap {
                 if (collided) break;
             }
             if (collided) break;
-            riverPoints[i] = pos;
+            riverPoints[i] = this.clampToMapBounds(pos);
 
             if (!coldet.testPointAabb(pos, bounds.min, bounds.max)) break;
         }
@@ -588,6 +589,7 @@ export class GameMap {
     }
 
     genObstacle(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, buildingId?: number, puzzlePiece?: string): Obstacle {
+        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as ObstacleDef;
 
         scale = scale ?? util.random(def.scale.createMin, def.scale.createMax);
@@ -610,6 +612,7 @@ export class GameMap {
     }
 
     genBuilding(type: string, pos: Vec2, layer = 0, ori?: number, parentId?: number): Building {
+        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as BuildingDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -661,6 +664,7 @@ export class GameMap {
     }
 
     genStructure(type: string, pos: Vec2, layer = 0, ori?: number): Structure {
+        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as StructureDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);

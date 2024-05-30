@@ -33,7 +33,7 @@ export class Emote {
     pos: Vec2;
     type: string;
     isPing: boolean;
-    itemType!: string;
+    itemType = "";
 
     constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
         this.playerId = playerId;
@@ -136,7 +136,6 @@ export class Player extends BaseGameObject {
     }
 
     action: { time: number, duration: number, targetId: number };
-    lastAction!: { time: number, duration: number, targetId: number };
 
     private _scope = "1xscope";
 
@@ -408,13 +407,13 @@ export class Player extends BaseGameObject {
         }
 
         // handle heal and boost actions
-        let actionTimeThreshold;// hacky but works, couldnt find a better way
-        if (this.action.time == -1) {
-            actionTimeThreshold = -Date.now();
-        } else {
-            actionTimeThreshold = Date.now() + this.action.time * 1000 - this.action.duration * 1000;
+
+        if (this.actionType !== GameConfig.Action.None) {
+            this.action.time += dt;
+            this.action.time = math.clamp(this.action.time, 0, Constants.ActionMaxDuration);
         }
-        if (actionTimeThreshold >= 0) {
+
+        if (this.action.time >= this.action.duration) {
             if (this.actionType === GameConfig.Action.UseItem) {
                 const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
                 if ("heal" in itemDef) this.health += itemDef.heal;
@@ -424,9 +423,7 @@ export class Player extends BaseGameObject {
             } else if (this.isReloading()) {
                 this.weaponManager.reload();
             }
-            if (this.reloadAgain) {
-                this.lastAction = { ...this.action };// shallow copy so no references are kept
-            }
+
             this.cancelAction();
 
             if (
@@ -1485,10 +1482,9 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        this.action.targetId = -1;
+        this.action.targetId = 0;
         this.action.duration = duration;
-        const t = Date.now() + (duration * 1000);
-        this.action.time = duration - (t / 1000);
+        this.action.time = 0;
 
         this.actionDirty = true;
         this.actionItem = actionItem;
@@ -1503,10 +1499,10 @@ export class Player extends BaseGameObject {
         }
         this.action.duration = 0;
         this.action.targetId = 0;
-        this.action.time = -1;
+        this.action.time = 0;
 
         this.actionItem = "";
-        this.actionType = 0;
+        this.actionType = GameConfig.Action.None;
         this.actionSeq++;
         this.actionDirty = false;
         this.setDirty();

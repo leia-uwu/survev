@@ -1,5 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type ExplosionDef } from "../../../shared/defs/objectsTypings";
+import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
@@ -16,8 +17,9 @@ export class Explosion {
         public type: string,
         public pos: Vec2,
         public layer: number,
-        public sourceType: string,
-        public damageType: number,
+        public gameSourceType = "",
+        public mapSourceType = "",
+        public damageType: number = GameConfig.DamageType.Player,
         public source?: GameObject
     ) {
         this.rad = (GameObjectDefs[this.type] as ExplosionDef).rad.max;
@@ -89,8 +91,8 @@ export class Explosion {
 
                         obj.damage({
                             amount: damage,
-                            gameSourceType: this.sourceType,
-                            mapSourceType: this.sourceType,
+                            gameSourceType: this.gameSourceType,
+                            mapSourceType: this.mapSourceType,
                             source: this.source,
                             damageType: this.damageType,
                             dir: collision.dir
@@ -119,7 +121,8 @@ export class Explosion {
                         shotFx: false,
                         damageMult: 1,
                         varianceT: Math.random(),
-                        sourceType: this.sourceType,
+                        gameSourceType: this.gameSourceType,
+                        mapSourceType: this.mapSourceType,
                         dir: v2.randomUnit()
                     }
                 );
