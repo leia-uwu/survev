@@ -754,26 +754,29 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
 
         let finalDamage = params.amount;
-        let isHeadShot = false;
 
-        const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
+        // ignore armor for gas and bleeding damage
+        if (params.damageType !== GameConfig.DamageType.Gas && params.damageType !== GameConfig.DamageType.Bleeding) {
+            let isHeadShot = false;
 
-        if (gameSourceDef && "headshotMult" in gameSourceDef) {
-            isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
-            if (isHeadShot) {
-                finalDamage *= gameSourceDef.headshotMult;
+            const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
+
+            if (gameSourceDef && "headshotMult" in gameSourceDef) {
+                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
+                if (isHeadShot) {
+                    finalDamage *= gameSourceDef.headshotMult;
+                }
             }
-        }
 
-        const chest = GameObjectDefs[this.chest] as ChestDef;
+            const chest = GameObjectDefs[this.chest] as ChestDef;
+            if (chest && !isHeadShot) {
+                finalDamage -= finalDamage * chest.damageReduction;
+            }
 
-        if (chest && !isHeadShot) {
-            finalDamage -= finalDamage * chest.damageReduction;
-        }
-
-        const helmet = GameObjectDefs[this.helmet] as HelmetDef;
-        if (helmet) {
-            finalDamage -= finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+            const helmet = GameObjectDefs[this.helmet] as HelmetDef;
+            if (helmet) {
+                finalDamage -= finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+            }
         }
 
         if (this._health - finalDamage < 0) finalDamage = this.health;
