@@ -68,7 +68,7 @@ function computeBoundingCollider(type: string): Collider {
     } if (def.type === "loot_spawner") {
         return collider.createCircle(v2.create(0.0, 0.0), 3.0);
     }
-    assert(def.collision);
+    assert(def.collision !== undefined);
     return def.collision;
 }
 
