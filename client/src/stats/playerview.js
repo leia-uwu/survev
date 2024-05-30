@@ -4,7 +4,7 @@ import $ from "jquery";
 import { battletagCensoring, helpers } from "./mainview";
 import loading from "./templates/loading.jsx";
 import player from "./templates/player.jsx";
-import playerCards from "./templates/playerCards.js";
+import playerCards from "./templates/playerCards.jsx";
 import matchData from "./templates/matchData.jsx";
 import matchHistory from "./templates/matchHistory.jsx";
 
