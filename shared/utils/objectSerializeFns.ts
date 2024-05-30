@@ -18,8 +18,9 @@ export enum ObjectType {
     Airdrop
 }
 
+export type ObjectData<T extends ObjectType> = ObjectsFullData[T] & ObjectsPartialData[T];
 export interface ObjectsPartialData {
-    [ObjectType.Invalid]: null
+    [ObjectType.Invalid]: unknown
     [ObjectType.Player]: {
         pos: Vec2
         dir: Vec2
@@ -48,8 +49,8 @@ export interface ObjectsPartialData {
         puzzleSolved: boolean
         puzzleErrSeq: number
     }
-    [ObjectType.Structure]: null
-    [ObjectType.Decal]: null
+    [ObjectType.Structure]: unknown
+    [ObjectType.Decal]: unknown
     [ObjectType.Projectile]: {
         pos: Vec2
         posZ: number
@@ -66,7 +67,7 @@ export interface ObjectsPartialData {
 }
 
 export interface ObjectsFullData {
-    [ObjectType.Invalid]: null
+    [ObjectType.Invalid]: unknown
     [ObjectType.Player]: {
         outfit: string
         backpack: string
