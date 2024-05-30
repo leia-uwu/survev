@@ -11,11 +11,14 @@
     "useDefineForClassFields": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowJs": true
+    "allowJs": true,
+    "strict": true,
+    "types": ["vite/client"]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.js",
-    "../shared/"
+    "../shared/",
+    "global.d.ts"
   ]
 }

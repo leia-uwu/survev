@@ -1,8 +1,9 @@
+import { WeaponSlot } from "../gameConfig";
 import { AbstractMsg, type BitStream } from "../net";
 
 export class DropItemMsg extends AbstractMsg {
     item = "";
-    weapIdx = 0;
+    weapIdx = WeaponSlot.Primary;
 
     override serialize(s: BitStream) {
         s.writeGameType(this.item);

@@ -1,7 +1,7 @@
-import { AbstractMsg, type BitStream } from "../net";
+import { AbstractMsg, PickupMsgType, type BitStream } from "../net";
 
 export class PickupMsg extends AbstractMsg {
-    type = 0;
+    type = PickupMsgType.Full;
     item = "";
     count = 0;
 

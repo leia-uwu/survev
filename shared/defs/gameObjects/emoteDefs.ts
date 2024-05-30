@@ -1,4 +1,4 @@
-enum EmoteCategory {
+export enum EmoteCategory {
     Locked,
     Faces,
     Food,

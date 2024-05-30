@@ -693,7 +693,7 @@ interface Airstrike {
     rad: number
 }
 
-interface Plane {
+export interface Plane {
     planeDir: Vec2
     pos: Vec2
     actionComplete: boolean
@@ -701,7 +701,7 @@ interface Plane {
     id: number
 }
 
-interface MapIndicator {
+export interface MapIndicator {
     id: number
     dead: boolean
     equipped: boolean
