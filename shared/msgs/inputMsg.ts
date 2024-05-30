@@ -45,8 +45,8 @@ export class InputMsg extends AbstractMsg {
         s.writeFloat(this.toMouseLen, 0, Constants.MouseMaxDist, 8);
 
         s.writeBits(this.inputs.length, 4);
-        for (let t = 0; t < this.inputs.length; t++) {
-            s.writeUint8(this.inputs[t]);
+        for (let i = 0; i < this.inputs.length; i++) {
+            s.writeUint8(this.inputs[i]);
         }
 
         s.writeGameType(this.useItem);

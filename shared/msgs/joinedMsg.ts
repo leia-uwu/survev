@@ -11,8 +11,8 @@ export class JoinedMsg extends AbstractMsg {
         s.writeUint16(this.playerId);
         s.writeBoolean(this.started);
         s.writeUint8(this.emotes.length);
-        for (const emote of this.emotes) {
-            s.writeGameType(emote);
+        for (let i = 0; i < this.emotes.length; i++) {
+            s.writeGameType(this.emotes[i]);
         }
         s.writeAlignToNextByte();
     }

@@ -108,9 +108,10 @@ function deserializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
     s.readAlignToNextByte();
 }
 
-function serializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
-    s.writeUint8(data.length);
-    for (const info of data) {
+function serializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) {
+    s.writeUint8(data.players.length);
+    for (let i = 0; i < data.players.length; i++) {
+        const info = data.players[i];
         s.writeBoolean(info.hasData);
 
         if (info.hasData) {
@@ -127,8 +128,8 @@ function serializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
     }
 }
 
-function deserializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
-    data = [];
+function deserializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) {
+    data.players = [];
     const count = s.readUint8();
     for (let i = 0; i < count; i++) {
         const p = {} as PlayerStatus & { hasData: boolean };
@@ -143,7 +144,7 @@ function deserializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
                 p.role = s.readGameType();
             }
         }
-        data.push(p);
+        data.players.push(p);
     }
     s.readAlignToNextByte();
 }
@@ -151,7 +152,8 @@ function deserializePlayerStatus(s: BitStream, data: PlayerStatus[]) {
 function serializeGroupStatus(s: BitStream, data: GroupStatus[]) {
     s.writeUint8(data.length);
 
-    for (const status of data) {
+    for (let i = 0; i < data.length; i++) {
+        const status = data[i];
         s.writeFloat(status.health, 0, 100, 7);
         s.writeBoolean(status.disconnected);
     }
@@ -280,7 +282,7 @@ export class UpdateMsg extends AbstractMsg {
     playerInfos: PlayerInfo[] = [];
     deletedPlayerIds: number[] = [];
 
-    playerStatus!: PlayerStatus[];
+    playerStatus = {} as { players: PlayerStatus[] };
     playerStatusDirty = false;
 
     groupStatus: GroupStatus[] = [];
@@ -305,15 +307,16 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.delObjIds.length) {
             s.writeUint16(this.delObjIds.length);
-            for (const id of this.delObjIds) {
-                s.writeUint16(id);
+            for (let i = 0; i < this.delObjIds.length; i++) {
+                s.writeUint16(this.delObjIds[i]);
             }
             flags |= UpdateExtFlags.DeletedObjects;
         }
 
         if (this.fullObjects.length) {
             s.writeUint16(this.fullObjects.length);
-            for (const obj of this.fullObjects) {
+            for (let i = 0; i < this.fullObjects.length; i++) {
+                const obj = this.fullObjects[i];
                 s.writeUint8(obj.__type);
                 s.writeBytes(obj.partialStream, 0, obj.partialStream.byteIndex);
                 s.writeBytes(obj.fullStream, 0, obj.fullStream.byteIndex);
@@ -322,7 +325,8 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         s.writeUint16(this.partObjects.length);
-        for (const obj of this.partObjects) {
+        for (let i = 0; i < this.partObjects.length; i++) {
+            const obj = this.partObjects[i];
             s.writeBytes(obj.partialStream, 0, obj.partialStream.byteIndex);
         }
 
@@ -345,16 +349,16 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.playerInfos.length) {
             s.writeUint8(this.playerInfos.length);
-            for (const info of this.playerInfos) {
-                serializePlayerInfo(s, info);
+            for (let i = 0; i < this.playerInfos.length; i++) {
+                serializePlayerInfo(s, this.playerInfos[i]);
             }
             flags |= UpdateExtFlags.PlayerInfos;
         }
 
         if (this.deletedPlayerIds.length) {
             s.writeUint8(this.deletedPlayerIds.length);
-            for (const id of this.deletedPlayerIds) {
-                s.writeUint16(id);
+            for (let i = 0; i < this.deletedPlayerIds.length; i++) {
+                s.writeUint16(this.deletedPlayerIds[i]);
             }
             flags |= UpdateExtFlags.DeletePlayerIds;
         }
@@ -372,7 +376,9 @@ export class UpdateMsg extends AbstractMsg {
         if (this.bullets.length) {
             s.writeUint8(this.bullets.length);
 
-            for (const bullet of this.bullets) {
+            for (let i = 0; i < this.bullets.length; i++) {
+                const bullet = this.bullets[i];
+
                 s.writeUint16(bullet.playerId);
                 s.writeVec(bullet.startPos, 0, 0, 1024, 1024, 16);
                 s.writeUnitVec(bullet.dir, 8);
@@ -413,7 +419,9 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.explosions.length) {
             s.writeUint8(this.explosions.length);
-            for (const explosion of this.explosions) {
+            for (let i = 0; i < this.explosions.length; i++) {
+                const explosion = this.explosions[i];
+
                 s.writeVec(explosion.pos, 0, 0, 1024, 1024, 16);
                 s.writeGameType(explosion.type);
                 s.writeBits(explosion.layer, 2);
@@ -424,7 +432,9 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.emotes.length) {
             s.writeUint8(this.emotes.length);
-            for (const emote of this.emotes) {
+            for (let i = 0; i < this.emotes.length; i++) {
+                const emote = this.emotes[i];
+
                 s.writeUint16(emote.playerId);
                 s.writeGameType(emote.type);
                 s.writeGameType(emote.itemType);
@@ -438,7 +448,9 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.planes.length) {
             s.writeUint8(this.planes.length);
-            for (const plane of this.planes) {
+            for (let i = 0; i < this.planes.length; i++) {
+                const plane = this.planes[i];
+
                 s.writeUint8(plane.id);
                 s.writeVec(plane.pos, 0, 0, 2048, 2048, 10);
                 s.writeUnitVec(plane.planeDir, 8);
@@ -450,7 +462,9 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.airstrikeZones.length) {
             s.writeUint8(this.airstrikeZones.length);
-            for (const zone of this.airstrikeZones) {
+            for (let i = 0; i < this.airstrikeZones.length; i++) {
+                const zone = this.airstrikeZones[i];
+
                 s.writeVec(zone.pos, 0, 0, 1024, 1024, 12);
                 s.writeFloat(zone.rad, 0, Constants.AirstrikeZoneMaxRad, 8);
                 s.writeFloat(zone.duration, 0, Constants.AirstrikeZoneMaxDuration, 8);
@@ -460,7 +474,9 @@ export class UpdateMsg extends AbstractMsg {
 
         if (this.mapIndicators.length) {
             s.writeUint8(this.mapIndicators.length);
-            for (const indicator of this.mapIndicators) {
+            for (let i = 0; i < this.mapIndicators.length; i++) {
+                const indicator = this.mapIndicators[i];
+
                 s.writeBits(indicator.id, 4);
                 s.writeBoolean(indicator.dead);
                 s.writeBoolean(indicator.equipped);
@@ -554,7 +570,7 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         if ((flags & UpdateExtFlags.PlayerStatus) != 0) {
-            const playerStatus: PlayerStatus[] = [];
+            const playerStatus = {} as this["playerStatus"];
             deserializePlayerStatus(s, playerStatus);
             this.playerStatus = playerStatus;
             this.playerStatusDirty = true;
