@@ -406,9 +406,19 @@ export class GameMap {
 
             ori = math.radToOri(rot - edgeRot);
 
-            const dist = util.random(waterEdge.distMin, waterEdge.distMax);
+            let dist = util.random(waterEdge.distMin, waterEdge.distMax);
 
-            const min = v2.create(dist + 6.5, this.shoreInset);
+            // TODO: figure out how to use distance values from definitions
+
+            if (type.includes("hut")) {
+                dist -= 16;
+            } else if (type === "warehouse_complex_01") {
+                dist -= this.shoreInset - 6.5;
+            } else if (type === "bunker_structure_04") {
+                dist -= 24;
+            }
+
+            const min = v2.create(this.shoreInset + dist, this.shoreInset + height);
             const max = v2.create(min.x, this.height - this.shoreInset - height);
 
             // generate a position and rotate it based on the orientation and map center
