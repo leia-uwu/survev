@@ -331,6 +331,11 @@ export class Game {
         player.spectating = undefined;
         this.connectedPlayers.delete(player);
 
+        if (this.aliveCount == 0) {
+            this.end();
+            return;
+        }
+
         if (!player.dead && this.isGameOver()) {
             this.initGameEnd(this.spectatablePlayers[0], player);
         }
