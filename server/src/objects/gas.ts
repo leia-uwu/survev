@@ -69,7 +69,7 @@ export class Gas {
         }
 
         if (this.mode != GasMode.Inactive) {
-            this.gasT = (this.game.now - this.countdownStart) / 1000 / this.duration;
+            this.gasT = math.clamp((this.game.now - this.countdownStart) / 1000 / this.duration, 0, 1);
             this.timeDirty = true;
         }
 
@@ -95,7 +95,7 @@ export class Gas {
                 this.radNew = this.currentRad * GameConfig.gas.widthDecay;
 
                 if (this.radNew < GameConfig.gas.widthMin) {
-                    this.radNew = 0;
+                    this.radNew = this.radOld = this.currentRad = 0;
                 }
 
                 this.posOld = v2.copy(this.posNew);
