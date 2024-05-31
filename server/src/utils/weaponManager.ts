@@ -105,9 +105,6 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
-
-        this.weapons[0].type = "m870";
-        this.weapons[0].ammo = 10;
     }
 
     shootStart(): void {
