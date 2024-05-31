@@ -79,6 +79,14 @@ export interface MapDef {
     gameMode: {
         maxPlayers: number
         killLeaderEnabled: boolean
+        woodsMode?: boolean
+        desertMode?: boolean
+        potatoMode?: boolean
+        sniperMode?: boolean
+        perkMode?: boolean
+        perkModeRoles?: string[]
+        factionMode?: boolean
+        factions?: number
     }
     gameConfig: {
         planes: {

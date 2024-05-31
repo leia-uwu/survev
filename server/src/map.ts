@@ -116,6 +116,26 @@ export class GameMap {
         }
         const randomGenerator = util.seededRand(this.seed);
 
+        for (const lake of mapConfig.rivers.lakes) {
+            const points: Vec2[] = [];
+            const center = v2.mulElems(v2.create(this.width, this.height), lake.spawnBound.pos);
+
+            for (let i = 0; i < Math.PI * 2; i += randomGenerator(0.2, 0.3)) {
+                const dir = v2.create(Math.sin(i), Math.cos(i));
+                const len = lake.outerRad + randomGenerator(-10, 10);
+
+                points.push(v2.add(center, v2.mul(dir, len)));
+            }
+
+            points.push(v2.copy(points[0]));
+
+            this.riverDescs.push({
+                width: (lake.outerRad - lake.innerRad) / 2,
+                points,
+                looped: true
+            });
+        }
+
         const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
@@ -128,11 +148,12 @@ export class GameMap {
         const mapWidth = this.width - 1;
         const mapHeight = this.height - 1;
 
-        while (this.riverDescs.length < widths.length) {
+        const riverAmount = widths.length + this.riverDescs.length;
+        while (this.riverDescs.length < riverAmount) {
             let start: Vec2;
 
-            const horizontal = !!randomGenerator();
-            const reverse = !!randomGenerator();
+            const horizontal = randomGenerator() < 0.5;
+            const reverse = randomGenerator() < 0.5;
 
             if (horizontal) {
                 const topHalf = randomGenerator(1, halfHeight);
@@ -144,7 +165,8 @@ export class GameMap {
                 start = v2.create(reverse ? rightHalf : leftHalf, 1);
             }
 
-            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI);
+            const smoothness = mapConfig.rivers.smoothness;
+            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI) + randomGenerator(-smoothness, smoothness);
 
             this.genRiver(
                 start,
@@ -160,6 +182,7 @@ export class GameMap {
         const mapDef = this.mapDef;
 
         for (const river of this.terrain.rivers) {
+            if (river.looped) continue;
             for (let i = 0.2; i < 0.8; i += 0.05) {
                 if (Math.random() < 0.1) {
                     const pos = river.spline.getPos(i);
@@ -177,6 +200,7 @@ export class GameMap {
                     } else {
                         bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
                     }
+                    if (!bridgeType) continue;
 
                     const coll = collider.transform(
                         mapHelpers.getBoundingCollider(bridgeType),
@@ -557,20 +581,19 @@ export class GameMap {
 
         riverPoints.push(startPos);
 
-        let angle = startAngle;
+        const dir = v2.create(Math.cos(startAngle), Math.sin(startAngle));
 
         const smoothness = this.mapDef.mapGen.map.rivers.smoothness;
 
         for (let i = 1; i < 100; i++) {
             const lastPoint = riverPoints[i - 1];
 
-            angle = angle + randomGenerator(
-                -smoothness,
-                smoothness
-            );
+            const len = randomGenerator(15, 25);
 
-            const len = randomGenerator(20, 30);
-            const pos = v2.add(lastPoint, v2.create(Math.cos(angle) * len, Math.sin(angle) * len));
+            const x = randomGenerator(-smoothness, smoothness);
+            const newdir = v2.add(dir, v2.create(x, x));
+
+            const pos = v2.add(lastPoint, v2.mul(newdir, len));
 
             let collided = false;
 
