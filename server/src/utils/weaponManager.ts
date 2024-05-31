@@ -43,13 +43,19 @@ export class WeaponManager {
         const curWeapon = this.weapons[this.curWeapIdx];
         const nextWeapon = this.weapons[idx];
         if (curWeapon.type && nextWeapon.type) { // ensure that player is still holding both weapons (didnt drop one)
-            const gunDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-            const switchDelay = gunDef.type == "throwable" ? 0.25 : gunDef.switchDelay;
+            const curWeaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
+            const nextWeaponDef = GameObjectDefs[this.weapons[idx].type] as GunDef | MeleeDef | ThrowableDef;
+            let switchDelay;
+            if (curWeaponDef.type == "melee" && nextWeaponDef.type == "gun" && nextWeaponDef.pullDelay) {
+                switchDelay = nextWeaponDef.pullDelay;
+            } else {
+                switchDelay = curWeaponDef.type == "throwable" ? 0.25 : curWeaponDef.switchDelay;
+            }
             if (nextWeapon.cooldown - this.player.game.now > 0) { // cooldown still in progress
                 nextWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
             } else {
-                curWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
                 nextWeapon.cooldown = this.player.game.now + (0.25 * 1000);
+                curWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
             }
         }
 
@@ -99,6 +105,9 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
+
+        this.weapons[0].type = "m870";
+        this.weapons[0].ammo = 10;
     }
 
     shootStart(): void {

@@ -121,6 +121,7 @@ interface GunDef extends BaseLootDef {
     reloadTimeAlt?: number
     fireDelay: number
     switchDelay: number
+    pullDelay?: number
     barrelLength: number
     barrelOffset: number
     recoilTime: number
