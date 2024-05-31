@@ -3,6 +3,6 @@ export const api = {
         return url;
     },
     resolveRoomHost: function() {
-        return window.location.hostname;
+        return window.location.host;
     }
 };
