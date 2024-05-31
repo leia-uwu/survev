@@ -114,26 +114,26 @@ export class MapMsg extends AbstractMsg {
 
         // Rivers
         s.writeUint8(this.rivers.length);
-        for (const river of this.rivers) {
-            serializeMapRiver(s, river);
+        for (let i = 0; i < this.rivers.length; i++) {
+            serializeMapRiver(s, this.rivers[i]);
         }
 
         // Places
         s.writeUint8(this.places.length);
-        for (const place of this.places) {
-            serializeMapPlace(s, place);
+        for (let i = 0; i < this.places.length; i++) {
+            serializeMapPlace(s, this.places[i]);
         }
 
         // Objects
         s.writeUint16(this.objects.length);
-        for (const obj of this.objects) {
-            serializeMapObj(s, obj);
+        for (let i = 0; i < this.objects.length; i++) {
+            serializeMapObj(s, this.objects[i]);
         }
 
         // GroundPatches
         s.writeUint8(this.groundPatches.length);
-        for (const patch of this.groundPatches) {
-            serializeMapGroundPatch(s, patch);
+        for (let i = 0; i < this.groundPatches.length; i++) {
+            serializeMapGroundPatch(s, this.groundPatches[i]);
         }
     }
 

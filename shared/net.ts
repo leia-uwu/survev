@@ -3,6 +3,7 @@ import { GameObjectDefs } from "./defs/gameObjectDefs";
 import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { math } from "./utils/math";
 import { type Vec2 } from "./utils/v2";
+import { assert } from "./utils/util";
 
 const DEV_MODE = false;
 
@@ -30,8 +31,8 @@ class ConfigTypeMap {
     }
 
     addType(type: string) {
-        // assert(this._typeToId[type] === undefined, `Type ${type} has already been defined!`);
-        // assert(this.nextId < this.maxId);
+        assert(this._typeToId[type] === undefined, `Type ${type} has already been defined!`);
+        assert(this.nextId < this.maxId);
         this._typeToId[type] = this.nextId;
         this._idToType[this.nextId] = type;
         this.nextId++;
@@ -39,7 +40,7 @@ class ConfigTypeMap {
 
     typeToId(type: string) {
         const id = this._typeToId[type];
-        // assert(id !== undefined, `Invalid type ${type}`);
+        assert(id !== undefined, `Invalid type ${type}`);
         return id;
     }
 
@@ -56,7 +57,7 @@ function createTypeSerialization(type: string, typeList: Record<string, unknown>
     const typeMap = new ConfigTypeMap(bitsPerType);
 
     const types = Object.keys(typeList);
-    // assert(types.length <= typeMap.maxId, `${type} contains ${types.length} types, max ${typeMap.maxId}`);
+    assert(types.length <= typeMap.maxId, `${type} contains ${types.length} types, max ${typeMap.maxId}`);
     for (let i = 0; i < types.length; i++) {
         typeMap.addType(types[i]);
     }
@@ -89,8 +90,8 @@ export class BitStream extends bb.BitStream {
     }
 
     writeFloat(f: number, min: number, max: number, bits: number) {
-        // assert(bits > 0 && bits < 31);
-        // assert(f >= min && f <= max);
+        assert(bits > 0 && bits < 31);
+        assert(f >= min && f <= max, `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`);
         const range = (1 << bits) - 1;
         const x = math.clamp(f, min, max);
         const t = (x - min) / (max - min);
@@ -99,7 +100,7 @@ export class BitStream extends bb.BitStream {
     }
 
     readFloat(min: number, max: number, bits: number) {
-        // assert(bits > 0 && bits < 31);
+        assert(bits > 0 && bits < 31);
         const range = (1 << bits) - 1;
         const x = this.readBits(bits);
         const t = x / range;
@@ -143,9 +144,7 @@ export class BitStream extends bb.BitStream {
     declare _view: { _view: Uint8Array };
 
     writeBytes(src: BitStream, offset: number, length: number) {
-        if (this.index % 8 !== 0) {
-            throw new Error("writeBytes: stream not byte aligned");
-        }
+        assert(this.index % 8 == 0);
         const data = new Uint8Array(src._view._view.buffer, offset, length);
         this._view._view.set(data, this.index / 8);
         this.index += length * 8;
@@ -205,21 +204,14 @@ export class MsgStream {
     }
 
     serializeMsg(type: MsgType, msg: Msg) {
-        if (this.stream.index % 8 !== 0) {
-            throw new Error("SerializeMsg: stream not byte aligned");
-        }
+        assert(this.stream.index % 8 == 0);
         this.stream.writeUint8(type);
         msg.serialize(this.stream);
-
-        if (this.stream.index % 8 !== 0) {
-            throw new Error("SerializeMsg: stream not byte aligned");
-        }
+        assert(this.stream.index % 8 == 0);
     }
 
     serializeMsgStream(type: number, stream: BitStream) {
-        if (this.stream.index % 8 !== 0) {
-            throw new Error("serializeMsgStream: stream not byte aligned");
-        }
+        assert(this.stream.index % 8 == 0 && stream.index % 8 == 0);
         this.stream.writeUint8(type);
         this.stream.writeBytes(stream, 0, stream.index / 8);
     }
@@ -320,3 +312,159 @@ export class UpdatePassMsg {
     serialize(_e: BitStream) { }
     deserialize(_e: BitStream) { }
 }
+
+//
+// /api/team_v2 websocket msg typings
+// TODO?: move to another file?
+//
+
+interface RoomData {
+    roomUrl: string
+    findingGame: boolean
+    lastError: string
+    region: string
+    autoFill: boolean
+    enabledGameModeIdxs: number[]
+    gameModeIdx: number
+    maxPlayers: number
+}
+
+//
+// Team msgs that the server sends to clients
+//
+
+/**
+ * send by the server to all clients to make them join the game
+ */
+export interface TeamJoinGameMsg {
+    readonly type: "joinGame"
+    data: {
+        zone: string
+        gameId: string
+        hosts: string[]
+        addrs: string[]
+        // server generated data that gets sent back to the server on `joinMsg.matchPriv`
+        data: string
+        useHttps: boolean
+    }
+}
+
+/**
+ * Send by the server to update the client team ui
+ */
+export interface TeamStateMsg {
+    readonly type: "state"
+    data: {
+        localPlayerId: number
+        room: RoomData
+        players: Array<{
+            playerId: number
+            name: string
+            isLeader: boolean
+            inGame: boolean
+        }>
+    }
+}
+
+/**
+ * Send by the server to keep the connection alive
+ */
+export interface TeamKeepAliveMsg {
+    readonly type: "keepAlive"
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    data: {}
+}
+
+/**
+ * Send by the server when the player gets kicked from the team room
+ */
+export interface TeamKickedMsg {
+    readonly type: "kicked"
+}
+
+export interface TeamErrorMsg {
+    readonly type: "error"
+    data: {
+        type: string
+    }
+}
+
+export type ServerToClientTeamMsg =
+    TeamJoinGameMsg |
+    TeamStateMsg |
+    TeamKeepAliveMsg |
+    TeamKickedMsg |
+    TeamErrorMsg;
+
+//
+// Team Msgs that the client sends to the server
+//
+
+/**
+ * send by the client to join a team room
+ */
+export interface TeamJoinMsg {
+    readonly type: "join"
+    data: {
+        roomUrl: string
+        playerData: {
+            name: string
+        }
+    }
+}
+
+/**
+ * Send by the client to change the player name
+ */
+export interface TeamChangeNameMsg {
+    readonly type: "changeName"
+    data: {
+        name: string
+    }
+}
+
+/**
+ * Send by the client to set the room properties
+ */
+export interface TeamSetRoomPropsMsg {
+    readonly type: "setRoomProps"
+    data: RoomData
+}
+
+/**
+ * Send by the client to create a room
+ */
+export interface TeamCreateMsg {
+    readonly type: "create"
+    data: {
+        roomData: RoomData
+        playerData: {
+            name: string
+        }
+    }
+}
+
+/**
+ * Send by the client when the team leader kicks someone from the team
+ */
+export interface TeamKickMsg {
+    readonly type: "kick"
+    data: {
+        playerId: number
+    }
+}
+
+/**
+ * Send by the client when the game is completed
+ */
+export interface TeamGameCompleteMsg {
+    readonly type: "gameComplete"
+}
+
+export type ClientToServerTeamMsg =
+    TeamJoinMsg |
+    TeamChangeNameMsg |
+    TeamSetRoomPropsMsg |
+    TeamCreateMsg |
+    TeamKickMsg |
+    TeamGameCompleteMsg;

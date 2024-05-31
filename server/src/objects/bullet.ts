@@ -38,7 +38,8 @@ interface BulletCollision {
 
 export interface BulletParams {
     bulletType: string
-    sourceType: string
+    gameSourceType: string
+    mapSourceType?: string
     pos: Vec2
     dir: Vec2
     layer: number
@@ -82,6 +83,7 @@ export class BulletManager {
                         v2.sub(bullet.pos, v2.mul(bullet.dir, 0.01)),
                         bullet.layer,
                         bullet.shotSourceType,
+                        bullet.mapSourceType,
                         bullet.damageType,
                         bullet.player
                     );
@@ -134,6 +136,7 @@ export class Bullet {
     maxDistance: number;
     shotFx: boolean;
     shotSourceType: string;
+    mapSourceType: string;
     shotOffhand: boolean;
     lastShot: boolean;
     reflectCount: number;
@@ -162,7 +165,7 @@ export class Bullet {
 
         this.layer = params.layer;
         this.pos = v2.copy(params.pos);
-        this.dir = v2.copy(params.dir);
+        this.dir = v2.normalize(params.dir);
         this.playerId = params.playerId;
         this.startPos = v2.copy(params.pos);
         this.bulletType = params.bulletType;
@@ -194,7 +197,8 @@ export class Bullet {
         // this.serialized = false;
         // this.sentToClient = false;
         // this.timeInactive = 0.0;
-        this.shotSourceType = params.sourceType;
+        this.shotSourceType = params.gameSourceType;
+        this.mapSourceType = params.mapSourceType ?? "";
         this.damageType = params.damageType;
         this.damageMult = params.damageMult;
         this.shotFx = params.shotFx ?? false;
@@ -461,7 +465,7 @@ export class Bullet {
                 this.bulletManager.damages.push({
                     obj,
                     gameSourceType: this.shotSourceType,
-                    mapSourceType: this.shotSourceType,
+                    mapSourceType: this.mapSourceType,
                     damageType: this.damageType,
                     source: this.player,
                     amount: finalDamage * def.obstacleDamage,
@@ -478,7 +482,7 @@ export class Bullet {
                 this.bulletManager.damages.push({
                     obj,
                     gameSourceType: this.shotSourceType,
-                    mapSourceType: this.shotSourceType,
+                    mapSourceType: this.mapSourceType,
                     source: this.player,
                     damageType: this.damageType,
                     amount: finalDamage,
@@ -504,7 +508,8 @@ export class Bullet {
 
         this.bulletManager.fireBullet({
             bulletType: this.bulletType,
-            sourceType: this.shotSourceType,
+            gameSourceType: this.shotSourceType,
+            mapSourceType: this.mapSourceType,
             pos,
             dir,
             layer: this.layer,

@@ -116,6 +116,26 @@ export class GameMap {
         }
         const randomGenerator = util.seededRand(this.seed);
 
+        for (const lake of mapConfig.rivers.lakes) {
+            const points: Vec2[] = [];
+            const center = v2.mulElems(v2.create(this.width, this.height), lake.spawnBound.pos);
+
+            for (let i = 0; i < Math.PI * 2; i += randomGenerator(0.2, 0.3)) {
+                const dir = v2.create(Math.sin(i), Math.cos(i));
+                const len = lake.outerRad + randomGenerator(-10, 10);
+
+                points.push(v2.add(center, v2.mul(dir, len)));
+            }
+
+            points.push(v2.copy(points[0]));
+
+            this.riverDescs.push({
+                width: (lake.outerRad - lake.innerRad) / 2,
+                points,
+                looped: true
+            });
+        }
+
         const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
@@ -128,11 +148,12 @@ export class GameMap {
         const mapWidth = this.width - 1;
         const mapHeight = this.height - 1;
 
-        while (this.riverDescs.length < widths.length) {
+        const riverAmount = widths.length + this.riverDescs.length;
+        while (this.riverDescs.length < riverAmount) {
             let start: Vec2;
 
-            const horizontal = !!randomGenerator();
-            const reverse = !!randomGenerator();
+            const horizontal = randomGenerator() < 0.5;
+            const reverse = randomGenerator() < 0.5;
 
             if (horizontal) {
                 const topHalf = randomGenerator(1, halfHeight);
@@ -144,7 +165,8 @@ export class GameMap {
                 start = v2.create(reverse ? rightHalf : leftHalf, 1);
             }
 
-            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI);
+            const smoothness = mapConfig.rivers.smoothness;
+            const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI) + randomGenerator(-smoothness, smoothness);
 
             this.genRiver(
                 start,
@@ -160,6 +182,7 @@ export class GameMap {
         const mapDef = this.mapDef;
 
         for (const river of this.terrain.rivers) {
+            if (river.looped) continue;
             for (let i = 0.2; i < 0.8; i += 0.05) {
                 if (Math.random() < 0.1) {
                     const pos = river.spline.getPos(i);
@@ -177,6 +200,7 @@ export class GameMap {
                     } else {
                         bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
                     }
+                    if (!bridgeType) continue;
 
                     const coll = collider.transform(
                         mapHelpers.getBoundingCollider(bridgeType),
@@ -274,6 +298,7 @@ export class GameMap {
 
     genAuto(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, parentId?: number, puzzlePiece?: string) {
         const def = MapObjectDefs[type];
+        pos = this.clampToMapBounds(pos);
 
         switch (def.type) {
         case "obstacle":
@@ -405,9 +430,19 @@ export class GameMap {
 
             ori = math.radToOri(rot - edgeRot);
 
-            const dist = util.random(waterEdge.distMin, waterEdge.distMax);
+            let dist = util.random(waterEdge.distMin, waterEdge.distMax);
 
-            const min = v2.create(dist + 6.5, this.shoreInset);
+            // TODO: figure out how to use distance values from definitions
+
+            if (type.includes("hut")) {
+                dist -= 16;
+            } else if (type === "warehouse_complex_01") {
+                dist -= this.shoreInset - 6.5;
+            } else if (type === "bunker_structure_04") {
+                dist -= 24;
+            }
+
+            const min = v2.create(this.shoreInset + dist, this.shoreInset + height);
             const max = v2.create(min.x, this.height - this.shoreInset - height);
 
             // generate a position and rotate it based on the orientation and map center
@@ -546,20 +581,19 @@ export class GameMap {
 
         riverPoints.push(startPos);
 
-        let angle = startAngle;
+        const dir = v2.create(Math.cos(startAngle), Math.sin(startAngle));
 
         const smoothness = this.mapDef.mapGen.map.rivers.smoothness;
 
         for (let i = 1; i < 100; i++) {
             const lastPoint = riverPoints[i - 1];
 
-            angle = angle + randomGenerator(
-                -smoothness,
-                smoothness
-            );
+            const len = randomGenerator(15, 25);
 
-            const len = randomGenerator(20, 30);
-            const pos = v2.add(lastPoint, v2.create(Math.cos(angle) * len, Math.sin(angle) * len));
+            const x = randomGenerator(-smoothness, smoothness);
+            const newdir = v2.add(dir, v2.create(x, x));
+
+            const pos = v2.add(lastPoint, v2.mul(newdir, len));
 
             let collided = false;
 
@@ -578,7 +612,7 @@ export class GameMap {
                 if (collided) break;
             }
             if (collided) break;
-            riverPoints[i] = pos;
+            riverPoints[i] = this.clampToMapBounds(pos);
 
             if (!coldet.testPointAabb(pos, bounds.min, bounds.max)) break;
         }
@@ -588,6 +622,7 @@ export class GameMap {
     }
 
     genObstacle(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, buildingId?: number, puzzlePiece?: string): Obstacle {
+        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as ObstacleDef;
 
         scale = scale ?? util.random(def.scale.createMin, def.scale.createMax);
@@ -610,6 +645,7 @@ export class GameMap {
     }
 
     genBuilding(type: string, pos: Vec2, layer = 0, ori?: number, parentId?: number): Building {
+        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as BuildingDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -661,6 +697,7 @@ export class GameMap {
     }
 
     genStructure(type: string, pos: Vec2, layer = 0, ori?: number): Structure {
+        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as StructureDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);

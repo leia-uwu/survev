@@ -1,4 +1,5 @@
 import { math } from "./math";
+import { assert } from "./util";
 import { type Vec2, v2 } from "./v2";
 
 function getControlPoints(t: number, points: Vec2[], looped: boolean) {
@@ -53,7 +54,7 @@ export class Spline {
     looped: boolean;
 
     constructor(points: Vec2[], looped: boolean) {
-        // assert(points.length > 1);
+        assert(points.length > 1);
 
         this.totalArcLen = 0.0;
         this.looped = looped;

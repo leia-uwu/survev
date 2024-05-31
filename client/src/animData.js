@@ -1,6 +1,7 @@
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
+import { assert } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
 
 function a(e, t, r) {
@@ -121,7 +122,7 @@ const Bones = {
     FootL: 2,
     FootR: 3
 };
-// assert(Object.keys(Bones).length % 2 == 0);
+assert(Object.keys(Bones).length % 2 == 0);
 const IdlePoses = {
     fists:
         ((n = {}),

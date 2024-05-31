@@ -15,7 +15,8 @@ export class GameOverMsg extends AbstractMsg {
         s.writeUint8(this.winningTeamId);
 
         s.writeUint8(this.playerStats.length);
-        for (const stats of this.playerStats) {
+        for (let i = 0; i < this.playerStats.length; i++) {
+            const stats = this.playerStats[i];
             const statsMsg = new PlayerStatsMsg();
             statsMsg.playerId = stats.playerId;
             statsMsg.playerStats = stats;

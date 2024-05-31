@@ -1,4 +1,5 @@
 import { earcut } from "./earcut";
+import { assert } from "./util";
 import { v2, type Vec2 } from "./v2";
 
 const kEpsilon = 0.000001;
@@ -156,7 +157,7 @@ export const math = {
     },
 
     quantize(f: number, min: number, max: number, bits: number) {
-        // assert(f >= min && f <= max);
+        assert(f >= min && f <= max);
         const range = (1 << bits) - 1;
         const x = math.clamp(f, min, max);
         const t = (x - min) / (max - min);

@@ -323,6 +323,7 @@ export class Obstacle extends BaseGameObject {
             const explosion = new Explosion(def.explosion,
                 this.pos,
                 this.layer,
+                "",
                 this.type,
                 params.damageType,
                 params.source

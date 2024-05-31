@@ -170,7 +170,6 @@ export class Loot extends BaseGameObject {
         this.vel = v2.mul(this.vel, this.dragConstant);
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
-        this.game.map.clampToMapBounds(this.pos);
 
         const objects = this.game.grid.intersectCollider(this.collider);
         for (const obj of objects) {
@@ -240,6 +239,8 @@ export class Loot extends BaseGameObject {
             this.setPartDirty();
             this.game.grid.updateObject(this);
         }
+
+        this.game.map.clampToMapBounds(this.pos);
     }
 
     push(dir: Vec2, velocity: number): void {

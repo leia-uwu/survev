@@ -102,7 +102,6 @@ export class WeaponManager {
     }
 
     shootStart(): void {
-        this.player.cancelAction();
         const def = GameObjectDefs[this.activeWeapon];
 
         if (def) {
@@ -387,7 +386,7 @@ export class WeaponManager {
             const params: BulletParams = {
                 playerId: this.player.__id,
                 bulletType: itemDef.bulletType,
-                sourceType: this.activeWeapon,
+                gameSourceType: this.activeWeapon,
                 damageType: GameConfig.DamageType.Player,
                 pos: shotPos,
                 dir: shotDir,
@@ -453,6 +452,7 @@ export class WeaponManager {
     meleeAttack(skipCooldownCheck = false): void {
         if (this.player.game.now < this.weapons[this.curWeapIdx].cooldown && !skipCooldownCheck) return;
         if (this.player.animType === GameConfig.Anim.Melee) return;
+        this.player.cancelAction();
 
         const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
 

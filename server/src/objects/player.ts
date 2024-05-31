@@ -33,7 +33,7 @@ export class Emote {
     pos: Vec2;
     type: string;
     isPing: boolean;
-    itemType!: string;
+    itemType = "";
 
     constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
         this.playerId = playerId;
@@ -136,7 +136,6 @@ export class Player extends BaseGameObject {
     }
 
     action: { time: number, duration: number, targetId: number };
-    lastAction!: { time: number, duration: number, targetId: number };
 
     private _scope = "1xscope";
 
@@ -398,7 +397,7 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
 
-        if (this.game.gas.doDamge && this.game.gas.isInGas(this.pos)) {
+        if (this.game.gas.doDamage && this.game.gas.isInGas(this.pos)) {
             this.damage({
                 amount: this.game.gas.damage,
                 damageType: GameConfig.DamageType.Gas,
@@ -412,13 +411,13 @@ export class Player extends BaseGameObject {
         }
 
         // handle heal and boost actions
-        let actionTimeThreshold;// hacky but works, couldnt find a better way
-        if (this.action.time == -1) {
-            actionTimeThreshold = -Date.now();
-        } else {
-            actionTimeThreshold = Date.now() + this.action.time * 1000 - this.action.duration * 1000;
+
+        if (this.actionType !== GameConfig.Action.None) {
+            this.action.time += dt;
+            this.action.time = math.clamp(this.action.time, 0, Constants.ActionMaxDuration);
         }
-        if (actionTimeThreshold >= 0) {
+
+        if (this.action.time >= this.action.duration) {
             if (this.actionType === GameConfig.Action.UseItem) {
                 const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
                 if ("heal" in itemDef) this.health += itemDef.heal;
@@ -428,9 +427,7 @@ export class Player extends BaseGameObject {
             } else if (this.isReloading()) {
                 this.weaponManager.reload();
             }
-            if (this.reloadAgain) {
-                this.lastAction = { ...this.action };// shallow copy so no references are kept
-            }
+
             this.cancelAction();
 
             if (
@@ -761,26 +758,29 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
 
         let finalDamage = params.amount;
-        let isHeadShot = false;
 
-        const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
+        // ignore armor for gas and bleeding damage
+        if (params.damageType !== GameConfig.DamageType.Gas && params.damageType !== GameConfig.DamageType.Bleeding) {
+            let isHeadShot = false;
 
-        if (gameSourceDef && "headshotMult" in gameSourceDef) {
-            isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
-            if (isHeadShot) {
-                finalDamage *= gameSourceDef.headshotMult;
+            const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
+
+            if (gameSourceDef && "headshotMult" in gameSourceDef) {
+                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
+                if (isHeadShot) {
+                    finalDamage *= gameSourceDef.headshotMult;
+                }
             }
-        }
 
-        const chest = GameObjectDefs[this.chest] as ChestDef;
+            const chest = GameObjectDefs[this.chest] as ChestDef;
+            if (chest && !isHeadShot) {
+                finalDamage -= finalDamage * chest.damageReduction;
+            }
 
-        if (chest && !isHeadShot) {
-            finalDamage -= finalDamage * chest.damageReduction;
-        }
-
-        const helmet = GameObjectDefs[this.helmet] as HelmetDef;
-        if (helmet) {
-            finalDamage -= finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+            const helmet = GameObjectDefs[this.helmet] as HelmetDef;
+            if (helmet) {
+                finalDamage -= finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+            }
         }
 
         if (this._health - finalDamage < 0) finalDamage = this.health;
@@ -1506,10 +1506,9 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        this.action.targetId = -1;
+        this.action.targetId = 0;
         this.action.duration = duration;
-        const t = Date.now() + (duration * 1000);
-        this.action.time = duration - (t / 1000);
+        this.action.time = 0;
 
         this.actionDirty = true;
         this.actionItem = actionItem;
@@ -1524,10 +1523,10 @@ export class Player extends BaseGameObject {
         }
         this.action.duration = 0;
         this.action.targetId = 0;
-        this.action.time = -1;
+        this.action.time = 0;
 
         this.actionItem = "";
-        this.actionType = 0;
+        this.actionType = GameConfig.Action.None;
         this.actionSeq++;
         this.actionDirty = false;
         this.setDirty();
