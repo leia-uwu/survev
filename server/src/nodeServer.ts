@@ -27,6 +27,10 @@ function forbidden(res: HttpResponse): void {
     res.writeStatus("403 Forbidden").end("403 Forbidden");
 }
 
+interface UWSPlayerContainer extends PlayerContainer {
+    socket: ServerSocket
+}
+
 /**
  * Read the body of a POST request.
  * @link https://github.com/uNetworking/uWebSockets.js/blob/master/examples/JsonPost.js
@@ -97,10 +101,8 @@ class UWSSocket extends ServerSocket {
     }
 }
 
-class UWSServer extends AbstractServer {
+class NodeServer extends AbstractServer {
     app: TemplatedApp;
-
-    uwsToSocket = new Map<WebSocket<PlayerContainer>, UWSSocket>();
 
     constructor() {
         super();
@@ -170,9 +172,9 @@ class UWSServer extends AbstractServer {
              * Handle opening of the socket.
              * @param socket The socket being opened.
              */
-            open(s: WebSocket<PlayerContainer>) {
+            open(s: WebSocket<UWSPlayerContainer>) {
                 const socket = new UWSSocket(s);
-                This.uwsToSocket.set(s, socket);
+                s.getUserData().socket = socket;
                 This.onOpen(socket);
             },
 
@@ -181,16 +183,16 @@ class UWSServer extends AbstractServer {
              * @param socket The socket in question.
              * @param message The message to handle.
              */
-            message(socket: WebSocket<PlayerContainer>, message) {
-                This.onMessage(This.uwsToSocket.get(socket)!, message);
+            message(socket: WebSocket<UWSPlayerContainer>, message) {
+                This.onMessage(socket.getUserData().socket, message);
             },
 
             /**
              * Handle closing of the socket.
              * @param socket The socket being closed.
              */
-            close(socket: WebSocket<PlayerContainer>) {
-                This.onClose(This.uwsToSocket.get(socket)!);
+            close(socket: WebSocket<UWSPlayerContainer>) {
+                This.onClose(socket.getUserData().socket);
             }
 
         });
@@ -205,4 +207,4 @@ class UWSServer extends AbstractServer {
     }
 }
 
-new UWSServer();
+new NodeServer();
