@@ -318,16 +318,48 @@ export class Game {
         }
     }
 
+    isGameOver() {
+        return !this.stopped && this.started && this.aliveCount == 1;
+    }
+
     removePlayer(player: Player): void {
+        if (!player.dead) {
+            this.aliveCountDirty = true;
+            this.livingPlayers.delete(player);
+            this.spectatablePlayers.splice(this.spectatablePlayers.indexOf(player), 1);
+        }
         player.spectating = undefined;
-        this.spectatablePlayers.splice(this.spectatablePlayers.indexOf(player), 1);
         this.connectedPlayers.delete(player);
+
+        if (!player.dead && this.isGameOver()) {
+            this.initGameEnd(this.spectatablePlayers[0], player);
+        }
+    }
+
+    /**
+     * sends out GameOverMsgs to 1st place, 2nd place, and all their spectators before actually ending the game and closing all sockets
+     */
+    initGameEnd(winner: Player, runnerUp: Player): void {
+        if (runnerUp.dead) { // if not dead, means they left while still alive and their socket closed
+            runnerUp.addGameOverMsg(winner.teamId);
+        }
+        for (const spectator of runnerUp.spectators) {
+            spectator.addGameOverMsg(winner.teamId);
+        }
+
+        winner.addGameOverMsg(winner.teamId);
+        for (const spectator of winner.spectators) {
+            spectator.addGameOverMsg(winner.teamId);
+        }
+        setTimeout(() => {
+            this.end();
+        }, 750);
     }
 
     end(): void {
         this.stopped = true;
         this.allowJoin = false;
-        for (const player of this.players) {
+        for (const player of this.connectedPlayers) {
             player.socket.close();
         }
         this.logger.log("Game Ended");

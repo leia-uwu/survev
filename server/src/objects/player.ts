@@ -197,14 +197,18 @@ export class Player extends BaseGameObject {
 
         if (this._spectating) {
             this._spectating.spectatorCount--;
+            this._spectating.spectators.delete(this);
         }
         if (player) {
             player.spectatorCount++;
+            player.spectators.add(this);
         }
 
         this._spectating = player;
         this.startedSpectating = true;
     }
+
+    spectators = new Set<Player>();
 
     outfit = "outfitBase";
     /** "backpack00" is no backpack, "backpack03" is the max level backpack */
@@ -791,6 +795,24 @@ export class Player extends BaseGameObject {
         }
     }
 
+    /**
+     * adds gameover message to "this.msgsToSend" for the player and all their spectators
+     */
+    addGameOverMsg(winningTeamId: number = -1): void {
+        const gameOverMsg = new GameOverMsg();
+        gameOverMsg.playerStats.push(this);
+        if (this.spectating) {
+            gameOverMsg.teamRank = winningTeamId == this.spectating.teamId ? 1 : this.game.aliveCount + 1;
+            gameOverMsg.teamId = this.spectating.teamId;
+        } else {
+            gameOverMsg.teamRank = winningTeamId == this.teamId ? 1 : this.game.aliveCount + 1;
+            gameOverMsg.teamId = this.teamId;
+        }
+        gameOverMsg.winningTeamId = winningTeamId;
+        gameOverMsg.gameOver = winningTeamId != -1;
+        this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+    }
+
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
@@ -831,12 +853,11 @@ export class Player extends BaseGameObject {
         // Send game over message to player
         //
 
-        const gameOverMsg = new GameOverMsg();
-        gameOverMsg.teamRank = this.game.aliveCount;
-        gameOverMsg.playerStats.push(this);
-        gameOverMsg.teamId = this.teamId;
-        gameOverMsg.winningTeamId = -1;
-        this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+        if (this.game.isGameOver()) {
+            this.game.initGameEnd(this.killedBy ?? this.game.spectatablePlayers[0], this);
+        } else {
+            this.addGameOverMsg();
+        }
 
         const deadBody = new DeadBody(this.game, this.pos, this.__id, this.layer, params.dir);
         this.game.grid.addObject(deadBody);
