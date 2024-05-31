@@ -14,7 +14,6 @@ import { EmoteMsg } from "../../shared/msgs/emoteMsg";
 import { JoinMsg } from "../../shared/msgs/joinMsg";
 import { InputMsg } from "../../shared/msgs/inputMsg";
 import { type Explosion } from "./objects/explosion";
-import { type ServerSocket } from "./abstractServer";
 import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
 import { UnlockDefs } from "../../shared/defs/gameObjects/unlockDefs";
@@ -181,7 +180,7 @@ export class Game {
         return this.spectatablePlayers[util.randomInt(0, this.spectatablePlayers.length - 1)];
     }
 
-    addPlayer(socket: ServerSocket): Player {
+    addPlayer(socketSend: (msg: ArrayBuffer | Uint8Array) => void, closeSocket: () => void): Player {
         let pos: Vec2;
 
         switch (this.config.spawn.mode) {
@@ -199,7 +198,9 @@ export class Game {
         const player = new Player(
             this,
             pos,
-            socket);
+            socketSend,
+            closeSocket
+        );
 
         if (this.aliveCount >= 1 && !this.started) {
             this.started = true;
@@ -233,7 +234,7 @@ export class Game {
                 disconnectMsg.reason = "index-invalid-protocol";
                 player.sendMsg(net.MsgType.Disconnect, disconnectMsg);
                 setTimeout(() => {
-                    player.socket.close();
+                    player.closeSocket();
                 }, 1);
                 return;
             }
@@ -365,7 +366,7 @@ export class Game {
         this.stopped = true;
         this.allowJoin = false;
         for (const player of this.connectedPlayers) {
-            player.socket.close();
+            player.closeSocket();
         }
         this.logger.log("Game Ended");
     }

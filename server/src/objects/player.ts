@@ -14,7 +14,6 @@ import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type Hel
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { Structure } from "./structure";
 import { type Loot } from "./loot";
-import { type ServerSocket } from "../abstractServer";
 import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
 import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
 import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
@@ -335,16 +334,17 @@ export class Player extends BaseGameObject {
         return (Date.now() - this.joinedTime) / 1000;
     }
 
-    socket: ServerSocket;
-
     msgsToSend: Array<{ type: number, msg: Msg }> = [];
 
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
 
-    constructor(game: Game, pos: Vec2, socket: ServerSocket) {
+    constructor(
+        game: Game,
+        pos: Vec2,
+        public socketSend: (msg: ArrayBuffer | Uint8Array) => void,
+        public closeSocket: () => void) {
         super(game, pos);
-        this.socket = socket;
 
         this.collider = collider.createCircle(pos, this.rad);
 
@@ -1570,7 +1570,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer | Uint8Array): void {
         try {
-            this.socket.send(buffer);
+            this.socketSend(buffer);
         } catch (e) {
             console.warn("Error sending packet. Details:", e);
         }

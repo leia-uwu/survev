@@ -67,13 +67,17 @@ class BunServer extends AbstractServer {
             websocket: {
                 idleTimeout: 30,
                 open(ws) {
-                    This.onOpen(ws);
+                    This.onOpen(
+                        ws.data,
+                        (data) => ws.sendBinary(data, false),
+                        () => ws.close()
+                    );
                 },
                 message(ws, message) {
-                    This.onMessage(ws, message as Buffer);
+                    This.onMessage(ws.data, message as Buffer);
                 },
                 close(ws) {
-                    This.onClose(ws);
+                    This.onClose(ws.data);
                 }
             }
         });

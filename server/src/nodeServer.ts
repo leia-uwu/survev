@@ -10,7 +10,7 @@ import {
 import NanoTimer from "nanotimer";
 
 import { URLSearchParams } from "node:url";
-import { AbstractServer, type PlayerContainer, ServerSocket } from "./abstractServer";
+import { AbstractServer, type PlayerContainer } from "./abstractServer";
 
 /**
  * Apply CORS headers to a response.
@@ -25,10 +25,6 @@ function cors(res: HttpResponse): void {
 
 function forbidden(res: HttpResponse): void {
     res.writeStatus("403 Forbidden").end("403 Forbidden");
-}
-
-interface UWSPlayerContainer extends PlayerContainer {
-    socket: ServerSocket
 }
 
 /**
@@ -81,24 +77,6 @@ function readPostedJSON<T>(
 
     /* Register error cb */
     res.onAborted(err);
-}
-
-class UWSSocket extends ServerSocket {
-    constructor(private readonly _socket: WebSocket<PlayerContainer>) {
-        super();
-    }
-
-    send(message: ArrayBuffer): void {
-        this._socket.send(message, true, false);
-    }
-
-    close(): void {
-        this._socket.close();
-    }
-
-    get data() {
-        return this._socket.getUserData();
-    }
 }
 
 class NodeServer extends AbstractServer {
@@ -172,10 +150,12 @@ class NodeServer extends AbstractServer {
              * Handle opening of the socket.
              * @param socket The socket being opened.
              */
-            open(s: WebSocket<UWSPlayerContainer>) {
-                const socket = new UWSSocket(s);
-                s.getUserData().socket = socket;
-                This.onOpen(socket);
+            open(socket: WebSocket<PlayerContainer>) {
+                This.onOpen(
+                    socket.getUserData(),
+                    (data) => socket.send(data, true, false),
+                    () => socket.close()
+                );
             },
 
             /**
@@ -183,16 +163,16 @@ class NodeServer extends AbstractServer {
              * @param socket The socket in question.
              * @param message The message to handle.
              */
-            message(socket: WebSocket<UWSPlayerContainer>, message) {
-                This.onMessage(socket.getUserData().socket, message);
+            message(socket: WebSocket<PlayerContainer>, message) {
+                This.onMessage(socket.getUserData(), message);
             },
 
             /**
              * Handle closing of the socket.
              * @param socket The socket being closed.
              */
-            close(socket: WebSocket<UWSPlayerContainer>) {
-                This.onClose(socket.getUserData().socket);
+            close(socket: WebSocket<PlayerContainer>) {
+                This.onClose(socket.getUserData());
             }
 
         });

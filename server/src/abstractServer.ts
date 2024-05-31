@@ -10,12 +10,6 @@ export interface PlayerContainer {
     player?: Player
 }
 
-export abstract class ServerSocket {
-    abstract send(message: ArrayBuffer | Uint8Array): void;
-    abstract close(): void;
-    abstract get data(): PlayerContainer;
-}
-
 export abstract class AbstractServer {
     readonly logger = new Logger("Server");
 
@@ -163,16 +157,15 @@ export abstract class AbstractServer {
         return gameID;
     }
 
-    onOpen(socket: ServerSocket): void {
-        const data = socket.data;
+    onOpen(data: PlayerContainer, send: (msg: ArrayBuffer | Uint8Array) => void, closeSocket: () => void): void {
         const game = this.games[data.gameID];
         if (game === undefined) return;
-        data.player = game.addPlayer(socket);
+        data.player = game.addPlayer(send, closeSocket);
     }
 
-    onMessage(socket: ServerSocket, message: ArrayBuffer | Buffer) {
+    onMessage(data: PlayerContainer, message: ArrayBuffer | Buffer) {
         try {
-            const player = socket.data.player;
+            const player = data.player;
             if (player === undefined) return;
             player.game.handleMsg(message, player);
         } catch (e) {
@@ -180,8 +173,7 @@ export abstract class AbstractServer {
         }
     }
 
-    onClose(socket: ServerSocket): void {
-        const data = socket.data;
+    onClose(data: PlayerContainer): void {
         const game = this.games[data.gameID];
         const player = data.player;
         if (game === undefined || player === undefined) return;
