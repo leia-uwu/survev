@@ -143,8 +143,9 @@ export class Loot extends BaseGameObject {
     }
 
     update(dt: number): void {
-        if (this.ticks > 2) {
+        if (this.ticks > 2 && !this.isOld) {
             this.isOld = true;
+            this.ticks = 0;
             this.setDirty();
         } else this.ticks++;
         const moving = Math.abs(this.vel.x) > 0.001 ||
@@ -229,10 +230,11 @@ export class Loot extends BaseGameObject {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
                 }
-                if (this.layer !== originalLayer) {
-                    this.setDirty();
-                }
             }
+        }
+
+        if (this.layer !== originalLayer) {
+            this.setDirty();
         }
 
         if (!v2.eq(this.oldPos, this.pos)) {
