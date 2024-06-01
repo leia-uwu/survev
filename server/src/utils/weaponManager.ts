@@ -690,18 +690,38 @@ export class WeaponManager {
         }
     }
 
-    cookThrowable(): void {
-        this.player.playAnim(GameConfig.Anim.Cook, GameConfig.player.cookTime, () => {
-            const def = GameObjectDefs[this.activeWeapon];
-            if (def.type !== "throwable") {
-                throw new Error();
-            }
+    cookingThrowable = false;
+    cookTicker = 0;
 
+    update(dt: number) {
+        const itemDef = GameObjectDefs[this.activeWeapon];
+
+        if (this.cookingThrowable) {
+            this.cookTicker += dt;
+
+            if (itemDef.type === "throwable") {
+                if (this.cookTicker > itemDef.fuseTime || (!this.player.shootHold && this.cookTicker > GameConfig.player.cookTime)) {
+                    this.throwThrowable();
+                }
+            }
+        }
+    }
+
+    cookThrowable(): void {
+        const itemDef = GameObjectDefs[this.activeWeapon];
+        if (itemDef.type !== "throwable") {
+            throw new Error(`Invalid throwable item: ${this.activeWeapon}`);
+        }
+        this.cookingThrowable = true;
+        this.cookTicker = 0;
+
+        this.player.playAnim(GameConfig.Anim.Cook, itemDef.fuseTime, () => {
             this.throwThrowable();
         });
     }
 
     throwThrowable(): void {
+        this.cookingThrowable = false;
         const throwableType = this.activeWeapon;
         const throwableDef = GameObjectDefs[throwableType];
 
@@ -751,7 +771,7 @@ export class WeaponManager {
             throwableType,
             pos, 0.5, this.player.layer,
             vel,
-            fuseTime,
+            fuseTime - this.cookTicker,
             GameConfig.DamageType.Player
         );
 

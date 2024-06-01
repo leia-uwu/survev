@@ -548,6 +548,8 @@ export class Player extends BaseGameObject {
             this.game.grid.updateObject(this);
         }
 
+        this.weaponManager.update(dt);
+
         if (this.shotSlowdownTimer - Date.now() <= 0) {
             this.shotSlowdownTimer = -1;
         }
@@ -1603,6 +1605,10 @@ export class Player extends BaseGameObject {
         // decrease speed if popping adren or heals
         if (this.actionType == GameConfig.Action.UseItem) {
             this.speed -= 6;
+        }
+
+        if (this.animType === GameConfig.Anim.Cook) {
+            this.speed -= GameConfig.player.cookSpeedPenalty;
         }
 
         this.speed = math.max(this.speed, 1);
