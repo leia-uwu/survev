@@ -62,6 +62,8 @@ export class Projectile extends BaseGameObject {
     vel = v2.create(0, 0);
     dead = false;
 
+    obstacleBellowId = 0;
+
     constructor(game: Game, type: string, pos: Vec2, layer: number) {
         super(game, pos);
         this.layer = layer;
@@ -118,7 +120,6 @@ export class Projectile extends BaseGameObject {
                     this.setDirty();
                 }
             } else if (obj.__type === ObjectType.Obstacle &&
-                obj.height >= height &&
                 util.sameLayer(this.layer, obj.layer) &&
                 !obj.dead &&
                 obj.collidable
@@ -136,10 +137,14 @@ export class Projectile extends BaseGameObject {
                             dir: this.vel
                         });
                     } else {
-                        this.pos = v2.add(this.pos, v2.mul(intersection.dir, intersection.pen));
+                        if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
+                            this.pos = v2.add(this.pos, v2.mul(intersection.dir, intersection.pen));
 
-                        if (def.explodeOnImpact) {
-                            this.explode();
+                            if (def.explodeOnImpact) {
+                                this.explode();
+                            }
+                        } else {
+                            this.obstacleBellowId = obj.__id;
                         }
                     }
                 }
