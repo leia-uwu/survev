@@ -14,6 +14,24 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import * as net from "../../../shared/net";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { ThrowableDefs } from "../../../shared/defs/gameObjects/throwableDefs";
+
+type throwableDefKey = keyof typeof ThrowableDefs;
+/**
+ * List of throwables to cycle based on the definition `inventoryOrder`
+ */
+export const throwableList = Object.keys(ThrowableDefs).filter(a => {
+    const def = ThrowableDefs[a as throwableDefKey];
+    // Trying to pickup a throwable that has no `handImg` will crash the client
+    // so filter them out
+    return "handImg" in def && "equip" in def.handImg;
+});
+
+throwableList.sort((a, b) => {
+    const aDef = ThrowableDefs[a as throwableDefKey];
+    const bDef = ThrowableDefs[b as throwableDefKey];
+    return aDef.inventoryOrder - bDef.inventoryOrder;
+});
 
 export class WeaponManager {
     player: Player;
@@ -38,7 +56,6 @@ export class WeaponManager {
         if (this.weapons[idx].type === "") return;
 
         this.clearTimeouts();
-
         this.player.cancelAnim();
 
         const curWeapon = this.weapons[this.curWeapIdx];
@@ -136,6 +153,10 @@ export class WeaponManager {
             }
             case "gun": {
                 this.fireWeapon();
+                break;
+            }
+            case "throwable": {
+                this.cookThrowable();
                 break;
             }
             }
@@ -669,19 +690,91 @@ export class WeaponManager {
         }
     }
 
+    cookThrowable(): void {
+        this.player.playAnim(GameConfig.Anim.Cook, GameConfig.player.cookTime, () => {
+            const def = GameObjectDefs[this.activeWeapon];
+            if (def.type !== "throwable") {
+                throw new Error();
+            }
+
+            this.throwThrowable();
+        });
+    }
+
+    throwThrowable(): void {
+        const throwableType = this.activeWeapon;
+        const throwableDef = GameObjectDefs[throwableType];
+
+        const throwStr = this.player.toMouseLen / 15;
+
+        if (throwableDef.type !== "throwable") {
+            throw new Error();
+        }
+
+        const weapSlotId = GameConfig.WeaponSlot.Throwable;
+        if (this.weapons[weapSlotId].ammo > 0) {
+            this.weapons[weapSlotId].ammo -= 1;
+            this.player.inventory[throwableType] = this.weapons[weapSlotId].ammo;
+
+            // if throwable count drops bellow 0
+            // show the next throwable
+            // if theres none switch to last weapon
+            if (this.weapons[weapSlotId].ammo == 0) {
+                this.showNextThrowable();
+                if (this.weapons[weapSlotId].type === "") {
+                    this.setCurWeapIndex(this.lastWeaponIdx);
+                }
+            }
+            this.player.weapsDirty = true;
+            this.player.inventoryDirty = true;
+        }
+
+        if (!throwableDef.explosionType) return;
+
+        const pos = v2.add(this.player.pos, v2.rotate(v2.create(0.5, -1.0), Math.atan2(this.player.dir.y, this.player.dir.x)));
+
+        let { dir } = this.player;
+        // Aim toward a point some distance infront of the player
+        if (throwableDef.aimDistance > 0.0) {
+            const aimTarget = v2.add(this.player.pos, v2.mul(this.player.dir, throwableDef.aimDistance));
+            dir = v2.normalizeSafe(v2.sub(aimTarget, pos), v2.create(1.0, 0.0));
+        }
+
+        const throwPhysicsSpeed = throwableDef.throwPhysics.speed;
+
+        // Incorporate some of the player motion into projectile velocity
+        const vel = v2.add(v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult), v2.mul(dir, throwPhysicsSpeed * throwStr));
+
+        const fuseTime = math.max(0.0, throwableDef.fuseTime);
+        this.player.game.projectileBarn.addProjectile(
+            this.player.__id,
+            throwableType,
+            pos, 0.5, this.player.layer,
+            vel,
+            fuseTime,
+            GameConfig.DamageType.Player
+        );
+
+        const animationDuration = GameConfig.player.throwTime;
+        this.player.playAnim(GameConfig.Anim.Throw, animationDuration);
+    }
+
     /**
      * switch weapons slot throwable to the next one in the throwables array
      * only call this method after the inventory state has been updated accordingly, this function only changes the weaponManager.weapons' state
      */
     showNextThrowable(): void {
         // TODO: use throwable def inventory order
-        const throwables = ["frag", "smoke", "strobe", "mirv", "snowball", "potato"];
         const slot = GameConfig.WeaponSlot.Throwable;
-        const startingIndex = throwables.indexOf(this.weapons[3].type) + 1;
-        for (let i = startingIndex; i < startingIndex + throwables.length; i++) {
-            const arrayIndex = i % throwables.length;
-            const type = throwables[arrayIndex];
+        const startingIndex = throwableList.indexOf(this.weapons[3].type) + 1;
+        for (let i = startingIndex; i < startingIndex + throwableList.length; i++) {
+            const arrayIndex = i % throwableList.length;
+            const type = throwableList[arrayIndex];
             const amount = this.player.inventory[type];
+
+            if (!throwableList.includes(type)) {
+                continue;
+            }
 
             if (amount != 0) {
                 this.weapons[slot].type = type;

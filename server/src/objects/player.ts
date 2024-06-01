@@ -7,7 +7,7 @@ import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type Obstacle } from "./obstacle";
-import { WeaponManager } from "../utils/weaponManager";
+import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { DeadBody } from "./deadBody";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type LootDef } from "../../../shared/defs/objectsTypings";
@@ -117,6 +117,7 @@ export class Player extends BaseGameObject {
     }
 
     speed: number = 0;
+    moveVel = v2.create(0, 0);
 
     shotSlowdownTimer: number = -1;
 
@@ -230,9 +231,9 @@ export class Player extends BaseGameObject {
     downed = false;
 
     animType: number = GameConfig.Anim.None;
+    animSeq = 0;
     private _animTicker = 0;
     private _animCb?: () => void;
-    animSeq = 0;
 
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
@@ -441,8 +442,8 @@ export class Player extends BaseGameObject {
         }
 
         this.recalculateSpeed();
-
-        this.pos = v2.add(this.pos, v2.mul(movement, this.speed * dt));
+        this.moveVel = v2.mul(movement, this.speed * dt);
+        this.pos = v2.add(this.pos, this.moveVel);
 
         let collided = true;
         let step = 0;
@@ -1267,12 +1268,14 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case "throwable": {
-                    // fill empty slot with throwable, otherwise just add to inv
-                    if (this.inventory[obj.type] == 0) {
-                        this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
-                        this.weapons[GameConfig.WeaponSlot.Throwable].ammo = obj.count;
-                        this.weapsDirty = true;
-                        this.setDirty();
+                    if (throwableList.includes(obj.type)) {
+                        // fill empty slot with throwable, otherwise just add to inv
+                        if (this.inventory[obj.type] == 0) {
+                            this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
+                            this.weapons[GameConfig.WeaponSlot.Throwable].ammo = obj.count;
+                            this.weapsDirty = true;
+                            this.setDirty();
+                        }
                     }
                     break;
                 }
@@ -1292,7 +1295,7 @@ export class Player extends BaseGameObject {
                 } else {
                     this.inventory[obj.type] += amountToAdd;
                     this.inventoryDirty = true;
-                    if (def.type === "throwable" && amountToAdd != 0) {
+                    if (def.type === "throwable" && amountToAdd != 0 && throwableList.includes(obj.type)) {
                         this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
                         this.weapons[GameConfig.WeaponSlot.Throwable].ammo = amountToAdd;
                         this.weapsDirty = true;

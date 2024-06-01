@@ -22,12 +22,12 @@ export class Explosion {
         public damageType: number = GameConfig.DamageType.Player,
         public source?: GameObject
     ) {
-        this.rad = (GameObjectDefs[this.type] as ExplosionDef).rad.max;
         const def = GameObjectDefs[this.type] as ExplosionDef;
 
         if (def.type !== "explosion") {
             throw new Error(`Invalid explosion with type ${this.type}`);
         }
+        this.rad = def.rad.max;
     }
 
     explode(game: Game): void {

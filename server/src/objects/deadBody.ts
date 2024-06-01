@@ -67,13 +67,14 @@ export class DeadBody extends BaseGameObject {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
                 }
-                if (this.layer !== originalLayer) {
-                    this.setDirty();
-                }
             }
         }
 
         this.pos = this.game.map.clampToMapBounds(this.pos);
+
+        if (this.layer !== originalLayer) {
+            this.setDirty();
+        }
 
         if (!v2.eq(this.oldPos, this.pos)) {
             this.setPartDirty();

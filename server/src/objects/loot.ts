@@ -13,8 +13,12 @@ import { MapDefs } from "../../../shared/defs/mapDefs";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class LootBarn {
-    constructor(public game: Game) {
+    constructor(public game: Game) { }
 
+    update(dt: number) {
+        for (const loot of this.game.grid.categories[ObjectType.Loot]) {
+            loot.update(dt);
+        }
     }
 
     splitUpLoot(player: Player, item: string, amount: number, dir: Vec2) {

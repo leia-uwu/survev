@@ -22,6 +22,7 @@ import { IDAllocator } from "./IDAllocator";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 import { util } from "../../shared/utils/util";
+import { ProjectileBarn } from "./objects/projectile";
 
 export class Game {
     started = false;
@@ -51,6 +52,7 @@ export class Game {
     fullObjs = new Set<BaseGameObject>();
 
     lootBarn = new LootBarn(this);
+    projectileBarn = new ProjectileBarn(this);
 
     newPlayers: Player[] = [];
 
@@ -104,9 +106,8 @@ export class Game {
 
         this.gas.update(dt);
 
-        for (const loot of this.grid.categories[ObjectType.Loot]) {
-            loot.update(dt);
-        }
+        this.lootBarn.update(dt);
+        this.projectileBarn.update(dt);
 
         for (const deadBody of this.grid.categories[ObjectType.DeadBody]) {
             deadBody.update(dt);
