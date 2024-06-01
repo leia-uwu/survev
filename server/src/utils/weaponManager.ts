@@ -140,6 +140,18 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
+
+        // Link the throwable slot ammo counter to the inventory ammo counter
+        const _this = this;
+        const slot = GameConfig.WeaponSlot.Throwable;
+        Object.defineProperty(this.weapons[slot], "ammo", {
+            get() {
+                return _this.player.inventory[_this.weapons[slot].type] ?? 0;
+            },
+            set(amount: number) {
+                _this.player.inventory[_this.weapons[slot].type] = amount;
+            }
+        });
     }
 
     shootStart(): void {
@@ -686,8 +698,7 @@ export class WeaponManager {
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
                     dir: hit.dir
-                }
-                );
+                });
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {
                 obj.damage({
@@ -705,20 +716,24 @@ export class WeaponManager {
     cookTicker = 0;
 
     update(dt: number) {
-        const itemDef = GameObjectDefs[this.activeWeapon];
-
         if (this.cookingThrowable) {
             this.cookTicker += dt;
 
-            if (itemDef.type === "throwable") {
-                if (this.cookTicker > itemDef.fuseTime || (!this.player.shootHold && this.cookTicker > GameConfig.player.cookTime)) {
-                    this.throwThrowable();
-                }
+            const itemDef = GameObjectDefs[this.activeWeapon];
+
+            if (itemDef.type === "throwable" &&
+                itemDef.cookable &&
+                this.cookTicker > itemDef.fuseTime ||
+                (!this.player.shootHold &&
+                    this.cookTicker > GameConfig.player.cookTime)) {
+                this.throwThrowable();
             }
         }
     }
 
     cookThrowable(): void {
+        if (this.player.animType === GameConfig.Anim.Cook ||
+            this.player.animType === GameConfig.Anim.Throw) return;
         const itemDef = GameObjectDefs[this.activeWeapon];
         if (itemDef.type !== "throwable") {
             throw new Error(`Invalid throwable item: ${this.activeWeapon}`);
@@ -726,7 +741,7 @@ export class WeaponManager {
         this.cookingThrowable = true;
         this.cookTicker = 0;
 
-        this.player.playAnim(GameConfig.Anim.Cook, itemDef.fuseTime, () => {
+        this.player.playAnim(GameConfig.Anim.Cook, itemDef.cookable ? itemDef.fuseTime : Infinity, () => {
             this.throwThrowable();
         });
     }
@@ -745,7 +760,6 @@ export class WeaponManager {
         const weapSlotId = GameConfig.WeaponSlot.Throwable;
         if (this.weapons[weapSlotId].ammo > 0) {
             this.weapons[weapSlotId].ammo -= 1;
-            this.player.inventory[throwableType] = this.weapons[weapSlotId].ammo;
 
             // if throwable count drops bellow 0
             // show the next throwable
@@ -774,9 +788,12 @@ export class WeaponManager {
         const throwPhysicsSpeed = throwableDef.throwPhysics.speed;
 
         // Incorporate some of the player motion into projectile velocity
-        const vel = v2.add(v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult), v2.mul(dir, throwPhysicsSpeed * throwStr));
+        const vel = v2.add(
+            v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult),
+            v2.mul(dir, throwPhysicsSpeed * throwStr)
+        );
 
-        const fuseTime = math.max(0.0, throwableDef.fuseTime);
+        const fuseTime = math.max(0.0, throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0));
         this.player.game.projectileBarn.addProjectile(
             this.player.__id,
             throwableType,
@@ -784,7 +801,7 @@ export class WeaponManager {
             1,
             this.player.layer,
             vel,
-            fuseTime - this.cookTicker,
+            fuseTime,
             GameConfig.DamageType.Player
         );
 
@@ -821,7 +838,7 @@ export class WeaponManager {
         this.weapons[slot].type = "";
         this.weapons[slot].ammo = 0;
         this.weapons[slot].cooldown = 0;
-        if (this.curWeapIdx == 3) { // set weapon index to melee if run out of grenades
+        if (this.curWeapIdx === slot) { // set weapon index to melee if run out of grenades
             this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
         }
     }

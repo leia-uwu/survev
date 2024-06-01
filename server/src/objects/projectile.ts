@@ -130,7 +130,7 @@ export class Projectile extends BaseGameObject {
                     // resolve the collision otherwise
                     if (obj.isWindow) {
                         obj.damage({
-                            amount: 100,
+                            amount: 1,
                             damageType: this.damageType,
                             gameSourceType: this.type,
                             mapSourceType: "",

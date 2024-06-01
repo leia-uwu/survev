@@ -1274,7 +1274,6 @@ export class Player extends BaseGameObject {
                         // fill empty slot with throwable, otherwise just add to inv
                         if (this.inventory[obj.type] == 0) {
                             this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
-                            this.weapons[GameConfig.WeaponSlot.Throwable].ammo = obj.count;
                             this.weapsDirty = true;
                             this.setDirty();
                         }
@@ -1297,9 +1296,12 @@ export class Player extends BaseGameObject {
                 } else {
                     this.inventory[obj.type] += amountToAdd;
                     this.inventoryDirty = true;
-                    if (def.type === "throwable" && amountToAdd != 0 && throwableList.includes(obj.type)) {
+                    if (def.type === "throwable" &&
+                        amountToAdd != 0 &&
+                        throwableList.includes(obj.type) &&
+                        !this.weapons[GameConfig.WeaponSlot.Throwable].type
+                    ) {
                         this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
-                        this.weapons[GameConfig.WeaponSlot.Throwable].ammo = amountToAdd;
                         this.weapsDirty = true;
                         this.setDirty();
                     }
