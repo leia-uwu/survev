@@ -476,10 +476,21 @@ export class WeaponManager {
 
             // Shoot a projectile if defined
             if (itemDef.projType) {
-                // const projDef = GameObjectDefs[itemDef.projType];
-                // assert(projDef && projDef.type === 'throwable');
-                // const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
-                // this.projectileBarn.addProjectile(this.player.__id, itemDef.projType, shotPos, 0.5, bulletLayer, vel, projDef.fuseTime, GameConfig.DamageType.Player);
+                const projDef = GameObjectDefs[itemDef.projType];
+                if (projDef.type !== "throwable") {
+                    throw new Error(`Invalid projectile type: ${itemDef.projType}`);
+                }
+                const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
+                this.player.game.projectileBarn.addProjectile(
+                    this.player.__id,
+                    itemDef.projType,
+                    shotPos,
+                    0.5,
+                    bulletLayer,
+                    vel,
+                    projDef.fuseTime,
+                    GameConfig.DamageType.Player
+                );
             }
 
             // Splinter creates additional bullets that deviate on either side of
@@ -769,7 +780,9 @@ export class WeaponManager {
         this.player.game.projectileBarn.addProjectile(
             this.player.__id,
             throwableType,
-            pos, 0.5, this.player.layer,
+            pos,
+            1,
+            this.player.layer,
             vel,
             fuseTime - this.cookTicker,
             GameConfig.DamageType.Player

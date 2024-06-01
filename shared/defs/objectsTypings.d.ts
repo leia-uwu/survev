@@ -238,6 +238,8 @@ interface ThrowableDef extends BaseLootDef {
         spinVel: number
         spinDrag: number
         randomizeSpinDir?: boolean
+        fixedCollisionHeight?: number
+
     }
     speed: {
         equip: number
