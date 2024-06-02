@@ -25,7 +25,7 @@ export abstract class AbstractServer {
         setInterval(() => {
             const memoryUsage = process.memoryUsage().rss;
 
-            const perfString = `Server | Memory usage: ${Math.round(memoryUsage / 1024 / 1024 * 100) / 100} MB`;
+            const perfString = `Memory usage: ${Math.round(memoryUsage / 1024 / 1024 * 100) / 100} MB`;
 
             this.logger.log(perfString);
         }, 60000);
