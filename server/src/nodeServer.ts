@@ -10,7 +10,8 @@ import {
 import NanoTimer from "nanotimer";
 
 import { URLSearchParams } from "node:url";
-import { AbstractServer, type PlayerContainer } from "./abstractServer";
+import { AbstractServer, type PlayerContainer, type TeamMenuPlayerContainer } from "./abstractServer";
+import { TeamMenu } from "./teamMenu";
 
 /**
  * Apply CORS headers to a response.
@@ -80,6 +81,7 @@ function readPostedJSON<T>(
 }
 
 class NodeServer extends AbstractServer {
+    teamMenu = new TeamMenu();
     app: TemplatedApp;
 
     constructor() {
@@ -173,6 +175,53 @@ class NodeServer extends AbstractServer {
              */
             close(socket: WebSocket<PlayerContainer>) {
                 This.onClose(socket.getUserData());
+            }
+
+        });
+
+        app.ws("/team_v2", {
+            idleTimeout: 30,
+            /**
+            * Upgrade the connection to WebSocket.
+            */
+            upgrade(res, req, context) {
+                /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+                res.onAborted((): void => { });
+
+                res.upgrade(
+                    {},
+                    req.getHeader("sec-websocket-key"),
+                    req.getHeader("sec-websocket-protocol"),
+                    req.getHeader("sec-websocket-extensions"),
+                    context
+                );
+            },
+
+            /**
+             * Handle opening of the socket.
+             * @param socket The socket being opened.
+             */
+            open(socket: WebSocket<TeamMenuPlayerContainer>) {
+                // socket.getUserData().sendResponse = (data) => socket.send(data, false, false);
+            },
+
+            /**
+             * Handle messages coming from the socket.
+             * @param socket The socket in question.
+             * @param message The message to handle.
+             */
+            message(socket: WebSocket<TeamMenuPlayerContainer>, message) {
+                const response = This.teamMenu.handleMsg(message, socket.getUserData());
+                // socket.getUserData().sendResponse(JSON.stringify(response));
+                socket.send(JSON.stringify(response));
+            },
+
+            /**
+             * Handle closing of the socket.
+             * @param socket The socket being closed.
+             */
+            close(socket: WebSocket<TeamMenuPlayerContainer>) {
+
             }
 
         });

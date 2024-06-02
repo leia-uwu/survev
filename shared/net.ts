@@ -318,7 +318,7 @@ export class UpdatePassMsg {
 // TODO?: move to another file?
 //
 
-interface RoomData {
+export interface RoomData {
     roomUrl: string
     findingGame: boolean
     lastError: string
@@ -367,7 +367,7 @@ export interface TeamStateMsg {
 }
 
 /**
- * Send by the server to keep the connection alive
+ * Send by the client AND server to keep the connection alive
  */
 export interface TeamKeepAliveMsg {
     readonly type: "keepAlive"
@@ -461,10 +461,21 @@ export interface TeamGameCompleteMsg {
     readonly type: "gameComplete"
 }
 
+export interface TeamPlayGameMsg {
+    readonly type: "playGame"
+    data: {
+        version: number,
+        region: string,
+        zones: string[]
+    }
+}
+
 export type ClientToServerTeamMsg =
+    TeamKeepAliveMsg |
     TeamJoinMsg |
     TeamChangeNameMsg |
     TeamSetRoomPropsMsg |
     TeamCreateMsg |
     TeamKickMsg |
-    TeamGameCompleteMsg;
+    TeamGameCompleteMsg |
+    TeamPlayGameMsg;
