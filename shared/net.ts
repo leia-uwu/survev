@@ -349,20 +349,22 @@ export interface TeamJoinGameMsg {
     }
 }
 
+export type TeamMenuPlayer = {
+    name: string;
+    playerId: number;
+    isLeader: boolean;
+    inGame: boolean;
+}
+
 /**
  * Send by the server to update the client team ui
  */
 export interface TeamStateMsg {
     readonly type: "state"
     data: {
-        localPlayerId: number
+        localPlayerId: number //always -1 by default since it can only be set when the socket is actually sending state to each individual client
         room: RoomData
-        players: Array<{
-            playerId: number
-            name: string
-            isLeader: boolean
-            inGame: boolean
-        }>
+        players: Array<TeamMenuPlayer>
     }
 }
 

@@ -13,10 +13,7 @@ export interface PlayerContainer {
 export interface TeamMenuPlayerContainer {
     sendResponse: (response: string) => void;
     roomUrl: string;
-    name: string;
     playerId: number;
-    isLeader: boolean;
-    inGame: boolean;
 }
 
 export abstract class AbstractServer {

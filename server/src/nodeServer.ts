@@ -202,7 +202,7 @@ class NodeServer extends AbstractServer {
              * @param socket The socket being opened.
              */
             open(socket: WebSocket<TeamMenuPlayerContainer>) {
-                // socket.getUserData().sendResponse = (data) => socket.send(data, false, false);
+                socket.getUserData().sendResponse = (data) => socket.send(data, false, false);
             },
 
             /**
@@ -212,8 +212,23 @@ class NodeServer extends AbstractServer {
              */
             message(socket: WebSocket<TeamMenuPlayerContainer>, message) {
                 const response = This.teamMenu.handleMsg(message, socket.getUserData());
-                // socket.getUserData().sendResponse(JSON.stringify(response));
-                socket.send(JSON.stringify(response));
+                const userData = socket.getUserData();
+
+                const room = This.teamMenu.rooms.get(userData.roomUrl);
+                if (response.type == "error" || !room){
+                    console.log("Room Does Not Exist!");
+                    socket.send(JSON.stringify(response));
+                    return;
+                }
+                
+                const idToSocketSent = This.teamMenu.idToSocketSend;
+                for (const player of room.players){
+                    if (response.type == "state"){
+                        response.data.localPlayerId = player.playerId;
+                    }
+                    const sendResponse = idToSocketSent.get(player.playerId);
+                    sendResponse?.(JSON.stringify(response));
+                }
             },
 
             /**
@@ -221,7 +236,7 @@ class NodeServer extends AbstractServer {
              * @param socket The socket being closed.
              */
             close(socket: WebSocket<TeamMenuPlayerContainer>) {
-
+                This.teamMenu.removePlayer(socket.getUserData());
             }
 
         });
