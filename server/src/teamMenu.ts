@@ -101,7 +101,7 @@ export class TeamMenu {
                         room: room?.roomData,
                         players: room?.players
                     }
-                } as ServerToClientTeamMsg;
+                } satisfies ServerToClientTeamMsg;
                 break;
             }
             // case "join":{

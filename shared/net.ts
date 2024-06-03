@@ -372,7 +372,7 @@ export interface TeamStateMsg {
 export interface TeamKeepAliveMsg {
     readonly type: "keepAlive"
     // eslint-disable-next-line @typescript-eslint/ban-types
-    data: {}
+    data: Record<string, unknown>
 }
 
 /**
