@@ -216,27 +216,33 @@ class NodeServer extends AbstractServer {
 
                 const room = This.teamMenu.rooms.get(userData.roomUrl);
                 if (response.type == "error" || !room){
-                    console.log("Room Does Not Exist!");
+                    // console.log("Room Does Not Exist!");
                     socket.send(JSON.stringify(response));
                     return;
                 }
                 
-                const idToSocketSent = This.teamMenu.idToSocketSend;
+                const idToSocketSend = This.teamMenu.idToSocketSend;
                 for (const player of room.players){
                     if (response.type == "state"){
                         response.data.localPlayerId = player.playerId;
                     }
-                    const sendResponse = idToSocketSent.get(player.playerId);
+                    const sendResponse = idToSocketSend.get(player.playerId);
                     sendResponse?.(JSON.stringify(response));
                 }
             },
 
             /**
              * Handle closing of the socket.
+             * Called if player hits the leave button or if there's an error joining/creating a team
              * @param socket The socket being closed.
              */
             close(socket: WebSocket<TeamMenuPlayerContainer>) {
-                This.teamMenu.removePlayer(socket.getUserData());
+                const userData = socket.getUserData();
+                const room = This.teamMenu.rooms.get(userData.roomUrl);
+                console.log(room?.roomData.lastError);
+                if (room){
+                    This.teamMenu.removePlayer(userData);
+                }
             }
 
         });

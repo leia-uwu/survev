@@ -705,8 +705,10 @@ export class TeamMenu {
             }
 
             $(".icon-kick", teamMembers).click((e) => {
-                const playerId = $(e.currentTarget).attr(
-                    "data-playerid"
+                const playerId = Number(
+                    $(e.currentTarget).attr(
+                        "data-playerid"
+                    )
                 );
                 this.sendMessage("kick", {
                     playerId
