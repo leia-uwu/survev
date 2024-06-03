@@ -5,6 +5,7 @@ import {
     type TeamJoinGameMsg,
     type TeamStateMsg
 } from "../../shared/net";
+import { math } from "../../shared/utils/math";
 import {type TeamMenuPlayerContainer} from "./abstractServer";
 import { IDAllocator } from "./IDAllocator";
 import { RoomCodeAllocator } from "./RoomCodeAllocator";
@@ -39,7 +40,7 @@ export class TeamMenu {
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
-                maxPlayers: initialRoomData.gameModeIdx*2
+                maxPlayers: math.clamp(initialRoomData.gameModeIdx*2, 2, 4)
             },
             players: [roomLeader]
         };
