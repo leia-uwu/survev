@@ -17,26 +17,26 @@ export type Room = {
     players: TeamMenuPlayer[];
 }
 
-const JOIN_FAILED: TeamErrorMsg = {
-    type: "error",
-    data: {
-        type: "join_failed"
-    }
-};
+type ErrorType = 
+    "join_full"                  |
+    "join_not_found"             |
+    "create_failed"              |
+    "join_failed"                |
+    "join_game_failed"           |
+    "lost_conn"                  |
+    "find_game_error"            |
+    "find_game_full"             |
+    "find_game_invalid_protocol" |
+    "kicked";
 
-const CREATE_FAILED: TeamErrorMsg = {
-    type: "error",
-    data: {
-        type: "create_failed"
+function teamErrorMsg(type: ErrorType): TeamErrorMsg{
+    return {
+        type: "error",
+        data: {
+            type: type
+        }
     }
-};
-
-const LOST_CONN: TeamErrorMsg = {
-    type: "error",
-    data: {
-        type: "lost_conn"
-    }
-};
+}
 
 export class TeamMenu {
 
@@ -73,9 +73,9 @@ export class TeamMenu {
         this.idToSocketSend.delete(playerContainer.playerId);
         this.idAllocator.give(playerContainer.playerId);
 
-        const room = this.rooms.get(playerContainer.roomUrl) as Room;
+        const room = this.rooms.get(playerContainer.roomUrl)!;
 
-        const pToRemove = room.players.find(p => p.playerId == playerContainer.playerId) as TeamMenuPlayer;
+        const pToRemove = room.players.find(p => p.playerId == playerContainer.playerId)!;
         const pToRemoveIndex = room.players.indexOf(pToRemove);
         room.players.splice(pToRemoveIndex, 1);
 
@@ -123,7 +123,7 @@ export class TeamMenu {
     }
 
     handleMsg(message: ArrayBuffer, localPlayerData: TeamMenuPlayerContainer): ServerToClientTeamMsg{
-        const parsedMessage = JSON.parse(new TextDecoder().decode(message as ArrayBuffer)) as ClientToServerTeamMsg;
+        const parsedMessage: ClientToServerTeamMsg = JSON.parse(new TextDecoder().decode(message as ArrayBuffer));
         const type = parsedMessage.type;
         const data = type != "gameComplete" ? parsedMessage.data : undefined;
         let response: ServerToClientTeamMsg;
@@ -147,7 +147,7 @@ export class TeamMenu {
 
                 const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
                 if (!room){
-                    response = CREATE_FAILED;
+                    response = teamErrorMsg("create_failed");
                     break;
                 }
 
@@ -158,8 +158,12 @@ export class TeamMenu {
                 const roomUrl = parsedMessage.data.roomUrl;
                 const room = this.rooms.get(roomUrl);
                 //join fail if room doesnt exist or if room is already full
-                if (!room || room.roomData.maxPlayers == room.players.length){
-                    response = JOIN_FAILED;
+                if (!room){
+                    response = teamErrorMsg("join_failed");
+                    break;
+                }
+                if (room.roomData.maxPlayers == room.players.length){
+                    response = teamErrorMsg("join_full");
                     break;
                 }
 
@@ -182,18 +186,18 @@ export class TeamMenu {
             }
             case "changeName":{
                 const newName = parsedMessage.data.name;
-                const room = this.rooms.get(localPlayerData.roomUrl);
-                const player = room!.players.find(p => p.playerId == localPlayerData.playerId);
-                player!.name = newName;
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const player = room.players.find(p => p.playerId == localPlayerData.playerId)!;
+                player.name = newName;
 
-                response = this.roomToStateObj(room!);
+                response = this.roomToStateObj(room);
                 break;
             }
             case "setRoomProps":{
                 const newRoomData = parsedMessage.data; //roomUrl comes with #
                 const room = this.rooms.get(newRoomData.roomUrl.slice(1));
                 if (!room){
-                    response = LOST_CONN;
+                    response = teamErrorMsg("lost_conn");
                     break;
                 }
 
@@ -202,8 +206,8 @@ export class TeamMenu {
                 break;
             }
             case "kick":{
-                const room = this.rooms.get(localPlayerData.roomUrl) as Room;
-                const pToKick = room.players.find(p => p.playerId === parsedMessage.data.playerId) as TeamMenuPlayer;
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const pToKick = room.players.find(p => p.playerId === parsedMessage.data.playerId)!;
 
                 const sendResponse = this.idToSocketSend.get(pToKick.playerId);
                 response = {
@@ -216,6 +220,7 @@ export class TeamMenu {
                     type: "keepAlive",
                     data: {}
                 }
+                break;
             }
             case "keepAlive":{
                 response = {

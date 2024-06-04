@@ -239,7 +239,6 @@ class NodeServer extends AbstractServer {
             close(socket: WebSocket<TeamMenuPlayerContainer>) {
                 const userData = socket.getUserData();
                 const room = This.teamMenu.rooms.get(userData.roomUrl);
-                console.log(room?.roomData.lastError);
                 if (room){
                     This.teamMenu.removePlayer(userData);
                 }
