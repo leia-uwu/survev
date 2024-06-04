@@ -9,7 +9,6 @@ import {
 import { math } from "../../shared/utils/math";
 import { type TeamMenuPlayerContainer } from "./abstractServer";
 import { IDAllocator } from "./IDAllocator";
-import { RoomCodeAllocator } from "./RoomCodeAllocator";
 
 export interface Room {
     roomData: RoomData
@@ -37,10 +36,20 @@ function teamErrorMsg(type: ErrorType): TeamErrorMsg {
     };
 }
 
+const alphanumerics = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+function genRoomCode() {
+    let str = "";
+    let i = 0;
+    while (i < 4) {
+        str += alphanumerics.charAt(Math.floor(Math.random() * alphanumerics.length));
+        i++;
+    }
+    return `#${str}`;
+}
+
 export class TeamMenu {
     idToSocketSend = new Map<number, (response: string) => void>();
     rooms = new Map<string, Room>();
-    roomCodeAllocator = new RoomCodeAllocator();
     idAllocator = new IDAllocator(16);
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: TeamMenuPlayer) {
@@ -79,7 +88,6 @@ export class TeamMenu {
 
         if (room.players.length == 0) {
             this.rooms.delete(playerContainer.roomUrl);
-            this.roomCodeAllocator.freeCode(playerContainer.roomUrl);
             return;
         }
 
@@ -136,7 +144,14 @@ export class TeamMenu {
                 inGame: false
             };
 
-            const roomUrl = this.roomCodeAllocator.getCode();
+            const activeCodes = new Set(this.rooms.keys());
+            let roomUrl = genRoomCode();
+            while (activeCodes.has(roomUrl.slice(1))){
+                roomUrl = genRoomCode();
+            }
+
+            console.log(activeCodes);
+
             localPlayerData.roomUrl = roomUrl.slice(1);
             localPlayerData.playerId = playerId;
 
