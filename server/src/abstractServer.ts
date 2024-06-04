@@ -11,9 +11,9 @@ export interface PlayerContainer {
 }
 
 export interface TeamMenuPlayerContainer {
-    sendResponse: (response: string) => void;
-    roomUrl: string;
-    playerId: number;
+    sendResponse: (response: string) => void
+    roomUrl: string
+    playerId: number
 }
 
 export abstract class AbstractServer {

@@ -349,11 +349,11 @@ export interface TeamJoinGameMsg {
     }
 }
 
-export type TeamMenuPlayer = {
-    name: string;
-    playerId: number;
-    isLeader: boolean;
-    inGame: boolean;
+export interface TeamMenuPlayer {
+    name: string
+    playerId: number
+    isLeader: boolean
+    inGame: boolean
 }
 
 /**
@@ -362,9 +362,9 @@ export type TeamMenuPlayer = {
 export interface TeamStateMsg {
     readonly type: "state"
     data: {
-        localPlayerId: number //always -1 by default since it can only be set when the socket is actually sending state to each individual client
+        localPlayerId: number // always -1 by default since it can only be set when the socket is actually sending state to each individual client
         room: RoomData
-        players: Array<TeamMenuPlayer>
+        players: TeamMenuPlayer[]
     }
 }
 
@@ -466,8 +466,8 @@ export interface TeamGameCompleteMsg {
 export interface TeamPlayGameMsg {
     readonly type: "playGame"
     data: {
-        version: number,
-        region: string,
+        version: number
+        region: string
         zones: string[]
     }
 }

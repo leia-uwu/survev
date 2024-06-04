@@ -1,62 +1,61 @@
 import {
     type ClientToServerTeamMsg,
-    RoomData,
-    ServerToClientTeamMsg,
+    type RoomData,
+    type ServerToClientTeamMsg,
     type TeamJoinGameMsg,
     type TeamStateMsg,
     type TeamErrorMsg,
     type TeamMenuPlayer
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
-import {type TeamMenuPlayerContainer} from "./abstractServer";
+import { type TeamMenuPlayerContainer } from "./abstractServer";
 import { IDAllocator } from "./IDAllocator";
 import { RoomCodeAllocator } from "./RoomCodeAllocator";
 
-export type Room = {
-    roomData: RoomData;
-    players: TeamMenuPlayer[];
+export interface Room {
+    roomData: RoomData
+    players: TeamMenuPlayer[]
 }
 
-type ErrorType = 
-    "join_full"                  |
-    "join_not_found"             |
-    "create_failed"              |
-    "join_failed"                |
-    "join_game_failed"           |
-    "lost_conn"                  |
-    "find_game_error"            |
-    "find_game_full"             |
+type ErrorType =
+    "join_full" |
+    "join_not_found" |
+    "create_failed" |
+    "join_failed" |
+    "join_game_failed" |
+    "lost_conn" |
+    "find_game_error" |
+    "find_game_full" |
     "find_game_invalid_protocol" |
     "kicked";
 
-function teamErrorMsg(type: ErrorType): TeamErrorMsg{
+function teamErrorMsg(type: ErrorType): TeamErrorMsg {
     return {
         type: "error",
         data: {
-            type: type
+            type
         }
-    }
+    };
 }
 
 export class TeamMenu {
-
     idToSocketSend = new Map<number, (response: string) => void>();
     rooms = new Map<string, Room>();
     roomCodeAllocator = new RoomCodeAllocator();
     idAllocator = new IDAllocator(16);
 
-    addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: TeamMenuPlayer){
+    addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: TeamMenuPlayer) {
         const key = roomUrl.slice(1);
         const value = {
             roomData: {
-                roomUrl: roomUrl,
+                roomUrl,
                 region: initialRoomData.region,
                 gameModeIdx: initialRoomData.gameModeIdx,
                 enabledGameModeIdxs: [1, 2],
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
-                maxPlayers: math.clamp(initialRoomData.gameModeIdx*2, 2, 4)
+                maxPlayers: math.clamp(initialRoomData.gameModeIdx * 2, 2, 4)
             },
             players: [roomLeader]
         };
@@ -69,7 +68,7 @@ export class TeamMenu {
      * @param playerId id of player to remove
      * @param room room to remove player from
      */
-    removePlayer(playerContainer: TeamMenuPlayerContainer): void{
+    removePlayer(playerContainer: TeamMenuPlayerContainer): void {
         this.idToSocketSend.delete(playerContainer.playerId);
         this.idAllocator.give(playerContainer.playerId);
 
@@ -79,20 +78,20 @@ export class TeamMenu {
         const pToRemoveIndex = room.players.indexOf(pToRemove);
         room.players.splice(pToRemoveIndex, 1);
 
-        if (room.players.length == 0){
+        if (room.players.length == 0) {
             this.rooms.delete(playerContainer.roomUrl);
             this.roomCodeAllocator.freeCode(playerContainer.roomUrl);
             return;
         }
 
-        //if leader leaves, make next player in array the new leader
-        if (pToRemove.isLeader){
+        // if leader leaves, make next player in array the new leader
+        if (pToRemove.isLeader) {
             room.players[0].isLeader = true;
         }
 
-        //send the new room state to all remaining players
+        // send the new room state to all remaining players
         const response = this.roomToStateObj(room);
-        for (const player of room.players){
+        for (const player of room.players) {
             response.data.localPlayerId = player.playerId;
             const sendResponse = this.idToSocketSend.get(player.playerId);
             sendResponse?.(JSON.stringify(response));
@@ -102,16 +101,16 @@ export class TeamMenu {
     /**
      * the only properties that can change are: region, gameModeIdx, autoFill, and maxPlayers (by virtue of gameModeIdx)
      */
-    modifyRoom(newRoomData: RoomData, room: Room): void{
+    modifyRoom(newRoomData: RoomData, room: Room): void {
         room.roomData.gameModeIdx = newRoomData.gameModeIdx;
-        room.roomData.maxPlayers = math.clamp(room.roomData.gameModeIdx*2, 2, 4);
+        room.roomData.maxPlayers = math.clamp(room.roomData.gameModeIdx * 2, 2, 4);
         room.roomData.autoFill = newRoomData.autoFill;
         room.roomData.region = newRoomData.region;
 
         // Object.assign(room.roomData, newRoomData);
     }
 
-    roomToStateObj(room: Room): TeamStateMsg{
+    roomToStateObj(room: Room): TeamStateMsg {
         return {
             type: "state",
             data: {
@@ -122,125 +121,125 @@ export class TeamMenu {
         };
     }
 
-    handleMsg(message: ArrayBuffer, localPlayerData: TeamMenuPlayerContainer): ServerToClientTeamMsg{
-        const parsedMessage: ClientToServerTeamMsg = JSON.parse(new TextDecoder().decode(message as ArrayBuffer));
+    handleMsg(message: ArrayBuffer, localPlayerData: TeamMenuPlayerContainer): ServerToClientTeamMsg {
+        const parsedMessage: ClientToServerTeamMsg = JSON.parse(new TextDecoder().decode(message));
         const type = parsedMessage.type;
         const data = type != "gameComplete" ? parsedMessage.data : undefined;
         let response: ServerToClientTeamMsg;
-        
-        switch (type){
-            case "create":{
-                let name = parsedMessage.data.playerData.name != '' ? parsedMessage.data.playerData.name : "Player";
-                const playerId = this.idAllocator.getNextId();
-                const player: TeamMenuPlayer = {
-                    name: name,
-                    playerId: playerId,
-                    isLeader: true,
-                    inGame: false,
-                }
 
-                const roomUrl = this.roomCodeAllocator.getCode();
-                localPlayerData.roomUrl = roomUrl.slice(1);
-                localPlayerData.playerId = playerId;
+        switch (type) {
+        case "create":{
+            const name = parsedMessage.data.playerData.name != "" ? parsedMessage.data.playerData.name : "Player";
+            const playerId = this.idAllocator.getNextId();
+            const player: TeamMenuPlayer = {
+                name,
+                playerId,
+                isLeader: true,
+                inGame: false
+            };
 
-                this.idToSocketSend.set(playerId, localPlayerData.sendResponse);
+            const roomUrl = this.roomCodeAllocator.getCode();
+            localPlayerData.roomUrl = roomUrl.slice(1);
+            localPlayerData.playerId = playerId;
 
-                const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
-                if (!room){
-                    response = teamErrorMsg("create_failed");
-                    break;
-                }
+            this.idToSocketSend.set(playerId, localPlayerData.sendResponse);
 
-                response = this.roomToStateObj(room);
+            const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
+            if (!room) {
+                response = teamErrorMsg("create_failed");
                 break;
             }
-            case "join":{
-                const roomUrl = parsedMessage.data.roomUrl;
-                const room = this.rooms.get(roomUrl);
-                //join fail if room doesnt exist or if room is already full
-                if (!room){
-                    response = teamErrorMsg("join_failed");
-                    break;
-                }
-                if (room.roomData.maxPlayers == room.players.length){
-                    response = teamErrorMsg("join_full");
-                    break;
-                }
 
-                let name = parsedMessage.data.playerData.name;
-                name = name != '' ? name : "Player";
-                const playerId = this.idAllocator.getNextId();
-                const player: TeamMenuPlayer = {
-                    name: name,
-                    playerId: playerId,
-                    isLeader: false,
-                    inGame: false,
-                }
-                localPlayerData.roomUrl = roomUrl;
-                localPlayerData.playerId = playerId;
-
-                this.idToSocketSend.set(playerId, localPlayerData.sendResponse);
-                room.players.push(player);
-                response = this.roomToStateObj(room);
+            response = this.roomToStateObj(room);
+            break;
+        }
+        case "join":{
+            const roomUrl = parsedMessage.data.roomUrl;
+            const room = this.rooms.get(roomUrl);
+            // join fail if room doesnt exist or if room is already full
+            if (!room) {
+                response = teamErrorMsg("join_failed");
                 break;
             }
-            case "changeName":{
-                const newName = parsedMessage.data.name;
-                const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(p => p.playerId == localPlayerData.playerId)!;
-                player.name = newName;
+            if (room.roomData.maxPlayers == room.players.length) {
+                response = teamErrorMsg("join_full");
+                break;
+            }
 
-                response = this.roomToStateObj(room);
-                break;
-            }
-            case "setRoomProps":{
-                const newRoomData = parsedMessage.data; //roomUrl comes with #
-                const room = this.rooms.get(newRoomData.roomUrl.slice(1));
-                if (!room){
-                    response = teamErrorMsg("lost_conn");
-                    break;
-                }
+            let name = parsedMessage.data.playerData.name;
+            name = name != "" ? name : "Player";
+            const playerId = this.idAllocator.getNextId();
+            const player: TeamMenuPlayer = {
+                name,
+                playerId,
+                isLeader: false,
+                inGame: false
+            };
+            localPlayerData.roomUrl = roomUrl;
+            localPlayerData.playerId = playerId;
 
-                this.modifyRoom(newRoomData, room);
-                response = this.roomToStateObj(room);
-                break;
-            }
-            case "kick":{
-                const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const pToKick = room.players.find(p => p.playerId === parsedMessage.data.playerId)!;
+            this.idToSocketSend.set(playerId, localPlayerData.sendResponse);
+            room.players.push(player);
+            response = this.roomToStateObj(room);
+            break;
+        }
+        case "changeName":{
+            const newName = parsedMessage.data.name;
+            const room = this.rooms.get(localPlayerData.roomUrl)!;
+            const player = room.players.find(p => p.playerId == localPlayerData.playerId)!;
+            player.name = newName;
 
-                const sendResponse = this.idToSocketSend.get(pToKick.playerId);
-                response = {
-                    type: "kicked"
-                }
-                sendResponse?.(JSON.stringify(response));
-                //hack to essentially "do nothing" for all the players that weren't kicked
-                //the new room state is already sent to all players when a player is kicked/removed so we don't need to send it again
-                response = {
-                    type: "keepAlive",
-                    data: {}
-                }
+            response = this.roomToStateObj(room);
+            break;
+        }
+        case "setRoomProps":{
+            const newRoomData = parsedMessage.data; // roomUrl comes with #
+            const room = this.rooms.get(newRoomData.roomUrl.slice(1));
+            if (!room) {
+                response = teamErrorMsg("lost_conn");
                 break;
             }
-            case "keepAlive":{
-                response = {
-                    type: "keepAlive",
-                    data: {}
-                }
-                break;
-            }
-            // case  "playGame":{
-            //     break;
-            // }
-            // case "gameComplete":{
-            //     break;
-            // }
-            default: {
-                response = {
-                    type: "keepAlive",
-                    data: {}
-                }
-            }
+
+            this.modifyRoom(newRoomData, room);
+            response = this.roomToStateObj(room);
+            break;
+        }
+        case "kick":{
+            const room = this.rooms.get(localPlayerData.roomUrl)!;
+            const pToKick = room.players.find(p => p.playerId === parsedMessage.data.playerId)!;
+
+            const sendResponse = this.idToSocketSend.get(pToKick.playerId);
+            response = {
+                type: "kicked"
+            };
+            sendResponse?.(JSON.stringify(response));
+            // hack to essentially "do nothing" for all the players that weren't kicked
+            // the new room state is already sent to all players when a player is kicked/removed so we don't need to send it again
+            response = {
+                type: "keepAlive",
+                data: {}
+            };
+            break;
+        }
+        case "keepAlive":{
+            response = {
+                type: "keepAlive",
+                data: {}
+            };
+            break;
+        }
+        // case  "playGame":{
+        //     break;
+        // }
+        // case "gameComplete":{
+        //     break;
+        // }
+        default: {
+            response = {
+                type: "keepAlive",
+                data: {}
+            };
+        }
         }
         return response;
     }

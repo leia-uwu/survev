@@ -215,15 +215,15 @@ class NodeServer extends AbstractServer {
                 const userData = socket.getUserData();
 
                 const room = This.teamMenu.rooms.get(userData.roomUrl);
-                if (response.type == "error" || !room){
+                if (response.type == "error" || !room) {
                     // console.log("Room Does Not Exist!");
                     socket.send(JSON.stringify(response));
                     return;
                 }
-                
+
                 const idToSocketSend = This.teamMenu.idToSocketSend;
-                for (const player of room.players){
-                    if (response.type == "state"){
+                for (const player of room.players) {
+                    if (response.type == "state") {
                         response.data.localPlayerId = player.playerId;
                     }
                     const sendResponse = idToSocketSend.get(player.playerId);
@@ -239,7 +239,7 @@ class NodeServer extends AbstractServer {
             close(socket: WebSocket<TeamMenuPlayerContainer>) {
                 const userData = socket.getUserData();
                 const room = This.teamMenu.rooms.get(userData.roomUrl);
-                if (room){
+                if (room) {
                     This.teamMenu.removePlayer(userData);
                 }
             }
