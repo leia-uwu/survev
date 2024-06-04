@@ -2,7 +2,6 @@ import {
     type ClientToServerTeamMsg,
     type RoomData,
     type ServerToClientTeamMsg,
-    type TeamJoinGameMsg,
     type TeamStateMsg,
     type TeamErrorMsg,
     type TeamMenuPlayer
@@ -124,7 +123,6 @@ export class TeamMenu {
     handleMsg(message: ArrayBuffer, localPlayerData: TeamMenuPlayerContainer): ServerToClientTeamMsg {
         const parsedMessage: ClientToServerTeamMsg = JSON.parse(new TextDecoder().decode(message));
         const type = parsedMessage.type;
-        const data = type != "gameComplete" ? parsedMessage.data : undefined;
         let response: ServerToClientTeamMsg;
 
         switch (type) {
