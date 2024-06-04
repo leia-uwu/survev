@@ -81,7 +81,7 @@ function readPostedJSON<T>(
 }
 
 class NodeServer extends AbstractServer {
-    teamMenu = new TeamMenu();
+    teamMenu = new TeamMenu(this);
     app: TemplatedApp;
 
     constructor() {
@@ -211,24 +211,8 @@ class NodeServer extends AbstractServer {
              * @param message The message to handle.
              */
             message(socket: WebSocket<TeamMenuPlayerContainer>, message) {
-                const response = This.teamMenu.handleMsg(message, socket.getUserData());
-                const userData = socket.getUserData();
-
-                const room = This.teamMenu.rooms.get(userData.roomUrl);
-                if (response.type == "error" || !room) {
-                    // console.log("Room Does Not Exist!");
-                    socket.send(JSON.stringify(response));
-                    return;
-                }
-
-                const idToSocketSend = This.teamMenu.idToSocketSend;
-                for (const player of room.players) {
-                    if (response.type == "state") {
-                        response.data.localPlayerId = player.playerId;
-                    }
-                    const sendResponse = idToSocketSend.get(player.playerId);
-                    sendResponse?.(JSON.stringify(response));
-                }
+                This.teamMenu.handleMsg(message, socket.getUserData());
+                const room = This.teamMenu.rooms.get(socket.getUserData().roomUrl);
             },
 
             /**
