@@ -25,7 +25,7 @@ export interface PlayerInfo {
     loadout: Loadout
 }
 
-//the non-optional properties are used by both server and client
+// the non-optional properties are used by both server and client
 export interface PlayerStatus {
     playerId?: number
     pos: Vec2

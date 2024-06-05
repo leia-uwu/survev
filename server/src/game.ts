@@ -40,7 +40,7 @@ export class Game {
     livingPlayers = new Set<Player>();
     spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
 
-    teams = new Map<number, Player[]>();//team id maps to all players in that team
+    teams = new Map<number, Player[]>();// team id maps to all players in that team
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -152,7 +152,7 @@ export class Game {
             player.activeIdDirty = false;
 
             player.groupStatusDirty = false;
-            player.playerStatusDirty = false;
+            // player.playerStatusDirty = false;
         }
 
         this.fullObjs.clear();
@@ -235,23 +235,23 @@ export class Game {
             const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
 
-            if (joinMsg.matchPriv){//mode is either duos or squads
+            if (joinMsg.matchPriv) { // mode is either duos or squads
                 const parsedMatchPriv: {
                     groupId: number
                     teamMode: TeamMode
                 } = JSON.parse(joinMsg.matchPriv);
-    
-                if (this.config.map != "faction"){
+
+                if (this.config.map != "faction") {
                     player.groupId = player.teamId = parsedMatchPriv.groupId;
-                    if (!this.teams.has(parsedMatchPriv.groupId)){
+                    if (!this.teams.has(parsedMatchPriv.groupId)) {
                         this.teams.set(parsedMatchPriv.groupId, [player]);
-                    }else{
+                    } else {
                         this.teams.get(parsedMatchPriv.groupId)!.push(player);
                     }
-                    player.groupStatusDirty = true;
+                    player.setGroupStatuses();
                     player.playerStatusDirty = true;
                 }
-                this.teamMode = parsedMatchPriv.teamMode;    
+                this.teamMode = parsedMatchPriv.teamMode;
             }
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
@@ -350,11 +350,9 @@ export class Game {
 
     removePlayer(player: Player): void {
         player.disconnected = true;
-        const teammates = this.teams.get(player.teamId)!;
-        teammates.forEach(t => {
-            t.groupStatusDirty = true
-            t.playerStatusDirty = true
-        });
+        if (this.teamMode != TeamMode.Solo) {
+            player.setGroupStatuses();
+        }
 
         if (!player.dead) {
             this.aliveCountDirty = true;

@@ -7,7 +7,7 @@ import {
     type TeamMenuPlayer
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
-import { type TeamMenuPlayerContainer, AbstractServer } from "./abstractServer";
+import { type TeamMenuPlayerContainer, type AbstractServer } from "./abstractServer";
 import { IDAllocator } from "./IDAllocator";
 
 export interface Room {
@@ -47,19 +47,14 @@ function genRoomCode() {
     return `#${str}`;
 }
 
-type Response = {
-    playerIds: number[] //ids of players to send the data to
-    data: ServerToClientTeamMsg
-}
-
 export class TeamMenu {
     idToSocketSend = new Map<number, (response: string) => void>();
     rooms = new Map<string, Room>();
     idAllocator = new IDAllocator(16);
     groupIdAllocator = new IDAllocator(16);
 
-    constructor(public server: AbstractServer){
-        
+    constructor(public server: AbstractServer) {
+
     }
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: TeamMenuPlayer) {
@@ -116,12 +111,12 @@ export class TeamMenu {
     }
 
     /**
-     * 
+     *
      * @param type type of response to send
      * @param player player to send the response to
      */
-    sendResponse(response: ServerToClientTeamMsg, player: TeamMenuPlayer): void{
-        if (response.type == "state"){
+    sendResponse(response: ServerToClientTeamMsg, player: TeamMenuPlayer): void {
+        if (response.type == "state") {
             response.data.localPlayerId = player.playerId;
         }
         const send = this.idToSocketSend.get(player.playerId);
@@ -129,11 +124,11 @@ export class TeamMenu {
     }
 
     /**
-     * 
+     *
      * @param type type of message to send
      * @param players players to send the message to
      */
-    sendResponses(response: ServerToClientTeamMsg, players: TeamMenuPlayer[]): void{
+    sendResponses(response: ServerToClientTeamMsg, players: TeamMenuPlayer[]): void {
         for (const player of players) {
             this.sendResponse(response, player);
         }
@@ -178,7 +173,7 @@ export class TeamMenu {
 
             const activeCodes = new Set(this.rooms.keys());
             let roomUrl = genRoomCode();
-            while (activeCodes.has(roomUrl.slice(1))){
+            while (activeCodes.has(roomUrl.slice(1))) {
                 roomUrl = genRoomCode();
             }
 
@@ -258,7 +253,7 @@ export class TeamMenu {
                 type: "kicked"
             };
             this.sendResponse(response, pToKick);
-            //don't need to send new state to remaining players in room since this.removePlayer will do that by default
+            // don't need to send new state to remaining players in room since this.removePlayer will do that by default
             break;
         }
         case "keepAlive":{
@@ -270,7 +265,7 @@ export class TeamMenu {
             this.sendResponses(response, room.players);
             break;
         }
-        case "playGame":{//this message can only ever be sent by the leader
+        case "playGame":{ // this message can only ever be sent by the leader
             const room = this.rooms.get(localPlayerData.roomUrl)!;
             const player = room.players.find(p => p.playerId == localPlayerData.playerId)!;
 
@@ -279,7 +274,7 @@ export class TeamMenu {
             this.sendResponses(response, room.players);
 
             const playData = this.server.findGame(parsedMessage.data.region).res[0];
-            if ("err" in playData){
+            if ("err" in playData) {
                 response = teamErrorMsg("find_game_error");
                 this.sendResponse(response, player);
                 break;
@@ -291,19 +286,19 @@ export class TeamMenu {
                     ...playData,
                     data: JSON.stringify({
                         groupId: this.groupIdAllocator.getNextId().toString(),
-                        teamMode: math.clamp(room.roomData.gameModeIdx*2, 2, 4)
-                    }),
+                        teamMode: math.clamp(room.roomData.gameModeIdx * 2, 2, 4)
+                    })
                 }
             };
             this.sendResponses(response, room.players);
 
-            room.players.forEach(p => p.inGame = true);
+            room.players.forEach((p) => { p.inGame = true; });
             room.roomData.findingGame = false;
             response = this.roomToStateObj(room);
             this.sendResponses(response, room.players);
             break;
         }
-        case "gameComplete":{//doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
+        case "gameComplete":{ // doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
             const room = this.rooms.get(localPlayerData.roomUrl)!;
             const player = room.players.find(p => p.playerId == localPlayerData.playerId)!;
             player.inGame = false;

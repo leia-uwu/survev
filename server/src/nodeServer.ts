@@ -212,7 +212,6 @@ class NodeServer extends AbstractServer {
              */
             message(socket: WebSocket<TeamMenuPlayerContainer>, message) {
                 This.teamMenu.handleMsg(message, socket.getUserData());
-                const room = This.teamMenu.rooms.get(socket.getUserData().roomUrl);
             },
 
             /**

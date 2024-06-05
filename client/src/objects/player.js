@@ -2415,11 +2415,11 @@ export class PlayerBarn {
             status.timeSinceVisible += dt;
             status.timeSinceUpdate += dt;
 
-            const fade =
-                !status.dead ||
-                    (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
-                    ? 0
-                    : 0.6;
+            // const fade =
+            //     !status.dead ||
+            //         (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
+            //         ? 0
+            //         : 0.6;
 
             // status.minimapAlpha =
             //     math.smoothstep(status.timeSinceVisible, 0, 0.1) *

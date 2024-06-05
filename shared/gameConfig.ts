@@ -315,5 +315,5 @@ export const GameConfig = {
         scope: 1,
         perk: 1.25,
         xp: 1
-    } as Record<string, number>,
+    } as Record<string, number>
 } as const;

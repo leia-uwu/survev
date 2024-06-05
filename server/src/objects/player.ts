@@ -90,7 +90,22 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     activeIdDirty = true;
 
+    /**
+     * set true if any member on the team changes health or disconnects
+     */
     groupStatusDirty = false;
+
+    setGroupStatuses() {
+        const teammates = this.game.teams.get(this.teamId)!;
+        for (const t of teammates) {
+            t.groupStatusDirty = true;
+        }
+    }
+
+    /**
+     * for updating player and teammate locations in the minimap client UI
+     * set to true if player or teammates move (which is almost always so this is just permanently set to true)
+     */
     playerStatusDirty = false;
 
     private _health: number = GameConfig.player.health;
@@ -678,9 +693,9 @@ export class Player extends BaseGameObject {
 
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
-        if (player.playerStatusDirty){
+        if (player.playerStatusDirty) {
             const teammates = this.game.teams.get(player.teamId)!;
-            for (const t of teammates){
+            for (let i = 0; i < teammates.length; i++) {
                 updateMsg.playerStatus.players.push({
                     hasData: true,
                     pos: player.pos,
@@ -688,18 +703,18 @@ export class Player extends BaseGameObject {
                     dead: player.dead,
                     downed: player.downed,
                     role: ""
-                })
+                });
             }
             updateMsg.playerStatusDirty = true;
         }
 
-        if (player.groupStatusDirty){
+        if (player.groupStatusDirty) {
             const teammates = this.game.teams.get(player.teamId)!;
-            for (const t of teammates){
+            for (const t of teammates) {
                 updateMsg.groupStatus.players.push({
                     health: t.health,
                     disconnected: t.disconnected
-                })
+                });
             }
             updateMsg.groupStatusDirty = true;
         }
@@ -820,6 +835,10 @@ export class Player extends BaseGameObject {
 
         this.health -= finalDamage;
 
+        if (this.game.teamMode != TeamMode.Solo) {
+            this.setGroupStatuses();
+        }
+
         if (this._health === 0) {
             this.kill(params);
         }
@@ -841,6 +860,17 @@ export class Player extends BaseGameObject {
         gameOverMsg.winningTeamId = winningTeamId;
         gameOverMsg.gameOver = winningTeamId != -1;
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+    }
+
+    /**
+     * includes player but doesn't matter since method is only called after player dies
+     */
+    allTeammatesDead(): boolean {
+        const teammates = this.game.teams.get(this.teamId)!;
+        for (const t of teammates) {
+            if (!t.dead) return false;
+        }
+        return true;
     }
 
     killedBy: Player | undefined;
@@ -878,6 +908,12 @@ export class Player extends BaseGameObject {
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+
+        if (this.game.teamMode != TeamMode.Solo) {
+            if (this.allTeammatesDead()) {
+                this.game.teams.delete(this.teamId);
+            }
+        }
 
         //
         // Send game over message to player
