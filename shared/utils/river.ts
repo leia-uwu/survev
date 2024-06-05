@@ -91,7 +91,7 @@ export class River {
             // There's a bug with clipRayToPoly when this happens at the
             // map edges; avoid that with a explicit check for now.
             let { shoreWidth } = this;
-            let boundingRiver = null;
+            let boundingRiver: River | null = null;
             for (let j = 0; j < otherRivers.length; j++) {
                 const river = otherRivers[j];
                 const t = river.spline.getClosestTtoPoint(vert);
