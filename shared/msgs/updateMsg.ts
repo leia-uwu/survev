@@ -1,5 +1,4 @@
 import { type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
-import { type Creator } from "../../client/src/objects/objectPool";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
 import { type ObjectType, ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "../utils/objectSerializeFns";
@@ -501,7 +500,7 @@ export class UpdateMsg extends AbstractMsg {
     }
 
     // @ts-expect-error deserialize only accept one argument for now
-    override deserialize(s: BitStream, objectCreator: Creator) {
+    override deserialize(s: BitStream, objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType }) {
         const flags = s.readUint16();
 
         if ((flags & UpdateExtFlags.DeletedObjects) != 0) {
