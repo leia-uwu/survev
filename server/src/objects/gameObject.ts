@@ -43,6 +43,7 @@ export abstract class BaseGameObject {
 
     abstract layer: number;
 
+    initialized = false;
     partialStream!: BitStream;
     fullStream!: BitStream;
 
@@ -55,18 +56,21 @@ export abstract class BaseGameObject {
     damage(_params: DamageParams): void {}
 
     init(): void {
+        this.initialized = true;
         this.partialStream = new BitStream(new ArrayBuffer(64));
         this.fullStream = new BitStream(new ArrayBuffer(64));
         this.serializeFull();
     }
 
     serializePartial(): void {
+        if (!this.initialized) return;
         this.partialStream.index = 0;
         this.partialStream.writeUint16(this.__id);
         (ObjectSerializeFns[this.__type].serializePart as (s: BitStream, data: this) => void)(this.partialStream, this);
     }
 
     serializeFull(): void {
+        if (!this.initialized) return;
         this.serializePartial();
         this.fullStream.index = 0;
         (ObjectSerializeFns[this.__type].serializeFull as (s: BitStream, data: this) => void)(this.fullStream, this);
