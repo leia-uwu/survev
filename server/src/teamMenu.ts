@@ -274,6 +274,10 @@ export class TeamMenu {
             const room = this.rooms.get(localPlayerData.roomUrl)!;
             const player = room.players.find(p => p.playerId == localPlayerData.playerId)!;
 
+            room.roomData.findingGame = true;
+            response = this.roomToStateObj(room);
+            this.sendResponses(response, room.players);
+
             const playData = this.server.findGame(parsedMessage.data.region).res[0];
             if ("err" in playData){
                 response = teamErrorMsg("find_game_error");
@@ -285,12 +289,16 @@ export class TeamMenu {
                 type: "joinGame",
                 data: {
                     ...playData,
-                    data: this.groupIdAllocator.getNextId().toString(),
+                    data: JSON.stringify({
+                        groupId: this.groupIdAllocator.getNextId().toString(),
+                        teamMode: math.clamp(room.roomData.gameModeIdx*2, 2, 4)
+                    }),
                 }
             };
             this.sendResponses(response, room.players);
 
             room.players.forEach(p => p.inGame = true);
+            room.roomData.findingGame = false;
             response = this.roomToStateObj(room);
             this.sendResponses(response, room.players);
             break;

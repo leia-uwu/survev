@@ -126,6 +126,7 @@ function serializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) 
             }
         }
     }
+    s.writeAlignToNextByte();
 }
 
 function deserializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) {
@@ -149,24 +150,24 @@ function deserializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }
     s.readAlignToNextByte();
 }
 
-function serializeGroupStatus(s: BitStream, data: GroupStatus[]) {
-    s.writeUint8(data.length);
+function serializeGroupStatus(s: BitStream, data: { players: GroupStatus[] }) {
+    s.writeUint8(data.players.length);
 
-    for (let i = 0; i < data.length; i++) {
-        const status = data[i];
+    for (let i = 0; i < data.players.length; i++) {
+        const status = data.players[i];
         s.writeFloat(status.health, 0, 100, 7);
         s.writeBoolean(status.disconnected);
     }
 }
 
-function deserializeGroupStatus(s: BitStream, data: GroupStatus[]) {
-    data = [];
+function deserializeGroupStatus(s: BitStream, data: { players: GroupStatus[] }) {
+    data.players = [];
     const count = s.readUint8();
     for (let i = 0; i < count; i++) {
         const p = {} as GroupStatus;
         p.health = s.readFloat(0, 100, 7);
         p.disconnected = s.readBoolean();
-        data.push(p);
+        data.players.push(p);
     }
 }
 
@@ -282,10 +283,10 @@ export class UpdateMsg extends AbstractMsg {
     playerInfos: PlayerInfo[] = [];
     deletedPlayerIds: number[] = [];
 
-    playerStatus = {} as { players: PlayerStatus[] };
+    playerStatus: { players: PlayerStatus[] } = { players: [] };
     playerStatusDirty = false;
 
-    groupStatus: GroupStatus[] = [];
+    groupStatus: { players: GroupStatus[] } = { players: [] };
     groupStatusDirty = false;
 
     bullets: Bullet[] = [];
@@ -577,7 +578,7 @@ export class UpdateMsg extends AbstractMsg {
         }
 
         if ((flags & UpdateExtFlags.GroupStatus) != 0) {
-            const groupStatus: GroupStatus[] = [];
+            const groupStatus = {} as this["groupStatus"];
             deserializeGroupStatus(s, groupStatus);
             this.groupStatus = groupStatus;
             this.groupStatusDirty = true;

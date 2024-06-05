@@ -1,5 +1,5 @@
 import { type Game } from "../game";
-import { GameConfig } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
@@ -89,6 +89,9 @@ export class Player extends BaseGameObject {
     weapsDirty = true;
     spectatorCountDirty = false;
     activeIdDirty = true;
+
+    groupStatusDirty = false;
+    playerStatusDirty = false;
 
     private _health: number = GameConfig.player.health;
 
@@ -228,6 +231,7 @@ export class Player extends BaseGameObject {
     aimLayer = 0;
     dead = false;
     downed = false;
+    disconnected = false;
 
     private _animType: number = GameConfig.Anim.None;
     get animType() {
@@ -348,7 +352,7 @@ export class Player extends BaseGameObject {
 
         this.collider = collider.createCircle(pos, this.rad);
 
-        if (game.config.map !== "faction") {
+        if (game.teamMode == TeamMode.Solo && game.config.map !== "faction") {
             this.groupId = this.teamId = this.game.groupIdAllocator.getNextId();
         }
 
@@ -558,7 +562,7 @@ export class Player extends BaseGameObject {
 
         if (this._firstUpdate) {
             const joinedMsg = new JoinedMsg();
-            joinedMsg.teamMode = 1;
+            joinedMsg.teamMode = this.game.teamMode;
             joinedMsg.playerId = this.__id;
             joinedMsg.started = this.game.started;
             joinedMsg.emotes = this.loadout.emotes;
@@ -673,6 +677,32 @@ export class Player extends BaseGameObject {
         }
 
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
+
+        if (player.playerStatusDirty){
+            const teammates = this.game.teams.get(player.teamId)!;
+            for (const t of teammates){
+                updateMsg.playerStatus.players.push({
+                    hasData: true,
+                    pos: player.pos,
+                    visible: true,
+                    dead: player.dead,
+                    downed: player.downed,
+                    role: ""
+                })
+            }
+            updateMsg.playerStatusDirty = true;
+        }
+
+        if (player.groupStatusDirty){
+            const teammates = this.game.teams.get(player.teamId)!;
+            for (const t of teammates){
+                updateMsg.groupStatus.players.push({
+                    health: t.health,
+                    disconnected: t.disconnected
+                })
+            }
+            updateMsg.groupStatusDirty = true;
+        }
 
         for (const emote of this.game.emotes) {
             const emotePlayer = this.game.grid.getById(emote.playerId);

@@ -6,7 +6,7 @@ import { SpawnMode, type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BulletManager } from "./objects/bullet";
 import { Logger } from "./utils/logger";
-import { GameConfig } from "../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../shared/gameConfig";
 import * as net from "../../shared/net";
 import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
 import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
@@ -30,6 +30,7 @@ export class Game {
     over = false;
     startedTime = 0;
     id: number;
+    teamMode = TeamMode.Solo;
 
     objectIdAllocator = new IDAllocator(16);
     groupIdAllocator = new IDAllocator(8);
@@ -38,6 +39,8 @@ export class Game {
     connectedPlayers = new Set<Player>();
     livingPlayers = new Set<Player>();
     spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
+
+    teams = new Map<number, Player[]>();//team id maps to all players in that team
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -147,6 +150,9 @@ export class Game {
             player.weapsDirty = false;
             player.spectatorCountDirty = false;
             player.activeIdDirty = false;
+
+            player.groupStatusDirty = false;
+            player.playerStatusDirty = false;
         }
 
         this.fullObjs.clear();
@@ -228,6 +234,25 @@ export class Game {
             if (player.joinedTime !== 0) return;
             const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
+
+            if (joinMsg.matchPriv){//mode is either duos or squads
+                const parsedMatchPriv: {
+                    groupId: number
+                    teamMode: TeamMode
+                } = JSON.parse(joinMsg.matchPriv);
+    
+                if (this.config.map != "faction"){
+                    player.groupId = player.teamId = parsedMatchPriv.groupId;
+                    if (!this.teams.has(parsedMatchPriv.groupId)){
+                        this.teams.set(parsedMatchPriv.groupId, [player]);
+                    }else{
+                        this.teams.get(parsedMatchPriv.groupId)!.push(player);
+                    }
+                    player.groupStatusDirty = true;
+                    player.playerStatusDirty = true;
+                }
+                this.teamMode = parsedMatchPriv.teamMode;    
+            }
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
                 const disconnectMsg = new DisconnectMsg();
@@ -324,6 +349,13 @@ export class Game {
     }
 
     removePlayer(player: Player): void {
+        player.disconnected = true;
+        const teammates = this.teams.get(player.teamId)!;
+        teammates.forEach(t => {
+            t.groupStatusDirty = true
+            t.playerStatusDirty = true
+        });
+
         if (!player.dead) {
             this.aliveCountDirty = true;
             this.livingPlayers.delete(player);

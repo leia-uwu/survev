@@ -967,6 +967,7 @@ export class Game {
         }
         // Update player status
         if (msg.playerStatusDirty) {
+            // console.log("hello");
             const teamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
             this.playerBarn.updatePlayerStatus(teamId, msg.playerStatus, this.map.factionMode);
         }

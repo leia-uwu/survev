@@ -1,3 +1,9 @@
+export enum TeamMode {
+    Solo = 1,
+    Duo = 2,
+    Squad = 4
+}
+
 export const GameConfig = {
     protocolVersion: 78,
     Input: {
@@ -309,5 +315,5 @@ export const GameConfig = {
         scope: 1,
         perk: 1.25,
         xp: 1
-    } as Record<string, number>
+    } as Record<string, number>,
 } as const;
