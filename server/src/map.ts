@@ -8,7 +8,7 @@ import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { Decal } from "./objects/decal";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
-import { coldet, type AABB } from "../../shared/utils/coldet";
+import { type Collider, coldet, type AABB } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
@@ -18,6 +18,136 @@ import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { MsgStream, MsgType } from "../../shared/net";
 import { MapMsg } from "../../shared/msgs/mapMsg";
+
+//
+// Helpers
+//
+
+interface GroundBunkerColliders {
+    ground: Collider[]
+    bunker: Collider[]
+}
+
+// colliders:                          ground     bunker layer
+const cachedColliders: Record<string, GroundBunkerColliders> = {};
+
+function computeColliders(type: string) {
+    const def = MapObjectDefs[type];
+
+    const colliders: GroundBunkerColliders = {
+        ground: [],
+        bunker: []
+    };
+
+    if (def === undefined) return colliders;
+
+    switch (def.type) {
+    case "obstacle": {
+        colliders.ground.push(def.collision);
+        break;
+    }
+    case "structure": {
+        if (def.mapObstacleBounds) {
+            for (let i = 0; i < def.mapObstacleBounds.length; i++) {
+                colliders.ground.push(...def.mapObstacleBounds);
+            }
+        }
+
+        for (let i = 0; i < def.layers.length; i++) {
+            const layer = def.layers[i];
+            const layerColliders = getColliders(layer.type);
+            const colliderLayer = i === 0 ? "ground" : "bunker";
+            const rot = math.oriToRad(layer.ori);
+
+            for (let j = 0; j < layerColliders.ground.length; j++) {
+                const coll = collider.transform(layerColliders.ground[j], layer.pos, rot, 1);
+                colliders[colliderLayer].push(coll);
+            }
+            for (let j = 0; j < layerColliders.bunker.length; j++) {
+                const coll = collider.transform(layerColliders.bunker[j], layer.pos, rot, 1);
+                colliders[colliderLayer].push(coll);
+            }
+        }
+
+        break;
+    }
+    case "building": {
+        if (def.mapObstacleBounds) colliders.ground.push(...def.mapObstacleBounds);
+
+        for (const object of def.mapObjects ?? []) {
+            const type = typeof object.type === "string"
+                ? object.type
+                : object.type();
+
+            const objColliders = getColliders(type);
+            const rot = math.oriToRad(object.ori);
+            for (let j = 0; j < objColliders.ground.length; j++) {
+                const coll = collider.transform(objColliders.ground[j], object.pos, rot, 1);
+                colliders.ground.push(coll);
+            }
+            for (let j = 0; j < objColliders.bunker.length; j++) {
+                const coll = collider.transform(objColliders.bunker[j], object.pos, rot, 1);
+                colliders.bunker.push(coll);
+            }
+        }
+
+        for (let i = 0; i < def.floor.surfaces.length; i++) {
+            const collisions = def.floor.surfaces[i].collision;
+            for (let j = 0; j < collisions.length; j++) {
+                colliders.ground.push(collisions[j]);
+            }
+        }
+        for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
+            const region = def.ceiling.zoomRegions[i];
+            if (region.zoomIn) {
+                colliders.ground.push(region.zoomIn);
+            }
+            if (region.zoomOut) {
+                colliders.ground.push(region.zoomOut);
+            }
+        }
+        break;
+    }
+    }
+    return colliders;
+}
+
+export function getColliders(type: string) {
+    if (cachedColliders[type]) {
+        return cachedColliders[type];
+    }
+    const colliders = computeColliders(type);
+    cachedColliders[type] = colliders;
+    return colliders;
+}
+
+function transformColliders(colls: GroundBunkerColliders, pos: Vec2, rot: number) {
+    const newColls: GroundBunkerColliders = {
+        ground: [],
+        bunker: []
+    };
+    for (let i = 0; i < colls.ground.length; i++) {
+        newColls.ground.push(collider.transform(colls.ground[i], pos, rot, 1));
+    }
+    for (let i = 0; i < colls.bunker.length; i++) {
+        newColls.bunker.push(collider.transform(colls.bunker[i], pos, rot, 1));
+    }
+    return newColls;
+}
+
+function checkCollision(collsA: GroundBunkerColliders, collsB: Collider[], layer: number) {
+    const collLayer = layer === 0 ? "ground" : "bunker";
+    const layerColls = collsA[collLayer];
+
+    for (let i = 0; i < layerColls.length; i++) {
+        const collA = layerColls[i];
+        for (let j = 0; j < collsB.length; j++) {
+            const collB = collsB[j];
+            if (coldet.test(collA, collB)) return true;
+        }
+    }
+    return false;
+}
 
 export class GameMap {
     game: Game;
@@ -342,8 +472,7 @@ export class GameMap {
 
         const rot = math.oriToRad(ori);
 
-        const mapObstacleBounds = mapHelpers.getColliders(type)
-            .map(coll => collider.transform(coll, pos, rot, scale));
+        const collsA = transformColliders(getColliders(type), pos, rot);
 
         const boundCollider = collider.transform(mapHelpers.getBoundingCollider(type), pos, rot, scale);
         const objs = this.game.grid.intersectCollider(boundCollider);
@@ -352,15 +481,7 @@ export class GameMap {
             if (!GameMap.collidableTypes.includes(objs[i].__type)) continue;
 
             const obj = objs[i] as Obstacle | Building | Structure;
-
-            for (let j = 0; j < obj.mapObstacleBounds.length; j++) {
-                const otherBound = obj.mapObstacleBounds[j];
-                for (let k = 0; k < mapObstacleBounds.length; k++) {
-                    if (coldet.test(mapObstacleBounds[k], otherBound)) {
-                        return false;
-                    }
-                }
-            }
+            if (checkCollision(collsA, obj.mapObstacleBounds, obj.layer)) return false;
         }
 
         if (!def.terrain?.river &&

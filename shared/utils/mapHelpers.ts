@@ -72,54 +72,6 @@ function computeBoundingCollider(type: string): Collider {
     return def.collision;
 }
 
-const cachedRealColliders: Record<string, Collider[]> = {};
-
-function getColliders(type: string) {
-    const def = MapObjectDefs[type];
-    if (def === undefined) return [];
-    const colliders: Collider[] = [];
-    switch (def.type) {
-    case "obstacle": {
-        colliders.push(def.collision);
-        break;
-    }
-    case "structure": {
-        if (def.mapObstacleBounds) colliders.push(...def.mapObstacleBounds);
-
-        for (const layer of def.layers ?? []) {
-            colliders.push(...getColliders(layer.type).map(coll => {
-                const rot = math.oriToRad(layer.ori);
-                return collider.transform(coll, v2.rotate(layer.pos, rot), rot, 1);
-            }));
-        }
-
-        break;
-    }
-    case "building": {
-        if (def.mapObstacleBounds) colliders.push(...def.mapObstacleBounds);
-
-        for (const object of def.mapObjects ?? []) {
-            const type = typeof object.type === "string"
-                ? object.type
-                : object.type();
-            colliders.push(...getColliders(type).map(coll => {
-                const rot = object.inheritOri ? math.oriToRad(object.ori) : 0;
-                return collider.transform(coll, v2.rotate(object.pos, rot), rot, 1);
-            }));
-        }
-
-        for (let i = 0; i < def.floor.surfaces.length; i++) {
-            const collisions = def.floor.surfaces[i].collision;
-            for (let j = 0; j < collisions.length; j++) {
-                colliders.push(collisions[j]);
-            }
-        }
-        break;
-    }
-    }
-    return colliders;
-}
-
 //
 // MapHelpers
 //
@@ -130,15 +82,6 @@ export const mapHelpers = {
         }
         const col = computeBoundingCollider(type);
         cachedColliders[type] = col;
-        return col;
-    },
-
-    getColliders(type: string): Collider[] {
-        if (cachedRealColliders[type]) {
-            return cachedRealColliders[type];
-        }
-        const col = getColliders(type);
-        cachedRealColliders[type] = col;
         return col;
     },
 

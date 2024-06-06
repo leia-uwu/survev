@@ -8,6 +8,7 @@ import { math } from "../../../shared/utils/math";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { getColliders } from "../map";
 
 interface Stair {
     collision: AABB
@@ -81,7 +82,7 @@ export class Structure extends BaseGameObject {
             });
         }
 
-        this.mapObstacleBounds = mapHelpers.getColliders(type).map(coll => {
+        this.mapObstacleBounds = getColliders(type).ground.map(coll => {
             return collider.transform(coll, pos, this.rot, 1);
         });
     }

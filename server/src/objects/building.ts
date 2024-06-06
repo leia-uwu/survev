@@ -12,6 +12,7 @@ import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { type Structure } from "./structure";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { getColliders } from "../map";
 
 export class Building extends BaseGameObject {
     bounds: Collider;
@@ -89,7 +90,7 @@ export class Building extends BaseGameObject {
 
         this.wallsToDestroy = def.ceiling.destroy?.wallCount ?? Infinity;
 
-        this.mapObstacleBounds = mapHelpers.getColliders(type).map(coll => {
+        this.mapObstacleBounds = getColliders(type).ground.map(coll => {
             return collider.transform(coll, pos, this.rot, 1);
         });
 
