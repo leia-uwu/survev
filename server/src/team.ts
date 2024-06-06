@@ -37,7 +37,7 @@ export class Team {
     }
 
     /**
-     * kills all teammates, only called after last player on team thats not knocked gets knocked
+     * kills all teammates besides the passed in player, only called after last player on team thats not knocked gets knocked
      */
     killAllTeammates(player: Player) {
         for (const p of this.players) {

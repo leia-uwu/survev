@@ -865,6 +865,8 @@ export class Player extends BaseGameObject {
                     this.kill(params);
                 } else if (this.downedBy && params.damageType == GameConfig.DamageType.Bleeding) {
                     this.kill(params);
+                } else {
+                    this.kill(params);
                 }
             } else {
                 if (this.team.allTeammatesDowned(this)) {
