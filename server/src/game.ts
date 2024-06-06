@@ -188,7 +188,7 @@ export class Game {
      * @param team team object to assert as Team if return is true
      * @returns true if duos or squads, false if solos
      */
-    isTeammode(team: Team | undefined): team is Team{
+    isTeammode(team: Team | undefined): team is Team {
         return this.teamMode != TeamMode.Solo;
     }
 

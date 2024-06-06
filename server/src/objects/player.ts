@@ -26,7 +26,7 @@ import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
-import { Team } from "../team";
+import { type Team } from "../team";
 
 export class Emote {
     playerId: number;
@@ -805,6 +805,11 @@ export class Player extends BaseGameObject {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
+        // teammates can't deal damage to each other
+        if (this.game.isTeammode(this.team) && params.source instanceof Player && this.team.isTeammate(params.source)) {
+            return;
+        }
+
         let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
@@ -843,31 +848,31 @@ export class Player extends BaseGameObject {
         }
 
         if (this._health === 0) {
-            if (!this.game.isTeammode(this.team)){//solos
+            if (!this.game.isTeammode(this.team)) { // solos
                 this.kill(params);
                 return;
             }
 
-            //teams
-            //this is very unoptimized/ugly and i just hacked it together to get all cases to trigger, definitely room for improvement by whoever reads this
-            if (this.downed){
-                if (this.downedBy && params.source instanceof Player && this.downedBy == params.source){
+            // teams
+            // this is very unoptimized/ugly and i just hacked it together to get all cases to trigger, definitely room for improvement by whoever reads this
+            if (this.downed) {
+                if (this.downedBy && params.source instanceof Player && this.downedBy == params.source) {
                     this.kill(params);
-                }else if (this.downedBy && params.source instanceof Player && this.downedBy.team?.isTeammate(params.source)){
+                } else if (this.downedBy && params.source instanceof Player && this.downedBy.team?.isTeammate(params.source)) {
                     params.source = this.downedBy;
                     this.kill(params);
-                }else if (this.downedBy && params.source instanceof Player && !this.downedBy.team?.isTeammate(params.source)){
+                } else if (this.downedBy && params.source instanceof Player && !this.downedBy.team?.isTeammate(params.source)) {
                     this.kill(params);
-                }else if (this.downedBy && params.damageType == GameConfig.DamageType.Bleeding){
+                } else if (this.downedBy && params.damageType == GameConfig.DamageType.Bleeding) {
                     this.kill(params);
                 }
-            }else{
-                if (this.team.allTeammatesDowned(this)){
+            } else {
+                if (this.team.allTeammatesDowned(this)) {
                     this.kill(params);
                     this.team.killAllTeammates(this);
-                }else if (this.team.allTeammatesDead(this)){
+                } else if (this.team.allTeammatesDead(this)) {
                     this.kill(params);
-                }else{
+                } else {
                     this.down(params);
                 }
             }
@@ -954,9 +959,9 @@ export class Player extends BaseGameObject {
         if (params.source instanceof Player) {
             this.killedBy = params.source;
             if (params.source !== this) {
-                params.source.kills++
-            };
-            
+                params.source.kills++;
+            }
+
             killMsg.killerId = params.source.__id;
             killMsg.killCreditId = params.source.__id;
             killMsg.killerKills = params.source.kills;
