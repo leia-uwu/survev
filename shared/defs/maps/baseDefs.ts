@@ -283,6 +283,10 @@ export const Main: MapDef = {
             { name: "4xscope", count: 1, weight: 1 },
             { name: "8xscope", count: 1, weight: 0.5 }
         ],
+        tier_conch: [
+            { name: "outfitAqua", count: 1, weight: 1 },
+            { name: "outfitCoral", count: 1, weight: 1 }
+        ],
         tier_hatchet: [
             { name: "vector", count: 1, weight: 5 },
             { name: "hk416", count: 1, weight: 2 },
