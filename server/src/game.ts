@@ -22,6 +22,7 @@ import { IDAllocator } from "./IDAllocator";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 import { util } from "../../shared/utils/util";
+import { Team } from "./team";
 
 export class Game {
     started = false;
@@ -40,7 +41,7 @@ export class Game {
     livingPlayers = new Set<Player>();
     spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
 
-    teams = new Map<number, Player[]>();// team id maps to all players in that team
+    teams = new Map<number, Team>();// team id maps to all players in that team
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -182,6 +183,15 @@ export class Game {
         }
     }
 
+    /**
+     * checks teammode and asserts the passed in team object accordingly
+     * @param team team object to assert as Team if return is true
+     * @returns true if duos or squads, false if solos
+     */
+    isTeammode(team: Team | undefined): team is Team{
+        return this.teamMode != TeamMode.Solo;
+    }
+
     randomPlayer() {
         return this.spectatablePlayers[util.randomInt(0, this.spectatablePlayers.length - 1)];
     }
@@ -244,10 +254,13 @@ export class Game {
                 if (this.config.map != "faction") {
                     player.groupId = player.teamId = parsedMatchPriv.groupId;
                     if (!this.teams.has(parsedMatchPriv.groupId)) {
-                        this.teams.set(parsedMatchPriv.groupId, [player]);
+                        const team = new Team();
+                        team.add(player);
+                        this.teams.set(parsedMatchPriv.groupId, team);
                     } else {
-                        this.teams.get(parsedMatchPriv.groupId)!.push(player);
+                        this.teams.get(parsedMatchPriv.groupId)!.add(player);
                     }
+                    player.team = this.teams.get(parsedMatchPriv.groupId)!;
                     player.setGroupStatuses();
                     player.playerStatusDirty = true;
                 }

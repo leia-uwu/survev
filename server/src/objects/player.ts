@@ -26,6 +26,7 @@ import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { Team } from "../team";
 
 export class Emote {
     playerId: number;
@@ -90,13 +91,15 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     activeIdDirty = true;
 
+    team: Team | undefined = undefined;
+
     /**
      * set true if any member on the team changes health or disconnects
      */
     groupStatusDirty = false;
 
     setGroupStatuses() {
-        const teammates = this.game.teams.get(this.teamId)!;
+        const teammates = this.game.teams.get(this.teamId)!.players;
         for (const t of teammates) {
             t.groupStatusDirty = true;
         }
@@ -694,7 +697,7 @@ export class Player extends BaseGameObject {
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
         if (player.playerStatusDirty) {
-            const teammates = this.game.teams.get(player.teamId)!;
+            const teammates = this.game.teams.get(player.teamId)!.players;
             for (let i = 0; i < teammates.length; i++) {
                 updateMsg.playerStatus.players.push({
                     hasData: true,
@@ -709,7 +712,7 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teammates = this.game.teams.get(player.teamId)!;
+            const teammates = this.game.teams.get(player.teamId)!.players;
             for (const t of teammates) {
                 updateMsg.groupStatus.players.push({
                     health: t.health,
@@ -802,7 +805,7 @@ export class Player extends BaseGameObject {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
-        let finalDamage = params.amount;
+        let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
         if (params.damageType !== GameConfig.DamageType.Gas && params.damageType !== GameConfig.DamageType.Bleeding) {
@@ -835,12 +838,39 @@ export class Player extends BaseGameObject {
 
         this.health -= finalDamage;
 
-        if (this.game.teamMode != TeamMode.Solo) {
+        if (this.game.isTeammode(this.team)) {
             this.setGroupStatuses();
         }
 
         if (this._health === 0) {
-            this.kill(params);
+            if (!this.game.isTeammode(this.team)){//solos
+                this.kill(params);
+                return;
+            }
+
+            //teams
+            //this is very unoptimized/ugly and i just hacked it together to get all cases to trigger, definitely room for improvement by whoever reads this
+            if (this.downed){
+                if (this.downedBy && params.source instanceof Player && this.downedBy == params.source){
+                    this.kill(params);
+                }else if (this.downedBy && params.source instanceof Player && this.downedBy.team?.isTeammate(params.source)){
+                    params.source = this.downedBy;
+                    this.kill(params);
+                }else if (this.downedBy && params.source instanceof Player && !this.downedBy.team?.isTeammate(params.source)){
+                    this.kill(params);
+                }else if (this.downedBy && params.damageType == GameConfig.DamageType.Bleeding){
+                    this.kill(params);
+                }
+            }else{
+                if (this.team.allTeammatesDowned(this)){
+                    this.kill(params);
+                    this.team.killAllTeammates(this);
+                }else if (this.team.allTeammatesDead(this)){
+                    this.kill(params);
+                }else{
+                    this.down(params);
+                }
+            }
         }
     }
 
@@ -862,20 +892,42 @@ export class Player extends BaseGameObject {
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
     }
 
-    /**
-     * includes player but doesn't matter since method is only called after player dies
-     */
-    allTeammatesDead(): boolean {
-        const teammates = this.game.teams.get(this.teamId)!;
-        for (const t of teammates) {
-            if (!t.dead) return false;
+    downedBy: Player | undefined;
+    /** downs a player */
+    down(params: DamageParams): void {
+        this.downed = true;
+        this.boost = 0;
+        this.health = 100;
+        this.actionType = this.actionSeq = 0;
+        this.animType = this.animSeq = 0;
+        this.setDirty();
+
+        this.shootHold = false;
+        this.weaponManager.clearTimeouts();
+
+        //
+        // Send downed msg
+        //
+        const downedMsg = new KillMsg();
+        downedMsg.damageType = params.damageType;
+        downedMsg.itemSourceType = params.gameSourceType ?? "";
+        downedMsg.mapSourceType = params.mapSourceType ?? "";
+        downedMsg.targetId = this.__id;
+        downedMsg.downed = true;
+
+        if (params.source instanceof Player) {
+            this.downedBy = params.source;
+            downedMsg.killerId = params.source.__id;
+            downedMsg.killCreditId = params.source.__id;
         }
-        return true;
+
+        this.game.msgsToSend.push({ type: MsgType.Kill, msg: downedMsg });
     }
 
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
+        if (this.downed) this.downed = false;
         this.dead = true;
         this.boost = 0;
         this.actionType = this.actionSeq = 0;
@@ -901,19 +953,16 @@ export class Player extends BaseGameObject {
 
         if (params.source instanceof Player) {
             this.killedBy = params.source;
-            if (params.source !== this) params.source.kills++;
+            if (params.source !== this) {
+                params.source.kills++
+            };
+            
             killMsg.killerId = params.source.__id;
             killMsg.killCreditId = params.source.__id;
             killMsg.killerKills = params.source.kills;
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
-
-        if (this.game.teamMode != TeamMode.Solo) {
-            if (this.allTeammatesDead()) {
-                this.game.teams.delete(this.teamId);
-            }
-        }
 
         //
         // Send game over message to player
