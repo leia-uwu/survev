@@ -108,7 +108,12 @@ function computeColliders(type: string) {
         }
         break;
     }
+    case "loot_spawner": {
+        colliders.ground.push(collider.createCircle(v2.create(0.0, 0.0), 3.0));
+        break;
     }
+    }
+
     return colliders;
 }
 
@@ -455,7 +460,7 @@ export class GameMap {
                 const items = this.game.lootBarn.getLootTable(tier.tier);
 
                 for (const item of items) {
-                    this.game.lootBarn.addLoot(item.name, pos, layer, item.count);
+                    this.game.lootBarn.addLoot(item.name, pos, layer, item.count, undefined, 0);
                 }
             }
             break;

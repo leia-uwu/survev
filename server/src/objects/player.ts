@@ -1421,7 +1421,7 @@ export class Player extends BaseGameObject {
                 amountToDrop = Math.min(5, inventoryCount);
             }
 
-            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop, this.dir);
             this.inventory[dropMsg.item] -= amountToDrop;
             this.inventoryDirty = true;
             break;
@@ -1431,7 +1431,15 @@ export class Player extends BaseGameObject {
             const scopeLevel = `${itemDef.level}xscope`;
             const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
 
-            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(
+                dropMsg.item,
+                this.pos,
+                this.layer,
+                1,
+                undefined,
+                -4,
+                this.dir
+            );
             this.inventory[scopeLevel] = 0;
 
             if (this.scope === scopeLevel) {
@@ -1448,7 +1456,15 @@ export class Player extends BaseGameObject {
         case "chest":
         case "helmet": {
             if (itemDef.noDrop) break;
-            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(
+                dropMsg.item,
+                this.pos,
+                this.layer,
+                1,
+                undefined,
+                -4,
+                this.dir
+            );
             this[itemDef.type] = "";
             this.setDirty();
             break;
@@ -1458,7 +1474,15 @@ export class Player extends BaseGameObject {
             if (this.inventory[dropMsg.item] === 0) break;
             this.inventory[dropMsg.item]--;
             // @TODO: drop more than one?
-            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(
+                dropMsg.item,
+                this.pos,
+                this.layer,
+                1,
+                undefined,
+                -4,
+                this.dir
+            );
             this.inventoryDirty = true;
             break;
         }
@@ -1475,7 +1499,7 @@ export class Player extends BaseGameObject {
 
             const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
 
-            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop, this.dir);
             this.inventory[dropMsg.item] -= amountToDrop;
             this.weapons[3].ammo -= amountToDrop;
 

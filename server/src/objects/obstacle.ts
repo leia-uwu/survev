@@ -303,6 +303,7 @@ export class Obstacle extends BaseGameObject {
                             this.layer,
                             item.count,
                             undefined,
+                            undefined,
                             params.dir
                         );
                     }
@@ -313,6 +314,7 @@ export class Obstacle extends BaseGameObject {
                     lootPos,
                     this.layer,
                     lootTierOrItem.count,
+                    undefined,
                     undefined,
                     params.dir
                 );
