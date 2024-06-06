@@ -806,7 +806,12 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
 
         // teammates can't deal damage to each other
-        if (this.game.isTeammode(this.team) && params.source instanceof Player && this.team.isTeammate(params.source)) {
+        if (
+            this.game.isTeammode(this.team) && 
+            params.source instanceof Player && 
+            params.source != this && 
+            this.team.isTeammate(params.source)
+        ) {
             return;
         }
 
@@ -872,7 +877,7 @@ export class Player extends BaseGameObject {
                 if (this.team.allTeammatesDowned(this)) {
                     this.kill(params);
                     this.team.killAllTeammates(this);
-                } else if (this.team.allTeammatesDead(this)) {
+                } else if (this.team.allTeammatesDead(this) || this.team.players.length == 1) {
                     this.kill(params);
                 } else {
                     this.down(params);
