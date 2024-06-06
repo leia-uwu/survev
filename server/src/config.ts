@@ -28,7 +28,7 @@ export const Config = {
 
     defaultRegion: "local",
 
-    spawn: { mode: SpawnMode.Center },
+    spawn: { mode: SpawnMode.Random },
 
     maxGames: 1,
 
