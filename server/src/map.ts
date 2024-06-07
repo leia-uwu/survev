@@ -487,8 +487,12 @@ export class GameMap {
         }
     }
 
-    genAuto(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, parentId?: number, puzzlePiece?: string) {
+    genAuto(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, parentId?: number, puzzlePiece?: string, ignoreMapSpawnReplacement?: boolean) {
         const def = MapObjectDefs[type];
+
+        const spawnReplacements = this.mapDef.mapGen.spawnReplacements[0];
+        if (spawnReplacements[type] && !ignoreMapSpawnReplacement) type = spawnReplacements[type];
+
         pos = this.clampToMapBounds(pos);
 
         switch (def.type) {
@@ -866,8 +870,10 @@ export class GameMap {
                 partOri,
                 mapObject.scale,
                 building.__id,
-                mapObject.puzzlePiece
+                mapObject.puzzlePiece,
+                mapObject.ignoreMapSpawnReplacement
             );
+
             if (obj) building.childObjects.push(obj);
         }
 

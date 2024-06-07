@@ -136,6 +136,7 @@ interface BuildingDef {
         ori: number
         inheritOri?: boolean
         puzzlePiece?: string
+        ignoreMapSpawnReplacement?: boolean
     }>
     puzzle?: {
         name: string
