@@ -225,7 +225,8 @@ const mapDef = {
                 tree_07: 1400,
                 tree_08: 1300,
                 tree_08b: 200,
-                tree_09: 84
+                tree_09: 84,
+                teapavilion_01w: 1
             }
         ],
         randomSpawns: [],

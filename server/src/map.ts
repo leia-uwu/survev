@@ -162,7 +162,7 @@ export class GameMap {
     center: Vec2;
 
     msg = new MapMsg();
-    mapStream = new MsgStream(new ArrayBuffer(1 << 14));
+    mapStream = new MsgStream(new ArrayBuffer(1 << 15));
     seed = util.randomInt(0, 2 ** 31);
 
     bounds: AABB;
@@ -177,6 +177,11 @@ export class GameMap {
     mapDef: MapDef;
 
     riverDescs: MapRiverData[] = [];
+
+    lakes: Array<{
+        river: MapRiverData
+        center: Vec2
+    }> = [];
 
     constructor(game: Game) {
         this.game = game;
@@ -263,10 +268,17 @@ export class GameMap {
 
             points.push(v2.copy(points[0]));
 
-            this.riverDescs.push({
+            const river = {
                 width: (lake.outerRad - lake.innerRad) / 2,
                 points,
                 looped: true
+            };
+
+            this.riverDescs.push(river);
+
+            this.lakes.push({
+                river,
+                center
             });
         }
 
@@ -360,7 +372,7 @@ export class GameMap {
             let ori: number | undefined;
 
             let attempts = 0;
-            while (attempts++ < 200) {
+            while (attempts++ < GameMap.MaxSpawnAttempts) {
                 ori = util.randomInt(0, 3);
                 pos = v2.add(
                     util.randomPointInCircle(customSpawnRule.rad),
@@ -371,7 +383,7 @@ export class GameMap {
                     break;
                 }
             }
-            if (pos && ori) {
+            if (pos && ori && attempts < GameMap.MaxSpawnAttempts) {
                 this.genAuto(customSpawnRule.type, pos);
             }
         }
@@ -423,6 +435,8 @@ export class GameMap {
                 this.genOnWaterEdge(type);
             } else if (def.terrain?.bridge) {
                 this.genOnRiver(type);
+            } else if (def.terrain?.lakeCenter) {
+                this.genOnLakeCenter(type);
             } else if (def.terrain?.grass) {
                 this.genOnGrass(type);
             } else if (def.terrain?.beach) {
@@ -694,6 +708,13 @@ export class GameMap {
         } else {
             console.warn(`Failed to generate ${type} on river`);
         }
+    }
+
+    genOnLakeCenter(type: string) {
+        const lake = this.lakes[util.randomInt(0, this.lakes.length - 1)];
+        const pos = lake.center;
+
+        this.genAuto(type, pos, 0, 0);
     }
 
     genRiver(

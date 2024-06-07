@@ -5,6 +5,7 @@ interface TerrainSpawnDef {
     grass?: boolean
     beach?: boolean
     riverShore?: boolean
+    lakeCenter?: boolean
     bridge?: {
         nearbyWidthMult: number
     }
