@@ -255,13 +255,24 @@ export class GameMap {
         }
         const randomGenerator = util.seededRand(this.seed);
 
+        //
+        // Generate lakes
+        //
         for (const lake of mapConfig.rivers.lakes) {
             const points: Vec2[] = [];
-            const center = v2.mulElems(v2.create(this.width, this.height), lake.spawnBound.pos);
+
+            const center = v2.add(v2.mulElems(
+                v2.create(this.width, this.height),
+                lake.spawnBound.pos
+            ), util.randomPointInCircle(lake.spawnBound.rad));
+
+            let len = (lake.outerRad - lake.innerRad);
+            const startLen = len;
 
             for (let i = 0; i < Math.PI * 2; i += randomGenerator(0.2, 0.3)) {
                 const dir = v2.create(Math.sin(i), Math.cos(i));
-                const len = lake.outerRad + randomGenerator(-10, 10);
+                len += randomGenerator(-8, 8);
+                len = math.clamp(len, startLen - 10, startLen + 10);
 
                 points.push(v2.add(center, v2.mul(dir, len)));
             }
@@ -282,6 +293,9 @@ export class GameMap {
             });
         }
 
+        //
+        // Generate rivers
+        //
         const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
@@ -294,8 +308,7 @@ export class GameMap {
         const mapWidth = this.width - 1;
         const mapHeight = this.height - 1;
 
-        const riverAmount = widths.length + this.riverDescs.length;
-        while (this.riverDescs.length < riverAmount) {
+        for (let i = 0; i < widths.length;) {
             let start: Vec2;
 
             const horizontal = randomGenerator() < 0.5;
@@ -311,16 +324,50 @@ export class GameMap {
                 start = v2.create(reverse ? rightHalf : leftHalf, 1);
             }
 
-            const smoothness = mapConfig.rivers.smoothness;
+            const smoothness = this.mapDef.mapGen.map.rivers.smoothness;
+
             const startAngle = Math.atan2(center.y - start.y, center.x - start.x) + (reverse ? 0 : Math.PI) + randomGenerator(-smoothness, smoothness);
 
-            this.genRiver(
-                start,
-                startAngle,
-                widths[this.riverDescs.length],
-                riverRect,
-                randomGenerator
-            );
+            const riverPoints: Vec2[] = [];
+
+            riverPoints.push(start);
+
+            const dir = v2.create(Math.cos(startAngle), Math.sin(startAngle));
+
+            for (let i = 1; i < 100; i++) {
+                const lastPoint = riverPoints[i - 1];
+
+                const len = randomGenerator(15, 25);
+
+                const x = randomGenerator(-smoothness, smoothness);
+                const newdir = v2.add(dir, v2.create(x, x));
+
+                const pos = v2.add(lastPoint, v2.mul(newdir, len));
+
+                let collided = false;
+
+                // end the river if it collides with another river
+                for (const river of this.riverDescs) {
+                    const points = river.points;
+                    for (let j = 1; j < points.length; j++) {
+                        const intersection = coldet.intersectSegmentSegment(lastPoint, pos, points[j - 1], points[j]);
+                        if (intersection) {
+                            const dist = v2.distance(intersection.point, riverPoints[i - 1]);
+                            if (dist > 6) riverPoints[i] = intersection.point;
+                            collided = true;
+                            break;
+                        }
+                    }
+                    if (collided) break;
+                }
+                if (collided) break;
+                riverPoints[i] = this.clampToMapBounds(pos);
+
+                if (!coldet.testPointAabb(pos, riverRect.min, riverRect.max)) break;
+            }
+            if (riverPoints.length < 20) continue;
+            this.riverDescs.push({ width: widths[i], points: riverPoints, looped: false });
+            i++;
         }
     }
 
@@ -715,57 +762,6 @@ export class GameMap {
         const pos = lake.center;
 
         this.genAuto(type, pos, 0, 0);
-    }
-
-    genRiver(
-        startPos: Vec2,
-        startAngle: number,
-        width: number,
-        bounds: AABB,
-        randomGenerator: ReturnType<typeof util["seededRand"]>
-    ) {
-        const riverPoints: Vec2[] = [];
-
-        riverPoints.push(startPos);
-
-        const dir = v2.create(Math.cos(startAngle), Math.sin(startAngle));
-
-        const smoothness = this.mapDef.mapGen.map.rivers.smoothness;
-
-        for (let i = 1; i < 100; i++) {
-            const lastPoint = riverPoints[i - 1];
-
-            const len = randomGenerator(15, 25);
-
-            const x = randomGenerator(-smoothness, smoothness);
-            const newdir = v2.add(dir, v2.create(x, x));
-
-            const pos = v2.add(lastPoint, v2.mul(newdir, len));
-
-            let collided = false;
-
-            // end the river if it collides with another river
-            for (const river of this.riverDescs) {
-                const points = river.points;
-                for (let j = 1; j < points.length; j++) {
-                    const intersection = coldet.intersectSegmentSegment(lastPoint, pos, points[j - 1], points[j]);
-                    if (intersection) {
-                        const dist = v2.distance(intersection.point, riverPoints[i - 1]);
-                        if (dist > 6) riverPoints[i] = intersection.point;
-                        collided = true;
-                        break;
-                    }
-                }
-                if (collided) break;
-            }
-            if (collided) break;
-            riverPoints[i] = this.clampToMapBounds(pos);
-
-            if (!coldet.testPointAabb(pos, bounds.min, bounds.max)) break;
-        }
-        if (riverPoints.length < 20) return;
-
-        this.riverDescs.push({ width, points: riverPoints, looped: false });
     }
 
     genObstacle(type: string, pos: Vec2, layer = 0, ori?: number, scale?: number, buildingId?: number, puzzlePiece?: string): Obstacle {

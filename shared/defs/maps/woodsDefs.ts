@@ -209,6 +209,7 @@ const mapDef = {
             {
                 logging_complex_01: 1,
                 logging_complex_02: 1,
+                teapavilion_01w: 1,
                 warehouse_01: 3,
                 house_red_01: 3,
                 barn_01: 3,
@@ -225,8 +226,7 @@ const mapDef = {
                 tree_07: 1400,
                 tree_08: 1300,
                 tree_08b: 200,
-                tree_09: 84,
-                teapavilion_01w: 1
+                tree_09: 84
             }
         ],
         randomSpawns: [],
