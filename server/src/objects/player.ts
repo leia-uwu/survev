@@ -134,8 +134,6 @@ export class Player extends BaseGameObject {
         this.zoomDirty = true;
     }
 
-    action: { time: number, duration: number, targetId: number };
-
     private _scope = "1xscope";
 
     get scope() {
@@ -245,6 +243,7 @@ export class Player extends BaseGameObject {
 
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
+    action = { time: 0, duration: 0, targetId: 0 };
 
     /**
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
@@ -357,8 +356,6 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-
-        this.action = { time: -1, duration: 0, targetId: -1 };
     }
 
     visibleObjects = new Set<GameObject>();
@@ -415,26 +412,26 @@ export class Player extends BaseGameObject {
         if (this.actionType !== GameConfig.Action.None) {
             this.action.time += dt;
             this.action.time = math.clamp(this.action.time, 0, Constants.ActionMaxDuration);
-        }
 
-        if (this.action.time >= this.action.duration) {
-            if (this.actionType === GameConfig.Action.UseItem) {
-                const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
-                if ("heal" in itemDef) this.health += itemDef.heal;
-                if ("boost" in itemDef) this.boost += itemDef.boost;
-                this.inventory[this.actionItem]--;
-                this.inventoryDirty = true;
-            } else if (this.isReloading()) {
-                this.weaponManager.reload();
-            }
+            if (this.action.time >= this.action.duration) {
+                if (this.actionType === GameConfig.Action.UseItem) {
+                    const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
+                    if ("heal" in itemDef) this.health += itemDef.heal;
+                    if ("boost" in itemDef) this.boost += itemDef.boost;
+                    this.inventory[this.actionItem]--;
+                    this.inventoryDirty = true;
+                } else if (this.isReloading()) {
+                    this.weaponManager.reload();
+                }
 
-            this.cancelAction();
+                this.cancelAction();
 
-            if (
-                (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
-                this.weapons[this.curWeapIdx].ammo == 0
-            ) {
-                this.weaponManager.tryReload();
+                if (
+                    (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
+                    this.weapons[this.curWeapIdx].ammo == 0
+                ) {
+                    this.weaponManager.tryReload();
+                }
             }
         }
 
