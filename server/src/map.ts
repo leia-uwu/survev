@@ -383,6 +383,8 @@ export class GameMap {
             if (river.looped) continue;
 
             for (let i = 0.2; i < 0.8; i += 0.05) {
+                if (Math.random() > 0.3) continue;
+
                 const pos = river.spline.getPos(i);
 
                 const rot = river.spline.getNormal(i);
