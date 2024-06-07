@@ -186,6 +186,9 @@ export const Main: MapDef = {
             { name: "8xscope", count: 1, weight: 0.05 },
             { name: "15xscope", count: 1, weight: 0.001 }
         ],
+        tier_chrys_case: [
+            { name: "", count: 1, weight: 1 }
+        ],
         tier_chrys_chest: [
             { name: "", count: 1, weight: 1 },
             { name: "katana", count: 1, weight: 1 },
@@ -287,6 +290,15 @@ export const Main: MapDef = {
             { name: "outfitAqua", count: 1, weight: 1 },
             { name: "outfitCoral", count: 1, weight: 1 }
         ],
+        tier_noir_outfit: [
+            { name: "outfitNoir", count: 1, weight: 1 }
+        ],
+        tier_khaki_outfit: [
+            { name: "outfitKhaki", count: 1, weight: 1 }
+        ],
+        tier_pirate_melee: [
+            { name: "hook", count: 1, weight: 1 }
+        ],
         tier_hatchet: [
             { name: "vector", count: 1, weight: 5 },
             { name: "hk416", count: 1, weight: 2 },
@@ -294,6 +306,56 @@ export const Main: MapDef = {
             { name: "m249", count: 1, weight: 0.1 },
             { name: "pkp", count: 1, weight: 0.05 },
             { name: "m9", count: 1, weight: 0.01 }
+        ],
+        tier_lmgs: [
+            { name: "bar", count: 1, weight: 5 },
+            { name: "dp28", count: 1, weight: 5 },
+            { name: "qbb97", count: 1, weight: 0.5 },
+            { name: "m249", count: 1, weight: 0.01 },
+            { name: "pkp", count: 1, weight: 0.01 }
+        ],
+        tier_shotguns: [
+            { name: "m1100", count: 1, weight: 5 },
+            { name: "m870", count: 1, weight: 5 },
+            { name: "mp220", count: 1, weight: 1 },
+            { name: "spas12", count: 1, weight: 1 },
+            { name: "saiga", count: 1, weight: 0.1 },
+            { name: "usas", count: 1, weight: 0.005 }
+        ],
+        tier_hatchet_melee: [
+            { name: "fireaxe", count: 1, weight: 5 },
+            { name: "katana", count: 1, weight: 1 },
+            { name: "katana_rusted", count: 1, weight: 1 },
+            { name: "katana_orchid", count: 1, weight: 0.1 },
+            { name: "stonehammer", count: 1, weight: 0.1 }
+        ],
+        tier_pavilion: [
+            { name: "dp28", count: 1, weight: 5 },
+            { name: "bar", count: 1, weight: 5 },
+            { name: "naginata", count: 1, weight: 1 },
+            { name: "m9", count: 1, weight: 1 },
+            { name: "pkp", count: 1, weight: 1 }
+        ],
+        tier_forest_helmet: [
+            { name: "helmet03_forest", count: 1, weight: 1 }
+        ],
+        tier_imperial_outfit: [
+            { name: "outfitImperial", count: 1, weight: 1 }
+        ],
+        tier_pineapple_outfit: [
+            { name: "outfitPineapple", count: 1, weight: 1 }
+        ],
+        tier_tarkhany_outfit: [
+            { name: "outfitTarkhany", count: 1, weight: 1 }
+        ],
+        tier_spetsnaz_outfit: [
+            { name: "outfitSpetsnaz", count: 1, weight: 1 }
+        ],
+        tier_lumber_outfit: [
+            { name: "outfitLumber", count: 1, weight: 1 }
+        ],
+        tier_verde_outfit: [
+            { name: "outfitVerde", count: 1, weight: 1 }
         ]
     },
     mapGen: {
