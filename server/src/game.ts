@@ -192,8 +192,28 @@ export class Game {
         return this.teamMode != TeamMode.Solo;
     }
 
-    randomPlayer() {
-        return this.spectatablePlayers[util.randomInt(0, this.spectatablePlayers.length - 1)];
+    nextTeam(currentTeam: Team){
+        const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDead);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
+        return aliveTeams[newIndex];
+    }
+
+    prevTeam(currentTeam: Team){
+        const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDead);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
+        return aliveTeams[newIndex];
+    }
+
+    /**
+     * 
+     * @param player optional player to exclude
+     * @returns random player
+     */
+    randomPlayer(player?: Player) {
+        const spectatablePlayers = player ? this.spectatablePlayers.filter(p => p != player) : this.spectatablePlayers;
+        return spectatablePlayers[util.randomInt(0, spectatablePlayers.length - 1)];
     }
 
     addPlayer(socketSend: (msg: ArrayBuffer | Uint8Array) => void, closeSocket: () => void): Player {

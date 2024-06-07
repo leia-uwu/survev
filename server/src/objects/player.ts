@@ -437,7 +437,7 @@ export class Player extends BaseGameObject {
         if (this.actionType !== GameConfig.Action.None) {
             this.action.time += dt;
             this.action.time = math.clamp(this.action.time, 0, Constants.ActionMaxDuration);
-            
+
             if (this.action.time >= this.action.duration) {
                 if (this.actionType === GameConfig.Action.UseItem) {
                     const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
@@ -613,9 +613,18 @@ export class Player extends BaseGameObject {
         if (this.spectating == undefined) { // not spectating anyone
             player = this;
         } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
-            player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer();
-            if (player === this) {
-                player = this.game.randomPlayer();
+            if (!this.game.isTeammode(this.team)){//solos
+                player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer(this);
+            }else{
+                if (!this.spectating.team!.allTeammatesDead(this)){//team alive
+                    player = this.spectating.team!.randomPlayer(this);
+                }else{//team dead
+                    player = (
+                        this.spectating.killedBy && 
+                        this.spectating.killedBy != this.spectating &&
+                        this.spectating.team!.allTeammatesDead(this.spectating) //only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                    ) ? this.spectating.killedBy : this.spectating.team!.randomPlayer(this.spectating);
+                }
             }
             this.spectating = player;
         } else { // spectating someone currently who is still alive
@@ -778,25 +787,61 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
+    /** incremented when next, decremented when prev, when it reaches this.spectating.team.getAlivePlayers().length-1, switch to next team */
+    enemyTeamCycleCount = 0;
+
     /**
      * the main purpose of this function is to asynchronously set "spectating"
      * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
      */
     spectate(spectateMsg: SpectateMsg): void {
         let playerToSpec: Player | undefined;
-        if (spectateMsg.specBegin) {
-            playerToSpec = this.killedBy ? this.killedBy : this.game.randomPlayer();
-            if (playerToSpec === this) {
-                playerToSpec = this.game.randomPlayer();
+        if (!this.game.isTeammode(this.team)){//solos
+            if (spectateMsg.specBegin) {
+                playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
+            } else if (spectateMsg.specNext && this.spectating) {
+                const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+                const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
+                playerToSpec = this.game.spectatablePlayers[newIndex];
+            } else if (spectateMsg.specPrev && this.spectating) {
+                const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
+                const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
+                playerToSpec = this.game.spectatablePlayers[newIndex];
             }
-        } else if (spectateMsg.specNext && this.spectating) {
-            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
-            const newIndex = (playerBeingSpecIndex + 1) % this.game.spectatablePlayers.length;
-            playerToSpec = this.game.spectatablePlayers[newIndex];
-        } else if (spectateMsg.specPrev && this.spectating) {
-            const playerBeingSpecIndex = this.game.spectatablePlayers.indexOf(this.spectating);
-            const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
-            playerToSpec = this.game.spectatablePlayers[newIndex];
+        }else{
+            if (!this.team.allTeammatesDead(this)){//team still alive
+                if (spectateMsg.specBegin){
+                    playerToSpec = this.team.randomPlayer(this);
+                }else if (spectateMsg.specNext && this.spectating){
+                    playerToSpec = this.team.nextPlayer(this.spectating);
+                }else if (spectateMsg.specPrev && this.spectating){
+                    playerToSpec = this.team.prevPlayer(this.spectating);
+                }
+            }else{//team dead
+                let specType: Team["prevPlayer"] | Team["nextPlayer"] | undefined;
+                if (spectateMsg.specBegin){
+                    playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
+                }else if (spectateMsg.specNext && this.spectating){
+                    specType = this.spectating.team!.nextPlayer.bind(this.spectating.team);
+                    this.enemyTeamCycleCount++;
+                }else if (spectateMsg.specPrev && this.spectating){
+                    specType = this.spectating.team!.prevPlayer.bind(this.spectating.team);
+                    this.enemyTeamCycleCount--;
+                }
+
+                if (this.spectating){
+                    if (this.enemyTeamCycleCount >= this.spectating.team!.getAlivePlayers().length){
+                        playerToSpec = this.game.nextTeam(this.spectating.team!).randomPlayer();
+                        this.enemyTeamCycleCount = 0;
+                    }else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.team!.getAlivePlayers().length){
+                        playerToSpec = this.game.prevTeam(this.spectating.team!).randomPlayer();
+                        this.enemyTeamCycleCount = 0;
+                    }else if (specType){
+                        playerToSpec = specType(this.spectating);
+                    }
+                }
+            }
+            
         }
         this.spectating = playerToSpec;
     }
@@ -874,11 +919,13 @@ export class Player extends BaseGameObject {
                     this.kill(params);
                 }
             } else {
-                if (this.team.allTeammatesDowned(this)) {
+                if (this.team.allTeammatesDead(this)) {//includes solo duos/squads
+                    this.kill(params);
+                    this.team.allDead = true;
+                }else if (this.team.allTeammatesDowned(this)) {
                     this.kill(params);
                     this.team.killAllTeammates(this);
-                } else if (this.team.allTeammatesDead(this) || this.team.players.length == 1) {
-                    this.kill(params);
+                    this.team.allDead = true;
                 } else {
                     this.down(params);
                 }
