@@ -183,6 +183,8 @@ export class GameMap {
         center: Vec2
     }> = [];
 
+    bridges: Structure[] = [];
+
     constructor(game: Game) {
         this.game = game;
 
@@ -374,42 +376,33 @@ export class GameMap {
     generateObjects(): void {
         const mapDef = this.mapDef;
 
+        //
+        // Generate bridge on rivers
+        //
         for (const river of this.terrain.rivers) {
             if (river.looped) continue;
+
             for (let i = 0.2; i < 0.8; i += 0.05) {
-                if (Math.random() < 0.1) {
-                    const pos = river.spline.getPos(i);
+                const pos = river.spline.getPos(i);
 
-                    const rot = river.spline.getNormal(i);
-                    const ori = math.radToOri(Math.atan2(rot.y, rot.x));
+                const rot = river.spline.getNormal(i);
+                const ori = math.radToOri(Math.atan2(rot.y, rot.x));
 
-                    const width = river.waterWidth;
+                const width = river.waterWidth;
 
-                    let bridgeType: string;
-                    if (width < 9) {
-                        bridgeType = mapDef.mapGen.bridgeTypes.medium;
-                    } else if (width < 20) {
-                        bridgeType = mapDef.mapGen.bridgeTypes.large;
-                    } else {
-                        bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
-                    }
-                    if (!bridgeType) continue;
+                let bridgeType: string;
+                if (width < 9) {
+                    bridgeType = mapDef.mapGen.bridgeTypes.medium;
+                } else if (width < 20) {
+                    bridgeType = mapDef.mapGen.bridgeTypes.large;
+                } else {
+                    bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
+                }
+                if (!bridgeType) continue;
 
-                    const coll = collider.transform(
-                        mapHelpers.getBoundingCollider(bridgeType),
-                        pos,
-                        math.oriToRad(ori),
-                        1
-                    ) as AABB;
-
-                    if (this.getGroundSurface(coll.min, 0).type === "water" ||
-                        this.getGroundSurface(coll.max, 0).type === "water") {
-                        continue;
-                    }
-
-                    if (bridgeType) {
-                        this.genStructure(bridgeType, pos, 0, ori);
-                    }
+                if (bridgeType && this.canSpawn(bridgeType, pos, ori)) {
+                    const bridge = this.genStructure(bridgeType, pos, 0, ori);
+                    this.bridges.push(bridge);
                 }
             }
         }
@@ -548,6 +541,59 @@ export class GameMap {
 
             const obj = objs[i] as Obstacle | Building | Structure;
             if (checkCollision(collsA, obj.mapObstacleBounds, obj.layer)) return false;
+        }
+
+        // checks for bridges and other river structures like crossing bunker
+        if (def.type === "structure") {
+            if (def.terrain.bridge) {
+                for (let i = 0; i < this.bridges.length; i++) {
+                    const otherBridge = this.bridges[i];
+                    const thatBounds = mapHelpers.getBridgeOverlapCollider(otherBridge.type, otherBridge.pos, otherBridge.rot, 1);
+                    if (coldet.test(boundCollider, thatBounds)) {
+                        return false;
+                    }
+                }
+            }
+
+            // bridge land bounds are AABBs that should always be on land and never on water
+            if (def.bridgeLandBounds) {
+                for (let i = 0; i < def.bridgeLandBounds.length; i++) {
+                    const bound = collider.transform(def.bridgeLandBounds[i], pos, rot, 1) as AABB;
+
+                    // check all 4 corners of the AABB
+                    const points = [
+                        bound.min,
+                        bound.max,
+                        v2.create(bound.min.x, bound.max.y),
+                        v2.create(bound.max.x, bound.min.y)
+                    ];
+
+                    for (let j = 0; j < points.length; j++) {
+                        if (this.getGroundSurface(points[j], 0).type === "water") {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            // and water bounds should always be inside water
+            if (def.bridgeWaterBounds) {
+                for (let i = 0; i < def.bridgeWaterBounds.length; i++) {
+                    const bound = collider.transform(def.bridgeWaterBounds[i], pos, rot, 1) as AABB;
+
+                    // check all 4 corners of the AABB
+                    const points = [
+                        bound.min,
+                        bound.max,
+                        v2.create(bound.min.x, bound.max.y),
+                        v2.create(bound.max.x, bound.min.y)
+                    ];
+
+                    for (let j = 0; j < points.length; j++) {
+                        if (this.getGroundSurface(points[j], 0).type !== "water") return false;
+                    }
+                }
+            }
         }
 
         if (!def.terrain?.river &&

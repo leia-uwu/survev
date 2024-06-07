@@ -104,7 +104,7 @@ export const mapHelpers = {
         const dir = v2.create(1.0, 0.0);
         const ext = v2.add(v2.mul(dir, dims.length * 1.5), v2.mul(v2.perp(dir), dims.width * def.terrain.bridge!.nearbyWidthMult));
         const col = collider.createAabbExtents(v2.create(0.0, 0.0), v2.mul(ext, 0.5));
-        return collider.transform(col, pos, rot, scale);
+        return collider.transform(col, pos, rot, scale) as AABB;
     },
     nt: 0.8,
     lt: 0.9,
