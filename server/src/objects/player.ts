@@ -973,14 +973,14 @@ export class Player extends BaseGameObject {
 
         let player: Player;
         if (!this.game.isTeammode(this.team)){//solo
-            player = this.killedBy ? this.killedBy : this.game.randomPlayer(this);
+            player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
         }else{
             if (!this.team.allTeammatesDead(this)){//team alive
                 player = this.team.randomPlayer(this);
             }else{//team dead
                 player = (
                     this.killedBy && 
-                    this.killedBy != this.spectating &&
+                    this.killedBy != this &&
                     this.team.allTeammatesDead(this) //only spectate player's killer if all the players teammates are dead, otherwise spec teammates
                 ) ? this.killedBy : this.team.randomPlayer(this.spectating);
             }
