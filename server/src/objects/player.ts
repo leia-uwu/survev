@@ -612,22 +612,7 @@ export class Player extends BaseGameObject {
         let player: Player;
         if (this.spectating == undefined) { // not spectating anyone
             player = this;
-        } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
-            if (!this.game.isTeammode(this.team)){//solos
-                player = this.spectating.killedBy ? this.spectating.killedBy : this.game.randomPlayer(this);
-            }else{
-                if (!this.spectating.team!.allTeammatesDead(this)){//team alive
-                    player = this.spectating.team!.randomPlayer(this);
-                }else{//team dead
-                    player = (
-                        this.spectating.killedBy && 
-                        this.spectating.killedBy != this.spectating &&
-                        this.spectating.team!.allTeammatesDead(this.spectating) //only spectate player's killer if all the players teammates are dead, otherwise spec teammates
-                    ) ? this.spectating.killedBy : this.spectating.team!.randomPlayer(this.spectating);
-                }
-            }
-            this.spectating = player;
-        } else { // spectating someone currently who is still alive
+        } else {
             player = this.spectating;
         }
 
@@ -983,6 +968,30 @@ export class Player extends BaseGameObject {
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: downedMsg });
     }
 
+    private assignNewSpectate(){
+        if (this.spectatorCount == 0) return;
+
+        let player: Player;
+        if (!this.game.isTeammode(this.team)){//solo
+            player = this.killedBy ? this.killedBy : this.game.randomPlayer(this);
+        }else{
+            if (!this.team.allTeammatesDead(this)){//team alive
+                player = this.team.randomPlayer(this);
+            }else{//team dead
+                player = (
+                    this.killedBy && 
+                    this.killedBy != this.spectating &&
+                    this.team.allTeammatesDead(this) //only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                ) ? this.killedBy : this.team.randomPlayer(this.spectating);
+            }
+        }
+
+        //loop through all of this object's spectators and change who they're spectating to the new selected player
+        for (const spectator of this.spectators){
+            spectator.spectating = player;
+        }
+    }
+
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
@@ -1022,6 +1031,12 @@ export class Player extends BaseGameObject {
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+
+        //
+        // Give spectators someone new to spectate
+        //
+
+        this.assignNewSpectate();
 
         //
         // Send game over message to player
