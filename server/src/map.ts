@@ -28,7 +28,6 @@ interface GroundBunkerColliders {
     bunker: Collider[]
 }
 
-// colliders:                          ground     bunker layer
 const cachedColliders: Record<string, GroundBunkerColliders> = {};
 
 function computeColliders(type: string) {
@@ -406,7 +405,8 @@ export class GameMap {
 
         const densitySpawns = mapDef.mapGen.densitySpawns[0];
         for (const type in densitySpawns) {
-            const count = densitySpawns[type];
+            // TODO: figure out density spawn amount algorithm
+            const count = Math.round(densitySpawns[type] * 1.35);
             this.genFromMapDef(type, count);
         }
 
