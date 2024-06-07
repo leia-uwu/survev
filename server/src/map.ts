@@ -392,12 +392,12 @@ export class GameMap {
 
                 const width = river.waterWidth;
 
-                let bridgeType: string;
-                if (width < 9) {
+                let bridgeType: string | undefined;
+                if (width < 9 && width > 4) {
                     bridgeType = mapDef.mapGen.bridgeTypes.medium;
-                } else if (width < 20) {
+                } else if (width < 20 && width > 8) {
                     bridgeType = mapDef.mapGen.bridgeTypes.large;
-                } else {
+                } else if (width > 20) {
                     bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
                 }
                 if (!bridgeType) continue;
