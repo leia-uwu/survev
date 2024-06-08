@@ -398,7 +398,7 @@ export class Player extends BaseGameObject {
             this.damage({
                 amount: this.game.gas.damage,
                 damageType: GameConfig.DamageType.Gas,
-                dir: v2.randomUnit()
+                dir: this.dir
             });
         }
 
