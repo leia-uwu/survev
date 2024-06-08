@@ -120,6 +120,8 @@ export class Player extends BaseGameObject {
 
     shotSlowdownTimer: number = -1;
 
+    freeSwitchTimer: number = -1;
+
     indoors = false;
 
     private _zoom: number = 0;

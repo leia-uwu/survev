@@ -42,21 +42,34 @@ export class WeaponManager {
 
         const curWeapon = this.weapons[this.curWeapIdx];
         const nextWeapon = this.weapons[idx];
+        let effectiveSwitchDelay = 0;
+
         if (curWeapon.type && nextWeapon.type) { // ensure that player is still holding both weapons (didnt drop one)
             const curWeaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
             const nextWeaponDef = GameObjectDefs[this.weapons[idx].type] as GunDef | MeleeDef | ThrowableDef;
-            let switchDelay;
-            if (curWeaponDef.type == "melee" && nextWeaponDef.type == "gun" && nextWeaponDef.pullDelay) {
-                switchDelay = nextWeaponDef.pullDelay;
-            } else {
-                switchDelay = curWeaponDef.type == "throwable" ? 0.25 : curWeaponDef.switchDelay;
+
+            const swappingToGun = nextWeaponDef.type == "gun";
+
+            effectiveSwitchDelay = swappingToGun
+                ? nextWeaponDef.switchDelay
+                : 0;
+
+            if (this.player.freeSwitchTimer < this.player.game.now) {
+                effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
+                this.player.freeSwitchTimer = this.player.game.now + (GameConfig.player.freeSwitchCooldown * 1000);
             }
-            if (nextWeapon.cooldown - this.player.game.now > 0) { // cooldown still in progress
-                nextWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
-            } else {
-                nextWeapon.cooldown = this.player.game.now + (0.25 * 1000);
-                curWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
+
+            if (
+                swappingToGun &&
+                // @ts-expect-error All combinations of non-identical non-zero values (including undefined)
+                //                  give NaN or a number not equal to 1, meaning that this correctly checks
+                //                  for two identical non-zero numerical deploy groups
+                curWeaponDef.deployGroup / nextWeaponDef.deployGroup === 1
+            ) {
+                effectiveSwitchDelay = nextWeaponDef.switchDelay;
             }
+
+            nextWeapon.cooldown = this.player.game.now + (effectiveSwitchDelay * 1000);
         }
 
         this.player.shotSlowdownTimer = -1;
@@ -69,7 +82,11 @@ export class WeaponManager {
         }
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
-            this.tryReload();
+            this.timeouts.push(
+                setTimeout(() => {
+                    this.tryReload();
+                }, effectiveSwitchDelay * 1000)
+            );
         }
 
         this.player.setDirty();
@@ -136,7 +153,8 @@ export class WeaponManager {
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
             this.player.inventory[weaponDef.ammo] == 0,
-            this.curWeapIdx == GameConfig.WeaponSlot.Melee || this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+            this.curWeapIdx == GameConfig.WeaponSlot.Melee || this.curWeapIdx == GameConfig.WeaponSlot.Throwable,
+            this.weapons[this.curWeapIdx].cooldown > this.player.game.now
         ];
         if (conditions.some(c => c)) {
             return;
@@ -461,7 +479,11 @@ export class WeaponManager {
             }
         }
         if (this.weapons[this.curWeapIdx].ammo == 0) {
-            this.tryReload();
+            this.timeouts.push(
+                setTimeout(() => {
+                    this.tryReload();
+                }, itemDef.fireDelay * 1000)
+            );
         }
         this.offHand = !this.offHand;
     }

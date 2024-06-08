@@ -120,6 +120,7 @@ interface GunDef extends BaseLootDef {
     reloadTime: number
     reloadTimeAlt?: number
     fireDelay: number
+    deployGroup?: number
     switchDelay: number
     pullDelay?: number
     barrelLength: number
@@ -131,7 +132,7 @@ interface GunDef extends BaseLootDef {
     bulletType: string
     projType?: string
     bulletTypeBonus?: string
-    headshotMult: 2
+    headshotMult: number
     noSplinter?: boolean
     outsideOnly?: boolean
     ignoreEndlessAmmo?: boolean
