@@ -798,8 +798,6 @@ export class GameMap {
                 const riverOri = math.radToOri(Math.atan2(norm.y, norm.x));
                 ori = (def.terrain.nearbyRiver.facingOri + riverOri) % 4;
 
-                const rad = util.random(def.terrain.nearbyRiver.radMin, def.terrain.nearbyRiver.radMax);
-
                 pos = v2.add(pos, v2.rotate(v2.create(river.waterWidth * 2, river.waterWidth * 2), math.oriToRad(riverOri)));
             }
             return pos;
