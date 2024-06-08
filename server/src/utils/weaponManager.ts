@@ -47,16 +47,44 @@ export class WeaponManager {
             const nextWeaponDef = GameObjectDefs[this.weapons[idx].type] as GunDef | MeleeDef | ThrowableDef;
             let switchDelay;
             if (curWeaponDef.type == "melee" && nextWeaponDef.type == "gun" && nextWeaponDef.pullDelay) {
+                /*
+                    ???? Pull delay has absolutely nothing to do with quickswitch
+                    Pull delay is the time between firing and ejecting the shell casing
+
+                    surviv only use the previous gun for its deploy group check
+                    and nothing else
+                */
                 switchDelay = nextWeaponDef.pullDelay;
             } else {
+                /*
+                    Melee and throwables have a constant 0ms switch delay
+
+                    Also wtf? You use the stats of the weapon you're switching to, not
+                    the one you're switching from!
+                */
                 switchDelay = curWeaponDef.type == "throwable" ? 0.25 : curWeaponDef.switchDelay;
             }
+
+            /*
+                Where's the free switch?
+            */
             if (nextWeapon.cooldown - this.player.game.now > 0) { // cooldown still in progress
+                /*
+                    No? surviv switch delay didn't depend on either weapon's firing state
+                */
                 nextWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
             } else {
                 nextWeapon.cooldown = this.player.game.now + (0.25 * 1000);
+
+                /*
+                    What does setting this cooldown even achieve?
+                */
                 curWeapon.cooldown = this.player.game.now + (switchDelay * 1000);
             }
+
+            /*
+                Where are the deploy groups?
+            */
         }
 
         this.player.shotSlowdownTimer = -1;
@@ -69,6 +97,9 @@ export class WeaponManager {
         }
 
         if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
+            /*
+                Reloading needs to wait out the switch delay
+            */
             this.tryReload();
         }
 
@@ -132,6 +163,9 @@ export class WeaponManager {
             return;
         }
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
+        /*
+            Weapon cooldown timer needs to have elapsed in order to reload
+        */
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
@@ -461,6 +495,9 @@ export class WeaponManager {
             }
         }
         if (this.weapons[this.curWeapIdx].ammo == 0) {
+            /*
+                This should be scheduled for after the firing delay has elapsed
+            */
             this.tryReload();
         }
         this.offHand = !this.offHand;
