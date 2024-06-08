@@ -120,6 +120,8 @@ export class Player extends BaseGameObject {
 
     shotSlowdownTimer: number = -1;
 
+    freeSwitchTimer: number = -1;
+
     indoors = false;
 
     private _zoom: number = 0;
@@ -356,6 +358,10 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+
+        // (async() => {
+        //     (await import("./qsDemos")).getDemos(this)["two-shot overclock"]();
+        // })();
     }
 
     visibleObjects = new Set<GameObject>();
