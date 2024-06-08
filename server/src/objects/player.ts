@@ -358,10 +358,6 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-
-        // (async() => {
-        //     (await import("./qsDemos")).getDemos(this)["two-shot overclock"]();
-        // })();
     }
 
     visibleObjects = new Set<GameObject>();
