@@ -17,6 +17,11 @@ interface TerrainSpawnDef {
     river?: {
         centerWeight: number
     }
+    nearbyRiver: {
+        radMin: number
+        radMax: number
+        facingOri: number
+    }
 }
 
 interface ObstacleDef {

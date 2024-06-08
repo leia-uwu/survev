@@ -780,12 +780,28 @@ export class GameMap {
     }
 
     genOnRiver(type: string) {
-        const { ori, scale } = this.getOriAndScale(type);
+        let { ori, scale } = this.getOriAndScale(type);
+
+        const def = MapObjectDefs[type];
 
         const getPos = () => {
+            const oriAndScale = this.getOriAndScale(type);
+            ori = oriAndScale.ori;
+            scale = oriAndScale.scale;
+
             const river = this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
             const t = util.random(0.2, 0.8);
-            const pos = river.spline.getPos(t);
+            let pos = river.spline.getPos(t);
+
+            if (def.terrain?.nearbyRiver) {
+                const norm = river.spline.getNormal(t);
+                const riverOri = math.radToOri(Math.atan2(norm.y, norm.x));
+                ori = (def.terrain.nearbyRiver.facingOri + riverOri) % 4;
+
+                const rad = util.random(def.terrain.nearbyRiver.radMin, def.terrain.nearbyRiver.radMax);
+
+                pos = v2.add(pos, v2.rotate(v2.create(river.waterWidth * 2, river.waterWidth * 2), math.oriToRad(riverOri)));
+            }
             return pos;
         };
 
