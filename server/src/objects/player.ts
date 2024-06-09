@@ -422,17 +422,17 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
 
-        if (this.game.isTeammode(this.team) && this.actionType == GameConfig.Action.Revive){
-            if (this.playerBeingRevived && v2.distance(this.pos, this.playerBeingRevived.pos) > GameConfig.player.reviveRange){
+        if (this.game.isTeammode(this.team) && this.actionType == GameConfig.Action.Revive) {
+            if (this.playerBeingRevived && v2.distance(this.pos, this.playerBeingRevived.pos) > GameConfig.player.reviveRange) {
                 this.cancelAction();
             }
-        }else if (this.downed){
+        } else if (this.downed) {
             this.bleedTickCounter++;
-            if (this.bleedTickCounter >= (GameConfig.player.bleedTickRate * this.game.config.tps)){//bleedTickRate measured in seconds
+            if (this.bleedTickCounter >= (GameConfig.player.bleedTickRate * this.game.config.tps)) { // bleedTickRate measured in seconds
                 this.damage({
                     amount: GameConfig.player.bleedDamage,
                     damageType: GameConfig.DamageType.Bleeding,
-                    dir: v2.create(0,0)
+                    dir: v2.randomUnit()
                 });
                 this.bleedTickCounter = 0;
             }
@@ -466,19 +466,19 @@ export class Player extends BaseGameObject {
                     this.inventoryDirty = true;
                 } else if (this.isReloading()) {
                     this.weaponManager.reload();
-                }else if (this.actionType === GameConfig.Action.Revive){
-                    if (this.playerBeingRevived){//player who initiated the revive
-                        //LEIA TODO: reset animation
-                    }else{//player who got revived
+                } else if (this.actionType === GameConfig.Action.Revive) {
+                    if (this.playerBeingRevived) { // player who initiated the revive
+                        // LEIA TODO: reset animation
+                    } else { // player who got revived
                         this.downed = false;
                         this.health = GameConfig.player.reviveHealth;
                         this.setDirty();
                         this.setGroupStatuses();
                     }
                 }
-    
+
                 this.cancelAction();
-    
+
                 if (
                     (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
                     this.weapons[this.curWeapIdx].ammo == 0
@@ -809,7 +809,7 @@ export class Player extends BaseGameObject {
      */
     spectate(spectateMsg: SpectateMsg): void {
         let playerToSpec: Player | undefined;
-        if (!this.game.isTeammode(this.team)){//solos
+        if (!this.game.isTeammode(this.team)) { // solos
             if (spectateMsg.specBegin) {
                 playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
             } else if (spectateMsg.specNext && this.spectating) {
@@ -821,40 +821,39 @@ export class Player extends BaseGameObject {
                 const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
                 playerToSpec = this.game.spectatablePlayers[newIndex];
             }
-        }else{
-            if (!this.team.allTeammatesDeadOrDisconnected(this)){//team still alive
-                if (spectateMsg.specBegin){
+        } else {
+            if (!this.team.allTeammatesDeadOrDisconnected(this)) { // team still alive
+                if (spectateMsg.specBegin) {
                     playerToSpec = this.team.randomPlayer(this);
-                }else if (spectateMsg.specNext && this.spectating){
+                } else if (spectateMsg.specNext && this.spectating) {
                     playerToSpec = this.team.nextPlayer(this.spectating);
-                }else if (spectateMsg.specPrev && this.spectating){
+                } else if (spectateMsg.specPrev && this.spectating) {
                     playerToSpec = this.team.prevPlayer(this.spectating);
                 }
-            }else{//team dead
+            } else { // team dead
                 let specType: Team["prevPlayer"] | Team["nextPlayer"] | undefined;
-                if (spectateMsg.specBegin){
+                if (spectateMsg.specBegin) {
                     playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
-                }else if (spectateMsg.specNext && this.spectating){
+                } else if (spectateMsg.specNext && this.spectating) {
                     specType = this.spectating.team!.nextPlayer.bind(this.spectating.team);
                     this.enemyTeamCycleCount++;
-                }else if (spectateMsg.specPrev && this.spectating){
+                } else if (spectateMsg.specPrev && this.spectating) {
                     specType = this.spectating.team!.prevPlayer.bind(this.spectating.team);
                     this.enemyTeamCycleCount--;
                 }
 
-                if (this.spectating){
-                    if (this.enemyTeamCycleCount >= this.spectating.team!.getAlivePlayers().length){
+                if (this.spectating) {
+                    if (this.enemyTeamCycleCount >= this.spectating.team!.getAlivePlayers().length) {
                         playerToSpec = this.game.nextTeam(this.spectating.team!).randomPlayer();
                         this.enemyTeamCycleCount = 0;
-                    }else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.team!.getAlivePlayers().length){
+                    } else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.team!.getAlivePlayers().length) {
                         playerToSpec = this.game.prevTeam(this.spectating.team!).randomPlayer();
                         this.enemyTeamCycleCount = 0;
-                    }else if (specType){
+                    } else if (specType) {
                         playerToSpec = specType(this.spectating);
                     }
                 }
             }
-            
         }
         this.spectating = playerToSpec;
     }
@@ -865,9 +864,9 @@ export class Player extends BaseGameObject {
 
         // teammates can't deal damage to each other
         if (
-            this.game.isTeammode(this.team) && 
-            params.source instanceof Player && 
-            params.source != this && 
+            this.game.isTeammode(this.team) &&
+            params.source instanceof Player &&
+            params.source != this &&
             this.team.isTeammate(params.source)
         ) {
             return;
@@ -924,18 +923,14 @@ export class Player extends BaseGameObject {
                 } else if (this.downedBy && params.source instanceof Player && this.downedBy.team?.isTeammate(params.source)) {
                     params.source = this.downedBy;
                     this.kill(params);
-                }/* else if (this.downedBy && params.source instanceof Player && !this.downedBy.team?.isTeammate(params.source)) {
-                    this.kill(params);
-                } else if (this.downedBy && params.damageType == GameConfig.DamageType.Bleeding) {
-                    this.kill(params);
-                } */else {
+                } else {
                     this.kill(params);
                 }
             } else {
-                if (this.team.allTeammatesDeadOrDisconnected(this)) {//includes solo duos/squads
+                if (this.team.allTeammatesDeadOrDisconnected(this)) { // includes solo duos/squads
                     this.team.allDeadOrDisconnected = true;
                     this.kill(params);
-                }else if (this.team.allTeammatesDowned(this)) {
+                } else if (this.team.allTeammatesDowned(this)) {
                     this.team.allDeadOrDisconnected = true;
                     this.kill(params);
                     this.team.killAllTeammates(this);
@@ -951,10 +946,10 @@ export class Player extends BaseGameObject {
      */
     addGameOverMsg(winningTeamId: number = -1): void {
         const gameOverMsg = new GameOverMsg();
-        
-        if (!this.game.isTeammode(this.team)){//solo
+
+        if (!this.game.isTeammode(this.team)) { // solo
             gameOverMsg.playerStats.push(this);
-        }else{
+        } else {
             this.team.players.forEach(p => gameOverMsg.playerStats.push(p));
         }
 
@@ -1002,26 +997,30 @@ export class Player extends BaseGameObject {
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: downedMsg });
     }
 
-    private assignNewSpectate(){
+    private assignNewSpectate() {
         if (this.spectatorCount == 0) return;
 
         let player: Player;
-        if (!this.game.isTeammode(this.team)){//solo
+        if (!this.game.isTeammode(this.team)) { // solo
             player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
-        }else{
-            if (!this.team.allTeammatesDeadOrDisconnected(this)){//team alive
+        } else {
+            if (!this.team.allTeammatesDeadOrDisconnected(this)) { // team alive
                 player = this.team.randomPlayer(this);
-            }else{//team dead
-                player = (
-                    this.killedBy && 
+            } else { // team dead
+                if (
+                    this.killedBy &&
                     this.killedBy != this &&
-                    this.team.allTeammatesDeadOrDisconnected(this) //only spectate player's killer if all the players teammates are dead, otherwise spec teammates
-                ) ? this.killedBy : this.team.randomPlayer(this.spectating);
+                    this.team.allTeammatesDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                ) {
+                    player = this.killedBy;
+                } else {
+                    player = this.team.randomPlayer(this.spectating);
+                }
             }
         }
 
-        //loop through all of this object's spectators and change who they're spectating to the new selected player
-        for (const spectator of this.spectators){
+        // loop through all of this object's spectators and change who they're spectating to the new selected player
+        for (const spectator of this.spectators) {
             spectator.spectating = player;
         }
     }
@@ -1078,10 +1077,10 @@ export class Player extends BaseGameObject {
 
         if (this.game.teamMode == TeamMode.Solo && this.game.isGameOver()) {
             this.game.soloInitGameEnd(this.killedBy ?? this.game.spectatablePlayers[0], this);
-        } else if (this.game.teamMode != TeamMode.Solo && this.game.isGameOver()){
+        } else if (this.game.teamMode != TeamMode.Solo && this.game.isGameOver()) {
             const x = Array.from(this.game.teams.values()).find(team => !team.allDeadOrDisconnected)!;
             this.game.teamInitGameEnd(this.killedBy ? this.killedBy.team! : x, this.team!);
-        }else {
+        } else {
             this.addGameOverMsg();
         }
 
@@ -1144,10 +1143,10 @@ export class Player extends BaseGameObject {
     }
 
     revive() {
-        if (this.actionType != GameConfig.Action.None){//action in progress
+        if (this.actionType != GameConfig.Action.None) { // action in progress
             return;
         }
-        if (!this.game.isTeammode(this.team)){//can only revive in teams modes
+        if (!this.game.isTeammode(this.team)) { // can only revive in teams modes
             return;
         }
 
@@ -1155,13 +1154,13 @@ export class Player extends BaseGameObject {
         const downedTeammates = this.team.getAliveTeammates(this).filter(t => t.downed);
 
         let playerToRevive: Player | undefined;
-        for (const t of downedTeammates){
-            if (v2.distance(this.pos, t.pos) <= GameConfig.player.reviveRange){
+        for (const t of downedTeammates) {
+            if (v2.distance(this.pos, t.pos) <= GameConfig.player.reviveRange) {
                 playerToRevive = t;
             }
         }
 
-        if (playerToRevive){
+        if (playerToRevive) {
             this.playerBeingRevived = playerToRevive;
             playerToRevive.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration);
             this.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration, playerToRevive.__id);
@@ -1218,7 +1217,7 @@ export class Player extends BaseGameObject {
         this.shootStart = msg.shootStart;
         this.toMouseLen = msg.toMouseLen;
 
-        if (this.downed){//return over here since player is still allowed to move and look around, just can't do anything else
+        if (this.downed) { // return over here since player is still allowed to move and look around, just can't do anything else
             return;
         }
 
@@ -1297,7 +1296,7 @@ export class Player extends BaseGameObject {
                     this.interactWith(loot);
                 } else if (obstacle) {
                     this.interactWith(obstacle);
-                }else{
+                } else {
                     this.revive();
                 }
                 break;
@@ -1782,7 +1781,7 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        if (this.playerBeingRevived){
+        if (this.playerBeingRevived) {
             this.playerBeingRevived = undefined;
         }
 
@@ -1800,15 +1799,15 @@ export class Player extends BaseGameObject {
     recalculateSpeed(): void {
         // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
 
-        if (this.actionType == GameConfig.Action.Revive){
-            if (this.action.targetId){//player reviving
-                this.speed = GameConfig.player.downedMoveSpeed + 2; //not specified in game config so i just estimated
-            }else{//player being revived
+        if (this.actionType == GameConfig.Action.Revive) {
+            if (this.action.targetId) { // player reviving
+                this.speed = GameConfig.player.downedMoveSpeed + 2; // not specified in game config so i just estimated
+            } else { // player being revived
                 this.speed = GameConfig.player.downedRezMoveSpeed;
             }
-        }else if (this.downed){
+        } else if (this.downed) {
             this.speed = GameConfig.player.downedMoveSpeed;
-        }else{
+        } else {
             this.speed = GameConfig.player.moveSpeed;
         }
 

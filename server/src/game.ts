@@ -192,14 +192,14 @@ export class Game {
         return this.teamMode != TeamMode.Solo;
     }
 
-    nextTeam(currentTeam: Team){
+    nextTeam(currentTeam: Team) {
         const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDeadOrDisconnected);
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
         return aliveTeams[newIndex];
     }
 
-    prevTeam(currentTeam: Team){
+    prevTeam(currentTeam: Team) {
         const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDeadOrDisconnected);
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex = currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
@@ -207,7 +207,7 @@ export class Game {
     }
 
     /**
-     * 
+     *
      * @param player optional player to exclude
      * @returns random player
      */
@@ -378,16 +378,16 @@ export class Game {
     }
 
     isGameOver() {
-        if (!this.isTeammode()){//solos
+        if (!this.isTeammode()) { // solos
             return !this.stopped && this.started && this.aliveCount == 1;
-        }else{
+        } else {
             const nAliveTeams = Array.from(this.teams.values()).reduce(
                 (n, team) => !team.allDeadOrDisconnected ? n + 1 : n,
                 0
             );
 
             return (
-                !this.stopped && 
+                !this.stopped &&
                 this.started &&
                 nAliveTeams == 1
             );
@@ -400,7 +400,7 @@ export class Game {
             player.setGroupStatuses();
         }
 
-        if (!player.dead) {//meaning they disconnected before death
+        if (!player.dead) { // meaning they disconnected before death
             this.aliveCountDirty = true;
             this.livingPlayers.delete(player);
             this.spectatablePlayers.splice(this.spectatablePlayers.indexOf(player), 1);
@@ -415,7 +415,7 @@ export class Game {
 
         if (!player.dead && !this.isTeammode() && this.isGameOver()) {
             this.soloInitGameEnd(this.spectatablePlayers[0], player);
-        }else if (this.isTeammode(player.team) && this.isGameOver()){
+        } else if (this.isTeammode(player.team) && this.isGameOver()) {
             this.teamInitGameEnd(Array.from(this.teams.values()).find(team => !team.allDeadOrDisconnected)!, player.team);
         }
     }
@@ -426,7 +426,7 @@ export class Game {
         }
 
         winner.addGameOverMsg(winner.id);
-        
+
         setTimeout(() => {
             this.end();
         }, 750);

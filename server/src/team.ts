@@ -9,15 +9,15 @@ export class Team {
     allDeadOrDisconnected = false;
     players: Player[] = [];
 
-    constructor(id: number){
+    constructor(id: number) {
         this.id = id;
     }
 
-    getAlivePlayers(){
+    getAlivePlayers() {
         return this.players.filter(p => !p.dead);
     }
 
-    getAliveTeammates(player: Player){
+    getAliveTeammates(player: Player) {
         return this.getAlivePlayers().filter(p => p != player);
     }
 
@@ -44,8 +44,8 @@ export class Team {
      * true if all teammates besides the passed in player are dead
      * also if player is solo queuing, all teammates are "dead" by default
      */
-    allTeammatesDeadOrDisconnected(player: Player) {//TODO: potentially replace with allDead?
-        if (this.players.length == 1 && this.players[0] == player){
+    allTeammatesDeadOrDisconnected(player: Player) { // TODO: potentially replace with allDead?
+        if (this.players.length == 1 && this.players[0] == player) {
             return true;
         }
 
@@ -72,7 +72,7 @@ export class Team {
     }
 
     /**
-     * 
+     *
      * @param player optional player to exclude
      * @returns random player
      */
@@ -82,7 +82,7 @@ export class Team {
     }
 
     /** gets next alive player in the array, loops around if end is reached */
-    nextPlayer(currentPlayer: Player){
+    nextPlayer(currentPlayer: Player) {
         const alivePlayers = this.getAlivePlayers();
         const currentPlayerIndex = alivePlayers.indexOf(currentPlayer);
         const newIndex = (currentPlayerIndex + 1) % alivePlayers.length;
@@ -90,15 +90,15 @@ export class Team {
     }
 
     /** gets previous alive player in the array, loops around if beginning is reached */
-    prevPlayer(currentPlayer: Player){
+    prevPlayer(currentPlayer: Player) {
         const alivePlayers = this.getAlivePlayers();
         const currentPlayerIndex = alivePlayers.indexOf(currentPlayer);
         const newIndex = currentPlayerIndex == 0 ? alivePlayers.length - 1 : currentPlayerIndex - 1;
         return alivePlayers[newIndex];
     }
 
-    addGameOverMsg(winningTeamId: number = -1){
-        for (const p of this.players){
+    addGameOverMsg(winningTeamId: number = -1) {
+        for (const p of this.players) {
             p.addGameOverMsg(winningTeamId);
             for (const spectator of p.spectators) {
                 spectator.addGameOverMsg(winningTeamId);
