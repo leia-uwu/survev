@@ -5,11 +5,20 @@ import { v2 } from "../../shared/utils/v2";
 import { util } from "../../shared/utils/util";
 
 export class Team {
-    allDead = false;
+    id: number;
+    allDeadOrDisconnected = false;
     players: Player[] = [];
+
+    constructor(id: number){
+        this.id = id;
+    }
 
     getAlivePlayers(){
         return this.players.filter(p => !p.dead);
+    }
+
+    getAliveTeammates(player: Player){
+        return this.getAlivePlayers().filter(p => p != player);
     }
 
     add(player: Player) {
@@ -35,7 +44,7 @@ export class Team {
      * true if all teammates besides the passed in player are dead
      * also if player is solo queuing, all teammates are "dead" by default
      */
-    allTeammatesDead(player: Player) {//TODO: potentially replace with allDead?
+    allTeammatesDeadOrDisconnected(player: Player) {//TODO: potentially replace with allDead?
         if (this.players.length == 1 && this.players[0] == player){
             return true;
         }
@@ -44,7 +53,7 @@ export class Team {
         if (filteredPlayers.length == 0) { // this is necessary since for some dumb reason every() on an empty array returns true????
             return false;
         }
-        return filteredPlayers.every(p => p.dead);
+        return filteredPlayers.every(p => p.dead || p.disconnected);
     }
 
     /**
@@ -86,5 +95,14 @@ export class Team {
         const currentPlayerIndex = alivePlayers.indexOf(currentPlayer);
         const newIndex = currentPlayerIndex == 0 ? alivePlayers.length - 1 : currentPlayerIndex - 1;
         return alivePlayers[newIndex];
+    }
+
+    addGameOverMsg(winningTeamId: number = -1){
+        for (const p of this.players){
+            p.addGameOverMsg(winningTeamId);
+            for (const spectator of p.spectators) {
+                spectator.addGameOverMsg(winningTeamId);
+            }
+        }
     }
 }
