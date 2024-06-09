@@ -13,6 +13,12 @@ export enum GasMode {
     Disabled
 }
 
+export enum TeamMode {
+    Solo = 1,
+    Duo = 2,
+    Squad = 4
+}
+
 export const Config = {
     host: "0.0.0.0",
     port: 8000,

@@ -1,5 +1,5 @@
 import { type Game } from "../game";
-import { GameConfig, TeamMode } from "../../../shared/gameConfig";
+import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
@@ -27,6 +27,7 @@ import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { type Team } from "../team";
+import { TeamMode } from "../config";
 
 export class Emote {
     playerId: number;

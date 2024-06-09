@@ -1,9 +1,3 @@
-export enum TeamMode {
-    Solo = 1,
-    Duo = 2,
-    Squad = 4
-}
-
 export const GameConfig = {
     protocolVersion: 78,
     Input: {
