@@ -4,7 +4,6 @@ import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import { type ConfigManager } from "./config";
 import { type Localization } from "./ui/localization";
-``
 export enum TeamMode {
     Solo = 1,
     Duo = 2,
