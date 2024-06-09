@@ -4,13 +4,7 @@ import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import { type ConfigManager } from "./config";
 import { type Localization } from "./ui/localization";
-
-export enum ModeType {
-    Solo = 1,
-    Duo = 2,
-    Squad = 4,
-}
-
+``
 export enum TeamMode {
     Solo = 1,
     Duo = 2,
@@ -21,7 +15,7 @@ interface Info {
     country: string
     modes: Array<{
         mapName: string
-        teamMode: ModeType
+        teamMode: TeamMode
     }>
     pops: Record<string, string>
     youtube: {
