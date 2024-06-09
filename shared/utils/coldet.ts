@@ -17,6 +17,9 @@ export interface AABB {
 }
 
 export type Collider = Circle | AABB;
+export type AABBWithHeight = AABB & { height?: number };
+export type CircleWithHeight = Circle & { height?: number };
+export type ColliderWithHeight = Collider & { height?: number };
 
 export const coldet = {
     circleToAabb(pos: Vec2, rad: number): AABB {
@@ -60,8 +63,8 @@ export const coldet = {
     },
 
     splitAabb(aabb: AABB, axis: Vec2) {
-        // Split aabb along centerpoint into two child aabbs.
-        // This could be generalized into split-along-plane
+    // Split aabb along centerpoint into two child aabbs.
+    // This could be generalized into split-along-plane
         const e = v2.mul(v2.sub(aabb.max, aabb.min), 0.5);
         const c = v2.add(aabb.min, e);
         const left = { min: v2.copy(aabb.min), max: v2.copy(aabb.max) };
@@ -83,8 +86,14 @@ export const coldet = {
         const c = v2.add(aabb.min, e);
         const y = Math.abs(axis.y) > Math.abs(axis.x);
         return {
-            min: v2.create(y ? aabb.min.x : c.x - e.x * scale, y ? c.y - e.y * scale : aabb.min.y),
-            max: v2.create(y ? aabb.max.x : c.x + e.x * scale, y ? c.y + e.y * scale : aabb.max.y)
+            min: v2.create(
+                y ? aabb.min.x : c.x - e.x * scale,
+                y ? c.y - e.y * scale : aabb.min.y
+            ),
+            max: v2.create(
+                y ? aabb.max.x : c.x + e.x * scale,
+                y ? c.y + e.y * scale : aabb.max.y
+            )
         };
     },
 
@@ -105,9 +114,15 @@ export const coldet = {
     },
 
     testCircleAabb(pos: Vec2, rad: number, min: Vec2, max: Vec2) {
-        const cpt = v2.create(math.clamp(pos.x, min.x, max.x), math.clamp(pos.y, min.y, max.y));
+        const cpt = v2.create(
+            math.clamp(pos.x, min.x, max.x),
+            math.clamp(pos.y, min.y, max.y)
+        );
         const dstSqr = v2.lengthSqr(v2.sub(pos, cpt));
-        return dstSqr < rad * rad || pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y;
+        return (
+            dstSqr < rad * rad ||
+      (pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y)
+        );
     },
 
     testCircleCircle(pos0: Vec2, rad0: number, pos1: Vec2, rad1: number) {
@@ -116,7 +131,9 @@ export const coldet = {
     },
 
     testAabbAabb(min0: Vec2, max0: Vec2, min1: Vec2, max1: Vec2) {
-        return min0.x < max1.x && min0.y < max1.y && min1.x < max0.x && min1.y < max0.y;
+        return (
+            min0.x < max1.x && min0.y < max1.y && min1.x < max0.x && min1.y < max0.y
+        );
     },
 
     testAabbPolygon(min: Vec2, max: Vec2, poly: Vec2[]) {
@@ -133,19 +150,34 @@ export const coldet = {
     test(coll1: Collider, coll2: Collider): boolean {
         if (coll1.type === 0) {
             if (coll2.type === 0) {
-                return coldet.testCircleCircle(coll1.pos, coll1.rad, coll2.pos, coll2.rad);
+                return coldet.testCircleCircle(
+                    coll1.pos,
+                    coll1.rad,
+                    coll2.pos,
+                    coll2.rad
+                );
             }
             return coldet.testCircleAabb(coll1.pos, coll1.rad, coll2.min, coll2.max);
         } else {
             if (coll2.type === 0) {
-                return coldet.testCircleAabb(coll2.pos, coll2.rad, coll1.min, coll1.max);
+                return coldet.testCircleAabb(
+                    coll2.pos,
+                    coll2.rad,
+                    coll1.min,
+                    coll1.max
+                );
             }
             return coldet.testAabbAabb(coll1.min, coll1.max, coll2.min, coll2.max);
         }
     },
 
     aabbInsideAabb(min0: Vec2, max0: Vec2, min1: Vec2, max1: Vec2) {
-        return min0.x >= min1.x && min0.y >= min1.y && max0.x <= max1.x && max0.y <= max1.y;
+        return (
+            min0.x >= min1.x &&
+      min0.y >= min1.y &&
+      max0.x <= max1.x &&
+      max0.y <= max1.y
+        );
     },
 
     signedAreaTri(a: Vec2, b: Vec2, c: Vec2) {
@@ -247,9 +279,15 @@ export const coldet = {
         const p0 = v2.sub(p, c);
         const d0 = v2.mul(v2.sub(min, max), 0.5);
 
-        const x = p0.x / Math.abs(d0.x) * 1.001;
-        const y = p0.y / Math.abs(d0.y) * 1.001;
-        const n = v2.normalizeSafe(v2.create(x < 0.0 ? Math.ceil(x) : Math.floor(x), y < 0.0 ? Math.ceil(y) : Math.floor(y)), v2.create(1.0, 0.0));
+        const x = (p0.x / Math.abs(d0.x)) * 1.001;
+        const y = (p0.y / Math.abs(d0.y)) * 1.001;
+        const n = v2.normalizeSafe(
+            v2.create(
+                x < 0.0 ? Math.ceil(x) : Math.floor(x),
+                y < 0.0 ? Math.ceil(y) : Math.floor(y)
+            ),
+            v2.create(1.0, 0.0)
+        );
         return {
             point: p,
             normal: n
@@ -257,9 +295,14 @@ export const coldet = {
     },
 
     intersectSegmentAabb2(s0: Vec2, s1: Vec2, min: Vec2, max: Vec2) {
-        // Returns proper intersection point if the segment
-        // begins inside of the aabb
-        const segments = [{ a: v2.create(min.x, min.y), b: v2.create(max.x, min.y) }, { a: v2.create(max.x, min.y), b: v2.create(max.x, max.y) }, { a: v2.create(max.x, max.y), b: v2.create(min.x, max.y) }, { a: v2.create(min.x, max.y), b: v2.create(min.x, min.y) }];
+    // Returns proper intersection point if the segment
+    // begins inside of the aabb
+        const segments = [
+            { a: v2.create(min.x, min.y), b: v2.create(max.x, min.y) },
+            { a: v2.create(max.x, min.y), b: v2.create(max.x, max.y) },
+            { a: v2.create(max.x, max.y), b: v2.create(min.x, max.y) },
+            { a: v2.create(min.x, max.y), b: v2.create(min.x, min.y) }
+        ];
         for (let i = 0; i < segments.length; i++) {
             const seg = segments[i];
             const res = coldet.intersectSegmentSegment(s0, s1, seg.a, seg.b);
@@ -301,7 +344,13 @@ export const coldet = {
         return null;
     },
 
-    intersectAabbCircle(min: Vec2, max: Vec2, pos: Vec2, rad: number, isPlayerCollision = false) {
+    intersectAabbCircle(
+        min: Vec2,
+        max: Vec2,
+        pos: Vec2,
+        rad: number,
+        isPlayerCollision = false
+    ) {
         if (pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y) {
             const e = v2.mul(v2.sub(max, min), 0.5);
             const c = v2.add(min, e);
@@ -321,7 +370,8 @@ export const coldet = {
         }
         const cpt = v2.create(
             math.clamp(pos.x, min.x, max.x),
-            math.clamp(pos.y, min.y, max.y));
+            math.clamp(pos.y, min.y, max.y)
+        );
         let dir = v2.sub(pos, cpt);
 
         dir = v2.sub(pos, cpt);

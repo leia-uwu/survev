@@ -96,6 +96,7 @@ class ObjectCreator {
     updateObjPart(id: number, data: ObjectsPartialData[ObjectType]) {
         const obj = this.getObjById(id);
         if (obj) {
+            // @ts-expect-error even lazier;
             for (const dataKey in data) {
                 // @ts-expect-error too lazy;
                 obj.data[dataKey] = data;

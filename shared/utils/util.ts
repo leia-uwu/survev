@@ -11,6 +11,14 @@ export function assert(condition: boolean | undefined, msg?: string) {
     }
 }
 
+export function defineSkin<Def>(
+    baseDefs: Record<string, Def>,
+    baseType: string,
+    params: Partial<Def>
+) {
+    return util.mergeDeep({}, baseDefs[baseType], { baseType }, params) as Def;
+}
+
 export const util = {
     //
     // Game objects can belong to the following layers:
@@ -21,10 +29,10 @@ export const util = {
     //
     // Objects on the same layer should interact with one another.
     sameLayer(a: number, b: number) {
-        // Which is faster?
-        /* eslint-disable no-mixed-operators */
-        // return (a == b && a < 2) || (a >= 2 && b >= 2);
-        return (a & 0x1) === (b & 0x1) || a & 0x2 && b & 0x2;
+    // Which is faster?
+    /* eslint-disable no-mixed-operators */
+    // return (a == b && a < 2) || (a >= 2 && b >= 2);
+        return (a & 0x1) === (b & 0x1) || (a & 0x2 && b & 0x2);
     },
 
     sameAudioLayer(a: number, b: number) {
@@ -32,13 +40,13 @@ export const util = {
     },
 
     toGroundLayer(a: number) {
-        // return a < 2 ? a : (a == 2 ? 0 : 1);
+    // return a < 2 ? a : (a == 2 ? 0 : 1);
         return a & 0x1;
     },
 
     toStairsLayer(a: number) {
-        // return a >= 2 ? a : (a == 0 ? 2 : 3);
-        //  return a | 0x2;
+    // return a >= 2 ? a : (a == 0 ? 2 : 3);
+    //  return a | 0x2;
         return a & 0x1;
     },
 
@@ -62,19 +70,25 @@ export const util = {
             a = b;
             b = c;
         }
-        const pos = v2.create(b * rad * Math.cos(2.0 * Math.PI * a / b), b * rad * Math.sin(2.0 * Math.PI * a / b));
+        const pos = v2.create(
+            b * rad * Math.cos((2.0 * Math.PI * a) / b),
+            b * rad * Math.sin((2.0 * Math.PI * a) / b)
+        );
         return pos;
     },
 
     randomPointInAabb(aabb: AABB) {
-        return v2.create(util.random(aabb.min.x, aabb.max.x), util.random(aabb.min.y, aabb.max.y));
+        return v2.create(
+            util.random(aabb.min.x, aabb.max.x),
+            util.random(aabb.min.y, aabb.max.y)
+        );
     },
 
     seededRand(seed: number) {
-        // Park-Miller PRNG
+    // Park-Miller PRNG
         let rng = seed;
         return function(min = 0, max = 1) {
-            rng = rng * 16807 % 2147483647;
+            rng = (rng * 16807) % 2147483647;
             const t = rng / 2147483647;
             return math.lerp(t, min, max);
         };
@@ -100,11 +114,14 @@ export const util = {
         } else {
             switch (max) {
             case r:
-                h = (g - b) / d + (g < b ? 6 : 0); break;
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
             case g:
-                h = (b - r) / d + 2; break;
+                h = (b - r) / d + 2;
+                break;
             case b:
-                h = (r - g) / d + 4; break;
+                h = (r - g) / d + 4;
+                break;
             }
 
             h /= 6;
@@ -173,9 +190,9 @@ export const util = {
     },
 
     adjustValue(tint: number, value: number) {
-        let r = tint >> 16 & 0xFF;
-        let g = tint >> 8 & 0xFF;
-        let b = tint & 0xFF;
+        let r = (tint >> 16) & 0xff;
+        let g = (tint >> 8) & 0xff;
+        let b = tint & 0xff;
         r = Math.round(r * value);
         g = Math.round(g * value);
         b = Math.round(b * value);
@@ -201,11 +218,13 @@ export const util = {
         const s = toLinear(util.intToRgb(start));
         const e = toLinear(util.intToRgb(end));
 
-        return util.rgbToInt(toSRGB({
-            r: math.lerp(t, s.r, e.r),
-            g: math.lerp(t, s.g, e.g),
-            b: math.lerp(t, s.b, e.b)
-        }));
+        return util.rgbToInt(
+            toSRGB({
+                r: math.lerp(t, s.r, e.r),
+                g: math.lerp(t, s.g, e.g),
+                b: math.lerp(t, s.b, e.b)
+            })
+        );
     },
 
     rgbToInt(c: { r: number, g: number, b: number }) {
@@ -214,9 +233,9 @@ export const util = {
 
     intToRgb(c: number) {
         return {
-            r: c >> 16 & 0xFF,
-            g: c >> 8 & 0xFF,
-            b: c & 0xFF
+            r: (c >> 16) & 0xff,
+            g: (c >> 8) & 0xff,
+            b: c & 0xff
         };
     },
 
@@ -262,7 +281,11 @@ export const util = {
 
     // Taken from https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
     isObject(item: unknown) {
-        return item && (typeof item === "undefined" ? "undefined" : typeof item) === "object" && !Array.isArray(item);
+        return (
+            item &&
+      (typeof item === "undefined" ? "undefined" : typeof item) === "object" &&
+      !Array.isArray(item)
+        );
     },
 
     mergeDeep(target: any, ...sources: any[]): any {
@@ -284,7 +307,7 @@ export const util = {
     },
 
     cloneDeep(source: unknown) {
-        // @TODO: This does not properly handle arrays
+    // @TODO: This does not properly handle arrays
         return util.mergeDeep({}, source);
     },
 
@@ -300,18 +323,19 @@ export const util = {
     // functions not copied from surviv
     // https://stackoverflow.com/a/55671924/5905216
     /**
-    * Pick a random element from a weighted series of elements.
-    * @param items The elements to choose from.
-    * @param weights A legend of the elements' relative weight.
-    * @param random The random number generator
-    */
+   * Pick a random element from a weighted series of elements.
+   * @param items The elements to choose from.
+   * @param weights A legend of the elements' relative weight.
+   * @param random The random number generator
+   */
     weightedRandom<T>(items: T[], weights: number[], random = Math.random): T {
         let i: number;
         for (i = 1; i < weights.length; i++) weights[i] += weights[i - 1];
 
         const rand = random() * weights[weights.length - 1];
-        for (i = 0; i < weights.length; i++) { if (weights[i] > rand) break; }
+        for (i = 0; i < weights.length; i++) {
+            if (weights[i] > rand) break;
+        }
         return items[i];
     }
-
 };

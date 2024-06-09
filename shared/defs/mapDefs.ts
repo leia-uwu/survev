@@ -16,7 +16,7 @@ import { WoodsSnow } from "./maps/woodsSnowDefs";
 import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 
-export const MapDefs = {
+export const MapDefs: Record<string, MapDef> = {
     main: Main,
     main_spring: MainSpring,
     main_summer: MainSummer,
@@ -35,19 +35,21 @@ export const MapDefs = {
     turkey: Turkey
 };
 
+export type Atlas = "gradient" | "loadout" | "shared" | "main";
 export interface MapDef {
     mapId: number
     desc: {
         name: string
         icon: string
         buttonCss: string
+        buttonText?: string
     }
     assets: {
         audio: Array<{
             name: string
             channel: string
         }>
-        atlases: string[]
+        atlases: Atlas[]
     }
     biome: {
         colors: {
@@ -68,40 +70,50 @@ export interface MapDef {
         particles: {
             camera: string
         }
-        tracerColors: Record<string, number>
+        tracerColors: Record<string, Record<string, number>>
         airdrop: {
             planeImg: string
             planeSound: string
             airdropImg: string
         }
+        frozenSprites?: string[]
     }
-
     gameMode: {
         maxPlayers: number
         killLeaderEnabled: boolean
-        woodsMode?: boolean
         desertMode?: boolean
+        factionMode?: boolean
+        factions?: number
         potatoMode?: boolean
+        woodsMode?: boolean
         sniperMode?: boolean
         perkMode?: boolean
         perkModeRoles?: string[]
-        factionMode?: boolean
-        factions?: number
+        turkeyMode?: number
+        spookyKillSounds?: boolean
     }
     gameConfig: {
         planes: {
-            timings: Array<
-            {
+            timings: Array<{
                 circleIdx: number
                 wait: number
-                options: { type: number }
+                options: {
+                    type: number
+                    numPlanes?: Array<{
+                        count: number
+                        weight: number
+                    }>
+                    airstrikeZoneRad?: number
+                    wait?: number
+                    delay?: number
+                }
             }>
             crates: Array<{
                 name: string
                 weight: number
             }>
         }
-        bagSizes: Record<string, number>
+        bagSizes: Record<string, number[]>
         bleedDamage: number
         bleedDamageMult: number
     }
@@ -114,7 +126,10 @@ export interface MapDef {
         map: {
             baseWidth: number
             baseHeight: number
-            scale: { small: number, large: number }
+            scale: {
+                small: number
+                large: number
+            }
             extension: number
             shoreInset: number
             grassInset: number
@@ -128,7 +143,10 @@ export interface MapDef {
                         rad: number
                     }
                 }>
-                weights: Array<{ weight: number, widths: number[] }>
+                weights: Array<{
+                    weight: number
+                    widths: number[]
+                }>
                 smoothness: number
                 masks: Array<{
                     pos: Vec2
@@ -136,7 +154,10 @@ export interface MapDef {
                 }>
             }
         }
-        places: Array<{ name: string, pos: Vec2 }>
+        places: Array<{
+            name: string
+            pos: Vec2
+        }>
         bridgeTypes: {
             medium: string
             large: string
@@ -152,11 +173,9 @@ export interface MapDef {
             placeSpawns: string[]
         }
         densitySpawns: Array<Record<string, number>>
-        fixedSpawns: Array<
-        Record<string,
+        fixedSpawns: Array<Record<string,
         number | { odds: number } | { small: number, large: number }
-        >
-        >
+        >>
         randomSpawns: Array<{
             spawns: string[]
             choose: number

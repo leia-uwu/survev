@@ -1,4 +1,3 @@
-import { type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
 import type { Bullet } from "../../server/src/objects/bullet";
 import type { Explosion } from "../../server/src/objects/explosion";
 import { type ObjectType, ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "../utils/objectSerializeFns";
@@ -202,15 +201,6 @@ function deserializePlayerInfo(s: BitStream, data: PlayerInfo) {
     data.loadout.heal = s.readGameType();
     data.loadout.boost = s.readGameType();
     s.readAlignToNextByte();
-}
-
-interface GasData {
-    mode: number
-    duration: number
-    posOld: Vec2
-    posNew: Vec2
-    radOld: number
-    radNew: number
 }
 
 function serializeGasData(s: BitStream, data: GasData) {
@@ -710,13 +700,13 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
     }
 }
 
-interface Airstrike {
+export interface Airstrike {
     pos: Vec2
     duration: number
     rad: number
 }
 
-interface Plane {
+export interface Plane {
     planeDir: Vec2
     pos: Vec2
     actionComplete: boolean
@@ -724,10 +714,85 @@ interface Plane {
     id: number
 }
 
-interface MapIndicator {
+export interface MapIndicator {
     id: number
     dead: boolean
     equipped: boolean
     type: string
     pos: Vec2
+}
+
+export interface GasData {
+    mode: number
+    duration: number
+    posOld: Vec2
+    posNew: Vec2
+    radOld: number
+    radNew: number
+}
+
+export interface Action {
+    type: Action
+    seq: number
+    seqOld: number
+    item: string
+    skin: string
+    targetId: number
+    time: number
+    duration: number
+    throttleCount: number
+    throttleTicker: number
+}
+
+export interface LocalData {
+    health: number
+    zoom: number
+    boost: number
+    scope: string
+    curWeapIdx: number
+    inventory: Record<string, number>
+    weapons: Array<{
+        type: string
+        ammo: number
+    }>
+    spectatorCount: number
+}
+
+export interface LocalDataWithDirty extends LocalData {
+    healthDirty: boolean
+    boostDirty: boolean
+    zoomDirty: boolean
+    actionDirty: boolean
+    action: {
+        time: number
+        duration: number
+        targetId: number
+    }
+    inventoryDirty: boolean
+    weapsDirty: boolean
+    spectatorCountDirty: boolean
+}
+
+// the non-optional properties are used by both server and client
+export interface PlayerStatus {
+    playerId?: number
+    pos: Vec2
+    posTarget?: Vec2
+    posDelta?: number
+    health?: number
+    posInterp?: number
+    visible: boolean
+    dead: boolean
+    downed: boolean
+    disconnected?: boolean
+    role: string
+    timeSinceUpdate?: number
+    timeSinceVisible?: number
+    minimapAlpha?: number
+    minimapVisible?: boolean
+    hasData: boolean
+}
+export interface GroupStatus {
+    health: number
+    disconnected: boolean
 }

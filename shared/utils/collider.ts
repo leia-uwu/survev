@@ -1,4 +1,4 @@
-import { type Collider, type AABB, coldet } from "./coldet";
+import { type Collider, type AABB, coldet, type ColliderWithHeight } from "./coldet";
 import { math } from "./math";
 import { v2, type Vec2 } from "./v2";
 
@@ -36,7 +36,7 @@ export const collider = {
         return collider.createAabb(min, max, height);
     },
 
-    createBounding(colliders: Array<Collider & { height: number }>) {
+    createBounding(colliders: ColliderWithHeight[]) {
         if (colliders.length === 1) {
             return collider.copy(colliders[0]);
         }
@@ -45,13 +45,13 @@ export const collider = {
         for (let i = 0; i < colliders.length; i++) {
             const col = colliders[i];
             aabbs.push(collider.toAabb(col));
-            maxHeight = math.max(maxHeight, col.height);
+            maxHeight = math.max(maxHeight, col.height!);
         }
         const bound = coldet.boundingAabb(aabbs);
         return collider.createAabb(bound.min, bound.max, maxHeight);
     },
 
-    toAabb(c: Collider & { height?: number }) {
+    toAabb(c: ColliderWithHeight) {
         if (c.type === collider.Type.Aabb) {
             return collider.createAabb(c.min, c.max, c.height);
         }
@@ -59,15 +59,22 @@ export const collider = {
         return collider.createAabb(aabb.min, aabb.max, c.height);
     },
 
-    copy(c: Collider & { height?: number }) {
-        return c.type === collider.Type.Circle ? collider.createCircle(c.pos, c.rad, c.height) : collider.createAabb(c.min, c.max, c.height);
+    copy(c: ColliderWithHeight) {
+        return c.type === collider.Type.Circle
+            ? collider.createCircle(c.pos, c.rad, c.height)
+            : collider.createAabb(c.min, c.max, c.height);
     },
 
-    transform(col: Collider & { height?: number }, pos: Vec2, rot: number, scale: number) {
+    transform(col: ColliderWithHeight, pos: Vec2, rot: number, scale: number) {
         if (col.type === collider.Type.Aabb) {
             const e = v2.mul(v2.sub(col.max, col.min), 0.5);
             const c = v2.add(col.min, e);
-            const pts = [v2.create(c.x - e.x, c.y - e.y), v2.create(c.x - e.x, c.y + e.y), v2.create(c.x + e.x, c.y - e.y), v2.create(c.x + e.x, c.y + e.y)];
+            const pts = [
+                v2.create(c.x - e.x, c.y - e.y),
+                v2.create(c.x - e.x, c.y + e.y),
+                v2.create(c.x + e.x, c.y - e.y),
+                v2.create(c.x + e.x, c.y + e.y)
+            ];
             const min = v2.create(Number.MAX_VALUE, Number.MAX_VALUE);
             const max = v2.create(-Number.MAX_VALUE, -Number.MAX_VALUE);
             for (let i = 0; i < pts.length; i++) {
@@ -80,7 +87,11 @@ export const collider = {
 
             return collider.createAabb(min, max, col.height);
         }
-        return collider.createCircle(v2.add(v2.rotate(v2.mul(col.pos, scale), rot), pos), col.rad * scale, col.height);
+        return collider.createCircle(
+            v2.add(v2.rotate(v2.mul(col.pos, scale), rot), pos),
+            col.rad * scale,
+            col.height
+        );
     },
 
     getPoints(aabb: AABB) {

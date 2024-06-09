@@ -318,15 +318,15 @@ export class UpdatePassMsg {
 // TODO?: move to another file?
 //
 
-interface RoomData {
+export interface RoomData {
+    maxPlayers?: number
+    findingGame?: boolean
     roomUrl: string
-    findingGame: boolean
+    autoFill: boolean
+    gameModeIdx: number
     lastError: string
     region: string
-    autoFill: boolean
-    enabledGameModeIdxs: number[]
-    gameModeIdx: number
-    maxPlayers: number
+    enabledGameModeIdxs?: number[]
 }
 
 //

@@ -309,7 +309,7 @@ export class Player extends BaseGameObject {
 
     getPanSegment() {
         const type = this.wearingPan ? "unequipped" : "equipped";
-        return MeleeDefs.pan.reflectSurface[type];
+        return MeleeDefs.pan.reflectSurface![type];
     }
 
     name = "Player";
@@ -872,7 +872,7 @@ export class Player extends BaseGameObject {
                 this.weaponManager.dropGun(i);
                 break;
             case "melee":
-                if (def.noDrop || def.noDropOnDeath || weap.type === "fists") break;
+                if (def.noDropOnDeath || weap.type === "fists") break;
                 this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
                 break;
             }
@@ -893,7 +893,7 @@ export class Player extends BaseGameObject {
             const type = this[item];
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
-            if (!!def.noDrop || def.level < 1) continue;
+            if (!!(def as ChestDef).noDrop || def.level < 1) continue;
             this.game.lootBarn.addLoot(type, this.pos, this.layer, 1);
         }
 
@@ -1386,7 +1386,7 @@ export class Player extends BaseGameObject {
         }
 
         const lootToAddDef = GameObjectDefs[lootToAdd] as LootDef;
-        if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !lootToAddDef.noDrop) {
+        if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !(lootToAddDef as ChestDef).noDrop) {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
@@ -1563,7 +1563,7 @@ export class Player extends BaseGameObject {
         }
 
         if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
-            this.speed += weaponDef.speed.attack + weaponDef.speed.equip + -3;
+            this.speed += weaponDef.speed.attack! + weaponDef.speed.equip + -3;
         }
 
         // if player is on water decrease speed
