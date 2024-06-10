@@ -123,6 +123,7 @@ export class Player extends BaseGameObject {
         this._health = health;
         this._health = math.clamp(this._health, 0, GameConfig.player.health);
         this.healthDirty = true;
+        this.setGroupStatuses();
     }
 
     private _boost: number = 0;
@@ -1783,6 +1784,7 @@ export class Player extends BaseGameObject {
         }
 
         if (this.playerBeingRevived) {
+            this.playerBeingRevived.cancelAction();
             this.playerBeingRevived = undefined;
         }
 
