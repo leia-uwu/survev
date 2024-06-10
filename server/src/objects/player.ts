@@ -606,19 +606,14 @@ export class Player extends BaseGameObject {
     secondsSinceLastUpdate = 0;
 
     pushEmotes(player: Player, emotePlayer: Player, emote: Emote, emotes: Emote[]){
-        let conditions: boolean[];
+        let condition: boolean;
         if (!player.game.isTeammode(player.team)){//solo
-            conditions = [
-                emote.isPing ? emotePlayer == player : true,
-                player.visibleObjects.has(emotePlayer)
-            ]
+            condition = (emote.isPing ? emotePlayer == player : true) && player.visibleObjects.has(emotePlayer)
         }else{//teams
-            conditions = [
-                emote.isPing ? player.team.isTeammate(emotePlayer) : player.visibleObjects.has(emotePlayer)
-            ]
+            condition = emote.isPing ? player.team.isTeammate(emotePlayer) : player.visibleObjects.has(emotePlayer)
         }
 
-        if (conditions.every(Boolean)){
+        if (condition){
             emotes.push(emote);
         }
     }
