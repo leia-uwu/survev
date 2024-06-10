@@ -605,6 +605,24 @@ export class Player extends BaseGameObject {
     private _firstUpdate = true;
     secondsSinceLastUpdate = 0;
 
+    pushEmotes(player: Player, emotePlayer: Player, emote: Emote, emotes: Emote[]){
+        let conditions: boolean[];
+        if (!player.game.isTeammode(player.team)){//solo
+            conditions = [
+                emote.isPing ? emotePlayer == player : true,
+                player.visibleObjects.has(emotePlayer)
+            ]
+        }else{//teams
+            conditions = [
+                emote.isPing ? player.team.isTeammate(emotePlayer) : player.visibleObjects.has(emotePlayer)
+            ]
+        }
+
+        if (conditions.every(Boolean)){
+            emotes.push(emote);
+        }
+    }
+
     sendMsgs(dt: number): void {
         const msgStream = new MsgStream(new ArrayBuffer(65536));
 
@@ -749,8 +767,8 @@ export class Player extends BaseGameObject {
 
         for (const emote of this.game.emotes) {
             const emotePlayer = this.game.grid.getById(emote.playerId);
-            if (emotePlayer && player.visibleObjects.has(emotePlayer)) {
-                updateMsg.emotes.push(emote);
+            if (emotePlayer){
+                this.pushEmotes(player, emotePlayer as Player, emote, updateMsg.emotes);
             }
         }
 
