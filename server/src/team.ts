@@ -13,12 +13,21 @@ export class Team {
         this.id = id;
     }
 
+    /**
+     * getPlayers((p) => !p.dead) : gets all alive players on team
+     */
+    getPlayers(playerFilter?: (player: Player) => (boolean)){
+        if (!playerFilter) return this.players;
+
+        return this.players.filter(p => playerFilter(p));
+    }
+
     getAlivePlayers() {
-        return this.players.filter(p => !p.dead);
+        return this.getPlayers(p => !p.dead && !p.disconnected);
     }
 
     getAliveTeammates(player: Player) {
-        return this.getAlivePlayers().filter(p => p != player);
+        return this.getPlayers(p => p != player && !p.dead && !p.disconnected);
     }
 
     add(player: Player) {
@@ -77,13 +86,14 @@ export class Team {
      * @returns random player
      */
     randomPlayer(player?: Player) {
-        const players = player ? this.players.filter(p => p != player) : this.players;
+        const players = player ? this.getPlayers(p => p != player) : this.players;
         return players[util.randomInt(0, this.players.length - 1)];
     }
 
     /** gets next alive player in the array, loops around if end is reached */
     nextPlayer(currentPlayer: Player) {
-        const alivePlayers = this.getAlivePlayers();
+        // const alivePlayers = this.getAlivePlayers();
+        const alivePlayers = this.getPlayers(p => !p.dead && !p.disconnected);
         const currentPlayerIndex = alivePlayers.indexOf(currentPlayer);
         const newIndex = (currentPlayerIndex + 1) % alivePlayers.length;
         return alivePlayers[newIndex];
@@ -91,7 +101,8 @@ export class Team {
 
     /** gets previous alive player in the array, loops around if beginning is reached */
     prevPlayer(currentPlayer: Player) {
-        const alivePlayers = this.getAlivePlayers();
+        // const alivePlayers = this.getAlivePlayers();
+        const alivePlayers = this.getPlayers(p => !p.dead && !p.disconnected);
         const currentPlayerIndex = alivePlayers.indexOf(currentPlayer);
         const newIndex = currentPlayerIndex == 0 ? alivePlayers.length - 1 : currentPlayerIndex - 1;
         return alivePlayers[newIndex];

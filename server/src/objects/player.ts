@@ -721,14 +721,15 @@ export class Player extends BaseGameObject {
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
         if (player.playerStatusDirty) {
-            const teammates = this.game.teams.get(player.teamId)!.players;
-            for (let i = 0; i < teammates.length; i++) {
+            const teamPlayers = this.team!.getPlayers();
+            for (let i = 0; i < teamPlayers.length; i++) {
+                const p = teamPlayers[i];
                 updateMsg.playerStatus.players.push({
                     hasData: true,
-                    pos: player.pos,
+                    pos: p.pos,
                     visible: true,
-                    dead: player.dead,
-                    downed: player.downed,
+                    dead: p.dead,
+                    downed: p.downed,
                     role: ""
                 });
             }
@@ -736,11 +737,11 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teammates = this.game.teams.get(player.teamId)!.players;
-            for (const t of teammates) {
+            const teamPlayers = this.team!.getPlayers();
+            for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
-                    health: t.health,
-                    disconnected: t.disconnected
+                    health: p.health,
+                    disconnected: p.disconnected
                 });
             }
             updateMsg.groupStatusDirty = true;
