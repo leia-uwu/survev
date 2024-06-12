@@ -1006,36 +1006,36 @@ export class Game {
     }
 
     updateAmbience() {
-        const e = this.activePlayer.pos;
-        let t = 0;
-        let r = 0;
-        let a = 1;
-        if (this.map.isInOcean(e)) {
-            t = 1;
-            r = 0;
-            a = 0;
+        const playerPos = this.activePlayer.pos;
+        let wavesWeight = 0;
+        let riverWeight = 0;
+        let windWeight = 1;
+        if (this.map.isInOcean(playerPos)) {
+            wavesWeight = 1;
+            riverWeight = 0;
+            windWeight = 0;
         } else {
-            const i = this.map.distanceToShore(e);
-            t = math.delerp(i, 50, 0);
-            r = 0;
-            for (let o = 0; o < this.map.terrain!.rivers.length; o++) {
-                const s = this.map.terrain?.rivers[o]!;
-                const n = s.spline.getClosestTtoPoint(e);
-                const l = s.spline.getPos(n);
-                const c = v2.length(v2.sub(l, e));
-                const p = s.waterWidth + 2;
-                const d = math.delerp(c, 30 + p, p);
-                const u = math.clamp(s.waterWidth / 8, 0.25, 1);
-                r = math.max(d * u, r);
+            const dist = this.map.distanceToShore(playerPos);
+            wavesWeight = math.delerp(dist, 50, 0);
+            riverWeight = 0;
+            for (let i = 0; i < this.map.terrain!.rivers.length; i++) {
+                const river = this.map.terrain?.rivers[i]!;
+                const closestPointT = river.spline.getClosestTtoPoint(playerPos);
+                const closestPoint = river .spline.getPos(closestPointT);
+                const distanceToRiver = v2.length(v2.sub(closestPoint, playerPos));
+                const riverWidth = river.waterWidth + 2;
+                const normalizedDistance = math.delerp(distanceToRiver, 30 + riverWidth, riverWidth);
+                const riverStrength = math.clamp(river .waterWidth / 8, 0.25, 1);
+                riverWeight = math.max(normalizedDistance * riverStrength, riverWeight );
             }
             if (this.activePlayer.layer == 1) {
-                r = 0;
+                riverWeight = 0;
             }
-            a = 1;
+            windWeight = 1;
         }
-        this.ambience.getTrack("wind").weight = a;
-        this.ambience.getTrack("river").weight = r;
-        this.ambience.getTrack("waves").weight = t;
+        this.ambience.getTrack("wind").weight = windWeight ;
+        this.ambience.getTrack("river").weight = riverWeight ;
+        this.ambience.getTrack("waves").weight = wavesWeight ;
     }
 
     resize() {

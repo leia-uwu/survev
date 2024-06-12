@@ -827,7 +827,8 @@ export class LoadoutMenu {
         }
 
         if (this.selectedItem.loadoutType == "crosshair") {
-            const objDef = GameObjectDefs[this.selectedItem.type] as CrosshairDef;
+            const objDef = GameObjectDefs[this.selectedItem.type!];
+            // @ts-expect-error error: crosshair isn't a game object
             if (objDef && objDef.type == "crosshair" && objDef.cursor) {
                 $("#modal-content-right-crosshair").css("display", "none");
             } else {

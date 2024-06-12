@@ -838,7 +838,7 @@ export class UiManager {
                 this.updateTeam(
                     i,
                     helpers.htmlEscape(playerInfo.name),
-                    playerStatus.health,
+                    playerStatus.health!,
                     {
                         disconnected: playerStatus.disconnected,
                         dead: playerStatus.dead,
@@ -1021,7 +1021,7 @@ export class UiManager {
         const keys = Object.keys(playerBarn.playerStatus);
         for (let i = 0; i < keys.length; i++) {
             const playerStatus =
-        playerBarn.playerStatus[keys[i] as unknown as number];
+        playerBarn.playerStatus[keys[i] as unknown as number] as Required<PlayerStatus>;
             const playerId = playerStatus.playerId;
             const playerInfo = playerBarn.getPlayerInfo(playerId);
             const sameGroup = playerInfo.groupId == activePlayerInfo.groupId;
@@ -1085,7 +1085,7 @@ export class UiManager {
                 addSprite(
                     playerStatus.pos,
                     scale,
-                    playerStatus.minimapAlpha,
+                    playerStatus.minimapAlpha!,
                     visible,
                     zOrder - 1,
                     "player-map-outer.img",
@@ -1443,20 +1443,20 @@ export class UiManager {
 
             const victory = localTeamId == winningTeamId;
             const statsDelay = victory ? 1750 : 2500;
-            const _ =
+            const isLocalTeamWinner =
         localTeamId == winningTeamId || (spectating && winningTeamId == teamId);
-            const b = spectating && localTeamId != teamId;
-            const S = _
-                ? this.getTitleVictoryText(b, map.getMapDef().gameMode)
-                : this.getTitleDefeatText(teamMode, b);
-            let v = 0;
+            const spectatingAnotherTeam = spectating && localTeamId != teamId;
+            const S = isLocalTeamWinner
+                ? this.getTitleVictoryText(spectatingAnotherTeam, map.getMapDef().gameMode)
+                : this.getTitleDefeatText(teamMode, spectatingAnotherTeam);
+            let teamKills = 0;
             for (let i = 0; i < playerStats.length; i++) {
-                v += playerStats[i].kills;
+                teamKills += playerStats[i].kills;
             }
             const z = this.getOverviewElems(
                 teamMode,
                 teamRank,
-                v,
+                teamKills,
                 map.getMapDef().gameMode.factionMode!
             );
             const I = $("<div/>")
@@ -1494,11 +1494,11 @@ export class UiManager {
             P -= ((playerStats.length - 1) * M) / 2;
             P -= (playerStats.length - 1) * 10;
             for (let C = 0; C < playerStats.length; C++) {
-                const A = playerStats[C];
-                const O = playerBarn.getPlayerInfo(A.playerId);
-                const D = humanizeTime(A.timeAlive);
+                const stats = playerStats[C];
+                const playerInfo = playerBarn.getPlayerInfo(stats.playerId);
+                const D = humanizeTime(stats.timeAlive);
                 let E = "ui-stats-info-player";
-                E += A.dead ? " ui-stats-info-status" : "";
+                E += stats.dead ? " ui-stats-info-status" : "";
                 const B = (function(e) {
                     return $("<div/>", {
                         class: e
@@ -1508,15 +1508,15 @@ export class UiManager {
                 B.append(
                     $("<div/>", {
                         class: "ui-stats-info-player-name",
-                        html: helpers.htmlEscape(O.name)
+                        html: helpers.htmlEscape(playerInfo.name)
                     })
                 );
-                B.append(T(this.localization.translate("game-kills"), `${A.kills}`))
+                B.append(T(this.localization.translate("game-kills"), `${stats.kills}`))
                     .append(
-                        T(this.localization.translate("game-damage-dealt"), A.damageDealt)
+                        T(this.localization.translate("game-damage-dealt"), stats.damageDealt)
                     )
                     .append(
-                        T(this.localization.translate("game-damage-taken"), A.damageTaken)
+                        T(this.localization.translate("game-damage-taken"), stats.damageTaken)
                     )
                     .append(T(this.localization.translate("game-survived"), D));
                 if (map.getMapDef().gameMode.factionMode && gameOver) {
@@ -1539,7 +1539,7 @@ export class UiManager {
                         break;
                     case 3: {
                         const R =
-                O.teamId == 1
+                playerInfo.teamId == 1
                     ? "ui-stats-info-player-red-ribbon"
                     : "ui-stats-info-player-blue-ribbon";
                         B.append(
