@@ -16,7 +16,7 @@ export class Team {
     /**
      * getPlayers((p) => !p.dead) : gets all alive players on team
      */
-    getPlayers(playerFilter?: (player: Player) => (boolean)){
+    getPlayers(playerFilter?: (player: Player) => (boolean)) {
         if (!playerFilter) return this.players;
 
         return this.players.filter(p => playerFilter(p));
@@ -32,10 +32,6 @@ export class Team {
 
     add(player: Player) {
         this.players.push(player);
-    }
-
-    isTeammate(player: Player) {
-        return this.players.includes(player);
     }
 
     /**

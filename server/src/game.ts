@@ -32,6 +32,7 @@ export class Game {
     startedTime = 0;
     id: number;
     teamMode = TeamMode.Solo;
+    isTeamMode = this.teamMode != TeamMode.Solo;
 
     objectIdAllocator = new IDAllocator(16);
     groupIdAllocator = new IDAllocator(8);
@@ -181,15 +182,6 @@ export class Game {
             this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / this.config.tps)) * 100).toFixed(1)}%`);
             this.tickTimes = [];
         }
-    }
-
-    /**
-     * checks teammode and asserts the passed in team object accordingly
-     * @param team team object to assert as Team if return is true
-     * @returns true if duos or squads, false if solos
-     */
-    isTeammode(team?: Team): team is Team {
-        return this.teamMode != TeamMode.Solo;
     }
 
     nextTeam(currentTeam: Team) {
@@ -378,7 +370,7 @@ export class Game {
     }
 
     isGameOver() {
-        if (!this.isTeammode()) { // solos
+        if (!this.isTeamMode) { // solos
             return !this.stopped && this.started && this.aliveCount == 1;
         } else {
             const nAliveTeams = Array.from(this.teams.values()).reduce(
@@ -413,10 +405,10 @@ export class Game {
             return;
         }
 
-        if (!player.dead && !this.isTeammode() && this.isGameOver()) {
+        if (!player.dead && !this.isTeamMode && this.isGameOver()) {
             this.soloInitGameEnd(this.spectatablePlayers[0], player);
-        } else if (this.isTeammode(player.team) && this.isGameOver()) {
-            this.teamInitGameEnd(Array.from(this.teams.values()).find(team => !team.allDeadOrDisconnected)!, player.team);
+        } else if (this.isTeamMode && this.isGameOver()) {
+            this.teamInitGameEnd(Array.from(this.teams.values()).find(team => !team.allDeadOrDisconnected)!, player.team!);
         }
     }
 

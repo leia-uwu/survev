@@ -87,6 +87,7 @@ export interface MapDef {
         perkModeRoles?: string[]
         factionMode?: boolean
         factions?: number
+        turkeyMode?: boolean
     }
     gameConfig: {
         planes: {

@@ -44,15 +44,21 @@ export class GameMap {
 
     riverDescs: MapRiverData[] = [];
 
+    factionMode: boolean;
+    perkMode: boolean;
+    turkeyMode: boolean;
+    woodsMode: boolean;
+    desertMode: boolean;
+    potatoMode: boolean;
+    sniperMode: boolean;
+
     constructor(game: Game) {
         this.game = game;
 
-        const mapDef = this.mapDef = MapDefs[game.config.map];
+        const mapDef = this.mapDef = util.cloneDeep(MapDefs[game.config.map]);
         if (mapDef === undefined) {
             throw new Error(`Invalid map name: ${game.config.map}`);
         }
-
-        this.mapDef = mapDef;
 
         const mapConfig = mapDef.mapGen.map;
         this.width = (mapConfig.baseWidth * mapConfig.scale.small) + mapConfig.extension;
@@ -68,6 +74,14 @@ export class GameMap {
         this.center = v2.create(this.width / 2, this.height / 2);
         this.grassInset = this.msg.grassInset = mapConfig.grassInset;
         this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
+
+        this.factionMode = !!this.mapDef.gameMode.factionMode;
+        this.perkMode = !!this.mapDef.gameMode.perkMode;
+        this.turkeyMode = !!this.mapDef.gameMode.turkeyMode;
+        this.woodsMode = !!this.mapDef.gameMode.woodsMode;
+        this.desertMode = !!this.mapDef.gameMode.desertMode;
+        this.potatoMode = !!this.mapDef.gameMode.potatoMode;
+        this.sniperMode = !!this.mapDef.gameMode.sniperMode;
 
         /* const lootPos = v2.create(this.width / 2, this.height / 2);
         for (const loot in GameObjectDefs) {
