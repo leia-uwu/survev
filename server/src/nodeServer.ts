@@ -202,7 +202,7 @@ class NodeServer extends AbstractServer {
              * @param socket The socket being opened.
              */
             open(socket: WebSocket<TeamMenuPlayerContainer>) {
-                socket.getUserData().sendResponse = (data) => socket.send(data, false, false);
+                socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
             },
 
             /**

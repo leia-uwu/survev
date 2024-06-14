@@ -4,13 +4,20 @@ import { GameConfig } from "../../shared/gameConfig";
 import { v2 } from "../../shared/utils/v2";
 import { util } from "../../shared/utils/util";
 
-export class Team {
-    id: number;
+export class Group {
+    groupId: number;
+    /**
+     * faction mode team ID
+     * 0 is no team
+     * 1 is red
+     * 2 is blue
+     */
+    teamId = 0;
     allDeadOrDisconnected = false;
     players: Player[] = [];
 
     constructor(id: number) {
-        this.id = id;
+        this.groupId = id;
     }
 
     /**
@@ -31,6 +38,11 @@ export class Team {
     }
 
     add(player: Player) {
+        player.groupId = this.groupId;
+        player.teamId = this.teamId;
+        player.group = this;
+        player.setGroupStatuses();
+        player.playerStatusDirty = true;
         this.players.push(player);
     }
 

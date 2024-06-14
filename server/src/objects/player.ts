@@ -26,7 +26,7 @@ import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
-import { type Team } from "../team";
+import { type Group } from "../group";
 import { TeamMode } from "../config";
 
 export class Emote {
@@ -92,7 +92,7 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     activeIdDirty = true;
 
-    team: Team | undefined = undefined;
+    group: Group | undefined = undefined;
 
     /**
      * set true if any member on the team changes health or disconnects
@@ -102,7 +102,7 @@ export class Player extends BaseGameObject {
     setGroupStatuses() {
         if (!this.game.isTeamMode) return;
 
-        const teammates = this.game.teams.get(this.teamId)!.players;
+        const teammates = this.group!.players;
         for (const t of teammates) {
             t.groupStatusDirty = true;
         }
@@ -376,10 +376,6 @@ export class Player extends BaseGameObject {
         super(game, pos);
 
         this.collider = collider.createCircle(pos, this.rad);
-
-        if (game.teamMode == TeamMode.Solo && game.config.map !== "faction") {
-            this.groupId = this.teamId = this.game.groupIdAllocator.getNextId();
-        }
 
         for (const item in GameConfig.bagSizes) {
             this.inventory[item] = 0;
@@ -722,11 +718,11 @@ export class Player extends BaseGameObject {
 
         updateMsg.playerInfos = player._firstUpdate ? [...this.game.players] : this.game.newPlayers;
 
-        if (this.team) {
+        if (this.group) {
             this.playerStatusTicker += dt;
 
             if (this.playerStatusTicker > getPlayerStatusUpdateRate(this.game.map.factionMode)) {
-                const teamPlayers = this.team.getPlayers();
+                const teamPlayers = this.group.getPlayers();
                 for (let i = 0; i < teamPlayers.length; i++) {
                     const p = teamPlayers[i];
                     updateMsg.playerStatus.players.push({
@@ -744,7 +740,7 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teamPlayers = this.team!.getPlayers();
+            const teamPlayers = this.group!.getPlayers();
             for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
                     health: p.health,
@@ -835,33 +831,33 @@ export class Player extends BaseGameObject {
                 const newIndex = playerBeingSpecIndex == 0 ? this.game.spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
                 playerToSpec = this.game.spectatablePlayers[newIndex];
             }
-        } else if (this.team) {
-            if (!this.team.allTeammatesDeadOrDisconnected(this)) { // team still alive
+        } else if (this.group) {
+            if (!this.group.allTeammatesDeadOrDisconnected(this)) { // team still alive
                 if (spectateMsg.specBegin) {
-                    playerToSpec = this.team.randomPlayer(this);
+                    playerToSpec = this.group.randomPlayer(this);
                 } else if (spectateMsg.specNext && this.spectating) {
-                    playerToSpec = this.team.nextPlayer(this.spectating);
+                    playerToSpec = this.group.nextPlayer(this.spectating);
                 } else if (spectateMsg.specPrev && this.spectating) {
-                    playerToSpec = this.team.prevPlayer(this.spectating);
+                    playerToSpec = this.group.prevPlayer(this.spectating);
                 }
             } else { // team dead
-                let specType: Team["prevPlayer"] | Team["nextPlayer"] | undefined;
+                let specType: Group["prevPlayer"] | Group["nextPlayer"] | undefined;
                 if (spectateMsg.specBegin) {
                     playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
                 } else if (spectateMsg.specNext && this.spectating) {
-                    specType = this.spectating.team!.nextPlayer.bind(this.spectating.team);
+                    specType = this.spectating.group!.nextPlayer.bind(this.spectating.group);
                     this.enemyTeamCycleCount++;
                 } else if (spectateMsg.specPrev && this.spectating) {
-                    specType = this.spectating.team!.prevPlayer.bind(this.spectating.team);
+                    specType = this.spectating.group!.prevPlayer.bind(this.spectating.group);
                     this.enemyTeamCycleCount--;
                 }
 
                 if (this.spectating) {
-                    if (this.enemyTeamCycleCount >= this.spectating.team!.getAlivePlayers().length) {
-                        playerToSpec = this.game.nextTeam(this.spectating.team!).randomPlayer();
+                    if (this.enemyTeamCycleCount >= this.spectating.group!.getAlivePlayers().length) {
+                        playerToSpec = this.game.nextTeam(this.spectating.group!).randomPlayer();
                         this.enemyTeamCycleCount = 0;
-                    } else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.team!.getAlivePlayers().length) {
-                        playerToSpec = this.game.prevTeam(this.spectating.team!).randomPlayer();
+                    } else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.group!.getAlivePlayers().length) {
+                        playerToSpec = this.game.prevTeam(this.spectating.group!).randomPlayer();
                         this.enemyTeamCycleCount = 0;
                     } else if (specType) {
                         playerToSpec = specType(this.spectating);
@@ -879,11 +875,14 @@ export class Player extends BaseGameObject {
         const sourceIsPlayer = params.source?.__type === ObjectType.Player;
 
         // teammates can't deal damage to each other
-        if (sourceIsPlayer && params.source !== this &&
-            ((params.source as Player).teamId === this.teamId ||
-                (params.source as Player).groupId === this.groupId)
+        if (sourceIsPlayer && params.source !== this
         ) {
-            return;
+            if ((params.source as Player).groupId === this.groupId) {
+                return;
+            }
+            if (this.game.map.factionMode && (params.source as Player).teamId === this.teamId) {
+                return;
+            }
         }
 
         let finalDamage = params.amount!;
@@ -944,13 +943,13 @@ export class Player extends BaseGameObject {
                     this.kill(params);
                 }
             } else {
-                if (this.team!.allTeammatesDeadOrDisconnected(this)) { // includes solo duos/squads
-                    this.team!.allDeadOrDisconnected = true;
+                if (this.group!.allTeammatesDeadOrDisconnected(this)) { // includes solo duos/squads
+                    this.group!.allDeadOrDisconnected = true;
                     this.kill(params);
-                } else if (this.team!.allTeammatesDowned(this)) {
-                    this.team!.allDeadOrDisconnected = true;
+                } else if (this.group!.allTeammatesDowned(this)) {
+                    this.group!.allDeadOrDisconnected = true;
                     this.kill(params);
-                    this.team!.killAllTeammates(this);
+                    this.group!.killAllTeammates(this);
                 } else {
                     this.down(params);
                 }
@@ -966,12 +965,12 @@ export class Player extends BaseGameObject {
 
         if (!this.game.isTeamMode) { // solo
             gameOverMsg.playerStats.push(this);
-        } else if (this.team) {
-            this.team.players.forEach(p => gameOverMsg.playerStats.push(p));
+        } else if (this.group) {
+            this.group.players.forEach(p => gameOverMsg.playerStats.push(p));
         }
 
         const targetPlayer = this.spectating ?? this;
-        const teamRank = !this.game.isTeamMode ? this.game.aliveCount + 1 : this.game.teams.size;
+        const teamRank = !this.game.isTeamMode ? this.game.aliveCount + 1 : this.game.groups.size;
 
         gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
         gameOverMsg.teamId = targetPlayer.teamId;
@@ -1020,18 +1019,18 @@ export class Player extends BaseGameObject {
         let player: Player;
         if (!this.game.isTeamMode) { // solo
             player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.randomPlayer(this);
-        } else if (this.team) {
-            if (!this.team.allTeammatesDeadOrDisconnected(this)) { // team alive
-                player = this.team.randomPlayer(this);
+        } else if (this.group) {
+            if (!this.group.allTeammatesDeadOrDisconnected(this)) { // team alive
+                player = this.group.randomPlayer(this);
             } else { // team dead
                 if (
                     this.killedBy &&
                     this.killedBy != this &&
-                    this.team.allTeammatesDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                    this.group.allTeammatesDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
                 ) {
                     player = this.killedBy;
                 } else {
-                    player = this.team.randomPlayer(this.spectating);
+                    player = this.group.randomPlayer(this.spectating);
                 }
             }
         }
@@ -1095,8 +1094,8 @@ export class Player extends BaseGameObject {
         if (this.game.teamMode == TeamMode.Solo && this.game.isGameOver()) {
             this.game.soloInitGameEnd(this.killedBy ?? this.game.spectatablePlayers[0], this);
         } else if (this.game.teamMode != TeamMode.Solo && this.game.isGameOver()) {
-            const x = Array.from(this.game.teams.values()).find(team => !team.allDeadOrDisconnected)!;
-            this.game.teamInitGameEnd(this.killedBy ? this.killedBy.team! : x, this.team!);
+            const x = Array.from(this.game.groups.values()).find(team => !team.allDeadOrDisconnected)!;
+            this.game.teamInitGameEnd(this.killedBy ? this.killedBy.group! : x, this.group!);
         } else {
             this.addGameOverMsg();
         }
@@ -1168,7 +1167,7 @@ export class Player extends BaseGameObject {
         }
 
         // this.animType = GameConfig.Anim.Revive;
-        const downedTeammates = this.team!.getAliveTeammates(this).filter(t => t.downed);
+        const downedTeammates = this.group!.getAliveTeammates(this).filter(t => t.downed);
 
         let playerToRevive: Player | undefined;
         let closestDist = Number.MAX_VALUE;

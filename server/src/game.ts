@@ -22,7 +22,7 @@ import { IDAllocator } from "./IDAllocator";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 import { util } from "../../shared/utils/util";
-import { Team } from "./team";
+import { Group } from "./group";
 
 export class Game {
     started = false;
@@ -31,8 +31,8 @@ export class Game {
     over = false;
     startedTime = 0;
     id: number;
-    teamMode = TeamMode.Solo;
-    isTeamMode = this.teamMode != TeamMode.Solo;
+    teamMode: TeamMode;
+    isTeamMode: boolean;
 
     objectIdAllocator = new IDAllocator(16);
     groupIdAllocator = new IDAllocator(8);
@@ -42,7 +42,7 @@ export class Game {
     livingPlayers = new Set<Player>();
     spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
 
-    teams = new Map<number, Team>();// team id maps to all players in that team
+    groups = new Map<string, Group>();
 
     get aliveCount(): number {
         return this.livingPlayers.size;
@@ -88,6 +88,9 @@ export class Game {
         const start = Date.now();
 
         this.config = config;
+
+        this.teamMode = config.teamMode;
+        this.isTeamMode = this.teamMode !== TeamMode.Solo;
 
         this.grid = new Grid(1024, 1024);
         this.map = new GameMap(this);
@@ -184,15 +187,15 @@ export class Game {
         }
     }
 
-    nextTeam(currentTeam: Team) {
-        const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDeadOrDisconnected);
+    nextTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(t => !t.allDeadOrDisconnected);
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
         return aliveTeams[newIndex];
     }
 
-    prevTeam(currentTeam: Team) {
-        const aliveTeams = Array.from(this.teams.values()).filter(t => !t.allDeadOrDisconnected);
+    prevTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(t => !t.allDeadOrDisconnected);
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex = currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
         return aliveTeams[newIndex];
@@ -257,26 +260,12 @@ export class Game {
             const joinMsg = new JoinMsg();
             joinMsg.deserialize(stream);
 
-            if (joinMsg.matchPriv) { // mode is either duos or squads
-                const parsedMatchPriv: {
-                    groupId: number
-                    teamMode: TeamMode
-                } = JSON.parse(joinMsg.matchPriv);
-
-                if (this.config.map != "faction") {
-                    player.groupId = player.teamId = parsedMatchPriv.groupId;
-                    if (!this.teams.has(parsedMatchPriv.groupId)) {
-                        const team = new Team(parsedMatchPriv.groupId);
-                        team.add(player);
-                        this.teams.set(parsedMatchPriv.groupId, team);
-                    } else {
-                        this.teams.get(parsedMatchPriv.groupId)!.add(player);
-                    }
-                    player.team = this.teams.get(parsedMatchPriv.groupId)!;
-                    player.setGroupStatuses();
-                    player.playerStatusDirty = true;
-                }
-                this.teamMode = parsedMatchPriv.teamMode;
+            if (this.isTeamMode) {
+                const group = this.groups.get(joinMsg.matchPriv);
+                if (!group) return;
+                group.add(player);
+            } else {
+                player.groupId = this.groupIdAllocator.getNextId();
             }
 
             if (joinMsg.protocol !== GameConfig.protocolVersion) {
@@ -373,7 +362,7 @@ export class Game {
         if (!this.isTeamMode) { // solos
             return !this.stopped && this.started && this.aliveCount == 1;
         } else {
-            const nAliveTeams = Array.from(this.teams.values()).reduce(
+            const nAliveTeams = Array.from(this.groups.values()).reduce(
                 (n, team) => !team.allDeadOrDisconnected ? n + 1 : n,
                 0
             );
@@ -388,7 +377,7 @@ export class Game {
 
     removePlayer(player: Player): void {
         player.disconnected = true;
-        if (this.teamMode != TeamMode.Solo) {
+        if (this.isTeamMode) {
             player.setGroupStatuses();
         }
 
@@ -408,16 +397,16 @@ export class Game {
         if (!player.dead && !this.isTeamMode && this.isGameOver()) {
             this.soloInitGameEnd(this.spectatablePlayers[0], player);
         } else if (this.isTeamMode && this.isGameOver()) {
-            this.teamInitGameEnd(Array.from(this.teams.values()).find(team => !team.allDeadOrDisconnected)!, player.team!);
+            this.teamInitGameEnd(Array.from(this.groups.values()).find(team => !team.allDeadOrDisconnected)!, player.group!);
         }
     }
 
-    teamInitGameEnd(winner: Team, runnerUp: Team): void {
+    teamInitGameEnd(winner: Group, runnerUp: Group): void {
         if (runnerUp.allDeadOrDisconnected) { // if not dead, means they left while still alive and their socket closed
-            runnerUp.addGameOverMsg(winner.id);
+            runnerUp.addGameOverMsg(winner.groupId);
         }
 
-        winner.addGameOverMsg(winner.id);
+        winner.addGameOverMsg(winner.groupId);
 
         setTimeout(() => {
             this.end();
@@ -442,6 +431,14 @@ export class Game {
         setTimeout(() => {
             this.end();
         }, 750);
+    }
+
+    addGroup(id: string) {
+        const group = new Group(this.groupIdAllocator.getNextId());
+        if (this.map.factionMode) {
+            group.teamId = util.randomInt(1, 2);
+        }
+        this.groups.set(id, group);
     }
 
     end(): void {

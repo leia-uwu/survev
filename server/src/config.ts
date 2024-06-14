@@ -25,6 +25,8 @@ export const Config = {
 
     map: "main",
 
+    teamMode: TeamMode.Solo,
+
     regions: {
         local: {
             https: false,
@@ -62,6 +64,8 @@ export interface ConfigType {
     readonly defaultRegion: string
 
     readonly map: keyof typeof MapDefs
+
+    readonly teamMode: TeamMode
 
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.
