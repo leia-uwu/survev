@@ -434,10 +434,12 @@ export class Game {
     }
 
     addGroup(id: string) {
-        const group = new Group(this.groupIdAllocator.getNextId());
+        const groupId = this.groupIdAllocator.getNextId();
+        let teamId = groupId;
         if (this.map.factionMode) {
-            group.teamId = util.randomInt(1, 2);
+            teamId = util.randomInt(1, 2);
         }
+        const group = new Group(groupId, teamId);
         this.groups.set(id, group);
     }
 

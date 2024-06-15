@@ -7,17 +7,19 @@ import { util } from "../../shared/utils/util";
 export class Group {
     groupId: number;
     /**
-     * faction mode team ID
+     * Faction mode team ID.
+     * Same as group id when not in faction mode.
      * 0 is no team
      * 1 is red
      * 2 is blue
      */
-    teamId = 0;
+    teamId: number;
     allDeadOrDisconnected = false;
     players: Player[] = [];
 
-    constructor(id: number) {
-        this.groupId = id;
+    constructor(groupId: number, teamId: number) {
+        this.groupId = groupId;
+        this.teamId = teamId;
     }
 
     /**
