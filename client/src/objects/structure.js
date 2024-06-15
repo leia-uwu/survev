@@ -4,6 +4,8 @@ import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
+import { renderBridge, renderMapBuildingBounds, renderWaterEdge } from "../debugHelpers";
+import { device } from "../device";
 
 export class Structure {
     init() {
@@ -202,7 +204,13 @@ export class Structure {
         track1.weight = sound ? weight1 * transitionWeight * this.soundEnabledT : 0;
     }
 
-    render(camera, debug, layer) { }
+    render(camera, debug, layer) {
+        if (device.debug) {
+            renderMapBuildingBounds(this);
+            renderBridge(this);
+            renderWaterEdge(this);
+        }
+    }
 
     insideStairs(collision) {
         for (let i = 0; i < this.stairs.length; i++) {

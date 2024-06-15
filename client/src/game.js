@@ -887,6 +887,9 @@ export class Game {
             debug
         );
         this.emoteBarn.render(this.camera);
+        if (device.debug) {
+            debugLines.render(this.camera, this.debugDisplay);
+        }
         debugLines.flush();
     }
 

@@ -5,6 +5,7 @@ interface TerrainSpawnDef {
     grass?: boolean
     beach?: boolean
     riverShore?: boolean
+    lakeCenter?: boolean
     bridge?: {
         nearbyWidthMult: number
     }
@@ -15,6 +16,11 @@ interface TerrainSpawnDef {
     }
     river?: {
         centerWeight: number
+    }
+    nearbyRiver: {
+        radMin: number
+        radMax: number
+        facingOri: number
     }
 }
 
@@ -135,6 +141,7 @@ interface BuildingDef {
         ori: number
         inheritOri?: boolean
         puzzlePiece?: string
+        ignoreMapSpawnReplacement?: boolean
     }>
     puzzle?: {
         name: string
@@ -166,8 +173,8 @@ interface StructureDef {
         ori: number
         underground?: boolean
     }>
-    bridgeLandBounds?: Collider[]
-    bridgeWaterBounds?: Collider[]
+    bridgeLandBounds?: AABB[]
+    bridgeWaterBounds?: AABB[]
     stairs: Array<{
         collision: AABB
         downDir: Vec2

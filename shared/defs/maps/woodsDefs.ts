@@ -209,6 +209,7 @@ const mapDef = {
             {
                 logging_complex_01: 1,
                 logging_complex_02: 1,
+                teapavilion_01w: 1,
                 warehouse_01: 3,
                 house_red_01: 3,
                 barn_01: 3,

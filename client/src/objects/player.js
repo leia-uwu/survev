@@ -14,6 +14,7 @@ import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import animData from "../animData";
 import { createCasingParticle } from "./shot";
 import { getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
+import { debugLines } from "../debugLines";
 
 const Action = GameConfig.Action;
 const Anim = GameConfig.Anim;
@@ -1147,6 +1148,15 @@ export class Player {
         this.container.visible = !this.netData.dead;
         this.auraContainer.position.set(screenPos.x, screenPos.y);
         this.auraContainer.scale.set(screenScale, screenScale);
+
+        if (device.debug) {
+            debugLines.addCircle(this.pos, this.rad, 0xff0000, 0);
+
+            const weapDef = GameObjectDefs[this.netData.activeWeapon];
+            if (weapDef.type === "gun") {
+                debugLines.addRay(this.pos, this.dir, weapDef.barrelLength, 0xff0000, 0);
+            }
+        }
     }
 
     /**

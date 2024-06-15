@@ -145,6 +145,8 @@ export class Player extends BaseGameObject {
 
     shotSlowdownTimer: number = -1;
 
+    freeSwitchTimer: number = -1;
+
     indoors = false;
 
     private _zoom: number = 0;
@@ -158,8 +160,6 @@ export class Player extends BaseGameObject {
         this._zoom = zoom;
         this.zoomDirty = true;
     }
-
-    action: { time: number, duration: number, targetId: number };
 
     private _scope = "1xscope";
 
@@ -258,22 +258,14 @@ export class Player extends BaseGameObject {
     bleedTickCounter = 0;
     playerBeingRevived: Player | undefined;
 
-    private _animType: number = GameConfig.Anim.None;
-    get animType() {
-        return this._animType;
-    }
-
-    set animType(anim: number) {
-        if (this._animType === anim) return;
-        this._animType = anim;
-        this.animSeq++;
-        this.setDirty();
-    }
-
+    animType: number = GameConfig.Anim.None;
+    private _animTicker = 0;
+    private _animCb?: () => void;
     animSeq = 0;
 
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
+    action = { time: 0, duration: 0, targetId: 0 };
 
     /**
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
@@ -382,8 +374,6 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-
-        this.action = { time: 0, duration: 0, targetId: -1 };
     }
 
     visibleObjects = new Set<GameObject>();
@@ -442,7 +432,7 @@ export class Player extends BaseGameObject {
             this.damage({
                 amount: this.game.gas.damage,
                 damageType: GameConfig.DamageType.Gas,
-                dir: v2.randomUnit()
+                dir: this.dir
             });
         }
 
@@ -485,6 +475,17 @@ export class Player extends BaseGameObject {
                 ) {
                     this.weaponManager.tryReload();
                 }
+        }
+
+        if (this.animType !== GameConfig.Anim.None) {
+            this._animTicker -= dt;
+
+            if (this._animTicker <= 0) {
+                this.animType = GameConfig.Anim.None;
+                this._animTicker = 0;
+                this.animSeq++;
+                this.setDirty();
+                this._animCb?.();
             }
         }
 
@@ -1699,7 +1700,7 @@ export class Player extends BaseGameObject {
                 amountToDrop = Math.min(5, inventoryCount);
             }
 
-            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop, this.dir);
             this.inventory[dropMsg.item] -= amountToDrop;
             this.inventoryDirty = true;
             break;
@@ -1709,7 +1710,15 @@ export class Player extends BaseGameObject {
             const scopeLevel = `${itemDef.level}xscope`;
             const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
 
-            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(
+                dropMsg.item,
+                this.pos,
+                this.layer,
+                1,
+                undefined,
+                -4,
+                this.dir
+            );
             this.inventory[scopeLevel] = 0;
 
             if (this.scope === scopeLevel) {
@@ -1726,7 +1735,15 @@ export class Player extends BaseGameObject {
         case "chest":
         case "helmet": {
             if (itemDef.noDrop) break;
-            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(
+                dropMsg.item,
+                this.pos,
+                this.layer,
+                1,
+                undefined,
+                -4,
+                this.dir
+            );
             this[itemDef.type] = "";
             this.setDirty();
             break;
@@ -1736,7 +1753,15 @@ export class Player extends BaseGameObject {
             if (this.inventory[dropMsg.item] === 0) break;
             this.inventory[dropMsg.item]--;
             // @TODO: drop more than one?
-            this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(
+                dropMsg.item,
+                this.pos,
+                this.layer,
+                1,
+                undefined,
+                -4,
+                this.dir
+            );
             this.inventoryDirty = true;
             break;
         }
@@ -1753,7 +1778,7 @@ export class Player extends BaseGameObject {
 
             const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
 
-            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop);
+            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop, this.dir);
             this.inventory[dropMsg.item] -= amountToDrop;
             this.weapons[3].ammo -= amountToDrop;
 
@@ -1813,6 +1838,21 @@ export class Player extends BaseGameObject {
         this.actionType = GameConfig.Action.None;
         this.actionSeq++;
         this.actionDirty = false;
+        this.setDirty();
+    }
+
+    playAnim(type: number, duration: number, cb?: () => void): void {
+        this.animType = type;
+        this.animSeq++;
+        this.setDirty();
+        this._animTicker = duration;
+        this._animCb = cb;
+    }
+
+    cancelAnim(): void {
+        this.animType = GameConfig.Anim.None;
+        this.animSeq++;
+        this._animTicker = 0;
         this.setDirty();
     }
 

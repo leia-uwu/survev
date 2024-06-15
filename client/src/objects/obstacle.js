@@ -4,6 +4,8 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
+import { device } from "../device";
+import { debugLines } from "../debugLines";
 
 export class Obstacle {
     constructor() {
@@ -432,6 +434,10 @@ export class Obstacle {
             this.door.casingSprite.scale.set(casingScale, casingScale);
             this.door.casingSprite.rotation = -rot;
             this.door.casingSprite.visible = !this.dead;
+        }
+
+        if (device.debug) {
+            debugLines.addCollider(this.collider, 0xff0000, 0);
         }
     }
 }

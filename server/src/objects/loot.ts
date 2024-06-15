@@ -17,12 +17,12 @@ export class LootBarn {
 
     }
 
-    splitUpLoot(player: Player, item: string, amount: number) {
+    splitUpLoot(player: Player, item: string, amount: number, dir: Vec2) {
         const dropCount = Math.floor(amount / 60);
         for (let i = 0; i < dropCount; i++) {
-            this.addLoot(item, player.pos, player.layer, 60);
+            this.addLoot(item, player.pos, player.layer, 60, undefined, -4, dir);
         }
-        if (amount % 60 !== 0) this.addLoot(item, player.pos, player.layer, amount % 60);
+        if (amount % 60 !== 0) this.addLoot(item, player.pos, player.layer, amount % 60, undefined, -4, dir);
     }
 
     /**
@@ -33,8 +33,8 @@ export class LootBarn {
         this.game.grid.addObject(loot);
     }
 
-    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean, dir?: Vec2) {
-        const loot = new Loot(this.game, type, pos, layer, count, undefined, dir);
+    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean, pushSpeed?: number, dir?: Vec2) {
+        const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this.game.grid.addObject(loot);
 
         const def = GameObjectDefs[type];

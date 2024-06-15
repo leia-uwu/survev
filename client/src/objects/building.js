@@ -6,6 +6,9 @@ import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
+import { debugLines } from "../debugLines";
+import { device } from "../device";
+import { renderMapBuildingBounds } from "../debugHelpers";
 
 function step(cur, target, rate) {
     const delta = target - cur;
@@ -595,5 +598,19 @@ export class Building {
         sprite.alpha = sprite.imgAlpha * alpha;
     }
 
-    render(camera, debug, layer) { }
+    render(camera, debug, layer) {
+        if (device.debug) {
+            renderMapBuildingBounds(this);
+
+            for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
+                const region = this.ceiling.zoomRegions[i];
+                if (region.zoomIn) {
+                    debugLines.addCollider(region.zoomIn, 0x00ff00, 0);
+                }
+                if (region.zoomOut) {
+                    debugLines.addCollider(region.zoomOut, 0x0000ff, 0);
+                }
+            }
+        }
+    }
 }
