@@ -475,6 +475,7 @@ export class Player extends BaseGameObject {
                 ) {
                     this.weaponManager.tryReload();
                 }
+            }
         }
 
         if (this.animType !== GameConfig.Anim.None) {
