@@ -263,6 +263,8 @@ export class Player extends BaseGameObject {
     private _animCb?: () => void;
     animSeq = 0;
 
+    distSinceLastCrawl = 0;
+
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
     action = { time: 0, duration: 0, targetId: 0 };
@@ -595,6 +597,21 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
             this.game.grid.updateObject(this);
+        }
+
+        if (this.downed) {
+            this.distSinceLastCrawl += v2.distance(this.posOld, this.pos);
+
+            if (this.animType === GameConfig.Anim.None && this.distSinceLastCrawl > 3) {
+                let anim: number = GameConfig.Anim.CrawlForward;
+
+                if (!v2.eq(this.dir, movement, 1)) {
+                    anim = GameConfig.Anim.CrawlBackward;
+                }
+
+                this.playAnim(anim, GameConfig.player.crawlTime);
+                this.distSinceLastCrawl = 0;
+            }
         }
 
         if (this.shotSlowdownTimer - Date.now() <= 0) {
