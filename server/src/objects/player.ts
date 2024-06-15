@@ -1192,10 +1192,13 @@ export class Player extends BaseGameObject {
 
         let playerToRevive: Player | undefined;
         let closestDist = Number.MAX_VALUE;
-        for (const t of downedTeammates) {
-            const dist = v2.distance(this.pos, t.pos);
+        for (const teammate of downedTeammates) {
+            if (!util.sameLayer(this.layer, teammate.layer)) {
+                continue;
+            }
+            const dist = v2.distance(this.pos, teammate.pos);
             if (dist <= GameConfig.player.reviveRange && dist < closestDist) {
-                playerToRevive = t;
+                playerToRevive = teammate;
                 closestDist = dist;
             }
         }
