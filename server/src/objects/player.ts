@@ -1638,13 +1638,10 @@ export class Player extends BaseGameObject {
             }
 
             this.weapons[newGunIdx].cooldown = 0;
-            if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) {
+            if (this.curWeapIdx === GameConfig.WeaponSlot.Melee || this.curWeapIdx === GameConfig.WeaponSlot.Secondary) {
                 this.weaponManager.setCurWeapIndex(newGunIdx);
             }
-            if (this.weapons[newGunIdx].ammo <= 0 && newGunIdx === this.curWeapIdx) {
-                this.cancelAction();
-                this.weaponManager.tryReload();
-            }
+
             this.weapsDirty = true;
             this.setDirty();
         } break;

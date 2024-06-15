@@ -59,13 +59,14 @@ export class TeamMenu {
     }
 
     addRoom(id: string, roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
+        initialRoomData.gameModeIdx = 2; //temporary until leia adds multi gamemode support
         const value = {
             id,
             roomData: {
                 roomUrl,
                 region: initialRoomData.region,
                 gameModeIdx: initialRoomData.gameModeIdx,
-                enabledGameModeIdxs: [1, 2],
+                enabledGameModeIdxs: [2], //default is [1, 2], but i changed to [2] to hardcode to squads for now
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
@@ -233,6 +234,11 @@ export class TeamMenu {
             const room = this.rooms.get(localPlayerData.roomUrl)!;
             const player = room.players.find(p => p.socketData === localPlayerData)!;
             if (!player.isLeader) {
+                return;
+            }
+
+            //do nothing if player tries to select disabled gamemode
+            if (!room.roomData.enabledGameModeIdxs.includes(newRoomData.gameModeIdx)){
                 return;
             }
 

@@ -25,7 +25,7 @@ export const Config = {
 
     map: "main",
 
-    teamMode: TeamMode.Solo,
+    teamMode: TeamMode.Squad,
 
     regions: {
         local: {
