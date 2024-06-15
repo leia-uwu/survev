@@ -38,7 +38,8 @@ export class WeaponManager {
         if (this.weapons[idx].type === "") return;
 
         this.clearTimeouts();
-        this.player.animType = GameConfig.Anim.None;
+
+        this.player.cancelAnim();
 
         const curWeapon = this.weapons[this.curWeapIdx];
         const nextWeapon = this.weapons[idx];
@@ -502,18 +503,12 @@ export class WeaponManager {
     }
 
     meleeAttack(skipCooldownCheck = false): void {
-        if (this.player.game.now < this.weapons[this.curWeapIdx].cooldown && !skipCooldownCheck) return;
-        if (this.player.animType === GameConfig.Anim.Melee) return;
+        if (this.player.animType === GameConfig.Anim.Melee && !skipCooldownCheck) return;
         this.player.cancelAction();
 
         const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
 
-        this.player.animType = GameConfig.Anim.Melee;
-        this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (meleeDef.attack.cooldownTime * 1000);
-
-        this.timeouts.push(setTimeout(() => {
-            this.player.animType = GameConfig.Anim.None;
-        }, meleeDef.attack.cooldownTime * 1000));
+        this.player.playAnim(GameConfig.Anim.Melee, meleeDef.attack.cooldownTime);
 
         const damageTimes = meleeDef.attack.damageTimes;
         for (let i = 0; i < damageTimes.length; i++) {

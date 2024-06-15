@@ -229,18 +229,9 @@ export class Player extends BaseGameObject {
     dead = false;
     downed = false;
 
-    private _animType: number = GameConfig.Anim.None;
-    get animType() {
-        return this._animType;
-    }
-
-    set animType(anim: number) {
-        if (this._animType === anim) return;
-        this._animType = anim;
-        this.animSeq++;
-        this.setDirty();
-    }
-
+    animType: number = GameConfig.Anim.None;
+    private _animTicker = 0;
+    private _animCb?: () => void;
     animSeq = 0;
 
     actionType: number = GameConfig.Action.None;
@@ -434,6 +425,18 @@ export class Player extends BaseGameObject {
                 ) {
                     this.weaponManager.tryReload();
                 }
+            }
+        }
+
+        if (this.animType !== GameConfig.Anim.None) {
+            this._animTicker -= dt;
+
+            if (this._animTicker <= 0) {
+                this.animType = GameConfig.Anim.None;
+                this._animTicker = 0;
+                this.animSeq++;
+                this.setDirty();
+                this._animCb?.();
             }
         }
 
@@ -1552,6 +1555,21 @@ export class Player extends BaseGameObject {
         this.actionType = GameConfig.Action.None;
         this.actionSeq++;
         this.actionDirty = false;
+        this.setDirty();
+    }
+
+    playAnim(type: number, duration: number, cb?: () => void): void {
+        this.animType = type;
+        this.animSeq++;
+        this.setDirty();
+        this._animTicker = duration;
+        this._animCb = cb;
+    }
+
+    cancelAnim(): void {
+        this.animType = GameConfig.Anim.None;
+        this.animSeq++;
+        this._animTicker = 0;
         this.setDirty();
     }
 
