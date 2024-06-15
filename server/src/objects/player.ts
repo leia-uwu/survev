@@ -555,8 +555,11 @@ export class Player extends BaseGameObject {
     private _firstUpdate = true;
     secondsSinceLastUpdate = 0;
 
+    msgStream = new MsgStream(new ArrayBuffer(65536));
     sendMsgs(dt: number): void {
-        const msgStream = new MsgStream(new ArrayBuffer(65536));
+
+       const msgStream = this.msgStream;
+       msgStream.stream.index = 0;
 
         if (this._firstUpdate) {
             const joinedMsg = new JoinedMsg();
