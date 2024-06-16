@@ -255,7 +255,7 @@ export class Player extends BaseGameObject {
     downed = false;
     disconnected = false;
 
-    bleedTickCounter = 0;
+    bleedTicker = 0;
     playerBeingRevived: Player | undefined;
 
     animType: number = GameConfig.Anim.None;
@@ -419,14 +419,14 @@ export class Player extends BaseGameObject {
                 this.cancelAction();
             }
         } else if (this.downed) {
-            this.bleedTickCounter++;
-            if (this.bleedTickCounter >= (GameConfig.player.bleedTickRate * this.game.config.tps)) { // bleedTickRate measured in seconds
+            this.bleedTicker += dt;
+            if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
                 this.damage({
                     amount: GameConfig.player.bleedDamage,
                     damageType: GameConfig.DamageType.Bleeding,
-                    dir: v2.randomUnit()
+                    dir: this.dir
                 });
-                this.bleedTickCounter = 0;
+                this.bleedTicker = 0;
             }
         }
 
@@ -458,15 +458,12 @@ export class Player extends BaseGameObject {
                     this.inventoryDirty = true;
                 } else if (this.isReloading()) {
                     this.weaponManager.reload();
-                } else if (this.actionType === GameConfig.Action.Revive) {
-                    if (this.playerBeingRevived) { // player who initiated the revive
-                        // LEIA TODO: reset animation
-                    } else { // player who got revived
-                        this.downed = false;
-                        this.health = GameConfig.player.reviveHealth;
-                        this.setDirty();
-                        this.setGroupStatuses();
-                    }
+                } else if (this.actionType === GameConfig.Action.Revive && this.playerBeingRevived) {
+                    // player who got revived
+                    this.playerBeingRevived.downed = false;
+                    this.playerBeingRevived.health = GameConfig.player.reviveHealth;
+                    this.playerBeingRevived.setDirty();
+                    this.playerBeingRevived.setGroupStatuses();
                 }
 
                 this.cancelAction();
@@ -620,7 +617,7 @@ export class Player extends BaseGameObject {
     }
 
     private _firstUpdate = true;
-    secondsSinceLastUpdate = 0;
+    private _updateObjectsTicker = 0;
 
     msgStream = new MsgStream(new ArrayBuffer(65536));
     sendMsgs(dt: number): void {
@@ -668,13 +665,13 @@ export class Player extends BaseGameObject {
         const radius = player.zoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
 
-        this.secondsSinceLastUpdate += dt;
+        this._updateObjectsTicker += dt;
         if (this.game.grid.updateObjects ||
             this._firstUpdate ||
             this.startedSpectating ||
-            this.secondsSinceLastUpdate > 0.5
+            this._updateObjectsTicker > 0.5
         ) {
-            this.secondsSinceLastUpdate = 0;
+            this._updateObjectsTicker = 0;
             const newVisibleObjects = new Set(this.game.grid.intersectCollider(rect));
             // client crashes if active player is not visible
             // so make sure its always added to visible objects
@@ -1207,6 +1204,7 @@ export class Player extends BaseGameObject {
             this.playerBeingRevived = playerToRevive;
             playerToRevive.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration);
             this.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration, playerToRevive.__id);
+            this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
         }
     }
 
@@ -1848,6 +1846,7 @@ export class Player extends BaseGameObject {
         if (this.playerBeingRevived) {
             this.playerBeingRevived.cancelAction();
             this.playerBeingRevived = undefined;
+            this.cancelAnim();
         }
 
         this.action.duration = 0;
