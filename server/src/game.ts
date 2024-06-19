@@ -87,7 +87,7 @@ export class Game {
         this.grid = new Grid(1024, 1024);
         this.map = new GameMap(this);
 
-        this.gas = new Gas(this);
+        this.gas = new Gas(this.map);
 
         this.allowJoin = true;
 
