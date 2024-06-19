@@ -145,7 +145,7 @@ img {
     text-shadow: 3px 3px black;
 }
 .ui-role-body-image {
-    background-image: url(../img/loot/player-visor-tank.svg);
+    background-image: url(/img/loot/player-visor-tank.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 240px;
@@ -164,7 +164,7 @@ img {
     margin-top: 24px;
 }
 .ui-role-body-perk-image-wrapper {
-    background-image: url(../img/loot/loot-circle-outer-03.svg);
+    background-image: url(/img/loot/loot-circle-outer-03.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 96px;
@@ -174,7 +174,7 @@ img {
     width: 96px;
 }
 .ui-role-body-perk-image-icon {
-    background-image: url(../img/loot/loot-perk-steelskin.svg);
+    background-image: url(/img/loot/loot-perk-steelskin.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 64px;
@@ -320,16 +320,16 @@ img {
     width: 100%;
 }
 .movement-icon {
-    background-image: url(../img/gui/movement.svg);
+    background-image: url(/img/gui/movement.svg);
 }
 .target-icon {
-    background-image: url(../img/gui/target.svg);
+    background-image: url(/img/gui/target.svg);
 }
 .aim-line-on-icon {
-    background-image: url(../img/gui/checked.svg);
+    background-image: url(/img/gui/checked.svg);
 }
 .aim-line-off-icon {
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
 }
 #btn-game-tabs > .btn-game-container > .btn-game-menu {
     text-align: center;
@@ -363,10 +363,10 @@ img {
     width: 36px;
 }
 .settings-icon {
-    background-image: url(../img/gui/cog.svg);
+    background-image: url(/img/gui/cog.svg);
 }
 .keybind-icon {
-    background-image: url(../img/gui/keyboard.svg);
+    background-image: url(/img/gui/keyboard.svg);
 }
 #ui-game-tab-settings {
     display: block;
@@ -488,7 +488,7 @@ img {
     background-size: 20px;
     background-repeat: no-repeat;
     background-position: 6px 4px;
-    background-image: url(../img/gui/eye.svg);
+    background-image: url(/img/gui/eye.svg);
 }
 .ui-map-wrapper-mobile #ui-spec-counter-number {
     position: relative;
@@ -500,13 +500,13 @@ img {
     left: 0px;
 }
 .ui-map-wrapper-mobile .gas-icon {
-    background-image: url(../img/gui/gas.svg);
+    background-image: url(/img/gui/gas.svg);
 }
 .ui-map-wrapper-mobile .danger-icon {
-    background-image: url(../img/gui/danger.svg);
+    background-image: url(/img/gui/danger.svg);
 }
 .ui-map-wrapper-mobile .alive-icon {
-    background-image: url(../img/gui/player-gui.svg);
+    background-image: url(/img/gui/player-gui.svg);
 }
 .ui-map-wrapper-mobile .icon-pulse {
     -webkit-animation: pulse 2s linear infinite;
@@ -569,7 +569,7 @@ img {
     background-size: 48px;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(../img/gui/cog.svg);
+    background-image: url(/img/gui/cog.svg);
     z-index: 1;
 }
 /**
@@ -603,7 +603,7 @@ img {
     background-repeat: no-repeat;
     background-size: 48px;
     background-position: center;
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
     pointer-events: all;
 }
 /**
@@ -712,7 +712,7 @@ img {
 }
 #ui-reload-button {
     background: rgba(0, 0, 0, 0.4);
-    background-image: url(../img/gui/bullets.svg);
+    background-image: url(/img/gui/bullets.svg);
     background-repeat: no-repeat;
     border-radius: 100%;
     left: 50%;
@@ -753,7 +753,7 @@ img {
 }
 #ui-emote-button {
     background: rgba(0, 0, 0, 0.4);
-    background-image: url(../img/gui/emote.svg);
+    background-image: url(/img/gui/emote.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 28px;
@@ -834,7 +834,7 @@ img {
     }
 }
 #ui-stats-logo {
-    background-image: url("../img/surviv_logo_full.png");
+    background-image: url("/img/surviv_logo_full.png");
     background-repeat: no-repeat;
     background-size: 250px;
     background-position: center;
@@ -903,7 +903,7 @@ img {
 #btn-game-fullscreen {
     background-size: 34px;
     background-position: 4px 2px;
-    background-image: url(../img/gui/minimize.svg);
+    background-image: url(/img/gui/minimize.svg);
 }
 #btn-game-sound {
     background-size: 44px;
@@ -917,13 +917,13 @@ img {
     margin-top: 40px;
     background-size: 44px;
     background-position: -2px -3px;
-    background-image: url(../img/gui/quit.svg);
+    background-image: url(/img/gui/quit.svg);
 }
 #btn-game-resume {
     margin-top: 30px;
     background-size: 44px;
     background-position: -2px -3px;
-    background-image: url(../img/gui/resume.svg);
+    background-image: url(/img/gui/resume.svg);
 }
 /**
      * ui-top-center
@@ -1090,25 +1090,25 @@ img {
 }
 .ui-emote-bg-circle {
     opacity: 0.5;
-    background-image: url(../img/gui/ping-part-circle.svg);
+    background-image: url(/img/gui/ping-part-circle.svg);
 }
 .ui-emote-bg-quarter {
     opacity: 0.5;
-    background-image: url(../img/gui/ping-part-quarter.svg);
+    background-image: url(/img/gui/ping-part-quarter.svg);
 }
 .ui-emote-bg-eighth {
     opacity: 0.5;
-    background-image: url(../img/gui/ping-part-eighth.svg);
+    background-image: url(/img/gui/ping-part-eighth.svg);
 }
 .ui-emote-middle .ui-emote-image {
     width: 24px !important;
     height: 24px !important;
     background-size: 24px !important;
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
 }
 .ui-emote-top .ui-emote-image {
     margin-top: -78px;
-    background-image: url(../img/gui/ping-team-danger.svg);
+    background-image: url(/img/gui/ping-team-danger.svg);
 }
 .ui-emote-right .ui-emote {
     -webkit-transform: translate(-50%, -50%) rotate(90deg);
@@ -1116,7 +1116,7 @@ img {
 }
 .ui-emote-right .ui-emote-image {
     margin-left: 78px;
-    background-image: url(../img/gui/ping-team-coming.svg);
+    background-image: url(/img/gui/ping-team-coming.svg);
 }
 .ui-emote-bottom .ui-emote {
     -webkit-transform: translate(-50%, -50%) rotate(180deg);
@@ -1124,7 +1124,7 @@ img {
 }
 .ui-emote-bottom .ui-emote-image {
     margin-top: 78px;
-    background-image: url(../img/gui/ping-team-help.svg);
+    background-image: url(/img/gui/ping-team-help.svg);
 }
 .ui-emote-left .ui-emote {
     -webkit-transform: translate(-50%, -50%) rotate(270deg);
@@ -1132,12 +1132,12 @@ img {
 }
 .ui-emote-left .ui-emote-image {
     margin-left: -78px;
-    background-image: url(../img/gui/ping-team-help.svg);
+    background-image: url(/img/gui/ping-team-help.svg);
 }
 .ui-emote-top-left .ui-emote-image {
     margin-left: -80px;
     margin-top: -30px;
-    background-image: url(../img/loot/loot-ammo-box.svg);
+    background-image: url(/img/loot/loot-ammo-box.svg);
 }
 .ui-emote-bottom-left .ui-emote {
     -webkit-transform: translate(-50%, -50%) rotate(-45deg);
@@ -1146,16 +1146,16 @@ img {
 .ui-emote-bottom-left .ui-emote-image {
     margin-left: -80px;
     margin-top: 30px;
-    background-image: url(../img/loot/loot-medical-healthkit.svg);
+    background-image: url(/img/loot/loot-medical-healthkit.svg);
 }
 .ui-emote-circle .ui-emote-hl {
-    background-image: url(../img/gui/ping-part-circle-highlight.svg);
+    background-image: url(/img/gui/ping-part-circle-highlight.svg);
 }
 .ui-emote-quarter .ui-emote-hl {
-    background-image: url(../img/gui/ping-part-quarter-highlight.svg);
+    background-image: url(/img/gui/ping-part-quarter-highlight.svg);
 }
 .ui-emote-eighth .ui-emote-hl {
-    background-image: url(../img/gui/ping-part-eighth-highlight.svg);
+    background-image: url(/img/gui/ping-part-eighth-highlight.svg);
 }
 .ui-emote-image {
     z-index: 1;
@@ -1188,7 +1188,7 @@ img {
     height: 64px;
     background-size: 64px;
     background-repeat: no-repeat;
-    background-image: url(../img/gui/indicator.svg);
+    background-image: url(/img/gui/indicator.svg);
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
@@ -1208,7 +1208,7 @@ img {
     height: 32px;
     background-size: 32px;
     background-repeat: no-repeat;
-    background-image: url(../img/gui/ping-team-danger.svg);
+    background-image: url(/img/gui/ping-team-danger.svg);
 }
 .ui-indicator-ping-border {
     z-index: 0;
@@ -1221,7 +1221,7 @@ img {
     position: relative;
     background-size: 160px;
     background-repeat: no-repeat;
-    background-image: url(../img/gui/ping-border.svg);
+    background-image: url(/img/gui/ping-border.svg);
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
@@ -1304,16 +1304,16 @@ img {
 .ui-team-member-status-downed {
     border-radius: 16px;
     display: block !important;
-    background-image: url(../img/gui/down.svg) !important;
+    background-image: url(/img/gui/down.svg) !important;
 }
 .ui-team-member-status-dead {
     display: block !important;
-    background-image: url(../img/gui/skull-team.svg) !important;
+    background-image: url(/img/gui/skull-team.svg) !important;
     opacity: 0.5 !important;
 }
 .ui-team-member-status-disconnected {
     display: block !important;
-    background-image: url(../img/gui/close.svg) !important;
+    background-image: url(/img/gui/close.svg) !important;
     opacity: 0.5 !important;
 }
 .ui-team-member-health {
@@ -1575,7 +1575,7 @@ img {
 }
 #ui-kill-leader-icon {
     background-color: rgba(0, 0, 0, 0.4);
-    background-image: url(../img/gui/crosshair.svg);
+    background-image: url(/img/gui/crosshair.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 32px;
@@ -1838,10 +1838,10 @@ img {
     background-position: 6px 6px;
 }
 .gas-icon {
-    background-image: url(../img/gui/gas.svg);
+    background-image: url(/img/gui/gas.svg);
 }
 .danger-icon {
-    background-image: url(../img/gui/danger.svg);
+    background-image: url(/img/gui/danger.svg);
 }
 .icon-pulse {
     -webkit-animation: pulse 2s linear infinite;
@@ -1874,7 +1874,7 @@ img {
     background-size: 20px;
     background-repeat: no-repeat;
     background-position: 6px 4px;
-    background-image: url(../img/gui/eye.svg);
+    background-image: url(/img/gui/eye.svg);
 }
 #ui-spec-counter-number {
     position: relative;
@@ -2281,7 +2281,7 @@ img {
     }
 }
 #ui-perk-message-image-wrapper {
-    background-image: url(../img/loot/loot-circle-outer-03.svg);
+    background-image: url(/img/loot/loot-circle-outer-03.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 96px;
@@ -2295,7 +2295,7 @@ img {
     width: 96px;
 }
 #ui-perk-message-image-icon {
-    background-image: url(../img/loot/loot-perk-splinter.svg);
+    background-image: url(/img/loot/loot-perk-splinter.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: 64px;
@@ -2756,7 +2756,7 @@ span.ui-stats-header-value {
     position: absolute;
     top: 15%;
     left: 25%;
-    background-image: url(../img/gui/skull.svg);
+    background-image: url(/img/gui/skull.svg);
     background-repeat: no-repeat;
     background-size: 128px;
     width: 100%;
@@ -2789,16 +2789,16 @@ span.ui-stats-header-value {
     width: 100%;
 }
 .ui-stats-info-player-red-leader {
-    background-image: url(../img/gui/star-red.svg);
+    background-image: url(/img/gui/star-red.svg);
 }
 .ui-stats-info-player-red-ribbon {
-    background-image: url(../img/gui/ribbon-red.svg);
+    background-image: url(/img/gui/ribbon-red.svg);
 }
 .ui-stats-info-player-blue-leader {
-    background-image: url(../img/gui/star-blue.svg);
+    background-image: url(/img/gui/star-blue.svg);
 }
 .ui-stats-info-player-blue-ribbon {
-    background-image: url(../img/gui/ribbon-blue.svg);
+    background-image: url(/img/gui/ribbon-blue.svg);
 }
 .ui-stats-info {
     display: flex;
@@ -3090,7 +3090,7 @@ span.ui-stats-header-value {
     #btn-game-fullscreen {
         background-size: 22px;
         background-position: 4px 2px;
-        background-image: url(../img/gui/minimize.svg);
+        background-image: url(/img/gui/minimize.svg);
     }
     #btn-game-aim-line {
         background-size: 18px;
@@ -3106,13 +3106,13 @@ span.ui-stats-header-value {
         margin-top: 20px;
         background-size: 34px;
         background-position: -2px -3px;
-        background-image: url(../img/gui/quit.svg);
+        background-image: url(/img/gui/quit.svg);
     }
     #btn-game-resume {
         margin-top: 20px;
         background-size: 34px;
         background-position: -1px -1px;
-        background-image: url(../img/gui/resume.svg);
+        background-image: url(/img/gui/resume.svg);
     }
     /**
      * ui-top-center
@@ -3264,15 +3264,15 @@ span.ui-stats-header-value {
     }
     .ui-emote-bg-circle {
         opacity: 0.65;
-        background-image: url(../img/gui/ping-part-circle.svg);
+        background-image: url(/img/gui/ping-part-circle.svg);
     }
     .ui-emote-bg-quarter {
         opacity: 0.65;
-        background-image: url(../img/gui/ping-part-quarter.svg);
+        background-image: url(/img/gui/ping-part-quarter.svg);
     }
     .ui-emote-bg-eighth {
         opacity: 0.65;
-        background-image: url(../img/gui/ping-part-eighth.svg);
+        background-image: url(/img/gui/ping-part-eighth.svg);
     }
     .ui-emote-middle .ui-emote-image {
         width: 24px !important;
@@ -3282,7 +3282,7 @@ span.ui-stats-header-value {
     }
     .ui-emote-top .ui-emote-image {
         margin-top: -78px;
-        background-image: url(../img/gui/ping-team-danger.svg);
+        background-image: url(/img/gui/ping-team-danger.svg);
     }
     .ui-emote-right .ui-emote {
         -webkit-transform: translate(-50%, -50%) rotate(90deg);
@@ -3290,7 +3290,7 @@ span.ui-stats-header-value {
     }
     .ui-emote-right .ui-emote-image {
         margin-left: 78px;
-        background-image: url(../img/gui/ping-team-coming.svg);
+        background-image: url(/img/gui/ping-team-coming.svg);
     }
     .ui-emote-bottom .ui-emote {
         -webkit-transform: translate(-50%, -50%) rotate(180deg);
@@ -3298,7 +3298,7 @@ span.ui-stats-header-value {
     }
     .ui-emote-bottom .ui-emote-image {
         margin-top: 78px;
-        background-image: url(../img/gui/ping-team-help.svg);
+        background-image: url(/img/gui/ping-team-help.svg);
     }
     .ui-emote-left .ui-emote {
         -webkit-transform: translate(-50%, -50%) rotate(270deg);
@@ -3306,12 +3306,12 @@ span.ui-stats-header-value {
     }
     .ui-emote-left .ui-emote-image {
         margin-left: -78px;
-        background-image: url(../img/gui/ping-team-help.svg);
+        background-image: url(/img/gui/ping-team-help.svg);
     }
     .ui-emote-top-left .ui-emote-image {
         margin-left: -80px;
         margin-top: -30px;
-        background-image: url(../img/loot/loot-ammo-box.svg);
+        background-image: url(/img/loot/loot-ammo-box.svg);
     }
     .ui-emote-bottom-left .ui-emote {
         -webkit-transform: translate(-50%, -50%) rotate(-45deg);
@@ -3320,16 +3320,16 @@ span.ui-stats-header-value {
     .ui-emote-bottom-left .ui-emote-image {
         margin-left: -80px;
         margin-top: 30px;
-        background-image: url(../img/loot/loot-medical-healthkit.svg);
+        background-image: url(/img/loot/loot-medical-healthkit.svg);
     }
     .ui-emote-circle .ui-emote-hl {
-        background-image: url(../img/gui/ping-part-circle-highlight.svg);
+        background-image: url(/img/gui/ping-part-circle-highlight.svg);
     }
     .ui-emote-quarter .ui-emote-hl {
-        background-image: url(../img/gui/ping-part-quarter-highlight.svg);
+        background-image: url(/img/gui/ping-part-quarter-highlight.svg);
     }
     .ui-emote-eighth .ui-emote-hl {
-        background-image: url(../img/gui/ping-part-eighth-highlight.svg);
+        background-image: url(/img/gui/ping-part-eighth-highlight.svg);
     }
     .ui-emote-image {
         z-index: 1;
@@ -3363,7 +3363,7 @@ span.ui-stats-header-value {
         height: 64px;
         background-size: 64px;
         background-repeat: no-repeat;
-        background-image: url(../img/gui/indicator.svg);
+        background-image: url(/img/gui/indicator.svg);
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
@@ -3383,7 +3383,7 @@ span.ui-stats-header-value {
         height: 32px;
         background-size: 32px;
         background-repeat: no-repeat;
-        background-image: url(../img/gui/ping-team-danger.svg);
+        background-image: url(/img/gui/ping-team-danger.svg);
     }
     .ui-indicator-ping-border {
         z-index: 0;
@@ -3396,7 +3396,7 @@ span.ui-stats-header-value {
         position: relative;
         background-size: 160px;
         background-repeat: no-repeat;
-        background-image: url(../img/gui/ping-border.svg);
+        background-image: url(/img/gui/ping-border.svg);
         -webkit-transform: translate(-50%, -50%);
         transform: translate(-50%, -50%);
     }
@@ -3472,16 +3472,16 @@ span.ui-stats-header-value {
     .ui-team-member-status-downed {
         border-radius: 16px;
         display: block !important;
-        background-image: url(../img/gui/down.svg) !important;
+        background-image: url(/img/gui/down.svg) !important;
     }
     .ui-team-member-status-dead {
         display: block !important;
-        background-image: url(../img/gui/skull-team.svg) !important;
+        background-image: url(/img/gui/skull-team.svg) !important;
         opacity: 0.5 !important;
     }
     .ui-team-member-status-disconnected {
         display: block !important;
-        background-image: url(../img/gui/close.svg) !important;
+        background-image: url(/img/gui/close.svg) !important;
         opacity: 0.5 !important;
     }
     .ui-team-member-health {
@@ -3876,7 +3876,7 @@ span.ui-stats-header-value {
         bottom: 10px;
         right: 38px;
         background-position: center;
-        background-image: url(../img/gui/mag-glass.svg);
+        background-image: url(/img/gui/mag-glass.svg);
         background-repeat: no-repeat;
         pointer-events: auto;
         z-index: 1;
@@ -4465,7 +4465,7 @@ span.ui-stats-header-value {
         transform: translateX(-50%);
     }
     .ui-stats-info-status:after {
-        background-image: url(../img/gui/skull.svg);
+        background-image: url(/img/gui/skull.svg);
         background-position: center;
         background-repeat: no-repeat;
         background-size: 70px;
