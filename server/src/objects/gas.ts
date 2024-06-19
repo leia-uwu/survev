@@ -88,6 +88,9 @@ export class Gas {
     }
 
     advanceGasStage() {
+        if (this.currentRad <= 0) {
+            return;
+        }
         if (this.mode !== GasMode.Waiting) {
             this.radOld = this.currentRad;
 
@@ -95,7 +98,7 @@ export class Gas {
                 this.radNew = this.currentRad * GameConfig.gas.widthDecay;
 
                 if (this.radNew < GameConfig.gas.widthMin) {
-                    this.radNew = this.radOld = this.currentRad = 0;
+                    this.radNew = 0;
                 }
 
                 this.posOld = v2.copy(this.posNew);
@@ -121,7 +124,9 @@ export class Gas {
         case GasMode.Waiting: {
             this.mode = GasMode.Moving;
             this.gasTime = math.max(this.gasTime - GameConfig.gas.gasTimeDecay, GameConfig.gas.gasTimeMin);
-            if (this.radNew > 0) this.stage++;
+            if (this.radNew > 0) {
+                this.stage++;
+            }
             break;
         }
         case GasMode.Moving: {

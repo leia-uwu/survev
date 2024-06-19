@@ -7,11 +7,6 @@ export enum SpawnMode {
     Fixed,
     Center
 }
-export enum GasMode {
-    Normal,
-    Debug,
-    Disabled
-}
 
 export const Config = {
     host: "0.0.0.0",
