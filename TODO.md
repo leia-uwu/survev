@@ -9,7 +9,7 @@
  - [x] Adrenaline
  - [x] Scopes
  - [x] Consumable items
- - [ ] Spectating
+ - [x] Spectating
  - [x] Slowdown on water
  - [ ] Kill Leader
  - [x] Loadouts
@@ -53,7 +53,9 @@
  - [x] Ceiling Zoom
  - [x] Destroying and damaging ceilings
  - [x] Puzzles
- - [ ] Occupied emitters
+ - [ ] Occupied emitters (like Smoke from cabins when player is inside)
+ - [ ] Heal regions (club pool sauna)
+ - [ ] Gore regions (club pool blood on kills)
 
 ### Structures
  - [x] Generation
@@ -61,8 +63,8 @@
 
 ### Map Generation
  - [x] Basic generation
- - [ ] Getting objects to not overlap (WIP)
- - [ ] Spawning objects on beach and rivers properly
+ - [x] Getting objects to not overlap
+ - [x] Spawning objects on beach and rivers properly
  - [x] Port Terrain and river code
  - [ ] Randomized River generation (WIP)
 
@@ -124,6 +126,7 @@ won't list all that need to be competently done because lazy
 ### Server and core stuff
  - [x] Port all definitions from the clients
  - [x] Debundle client and share code and definitions
+ - [ ] Separating API and Game servers
  - [ ] Connections limit per ip
  - [ ] Banning Ips
  - [ ] Matchmaking algorithm
