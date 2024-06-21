@@ -112,9 +112,7 @@ export class PlayerBarn {
             socketData.closeSocket
         );
 
-        if (this.game.isTeamMode) {
-            const group = this.game.groups.get(joinMsg.matchPriv);
-            if (!group) return;
+        if (group) {
             group.add(player);
         } else {
             player.groupId = this.groupIdAllocator.getNextId();

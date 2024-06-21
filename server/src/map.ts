@@ -952,13 +952,19 @@ export class GameMap {
         return structure;
     }
 
-    getRandomSpawnPos(): Vec2 {
-        const getPos = () => {
+    getRandomSpawnPos(pos?: Vec2, radius?: number): Vec2 {
+        let getPos = () => {
             return {
                 x: util.random(this.shoreInset, this.width - this.shoreInset),
                 y: util.random(this.shoreInset, this.height - this.shoreInset)
             };
         };
+
+        if (pos && radius) {
+            getPos = () => {
+                return v2.add(pos, util.randomPointInCircle(radius));
+            };
+        }
 
         let attempts = 0;
         let collided = true;

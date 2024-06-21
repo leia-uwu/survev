@@ -144,7 +144,7 @@ export class Game {
                     this.initGameOver();
                 }
             } else {
-                let groupAlives = [...this.groups.values()].filter(group => !group.allDeadOrDisconnected);
+                const groupAlives = [...this.groups.values()].filter(group => !group.allDeadOrDisconnected);
                 if (groupAlives.length <= 1) {
                     this.initGameOver(groupAlives[0]);
                 }
