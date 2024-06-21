@@ -106,6 +106,7 @@ export class BullletBarn {
     }
 
     fireBullet(params: BulletParams): Bullet {
+        params.pos = this.game.map.clampToMapBounds(params.pos);
         const bullet = new Bullet(this, params);
         this.bullets.push(bullet);
         this.newBullets.push(bullet);
