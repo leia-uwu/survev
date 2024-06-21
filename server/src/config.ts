@@ -7,11 +7,6 @@ export enum SpawnMode {
     Fixed,
     Center
 }
-export enum GasMode {
-    Normal,
-    Debug,
-    Disabled
-}
 
 export enum TeamMode {
     Solo = 1,

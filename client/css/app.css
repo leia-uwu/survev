@@ -147,7 +147,7 @@ a:active {
     text-decoration: none;
 }
 #background {
-    background-image: url(../img/main_splash.png);
+    background-image: url(/img/main_splash.png);
     background-repeat: no-repeat;
     background-size: cover;
     bottom: 0;
@@ -166,7 +166,7 @@ a:active {
     background-color: rgba(0, 0, 0, 0.75) !important;
 }
 #start-row-header {
-    background-image: url(../img/surviv_logo_full.png);
+    background-image: url(/img/surviv_logo_full.png);
     background-repeat: no-repeat;
     background-size: 375px;
     background-position: center;
@@ -337,10 +337,10 @@ a:active {
     width: 300px;
 }
 .surviv-shirts-en {
-    background-image: url(./surviv.i../img/surviv_shirts_en.png);
+    background-image: url(/img/surviv_shirts_en.png);
 }
 .surviv-shirts-de {
-    background-image: url(../img/surviv_shirts_de.png);
+    background-image: url(/img/surviv_shirts_de.png);
 }
 .adblock-plea {
     display: none;
@@ -411,32 +411,32 @@ a:active {
     -webkit-border-radius: 12px;
 }
 .btn-twitter {
-    background-image: url(../img/icon_twitter.png);
+    background-image: url(/img/icon_twitter.png);
     background-color: #1da1f2;
     box-shadow: inset 0 -4px #1a78b2;
 }
 .btn-facebook {
-    background-image: url(../img/icon_facebook.png);
+    background-image: url(/img/icon_facebook.png);
     background-color: #3b579d;
     box-shadow: inset 0 -4px #253763;
 }
 .btn-reddit {
-    background-image: url(../img/icon_reddit.png);
+    background-image: url(/img/icon_reddit.png);
     background-color: #b0502c;
     box-shadow: inset 0 -4px #982900;
 }
 .btn-discord {
-    background-image: url(../img/icon_discord_sm.png);
+    background-image: url(/img/icon_discord_sm.png);
     background-color: #7289da;
     box-shadow: inset 0 -4px #46558a;
 }
 .btn-youtube {
-    background-image: url(../img/icon_youtube.png);
+    background-image: url(/img/icon_youtube.png);
     background-color: red;
     box-shadow: inset 0 -4px #8e0000;
 }
 .btn-instagram {
-    background-image: url(../img/icon_instagram.png);
+    background-image: url(/img/icon_instagram.png);
     background-color: #d93175;
     box-shadow: inset 0 -4px #9b2354;
 }
@@ -671,7 +671,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/loot/loot-throwable-potato.svg);
+    background-image: url(/img/loot/loot-throwable-potato.svg);
     border-bottom: 4px solid #563619 !important;
     box-shadow: inset 0 -2px #563619 !important;
     height: 41px;
@@ -690,7 +690,7 @@ a:active {
 .btn-team-queue-potato-mode {
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/loot/loot-throwable-potato.svg);
+    background-image: url(/img/loot/loot-throwable-potato.svg);
     text-indent: 18px;
 }
 @media (max-width: 850px),
@@ -708,7 +708,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/loot/loot-weapon-flare-gun.svg);
+    background-image: url(/img/loot/loot-weapon-flare-gun.svg);
     border-bottom: 4px solid #853500 !important;
     box-shadow: inset 0 -2px #853500 !important;
     height: 41px;
@@ -727,7 +727,7 @@ a:active {
 .btn-team-queue-flare-mode {
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/loot/loot-weapon-flare-gun.svg);
+    background-image: url(/img/loot/loot-weapon-flare-gun.svg);
     text-indent: 18px;
 }
 @media (max-width: 850px),
@@ -745,7 +745,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/player-king-woods.svg);
+    background-image: url(/img/gui/player-king-woods.svg);
     border-bottom: 4px solid #696726 !important;
     box-shadow: inset 0 -2px #696726 !important;
     height: 41px;
@@ -764,7 +764,7 @@ a:active {
 .btn-team-queue-woods-mode {
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/player-king-woods.svg);
+    background-image: url(/img/gui/player-king-woods.svg);
     text-indent: 18px;
 }
 @media (max-width: 850px),
@@ -782,7 +782,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/player-king-woods.svg);
+    background-image: url(/img/gui/player-king-woods.svg);
     border-bottom: 4px solid #138500 !important;
     box-shadow: inset 0 -2px #138500 !important;
     height: 41px;
@@ -801,7 +801,7 @@ a:active {
 .btn-team-queue-woods-spring-mode {
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/player-king-woods.svg);
+    background-image: url(/img/gui/player-king-woods.svg);
     text-indent: 18px;
 }
 @media (max-width: 850px),
@@ -819,7 +819,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/pumpkin-play.svg);
+    background-image: url(/img/gui/pumpkin-play.svg);
     border-bottom: 4px solid #2d0000 !important;
     box-shadow: inset 0 -2px #2d0000 !important;
     height: 41px;
@@ -841,7 +841,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/star.svg);
+    background-image: url(/img/gui/star.svg);
     border-bottom: 4px solid #00448a;
     height: 41px;
 }
@@ -859,7 +859,7 @@ a:active {
 .btn-team-queue-faction-mode {
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/star.svg);
+    background-image: url(/img/gui/star.svg);
     text-indent: 18px;
 }
 @media (max-width: 850px),
@@ -877,7 +877,7 @@ a:active {
     -webkit-animation-iteration-count: infinite;
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/player-the-hunted.svg);
+    background-image: url(/img/gui/player-the-hunted.svg);
     border-bottom: 4px solid #947c1c;
     height: 41px;
 }
@@ -895,7 +895,7 @@ a:active {
 .btn-team-queue-savannah-mode {
     background-repeat: no-repeat;
     background-size: 35px;
-    background-image: url(../img/gui/player-the-hunted.svg);
+    background-image: url(/img/gui/player-the-hunted.svg);
     text-indent: 18px;
 }
 @media (max-width: 850px),
@@ -1026,7 +1026,7 @@ a:active {
 }
 #btn-customize {
     background: #1e90ff;
-    background-image: url(../img/emotes/surviv.svg);
+    background-image: url(/img/emotes/surviv.svg);
     background-position: 8px 5px;
     background-repeat: no-repeat;
     background-size: 28px;
@@ -1194,10 +1194,10 @@ a:active {
     }
 }
 .team-menu-member > .icon-leader {
-    background-image: url(../img/gui/crown.svg);
+    background-image: url(/img/gui/crown.svg);
 }
 .team-menu-member > .icon-kick {
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
     background-position: 49%;
     background-size: 65%;
     opacity: 1;
@@ -1209,13 +1209,13 @@ a:active {
     filter: brightness(60%);
 }
 .team-menu-member > .icon-in-game {
-    background-image: url(../img/gui/player-gui.svg);
+    background-image: url(/img/gui/player-gui.svg);
     background-size: 85%;
     -webkit-animation: msgStartWaitingPulse 3s ease-out infinite;
     animation: msgStartWaitingPulse 3s ease-out infinite;
 }
 .team-menu-member > .icon-submit-name-change {
-    background-image: url(../img/gui/submit.svg);
+    background-image: url(/img/gui/submit.svg);
     background-size: 75%;
     cursor: pointer;
 }
@@ -1736,29 +1736,29 @@ a:active {
     height: 24px;
     background-repeat: no-repeat;
     background-size: 24px;
-    background-image: url(../img/gui/trash.svg);
+    background-image: url(/img/gui/trash.svg);
     cursor: pointer;
 }
 #customize-account-avatar > .ui-emote-avatar-player {
-    background-image: url(../img/gui/player-gui.svg);
+    background-image: url(/img/gui/player-gui.svg);
 }
 #customize-account-avatar > .ui-emote-bg-circle-outer {
     width: 172px;
     height: 172px;
     background-size: 172px;
-    background-image: url(../img/gui/ping-part-circle-auto-outer.svg);
+    background-image: url(/img/gui/ping-part-circle-auto-outer.svg);
 }
 #customize-account-avatar > .ui-emote-bg-circle {
     width: 128px;
     height: 128px;
     background-size: 128px;
-    background-image: url(../img/gui/ping-part-circle-auto.svg);
+    background-image: url(/img/gui/ping-part-circle-auto.svg);
 }
 #customize-account-avatar > .ui-emote-hl {
     width: 128px;
     height: 128px;
     background-size: 128px;
-    background-image: url(../img/gui/ping-part-circle-auto-highlight.svg);
+    background-image: url(/img/gui/ping-part-circle-auto-highlight.svg);
 }
 #customize-account-avatar > .customize-item-image {
     z-index: 1;
@@ -2136,14 +2136,14 @@ a:active {
     }
 }
 .account-details-top-buttons > .account-details-link-out {
-    background-image: url(../img/gui/link.svg);
+    background-image: url(/img/gui/link.svg);
     background-color: #1e90ff;
     background-position: 97%;
     border-bottom: 2px solid #1871c8;
     box-shadow: inset 0 -2px #1871c8;
 }
 .account-details-top-buttons > .account-details-button-loadout {
-    background-image: url(../img/emotes/surviv.svg);
+    background-image: url(/img/emotes/surviv.svg);
     background-color: #1e90ff;
     background-position: 96%;
     border-bottom: 2px solid #1871c8;
@@ -2234,10 +2234,10 @@ a:active {
     width: 30px;
 }
 .account-details-bottom-buttons .account-details-currency-bucks {
-    background-image: url(../img/gui/star-blue.svg);
+    background-image: url(/img/gui/star-blue.svg);
 }
 .account-details-bottom-buttons .account-details-currency-coins {
-    background-image: url(../img/gui/star-red.svg);
+    background-image: url(/img/gui/star-red.svg);
 }
 .account-details-guest {
     cursor: pointer;
@@ -2252,7 +2252,7 @@ a:active {
     width: 100%;
 }
 .btn-leaderboard-stats-link {
-    background-image: url(../img/gui/link.svg);
+    background-image: url(/img/gui/link.svg);
     background-position: 97%;
     background-repeat: no-repeat;
     background-size: 28px;
@@ -2262,7 +2262,7 @@ a:active {
     color: #fff !important;
 }
 .btn-player-stats-link {
-    background-image: url(../img/gui/link.svg);
+    background-image: url(/img/gui/link.svg);
     background-position: 97%;
     background-repeat: no-repeat;
     background-size: 28px;
@@ -2347,7 +2347,7 @@ a:active {
     box-shadow: inset 0 -2px #253763;
 }
 .btn-login-facebook > .login-button-name > .icon {
-    background-image: url(../img/icon_facebook_reverse.png);
+    background-image: url(/img/icon_facebook_reverse.png);
 }
 .btn-login-google {
     background: #ea4335;
@@ -2355,7 +2355,7 @@ a:active {
     box-shadow: inset 0 -2px #af3228;
 }
 .btn-login-google > .login-button-name > .icon {
-    background-image: url(../img/icon_google.png);
+    background-image: url(/img/icon_google.png);
 }
 .btn-login-twitch {
     background-color: #6441a4;
@@ -2363,7 +2363,7 @@ a:active {
     box-shadow: inset 0 -2px #3f2868;
 }
 .btn-login-twitch > .login-button-name > .icon {
-    background-image: url(../img/icon_twitch.png);
+    background-image: url(/img/icon_twitch.png);
 }
 .btn-login-discord {
     background-color: #7289da;
@@ -2371,10 +2371,10 @@ a:active {
     box-shadow: inset 0 -2px #53639e;
 }
 .btn-login-discord > .login-button-name > .icon {
-    background-image: url(../img/icon_discord.png);
+    background-image: url(/img/icon_discord.png);
 }
 .btn-login-linked {
-    background-image: url(../img/gui/checked.svg);
+    background-image: url(/img/gui/checked.svg);
     background-position-x: 60%;
     background-position-y: 50%;
     background-repeat: no-repeat;
@@ -2439,7 +2439,7 @@ a:active {
     width: 100%;
 }
 .account-avatar {
-    background-image: url(../img/gui/player-gui.svg);
+    background-image: url(/img/gui/player-gui.svg);
     background-color: rgba(0, 0, 0, 0.25);
     background-position: center;
     background-repeat: no-repeat;
@@ -2701,7 +2701,7 @@ a:active {
     transform: translateX(50%);
 }
 #mobile-app-icon {
-    background-image: url(../img/icon_app.png);
+    background-image: url(/img/icon_app.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -3044,7 +3044,7 @@ a:active {
 }
 .btn-mode-potato {
     -webkit-animation-name: potato-pulse;
-    background-image: url(../img/loot/loot-throwable-potato.svg);
+    background-image: url(/img/loot/loot-throwable-potato.svg);
     border-bottom: 4px solid #563619 !important;
     box-shadow: inset 0 -2px #563619 !important;
 }
@@ -3280,7 +3280,7 @@ a:active {
     border: none;
     background-color: transparent;
     background-size: 32px;
-    background-image: url(../img/gui/copy.svg);
+    background-image: url(/img/gui/copy.svg);
     cursor: pointer;
 }
 .copy-toast {
@@ -3301,7 +3301,7 @@ a:active {
     background-repeat: no-repeat;
     background-color: transparent;
     background-size: 24px;
-    background-image: url(../img/gui/eye.svg);
+    background-image: url(/img/gui/eye.svg);
     cursor: pointer;
 }
 .server-select {
@@ -3366,7 +3366,7 @@ a:active {
     z-index: 3;
 }
 .news-toggle {
-    background-image: url(../img/gui/news.svg);
+    background-image: url(/img/gui/news.svg);
 }
 .news-toggle > .account-alert {
     height: 18px;
@@ -3376,7 +3376,7 @@ a:active {
     width: 18px;
 }
 .pass-toggle {
-    background-image: url(../img/gui/pass.svg);
+    background-image: url(/img/gui/pass.svg);
 }
 #pass-wrapper {
     display: block;
@@ -3490,7 +3490,7 @@ a:active {
     top: 10px;
 }
 #pass-progress-level {
-    background-image: url(../img/pass/pass-level-bg.svg);
+    background-image: url(/img/pass/pass-level-bg.svg);
     background-repeat: no-repeat;
     background-size: 72px;
     color: #ffd800;
@@ -3526,7 +3526,7 @@ a:active {
     font-size: 14px;
 }
 #pass-progress-unlock-wrapper {
-    background-image: url(../img/pass/pass-unlock-bg.svg);
+    background-image: url(/img/pass/pass-unlock-bg.svg);
     background-repeat: no-repeat;
     background-size: 128px;
     border-radius: 100%;
@@ -3554,7 +3554,7 @@ a:active {
     width: 100%;
 }
 #pass-progress-unlock-type-wrapper {
-    background-image: url(../img/pass/pass-unlock-type-bg.svg);
+    background-image: url(/img/pass/pass-unlock-type-bg.svg);
     background-repeat: no-repeat;
     background-size: 44px;
     height: 44px;
@@ -3628,7 +3628,7 @@ a:active {
     min-height: 49px;
 }
 .pass-quest-timer {
-    background-image: url(../img/gui/timer.svg);
+    background-image: url(/img/gui/timer.svg);
     background-position: 6px;
     background-repeat: no-repeat;
     background-size: 28px;
@@ -3673,12 +3673,12 @@ a:active {
     transition: all 0.25s ease;
 }
 .pass-quest-refresh-confirm {
-    background-image: url(../img/gui/checked.svg);
+    background-image: url(/img/gui/checked.svg);
     border: 3px solid #0f0;
     right: 60px;
 }
 .pass-quest-refresh-cancel {
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
     border: 3px solid red;
     right: 10px;
 }
@@ -3702,7 +3702,7 @@ a:active {
     right: 30px;
 }
 .pass-quest-refresh {
-    background-image: url(../img/gui/reload.svg);
+    background-image: url(/img/gui/reload.svg);
     background-repeat: no-repeat;
     background-size: 18px;
     cursor: pointer;
@@ -3914,7 +3914,7 @@ a:active {
     font-weight: 700;
 }
 .btn-youtuber {
-    background-image: url(../img/yt_icon_rgb.png);
+    background-image: url(/img/yt_icon_rgb.png);
     background-size: 36px;
     background-repeat: no-repeat;
     background-position: 4px 4px;
@@ -3952,7 +3952,7 @@ a:active {
     font-weight: 700;
 }
 #streaming-icon {
-    background-image: url(../img/icon_twitch.png);
+    background-image: url(/img/icon_twitch.png);
     background-repeat: no-repeat;
     background-size: 42px;
     bottom: 12px;
@@ -4052,7 +4052,7 @@ a:active {
     background-size: 24px;
     background-repeat: no-repeat;
     background-position: 0 0;
-    background-image: url(../img/gui/globe.svg);
+    background-image: url(/img/gui/globe.svg);
     -moz-appearance: none;
     -webkit-appearance: none;
     cursor: pointer;
@@ -4099,7 +4099,7 @@ a:active {
 }
 .btn-download-ios {
     display: block;
-    background-image: url(../img/icon_download_ios.png);
+    background-image: url(/img/icon_download_ios.png);
     background-repeat: no-repeat;
 }
 @media (max-height: 720px) {
@@ -4108,7 +4108,7 @@ a:active {
     }
 }
 .btn-download-android {
-    background-image: url(../img/icon_download_android.png);
+    background-image: url(/img/icon_download_android.png);
     background-repeat: no-repeat;
     vertical-align: bottom;
 }
@@ -4189,17 +4189,17 @@ input [type="image"]:focus {
     }
 }
 .btn-keybind {
-    background-image: url(../img/gui/keyboard.svg);
+    background-image: url(/img/gui/keyboard.svg);
     background-size: 44px;
     background-position: 2px -3px;
 }
 .btn-settings {
-    background-image: url(../img/gui/cog.svg);
+    background-image: url(/img/gui/cog.svg);
     background-size: 44px;
     background-position: 2px -3px;
 }
 #btn-start-fullscreen {
-    background-image: url(../img/gui/minimize.svg);
+    background-image: url(/img/gui/minimize.svg);
     background-size: 34px;
     background-position: 7px 2px;
 }
@@ -4208,19 +4208,19 @@ input [type="image"]:focus {
     background-position: 2px -3px;
 }
 .audio-on-icon {
-    background-image: url(../img/gui/audio-on.svg);
+    background-image: url(/img/gui/audio-on.svg);
 }
 .audio-off-icon {
-    background-image: url(../img/gui/audio-off.svg);
+    background-image: url(/img/gui/audio-off.svg);
 }
 .locked-on-icon {
-    background-image: url(../img/gui/lock.svg);
+    background-image: url(/img/gui/lock.svg);
 }
 .locked-off-icon {
     background-image: "none";
 }
 .unlocked-on-icon {
-    background-image: url(../img/gui/unlock.svg);
+    background-image: url(/img/gui/unlock.svg);
 }
 .modal {
     display: none;
@@ -4525,7 +4525,7 @@ input [type="image"]:focus {
 #customize-emote-autos .ui-emote-auto-trash {
     background-repeat: no-repeat;
     background-size: 24px;
-    background-image: url(../img/gui/trash.svg);
+    background-image: url(/img/gui/trash.svg);
     cursor: pointer;
     height: 24px;
     left: 56px;
@@ -4535,28 +4535,28 @@ input [type="image"]:focus {
     z-index: 3;
 }
 #customize-emote-autos .ui-emote-auto-chicken {
-    background-image: url(../img/gui/chicken.svg);
+    background-image: url(/img/gui/chicken.svg);
 }
 #customize-emote-autos .ui-emote-auto-skull {
-    background-image: url(../img/gui/skull.svg);
+    background-image: url(/img/gui/skull.svg);
 }
 #customize-emote-autos .ui-emote-bg-circle-outer {
     width: 172px;
     height: 172px;
     background-size: 172px;
-    background-image: url(../img/gui/ping-part-circle-auto-outer.svg);
+    background-image: url(/img/gui/ping-part-circle-auto-outer.svg);
 }
 #customize-emote-autos .ui-emote-bg-circle {
     width: 128px;
     height: 128px;
     background-size: 128px;
-    background-image: url(../img/gui/ping-part-circle-auto.svg);
+    background-image: url(/img/gui/ping-part-circle-auto.svg);
 }
 #customize-emote-autos .ui-emote-hl {
     width: 128px;
     height: 128px;
     background-size: 128px;
-    background-image: url(../img/gui/ping-part-circle-auto-highlight.svg);
+    background-image: url(/img/gui/ping-part-circle-auto-highlight.svg);
 }
 #customize-emote-win {
     bottom: 100px;
@@ -4622,7 +4622,7 @@ input [type="image"]:focus {
 }
 .customize-list-item-locked {
     background-repeat: no-repeat;
-    background-image: url(../img/gui/lock.svg);
+    background-image: url(/img/gui/lock.svg);
     background-size: 24px;
     background-position: 71px 68px;
     opacity: 0.4;
@@ -4776,7 +4776,7 @@ input [type="image"]:focus {
     height: 10em;
     float: right;
     cursor: ns-resize;
-    background: transparent url(./css/color-picker-h.png) no-repeat 50% 50%;
+    background: transparent /*url(./css/color-picker-h.png)*/ no-repeat 50% 50%;
     background-image: linear-gradient(
         to top,
         #f00 0%,
@@ -4818,7 +4818,7 @@ input [type="image"]:focus {
     height: 10em;
     float: left;
     margin-right: 1px;
-    background: transparent url(./css/color-picker-sv.png) no-repeat 50% 50%;
+    background: transparent /*url(./css/color-picker-sv.png)*/ no-repeat 50% 50%;
     background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0)),
         linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
     background-size: 100% 100%;
@@ -4974,7 +4974,7 @@ input [type="image"]:focus {
     font-size: 48px;
     font-weight: 400;
     background-repeat: no-repeat;
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
     background-size: 28px;
 }
 #modal-customize-header {
@@ -5101,7 +5101,7 @@ input [type="image"]:focus {
     }
 }
 .btn-social-unlocked {
-    background-image: url(../img/gui/checked.svg);
+    background-image: url(/img/gui/checked.svg);
     opacity: 0.5;
 }
 #btn-facebook-like-unlock {
@@ -5259,7 +5259,7 @@ input [type="image"]:focus {
     font-size: 48px;
     font-weight: 400;
     background-repeat: no-repeat;
-    background-image: url(../img/gui/close.svg);
+    background-image: url(/img/gui/close.svg);
     background-size: 24px;
 }
 .close:hover,
@@ -5497,7 +5497,7 @@ input [type="image"]:focus {
         background-repeat: no-repeat;
         background-color: transparent;
         background-size: 24px;
-        background-image: url(../img/gui/copy.svg);
+        background-image: url(/img/gui/copy.svg);
         cursor: pointer;
     }
     .copy-toast {
@@ -5582,27 +5582,27 @@ input [type="image"]:focus {
         -webkit-border-radius: 12px;
     }
     .btn-twitter {
-        background-image: url(../img/icon_twitter.png);
+        background-image: url(/img/icon_twitter.png);
         background-color: #1da1f2;
         box-shadow: inset 0 -4px #1a78b2;
     }
     .btn-facebook {
-        background-image: url(../img/icon_facebook.png);
+        background-image: url(/img/icon_facebook.png);
         background-color: #3b579d;
         box-shadow: inset 0 -4px #253763;
     }
     .btn-reddit {
-        background-image: url(../img/icon_reddit.png);
+        background-image: url(/img/icon_reddit.png);
         background-color: #b0502c;
         box-shadow: inset 0 -4px #982900;
     }
     .btn-discord {
-        background-image: url(../img/icon_discord_sm.png);
+        background-image: url(/img/icon_discord_sm.png);
         background-color: #7289da;
         box-shadow: inset 0 -4px #46558a;
     }
     .btn-youtube {
-        background-image: url(../img/icon_youtube.png);
+        background-image: url(/img/icon_youtube.png);
         background-color: red;
         box-shadow: inset 0 -4px #8e0000;
     }
@@ -5656,7 +5656,7 @@ input [type="image"]:focus {
     .icon-hamburger {
         height: 36px;
         width: 36px;
-        background-image: url(../img/gui/hamburger.svg);
+        background-image: url(/img/gui/hamburger.svg);
         background-size: 36px;
         background-repeat: no-repeat;
     }
@@ -5693,7 +5693,7 @@ input [type="image"]:focus {
         background-size: 24px;
         background-repeat: no-repeat;
         background-position: 0 0;
-        background-image: url(../img/gui/globe.svg);
+        background-image: url(/img/gui/globe.svg);
         -moz-appearance: none;
         -webkit-appearance: none;
         cursor: pointer;
@@ -5751,12 +5751,12 @@ input [type="image"]:focus {
         box-shadow: inset 0 -2px #3e3e3e;
     }
     .btn-settings {
-        background-image: url(../img/gui/cog.svg);
+        background-image: url(/img/gui/cog.svg);
         background-size: 32px;
         background-position: center;
     }
     #btn-start-fullscreen {
-        background-image: url(../img/gui/minimize.svg);
+        background-image: url(/img/gui/minimize.svg);
         background-size: 34px;
         background-position: 7px 2px;
     }
@@ -5765,10 +5765,10 @@ input [type="image"]:focus {
         background-position: center;
     }
     .audio-on-icon {
-        background-image: url(../img/gui/audio-on.svg);
+        background-image: url(/img/gui/audio-on.svg);
     }
     .audio-off-icon {
-        background-image: url(../img/gui/audio-off.svg);
+        background-image: url(/img/gui/audio-off.svg);
     }
     #mobile-download-app {
         bottom: var(--side-pad);
@@ -5893,7 +5893,7 @@ input [type="image"]:focus {
         width: 30px;
     }
     #modal-hamburger-youtuber .btn-youtuber {
-        background-image: url(../img/yt_icon_rgb.png);
+        background-image: url(/img/yt_icon_rgb.png);
         background-size: 40px;
         background-repeat: no-repeat;
         background-position: 0 3px;

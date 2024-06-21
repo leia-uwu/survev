@@ -4,6 +4,12 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
+export class SmokeBarn {
+    smokes: Smoke[] = [];
+
+    constructor(readonly game: Game) {}
+}
+
 export class Smoke extends BaseGameObject {
     bounds = collider.createCircle(v2.create(0, 0), 0);
 

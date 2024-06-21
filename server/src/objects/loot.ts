@@ -13,8 +13,18 @@ import { MapDefs } from "../../../shared/defs/mapDefs";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class LootBarn {
-    constructor(public game: Game) {
+    loots: Loot[] = [];
+    constructor(public game: Game) { }
 
+    update(dt: number) {
+        for (let i = 0; i < this.loots.length; i++) {
+            const loot = this.loots[i];
+            if (loot.destroyed) {
+                this.loots.splice(i, 1);
+                continue;
+            }
+            loot.update(dt);
+        }
     }
 
     splitUpLoot(player: Player, item: string, amount: number, dir: Vec2) {
@@ -30,12 +40,12 @@ export class LootBarn {
     */
     addLootWithoutAmmo(type: string, pos: Vec2, layer: number, count: number) {
         const loot = new Loot(this.game, type, pos, layer, count);
-        this.game.grid.addObject(loot);
+        this._addLoot(loot);
     }
 
     addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean, pushSpeed?: number, dir?: Vec2) {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
-        this.game.grid.addObject(loot);
+        this._addLoot(loot);
 
         const def = GameObjectDefs[type];
 
@@ -46,15 +56,20 @@ export class LootBarn {
 
             const leftAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
             leftAmmo.push(v2.create(-1, -1), 0.5);
-            this.game.grid.addObject(leftAmmo);
+            this._addLoot(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
                 const rightAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
                 rightAmmo.push(v2.create(1, -1), 0.5);
 
-                this.game.grid.addObject(rightAmmo);
+                this._addLoot(rightAmmo);
             }
         }
+    }
+
+    private _addLoot(loot: Loot) {
+        this.game.objectRegister.register(loot);
+        this.loots.push(loot);
     }
 
     getLootTable(tier: string): Array<{ name: string, count: number }> {
@@ -247,9 +262,5 @@ export class Loot extends BaseGameObject {
 
     push(dir: Vec2, velocity: number): void {
         this.vel = v2.add(this.vel, v2.mul(dir, velocity));
-    }
-
-    remove() {
-        this.game.grid.remove(this);
     }
 }

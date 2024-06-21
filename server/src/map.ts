@@ -5,7 +5,7 @@ import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { Decal } from "./objects/decal";
+import { type Decal } from "./objects/decal";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { type Collider, coldet, type AABB } from "../../shared/utils/coldet";
@@ -191,6 +191,9 @@ export class GameMap {
         center: Vec2
     }> = [];
 
+    obstacles: Obstacle[] = [];
+    buildings: Building[] = [];
+    structures: Structure[] = [];
     bridges: Structure[] = [];
 
     constructor(game: Game) {
@@ -525,8 +528,7 @@ export class GameMap {
         case "structure":
             return this.genStructure(type, pos, layer, ori);
         case "decal": {
-            const decal = new Decal(this.game, type, pos, layer, ori, scale);
-            this.game.grid.addObject(decal);
+            const decal = this.game.decalBarn.addDecal(type, pos, layer, ori, scale);
             return decal;
         }
         case "loot_spawner":
@@ -860,7 +862,8 @@ export class GameMap {
             buildingId,
             puzzlePiece
         );
-        this.game.grid.addObject(obstacle);
+        this.game.objectRegister.register(obstacle);
+        this.obstacles.push(obstacle);
 
         if (def.map?.display && layer === 0) this.msg.objects.push(obstacle);
         this.objectCount[type]++;
@@ -874,7 +877,8 @@ export class GameMap {
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
         const building = new Building(this.game, type, pos, ori, layer, parentId);
-        this.game.grid.addObject(building);
+        this.game.objectRegister.register(building);
+        this.buildings.push(building);
 
         if (def.map?.display && layer === 0) this.msg.objects.push(building);
 
@@ -928,7 +932,8 @@ export class GameMap {
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
         const structure = new Structure(this.game, type, pos, layer, ori);
-        this.game.grid.addObject(structure);
+        this.game.objectRegister.register(structure);
+        this.structures.push(structure);
 
         layer = 0;
         for (const layerDef of def.layers) {

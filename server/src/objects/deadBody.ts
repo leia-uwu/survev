@@ -5,6 +5,28 @@ import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { Structure } from "./structure";
 
+export class DeadBodyBarn {
+    deadBodies: DeadBody[] = [];
+
+    constructor(readonly game: Game) {}
+
+    update(dt: number) {
+        for (let i = 0; i < this.deadBodies.length; i++) {
+            const deadBody = this.deadBodies[i];
+            deadBody.update(dt);
+            if (deadBody.__id === 0) {
+                this.deadBodies.splice(i, 1);
+            }
+        }
+    }
+
+    addDeadBody(pos: Vec2, playerId: number, layer: number, dir: Vec2) {
+        const deadBody = new DeadBody(this.game, pos, playerId, layer, dir);
+        this.deadBodies.push(deadBody);
+        this.game.objectRegister.register(deadBody);
+    }
+}
+
 export class DeadBody extends BaseGameObject {
     bounds = collider.createCircle(v2.create(0, 0), 2);
 
@@ -67,13 +89,14 @@ export class DeadBody extends BaseGameObject {
                     if (this.layer === 2) this.layer = 0;
                     if (this.layer === 3) this.layer = 1;
                 }
-                if (this.layer !== originalLayer) {
-                    this.setDirty();
-                }
             }
         }
 
         this.pos = this.game.map.clampToMapBounds(this.pos);
+
+        if (this.layer !== originalLayer) {
+            this.setDirty();
+        }
 
         if (!v2.eq(this.oldPos, this.pos)) {
             this.setPartDirty();

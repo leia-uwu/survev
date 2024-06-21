@@ -1,8 +1,5 @@
 import { type Action, type GroupStatus, type LocalDataWithDirty, type PlayerStatus } from "../../client/clientTypes";
-import type { Bullet } from "../../server/src/objects/bullet";
-import type { Explosion } from "../../server/src/objects/explosion";
 import { type ObjectType, ObjectSerializeFns, type ObjectsFullData, type ObjectsPartialData } from "../utils/objectSerializeFns";
-import type { Emote, Player } from "../../server/src/objects/player";
 import { GameConfig } from "../gameConfig";
 import { AbstractMsg, Constants, type BitStream } from "../net";
 import { v2, type Vec2 } from "./../utils/v2";
@@ -199,7 +196,7 @@ function deserializePlayerInfo(s: BitStream, data: PlayerInfo) {
     data.teamId = s.readUint8();
     data.groupId = s.readUint8();
     data.name = s.readString();
-    data.loadout = {} as Player["loadout"];
+    data.loadout = {} as PlayerInfo["loadout"];
     data.loadout.heal = s.readGameType();
     data.loadout.boost = s.readGameType();
     s.readAlignToNextByte();
@@ -440,7 +437,9 @@ export class UpdateMsg extends AbstractMsg {
                 s.writeGameType(emote.itemType);
                 s.writeBoolean(emote.isPing);
 
-                if (emote.isPing) s.writeVec(emote.pos, 0, 0, 1024, 1024, 16);
+                if (emote.isPing) {
+                    s.writeVec(emote.pos!, 0, 0, 1024, 1024, 16);
+                }
                 s.writeAlignToNextByte();
             }
             flags |= UpdateExtFlags.Emotes;
@@ -711,6 +710,20 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
     }
 }
 
+interface Explosion {
+    pos: Vec2
+    type: string
+    layer: number
+}
+
+interface Emote {
+    playerId: number
+    type: string
+    itemType: string
+    isPing: boolean
+    pos?: Vec2
+}
+
 interface Airstrike {
     pos: Vec2
     duration: number
@@ -731,4 +744,29 @@ interface MapIndicator {
     equipped: boolean
     type: string
     pos: Vec2
+}
+
+interface Bullet {
+    playerId: number
+    startPos: Vec2
+    pos: Vec2
+    dir: Vec2
+    bulletType: string
+    layer: number
+    varianceT: number
+    distAdjIdx: number
+    clipDistance: boolean
+    distance: number
+    shotFx: boolean
+    shotSourceType: string
+    shotOffhand: boolean
+    lastShot: boolean
+    reflectCount: number
+    reflectObjId: number
+    hasSpecialFx: boolean
+    shotAlt: boolean
+    splinter: boolean
+    trailSaturated: boolean
+    trailSmall: boolean
+    trailThick: boolean
 }

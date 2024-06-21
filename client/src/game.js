@@ -210,7 +210,7 @@ export class Game {
             [ObjectType.Player]: this.playerBarn.playerPool,
             [ObjectType.Obstacle]: this.map.obstaclePool,
             [ObjectType.Loot]: this.lootBarn.lootPool,
-            [ObjectType.DeadBody]: this.deadBodyBarn.airdropPool,
+            [ObjectType.DeadBody]: this.deadBodyBarn.deadBodyPool,
             [ObjectType.Building]: this.map.buildingPool,
             [ObjectType.Structure]: this.map.structurePool,
             [ObjectType.Decal]: this.decalBarn.decalPool,

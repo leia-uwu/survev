@@ -63,11 +63,11 @@ class DeadBody {
 
 export class DeadBodyBarn {
     constructor() {
-        this.airdropPool = new Pool(DeadBody);
+        this.deadBodyPool = new Pool(DeadBody);
     }
 
     update(dt, playerBarn, activePlayer, map, camera, renderer) {
-        const deadBodies = this.airdropPool.getPool();
+        const deadBodies = this.deadBodyPool.getPool();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];
             if (d.active) {
@@ -100,7 +100,7 @@ export class DeadBodyBarn {
     }
 
     getDeadBodyById(playerId) {
-        const deadBodies = this.airdropPool.getPool();
+        const deadBodies = this.deadBodyPool.getPool();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];
             if (d.active && d.playerId == playerId) {
