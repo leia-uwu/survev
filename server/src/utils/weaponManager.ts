@@ -99,7 +99,7 @@ export class WeaponManager {
             this.player.cancelAction();
         }
 
-        if ((idx == 0 || idx == 1) && this.weapons[idx].ammo == 0) {
+        if (GameConfig.WeaponType[idx] === "gun" && this.weapons[idx].ammo == 0) {
             this.timeouts.push(
                 setTimeout(() => {
                     this.tryReload();
@@ -167,10 +167,10 @@ export class WeaponManager {
                 this.fireWeapon();
                 break;
             }
-            // case "throwable": {
-            //     this.cookThrowable();
-            //     break;
-            // }
+                // case "throwable": {
+                //     this.cookThrowable();
+                //     break;
+                // }
             }
         }
     }
@@ -187,8 +187,7 @@ export class WeaponManager {
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
             this.player.inventory[weaponDef.ammo] == 0,
-            this.curWeapIdx == GameConfig.WeaponSlot.Melee || this.curWeapIdx == GameConfig.WeaponSlot.Throwable,
-            this.weapons[this.curWeapIdx].cooldown > this.player.game.now
+            this.curWeapIdx == GameConfig.WeaponSlot.Melee || this.curWeapIdx == GameConfig.WeaponSlot.Throwable
         ];
         if (conditions.some(c => c)) {
             return;
@@ -321,9 +320,16 @@ export class WeaponManager {
 
     fireWeapon(skipDelayCheck = false) {
         if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now && !skipDelayCheck) return;
-        if (this.weapons[this.curWeapIdx].ammo <= 0) return;
-
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
+
+        if (this.weapons[this.curWeapIdx].ammo <= 1) {
+            this.timeouts.push(
+                setTimeout(() => {
+                    this.tryReload();
+                }, itemDef.fireDelay * 1000)
+            );
+        }
+        if (this.weapons[this.curWeapIdx].ammo <= 0) return;
 
         this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
 
@@ -523,13 +529,7 @@ export class WeaponManager {
                 }
             }
         }
-        if (this.weapons[this.curWeapIdx].ammo == 0) {
-            this.timeouts.push(
-                setTimeout(() => {
-                    this.tryReload();
-                }, itemDef.fireDelay * 1000)
-            );
-        }
+
         this.offHand = !this.offHand;
     }
 
