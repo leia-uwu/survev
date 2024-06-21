@@ -215,4 +215,9 @@ export class Gas {
     isInGas(pos: Vec2) {
         return v2.distance(pos, this.currentPos) >= this.currentRad;
     }
+
+    flush() {
+        this.dirty = false;
+        this.timeDirty = false;
+    }
 }

@@ -71,7 +71,7 @@ export class Building extends BaseGameObject {
         this.ori = ori;
         this.type = type;
 
-        const parentStructure = this.game.grid.getById(parentStructureId ?? 0);
+        const parentStructure = this.game.objectRegister.getById(parentStructureId ?? 0);
         if (parentStructure?.__type === ObjectType.Structure) {
             this.parentStructure = parentStructure;
         }

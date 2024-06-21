@@ -7,6 +7,8 @@ import { version } from "../../package.json";
 
 export interface PlayerContainer {
     readonly gameID: number
+    sendMsg: (msg: ArrayBuffer | Uint8Array) => void
+    closeSocket: () => void
     player?: Player
 }
 
@@ -33,7 +35,7 @@ export abstract class AbstractServer {
 
     tick(): void {
         for (const game of this.games) {
-            if (game) game.tick();
+            if (game) game.update();
         }
     }
 
@@ -54,7 +56,7 @@ export abstract class AbstractServer {
     endGame(id: number, createNewGame: boolean): void {
         const game = this.games[id];
         if (game === undefined) return;
-        game.end();
+        game.stop();
         if (createNewGame) {
             this.games[id] = new Game(id, Config);
         } else {
@@ -68,7 +70,7 @@ export abstract class AbstractServer {
 
     getSiteInfo() {
         const playerCount = this.games.reduce((a, b) => {
-            return a + (b ? b.connectedPlayers.size : 0);
+            return a + (b ? b.playerBarn.players.length : 0);
         }, 0);
 
         const data = {
@@ -157,17 +159,21 @@ export abstract class AbstractServer {
         return gameID;
     }
 
-    onOpen(data: PlayerContainer, send: (msg: ArrayBuffer | Uint8Array) => void, closeSocket: () => void): void {
+    onOpen(data: PlayerContainer): void {
         const game = this.games[data.gameID];
-        if (game === undefined) return;
-        data.player = game.addPlayer(send, closeSocket);
+        if (game === undefined) {
+            data.closeSocket();
+        }
     }
 
     onMessage(data: PlayerContainer, message: ArrayBuffer | Buffer) {
+        const game = this.games[data.gameID];
+        if (!game) {
+            data.closeSocket();
+            return;
+        }
         try {
-            const player = data.player;
-            if (player === undefined) return;
-            player.game.handleMsg(message, player);
+            game.handleMsg(message, data);
         } catch (e) {
             console.warn("Error parsing message:", e);
         }
@@ -178,6 +184,6 @@ export abstract class AbstractServer {
         const player = data.player;
         if (game === undefined || player === undefined) return;
         game.logger.log(`"${player.name}" left`);
-        game.removePlayer(player);
+        player.disconnected = true;
     }
 }

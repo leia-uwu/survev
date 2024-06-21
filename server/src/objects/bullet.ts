@@ -12,7 +12,6 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type DamageParams, type GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
-import { Explosion } from "./explosion";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 // NOTE: most of this code was copied from surviv client and bit heroes arena client
@@ -62,7 +61,7 @@ export interface BulletParams {
     distance?: number
 }
 
-export class BulletManager {
+export class BullletBarn {
     bullets: Bullet[] = [];
     newBullets: Bullet[] = [];
 
@@ -78,7 +77,7 @@ export class BulletManager {
                 this.bullets.splice(i, 1);
 
                 if (bullet.onHitFx && !bullet.reflected) {
-                    const explosion = new Explosion(bullet.onHitFx,
+                    this.game.explosionBarn.addExplosion(bullet.onHitFx,
                         // spawn the bullet a bit behind the bullet so it won't spawn inside obstacles
                         v2.sub(bullet.pos, v2.mul(bullet.dir, 0.01)),
                         bullet.layer,
@@ -87,7 +86,6 @@ export class BulletManager {
                         bullet.damageType,
                         bullet.player
                     );
-                    this.game.explosions.push(explosion);
                 }
 
                 continue;
@@ -102,7 +100,7 @@ export class BulletManager {
         }
     }
 
-    reset(): void {
+    flush(): void {
         this.newBullets.length = 0;
         this.damages.length = 0;
     }
@@ -158,7 +156,7 @@ export class Bullet {
     isShrapnel: boolean;
     skipCollision: boolean;
 
-    constructor(public bulletManager: BulletManager, params: BulletParams) {
+    constructor(public bulletManager: BullletBarn, params: BulletParams) {
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
 
         const variance = 1 + (params.varianceT ?? 1) * bulletDef.variance;
@@ -176,7 +174,7 @@ export class Bullet {
         this.onHitFx = bulletDef.onHit ?? params.onHitFx;
         this.hasOnHitFx = !!this.onHitFx;
 
-        const player = this.bulletManager.game.grid.getById(this.playerId);
+        const player = this.bulletManager.game.objectRegister.getById(this.playerId);
         if (player instanceof Player) {
             this.player = player;
         }

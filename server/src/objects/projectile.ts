@@ -8,15 +8,20 @@ import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { Structure } from "./structure";
-import { Explosion } from "./explosion";
 import { math } from "../../../shared/utils/math";
 import { GameConfig } from "../../../shared/gameConfig";
 
 export class ProjectileBarn {
+    projectiles: Projectile[] = [];
     constructor(readonly game: Game) { }
 
     update(dt: number) {
-        for (const proj of this.game.grid.categories[ObjectType.Projectile]) {
+        for (let i = 0; i < this.projectiles.length; i++) {
+            const proj = this.projectiles[i];
+            if (proj.destroyed) {
+                this.projectiles.splice(i, 0);
+                continue;
+            }
             proj.update(dt);
         }
     }
@@ -39,7 +44,7 @@ export class ProjectileBarn {
         proj.damageType = damageType;
         proj.dir = v2.normalize(vel);
 
-        this.game.grid.addObject(proj);
+        this.game.objectRegister.register(proj);
         return proj;
     }
 }
@@ -183,11 +188,17 @@ export class Projectile extends BaseGameObject {
         const def = GameObjectDefs[this.type] as ThrowableDef;
         const explosionType = def.explosionType;
         if (explosionType) {
-            const source = this.game.grid.getById(this.playerId);
-            const explosion = new Explosion(explosionType, this.pos, this.layer, this.type, "", this.damageType, source);
-            this.game.explosions.push(explosion);
+            const source = this.game.objectRegister.getById(this.playerId);
+            this.game.explosionBarn.addExplosion(
+                explosionType,
+                this.pos,
+                this.layer,
+                this.type,
+                "",
+                this.damageType,
+                source
+            );
         }
-
-        this.game.grid.remove(this);
+        this.destroy();
     }
 }

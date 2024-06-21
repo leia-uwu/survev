@@ -151,11 +151,13 @@ class NodeServer extends AbstractServer {
              * @param socket The socket being opened.
              */
             open(socket: WebSocket<PlayerContainer>) {
-                This.onOpen(
-                    socket.getUserData(),
-                    (data) => socket.send(data, true, false),
-                    () => socket.close()
-                );
+                socket.getUserData().sendMsg = (data) => {
+                    socket.send(data, true, false);
+                };
+                socket.getUserData().closeSocket = () => {
+                    socket.close();
+                };
+                This.onOpen(socket.getUserData());
             },
 
             /**

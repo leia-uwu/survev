@@ -484,7 +484,7 @@ export class WeaponManager {
                 // reflectObjId: this.player.linkedObstacleId,
                 onHitFx: hasExplosive ? "explosion_rounds" : undefined
             };
-            this.player.game.bulletManager.fireBullet(params);
+            this.player.game.bulletBarn.fireBullet(params);
 
             // Shoot a projectile if defined
             if (itemDef.projType) {
@@ -519,7 +519,7 @@ export class WeaponManager {
                     sParams.trailSmall = true;
                     sParams.damageMult *= 0.45;
 
-                    this.player.game.bulletManager.fireBullet(sParams);
+                    this.player.game.bulletBarn.fireBullet(sParams);
                 }
             }
         }
