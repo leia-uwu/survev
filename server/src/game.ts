@@ -239,16 +239,10 @@ export class Game {
             const winningPlayer = this.playerBarn.livingPlayers[0];
             if (winningPlayer) {
                 winningPlayer.addGameOverMsg(winningPlayer.teamId);
-                for (const spectator of winningPlayer.spectators) {
-                    spectator.addGameOverMsg(winningPlayer.teamId);
-                }
             }
         } else if (winningGroup) {
             for (const player of winningGroup.players) {
                 player.addGameOverMsg(winningGroup.groupId);
-                for (const spectator of player.spectators) {
-                    spectator.addGameOverMsg(winningGroup.groupId);
-                }
             }
         }
         setTimeout(() => {

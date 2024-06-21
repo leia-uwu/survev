@@ -1181,6 +1181,9 @@ export class Player extends BaseGameObject {
         gameOverMsg.winningTeamId = winningTeamId;
         gameOverMsg.gameOver = winningTeamId != -1;
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+        for (const spectator of this.spectators) {
+            spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+        }
     }
 
     downedBy: Player | undefined;
