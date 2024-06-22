@@ -1018,6 +1018,7 @@ export class Player extends BaseGameObject {
         // drop loot
         //
 
+        const dropRadius=2
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             const weap = this.weapons[i];
             if (!weap.type) continue;
@@ -1028,7 +1029,7 @@ export class Player extends BaseGameObject {
                 break;
             case "melee":
                 if (def.noDrop || def.noDropOnDeath || weap.type === "fists") break;
-                this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(weap.type, v2.add(this.pos,v2.mul(v2.randomUnit(),dropRadius)), this.layer, 1);
                 break;
             }
         }
@@ -1040,7 +1041,7 @@ export class Player extends BaseGameObject {
             }
 
             if (this.inventory[item] > 0) {
-                this.game.lootBarn.addLoot(item, this.pos, this.layer, this.inventory[item]);
+                this.game.lootBarn.addLoot(item, v2.add(this.pos,v2.mul(v2.randomUnit(),dropRadius)), this.layer, this.inventory[item]);
             }
         }
 
@@ -1049,13 +1050,13 @@ export class Player extends BaseGameObject {
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
             if (!!def.noDrop || def.level < 1) continue;
-            this.game.lootBarn.addLoot(type, this.pos, this.layer, 1);
+            this.game.lootBarn.addLoot(type, v2.add(this.pos,v2.mul(v2.randomUnit(),dropRadius)), this.layer, 1);
         }
 
         if (this.outfit) {
             const def = GameObjectDefs[this.outfit] as OutfitDef;
             if (!def.noDropOnDeath) {
-                this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
+                this.game.lootBarn.addLoot(this.outfit, v2.add(this.pos,v2.mul(v2.randomUnit(),dropRadius)), this.layer, 1);
             }
         }
 

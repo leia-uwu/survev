@@ -180,7 +180,7 @@ export class LootBarn {
                 }
 
                 const scaleIn = math.delerp(loot.ticker, 0, 1);
-                const scale = math.easeOutElastic(scaleIn, 0.75);
+                const scale = math.clamp(math.easeOutElastic(scaleIn, .8),.2,2)
                 const screenPos = camera.pointToScreen(loot.pos);
                 const screenScale = camera.pixels(loot.imgScale * scale);
 

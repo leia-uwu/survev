@@ -283,9 +283,10 @@ export class Obstacle extends BaseGameObject {
             this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
         }
 
-        const lootPos = v2.copy(this.pos);
+        const lootPos = collider.randomPoint(this.collider);
         if (def.lootSpawn) {
             v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
+            collider.randomPoint(this.collider)
         }
 
         for (const lootTierOrItem of def.loot) {

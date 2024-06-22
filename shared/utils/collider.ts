@@ -94,6 +94,14 @@ export const collider = {
 
         return pts;
     },
+    randomPoint(col:Collider):Vec2{
+        if (col.type === collider.Type.Aabb) {
+            return v2.create(Math.random()*(col.max.x-col.min.x)+col.min.x,Math.random()*(col.max.y-col.min.y)+col.min.y)
+        }
+        const ang=Math.random()*(Math.PI*2)
+        const leng=Math.random()*(col.rad)
+        return v2.create(col.pos.x+(Math.cos(ang)*leng),col.pos.y+(Math.sin(ang)*leng))
+    },
     // @TODO: Ensure consistent pen dirs (ie towards 2nd arg)
     intersectCircle(col: Collider, pos: Vec2, rad: number) {
         if (col.type === collider.Type.Aabb) {

@@ -186,6 +186,19 @@ export const Main: MapDef = {
             { name: "8xscope", count: 1, weight: 0.05 },
             { name: "15xscope", count: 1, weight: 0.001 }
         ],
+        tier_airdrop_uncommon: [
+            { name: "mirv", count: 8, weight: 1 },
+            { name: "strobe", count: 2, weight: 0.5 },
+            { name: "saiga", count: 1, weight: 1 },
+            { name: "qbb97", count: 1, weight: 2 }
+        ],
+        tier_airdrop_rare: [
+            { name: "usas", count: 1, weight: 2 },
+            { name: "pkp", count: 1, weight: 0.08 },
+            { name: "m249", count: 1, weight: 1 },
+            { name: "awc", count: 1, weight: 2 },
+            { name: "m9", count: 1, weight: 0.05 },
+        ],
         tier_chrys_case: [
             { name: "", count: 1, weight: 1 }
         ],
