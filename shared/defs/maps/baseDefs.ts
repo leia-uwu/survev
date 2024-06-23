@@ -60,7 +60,7 @@ export const Main: MapDef = {
                 }
             ],
             crates: [
-                { name: "airdrop_crate_01", weight: 10 },
+                { name: "airdrop_crate_01", weight: 5 },
                 { name: "airdrop_crate_02", weight: 1 }
             ]
         },
@@ -212,16 +212,12 @@ export const Main: MapDef = {
             { name: "stonehammer", count: 1, weight: 1 }
         ],
         tier_eye_block: [
-            { name: "m9", count: 1, weight: 1 },
-            { name: "ots38_dual", count: 1, weight: 1 },
-            { name: "flare_gun", count: 1, weight: 1 },
-            { name: "colt45", count: 1, weight: 1 },
-            { name: "45acp", count: 1, weight: 1 },
-            { name: "painkiller", count: 1, weight: 1 },
-            { name: "m4a1", count: 1, weight: 0.4 },
-            { name: "m249", count: 1, weight: 0.05 },
-            { name: "awc", count: 1, weight: 0.05 },
-            { name: "pkp", count: 1, weight: 0.05 }
+            { name: "m4a1", count: 1, weight: 0.5 },
+            { name: "m249", count: 1, weight: 0.4 },
+            { name: "usas", count: 1, weight: 0.4 },
+            { name: "garand", count: 1, weight: 0.4 },
+            { name: "awc", count: 1, weight: 0.3 },
+            { name: "pkp", count: 1, weight: 0.3 }
         ],
         tier_sledgehammer: [{ name: "sledgehammer", count: 1, weight: 1 }],
         tier_chest_04: [
@@ -458,8 +454,8 @@ export const Main: MapDef = {
                 barrel_01: 76,
                 silo_01: 8,
                 crate_01: 50,
-                crate_02: 4,
-                crate_03: 8,
+                crate_02: 10,
+                crate_03: 10,
                 bush_01: 78,
                 cache_06: 12,
                 tree_01: 320,
@@ -471,14 +467,15 @@ export const Main: MapDef = {
                 shack_01: 7,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
+                loot_tier_beach: 4,
+                tree_03:2
             }
         ],
         fixedSpawns: [
             {
-                warehouse_01: 2,
-                house_red_01: { small: 3, large: 4 },
-                house_red_02: { small: 3, large: 4 },
+                warehouse_01: {small:2,large:3},
+                house_red_01: { small: 3, large: 5 },
+                house_red_02: { small: 3, large: 5 },
                 barn_01: { small: 1, large: 3 },
                 barn_02: 1,
                 hut_01: 4,
@@ -498,7 +495,7 @@ export const Main: MapDef = {
                 chest_01: 1,
                 chest_03: { odds: 0.2 },
                 mil_crate_02: { odds: 0.25 },
-                tree_02: 3,
+                tree_02: 6,
                 teahouse_complex_01su: {
                     small: 1,
                     large: 2
