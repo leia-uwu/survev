@@ -705,7 +705,7 @@ class Application {
         const urls = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
-                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId}`
+                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameID=${matchData.gameId}`
             );
         }
         const joinGameImpl = (urls, matchData) => {

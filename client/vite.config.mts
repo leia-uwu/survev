@@ -14,6 +14,12 @@ const proxyConfig: Record<string, ProxyOptions> = {
         secure: false,
         ws: true
     },
+    "/find_game": {
+        target: `http://${Config.host}:${Config.port}`,
+        changeOrigin: true,
+        secure: false,
+        ws: true
+    },
     "/team_v2": {
         target: `http://${Config.host}:${Config.port}`,
         changeOrigin: true,

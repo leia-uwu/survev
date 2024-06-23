@@ -96,6 +96,12 @@ export class Game {
         this.logger.log(`Created in ${Date.now() - start} ms`);
     }
 
+    start():void{
+        setTimeout(()=>{
+            this.allowJoin=false
+        },this.config.joinTime*1000)
+    }
+
     update(): void {
         const now = Date.now();
         if (!this.now) this.now = now;

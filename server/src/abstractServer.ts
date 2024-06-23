@@ -117,6 +117,9 @@ export abstract class AbstractServer {
             let foundGame = false;
             for (let gameID = 0; gameID < Config.maxGames; gameID++) {
                 const game = this.games[gameID];
+                if(this.games[gameID]?.over){
+                    this.endGame(gameID,true)
+                }
                 if (this.canJoin(game) && game?.allowJoin) {
                     response.gameId = game.id;
                     foundGame = true;

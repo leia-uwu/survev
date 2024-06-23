@@ -17,7 +17,7 @@ export const Config = {
     regions: {
         local: {
             https: false,
-            address: "127.0.0.1:3000"
+            address: "127.0.0.1:8000"
         }
     },
 
@@ -26,6 +26,7 @@ export const Config = {
     spawn: { mode: SpawnMode.Random },
 
     maxGames: 3,
+    joinTime:1,
 
     tps: 30
 
@@ -76,4 +77,8 @@ export interface ConfigType {
      * Server tick rate
      */
     readonly tps: number
+    /**
+     * Join Time
+     */
+    readonly joinTime:number
 }
