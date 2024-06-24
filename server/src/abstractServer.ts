@@ -191,5 +191,8 @@ export abstract class AbstractServer {
         if (game === undefined || player === undefined) return;
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
+        if (player.timeAlive < 5) {
+            player.game.playerBarn.removePlayer(player);
+        }
     }
 }

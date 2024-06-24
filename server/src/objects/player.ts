@@ -113,7 +113,7 @@ export class PlayerBarn {
         );
 
         if (group) {
-            group.add(player);
+            group.addPlayer(player);
         } else {
             player.groupId = this.groupIdAllocator.getNextId();
         }
@@ -188,21 +188,23 @@ export class PlayerBarn {
 
     update(dt: number) {
         for (let i = 0; i < this.players.length; i++) {
-            const player = this.players[i];
-            // completely remove player if alive for less than 5 seconds
-            if (player.disconnected && player.timeAlive < 5) {
-                this.players.splice(i, 1);
-                this.deletedPlayers.push(player.__id);
-                const livingIdx = this.livingPlayers.indexOf(player);
-                if (livingIdx !== -1) {
-                    this.livingPlayers.splice(livingIdx, 1);
-                }
-                player.destroy();
-                continue;
-            }
-
-            player.update(dt);
+            this.players[i].update(dt);
         }
+    }
+
+    removePlayer(player: Player) {
+        this.players.splice(this.players.indexOf(player), 1);
+        const livingIdx = this.livingPlayers.indexOf(player);
+        if (livingIdx !== -1) {
+            this.livingPlayers.splice(livingIdx, 1);
+        }
+        this.deletedPlayers.push(player.__id);
+        player.destroy();
+        if (player.group) {
+            player.group.removePlayer(player);
+        }
+
+        this.game.checkGameOver();
     }
 
     sendMsgs(dt: number) {
@@ -1035,7 +1037,7 @@ export class Player extends BaseGameObject {
                 playerToSpec = spectatablePlayers[newIndex];
             }
         } else if (this.group) {
-            if (!this.group.allTeammatesDeadOrDisconnected(this)) { // team still alive
+            if (!this.group.checkAllDeadOrDisconnected(this)) { // team still alive
                 if (spectateMsg.specBegin) {
                     playerToSpec = this.group.randomPlayer(this);
                 } else if (spectateMsg.specNext && this.spectating) {
@@ -1133,29 +1135,28 @@ export class Player extends BaseGameObject {
                 return;
             }
 
-            // teams
-            // this is very unoptimized/ugly and i just hacked it together to get all cases to trigger, definitely room for improvement by whoever reads this
-            // TODO: refactor for faction mode
+            // Teams
+            const group = this.group!;
+
+            // TODO: fix for faction mode
             if (this.downed) {
-                if (this.downedBy && sourceIsPlayer && this.downedBy == params.source) {
-                    this.kill(params);
-                } else if (this.downedBy && sourceIsPlayer && this.downedBy.groupId === (params.source as Player).groupId) {
+                if (this.downedBy && sourceIsPlayer && this.downedBy.groupId === (params.source as Player).groupId) {
                     params.source = this.downedBy;
-                    this.kill(params);
-                } else {
-                    this.kill(params);
+                }
+                this.kill(params);
+                return;
+            }
+
+            const allDeadOrDisconnected = group.checkAllDeadOrDisconnected(this);
+            const allDowned = group.checkAllDowned(this);
+
+            if (allDeadOrDisconnected || allDowned) {
+                this.kill(params);
+                if (allDowned) {
+                    group.killAllTeammates();
                 }
             } else {
-                if (this.group!.allTeammatesDeadOrDisconnected(this)) { // includes solo duos/squads
-                    this.group!.allDeadOrDisconnected = true;
-                    this.kill(params);
-                } else if (this.group!.allTeammatesDowned(this)) {
-                    this.group!.allDeadOrDisconnected = true;
-                    this.kill(params);
-                    this.group!.killAllTeammates(this);
-                } else {
-                    this.down(params);
-                }
+                this.down(params);
             }
         }
     }
@@ -1226,13 +1227,13 @@ export class Player extends BaseGameObject {
         if (!this.game.isTeamMode) { // solo
             player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
         } else if (this.group) {
-            if (!this.group.allTeammatesDeadOrDisconnected(this)) { // team alive
+            if (!this.group.checkAllDeadOrDisconnected(this)) { // team alive
                 player = this.group.randomPlayer(this);
             } else { // team dead
                 if (
                     this.killedBy &&
                     this.killedBy != this &&
-                    this.group.allTeammatesDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                    this.group.checkAllDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
                 ) {
                     player = this.killedBy;
                 } else {
@@ -1250,6 +1251,7 @@ export class Player extends BaseGameObject {
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
+        if (this.dead) return;
         if (this.downed) this.downed = false;
         this.dead = true;
         this.boost = 0;
@@ -1353,6 +1355,13 @@ export class Player extends BaseGameObject {
                     false)
             );
         }
+
+        if (this.group) {
+            this.group.checkPlayers();
+        }
+
+        // Check for game over
+        this.game.checkGameOver();
     }
 
     isReloading() {

@@ -1,7 +1,5 @@
 import { type Player } from "./objects/player";
-import { type DamageParams } from "../src/objects/gameObject";
 import { GameConfig } from "../../shared/gameConfig";
-import { v2 } from "../../shared/utils/v2";
 import { util } from "../../shared/utils/util";
 
 export class Group {
@@ -39,7 +37,7 @@ export class Group {
         return this.getPlayers(p => p != player && !p.dead && !p.disconnected);
     }
 
-    add(player: Player) {
+    addPlayer(player: Player) {
         player.groupId = this.groupId;
         player.teamId = this.teamId;
         player.group = this;
@@ -48,10 +46,15 @@ export class Group {
         this.players.push(player);
     }
 
+    removePlayer(player: Player) {
+        this.players.splice(this.players.indexOf(player), 1);
+        this.checkPlayers();
+    }
+
     /**
      * true if all ALIVE teammates besides the passed in player are downed
      */
-    allTeammatesDowned(player: Player) {
+    checkAllDowned(player: Player) {
         const filteredPlayers = this.players.filter(p => p != player && !p.dead);
         if (filteredPlayers.length == 0) { // this is necessary since for some dumb reason every() on an empty array returns true????
             return false;
@@ -63,7 +66,7 @@ export class Group {
      * true if all teammates besides the passed in player are dead
      * also if player is solo queuing, all teammates are "dead" by default
      */
-    allTeammatesDeadOrDisconnected(player: Player) { // TODO: potentially replace with allDead?
+    checkAllDeadOrDisconnected(player: Player) { // TODO: potentially replace with allDead?
         if (this.players.length == 1 && this.players[0] == player) {
             return true;
         }
@@ -76,17 +79,26 @@ export class Group {
     }
 
     /**
-     * kills all teammates besides the passed in player, only called after last player on team thats not knocked gets knocked
+     * kills all teammates, only called after last player on team thats not knocked gets knocked
      */
-    killAllTeammates(player: Player) {
+    killAllTeammates() {
         for (const p of this.players) {
-            if (p == player) continue;
-            const params: DamageParams = {
+            p.kill({
                 damageType: GameConfig.DamageType.Bleeding,
-                dir: v2.create(0, 0),
+                dir: p.dir,
                 source: p.downedBy
-            };
-            p.kill(params);
+            });
+        }
+    }
+
+    checkPlayers(): void {
+        if (this.allDeadOrDisconnected) return;
+
+        for (const player of this.players) {
+            if (player.dead || player.disconnected) {
+                this.allDeadOrDisconnected = true;
+                break;
+            }
         }
     }
 

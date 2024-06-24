@@ -137,20 +137,6 @@ export class Game {
         this.gas.flush();
         this.msgsToSend.length = 0;
 
-        // Game over logic
-        if (this.started && !this.over) {
-            if (!this.isTeamMode) {
-                if (this.started && this.aliveCount <= 1) {
-                    this.initGameOver();
-                }
-            } else {
-                const groupAlives = [...this.groups.values()].filter(group => !group.allDeadOrDisconnected);
-                if (groupAlives.length <= 1) {
-                    this.initGameOver(groupAlives[0]);
-                }
-            }
-        }
-
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
         // It measures the time it takes to calculate a tick, not the time between ticks.
@@ -229,6 +215,20 @@ export class Game {
             player.spectate(spectateMsg);
             break;
         }
+        }
+    }
+
+    checkGameOver(): void {
+        if (this.over) return;
+        if (!this.isTeamMode) {
+            if (this.started && this.aliveCount <= 1) {
+                this.initGameOver();
+            }
+        } else {
+            const groupAlives = [...this.groups.values()].filter(group => !group.allDeadOrDisconnected);
+            if (groupAlives.length <= 1) {
+                this.initGameOver(groupAlives[0]);
+            }
         }
     }
 
