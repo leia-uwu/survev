@@ -16,7 +16,7 @@ import { WoodsSnow } from "./maps/woodsSnowDefs";
 import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 
-export const MapDefs: Record<string, MapDef> = {
+export const MapDefs = {
     main: Main,
     main_spring: MainSpring,
     main_summer: MainSummer,
@@ -33,7 +33,7 @@ export const MapDefs: Record<string, MapDef> = {
     savannah: Savannah,
     cobalt: Cobalt,
     turkey: Turkey
-};
+} satisfies Record<string, MapDef>;
 
 export type Atlas = "gradient" | "loadout" | "shared" | "main";
 export interface MapDef {
