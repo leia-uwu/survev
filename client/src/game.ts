@@ -662,27 +662,29 @@ export class Game {
             // Process 'drop' actions triggered from the ui
             let playDropSound = false;
             for (let X = 0; X < this.ui2Manager.uiEvents.length; X++) {
-                const e = this.ui2Manager.uiEvents[X];
-                if (e.action == "drop") {
+                const uiEvent = this.ui2Manager.uiEvents[X];
+                if (uiEvent.action == "drop") {
                     const dropMsg = new DropItemMsg();
-                    if (e.type == "weapon") {
+                    if (uiEvent.type == "weapon") {
+                        const eventData = uiEvent.data as unknown as number;
                         const Y = this.activePlayer.localData.weapons;
-                        dropMsg.item = Y[e.data].type;
-                        dropMsg.weapIdx = e.data;
-                    } else if (e.type == "perk") {
+                        dropMsg.item = Y[eventData].type;
+                        dropMsg.weapIdx = eventData;
+                    } else if (uiEvent.type == "perk") {
+                        const eventData = uiEvent.data as unknown as number;
                         const J = this.activePlayer.netData.perks;
-                        const Q = J.length > e.data ? J[e.data] : null;
+                        const Q = J.length > (eventData) ? J[eventData] : null;
                         if (Q?.droppable) {
                             dropMsg.item = Q.type;
                         }
                     } else {
                         let $ = "";
                         $ =
-              e.data == "helmet"
-                  ? this.activePlayer.netData.helmet
-                  : e.data == "chest"
-                      ? this.activePlayer.netData.chest
-                      : e.data;
+                    uiEvent.data == "helmet"
+                        ? this.activePlayer.netData.helmet
+                        : uiEvent.data == "chest"
+                            ? this.activePlayer.netData.chest
+                            : uiEvent.data;
                         dropMsg.item = $;
                     }
                     if (dropMsg.item != "") {

@@ -77,11 +77,11 @@ export class ConfigManager {
             return;
         }
         const path = key.split(".");
-        let elem = this.config;
+        let elem = this.config as any;
         while (path.length > 1) {
-            elem = elem[path.shift()];
+            elem = elem[path.shift()!];
         }
-        elem[path.shift()] = value;
+        elem[path.shift()!] = value;
 
         this.store();
         this.onModified(key);

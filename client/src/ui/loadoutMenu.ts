@@ -703,7 +703,7 @@ export class LoadoutMenu {
                 stroke: Number(stroke.toFixed(2))
             };
         } else {
-            this.loadout[loadoutType] = this.selectedItem.type;
+            this.loadout[loadoutType as keyof Loadout] = this.selectedItem.type as any;
         }
 
         this.loadout = loadout.validate(this.loadout);

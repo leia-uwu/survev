@@ -182,7 +182,7 @@ export class TeamMenu {
                 autoFill: this.config.get("teamAutoFill")!,
                 findingGame: false,
                 lastError: ""
-            };
+            } as RoomData;
             this.displayedInvalidProtocolModal = false;
 
             this.refreshUi();

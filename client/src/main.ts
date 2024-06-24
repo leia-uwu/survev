@@ -133,6 +133,7 @@ class Application {
     tryLoad() {
         if (this.domContentLoaded && this.configLoaded && !this.initialized) {
             this.initialized = true;
+            // this should be this.config.config.teamAutofill = true???
             this.config.teamAutoFill = true;
             if (device.mobile) {
                 Menu.applyMobileBrowserStyling(device.tablet);
@@ -262,7 +263,7 @@ class Application {
             const rendererRes = window.devicePixelRatio > 1 ? 2 : 1;
 
             if (device.os == "ios") {
-                PIXI.settings.PRECISION_FRAGMENT = "highp";
+                PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH; // "highp"
             }
 
             const createPixiApplication = (forceCanvas: boolean) => {

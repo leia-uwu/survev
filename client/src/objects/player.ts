@@ -1,8 +1,8 @@
-import { 
+import {
     type GroupStatus,
     type LocalDataWithDirty,
     type PlayerStatus
-} from './../../../shared/msgs/updateMsg';
+} from "./../../../shared/msgs/updateMsg";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";

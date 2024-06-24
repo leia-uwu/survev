@@ -40,7 +40,7 @@ function deserializeMapPlaces(s: BitStream, place: Place) {
     place.pos = s.readVec(0, 0, 1024, 1024, 16);
 }
 
-interface GroundPatch {
+export interface GroundPatch {
     color: number
     roughness: number
     offsetDist: number

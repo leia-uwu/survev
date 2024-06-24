@@ -67,6 +67,7 @@ interface ContainerWithMask extends PIXI.Container {
     mask: PIXI.Graphics
 }
 
+type PrevStatus = Pick<PlayerStatus, "downed" | "dead" | "disconnected" | "role">;
 export class UiManager {
     pieTimer = new PieTimer();
     gameElem = $("#ui-game");
@@ -255,12 +256,7 @@ export class UiManager {
         teamColor: JQuery<HTMLElement>
         playerId: number
         prevHealth: number
-        prevStatus: {
-            disconnected: boolean
-            dead: boolean
-            downed: boolean
-            role: string
-        }
+        prevStatus: PrevStatus
         indicators: Record<
         string,
         {
@@ -2102,7 +2098,7 @@ export class UiManager {
         slotIdx: number,
         name: string,
         health: number,
-        status: Partial<PlayerStatus>,
+        status: PrevStatus,
         playerId: number,
         o: unknown,
         s: unknown
@@ -2133,8 +2129,8 @@ export class UiManager {
                 null,
                 {
                     health,
-                    dead: status.dead!,
-                    downed: status.downed!
+                    dead: status.dead,
+                    downed: status.downed
                 }
             );
             if (statusChange) {

@@ -3,7 +3,7 @@ import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { type GroundPatch, type MapMsg } from "../../shared/msgs/mapMsg";
-import { type Collider, coldet } from "../../shared/utils/coldet";
+import { type Collider, coldet, type CircleWithHeight } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
@@ -463,8 +463,13 @@ export class Map {
         const def = MapObjectDefs[obj.type] as ObstacleDef | BuildingDef;
         const zIdx =
       def.type == "building" ? 750 + (def.zIdx || 0) : def.img.zIdx || 0;
-        let shapes = [];
+        let shapes: Array<{
+            scale?: number
+            color: number
+            collider: CircleWithHeight
+        }> = [];
         if ((def as BuildingDef).map?.shapes !== undefined) {
+            // @ts-expect-error stfu
             shapes = (def as BuildingDef).map?.shapes!;
         } else {
             let col = null;
@@ -478,7 +483,7 @@ export class Map {
                   : mapHelpers.getBoundingCollider(obj.type))
             ) {
                 shapes.push({
-                    collider: collider.copy(col),
+                    collider: collider.copy(col) as CircleWithHeight,
                     scale: def.map?.scale! || 1,
                     color: def.map?.color!
                 });
@@ -657,10 +662,7 @@ export class Map {
     getGroundSurface(pos: Vec2, layer: number) {
         const groundSurface = (
             type: string,
-            data: {
-                waterColor?: number
-                rippleColor?: number
-            } = {}
+            data: Record<string, any> = {}
         ) => {
             if (type == "water") {
                 const mapColors = this.getMapDef().biome.colors;
