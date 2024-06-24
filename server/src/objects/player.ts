@@ -115,6 +115,9 @@ export class PlayerBarn {
             group.addPlayer(player);
         } else {
             player.groupId = this.groupIdAllocator.getNextId();
+            if (!this.game.map.factionMode) {
+                player.teamId = player.groupId;
+            }
         }
 
         let name = joinMsg.name;
