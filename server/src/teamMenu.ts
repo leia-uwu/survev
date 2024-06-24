@@ -1,4 +1,3 @@
-import { randomBytes } from "crypto";
 import {
     type ClientToServerTeamMsg,
     type RoomData,
@@ -16,7 +15,6 @@ interface RoomPlayer extends TeamMenuPlayer {
 
 export interface Room {
     roomData: RoomData
-    hash: string
     players: RoomPlayer[]
 }
 
@@ -60,15 +58,12 @@ export class TeamMenu {
     }
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
-        const hash = randomBytes(20).toString("hex");
-        initialRoomData.gameModeIdx = 2; // temporary until leia adds multi gamemode support
         const value = {
-            hash,
             roomData: {
                 roomUrl,
                 region: initialRoomData.region,
                 gameModeIdx: initialRoomData.gameModeIdx,
-                enabledGameModeIdxs: [2], // default is [1, 2], but i changed to [2] to hardcode to squads for now
+                enabledGameModeIdxs: [1, 2],
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
@@ -292,7 +287,7 @@ export class TeamMenu {
                 zones: data.zones,
                 gameModeIdx: room.roomData.gameModeIdx,
                 autoFill: room.roomData.autoFill,
-                playerCount: 0
+                playerCount: room.players.length
             }).res[0];
 
             if ("err" in playData) {
@@ -308,13 +303,11 @@ export class TeamMenu {
                 return;
             }
 
-            game.addGroup(room.hash, room.roomData.autoFill);
-
             response = {
                 type: "joinGame",
                 data: {
                     ...playData,
-                    data: room.hash
+                    data: playData.data
                 }
             };
             this.sendResponses(response, room.players);
