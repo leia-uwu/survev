@@ -174,10 +174,12 @@ export class PlayerBarn {
         this.aliveCountDirty = true;
 
         if (!this.game.started) {
-            if ((!this.game.teamMode && this.game.aliveCount > 1) ||
-                (this.game.teamMode && this.game.groups.size > 1)
-            ) {
-                this.game.started = true;
+            if (!this.game.isTeamMode) {
+                this.game.started = this.game.aliveCount > 1;
+            } else {
+                this.game.started = this.game.groups.size > 1;
+            }
+            if (this.game.started) {
                 this.game.gas.advanceGasStage();
             }
         }

@@ -162,7 +162,7 @@ export class Game {
     }
 
     canJoin(): boolean {
-        return this.aliveCount < this.map.mapDef.gameMode.maxPlayers && !this.over;
+        return this.aliveCount < this.map.mapDef.gameMode.maxPlayers && !this.over && this.gas.stage < 1;
     }
 
     nextTeam(currentTeam: Group) {
