@@ -86,21 +86,4 @@ export class Structure extends BaseGameObject {
             return collider.transform(coll, pos, this.rot, 1);
         });
     }
-
-    static checkStairs(pos: Vec2, stair: Stair, object: BaseGameObject): boolean {
-        const collides = coldet.testPointAabb(pos, stair.collision.min, stair.collision.max);
-
-        if (collides) {
-            const collidesUp = coldet.testPointAabb(pos, stair.upAabb.min, stair.upAabb.max);
-
-            const collidesDown = coldet.testPointAabb(pos, stair.downAabb.min, stair.downAabb.max);
-
-            if (collidesUp) {
-                object.layer = 2;
-            } else if (collidesDown) {
-                object.layer = 3;
-            }
-        }
-        return collides;
-    }
 }

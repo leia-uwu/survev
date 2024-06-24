@@ -6,11 +6,11 @@ import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
-import { Obstacle } from "./obstacle";
-import { Structure } from "./structure";
 import { type Player } from "./player";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { Config } from "../config";
+import { type River } from "../../../shared/utils/river";
+import { math } from "../../../shared/utils/math";
 
 export class LootBarn {
     loots: Loot[] = [];
@@ -136,6 +136,8 @@ export class Loot extends BaseGameObject {
 
     ticks = 0;
 
+    bellowBridge = false;
+
     constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2, dir?: Vec2) {
         super(game, pos);
 
@@ -187,11 +189,28 @@ export class Loot extends BaseGameObject {
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
 
-        const objects = this.game.grid.intersectCollider(this.collider);
-        for (const obj of objects) {
+        const originalLayer = this.layer;
+
+        const objs = this.game.grid.intersectCollider(this.collider);
+
+        const stair = this.checkStairs(objs, this.rad * 2);
+        if (this.layer !== originalLayer) {
+            this.setDirty();
+        }
+
+        if (this.layer === 0) {
+            this.bellowBridge = false;
+        }
+
+        if (stair?.lootOnly) {
+            this.bellowBridge = true;
+        }
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
             if (
                 moving &&
-                obj instanceof Obstacle &&
+                obj.__type === ObjectType.Obstacle &&
                 !obj.dead &&
                 util.sameLayer(obj.layer, this.layer) &&
                 obj.collidable &&
@@ -201,9 +220,12 @@ export class Loot extends BaseGameObject {
                 if (res) {
                     this.pos = v2.add(this.pos, v2.mul(res.dir, res.pen));
                 }
-            }
-
-            if (obj instanceof Loot && obj !== this && coldet.test(this.collider, obj.collider)) {
+            } else if (
+                obj.__type === ObjectType.Loot &&
+                obj !== this &&
+                util.sameLayer(obj.layer, this.layer) &&
+                coldet.test(this.collider, obj.collider)
+            ) {
                 const res = coldet.intersectCircleCircle(this.pos, this.collider.rad, obj.pos, obj.collider.rad);
                 if (res) {
                     this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
@@ -222,34 +244,23 @@ export class Loot extends BaseGameObject {
             }
         }
 
-        const river = this.game.map.getGroundSurface(this.pos, 0).river;
-        if (river) {
-            const tangent = river.spline.getTangent(
-                river.spline.getClosestTtoPoint(this.pos)
-            );
-            this.push(tangent, 0.5 * dt);
-        }
-
-        let onStair = false;
-        const originalLayer = this.layer;
-        const objs = this.game.grid.intersectCollider(this.collider);
-        for (const obj of objs) {
-            if (obj.__type === ObjectType.Structure) {
-                for (const stair of obj.stairs) {
-                    if (Structure.checkStairs(this.pos, stair, this)) {
-                        onStair = true;
-                        break;
-                    }
-                }
-                if (!onStair) {
-                    if (this.layer === 2) this.layer = 0;
-                    if (this.layer === 3) this.layer = 1;
+        const surface = this.game.map.getGroundSurface(this.pos, this.layer);
+        let finalRiver: River | undefined;
+        if ((this.layer === 0 && surface.river) || this.bellowBridge) {
+            const rivers = this.game.map.terrain.rivers;
+            for (let i = 0; i < rivers.length; i++) {
+                const river = rivers[i];
+                if (coldet.testPointAabb(this.pos, river.aabb.min, river.aabb.max) &&
+                    math.pointInsidePolygon(this.pos, river.waterPoly)) {
+                    finalRiver = river;
                 }
             }
         }
-
-        if (this.layer !== originalLayer) {
-            this.setDirty();
+        if (finalRiver) {
+            const tangent = finalRiver.spline.getTangent(
+                finalRiver.spline.getClosestTtoPoint(this.pos)
+            );
+            this.push(tangent, 0.5 * dt);
         }
 
         if (!v2.eq(this.oldPos, this.pos)) {

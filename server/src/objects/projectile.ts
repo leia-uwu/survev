@@ -7,7 +7,6 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
-import { Structure } from "./structure";
 import { math } from "../../../shared/utils/math";
 import { GameConfig } from "../../../shared/gameConfig";
 
@@ -106,25 +105,9 @@ export class Projectile extends BaseGameObject {
         const rad = math.max(def.rad * this.posZ, 0.5);
         const coll = collider.createCircle(this.pos, rad, this.posZ);
         const objs = this.game.grid.intersectCollider(coll);
-        let onStair = false;
-        const originalLayer = this.layer;
 
         for (const obj of objs) {
-            if (obj.__type === ObjectType.Structure) {
-                for (const stair of obj.stairs) {
-                    if (Structure.checkStairs(this.pos, stair, this)) {
-                        onStair = true;
-                        break;
-                    }
-                }
-                if (!onStair) {
-                    if (this.layer === 2) this.layer = 0;
-                    if (this.layer === 3) this.layer = 1;
-                }
-                if (this.layer !== originalLayer) {
-                    this.setDirty();
-                }
-            } else if (obj.__type === ObjectType.Obstacle &&
+            if (obj.__type === ObjectType.Obstacle &&
                 util.sameLayer(this.layer, obj.layer) &&
                 !obj.dead &&
                 obj.collidable
@@ -161,6 +144,9 @@ export class Projectile extends BaseGameObject {
         }
 
         this.pos = this.game.map.clampToMapBounds(this.pos);
+
+        const originalLayer = this.layer;
+        this.checkStairs(objs, rad);
 
         if (!this.dead) {
             if (this.layer !== originalLayer) {

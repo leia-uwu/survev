@@ -11,7 +11,6 @@ import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
 import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type LootDef } from "../../../shared/defs/objectsTypings";
 import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
-import { Structure } from "./structure";
 import { type Loot } from "./loot";
 import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
 import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
@@ -711,39 +710,12 @@ export class Player extends BaseGameObject {
             }
         }
 
-        let onStair = false;
-        const originalLayer = this.layer;
-
-        const rot = Math.atan2(this.dir.y, this.dir.x);
-        const ori = math.radToOri(rot);
-
         const scopeZoom = GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
         let zoom = GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"]["1xscope"];
 
         let collidesWithZoomOut = false;
         for (const obj of objs!) {
-            if (obj.__type === ObjectType.Structure) {
-                for (const stair of obj.stairs) {
-                    if (stair.lootOnly) continue;
-                    if (Structure.checkStairs(this.pos, stair, this)) {
-                        onStair = true;
-
-                        if (ori === stair.downOri) this.aimLayer = 3;
-                        else if (ori === stair.upOri) this.aimLayer = 2;
-                        else this.aimLayer = this.layer;
-                        break;
-                    }
-                }
-                if (!onStair) {
-                    if (this.layer === 2) this.layer = 0;
-                    if (this.layer === 3) this.layer = 1;
-
-                    this.aimLayer = this.layer;
-                }
-                if (this.layer !== originalLayer) {
-                    this.setDirty();
-                }
-            } else if (obj.__type === ObjectType.Building) {
+            if (obj.__type === ObjectType.Building) {
                 let layer = this.layer;
                 if (this.layer > 2) layer = 0;
                 if (!util.sameLayer(util.toGroundLayer(layer), obj.layer) || obj.ceilingDead) continue;
@@ -774,6 +746,25 @@ export class Player extends BaseGameObject {
                     obj.interact(this, true);
                 }
             }
+        }
+
+        const originalLayer = this.layer;
+        const rot = Math.atan2(this.dir.y, this.dir.x);
+        const ori = math.radToOri(rot);
+        const stair = this.checkStairs(objs!, this.rad);
+        if (stair) {
+            if (ori === stair.downOri) {
+                this.aimLayer = 3;
+            } else if (ori === stair.upOri) {
+                this.aimLayer = 2;
+            } else {
+                this.aimLayer = this.layer;
+            }
+        } else {
+            this.aimLayer = this.layer;
+        }
+        if (this.layer !== originalLayer) {
+            this.setDirty();
         }
 
         this.zoom = this.indoors ? zoom : scopeZoom;

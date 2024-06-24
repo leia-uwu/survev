@@ -3,7 +3,6 @@ import { collider } from "../../../shared/utils/collider";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { Structure } from "./structure";
 import { Config } from "../config";
 
 export class DeadBodyBarn {
@@ -75,23 +74,9 @@ export class DeadBody extends BaseGameObject {
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
         this.game.map.clampToMapBounds(this.pos);
 
-        let onStair = false;
         const originalLayer = this.layer;
         const objs = this.game.grid.intersectCollider(collider.createCircle(this.pos, 0.1));
-        for (const obj of objs) {
-            if (obj.__type === ObjectType.Structure) {
-                for (const stair of obj.stairs) {
-                    if (Structure.checkStairs(this.pos, stair, this)) {
-                        onStair = true;
-                        break;
-                    }
-                }
-                if (!onStair) {
-                    if (this.layer === 2) this.layer = 0;
-                    if (this.layer === 3) this.layer = 1;
-                }
-            }
-        }
+        this.checkStairs(objs, 2);
 
         this.pos = this.game.map.clampToMapBounds(this.pos);
 

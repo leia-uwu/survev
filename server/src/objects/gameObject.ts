@@ -1,5 +1,5 @@
 import { type Game } from "../game";
-import { type Collider } from "../../../shared/utils/coldet";
+import { coldet, type Collider } from "../../../shared/utils/coldet";
 import { type Vec2 } from "../../../shared/utils/v2";
 import { type DeadBody } from "./deadBody";
 import { type Airdrop } from "./airdrop";
@@ -194,6 +194,39 @@ export abstract class BaseGameObject {
 
     setPartDirty() {
         this.game.objectRegister.dirtyPart[this.__id] = 1;
+    }
+
+    checkStairs(objs: GameObject[], rad: number): Structure["stairs"][0] | undefined {
+        let finalStair: Structure["stairs"][0] | undefined;
+        let onStair = false;
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (obj.__type !== ObjectType.Structure) continue;
+            for (let j = 0; j < obj.stairs.length; j++) {
+                const stair = obj.stairs[j];
+                if (stair.lootOnly && this.__type !== ObjectType.Loot) continue;
+
+                const collides = coldet.testCircleAabb(this.pos, rad, stair.collision.min, stair.collision.max);
+
+                if (collides) {
+                    if (coldet.testCircleAabb(this.pos, rad, stair.downAabb.min, stair.downAabb.max)) {
+                        this.layer = 3;
+                    } else if (coldet.testCircleAabb(this.pos, rad, stair.upAabb.min, stair.upAabb.max)) {
+                        this.layer = 2;
+                    }
+                }
+                if (collides) {
+                    onStair = true;
+                    finalStair = stair;
+                    break;
+                }
+            }
+            if (!onStair) {
+                if (this.layer === 2) this.layer = 0;
+                if (this.layer === 3) this.layer = 1;
+            }
+        }
+        return finalStair;
     }
 
     destroyed = false;
