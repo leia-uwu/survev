@@ -9,8 +9,8 @@ import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Structure } from "./structure";
 import { type Player } from "./player";
-import { MapDefs } from "../../../shared/defs/mapDefs";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { Config } from "../config";
 
 export class LootBarn {
     loots: Loot[] = [];
@@ -73,7 +73,7 @@ export class LootBarn {
     }
 
     getLootTable(tier: string): Array<{ name: string, count: number }> {
-        const lootTable = MapDefs[this.game.config.map].lootTable[tier];
+        const lootTable = this.game.map.mapDef.lootTable[tier];
         const items: Array<{ name: string, count: number }> = [];
 
         if (!lootTable) {
@@ -152,7 +152,7 @@ export class Loot extends BaseGameObject {
 
         this.rad = this.collider.rad;
 
-        this.dragConstant = Math.exp(-3.69 / game.config.tps);
+        this.dragConstant = Math.exp(-3.69 / Config.tps);
 
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }

@@ -1,12 +1,14 @@
 import { type URLSearchParams } from "url";
 import { Config } from "./config";
-import { Game } from "./game";
+import { Game, type ServerGameConfig } from "./game";
 import { type Player } from "./objects/player";
 import { Logger } from "./utils/logger";
 import { version } from "../../package.json";
+import { randomBytes } from "crypto";
+import { TeamMenu } from "./teamMenu";
 
 export interface PlayerContainer {
-    readonly gameID: number
+    readonly gameID: string
     sendMsg: (msg: ArrayBuffer | Uint8Array) => void
     closeSocket: () => void
     player?: Player
@@ -18,17 +20,27 @@ export interface TeamMenuPlayerContainer {
     roomUrl: string
 }
 
+export interface FindGameBody {
+    region: string
+    zones: string[]
+    version: number
+    playerCount: number
+    autoFill: boolean
+    gameModeIdx: number
+}
+
 export abstract class AbstractServer {
     readonly logger = new Logger("Server");
 
-    readonly games: Array<Game | undefined> = [];
+    readonly gamesById = new Map<string, Game>();
+    readonly games: Game[] = [];
+
+    teamMenu = new TeamMenu(this);
 
     init(): void {
         this.logger.log(`Resurviv Server v${version}`);
         this.logger.log(`Listening on ${Config.host}:${Config.port}`);
         this.logger.log("Press Ctrl+C to exit.");
-
-        this.newGame(0);
 
         setInterval(() => {
             const memoryUsage = process.memoryUsage().rss;
@@ -39,39 +51,24 @@ export abstract class AbstractServer {
         }, 60000);
     }
 
-    tick(): void {
-        for (const game of this.games) {
-            if (game) game.update();
-        }
-    }
-
-    newGame(id?: number): number {
-        if (id !== undefined) {
-            if (!this.games[id] || this.games[id]?.stopped) {
-                this.games[id] = new Game(id, Config);
-                return id;
+    update(): void {
+        for (let i = 0; i < this.games.length; i++) {
+            const game = this.games[i];
+            if (game.stopped) {
+                this.games.splice(i, 1);
+                this.gamesById.delete(game.id);
+                continue;
             }
-        } else {
-            for (let i = 0; i < Config.maxGames; i++) {
-                if (!this.games[i] || this.games[i]?.stopped) return this.newGame(i);
-            }
-        }
-        return -1;
-    }
-
-    endGame(id: number, createNewGame: boolean): void {
-        const game = this.games[id];
-        if (game === undefined) return;
-        game.stop();
-        if (createNewGame) {
-            this.games[id] = new Game(id, Config);
-        } else {
-            this.games[id] = undefined;
+            game.update();
         }
     }
 
-    canJoin(game?: Game): boolean {
-        return game !== undefined && game.aliveCount < game.map.mapDef.gameMode.maxPlayers && !game.over;
+    newGame(config: ServerGameConfig): Game {
+        const id = randomBytes(20).toString("hex");
+        const game = new Game(id, config);
+        this.games.push(game);
+        this.gamesById.set(id, game);
+        return game;
     }
 
     getSiteInfo() {
@@ -80,9 +77,7 @@ export abstract class AbstractServer {
         }, 0);
 
         const data = {
-            modes: [
-                { mapName: Config.map, teamMode: 1 }
-            ],
+            modes: Config.modes,
             pops: {
                 local: `${playerCount} players`
             },
@@ -97,10 +92,10 @@ export abstract class AbstractServer {
         return { err: "" };
     }
 
-    findGame(regionId: string) {
+    findGame(body: FindGameBody) {
         let response: {
             zone: string
-            gameId: number
+            gameId: string
             useHttps: boolean
             hosts: string[]
             addrs: string[]
@@ -108,40 +103,56 @@ export abstract class AbstractServer {
         } | { err: string } = {
             zone: "",
             data: "",
-            gameId: 0,
+            gameId: "",
             useHttps: true,
             hosts: [],
             addrs: []
         };
 
-        const region = (Config.regions[regionId] ?? Config.regions[Config.defaultRegion]);
+        const region = (Config.regions[body.region] ?? Config.regions[Config.defaultRegion]);
         if (region !== undefined) {
             response.hosts.push(region.address);
             response.addrs.push(region.address);
             response.useHttps = region.https;
 
-            let foundGame = false;
-            for (let gameID = 0; gameID < Config.maxGames; gameID++) {
-                const game = this.games[gameID];
-                if (this.canJoin(game) && game?.allowJoin) {
-                    response.gameId = game.id;
-                    foundGame = true;
-                    break;
+            let game = this.games.filter(game => {
+                return game.canJoin() && game.gameModeIdx === body.gameModeIdx;
+            }).sort((a, b) => {
+                return a.startedTime - b.startedTime;
+            })[0];
+
+            if (!game) {
+                const mode = Config.modes[body.gameModeIdx];
+
+                if (!mode) {
+                    response = {
+                        err: "Invalid game mode idx"
+                    };
+                } else {
+                    game = this.newGame({
+                        teamMode: mode.teamMode,
+                        mapName: mode.mapName
+                    });
                 }
             }
-            if (!foundGame) {
-                // Create a game if there's a free slot
-                const gameID = this.newGame();
-                if (gameID !== -1) {
-                    response.gameId = gameID;
-                } else {
-                    // Join the game that most recently started
-                    const game = this.games
-                        .filter(g => g && !g.over)
-                        .reduce((a, b) => (a!).startedTime > (b!).startedTime ? a : b);
 
-                    if (game) response.gameId = game.id;
-                    else response = { err: "failed finding game" };
+            if (game && !("err" in response)) {
+                response.gameId = game.id;
+
+                const mode = Config.modes[body.gameModeIdx];
+                if (mode.teamMode > 1) {
+                    let group = [...game.groups.values()].filter(group => {
+                        return group.autoFill &&
+                            group.players.length < mode.teamMode;
+                    })[0];
+
+                    if (!group) {
+                        group = game.addGroup(randomBytes(20).toString("hex"), true);
+                    }
+
+                    if (group) {
+                        response.data = group.hash;
+                    }
                 }
             }
         } else {
@@ -153,27 +164,29 @@ export abstract class AbstractServer {
         return { res: [response] };
     }
 
-    getGameId(params: URLSearchParams): false | number {
+    validateGameId(params: URLSearchParams): false | string {
         //
         // Validate game ID
         //
-        let gameID = Number(params.get("gameID"));
-        if (gameID < 0 || gameID > Config.maxGames - 1) gameID = 0;
-        if (!this.canJoin(this.games[gameID])) {
+        const gameId = params.get("gameId");
+        if (!gameId) {
             return false;
         }
-        return gameID;
+        if (!this.gamesById.get(gameId)?.canJoin()) {
+            return false;
+        }
+        return gameId;
     }
 
     onOpen(data: PlayerContainer): void {
-        const game = this.games[data.gameID];
+        const game = this.gamesById.get(data.gameID);
         if (game === undefined) {
             data.closeSocket();
         }
     }
 
     onMessage(data: PlayerContainer, message: ArrayBuffer | Buffer) {
-        const game = this.games[data.gameID];
+        const game = this.gamesById.get(data.gameID);
         if (!game) {
             data.closeSocket();
             return;
@@ -186,7 +199,7 @@ export abstract class AbstractServer {
     }
 
     onClose(data: PlayerContainer): void {
-        const game = this.games[data.gameID];
+        const game = this.gamesById.get(data.gameID);
         const player = data.player;
         if (game === undefined || player === undefined) return;
         game.logger.log(`"${player.name}" left`);

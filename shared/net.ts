@@ -340,7 +340,7 @@ export interface TeamJoinGameMsg {
     readonly type: "joinGame"
     data: {
         zone: string
-        gameId: number
+        gameId: string
         hosts: string[]
         addrs: string[]
         // server generated data that gets sent back to the server on `joinMsg.matchPriv`

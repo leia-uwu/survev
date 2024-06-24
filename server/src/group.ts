@@ -3,6 +3,7 @@ import { GameConfig } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
 
 export class Group {
+    hash: string;
     groupId: number;
     /**
      * Faction mode team ID.
@@ -14,10 +15,13 @@ export class Group {
     teamId: number;
     allDeadOrDisconnected = false;
     players: Player[] = [];
+    autoFill: boolean;
 
-    constructor(groupId: number, teamId: number) {
+    constructor(hash: string, groupId: number, teamId: number, autoFill: boolean) {
+        this.hash = hash;
         this.groupId = groupId;
         this.teamId = teamId;
+        this.autoFill = autoFill;
     }
 
     /**

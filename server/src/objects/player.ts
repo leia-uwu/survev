@@ -25,7 +25,7 @@ import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type Group } from "../group";
-import { SpawnMode } from "../config";
+import { Config, SpawnMode } from "../config";
 import { type PlayerContainer } from "../abstractServer";
 import { type JoinMsg } from "../../../shared/msgs/joinMsg";
 import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
@@ -84,12 +84,12 @@ export class PlayerBarn {
             if (!group) return;
         }
 
-        switch (this.game.config.spawn.mode) {
+        switch (Config.spawn.mode) {
         case SpawnMode.Center:
             pos = v2.copy(this.game.map.center);
             break;
         case SpawnMode.Fixed:
-            pos = v2.copy(this.game.config.spawn.pos);
+            pos = v2.copy(Config.spawn.pos);
             break;
         case SpawnMode.Random:
             if (!group) {
@@ -568,6 +568,8 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+
+        this.game.lootBarn.addLoot("m9", this.pos, this.layer, 1);
     }
 
     visibleObjects = new Set<GameObject>();

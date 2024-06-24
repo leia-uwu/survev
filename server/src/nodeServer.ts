@@ -10,8 +10,7 @@ import {
 import NanoTimer from "nanotimer";
 
 import { URLSearchParams } from "node:url";
-import { AbstractServer, type PlayerContainer, type TeamMenuPlayerContainer } from "./abstractServer";
-import { TeamMenu } from "./teamMenu";
+import { AbstractServer, type FindGameBody, type PlayerContainer, type TeamMenuPlayerContainer } from "./abstractServer";
 
 /**
  * Apply CORS headers to a response.
@@ -26,6 +25,10 @@ function cors(res: HttpResponse): void {
 
 function forbidden(res: HttpResponse): void {
     res.writeStatus("403 Forbidden").end("403 Forbidden");
+}
+
+function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
+    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
 }
 
 /**
@@ -81,7 +84,6 @@ function readPostedJSON<T>(
 }
 
 class NodeServer extends AbstractServer {
-    teamMenu = new TeamMenu(this);
     app: TemplatedApp;
 
     constructor() {
@@ -100,22 +102,32 @@ class NodeServer extends AbstractServer {
             const data = this.getSiteInfo();
             if (!aborted) {
                 res.cork(() => {
-                    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
+                    returnJson(res, data);
                 });
             }
         });
         app.post("/api/user/profile", (res, _req) => {
-            res.writeHeader("Content-Type", "application/json");
-            res.end(JSON.stringify(this.getUserProfile()));
+            returnJson(res, this.getUserProfile());
         });
 
         app.post("/api/find_game", async(res) => {
-            readPostedJSON(res, (body: { region: string, zones: any[] }) => {
-                const response = this.findGame(body.region);
-                res.writeHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(response));
+            readPostedJSON(res, (body: FindGameBody) => {
+                try {
+                    returnJson(res, this.findGame(body));
+                } catch {
+                    returnJson(res, {
+                        res: [{
+                            err: "Failed finding game"
+                        }]
+                    });
+                }
             }, () => {
                 this.logger.warn("/api/find_game: Error retrieving body");
+                returnJson(res, {
+                    res: [{
+                        err: "Error retriving body"
+                    }]
+                });
             });
         });
 
@@ -131,8 +143,7 @@ class NodeServer extends AbstractServer {
                 res.onAborted((): void => { });
 
                 const searchParams = new URLSearchParams(req.getQuery());
-                const gameID = This.getGameId(searchParams);
-
+                const gameID = This.validateGameId(searchParams);
                 if (gameID !== false) {
                     res.upgrade(
                         {
@@ -236,7 +247,7 @@ class NodeServer extends AbstractServer {
 
             const timer = new NanoTimer();
 
-            timer.setInterval(() => { this.tick(); }, "", `${1000 / Config.tps}m`);
+            timer.setInterval(() => { this.update(); }, "", `${1000 / Config.tps}m`);
         });
     }
 }

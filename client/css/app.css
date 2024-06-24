@@ -3322,11 +3322,6 @@ a:active {
     border-radius: 5px;
     background-color: #fff;
 }
-.btn-disabled2 {
-    filter: brightness(0.5);
-    pointer-events: none;
-    user-select: none;
-}
 .btn-disabled {
     cursor: default !important;
     color: #fff !important;

@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import {
     type ClientToServerTeamMsg,
     type RoomData,
@@ -15,7 +16,7 @@ interface RoomPlayer extends TeamMenuPlayer {
 
 export interface Room {
     roomData: RoomData
-    id: string
+    hash: string
     players: RoomPlayer[]
 }
 
@@ -58,10 +59,11 @@ export class TeamMenu {
 
     }
 
-    addRoom(id: string, roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
+    addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
+        const hash = randomBytes(20).toString("hex");
         initialRoomData.gameModeIdx = 2; // temporary until leia adds multi gamemode support
         const value = {
-            id,
+            hash,
             roomData: {
                 roomUrl,
                 region: initialRoomData.region,
@@ -176,9 +178,7 @@ export class TeamMenu {
 
             localPlayerData.roomUrl = roomUrl;
 
-            const roomId = randomString(128);
-
-            const room = this.addRoom(roomId, roomUrl, parsedMessage.data.roomData, player);
+            const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
             if (!room) {
                 response = teamErrorMsg("create_failed");
                 this.sendResponse(response, player);
@@ -285,14 +285,22 @@ export class TeamMenu {
             room.roomData.findingGame = true;
             this.sendRoomState(room);
 
-            const playData = this.server.findGame(parsedMessage.data.region).res[0];
+            const data = parsedMessage.data;
+            const playData = this.server.findGame({
+                version: data.version,
+                region: data.region,
+                zones: data.zones,
+                gameModeIdx: room.roomData.gameModeIdx,
+                autoFill: room.roomData.autoFill,
+                playerCount: 0
+            }).res[0];
 
             if ("err" in playData) {
                 response = teamErrorMsg("find_game_error");
                 this.sendResponse(response, player);
                 return;
             }
-            const game = this.server.games.find(game => game && game.id === playData.gameId)!;
+            const game = this.server.gamesById.get(playData.gameId)!;
 
             if (game.teamMode !== room.roomData.gameModeIdx * 2) {
                 response = teamErrorMsg("find_game_error");
@@ -300,13 +308,13 @@ export class TeamMenu {
                 return;
             }
 
-            game.addGroup(room.id);
+            game.addGroup(room.hash, room.roomData.autoFill);
 
             response = {
                 type: "joinGame",
                 data: {
                     ...playData,
-                    data: room.id
+                    data: room.hash
                 }
             };
             this.sendResponses(response, room.players);

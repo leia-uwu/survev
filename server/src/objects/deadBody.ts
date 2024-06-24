@@ -4,6 +4,7 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { Structure } from "./structure";
+import { Config } from "../config";
 
 export class DeadBodyBarn {
     deadBodies: DeadBody[] = [];
@@ -45,7 +46,7 @@ export class DeadBody extends BaseGameObject {
         this.playerId = playerId;
         this.vel = v2.mul(dir, 8);
         this.oldPos = v2.copy(this.pos);
-        this.dragConstant = Math.exp(-3.69 / game.config.tps);
+        this.dragConstant = Math.exp(-3.69 / Config.tps);
     }
 
     update(dt: number): void {

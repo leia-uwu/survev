@@ -159,6 +159,8 @@ export class GameMap {
     width: number;
     height: number;
 
+    scale: "large" | "small";
+
     center: Vec2;
 
     msg = new MapMsg();
@@ -172,7 +174,7 @@ export class GameMap {
     grassInset: number;
     shoreInset: number;
 
-    terrain: ReturnType<typeof generateTerrain>;
+    terrain!: ReturnType<typeof generateTerrain>;
 
     mapDef: MapDef;
 
@@ -199,18 +201,20 @@ export class GameMap {
     constructor(game: Game) {
         this.game = game;
 
-        const mapDef = this.mapDef = util.cloneDeep(MapDefs[game.config.map]);
+        const mapDef = this.mapDef = util.cloneDeep(MapDefs[game.config.mapName]) as MapDef;
         if (mapDef === undefined) {
-            throw new Error(`Invalid map name: ${game.config.map}`);
+            throw new Error(`Invalid map name: ${game.config.mapName}`);
         }
 
+        const scale = this.scale = game.teamMode > 2 ? "large" : "small";
+
         const mapConfig = mapDef.mapGen.map;
-        this.width = (mapConfig.baseWidth * mapConfig.scale.small) + mapConfig.extension;
-        this.height = (mapConfig.baseHeight * mapConfig.scale.small) + mapConfig.extension;
+        this.width = (mapConfig.baseWidth * mapConfig.scale[scale]) + mapConfig.extension;
+        this.height = (mapConfig.baseHeight * mapConfig.scale[scale]) + mapConfig.extension;
 
         this.bounds = collider.createAabb(v2.create(0, 0), v2.create(this.width, this.height));
 
-        this.msg.mapName = game.config.map;
+        this.msg.mapName = game.config.mapName;
         this.msg.seed = this.seed;
         this.msg.width = this.width;
         this.msg.height = this.height;
@@ -241,7 +245,9 @@ export class GameMap {
                 }
             }
         } */
+    }
 
+    init() {
         this.generateTerrain();
 
         this.terrain = generateTerrain(
@@ -254,12 +260,6 @@ export class GameMap {
         );
 
         this.generateObjects();
-
-        // const data =  require("../../reference/mapMsgData.json")
-        // this.msg.objects = data.objects;
-        // this.msg.groundPatches = data.groundPatches;
-        // this.msg.rivers = data.rivers
-
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
 
@@ -453,7 +453,7 @@ export class GameMap {
             let count = fixedSpawns[type];
             if (typeof count !== "number") {
                 if ("small" in count) {
-                    count = count.small;
+                    count = count[this.scale];
                 } else {
                     count = Math.random() < count.odds ? 1 : 0;
                 }
