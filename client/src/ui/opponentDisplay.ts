@@ -1,3 +1,4 @@
+import { type LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type OutfitDef } from "../../../shared/defs/objectsTypings";
@@ -7,7 +8,6 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { v2 } from "../../../shared/utils/v2";
-import { type LocalDataWithDirty } from "../../clientTypes";
 import { type Account } from "../account";
 import { type AudioManager } from "../audioManager";
 import { Camera } from "../camera";

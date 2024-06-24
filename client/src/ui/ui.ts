@@ -1,3 +1,4 @@
+import { type PlayerStatus } from "./../../../shared/msgs/updateMsg";
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
@@ -13,7 +14,6 @@ import { type MapIndicator } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type PlayerStatus } from "../../clientTypes";
 import { type AudioManager } from "../audioManager";
 import { type Camera } from "../camera";
 import { type SoundHandle } from "../createJS";

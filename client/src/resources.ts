@@ -104,7 +104,8 @@ export class ResourceManager {
         public config: ConfigManager
     ) {
         this.textureRes = selectTextureRes(this.renderer, this.config);
-        renderer.prepare.limiter.maxItemsPerFrame = 1;
+        // Private field
+        (renderer.prepare as any).limiter.maxItemsPerFrame = 1;
     }
 
     isAtlasLoaded(name: Atlas) {

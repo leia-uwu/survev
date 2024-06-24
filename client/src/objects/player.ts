@@ -1,3 +1,8 @@
+import { 
+    type GroupStatus,
+    type LocalDataWithDirty,
+    type PlayerStatus
+} from './../../../shared/msgs/updateMsg';
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
@@ -35,11 +40,6 @@ import {
 } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import {
-    type GroupStatus,
-    type LocalDataWithDirty,
-    type PlayerStatus
-} from "../../clientTypes";
 import { Animations, Bones, IdlePoses, Pose } from "../animData";
 import { type AudioManager } from "../audioManager";
 import { type Camera } from "../camera";
