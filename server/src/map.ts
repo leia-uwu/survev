@@ -76,7 +76,7 @@ function computeColliders(type: string) {
         for (const object of def.mapObjects ?? []) {
             const type = typeof object.type === "string"
                 ? object.type
-                : object.type();
+                : object.type?.()!;
 
             const objColliders = getColliders(type);
             const rot = math.oriToRad(object.ori);
@@ -533,7 +533,7 @@ export class GameMap {
         }
         case "loot_spawner":
             for (const tier of def.loot) {
-                const items = this.game.lootBarn.getLootTable(tier.tier);
+                const items = this.game.lootBarn.getLootTable(tier.tier!);
 
                 for (const item of items) {
                     this.game.lootBarn.addLoot(item.name, pos, layer, item.count, undefined, 0);
@@ -886,7 +886,7 @@ export class GameMap {
             let partType = mapObject.type;
 
             if (typeof partType !== "string") {
-                partType = partType();
+                partType = partType?.();
             }
             if (!partType) continue;
 

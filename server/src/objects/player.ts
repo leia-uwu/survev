@@ -5,14 +5,13 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import { type Obstacle } from "./obstacle";
 import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
-import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type LootDef } from "../../../shared/defs/objectsTypings";
-import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { type Loot } from "./loot";
-import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
+import { type BackpackDef, type BoostDef, type ChestDef, GEAR_TYPES, type HealDef, type HelmetDef, SCOPE_LEVELS, type ScopeDef } from "../../../shared/defs/gameObjects/gearDefs";
 import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
 import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
 import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
@@ -31,6 +30,9 @@ import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { IDAllocator } from "../IDAllocator";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 
 export class Emote {
     playerId: number;
@@ -531,7 +533,7 @@ export class Player extends BaseGameObject {
 
     getPanSegment() {
         const type = this.wearingPan ? "unequipped" : "equipped";
-        return MeleeDefs.pan.reflectSurface[type];
+        return MeleeDefs.pan.reflectSurface![type];
     }
 
     name = "Player";
@@ -1310,7 +1312,7 @@ export class Player extends BaseGameObject {
                 this.weaponManager.dropGun(i);
                 break;
             case "melee":
-                if (def.noDrop || def.noDropOnDeath || weap.type === "fists") break;
+                if (def.noDropOnDeath || weap.type === "fists") break;
                 this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
                 break;
             }
@@ -1331,7 +1333,7 @@ export class Player extends BaseGameObject {
             const type = this[item];
             if (!type) continue;
             const def = GameObjectDefs[type] as HelmetDef | ChestDef | BackpackDef;
-            if (!!def.noDrop || def.level < 1) continue;
+            if (!!(def as ChestDef).noDrop || def.level < 1) continue;
             this.game.lootBarn.addLoot(type, this.pos, this.layer, 1);
         }
 
@@ -1883,7 +1885,7 @@ export class Player extends BaseGameObject {
         }
 
         const lootToAddDef = GameObjectDefs[lootToAdd] as LootDef;
-        if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !lootToAddDef.noDrop) {
+        if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !(lootToAddDef as ChestDef).noDrop) {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
@@ -2094,7 +2096,7 @@ export class Player extends BaseGameObject {
         }
 
         if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
-            this.speed += weaponDef.speed.attack + weaponDef.speed.equip + -3;
+            this.speed += weaponDef.speed.attack! + weaponDef.speed.equip + -3;
         }
 
         // if player is on water decrease speed

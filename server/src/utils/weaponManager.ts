@@ -1,5 +1,4 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ThrowableDef, type GunDef, type MeleeDef } from "../../../shared/defs/objectsTypings";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type BulletParams } from "../objects/bullet";
 import { type GameObject } from "../objects/gameObject";
@@ -14,22 +13,23 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import * as net from "../../../shared/net";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { ThrowableDefs } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type ThrowableDef, ThrowableDefs } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 
-type throwableDefKey = keyof typeof ThrowableDefs;
 /**
  * List of throwables to cycle based on the definition `inventoryOrder`
  */
 export const throwableList = Object.keys(ThrowableDefs).filter(a => {
-    const def = ThrowableDefs[a as throwableDefKey];
+    const def = ThrowableDefs[a];
     // Trying to pickup a throwable that has no `handImg` will crash the client
     // so filter them out
-    return "handImg" in def && "equip" in def.handImg;
+    return "handImg" in def && "equip" in def.handImg!;
 });
 
 throwableList.sort((a, b) => {
-    const aDef = ThrowableDefs[a as throwableDefKey];
-    const bDef = ThrowableDefs[b as throwableDefKey];
+    const aDef = ThrowableDefs[a];
+    const bDef = ThrowableDefs[b];
     return aDef.inventoryOrder - bDef.inventoryOrder;
 });
 

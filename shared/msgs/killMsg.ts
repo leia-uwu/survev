@@ -1,9 +1,10 @@
+import { DamageType } from "../gameConfig";
 import { AbstractMsg, type BitStream } from "../net";
 
 export class KillMsg extends AbstractMsg {
     itemSourceType = "";
     mapSourceType = "";
-    damageType = 0;
+    damageType = DamageType.Player;
     targetId = 0;
     killerId = 0;
     killCreditId = 0;

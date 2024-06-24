@@ -1,21 +1,54 @@
-import { BulletDefs } from "./gameObjects/bulletDefs";
-import { CrosshairDefs } from "./gameObjects/crosshairDefs";
-import { EmotesDefs } from "./gameObjects/emoteDefs";
-import { ExplosionDefs } from "./gameObjects/explosionsDefs";
-import { GearDefs } from "./gameObjects/gearDefs";
-import { GunDefs } from "./gameObjects/gunDefs";
+import { type BulletDef, BulletDefs } from "./gameObjects/bulletDefs";
+import { type CrosshairDef, CrosshairDefs } from "./gameObjects/crosshairDefs";
+import { type EmoteDef, EmotesDefs } from "./gameObjects/emoteDefs";
+import { type ExplosionDef, ExplosionDefs } from "./gameObjects/explosionsDefs";
+import { type AmmoDef, type BackpackDef, type BoostDef, type ChestDef, GearDefs, type HealDef, type HelmetDef, type ScopeDef } from "./gameObjects/gearDefs";
+import { type GunDef, GunDefs } from "./gameObjects/gunDefs";
 import { HealEffectDefs } from "./gameObjects/healEffectDefs";
-import { MeleeDefs } from "./gameObjects/meleeDefs";
-import { OutfitDefs } from "./gameObjects/outfitDefs";
+import { type MeleeDef, MeleeDefs } from "./gameObjects/meleeDefs";
+import { type OutfitDef, OutfitDefs } from "./gameObjects/outfitDefs";
 import { PassDefs } from "./gameObjects/passDefs";
-import { PerkDefs } from "./gameObjects/perkDefs";
-import { PingDefs } from "./gameObjects/pingDefs";
+import { type PerkDef, PerkDefs } from "./gameObjects/perkDefs";
+import { type PingDef, PingDefs } from "./gameObjects/pingDefs";
 import { QuestDefs } from "./gameObjects/questDefs";
-import { RoleDefs } from "./gameObjects/roleDefs";
-import { ThrowableDefs } from "./gameObjects/throwableDefs";
+import { type RoleDef, RoleDefs } from "./gameObjects/roleDefs";
+import { type ThrowableDef, ThrowableDefs } from "./gameObjects/throwableDefs";
 import { UnlockDefs } from "./gameObjects/unlockDefs";
-import { XPDefs } from "./gameObjects/xpDefs";
-import { type GameObjectDef } from "./objectsTypings";
+import { type XPDef, XPDefs } from "./gameObjects/xpDefs";
+
+export type GameObjectDef = BulletDef |
+EmoteDef |
+CrosshairDef |
+ExplosionDef |
+AmmoDef |
+HealDef |
+BoostDef |
+BackpackDef |
+HelmetDef |
+ChestDef |
+ScopeDef |
+GunDef |
+MeleeDef |
+OutfitDef |
+PerkDef |
+PingDef |
+RoleDef |
+ThrowableDef |
+XPDef;
+
+export type LootDef = AmmoDef |
+HealDef |
+BoostDef |
+BackpackDef |
+HelmetDef |
+ChestDef |
+ScopeDef |
+GunDef |
+MeleeDef |
+OutfitDef |
+PerkDef |
+ThrowableDef |
+XPDef;
 
 const ObjectDefsList: Array<Record<string, unknown>> = [
     BulletDefs,

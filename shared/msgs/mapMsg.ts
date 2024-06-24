@@ -1,5 +1,3 @@
-import { type Building } from "../../server/src/objects/building";
-import { type Obstacle } from "../../server/src/objects/obstacle";
 import type { MapDef } from "../defs/mapDefs";
 import { AbstractMsg, Constants, type BitStream } from "../net";
 import type { MapRiverData } from "../utils/terrainGen";
@@ -7,9 +5,7 @@ import type { Vec2 } from "../utils/v2";
 
 function serializeMapRiver(s: BitStream, data: MapRiverData) {
     s.writeFloat32(data.width);
-    // !
-    // @ts-expect-error suppressed
-    s.writeUint8(data.looped);
+    s.writeUint8(data.looped as unknown as number);
     s.writeUint8(data.points.length);
 
     for (const point of data.points) {
@@ -19,9 +15,7 @@ function serializeMapRiver(s: BitStream, data: MapRiverData) {
 
 function deserializeMapRiver(s: BitStream, data: MapRiverData) {
     data.width = s.readFloat32();
-    // !
-    // @ts-expect-error suppressed
-    data.looped = s.readUint8();
+    data.looped = s.readUint8() as unknown as boolean;
     data.points = [];
 
     const count = s.readUint8();
@@ -44,7 +38,7 @@ function deserializeMapPlaces(s: BitStream, place: Place) {
     place.pos = s.readVec(0, 0, 1024, 1024, 16);
 }
 
-interface GroundPatch {
+export interface GroundPatch {
     color: number
     roughness: number
     offsetDist: number
@@ -74,9 +68,14 @@ function deserializeMapGroundPatch(s: BitStream, patch: GroundPatch) {
     patch.useAsMapShape = s.readBoolean();
 }
 
-type Obj = Obstacle | Building;
+interface MapObj {
+    pos: Vec2
+    scale: number
+    type: string
+    ori: number
+}
 
-function serializeMapObj(s: BitStream, obj: Obj) {
+function serializeMapObj(s: BitStream, obj: MapObj) {
     s.writeVec(obj.pos, 0, 0, 1024, 1024, 16);
     s.writeFloat(obj.scale, Constants.MapObjectMinScale, Constants.MapObjectMaxScale, 8);
     s.writeMapType(obj.type);
@@ -84,7 +83,7 @@ function serializeMapObj(s: BitStream, obj: Obj) {
     s.writeBits(0, 2); // Padding
 }
 
-function deserializeMapObj(s: BitStream, data: Obj) {
+function deserializeMapObj(s: BitStream, data: MapObj) {
     data.pos = s.readVec(0, 0, 1024, 1024, 16);
     data.scale = s.readFloat(Constants.MapObjectMinScale, Constants.MapObjectMaxScale, 8);
     data.type = s.readMapType();
@@ -101,7 +100,7 @@ export class MapMsg extends AbstractMsg {
     grassInset = 0;
     rivers: MapRiverData[] = [];
     places: Place[] = [];
-    objects: Obj[] = [];
+    objects: MapObj[] = [];
     groundPatches: GroundPatch[] = [];
 
     override serialize(s: BitStream) {
@@ -161,7 +160,7 @@ export class MapMsg extends AbstractMsg {
 
         const objCount = s.readUint16();
         for (let i = 0; i < objCount; i++) {
-            const obj = {} as Obj;
+            const obj = {} as MapObj;
             deserializeMapObj(s, obj);
             this.objects.push(obj);
         }

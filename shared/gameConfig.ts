@@ -1,89 +1,117 @@
+export enum EmoteSlot {
+    Top,
+    Right,
+    Bottom,
+    Left,
+    Win,
+    Death,
+    Count
+}
+
+export enum DamageType {
+    Player,
+    Bleeding,
+    Gas,
+    Airdrop,
+    Airstrike
+}
+
+export enum Action {
+    None,
+    Reload,
+    ReloadAlt,
+    UseItem,
+    Revive
+}
+
+export enum WeaponSlot {
+    Primary,
+    Secondary,
+    Melee,
+    Throwable,
+    Count
+}
+
+export enum GasMode {
+    Inactive,
+    Waiting,
+    Moving
+}
+
+export enum Anim {
+    None,
+    Melee,
+    Cook,
+    Throw,
+    CrawlForward,
+    CrawlBackward,
+    Revive
+}
+
+export enum Plane {
+    Airdrop,
+    Airstrike
+}
+
+export enum HasteType {
+    None,
+    Windwalk,
+    Takedown,
+    Inspire
+}
+
+export enum Input {
+    MoveLeft,
+    MoveRight,
+    MoveUp,
+    MoveDown,
+    Fire,
+    Reload,
+    Cancel,
+    Interact,
+    Revive,
+    Use,
+    Loot,
+    EquipPrimary,
+    EquipSecondary,
+    EquipMelee,
+    EquipThrowable,
+    EquipFragGrenade,
+    EquipSmokeGrenade,
+    EquipNextWeap,
+    EquipPrevWeap,
+    EquipLastWeap,
+    EquipOtherGun,
+    EquipPrevScope,
+    EquipNextScope,
+    UseBandage,
+    UseHealthKit,
+    UseSoda,
+    UsePainkiller,
+    StowWeapons,
+    SwapWeapSlots,
+    ToggleMap,
+    CycleUIMode,
+    EmoteMenu,
+    TeamPingMenu,
+    Fullscreen,
+    HideUI,
+    TeamPingSingle,
+    Count
+}
+
 export const GameConfig = {
     protocolVersion: 78,
-    Input: {
-        MoveLeft: 0,
-        MoveRight: 1,
-        MoveUp: 2,
-        MoveDown: 3,
-        Fire: 4,
-        Reload: 5,
-        Cancel: 6,
-        Interact: 7,
-        Revive: 8,
-        Use: 9,
-        Loot: 10,
-        EquipPrimary: 11,
-        EquipSecondary: 12,
-        EquipMelee: 13,
-        EquipThrowable: 14,
-        EquipFragGrenade: 15,
-        EquipSmokeGrenade: 16,
-        EquipNextWeap: 17,
-        EquipPrevWeap: 18,
-        EquipLastWeap: 19,
-        EquipOtherGun: 20,
-        EquipPrevScope: 21,
-        EquipNextScope: 22,
-        UseBandage: 23,
-        UseHealthKit: 24,
-        UseSoda: 25,
-        UsePainkiller: 26,
-        StowWeapons: 27,
-        SwapWeapSlots: 28,
-        ToggleMap: 29,
-        CycleUIMode: 30,
-        EmoteMenu: 31,
-        TeamPingMenu: 32,
-        Fullscreen: 33,
-        HideUI: 34,
-        TeamPingSingle: 35,
-        Count: 36
-    },
-    EmoteSlot: {
-        Top: 0,
-        Right: 1,
-        Bottom: 2,
-        Left: 3,
-        Win: 4,
-        Death: 5,
-        Count: 6
-    },
-    WeaponSlot: {
-        Primary: 0,
-        Secondary: 1,
-        Melee: 2,
-        Throwable: 3,
-        Count: 4
-    },
+    Input,
+    EmoteSlot,
+    WeaponSlot,
     WeaponType: ["gun", "gun", "melee", "throwable"],
-    DamageType: {
-        Player: 0,
-        Bleeding: 1,
-        Gas: 2,
-        Airdrop: 3,
-        Airstrike: 4
-    },
-    Action: {
-        None: 0,
-        Reload: 1,
-        ReloadAlt: 2,
-        UseItem: 3,
-        Revive: 4
-    },
-    Anim: {
-        None: 0,
-        Melee: 1,
-        Cook: 2,
-        Throw: 3,
-        CrawlForward: 4,
-        CrawlBackward: 5,
-        Revive: 6
-    },
-    GasMode: {
-        Inactive: 0,
-        Waiting: 1,
-        Moving: 2
-    },
+    DamageType,
+    Action,
+    Anim,
+    GasMode,
+    Plane,
+    HasteType,
     gas: {
         initWaitTime: 90,
         waitTimeDecay: 15,
@@ -98,16 +126,6 @@ export const GameConfig = {
         damage: [
             1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22
         ]
-    },
-    Plane: {
-        Airdrop: 0,
-        Airstrike: 1
-    },
-    HasteType: {
-        None: 0,
-        Windwalk: 1,
-        Takedown: 2,
-        Inspire: 3
     },
     map: {
         gridSize: 16,

@@ -1,5 +1,5 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ExplosionDef } from "../../../shared/defs/objectsTypings";
+import { type ExplosionDef } from "../../../shared/defs/gameObjects/explosionsDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
