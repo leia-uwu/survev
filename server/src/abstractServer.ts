@@ -6,6 +6,7 @@ import { Logger } from "./utils/logger";
 import { version } from "../../package.json";
 import { randomBytes } from "crypto";
 import { TeamMenu } from "./teamMenu";
+import { type Group } from "./group";
 
 export interface PlayerContainer {
     readonly gameID: string
@@ -141,10 +142,14 @@ export abstract class AbstractServer {
 
                 const mode = Config.modes[body.gameModeIdx];
                 if (mode.teamMode > 1) {
-                    let group = [...game.groups.values()].filter(group => {
-                        return group.autoFill &&
-                            group.players.length < mode.teamMode;
-                    })[0];
+                    let group: Group | undefined;
+
+                    if (body.autoFill) {
+                        group = [...game.groups.values()].filter(group => {
+                            return group.autoFill &&
+                                group.players.length < mode.teamMode;
+                        })[0];
+                    }
 
                     if (!group) {
                         group = game.addGroup(randomBytes(20).toString("hex"), true);
