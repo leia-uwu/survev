@@ -734,7 +734,32 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
     }
 }
 
-interface Explosion {
+export interface Bullet {
+    playerId: number
+    startPos: Vec2
+    pos: Vec2
+    dir: Vec2
+    bulletType: string
+    layer: number
+    varianceT: number
+    distAdjIdx: number
+    clipDistance: boolean
+    distance: number
+    shotFx: boolean
+    shotSourceType: string
+    shotOffhand: boolean
+    lastShot: boolean
+    reflectCount: number
+    reflectObjId: number
+    hasSpecialFx: boolean
+    shotAlt: boolean
+    splinter: boolean
+    trailSaturated: boolean
+    trailSmall: boolean
+    trailThick: boolean
+}
+
+export interface Explosion {
     pos: Vec2
     type: string
     layer: number
@@ -768,31 +793,6 @@ export interface MapIndicator {
     equipped: boolean
     type: string
     pos: Vec2
-}
-
-export interface Bullet {
-    playerId: number
-    startPos: Vec2
-    pos: Vec2
-    dir: Vec2
-    bulletType: string
-    layer: number
-    varianceT: number
-    distAdjIdx: number
-    clipDistance: boolean
-    distance: number
-    shotFx: boolean
-    shotSourceType: string
-    shotOffhand: boolean
-    lastShot: boolean
-    reflectCount: number
-    reflectObjId: number
-    hasSpecialFx: boolean
-    shotAlt: boolean
-    splinter: boolean
-    trailSaturated: boolean
-    trailSmall: boolean
-    trailThick: boolean
 }
 
 export interface Action {
@@ -856,6 +856,7 @@ export interface PlayerStatus {
     minimapVisible?: boolean
     hasData: boolean
 }
+
 export interface GroupStatus {
     health: number
     disconnected: boolean

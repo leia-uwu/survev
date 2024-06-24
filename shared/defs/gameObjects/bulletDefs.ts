@@ -853,4 +853,4 @@ const SkinDefs: Record<string, BulletDef> = {
     })
 };
 
-export const BulletDefs = { ...BaseDefs, ...SkinDefs };
+export const BulletDefs: Record<string, BulletDef> = { ...BaseDefs, ...SkinDefs };

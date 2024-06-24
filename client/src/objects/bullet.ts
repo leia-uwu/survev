@@ -3,7 +3,6 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import { type MeleeDef } from "../../../shared/defs/objectsTypings";
 import { GameConfig } from "../../../shared/gameConfig";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -18,6 +17,7 @@ import { type FlareBarn } from "./flare";
 import { type ParticleBarn } from "./particles";
 import { type Player, type PlayerBarn } from "./player";
 import { type Bullet } from "../../../shared/msgs/updateMsg";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 
 export function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
     const ang = Math.atan2(dir.y, dir.x);
@@ -205,8 +205,8 @@ export class BulletBarn {
         audioManager: AudioManager
     ) {
         const players = playerBarn.playerPool.getPool();
-        for (let _ = 0; _ < this.bullets.length; _++) {
-            const b = this.bullets[_];
+        for (let i = 0; i < this.bullets.length; i++) {
+            const b = this.bullets[i];
             if (b.collided) {
                 b.scale = math.max(b.scale - dt * 6, 0);
                 if (b.scale <= 0) {
@@ -244,7 +244,16 @@ export class BulletBarn {
                 }
 
                 // Gather colliding obstacles and players
-                const colObjs = [];
+                const colObjs: Array<{
+                    type: string
+                    obstacleType?: string
+                    collidable: boolean
+                    point: Vec2
+                    normal: Vec2
+                    dist?: number
+                    player?: Player
+                    layer?: number
+                }> = [];
 
                 // Obstacles
                 const obstacles = map.obstaclePool.getPool();
@@ -359,7 +368,7 @@ export class BulletBarn {
                 }
 
                 colObjs.sort((a, b) => {
-                    return a.dist - b.dist;
+                    return a.dist! - b.dist!;
                 });
 
                 let shooterDead = false;

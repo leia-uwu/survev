@@ -1,9 +1,9 @@
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { type MeleeDef } from "../../shared/defs/objectsTypings";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { assert } from "../../shared/utils/util";
+import { type MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 
 function frame(time: number, bones: Partial<Record<Bones, Pose>>) {
     return {

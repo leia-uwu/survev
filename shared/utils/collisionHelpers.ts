@@ -1,12 +1,18 @@
-import { type Obstacle as ClientObstacle } from "../../client/src/objects/obstacle";
-import { type Obstacle as ServerObstacle } from "../../server/src/objects/obstacle";
 import { type Collider } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";
 import { util } from "./util";
 import { type Vec2, v2 } from "./v2";
 
-type Obstacle = ServerObstacle | ClientObstacle;
+interface Obstacle {
+    __id: number
+    dead: boolean
+    collidable: boolean
+    isWindow: boolean
+    height: number
+    layer: number
+    collider: Collider
+}
 
 //
 // Internal helper routines

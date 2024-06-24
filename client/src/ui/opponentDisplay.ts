@@ -1,7 +1,7 @@
 import { type LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type OutfitDef } from "../../../shared/defs/objectsTypings";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type MapMsg } from "../../../shared/msgs/mapMsg";
 import { collider } from "../../../shared/utils/collider";

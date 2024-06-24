@@ -14,10 +14,8 @@ import { type Camera } from "../camera";
 import { type Player } from "../objects/player";
 import { type Renderer } from "../renderer";
 import { type Map } from "../map";
-import {
-    type GunDef,
-    type ThrowableDef
-} from "../../../shared/defs/objectsTypings";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 
 interface Pad {
     touched: boolean
@@ -324,7 +322,7 @@ export class Touch {
         this.setAimStyle(this.aimStyle == "locked" ? "anywhere" : "locked");
     }
 
-    setAimStyle(style: string) {
+    setAimStyle(style: "locked" | "anywhere") {
         this.aimStyle = style;
         this.config.set("touchAimStyle", style);
 

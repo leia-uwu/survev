@@ -164,10 +164,10 @@ export class Game {
     ) {
         if (!this.connecting && !this.connected && !this.initialized) {
             if (this.ws) {
-                this.ws.onerror = function() {};
-                this.ws.onopen = function() {};
-                this.ws.onmessage = function() {};
-                this.ws.onclose = function() {};
+                this.ws.onerror = function() { };
+                this.ws.onopen = function() { };
+                this.ws.onmessage = function() { };
+                this.ws.onclose = function() { };
                 this.ws.close();
                 this.ws = null;
             }
@@ -360,7 +360,7 @@ export class Game {
 
     free() {
         if (this.ws) {
-            this.ws.onmessage = function() {};
+            this.ws.onmessage = function() { };
             this.ws.close();
             this.ws = null;
         }
@@ -394,10 +394,10 @@ export class Game {
     warnPageReload() {
         return (
             import.meta.env.PROD &&
-      this.initialized &&
-      this.playing &&
-      !this.spectating &&
-      !this.uiManager.displayingStats
+            this.initialized &&
+            this.playing &&
+            !this.spectating &&
+            !this.uiManager.displayingStats
         );
     }
 
@@ -439,7 +439,7 @@ export class Game {
         const zoomLerpIn = this.activePlayer.zoomFast ? 3 : 2;
         const zoomLerpOut = this.activePlayer.zoomFast ? 3 : 1.4;
         const zoomLerp =
-      this.camera.targetZoom > this.camera.zoom ? zoomLerpIn : zoomLerpOut;
+            this.camera.targetZoom > this.camera.zoom ? zoomLerpIn : zoomLerpOut;
         this.camera.zoom = math.lerp(
             dt * zoomLerp,
             this.camera.zoom,
@@ -452,7 +452,7 @@ export class Game {
         // Large Map
         if (
             this.inputBinds.isBindPressed(Input.ToggleMap) ||
-      (this.input.keyPressed(Key.G) && !this.inputBinds.isKeyBound(Key.G))
+            (this.input.keyPressed(Key.G) && !this.inputBinds.isKeyBound(Key.G))
         ) {
             this.uiManager.displayMapLarge(false);
         }
@@ -463,7 +463,7 @@ export class Game {
         // Hide UI
         if (
             this.inputBinds.isBindPressed(Input.HideUI) ||
-      (this.input.keyPressed(Key.Escape) && !this.uiManager.hudVisible)
+            (this.input.keyPressed(Key.Escape) && !this.uiManager.hudVisible)
         ) {
             this.uiManager.cycleHud();
         }
@@ -473,7 +473,7 @@ export class Game {
         const toMousePos = v2.sub(mousePos, playerPos);
         let toMouseLen = v2.length(toMousePos);
         let toMouseDir =
-      toMouseLen > 0.00001 ? v2.div(toMousePos, toMouseLen) : v2.create(1, 0);
+            toMouseLen > 0.00001 ? v2.div(toMousePos, toMouseLen) : v2.create(1, 0);
 
         if (this.emoteBarn.wheelDisplayed) {
             toMouseLen = this.prevInputMsg.toMouseLen;
@@ -499,9 +499,9 @@ export class Game {
                         v2.create(1, 0)
                     );
                     const modifiedAimDir =
-            this.touch.turnDirTicker < 0
-                ? touchDir
-                : touchAimMovement.aimMovement.toAimDir;
+                        this.touch.turnDirTicker < 0
+                            ? touchDir
+                            : touchAimMovement.aimMovement.toAimDir;
                     this.touch.setAimDir(modifiedAimDir);
                     aimDir = modifiedAimDir;
                 }
@@ -522,27 +522,27 @@ export class Game {
                 inputMsg.touchMoveActive = true;
                 const aimLen = touchAimMovement.aimMovement.toAimLen;
                 const toTouchLenAdjusted =
-          math.clamp(aimLen / this.touch.padPosRange, 0, 1) *
-          GameConfig.player.throwableMaxMouseDist;
+                    math.clamp(aimLen / this.touch.padPosRange, 0, 1) *
+                    GameConfig.player.throwableMaxMouseDist;
                 inputMsg.toMouseLen = toTouchLenAdjusted;
                 inputMsg.toMouseDir = aimDir;
             } else {
                 // Only use arrow keys if they are unbound
                 inputMsg.moveLeft =
-          this.inputBinds.isBindDown(Input.MoveLeft) ||
-          (this.input.keyDown(Key.Left) &&
-            !this.inputBinds.isKeyBound(Key.Left));
+                    this.inputBinds.isBindDown(Input.MoveLeft) ||
+                    (this.input.keyDown(Key.Left) &&
+                        !this.inputBinds.isKeyBound(Key.Left));
                 inputMsg.moveRight =
-          this.inputBinds.isBindDown(Input.MoveRight) ||
-          (this.input.keyDown(Key.Right) &&
-            !this.inputBinds.isKeyBound(Key.Right));
+                    this.inputBinds.isBindDown(Input.MoveRight) ||
+                    (this.input.keyDown(Key.Right) &&
+                        !this.inputBinds.isKeyBound(Key.Right));
                 inputMsg.moveUp =
-          this.inputBinds.isBindDown(Input.MoveUp) ||
-          (this.input.keyDown(Key.Up) && !this.inputBinds.isKeyBound(Key.Up));
+                    this.inputBinds.isBindDown(Input.MoveUp) ||
+                    (this.input.keyDown(Key.Up) && !this.inputBinds.isKeyBound(Key.Up));
                 inputMsg.moveDown =
-          this.inputBinds.isBindDown(Input.MoveDown) ||
-          (this.input.keyDown(Key.Down) &&
-            !this.inputBinds.isKeyBound(Key.Down));
+                    this.inputBinds.isBindDown(Input.MoveDown) ||
+                    (this.input.keyDown(Key.Down) &&
+                        !this.inputBinds.isKeyBound(Key.Down));
                 inputMsg.toMouseDir = v2.copy(toMouseDir);
                 inputMsg.toMouseLen = toMouseLen;
             }
@@ -561,9 +561,9 @@ export class Game {
                 net.Constants.MouseMaxDist
             );
             inputMsg.shootStart =
-        this.inputBinds.isBindPressed(Input.Fire) || this.touch.shotDetected;
+                this.inputBinds.isBindPressed(Input.Fire) || this.touch.shotDetected;
             inputMsg.shootHold =
-        this.inputBinds.isBindDown(Input.Fire) || this.touch.shotDetected;
+                this.inputBinds.isBindDown(Input.Fire) || this.touch.shotDetected;
             inputMsg.portrait = this.camera.screenWidth < this.camera.screenHeight;
             const checkInputs = [
                 Input.Reload,
@@ -613,7 +613,7 @@ export class Game {
             // Swap weapon slots
             if (
                 this.inputBinds.isBindPressed(Input.SwapWeapSlots) ||
-        this.uiManager.swapWeapSlots
+                this.uiManager.swapWeapSlots
             ) {
                 inputMsg.addInput(Input.SwapWeapSlots);
                 this.activePlayer.gunSwitchCooldown = 0;
@@ -640,12 +640,12 @@ export class Game {
                             3: Input.EquipThrowable
                         };
                         const input =
-              weapIdxToInput[e.data as unknown as keyof typeof weapIdxToInput];
+                            weapIdxToInput[e.data as unknown as keyof typeof weapIdxToInput];
                         if (input) {
                             inputMsg.addInput(input);
                         }
                     } else {
-                        inputMsg.useItem = e.data;
+                        inputMsg.useItem = e.data as string;
                     }
                 }
             }
@@ -678,14 +678,13 @@ export class Game {
                             dropMsg.item = Q.type;
                         }
                     } else {
-                        let $ = "";
-                        $ =
-                    uiEvent.data == "helmet"
-                        ? this.activePlayer.netData.helmet
-                        : uiEvent.data == "chest"
-                            ? this.activePlayer.netData.chest
-                            : uiEvent.data;
-                        dropMsg.item = $;
+                        const item =
+                            uiEvent.data == "helmet"
+                                ? this.activePlayer.netData.helmet
+                                : uiEvent.data == "chest"
+                                    ? this.activePlayer.netData.chest
+                                    : uiEvent.data;
+                        dropMsg.item = item as string;
                     }
                     if (dropMsg.item != "") {
                         this.sendMessage(MsgType.DropItem, dropMsg, 128);
@@ -709,13 +708,13 @@ export class Game {
         }
         const specBegin = this.uiManager.specBegin;
         const specNext =
-      this.uiManager.specNext ||
-      (this.spectating && this.input.keyPressed(Key.Right));
+            this.uiManager.specNext ||
+            (this.spectating && this.input.keyPressed(Key.Right));
         const specPrev =
-      this.uiManager.specPrev ||
-      (this.spectating && this.input.keyPressed(Key.Left));
+            this.uiManager.specPrev ||
+            (this.spectating && this.input.keyPressed(Key.Left));
         const specForce =
-      this.input.keyPressed(Key.Right) || this.input.keyPressed(Key.Left);
+            this.input.keyPressed(Key.Right) || this.input.keyPressed(Key.Left);
         if (specBegin || (this.spectating && specNext) || specPrev) {
             const specMsg = new SpectateMsg();
             specMsg.specBegin = specBegin;
@@ -752,7 +751,7 @@ export class Game {
                     diff = inputMsg[k] || inputMsg[k] != this.prevInputMsg[k];
                 } else if (
                     this.prevInputMsg[k as keyof typeof this.prevInputMsg] !=
-          inputMsg[k as keyof typeof inputMsg]
+                    inputMsg[k as keyof typeof inputMsg]
                 ) {
                     diff = true;
                 }
@@ -1267,10 +1266,10 @@ export class Game {
                 this.activeId
             ).teamId;
             const useKillerInfoInFeed =
-          (msg.downed && !msg.killed) ||
-          msg.damageType == GameConfig.DamageType.Gas ||
-          msg.damageType == GameConfig.DamageType.Bleeding ||
-          msg.damageType == GameConfig.DamageType.Airdrop;
+                    (msg.downed && !msg.killed) ||
+                    msg.damageType == GameConfig.DamageType.Gas ||
+                    msg.damageType == GameConfig.DamageType.Bleeding ||
+                    msg.damageType == GameConfig.DamageType.Airdrop;
             const targetInfo = this.playerBarn.getPlayerInfo(msg.targetId);
             const killerInfo = this.playerBarn.getPlayerInfo(msg.killCreditId);
             const killfeedKillerInfo = useKillerInfoInFeed
@@ -1298,7 +1297,7 @@ export class Game {
             if (msg.killCreditId == this.activeId) {
                 const completeKill = msg.killerId == this.activeId;
                 const suicide =
-            msg.killerId == msg.targetId || msg.killCreditId == msg.targetId;
+                        msg.killerId == msg.targetId || msg.killCreditId == msg.targetId;
                 const killText = this.ui2Manager.getKillText(
                     killerName,
                     targetName,
@@ -1311,9 +1310,9 @@ export class Game {
                     this.spectating
                 );
                 const killCountText =
-            msg.killed && !suicide
-                ? this.ui2Manager.getKillCountText(msg.killerKills)
-                : "";
+                        msg.killed && !suicide
+                            ? this.ui2Manager.getKillCountText(msg.killerKills)
+                            : "";
                 this.ui2Manager.displayKillMessage(killText, killCountText);
             } else if (msg.targetId == this.activeId && msg.downed && !msg.killed) {
                 const downedText = this.ui2Manager.getDownedText(
@@ -1357,7 +1356,7 @@ export class Game {
             }
 
             // Bullets often don't play hit sounds on the frame that a player dies
-            if (msg.type == GameConfig.DamageType.Player) {
+            if (msg.damageType == GameConfig.DamageType.Player) {
                 this.bulletBarn.createBulletHit(
                     this.playerBarn,
                     msg.targetId,
@@ -1381,7 +1380,7 @@ export class Game {
                 if (roleDef.sound?.assign) {
                     if (
                         msg.role == "kill_leader" &&
-              this.map.getMapDef().gameMode.spookyKillSounds
+                            this.map.getMapDef().gameMode.spookyKillSounds
                     ) {
                         // Halloween map has special logic for the kill leader sounds
                         this.audioManager.playGroup("kill_leader_assigned", {
@@ -1390,8 +1389,8 @@ export class Game {
                     } else if (
                     // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
                         msg.role == "kill_leader" ||
-              !this.map.perkMode ||
-              this.localId == msg.playerId
+                            !this.map.perkMode ||
+                            this.localId == msg.playerId
                     ) {
                         this.audioManager.playSound(roleDef.sound.assign, {
                             channel: "ui"
@@ -1559,8 +1558,8 @@ export class Game {
     }
 
     sendMessageImpl(msgStream: MsgStream) {
-    // Separate function call so sendMessage can be optimized;
-    // v8 won't optimize functions containing a try/catch
+        // Separate function call so sendMessage can be optimized;
+        // v8 won't optimize functions containing a try/catch
         if (this.ws && this.ws.readyState == this.ws.OPEN) {
             try {
                 this.ws.send(msgStream.getBuffer());

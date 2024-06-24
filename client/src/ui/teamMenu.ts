@@ -9,6 +9,7 @@ import { helpers } from "../helpers";
 import { type PingTest } from "../pingTest";
 import { type SiteInfo } from "../siteInfo";
 import { type Localization } from "./localization";
+import { type MatchData } from "../main";
 
 function errorTypeToString(type: string, localization: Localization) {
     const typeMap = {
@@ -73,7 +74,7 @@ export class TeamMenu {
         public siteInfo: SiteInfo,
         public localization: Localization,
         public audioManager: AudioManager,
-        public joinGameCb: (data: unknown) => void,
+        public joinGameCb: (data: MatchData) => void,
         public leaveCb: (err: string) => void
     ) {
     // Listen for ui modifications

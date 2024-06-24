@@ -3,7 +3,6 @@ import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
-import { type AmmoDef, type GunDef } from "../../shared/defs/objectsTypings";
 import { EmoteSlot, GameConfig, Input } from "../../shared/gameConfig";
 import { coldet } from "../../shared/utils/coldet";
 import { math } from "../../shared/utils/math";
@@ -21,6 +20,8 @@ import { type Player, type PlayerBarn } from "./objects/player";
 import { type Renderer } from "./renderer";
 import { type UiManager } from "./ui/ui";
 import { type Emote } from "../../shared/msgs/updateMsg";
+import { type AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
+import { type GunDef } from "../../shared/defs/gameObjects/gunDefs";
 
 const airdropIdx = 4;
 const airstrikeIdx = 5;

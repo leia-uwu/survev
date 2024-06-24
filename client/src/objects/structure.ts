@@ -138,7 +138,7 @@ export class Structure implements AbstractObject {
             this.mask = [];
             for (let i = 0; i < def.mask.length; i++) {
                 this.mask.push(
-                    collider.transform(def.mask[i], this.pos, this.rot, this.scale)
+                    collider.transform(def.mask[i], this.pos, this.rot, this.scale) as AABB
                 );
             }
             ctx.renderer.layerMaskDirty = true;

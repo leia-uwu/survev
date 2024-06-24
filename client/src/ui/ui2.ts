@@ -1,4 +1,4 @@
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import {
     GEAR_TYPES,
     SCOPE_LEVELS,
@@ -7,14 +7,11 @@ import {
     type ChestDef,
     type HealDef
 } from "../../../shared/defs/gameObjects/gearDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import {
-    type GunDef,
-    type LootDef,
-    type MeleeDef,
-    type RoleDef
-} from "../../../shared/defs/objectsTypings";
 import {
     Action,
     DamageType,
@@ -298,7 +295,7 @@ export class UiManager2 {
     };
 
     rareLootMessageQueue: string[] = [];
-    uiEvents: Array<{ action: string, type: string, data: string }> = [];
+    uiEvents: Array<{ action: string, type: string, data: string | number }> = [];
 
     eventListeners = [] as EventListeners[];
     clearQueuedItemActions: () => void;

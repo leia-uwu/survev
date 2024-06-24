@@ -1,5 +1,4 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ThrowableDef } from "../../../shared/defs/objectsTypings";
 import { type Game } from "../game";
 import { coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -9,6 +8,7 @@ import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { math } from "../../../shared/utils/math";
 import { GameConfig } from "../../../shared/gameConfig";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 
 export class ProjectileBarn {
     projectiles: Projectile[] = [];

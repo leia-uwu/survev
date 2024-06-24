@@ -5,14 +5,13 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { util } from "../../../shared/utils/util";
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import { type Obstacle } from "./obstacle";
 import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { math } from "../../../shared/utils/math";
-import { type OutfitDef, type GunDef, type MeleeDef, type ThrowableDef, type HelmetDef, type ChestDef, type BackpackDef, type HealDef, type BoostDef, type ScopeDef, type LootDef } from "../../../shared/defs/objectsTypings";
-import { MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
 import { type Loot } from "./loot";
-import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
+import { type BackpackDef, type BoostDef, type ChestDef, GEAR_TYPES, type HealDef, type HelmetDef, SCOPE_LEVELS, type ScopeDef } from "../../../shared/defs/gameObjects/gearDefs";
 import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
 import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
 import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
@@ -31,6 +30,9 @@ import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { IDAllocator } from "../IDAllocator";
 import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 
 export class Emote {
     playerId: number;

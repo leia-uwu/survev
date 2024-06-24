@@ -1,7 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import { type BulletDef } from "../../../shared/defs/objectsTypings";
 import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { coldet } from "../../../shared/utils/coldet";
@@ -13,6 +12,7 @@ import { type DamageParams, type GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type BulletDef } from "../../../shared/defs/gameObjects/bulletDefs";
 
 // NOTE: most of this code was copied from surviv client and bit heroes arena client
 // to get bullet collision the most accurate possible

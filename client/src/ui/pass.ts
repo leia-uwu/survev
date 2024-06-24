@@ -8,7 +8,7 @@ import { passUtil } from "./passUtil";
 import { type LoadoutMenu } from "./loadoutMenu";
 import { type Localization } from "./localization";
 import { type Account } from "../account";
-import { type EmoteDef } from "../../../shared/defs/objectsTypings";
+import { type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 
 function i(e: string, t: number) {
     for (let r = PassDefs[e], a = 0; a < r.items.length; a++) {

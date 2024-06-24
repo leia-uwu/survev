@@ -11,10 +11,10 @@ const defaultConfig = {
     showFps: false,
     screenShake: true,
     anonPlayerNames: false,
-    touchMoveStyle: "anywhere",
-    touchAimStyle: "anywhere",
+    touchMoveStyle: "anywhere" as "locked" | "anywhere",
+    touchAimStyle: "anywhere" as "locked" | "anywhere",
     touchAimLine: true,
-    profile: null,
+    profile: null as { slug: string } | null,
     playerName: "",
     region: "na",
     gameModeIdx: 2,
@@ -28,8 +28,13 @@ const defaultConfig = {
     lastNewsTimestamp: 0,
     perkModeRole: "",
     loadout: loadout.defaultLoadout(),
+    sessionCookie: "" as string | null,
+    binds: "",
     version: 1
 };
+
+export type ConfigKey = keyof typeof defaultConfig;
+export type ConfigType = typeof defaultConfig;
 
 export class ConfigManager {
     loaded = false;
@@ -70,25 +75,25 @@ export class ConfigManager {
         }
     }
 
-    //! ~~ need some work
-    // set<T extends keyof typeof defaultConfig>(key: T, value: unknown) {
-    set(key: string, value: unknown) {
+    set<T extends keyof typeof defaultConfig>(key: T, value: typeof defaultConfig[T]) {
         if (!key) {
             return;
         }
         const path = key.split(".");
-        let elem = this.config as any;
+
+        let elem = this.config;
         while (path.length > 1) {
-            elem = elem[path.shift()!];
+            // @ts-expect-error bleh
+            elem = elem[path.shift()];
         }
-        elem[path.shift()!] = value;
+        // @ts-expect-error bleh
+        elem[path.shift()] = value;
 
         this.store();
         this.onModified(key);
     }
 
-    // get<T extends keyof typeof this.config>(key: T): typeof this.config[T] | undefined {
-    get(key: string) {
+    get<T extends keyof typeof this.config>(key: T): typeof this.config[T] | undefined {
         if (!key) {
             return undefined;
         }

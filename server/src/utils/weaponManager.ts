@@ -1,5 +1,4 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ThrowableDef, type GunDef, type MeleeDef } from "../../../shared/defs/objectsTypings";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type BulletParams } from "../objects/bullet";
 import { type GameObject } from "../objects/gameObject";
@@ -14,7 +13,9 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import * as net from "../../../shared/net";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { ThrowableDefs } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type ThrowableDef, ThrowableDefs } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 
 /**
  * List of throwables to cycle based on the definition `inventoryOrder`

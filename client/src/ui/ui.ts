@@ -1,4 +1,3 @@
-import { type PlayerStatus } from "./../../../shared/msgs/updateMsg";
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
@@ -10,7 +9,7 @@ import {
 import { type MapDef } from "../../../shared/defs/mapDefs";
 import { Action, GameConfig, GasMode } from "../../../shared/gameConfig";
 import { type PlayerStatsMsg } from "../../../shared/msgs/playerStatsMsg";
-import { type MapIndicator } from "../../../shared/msgs/updateMsg";
+import { type PlayerStatus, type MapIndicator } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -2147,7 +2146,7 @@ export class UiManager {
                 teamName.css("opacity", status.disconnected || status.dead ? 0.3 : 1);
             }
             groupId.css("display", "block");
-            this.teamSelectors[slotIdx].prevStatus = status;
+            this.teamSelectors[slotIdx].prevStatus = status as this["teamSelectors"][number]["prevStatus"];
             this.teamSelectors[slotIdx].prevHealth = health;
         }
     }

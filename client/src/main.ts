@@ -9,7 +9,7 @@ import { api } from "./api";
 import { Ambiance } from "./ambiance";
 import { AudioManager } from "./audioManager";
 import { device } from "./device";
-import { ConfigManager } from "./config";
+import { ConfigManager, type ConfigType } from "./config";
 import { Game } from "./game";
 import { InputHandler } from "./input";
 import { InputBinds, InputBindUi } from "./inputBinds";
@@ -26,7 +26,7 @@ import { ResourceManager } from "./resources";
 import { SiteInfo } from "./siteInfo";
 import { TeamMenu } from "./ui/teamMenu";
 
-interface MatchData {
+export interface MatchData {
     zone: string
     gameId: number
     useHttps: boolean
@@ -134,7 +134,7 @@ class Application {
         if (this.domContentLoaded && this.configLoaded && !this.initialized) {
             this.initialized = true;
             // this should be this.config.config.teamAutofill = true???
-            this.config.teamAutoFill = true;
+            // this.config.teamAutoFill = true;
             if (device.mobile) {
                 Menu.applyMobileBrowserStyling(device.tablet);
             }
@@ -148,7 +148,7 @@ class Application {
             this.account.init();
 
             (this.nameInput as unknown as HTMLInputElement).maxLength =
-        net.Constants.PlayerNameMaxLen;
+                net.Constants.PlayerNameMaxLen;
             this.playMode0Btn.on("click", () => {
                 this.tryQuickStartGame(0);
             });
@@ -160,7 +160,7 @@ class Application {
             });
             this.serverSelect.change(() => {
                 const t = this.serverSelect.find(":selected").val();
-                this.config.set("region", t);
+                this.config.set("region", t as string);
             });
             this.nameInput.on("blur", (t) => {
                 this.setConfigFromDOM();
@@ -211,7 +211,7 @@ class Application {
             this.languageSelect.on("change", (t) => {
                 const r = t.target.value;
                 if (r) {
-                    this.config.set("language", r);
+                    this.config.set("language", r as ConfigType["language"]);
                 }
             });
             $("#btn-create-team").on("click", () => {
@@ -263,7 +263,7 @@ class Application {
             const rendererRes = window.devicePixelRatio > 1 ? 2 : 1;
 
             if (device.os == "ios") {
-                PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH; // "highp"
+                PIXI.settings.PRECISION_FRAGMENT = PIXI.PRECISION.HIGH;
             }
 
             const createPixiApplication = (forceCanvas: boolean) => {
@@ -417,7 +417,7 @@ class Application {
             );
     }
 
-    onTeamMenuJoinGame(data) {
+    onTeamMenuJoinGame(data: MatchData) {
         this.waitOnAccount(() => {
             this.joinGame(data);
         });
@@ -439,7 +439,7 @@ class Application {
         );
         this.config.set("playerName", playerName);
         const region = this.serverSelect.find(":selected").val();
-        this.config.set("region", region);
+        this.config.set("region", region as string);
     }
 
     setDOMFromConfig() {
@@ -451,7 +451,7 @@ class Application {
     }
 
     onConfigModified(key?: string) {
-        const muteAudio = this.config.get("muteAudio");
+        const muteAudio = this.config.get("muteAudio")!;
         if (muteAudio != this.audioManager.mute) {
             this.muteBtns.removeClass(muteAudio ? "audio-on-icon" : "audio-off-icon");
             this.muteBtns.addClass(muteAudio ? "audio-off-icon" : "audio-on-icon");
@@ -607,7 +607,7 @@ class Application {
                             this.onJoinGameError(err);
                             return;
                         }
-                        this.joinGame(matchData);
+                        this.joinGame(matchData!);
                     });
                 });
             };
@@ -626,10 +626,7 @@ class Application {
 
     findGame(
         matchArgs: unknown,
-        cb: {
-            (err: null, matchData: MatchData): void
-            (err: string): void
-        }
+        cb: (err?: string | null, matchData?: MatchData) => void
     ) {
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
@@ -678,8 +675,7 @@ class Application {
         const urls: string[] = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
-                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${
-                    matchData.gameId
+                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId
                 }`
             );
         }
@@ -755,9 +751,9 @@ class Application {
         // LoadoutDisplay update
         if (
             this.active &&
-      this.loadoutDisplay &&
-      this.game &&
-      !this.game.initialized
+            this.loadoutDisplay &&
+            this.game &&
+            !this.game.initialized
         ) {
             if (this.loadoutMenu.active) {
                 if (!this.loadoutDisplay.initialized) {
@@ -806,7 +802,7 @@ window.addEventListener("hashchange", () => {
 });
 window.addEventListener("beforeunload", (e) => {
     if (App.game?.warnPageReload()) {
-    // In new browsers, dialogText is overridden by a generic string
+        // In new browsers, dialogText is overridden by a generic string
         const dialogText = "Do you want to reload the game?";
         e.returnValue = dialogText;
         return dialogText;
@@ -827,8 +823,8 @@ window.onerror = function(msg, url, lineNo, columnNo, error) {
     // Break a malicious iOS app and other extensions
     if (
         (msg as string).includes("').innerText") ||
-    stacktrace!.includes("cdn.rawgit.com") ||
-    stacktrace!.includes("chrome-extension://")
+        stacktrace!.includes("cdn.rawgit.com") ||
+        stacktrace!.includes("chrome-extension://")
     ) {
         helpers.cheatDetected();
         return;

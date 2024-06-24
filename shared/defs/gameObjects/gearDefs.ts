@@ -382,6 +382,7 @@ export interface LootImg {
     border?: string
     borderTint?: number
     tintDark?: number
+    innerScale?: number
 }
 
 export interface Sound {
@@ -901,12 +902,12 @@ export const GEAR_TYPES = ["chest", "helmet", "backpack"] as const;
 export const SCOPE_LEVELS = Object.keys(ScopeDefs);
 
 type GearDef =
-  | HealDef
-  | AmmoDef
-  | BoostDef
-  | BackpackDef
-  | HelmetDef
-  | ChestDef;
+    | HealDef
+    | AmmoDef
+    | BoostDef
+    | BackpackDef
+    | HelmetDef
+    | ChestDef;
 
 export const GearDefs: Record<string, GearDef> = {
     ...BaseDefs,

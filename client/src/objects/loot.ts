@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js-legacy";
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
@@ -11,18 +11,15 @@ import { type Map } from "../map";
 import { Pool } from "./objectPool";
 import { type AbstractObject, type Player } from "./player";
 import { type Emitter, type ParticleBarn } from "./particles";
-import {
-    type AmmoDef,
-    type GunDef,
-    type LootDef,
-    type MeleeDef,
-    type XPDef
-} from "../../../shared/defs/objectsTypings";
 import { type Renderer } from "../renderer";
 import {
     type ObjectData,
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
+import { type XPDef } from "../../../shared/defs/gameObjects/xpDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type AmmoDef } from "../../../shared/defs/gameObjects/gearDefs";
 
 export class Loot implements AbstractObject {
     __id!: number;
@@ -100,20 +97,18 @@ export class Loot implements AbstractObject {
 
             if (
                 !this.isOld &&
-        (itemDef as XPDef).sound.drop &&
-        !ctx.map.lootDropSfxIds.includes(this.__id)
+                (itemDef as XPDef).sound.drop &&
+                !ctx.map.lootDropSfxIds.includes(this.__id)
             ) {
                 this.playDropSfx = true;
             }
 
-            this.rad =
-        GameConfig.lootRadius[
-            itemDef.type as keyof typeof GameConfig.lootRadius
-        ];
+            this.rad = GameConfig.lootRadius[
+                itemDef.type as keyof typeof GameConfig.lootRadius
+            ];
             this.imgScale = itemDef.lootImg?.scale * 1.25;
 
-            // @ts-expect-error innerScale not used?
-            const innerScale = itemDef.lootImg.innerScale || 0.8;
+            const innerScale = (itemDef as { lootImg: { innerScale?: number } }).lootImg.innerScale || 0.8;
             this.sprite.scale.set(innerScale, innerScale);
             this.sprite.texture = PIXI.Texture.from(itemDef.lootImg?.sprite);
             this.sprite.tint = itemDef.lootImg?.tint;
@@ -177,8 +172,8 @@ export class LootBarn {
             if (loot.active) {
                 if (
                     util.sameLayer(loot.layer, activePlayer.layer) &&
-          !activePlayer.netData.dead &&
-          (loot.ownerId == 0 || loot.ownerId == activePlayer.__id)
+                    !activePlayer.netData.dead &&
+                    (loot.ownerId == 0 || loot.ownerId == activePlayer.__id)
                 ) {
                     const pos = loot.pos;
                     const rad = device.touch
@@ -198,7 +193,7 @@ export class LootBarn {
                 if (loot.playDropSfx) {
                     map.lootDropSfxIds.push(loot.__id);
                     loot.playDropSfx = false;
-                    const itemDef = GameObjectDefs[loot.type] as LootDef;
+                    const itemDef = GameObjectDefs[loot.type];
                     audioManager.playSound((itemDef as XPDef).sound?.drop, {
                         channel: "sfx",
                         soundPos: loot.pos,

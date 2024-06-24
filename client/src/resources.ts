@@ -17,7 +17,7 @@ function loadTexture(renderer: PIXI.IRenderer, url: string) {
     const baseTex = tex.baseTexture;
     let loadAttempts = 0;
 
-    if (!baseTex.hasLoaded) {
+    if (!baseTex.valid) {
         baseTex.on("loaded", (baseTex) => {
             console.log("Loaded texture", url);
             renderer.prepare.upload(baseTex);
@@ -67,7 +67,7 @@ function selectTextureRes(renderer: PIXI.IRenderer, config: ConfigManager) {
         textureRes = "low";
     }
     if (renderer.type == PIXI.RENDERER_TYPE.WEBGL) {
-        const s = renderer.gl;
+        const s = (renderer as PIXI.Renderer).gl;
         if (s.getParameter(s.MAX_TEXTURE_SIZE) < 4096) {
             textureRes = "low";
         }
@@ -104,8 +104,8 @@ export class ResourceManager {
         public config: ConfigManager
     ) {
         this.textureRes = selectTextureRes(this.renderer, this.config);
-        // Private field
-        (renderer.prepare as any).limiter.maxItemsPerFrame = 1;
+        // @ts-expect-error private field L
+        renderer.prepare.limiter.maxItemsPerFrame = 1;
     }
 
     isAtlasLoaded(name: Atlas) {
@@ -120,7 +120,7 @@ export class ResourceManager {
         const atlas = this.atlases[name];
         for (let i = 0; i < atlas.spritesheets.length; i++) {
             const spritesheet = atlas.spritesheets[i];
-            if (!spritesheet.baseTexture?.hasLoaded) {
+            if (!spritesheet.baseTexture.valid) {
                 return false;
             }
         }

@@ -5,7 +5,6 @@ import {
     EmoteCategory,
     type EmoteDef
 } from "../../../shared/defs/gameObjects/emoteDefs";
-import { type MeleeDef } from "../../../shared/defs/objectsTypings";
 import { EmoteSlot } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
 import { type Account } from "../account";
@@ -17,6 +16,7 @@ import { type Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 import { type LoadoutDisplay } from "./opponentDisplay";
 import { type UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 
 function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
     const emoteSlotToDomId = {
@@ -164,7 +164,7 @@ export class LoadoutMenu {
         }
     ];
 
-    selectedItem: Partial<{
+    selectedItem: {
         prevSlot: JQuery<HTMLElement> | null
         img: string
         type: string
@@ -174,7 +174,7 @@ export class LoadoutMenu {
         loadoutType?: string
         displayLore?: string
         subcat?: number
-    }> = {
+    } = {
             prevSlot: null,
             img: "",
             type: ""
@@ -627,8 +627,8 @@ export class LoadoutMenu {
                     const parent = $(elem).parent();
                     this.updateSlot(
                         parent,
-                        this.selectedItem.img!,
-                        this.selectedItem.type!
+                        this.selectedItem.img,
+                        this.selectedItem.type
                     );
                     this.updateLoadoutFromDOM();
                     this.deselectItem();
@@ -639,8 +639,8 @@ export class LoadoutMenu {
                         const parent = $(e.currentTarget).parent();
                         this.updateSlot(
                             parent,
-                            this.selectedItem.img!,
-                            this.selectedItem.type!
+                            this.selectedItem.img,
+                            this.selectedItem.type
                         );
                         this.updateLoadoutFromDOM();
                     }
@@ -697,7 +697,7 @@ export class LoadoutMenu {
             const color = $("#color-picker-hex").val() as string;
             const stroke = parseFloat($("#crosshair-stroke").val() as string);
             this.loadout.crosshair = {
-                type: this.selectedItem.type!,
+                type: this.selectedItem.type,
                 color: util.hexToInt(color),
                 size: Number(size.toFixed(2)),
                 stroke: Number(stroke.toFixed(2))
@@ -826,8 +826,7 @@ export class LoadoutMenu {
         }
 
         if (this.selectedItem.loadoutType == "crosshair") {
-            const objDef = GameObjectDefs[this.selectedItem.type!];
-            // @ts-expect-error error: crosshair isn't a game object
+            const objDef = GameObjectDefs[this.selectedItem.type];
             if (objDef && objDef.type == "crosshair" && objDef.cursor) {
                 $("#modal-content-right-crosshair").css("display", "none");
             } else {
@@ -852,7 +851,7 @@ export class LoadoutMenu {
 
     updateSlot(parent: JQuery<HTMLElement>, img: string, type: string) {
         const prevParent = this.selectedItem.prevSlot;
-        this.selectedItem = {};
+        this.selectedItem = {} as typeof this["selectedItem"];
         if (prevParent) {
             const image = parent.find(".customize-item-image");
             const slotIdx = parent.data("idx");
@@ -868,7 +867,7 @@ export class LoadoutMenu {
 
     deselectItem() {
         this.itemSelected = false;
-        this.selectedItem = {};
+        this.selectedItem = {} as typeof this["selectedItem"];
         this.selectableSlots.removeClass("customize-list-item-selected");
         this.highlightedSlots.css({
             display: "none",

@@ -161,7 +161,7 @@ export class Account {
 
     setSessionCookies() {
         this.clearSessionCookies();
-        document.cookie = this.config.get("sessionCookie");
+        document.cookie = this.config.get("sessionCookie")!;
         document.cookie = `app-data=${Date.now()}`;
     }
 
@@ -210,25 +210,25 @@ export class Account {
 
     loadProfile() {
         this.loggingIn = !this.loggedIn;
-        this.ajaxRequest("/api/user/profile", (t, r) => {
+        this.ajaxRequest("/api/user/profile", (err, data) => {
             const a = this.loggingIn;
             this.loggingIn = false;
             this.loggedIn = false;
             this.profile = {} as this["profile"];
             this.loadoutPriv = "";
             this.items = [];
-            if (t) {
+            if (err) {
                 console.error("account", "load_profile_error");
-            } else if (r.banned) {
-                this.emit("error", "account_banned", r.reason);
-            } else if (r.success) {
+            } else if (data.banned) {
+                this.emit("error", "account_banned", data.reason);
+            } else if (data.success) {
                 this.loggedIn = true;
-                this.profile = r.profile;
-                this.loadoutPriv = r.loadoutPriv;
-                this.items = r.items;
-                const i = this.config.get("profile") || {};
-                i.slug = r.profile.slug;
-                this.config.set("profile", i);
+                this.profile = data.profile;
+                this.loadoutPriv = data.loadoutPriv;
+                this.items = data.items;
+                const profile = this.config.get("profile") || { slug: "" };
+                profile.slug = data.profile.slug;
+                this.config.set("profile", profile);
             }
             if (!this.loggedIn) {
                 this.config.set("sessionCookie", null);

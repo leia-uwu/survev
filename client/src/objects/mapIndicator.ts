@@ -5,7 +5,7 @@ import { math } from "../../../shared/utils/math";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type MapSpriteBarn } from "./mapSprite";
 import { type MapIndicator } from "../../../shared/msgs/updateMsg";
-import { type RoleDef } from "../../../shared/defs/objectsTypings";
+import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 
 interface Indicator {
     id: number

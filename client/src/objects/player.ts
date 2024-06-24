@@ -1,23 +1,8 @@
-import {
-    type GroupStatus,
-    type LocalDataWithDirty,
-    type PlayerStatus
-} from "./../../../shared/msgs/updateMsg";
 import * as PIXI from "pixi.js-legacy";
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import {
-    type ChestDef,
-    type HealDef,
-    type HelmetDef,
-    type LootDef,
-    type MeleeDef,
-    type OutfitDef,
-    type RoleDef,
-    type ThrowableDef
-} from "../../../shared/defs/objectsTypings";
 import {
     Action,
     Anim,
@@ -28,7 +13,10 @@ import {
 } from "../../../shared/gameConfig";
 import {
     type PlayerInfo,
-    getPlayerStatusUpdateRate
+    getPlayerStatusUpdateRate,
+    type LocalDataWithDirty,
+    type PlayerStatus,
+    type GroupStatus
 } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -50,6 +38,9 @@ import { type Map } from "../map";
 import { type Renderer } from "../renderer";
 import { type UiManager2 } from "../ui/ui2";
 import {
+    type ChestDef,
+    type HealDef,
+    type HelmetDef,
     type BackpackDef,
     type BoostDef
 } from "./../../../shared/defs/gameObjects/gearDefs";
@@ -61,6 +52,10 @@ import { createCasingParticle } from "./shot";
 import { type River } from "../../../shared/utils/river";
 import { type SoundHandle } from "../createJS";
 import { debugLines } from "../debugLines";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 
 const submergeMaskScaleFactor = 0.1;
 
@@ -828,7 +823,7 @@ export class Player implements AbstractObject {
             audioManager.playSound(obstacleDef?.sound.enter!, {
                 channel: "sfx",
                 soundPos: this.pos,
-                falloff: 1,
+                fallOff: 1,
                 layer: this.layer,
                 filter: "muffled"
             });
@@ -873,13 +868,12 @@ export class Player implements AbstractObject {
             audioManager.playSound(doorSfx, {
                 channel: "sfx",
                 soundPos: this.pos,
-                falloff: 1,
+                fallOff: 1,
                 layer: this.layer,
                 filter: "muffled"
             });
         }
         this.surface = map.getGroundSurface(this.pos, this.layer);
-        if (Object.keys(this.surface?.data).length);
         // SOUND
 
         const inWater = this.surface.type == "water";
@@ -2323,7 +2317,7 @@ export class Player implements AbstractObject {
         const submersionScale = (0.9 - this.submersion * 0.4) * 2;
         const maskScale = 1 / (submersionScale * submergeMaskScaleFactor);
         this.bodySubmergeSprite.scale.set(submersionScale, submersionScale);
-        this.bodySubmergeSprite.mask?.scale.set(maskScale, maskScale);
+        (this.bodySubmergeSprite.mask as PIXI.Sprite).scale.set(maskScale, maskScale);
         this.bodySubmergeSprite.alpha = submersionAlpha;
         this.bodySubmergeSprite.visible = submersionAlpha > 0.001;
         if (inWater) {

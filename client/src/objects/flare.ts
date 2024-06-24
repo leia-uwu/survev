@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js-legacy";
-import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -9,8 +8,8 @@ import { type Renderer } from "../renderer";
 import { type Player, type PlayerBarn } from "./player";
 import { type Map } from "../map";
 import { type Camera } from "../camera";
-import { type BulletDef } from "../../../shared/defs/objectsTypings";
 import { type Bullet } from "../../../shared/msgs/updateMsg";
+import { type BulletDef, BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 
 interface FlareBullet extends BulletDef {
     flareContainer: PIXI.Container
