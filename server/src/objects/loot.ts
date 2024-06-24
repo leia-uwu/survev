@@ -139,7 +139,7 @@ export class Loot extends BaseGameObject {
     bellowBridge = false;
 
     constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2, dir?: Vec2) {
-        super(game, pos);
+        super(game, game.map.clampToMapBounds(pos));
 
         const def = GameObjectDefs[type];
         if (!def) {
