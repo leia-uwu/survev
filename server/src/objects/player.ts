@@ -1826,7 +1826,7 @@ export class Player extends BaseGameObject {
                     pickupMsg.type = PickupMsgType.Full;
                 }
                 this.cancelAction();
-                this.weaponManager.delayScheduledReload(def.switchDelay);
+                this.weaponManager.tryReload();
             } else if (freeGunSlot.isDualWield) {
                 this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
             } else {
