@@ -113,6 +113,7 @@ export class Game {
         this.projectileBarn.update(dt);
         this.explosionBarn.update();
         this.deadBodyBarn.update(dt);
+        this.decalBarn.update(dt);
 
         // second update:
         // serialize objects and send msgs

@@ -43,6 +43,7 @@ export class ProjectileBarn {
         proj.damageType = damageType;
         proj.dir = v2.normalize(vel);
 
+        this.projectiles.push(proj);
         this.game.objectRegister.register(proj);
         return proj;
     }
