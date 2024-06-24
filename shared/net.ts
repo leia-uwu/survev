@@ -318,7 +318,7 @@ export class UpdatePassMsg {
 // TODO?: move to another file?
 //
 
-interface RoomData {
+export interface RoomData {
     roomUrl: string
     findingGame: boolean
     lastError: string
@@ -349,30 +349,32 @@ export interface TeamJoinGameMsg {
     }
 }
 
+export interface TeamMenuPlayer {
+    name: string
+    playerId: number
+    isLeader: boolean
+    inGame: boolean
+}
+
 /**
  * Send by the server to update the client team ui
  */
 export interface TeamStateMsg {
     readonly type: "state"
     data: {
-        localPlayerId: number
+        localPlayerId: number // always -1 by default since it can only be set when the socket is actually sending state to each individual client
         room: RoomData
-        players: Array<{
-            playerId: number
-            name: string
-            isLeader: boolean
-            inGame: boolean
-        }>
+        players: TeamMenuPlayer[]
     }
 }
 
 /**
- * Send by the server to keep the connection alive
+ * Send by the client AND server to keep the connection alive
  */
 export interface TeamKeepAliveMsg {
     readonly type: "keepAlive"
     // eslint-disable-next-line @typescript-eslint/ban-types
-    data: {}
+    data: Record<string, unknown>
 }
 
 /**
@@ -461,10 +463,21 @@ export interface TeamGameCompleteMsg {
     readonly type: "gameComplete"
 }
 
+export interface TeamPlayGameMsg {
+    readonly type: "playGame"
+    data: {
+        version: number
+        region: string
+        zones: string[]
+    }
+}
+
 export type ClientToServerTeamMsg =
+    TeamKeepAliveMsg |
     TeamJoinMsg |
     TeamChangeNameMsg |
     TeamSetRoomPropsMsg |
     TeamCreateMsg |
     TeamKickMsg |
-    TeamGameCompleteMsg;
+    TeamGameCompleteMsg |
+    TeamPlayGameMsg;

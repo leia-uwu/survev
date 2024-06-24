@@ -54,37 +54,34 @@ export class SiteInfo {
 
     updatePageFromInfo() {
         if (this.loaded) {
-            const e = this.getGameModeStyles();
-            for (
-                let t = 0;
-                t < e.length;
-                t++
-            ) {
-                const r = e[t];
-                const a = `index-play-${r.buttonText}`;
-                const o = $(`#btn-start-mode-${t}`);
-                o.data("l10n", a);
-                o.html(this.localization.translate(a));
-                if (r.icon || r.buttonCss) {
-                    if (t == 0) {
-                        o.addClass("btn-custom-mode-no-indent");
+            const getGameModeStyles = this.getGameModeStyles();
+            for (let i = 0; i < getGameModeStyles.length; i++) {
+                const style = getGameModeStyles[i];
+                const selector = `index-play-${style.buttonText}`;
+                const btn = $(`#btn-start-mode-${i}`);
+                btn.data("l10n", selector);
+                btn.html(this.localization.translate(selector));
+                btn.removeClass("btn-disabled");
+                if (style.icon || style.buttonCss) {
+                    if (i == 0) {
+                        btn.addClass("btn-custom-mode-no-indent");
                     } else {
-                        o.addClass("btn-custom-mode-main");
+                        btn.addClass("btn-custom-mode-main");
                     }
-                    o.addClass(r.buttonCss);
-                    o.css({
-                        "background-image": `url(${r.icon})`
+                    btn.addClass(style.buttonCss);
+                    btn.css({
+                        "background-image": `url(${style.icon})`
                     });
                 }
-                const l = $(`#btn-team-queue-mode-${t}`);
+                const l = $(`#btn-team-queue-mode-${i}`);
                 if (l.length) {
-                    const c = `index-${r.buttonText}`;
+                    const c = `index-${style.buttonText}`;
                     l.data("l10n", c);
                     l.html(this.localization.translate(c));
-                    if (r.icon) {
+                    if (style.icon) {
                         l.addClass("btn-custom-mode-select");
                         l.css({
-                            "background-image": `url(${r.icon})`
+                            "background-image": `url(${style.icon})`
                         });
                     }
                 }

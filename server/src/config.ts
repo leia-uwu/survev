@@ -8,11 +8,21 @@ export enum SpawnMode {
     Center
 }
 
+export enum TeamMode {
+    Solo = 1,
+    Duo = 2,
+    Squad = 4
+}
+
 export const Config = {
     host: "0.0.0.0",
     port: 8000,
 
-    map: "main",
+    modes: [
+        { mapName: "main", teamMode: TeamMode.Solo },
+        { mapName: "main", teamMode: TeamMode.Duo },
+        { mapName: "main", teamMode: TeamMode.Squad }
+    ],
 
     regions: {
         local: {
@@ -24,8 +34,6 @@ export const Config = {
     defaultRegion: "local",
 
     spawn: { mode: SpawnMode.Random },
-
-    maxGames: 1,
 
     tps: 30
 
@@ -50,7 +58,10 @@ export interface ConfigType {
 
     readonly defaultRegion: string
 
-    readonly map: keyof typeof MapDefs
+    readonly modes: Array<{
+        mapName: keyof typeof MapDefs
+        teamMode: TeamMode
+    }>
 
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.
@@ -66,11 +77,6 @@ export interface ConfigType {
     } | {
         readonly mode: SpawnMode.Center
     }
-
-    /**
-     * The maximum number of concurrent games.
-     */
-    readonly maxGames: number
 
     /**
      * Server tick rate

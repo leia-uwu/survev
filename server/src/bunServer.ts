@@ -34,7 +34,7 @@ class BunServer extends AbstractServer {
                 case "/api/find_game": {
                     try {
                         const body = await request.json();
-                        return new Response(JSON.stringify(This.findGame(body.region)), {
+                        return new Response(JSON.stringify(This.findGame(body)), {
                             headers: { "Content-Type": "application/json" }
                         });
                     } catch (error) {
@@ -46,7 +46,7 @@ class BunServer extends AbstractServer {
                     }
                 }
                 case "/play": {
-                    const gameID = This.getGameId(url.searchParams);
+                    const gameID = This.validateGameId(url.searchParams);
                     if (gameID !== false) {
                         const sucess = server.upgrade(request, {
                             data: {
@@ -87,7 +87,7 @@ class BunServer extends AbstractServer {
         this.init();
 
         setInterval(() => {
-            this.tick();
+            this.update();
         }, 1000 / Config.tps);
     }
 }

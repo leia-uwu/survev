@@ -149,7 +149,7 @@ export class TeamMenu {
     connect(create, roomUrl) {
         if (!this.active || roomUrl !== this.roomData.roomUrl) {
             const roomHost = api.resolveRoomHost();
-            const url = `wss://${roomHost}/team_v2`;
+            const url = `w${window.location.protocol === "https:" ? "ss" : "s"}://${roomHost}/team_v2`;
             this.active = true;
             this.joined = false;
             this.create = create;
@@ -705,8 +705,10 @@ export class TeamMenu {
             }
 
             $(".icon-kick", teamMembers).click((e) => {
-                const playerId = $(e.currentTarget).attr(
-                    "data-playerid"
+                const playerId = Number(
+                    $(e.currentTarget).attr(
+                        "data-playerid"
+                    )
                 );
                 this.sendMessage("kick", {
                     playerId

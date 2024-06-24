@@ -19,7 +19,7 @@ import { assert } from "../../../shared/utils/util";
 export type GameObject = Player | Obstacle | Loot | DeadBody | Building | Structure | Decal | Projectile | Smoke | Airdrop;
 
 export interface DamageParams {
-    amount: number
+    amount?: number
     damageType: number
     dir: Vec2
     gameSourceType?: string

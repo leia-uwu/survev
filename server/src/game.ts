@@ -1,7 +1,7 @@
 import { Emote, PlayerBarn } from "./objects/player";
 import { Grid } from "./utils/grid";
+import { Config, TeamMode } from "./config";
 import { type GameObject, ObjectRegister } from "./objects/gameObject";
-import { type ConfigType } from "./config";
 import { GameMap } from "./map";
 import { BullletBarn } from "./objects/bullet";
 import { Logger } from "./utils/logger";
@@ -13,14 +13,22 @@ import { InputMsg } from "../../shared/msgs/inputMsg";
 import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
+import { util } from "../../shared/utils/util";
 import { ProjectileBarn } from "./objects/projectile";
 import { DeadBodyBarn } from "./objects/deadBody";
-import { type PlayerContainer } from "./abstractServer";
 import { ExplosionBarn } from "./objects/explosion";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { SmokeBarn } from "./objects/smoke";
 import { AirdropBarn } from "./objects/airdrop";
 import { DecalBarn } from "./objects/decal";
+import { Group } from "./group";
+import { type PlayerContainer } from "./abstractServer";
+import { type MapDefs } from "../../shared/defs/mapDefs";
+
+export interface ServerGameConfig {
+    readonly mapName: keyof typeof MapDefs
+    readonly teamMode: TeamMode
+}
 
 export class Game {
     started = false;
@@ -28,11 +36,16 @@ export class Game {
     allowJoin = true;
     over = false;
     startedTime = 0;
-    id: number;
-    config: ConfigType;
+    id: string;
+    teamMode: TeamMode;
+    gameModeIdx: number;
+    isTeamMode: boolean;
+    config: ServerGameConfig;
 
     grid: Grid;
     objectRegister: ObjectRegister;
+
+    groups = new Map<string, Group>();
 
     get aliveCount(): number {
         return this.playerBarn.livingPlayers.length;
@@ -62,13 +75,17 @@ export class Game {
 
     typeToPool: Record<ObjectType, GameObject[]>;
 
-    constructor(id: number, config: ConfigType) {
+    constructor(id: string, config: ServerGameConfig) {
         this.id = id;
-        this.logger = new Logger(`Game #${this.id}`);
+        this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
         this.logger.log("Creating");
         const start = Date.now();
 
         this.config = config;
+
+        this.teamMode = config.teamMode;
+        this.gameModeIdx = Math.floor(this.teamMode / 2);
+        this.isTeamMode = this.teamMode !== TeamMode.Solo;
 
         this.grid = new Grid(1024, 1024);
         this.objectRegister = new ObjectRegister(this.grid);
@@ -77,6 +94,8 @@ export class Game {
         this.gas = new Gas(this.map);
 
         this.allowJoin = true;
+
+        this.map.init();
 
         this.typeToPool = {
             [ObjectType.Invalid]: [],
@@ -116,7 +135,7 @@ export class Game {
         // second update:
         // serialize objects and send msgs
         this.objectRegister.serializeObjs();
-        this.playerBarn.sendMsgs();
+        this.playerBarn.sendMsgs(dt);
 
         //
         // reset stuff
@@ -128,10 +147,6 @@ export class Game {
         this.gas.flush();
         this.msgsToSend.length = 0;
 
-        if (this.started && this.aliveCount <= 1 && !this.over) {
-            this.initGameOver();
-        }
-
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
         // It measures the time it takes to calculate a tick, not the time between ticks.
@@ -141,9 +156,27 @@ export class Game {
         if (this.tickTimes.length >= 200) {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / this.config.tps)) * 100).toFixed(1)}%`);
+            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.tps)) * 100).toFixed(1)}%`);
             this.tickTimes = [];
         }
+    }
+
+    canJoin(): boolean {
+        return this.aliveCount < this.map.mapDef.gameMode.maxPlayers && !this.over;
+    }
+
+    nextTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(t => !t.allDeadOrDisconnected);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
+        return aliveTeams[newIndex];
+    }
+
+    prevTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(t => !t.allDeadOrDisconnected);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
+        return aliveTeams[newIndex];
     }
 
     handleMsg(buff: ArrayBuffer | Buffer, socketData: PlayerContainer): void {
@@ -199,19 +232,47 @@ export class Game {
         }
     }
 
-    initGameOver(): void {
+    checkGameOver(): void {
+        if (this.over) return;
+        if (!this.isTeamMode) {
+            if (this.started && this.aliveCount <= 1) {
+                this.initGameOver();
+            }
+        } else {
+            const groupAlives = [...this.groups.values()].filter(group => !group.allDeadOrDisconnected);
+            if (groupAlives.length <= 1) {
+                this.initGameOver(groupAlives[0]);
+            }
+        }
+    }
+
+    initGameOver(winningGroup?: Group): void {
         if (this.over) return;
         this.over = true;
-        const winningPlayer = this.playerBarn.livingPlayers[0];
-        if (winningPlayer) {
-            winningPlayer.addGameOverMsg(winningPlayer.teamId);
-            for (const spectator of winningPlayer.spectators) {
-                spectator.addGameOverMsg(winningPlayer.teamId);
+        if (!this.isTeamMode) {
+            const winningPlayer = this.playerBarn.livingPlayers[0];
+            if (winningPlayer) {
+                winningPlayer.addGameOverMsg(winningPlayer.teamId);
+            }
+        } else if (winningGroup) {
+            for (const player of winningGroup.players) {
+                player.addGameOverMsg(winningGroup.groupId);
             }
         }
         setTimeout(() => {
             this.stop();
         }, 750);
+    }
+
+    addGroup(hash: string, autoFill: boolean) {
+        const groupId = this.playerBarn.groupIdAllocator.getNextId();
+        let teamId = groupId;
+        if (this.map.factionMode) {
+            teamId = util.randomInt(1, 2);
+        }
+        const group = new Group(hash, groupId, teamId, autoFill);
+        this.groups.set(hash, group);
+        return group;
     }
 
     stop(): void {

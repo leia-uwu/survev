@@ -16,7 +16,7 @@ import { type Loot } from "./loot";
 import { GEAR_TYPES, SCOPE_LEVELS } from "../../../shared/defs/gameObjects/gearDefs";
 import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
 import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
-import { UpdateMsg } from "../../../shared/msgs/updateMsg";
+import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
 import { KillMsg } from "../../../shared/msgs/killMsg";
 import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
@@ -24,13 +24,14 @@ import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
-import { SpawnMode } from "../config";
+import { type Group } from "../group";
+import { Config, SpawnMode } from "../config";
 import { type PlayerContainer } from "../abstractServer";
 import { type JoinMsg } from "../../../shared/msgs/joinMsg";
 import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { IDAllocator } from "../IDAllocator";
+import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 
 export class Emote {
     playerId: number;
@@ -77,15 +78,30 @@ export class PlayerBarn {
             }, 1);
         }
 
-        switch (this.game.config.spawn.mode) {
+        let group: Group | undefined;
+        if (this.game.isTeamMode) {
+            group = this.game.groups.get(joinMsg.matchPriv);
+            if (!group) return;
+        }
+
+        switch (Config.spawn.mode) {
         case SpawnMode.Center:
             pos = v2.copy(this.game.map.center);
             break;
         case SpawnMode.Fixed:
-            pos = v2.copy(this.game.config.spawn.pos);
+            pos = v2.copy(Config.spawn.pos);
             break;
         case SpawnMode.Random:
-            pos = this.game.map.getRandomSpawnPos();
+            if (!group) {
+                pos = this.game.map.getRandomSpawnPos();
+            } else {
+                const leader = group.players[0];
+                if (leader) {
+                    pos = this.game.map.getRandomSpawnPos(leader.pos, 5);
+                } else {
+                    pos = this.game.map.getRandomSpawnPos();
+                }
+            }
             break;
         }
 
@@ -95,6 +111,12 @@ export class PlayerBarn {
             socketData.sendMsg,
             socketData.closeSocket
         );
+
+        if (group) {
+            group.addPlayer(player);
+        } else {
+            player.groupId = this.groupIdAllocator.getNextId();
+        }
 
         let name = joinMsg.name;
         if (name.trim() === "") name = "Player";
@@ -152,9 +174,13 @@ export class PlayerBarn {
         this.livingPlayers.push(player);
         this.aliveCountDirty = true;
 
-        if (this.game.aliveCount > 1 && !this.game.started) {
-            this.game.started = true;
-            this.game.gas.advanceGasStage();
+        if (!this.game.started) {
+            if ((!this.game.teamMode && this.game.aliveCount > 1) ||
+                (this.game.teamMode && this.game.groups.size > 1)
+            ) {
+                this.game.started = true;
+                this.game.gas.advanceGasStage();
+            }
         }
 
         return player;
@@ -162,28 +188,30 @@ export class PlayerBarn {
 
     update(dt: number) {
         for (let i = 0; i < this.players.length; i++) {
-            const player = this.players[i];
-            // completely remove player if alive for less than 5 seconds
-            if (player.disconnected && player.timeAlive < 5) {
-                this.players.splice(i, 1);
-                this.deletedPlayers.push(player.__id);
-                const livingIdx = this.livingPlayers.indexOf(player);
-                if (livingIdx !== -1) {
-                    this.livingPlayers.splice(livingIdx, 1);
-                }
-                player.destroy();
-                continue;
-            }
-
-            player.update(dt);
+            this.players[i].update(dt);
         }
     }
 
-    sendMsgs() {
+    removePlayer(player: Player) {
+        this.players.splice(this.players.indexOf(player), 1);
+        const livingIdx = this.livingPlayers.indexOf(player);
+        if (livingIdx !== -1) {
+            this.livingPlayers.splice(livingIdx, 1);
+        }
+        this.deletedPlayers.push(player.__id);
+        player.destroy();
+        if (player.group) {
+            player.group.removePlayer(player);
+        }
+
+        this.game.checkGameOver();
+    }
+
+    sendMsgs(dt: number) {
         for (let i = 0; i < this.players.length; i++) {
             const player = this.players[i];
             if (player.disconnected) continue;
-            player.sendMsgs();
+            player.sendMsgs(dt);
         }
     }
 
@@ -203,6 +231,7 @@ export class PlayerBarn {
             player.weapsDirty = false;
             player.spectatorCountDirty = false;
             player.activeIdDirty = false;
+            player.groupStatusDirty = false;
         }
     }
 }
@@ -255,6 +284,28 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     activeIdDirty = true;
 
+    group: Group | undefined = undefined;
+
+    /**
+     * set true if any member on the team changes health or disconnects
+     */
+    groupStatusDirty = false;
+
+    setGroupStatuses() {
+        if (!this.game.isTeamMode) return;
+
+        const teammates = this.group!.players;
+        for (const t of teammates) {
+            t.groupStatusDirty = true;
+        }
+    }
+
+    /**
+     * for updating player and teammate locations in the minimap client UI
+     */
+    playerStatusDirty = false;
+    playerStatusTicker = 0;
+
     private _health: number = GameConfig.player.health;
 
     get health(): number {
@@ -266,6 +317,7 @@ export class Player extends BaseGameObject {
         this._health = health;
         this._health = math.clamp(this._health, 0, GameConfig.player.health);
         this.healthDirty = true;
+        this.setGroupStatuses();
     }
 
     private _boost: number = 0;
@@ -397,10 +449,15 @@ export class Player extends BaseGameObject {
     dead = false;
     downed = false;
 
+    bleedTicker = 0;
+    playerBeingRevived: Player | undefined;
+
     animType: number = GameConfig.Anim.None;
     animSeq = 0;
     private _animTicker = 0;
     private _animCb?: () => void;
+
+    distSinceLastCrawl = 0;
 
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
@@ -506,15 +563,13 @@ export class Player extends BaseGameObject {
 
         this.collider = collider.createCircle(pos, this.rad);
 
-        if (game.config.map !== "faction") {
-            this.groupId = this.teamId = this.game.playerBarn.groupIdAllocator.getNextId();
-        }
-
         for (const item in GameConfig.bagSizes) {
             this.inventory[item] = 0;
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+
+        this.game.lootBarn.addLoot("m9", this.pos, this.layer, 1);
     }
 
     visibleObjects = new Set<GameObject>();
@@ -555,6 +610,22 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
 
+        if (this.game.isTeamMode && this.actionType == GameConfig.Action.Revive) {
+            if (this.playerBeingRevived && v2.distance(this.pos, this.playerBeingRevived.pos) > GameConfig.player.reviveRange) {
+                this.cancelAction();
+            }
+        } else if (this.downed) {
+            this.bleedTicker += dt;
+            if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
+                this.damage({
+                    amount: GameConfig.player.bleedDamage,
+                    damageType: GameConfig.DamageType.Bleeding,
+                    dir: this.dir
+                });
+                this.bleedTicker = 0;
+            }
+        }
+
         if (this.game.gas.doDamage && this.game.gas.isInGas(this.pos)) {
             this.damage({
                 amount: this.game.gas.damage,
@@ -583,6 +654,12 @@ export class Player extends BaseGameObject {
                     this.inventoryDirty = true;
                 } else if (this.isReloading()) {
                     this.weaponManager.reload();
+                } else if (this.actionType === GameConfig.Action.Revive && this.playerBeingRevived) {
+                    // player who got revived
+                    this.playerBeingRevived.downed = false;
+                    this.playerBeingRevived.health = GameConfig.player.reviveHealth;
+                    this.playerBeingRevived.setDirty();
+                    this.playerBeingRevived.setGroupStatuses();
                 }
 
                 this.cancelAction();
@@ -715,6 +792,21 @@ export class Player extends BaseGameObject {
             this.game.grid.updateObject(this);
         }
 
+        if (this.downed) {
+            this.distSinceLastCrawl += v2.distance(this.posOld, this.pos);
+
+            if (this.animType === GameConfig.Anim.None && this.distSinceLastCrawl > 3) {
+                let anim: number = GameConfig.Anim.CrawlForward;
+
+                if (!v2.eq(this.dir, movement, 1)) {
+                    anim = GameConfig.Anim.CrawlBackward;
+                }
+
+                this.playAnim(anim, GameConfig.player.crawlTime);
+                this.distSinceLastCrawl = 0;
+            }
+        }
+
         this.weaponManager.update(dt);
 
         if (this.shotSlowdownTimer - Date.now() <= 0) {
@@ -725,7 +817,7 @@ export class Player extends BaseGameObject {
     private _firstUpdate = true;
 
     msgStream = new MsgStream(new ArrayBuffer(65536));
-    sendMsgs(): void {
+    sendMsgs(dt: number): void {
         const msgStream = this.msgStream;
         const game = this.game;
         const playerBarn = game.playerBarn;
@@ -733,7 +825,7 @@ export class Player extends BaseGameObject {
 
         if (this._firstUpdate) {
             const joinedMsg = new JoinedMsg();
-            joinedMsg.teamMode = 1;
+            joinedMsg.teamMode = this.game.teamMode;
             joinedMsg.playerId = this.__id;
             joinedMsg.started = game.started;
             joinedMsg.emotes = this.loadout.emotes;
@@ -832,10 +924,46 @@ export class Player extends BaseGameObject {
         updateMsg.playerInfos = player._firstUpdate ? playerBarn.players : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
+        if (this.group) {
+            this.playerStatusTicker += dt;
+
+            if (this.playerStatusTicker > getPlayerStatusUpdateRate(this.game.map.factionMode)) {
+                const teamPlayers = this.group.getPlayers();
+                for (let i = 0; i < teamPlayers.length; i++) {
+                    const p = teamPlayers[i];
+                    updateMsg.playerStatus.players.push({
+                        hasData: p.playerStatusDirty,
+                        pos: p.pos,
+                        visible: true,
+                        dead: p.dead,
+                        downed: p.downed,
+                        role: p.role
+                    });
+                }
+                updateMsg.playerStatusDirty = true;
+                this.playerStatusTicker = 0;
+            }
+        }
+
+        if (player.groupStatusDirty) {
+            const teamPlayers = this.group!.getPlayers();
+            for (const p of teamPlayers) {
+                updateMsg.groupStatus.players.push({
+                    health: p.health,
+                    disconnected: p.disconnected
+                });
+            }
+            updateMsg.groupStatusDirty = true;
+        }
+
         for (const emote of playerBarn.emotes) {
-            const emotePlayer = game.objectRegister.getById(emote.playerId);
-            if (emotePlayer && player.visibleObjects.has(emotePlayer)) {
-                updateMsg.emotes.push(emote);
+            const emotePlayer = game.objectRegister.getById(emote.playerId) as Player | undefined;
+            if (emotePlayer) {
+                if (((emote.isPing || emote.itemType) && emotePlayer.groupId === this.groupId) ||
+                    this.visibleObjects.has(emotePlayer)
+                ) {
+                    updateMsg.emotes.push(emote);
+                }
             }
         }
 
@@ -888,35 +1016,83 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
+    /** incremented when next, decremented when prev, when it reaches this.spectating.team.getAlivePlayers().length-1, switch to next team */
+    enemyTeamCycleCount = 0;
+
     /**
      * the main purpose of this function is to asynchronously set "spectating"
      * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
      */
     spectate(spectateMsg: SpectateMsg): void {
         let playerToSpec: Player | undefined;
-        const livingPlayers = this.game.playerBarn.livingPlayers;
-        if (spectateMsg.specBegin) {
-            playerToSpec = this.killedBy ? this.killedBy : this.game.playerBarn.randomPlayer();
-            if (playerToSpec === this) {
-                playerToSpec = this.game.playerBarn.randomPlayer();
+        const spectatablePlayers = this.game.playerBarn.livingPlayers;
+        if (!this.game.isTeamMode) { // solos
+            if (spectateMsg.specBegin) {
+                playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
+            } else if (spectateMsg.specNext && this.spectating) {
+                const playerBeingSpecIndex = spectatablePlayers.indexOf(this.spectating);
+                const newIndex = (playerBeingSpecIndex + 1) % spectatablePlayers.length;
+                playerToSpec = spectatablePlayers[newIndex];
+            } else if (spectateMsg.specPrev && this.spectating) {
+                const playerBeingSpecIndex = spectatablePlayers.indexOf(this.spectating);
+                const newIndex = playerBeingSpecIndex == 0 ? spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
+                playerToSpec = spectatablePlayers[newIndex];
             }
-        } else if (spectateMsg.specNext && this.spectating) {
-            const playerBeingSpecIndex = livingPlayers.indexOf(this.spectating);
-            const newIndex = (playerBeingSpecIndex + 1) % livingPlayers.length;
-            playerToSpec = livingPlayers[newIndex];
-        } else if (spectateMsg.specPrev && this.spectating) {
-            const playerBeingSpecIndex = livingPlayers.indexOf(this.spectating);
-            const newIndex = playerBeingSpecIndex == 0 ? livingPlayers.length - 1 : playerBeingSpecIndex - 1;
-            playerToSpec = livingPlayers[newIndex];
+        } else if (this.group) {
+            if (!this.group.checkAllDeadOrDisconnected(this)) { // team still alive
+                if (spectateMsg.specBegin) {
+                    playerToSpec = this.group.randomPlayer(this);
+                } else if (spectateMsg.specNext && this.spectating) {
+                    playerToSpec = this.group.nextPlayer(this.spectating);
+                } else if (spectateMsg.specPrev && this.spectating) {
+                    playerToSpec = this.group.prevPlayer(this.spectating);
+                }
+            } else { // team dead
+                let specType: Group["prevPlayer"] | Group["nextPlayer"] | undefined;
+                if (spectateMsg.specBegin) {
+                    playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
+                } else if (spectateMsg.specNext && this.spectating) {
+                    specType = this.spectating.group!.nextPlayer.bind(this.spectating.group);
+                    this.enemyTeamCycleCount++;
+                } else if (spectateMsg.specPrev && this.spectating) {
+                    specType = this.spectating.group!.prevPlayer.bind(this.spectating.group);
+                    this.enemyTeamCycleCount--;
+                }
+
+                if (this.spectating) {
+                    if (this.enemyTeamCycleCount >= this.spectating.group!.getAlivePlayers().length) {
+                        playerToSpec = this.game.nextTeam(this.spectating.group!).randomPlayer();
+                        this.enemyTeamCycleCount = 0;
+                    } else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.group!.getAlivePlayers().length) {
+                        playerToSpec = this.game.prevTeam(this.spectating.group!).randomPlayer();
+                        this.enemyTeamCycleCount = 0;
+                    } else if (specType) {
+                        playerToSpec = specType(this.spectating);
+                    }
+                }
+            }
+            this.spectating = playerToSpec;
         }
-        this.spectating = playerToSpec;
     }
 
     damage(params: DamageParams) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
 
-        let finalDamage = params.amount;
+        const sourceIsPlayer = params.source?.__type === ObjectType.Player;
+
+        // teammates can't deal damage to each other
+        if (sourceIsPlayer && params.source !== this
+        ) {
+            if ((params.source as Player).groupId === this.groupId) {
+                return;
+            }
+            if (this.game.map.factionMode && (params.source as Player).teamId === this.teamId) {
+                return;
+            }
+        }
+
+        let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
         if (params.damageType !== GameConfig.DamageType.Gas && params.damageType !== GameConfig.DamageType.Bleeding) {
@@ -945,12 +1121,45 @@ export class Player extends BaseGameObject {
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
         this.damageTaken += finalDamage;
-        if (params.source instanceof Player) params.source.damageDealt += finalDamage;
+        if (sourceIsPlayer && params.source !== this) {
+            (params.source as Player).damageDealt += finalDamage;
+        }
 
         this.health -= finalDamage;
 
+        if (this.game.isTeamMode) {
+            this.setGroupStatuses();
+        }
+
         if (this._health === 0) {
-            this.kill(params);
+            if (!this.game.isTeamMode) { // solos
+                this.kill(params);
+                return;
+            }
+
+            // Teams
+            const group = this.group!;
+
+            // TODO: fix for faction mode
+            if (this.downed) {
+                if (this.downedBy && sourceIsPlayer && this.downedBy.groupId === (params.source as Player).groupId) {
+                    params.source = this.downedBy;
+                }
+                this.kill(params);
+                return;
+            }
+
+            const allDeadOrDisconnected = group.checkAllDeadOrDisconnected(this);
+            const allDowned = group.checkAllDowned(this);
+
+            if (allDeadOrDisconnected || allDowned) {
+                this.kill(params);
+                if (allDowned) {
+                    group.killAllTeammates();
+                }
+            } else {
+                this.down(params);
+            }
         }
     }
 
@@ -959,26 +1168,97 @@ export class Player extends BaseGameObject {
      */
     addGameOverMsg(winningTeamId: number = -1): void {
         const gameOverMsg = new GameOverMsg();
-        gameOverMsg.playerStats.push(this);
-        if (this.spectating) {
-            gameOverMsg.teamRank = winningTeamId == this.spectating.teamId ? 1 : this.game.aliveCount + 1;
-            gameOverMsg.teamId = this.spectating.teamId;
-        } else {
-            gameOverMsg.teamRank = winningTeamId == this.teamId ? 1 : this.game.aliveCount + 1;
-            gameOverMsg.teamId = this.teamId;
+
+        if (!this.game.isTeamMode) { // solo
+            gameOverMsg.playerStats.push(this);
+        } else if (this.group) {
+            this.group.players.forEach(p => gameOverMsg.playerStats.push(p));
         }
+
+        const targetPlayer = this.spectating ?? this;
+        const teamRank = !this.game.isTeamMode ? this.game.aliveCount + 1 : this.game.groups.size;
+
+        gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
+        gameOverMsg.teamId = targetPlayer.teamId;
+
         gameOverMsg.winningTeamId = winningTeamId;
         gameOverMsg.gameOver = winningTeamId != -1;
         this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+        for (const spectator of this.spectators) {
+            spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+        }
+    }
+
+    downedBy: Player | undefined;
+    /** downs a player */
+    down(params: DamageParams): void {
+        this.downed = true;
+        this.boost = 0;
+        this.health = 100;
+        this.actionType = 0;
+        this.animType = 0;
+        this.setDirty();
+
+        this.shootHold = false;
+        this.weaponManager.clearTimeouts();
+        this.cancelAction();
+
+        //
+        // Send downed msg
+        //
+        const downedMsg = new KillMsg();
+        downedMsg.damageType = params.damageType;
+        downedMsg.itemSourceType = params.gameSourceType ?? "";
+        downedMsg.mapSourceType = params.mapSourceType ?? "";
+        downedMsg.targetId = this.__id;
+        downedMsg.downed = true;
+
+        if (params.source instanceof Player) {
+            this.downedBy = params.source;
+            downedMsg.killerId = params.source.__id;
+            downedMsg.killCreditId = params.source.__id;
+        }
+
+        this.game.msgsToSend.push({ type: MsgType.Kill, msg: downedMsg });
+    }
+
+    private _assignNewSpectate() {
+        if (this.spectatorCount == 0) return;
+
+        let player: Player;
+        if (!this.game.isTeamMode) { // solo
+            player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
+        } else if (this.group) {
+            if (!this.group.checkAllDeadOrDisconnected(this)) { // team alive
+                player = this.group.randomPlayer(this);
+            } else { // team dead
+                if (
+                    this.killedBy &&
+                    this.killedBy != this &&
+                    this.group.checkAllDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                ) {
+                    player = this.killedBy;
+                } else {
+                    player = this.group.randomPlayer(this.spectating);
+                }
+            }
+        }
+
+        // loop through all of this object's spectators and change who they're spectating to the new selected player
+        for (const spectator of this.spectators) {
+            spectator.spectating = player!;
+        }
     }
 
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
+        if (this.dead) return;
+        if (this.downed) this.downed = false;
         this.dead = true;
         this.boost = 0;
-        this.actionType = this.actionSeq = 0;
-        this.animType = this.animSeq = 0;
+        this.actionType = 0;
+        this.animType = 0;
         this.setDirty();
 
         this.shootHold = false;
@@ -999,13 +1279,22 @@ export class Player extends BaseGameObject {
 
         if (params.source instanceof Player) {
             this.killedBy = params.source;
-            if (params.source !== this) params.source.kills++;
+            if (params.source !== this) {
+                params.source.kills++;
+            }
+
             killMsg.killerId = params.source.__id;
             killMsg.killCreditId = params.source.__id;
             killMsg.killerKills = params.source.kills;
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+
+        //
+        // Give spectators someone new to spectate
+        //
+
+        this._assignNewSpectate();
 
         //
         // Send game over message to player
@@ -1068,10 +1357,49 @@ export class Player extends BaseGameObject {
                     false)
             );
         }
+
+        if (this.group) {
+            this.group.checkPlayers();
+        }
+
+        // Check for game over
+        this.game.checkGameOver();
     }
 
     isReloading() {
         return this.actionType == GameConfig.Action.Reload || this.actionType == GameConfig.Action.ReloadAlt;
+    }
+
+    revive() {
+        if (this.actionType != GameConfig.Action.None) { // action in progress
+            return;
+        }
+        if (!this.game.isTeamMode) { // can only revive in teams modes
+            return;
+        }
+
+        // this.animType = GameConfig.Anim.Revive;
+        const downedTeammates = this.group!.getAliveTeammates(this).filter(t => t.downed);
+
+        let playerToRevive: Player | undefined;
+        let closestDist = Number.MAX_VALUE;
+        for (const teammate of downedTeammates) {
+            if (!util.sameLayer(this.layer, teammate.layer)) {
+                continue;
+            }
+            const dist = v2.distance(this.pos, teammate.pos);
+            if (dist <= GameConfig.player.reviveRange && dist < closestDist) {
+                playerToRevive = teammate;
+                closestDist = dist;
+            }
+        }
+
+        if (playerToRevive) {
+            this.playerBeingRevived = playerToRevive;
+            playerToRevive.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration);
+            this.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration, playerToRevive.__id);
+            this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
+        }
     }
 
     useHealingItem(item: string): void {
@@ -1123,6 +1451,10 @@ export class Player extends BaseGameObject {
         this.shootHold = msg.shootHold;
         this.shootStart = msg.shootStart;
         this.toMouseLen = msg.toMouseLen;
+
+        if (this.downed) { // return over here since player is still allowed to move and look around, just can't do anything else
+            return;
+        }
 
         if (this.shootStart) {
             this.weaponManager.shootStart();
@@ -1199,6 +1531,8 @@ export class Player extends BaseGameObject {
                     this.interactWith(loot);
                 } else if (obstacle) {
                     this.interactWith(obstacle);
+                } else {
+                    this.revive();
                 }
                 break;
             }
@@ -1273,6 +1607,9 @@ export class Player extends BaseGameObject {
                     this.weapsDirty = true;
                 }
                 break;
+            }
+            case GameConfig.Input.Revive: {
+                this.revive();
             }
             }
         }
@@ -1500,13 +1837,10 @@ export class Player extends BaseGameObject {
             }
 
             this.weapons[newGunIdx].cooldown = 0;
-            if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) {
+            if (this.curWeapIdx === GameConfig.WeaponSlot.Melee || this.curWeapIdx === GameConfig.WeaponSlot.Secondary) {
                 this.weaponManager.setCurWeapIndex(newGunIdx);
             }
-            if (this.weapons[newGunIdx].ammo <= 0 && newGunIdx === this.curWeapIdx) {
-                this.cancelAction();
-                this.weaponManager.tryReload();
-            }
+
             this.weapsDirty = true;
             this.setDirty();
         } break;
@@ -1687,12 +2021,12 @@ export class Player extends BaseGameObject {
         return false;
     }
 
-    doAction(actionItem: string, actionType: number, duration: number) {
+    doAction(actionItem: string, actionType: number, duration: number, targetId: number = 0) {
         if (this.actionDirty) { // action already in progress
             return;
         }
 
-        this.action.targetId = 0;
+        this.action.targetId = targetId;
         this.action.duration = duration;
         this.action.time = 0;
 
@@ -1707,6 +2041,13 @@ export class Player extends BaseGameObject {
         if (this.actionType === GameConfig.Action.None) {
             return;
         }
+
+        if (this.playerBeingRevived) {
+            this.playerBeingRevived.cancelAction();
+            this.playerBeingRevived = undefined;
+            this.cancelAnim();
+        }
+
         this.action.duration = 0;
         this.action.targetId = 0;
         this.action.time = 0;
@@ -1734,7 +2075,19 @@ export class Player extends BaseGameObject {
     }
 
     recalculateSpeed(): void {
-        this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
+        // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
+
+        if (this.actionType == GameConfig.Action.Revive) {
+            if (this.action.targetId) { // player reviving
+                this.speed = GameConfig.player.downedMoveSpeed + 2; // not specified in game config so i just estimated
+            } else { // player being revived
+                this.speed = GameConfig.player.downedRezMoveSpeed;
+            }
+        } else if (this.downed) {
+            this.speed = GameConfig.player.downedMoveSpeed;
+        } else {
+            this.speed = GameConfig.player.moveSpeed;
+        }
 
         // if melee is selected increase speed
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;

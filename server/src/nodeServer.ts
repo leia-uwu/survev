@@ -10,7 +10,7 @@ import {
 import NanoTimer from "nanotimer";
 
 import { URLSearchParams } from "node:url";
-import { AbstractServer, type PlayerContainer } from "./abstractServer";
+import { AbstractServer, type FindGameBody, type PlayerContainer, type TeamMenuPlayerContainer } from "./abstractServer";
 
 /**
  * Apply CORS headers to a response.
@@ -25,6 +25,10 @@ function cors(res: HttpResponse): void {
 
 function forbidden(res: HttpResponse): void {
     res.writeStatus("403 Forbidden").end("403 Forbidden");
+}
+
+function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
+    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
 }
 
 /**
@@ -98,22 +102,32 @@ class NodeServer extends AbstractServer {
             const data = this.getSiteInfo();
             if (!aborted) {
                 res.cork(() => {
-                    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
+                    returnJson(res, data);
                 });
             }
         });
         app.post("/api/user/profile", (res, _req) => {
-            res.writeHeader("Content-Type", "application/json");
-            res.end(JSON.stringify(this.getUserProfile()));
+            returnJson(res, this.getUserProfile());
         });
 
         app.post("/api/find_game", async(res) => {
-            readPostedJSON(res, (body: { region: string, zones: any[] }) => {
-                const response = this.findGame(body.region);
-                res.writeHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(response));
+            readPostedJSON(res, (body: FindGameBody) => {
+                try {
+                    returnJson(res, this.findGame(body));
+                } catch {
+                    returnJson(res, {
+                        res: [{
+                            err: "Failed finding game"
+                        }]
+                    });
+                }
             }, () => {
                 this.logger.warn("/api/find_game: Error retrieving body");
+                returnJson(res, {
+                    res: [{
+                        err: "Error retriving body"
+                    }]
+                });
             });
         });
 
@@ -129,8 +143,7 @@ class NodeServer extends AbstractServer {
                 res.onAborted((): void => { });
 
                 const searchParams = new URLSearchParams(req.getQuery());
-                const gameID = This.getGameId(searchParams);
-
+                const gameID = This.validateGameId(searchParams);
                 if (gameID !== false) {
                     res.upgrade(
                         {
@@ -179,12 +192,62 @@ class NodeServer extends AbstractServer {
 
         });
 
+        app.ws("/team_v2", {
+            idleTimeout: 30,
+            /**
+            * Upgrade the connection to WebSocket.
+            */
+            upgrade(res, req, context) {
+                /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+                res.onAborted((): void => { });
+
+                res.upgrade(
+                    {},
+                    req.getHeader("sec-websocket-key"),
+                    req.getHeader("sec-websocket-protocol"),
+                    req.getHeader("sec-websocket-extensions"),
+                    context
+                );
+            },
+
+            /**
+             * Handle opening of the socket.
+             * @param socket The socket being opened.
+             */
+            open(socket: WebSocket<TeamMenuPlayerContainer>) {
+                socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
+            },
+
+            /**
+             * Handle messages coming from the socket.
+             * @param socket The socket in question.
+             * @param message The message to handle.
+             */
+            message(socket: WebSocket<TeamMenuPlayerContainer>, message) {
+                This.teamMenu.handleMsg(message, socket.getUserData());
+            },
+
+            /**
+             * Handle closing of the socket.
+             * Called if player hits the leave button or if there's an error joining/creating a team
+             * @param socket The socket being closed.
+             */
+            close(socket: WebSocket<TeamMenuPlayerContainer>) {
+                const userData = socket.getUserData();
+                const room = This.teamMenu.rooms.get(userData.roomUrl);
+                if (room) {
+                    This.teamMenu.removePlayer(userData);
+                }
+            }
+
+        });
+
         app.listen(Config.host, Config.port, (): void => {
             this.init();
 
             const timer = new NanoTimer();
 
-            timer.setInterval(() => { this.tick(); }, "", `${1000 / Config.tps}m`);
+            timer.setInterval(() => { this.update(); }, "", `${1000 / Config.tps}m`);
         });
     }
 }

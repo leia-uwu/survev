@@ -254,7 +254,7 @@ export class Obstacle extends BaseGameObject {
         if (def.armorPlated && !armorPiercing) return;
         if (def.stonePlated && !stonePiercing) return;
 
-        this.health -= params.amount;
+        this.health -= params.amount!;
 
         if (this.health <= 0) {
             this.kill(params);
