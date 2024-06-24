@@ -568,8 +568,6 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-
-        this.game.lootBarn.addLoot("m9", this.pos, this.layer, 1);
     }
 
     visibleObjects = new Set<GameObject>();
@@ -1516,7 +1514,8 @@ export class Player extends BaseGameObject {
                     if (bothSlotsEmpty) {
                         this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
                     } else {
-                        this.weaponManager.setCurWeapIndex(this.curWeapIdx + (+(this.weapons[GameConfig.WeaponSlot.Primary].type)));
+                        const index = this.weapons[GameConfig.WeaponSlot.Primary].type ? GameConfig.WeaponSlot.Primary : GameConfig.WeaponSlot.Secondary;
+                        this.weaponManager.setCurWeapIndex(index);
                     }
                 }
 
@@ -1830,6 +1829,8 @@ export class Player extends BaseGameObject {
                     removeLoot = false;
                     pickupMsg.type = PickupMsgType.Full;
                 }
+                this.cancelAction();
+                this.weaponManager.delayScheduledReload(def.switchDelay);
             } else if (freeGunSlot.isDualWield) {
                 this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
             } else {
@@ -1837,8 +1838,9 @@ export class Player extends BaseGameObject {
             }
 
             this.weapons[newGunIdx].cooldown = 0;
+            //always select primary slot if melee or secondary is selected
             if (this.curWeapIdx === GameConfig.WeaponSlot.Melee || this.curWeapIdx === GameConfig.WeaponSlot.Secondary) {
-                this.weaponManager.setCurWeapIndex(newGunIdx);
+                this.weaponManager.setCurWeapIndex(newGunIdx);//primary
             }
 
             this.weapsDirty = true;

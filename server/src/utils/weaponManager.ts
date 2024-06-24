@@ -100,11 +100,7 @@ export class WeaponManager {
         }
 
         if (GameConfig.WeaponType[idx] === "gun" && this.weapons[idx].ammo == 0) {
-            this.timeouts.push(
-                setTimeout(() => {
-                    this.tryReload();
-                }, effectiveSwitchDelay * 1000)
-            );
+            this.delayScheduledReload(effectiveSwitchDelay);
         }
 
         this.player.setDirty();
@@ -175,6 +171,14 @@ export class WeaponManager {
         }
     }
 
+    delayScheduledReload(delay: number): void{
+        this.timeouts.push(
+            setTimeout(() => {
+                this.tryReload();
+            }, delay * 1000)
+        );
+    }
+
     /**
      * Try to schedule a reload action if all conditions are met
      */
@@ -205,6 +209,9 @@ export class WeaponManager {
         this.player.doAction(this.activeWeapon, action, duration);
     }
 
+    /**
+     * called when reload action completed, actually updates all state variables
+     */
     reload(): void {
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
         const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
