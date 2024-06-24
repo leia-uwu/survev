@@ -5,7 +5,7 @@ import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { Decal } from "./objects/decal";
+import { type Decal } from "./objects/decal";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { type Collider, coldet, type AABB } from "../../shared/utils/coldet";
@@ -159,6 +159,8 @@ export class GameMap {
     width: number;
     height: number;
 
+    scale: "large" | "small";
+
     center: Vec2;
 
     msg = new MapMsg();
@@ -172,36 +174,47 @@ export class GameMap {
     grassInset: number;
     shoreInset: number;
 
-    terrain: ReturnType<typeof generateTerrain>;
+    terrain!: ReturnType<typeof generateTerrain>;
 
     mapDef: MapDef;
 
     riverDescs: MapRiverData[] = [];
+
+    factionMode: boolean;
+    perkMode: boolean;
+    turkeyMode: boolean;
+    woodsMode: boolean;
+    desertMode: boolean;
+    potatoMode: boolean;
+    sniperMode: boolean;
 
     lakes: Array<{
         river: MapRiverData
         center: Vec2
     }> = [];
 
+    obstacles: Obstacle[] = [];
+    buildings: Building[] = [];
+    structures: Structure[] = [];
     bridges: Structure[] = [];
 
     constructor(game: Game) {
         this.game = game;
 
-        const mapDef = this.mapDef = MapDefs[game.config.map];
+        const mapDef = this.mapDef = util.cloneDeep(MapDefs[game.config.mapName]) as MapDef;
         if (mapDef === undefined) {
-            throw new Error(`Invalid map name: ${game.config.map}`);
+            throw new Error(`Invalid map name: ${game.config.mapName}`);
         }
 
-        this.mapDef = mapDef;
+        const scale = this.scale = game.teamMode > 2 ? "large" : "small";
 
         const mapConfig = mapDef.mapGen.map;
-        this.width = (mapConfig.baseWidth * mapConfig.scale.small) + mapConfig.extension;
-        this.height = (mapConfig.baseHeight * mapConfig.scale.small) + mapConfig.extension;
+        this.width = (mapConfig.baseWidth * mapConfig.scale[scale]) + mapConfig.extension;
+        this.height = (mapConfig.baseHeight * mapConfig.scale[scale]) + mapConfig.extension;
 
         this.bounds = collider.createAabb(v2.create(0, 0), v2.create(this.width, this.height));
 
-        this.msg.mapName = game.config.map;
+        this.msg.mapName = game.config.mapName;
         this.msg.seed = this.seed;
         this.msg.width = this.width;
         this.msg.height = this.height;
@@ -209,6 +222,14 @@ export class GameMap {
         this.center = v2.create(this.width / 2, this.height / 2);
         this.grassInset = this.msg.grassInset = mapConfig.grassInset;
         this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
+
+        this.factionMode = !!this.mapDef.gameMode.factionMode;
+        this.perkMode = !!this.mapDef.gameMode.perkMode;
+        this.turkeyMode = !!this.mapDef.gameMode.turkeyMode;
+        this.woodsMode = !!this.mapDef.gameMode.woodsMode;
+        this.desertMode = !!this.mapDef.gameMode.desertMode;
+        this.potatoMode = !!this.mapDef.gameMode.potatoMode;
+        this.sniperMode = !!this.mapDef.gameMode.sniperMode;
 
         /* const lootPos = v2.create(this.width / 2, this.height / 2);
         for (const loot in GameObjectDefs) {
@@ -224,7 +245,9 @@ export class GameMap {
                 }
             }
         } */
+    }
 
+    init() {
         this.generateTerrain();
 
         this.terrain = generateTerrain(
@@ -237,12 +260,6 @@ export class GameMap {
         );
 
         this.generateObjects();
-
-        // const data =  require("../../reference/mapMsgData.json")
-        // this.msg.objects = data.objects;
-        // this.msg.groundPatches = data.groundPatches;
-        // this.msg.rivers = data.rivers
-
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
 
@@ -436,7 +453,7 @@ export class GameMap {
             let count = fixedSpawns[type];
             if (typeof count !== "number") {
                 if ("small" in count) {
-                    count = count.small;
+                    count = count[this.scale];
                 } else {
                     count = Math.random() < count.odds ? 1 : 0;
                 }
@@ -511,8 +528,7 @@ export class GameMap {
         case "structure":
             return this.genStructure(type, pos, layer, ori);
         case "decal": {
-            const decal = new Decal(this.game, type, pos, layer, ori, scale);
-            this.game.grid.addObject(decal);
+            const decal = this.game.decalBarn.addDecal(type, pos, layer, ori, scale);
             return decal;
         }
         case "loot_spawner":
@@ -846,7 +862,8 @@ export class GameMap {
             buildingId,
             puzzlePiece
         );
-        this.game.grid.addObject(obstacle);
+        this.game.objectRegister.register(obstacle);
+        this.obstacles.push(obstacle);
 
         if (def.map?.display && layer === 0) this.msg.objects.push(obstacle);
         this.objectCount[type]++;
@@ -860,7 +877,8 @@ export class GameMap {
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
         const building = new Building(this.game, type, pos, ori, layer, parentId);
-        this.game.grid.addObject(building);
+        this.game.objectRegister.register(building);
+        this.buildings.push(building);
 
         if (def.map?.display && layer === 0) this.msg.objects.push(building);
 
@@ -914,7 +932,8 @@ export class GameMap {
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
         const structure = new Structure(this.game, type, pos, layer, ori);
-        this.game.grid.addObject(structure);
+        this.game.objectRegister.register(structure);
+        this.structures.push(structure);
 
         layer = 0;
         for (const layerDef of def.layers) {
@@ -933,13 +952,19 @@ export class GameMap {
         return structure;
     }
 
-    getRandomSpawnPos(): Vec2 {
-        const getPos = () => {
+    getRandomSpawnPos(pos?: Vec2, radius?: number): Vec2 {
+        let getPos = () => {
             return {
                 x: util.random(this.shoreInset, this.width - this.shoreInset),
                 y: util.random(this.shoreInset, this.height - this.shoreInset)
             };
         };
+
+        if (pos && radius) {
+            getPos = () => {
+                return v2.add(pos, util.randomPointInCircle(radius));
+            };
+        }
 
         let attempts = 0;
         let collided = true;

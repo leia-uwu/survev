@@ -9,6 +9,19 @@ import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
+export class DecalBarn {
+    decals: Decal[] = [];
+
+    constructor(readonly game: Game) {}
+
+    addDecal(type: string, pos: Vec2, layer: number, ori?: number, scale?: number) {
+        const decal = new Decal(this.game, type, pos, layer, ori, scale);
+        this.decals.push(decal);
+        this.game.objectRegister.register(decal);
+        return decal;
+    }
+}
+
 export class Decal extends BaseGameObject {
     bounds: Collider;
 
@@ -17,7 +30,7 @@ export class Decal extends BaseGameObject {
     layer: number;
     type: string;
     scale: number;
-    goreKills = 1;
+    goreKills = 0;
     ori: number;
     rot: number;
     collider?: Circle;

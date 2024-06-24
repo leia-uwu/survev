@@ -6,15 +6,25 @@ import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2, type Vec2 } from "../../../shared/utils/v2";
 import { BaseGameObject } from "./gameObject";
-import { Obstacle } from "./obstacle";
-import { Structure } from "./structure";
 import { type Player } from "./player";
-import { MapDefs } from "../../../shared/defs/mapDefs";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { Config } from "../config";
+import { type River } from "../../../shared/utils/river";
+import { math } from "../../../shared/utils/math";
 
 export class LootBarn {
-    constructor(public game: Game) {
+    loots: Loot[] = [];
+    constructor(public game: Game) { }
 
+    update(dt: number) {
+        for (let i = 0; i < this.loots.length; i++) {
+            const loot = this.loots[i];
+            if (loot.destroyed) {
+                this.loots.splice(i, 1);
+                continue;
+            }
+            loot.update(dt);
+        }
     }
 
     splitUpLoot(player: Player, item: string, amount: number, dir: Vec2) {
@@ -30,12 +40,12 @@ export class LootBarn {
     */
     addLootWithoutAmmo(type: string, pos: Vec2, layer: number, count: number) {
         const loot = new Loot(this.game, type, pos, layer, count);
-        this.game.grid.addObject(loot);
+        this._addLoot(loot);
     }
 
     addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean, pushSpeed?: number, dir?: Vec2) {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
-        this.game.grid.addObject(loot);
+        this._addLoot(loot);
 
         const def = GameObjectDefs[type];
 
@@ -46,19 +56,24 @@ export class LootBarn {
 
             const leftAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
             leftAmmo.push(v2.create(-1, -1), 0.5);
-            this.game.grid.addObject(leftAmmo);
+            this._addLoot(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
                 const rightAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
                 rightAmmo.push(v2.create(1, -1), 0.5);
 
-                this.game.grid.addObject(rightAmmo);
+                this._addLoot(rightAmmo);
             }
         }
     }
 
+    private _addLoot(loot: Loot) {
+        this.game.objectRegister.register(loot);
+        this.loots.push(loot);
+    }
+
     getLootTable(tier: string): Array<{ name: string, count: number }> {
-        const lootTable = MapDefs[this.game.config.map].lootTable[tier];
+        const lootTable = this.game.map.mapDef.lootTable[tier];
         const items: Array<{ name: string, count: number }> = [];
 
         if (!lootTable) {
@@ -121,8 +136,10 @@ export class Loot extends BaseGameObject {
 
     ticks = 0;
 
+    bellowBridge = false;
+
     constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2, dir?: Vec2) {
-        super(game, pos);
+        super(game, game.map.clampToMapBounds(pos));
 
         const def = GameObjectDefs[type];
         if (!def) {
@@ -137,7 +154,7 @@ export class Loot extends BaseGameObject {
 
         this.rad = this.collider.rad;
 
-        this.dragConstant = Math.exp(-3.69 / game.config.tps);
+        this.dragConstant = Math.exp(-3.69 / Config.tps);
 
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
@@ -172,11 +189,28 @@ export class Loot extends BaseGameObject {
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
 
-        const objects = this.game.grid.intersectCollider(this.collider);
-        for (const obj of objects) {
+        const originalLayer = this.layer;
+
+        const objs = this.game.grid.intersectCollider(this.collider);
+
+        const stair = this.checkStairs(objs, this.rad * 2);
+        if (this.layer !== originalLayer) {
+            this.setDirty();
+        }
+
+        if (this.layer === 0) {
+            this.bellowBridge = false;
+        }
+
+        if (stair?.lootOnly) {
+            this.bellowBridge = true;
+        }
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
             if (
                 moving &&
-                obj instanceof Obstacle &&
+                obj.__type === ObjectType.Obstacle &&
                 !obj.dead &&
                 util.sameLayer(obj.layer, this.layer) &&
                 obj.collidable &&
@@ -186,9 +220,12 @@ export class Loot extends BaseGameObject {
                 if (res) {
                     this.pos = v2.add(this.pos, v2.mul(res.dir, res.pen));
                 }
-            }
-
-            if (obj instanceof Loot && obj !== this && coldet.test(this.collider, obj.collider)) {
+            } else if (
+                obj.__type === ObjectType.Loot &&
+                obj !== this &&
+                util.sameLayer(obj.layer, this.layer) &&
+                coldet.test(this.collider, obj.collider)
+            ) {
                 const res = coldet.intersectCircleCircle(this.pos, this.collider.rad, obj.pos, obj.collider.rad);
                 if (res) {
                     this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
@@ -207,34 +244,23 @@ export class Loot extends BaseGameObject {
             }
         }
 
-        const river = this.game.map.getGroundSurface(this.pos, 0).river;
-        if (river) {
-            const tangent = river.spline.getTangent(
-                river.spline.getClosestTtoPoint(this.pos)
-            );
-            this.push(tangent, 0.5 * dt);
-        }
-
-        let onStair = false;
-        const originalLayer = this.layer;
-        const objs = this.game.grid.intersectCollider(this.collider);
-        for (const obj of objs) {
-            if (obj.__type === ObjectType.Structure) {
-                for (const stair of obj.stairs) {
-                    if (Structure.checkStairs(this.pos, stair, this)) {
-                        onStair = true;
-                        break;
-                    }
-                }
-                if (!onStair) {
-                    if (this.layer === 2) this.layer = 0;
-                    if (this.layer === 3) this.layer = 1;
+        const surface = this.game.map.getGroundSurface(this.pos, this.layer);
+        let finalRiver: River | undefined;
+        if ((this.layer === 0 && surface.river) || this.bellowBridge) {
+            const rivers = this.game.map.terrain.rivers;
+            for (let i = 0; i < rivers.length; i++) {
+                const river = rivers[i];
+                if (coldet.testPointAabb(this.pos, river.aabb.min, river.aabb.max) &&
+                    math.pointInsidePolygon(this.pos, river.waterPoly)) {
+                    finalRiver = river;
                 }
             }
         }
-
-        if (this.layer !== originalLayer) {
-            this.setDirty();
+        if (finalRiver) {
+            const tangent = finalRiver.spline.getTangent(
+                finalRiver.spline.getClosestTtoPoint(this.pos)
+            );
+            this.push(tangent, 0.5 * dt);
         }
 
         if (!v2.eq(this.oldPos, this.pos)) {
@@ -247,9 +273,5 @@ export class Loot extends BaseGameObject {
 
     push(dir: Vec2, velocity: number): void {
         this.vel = v2.add(this.vel, v2.mul(dir, velocity));
-    }
-
-    remove() {
-        this.game.grid.remove(this);
     }
 }

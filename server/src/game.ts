@@ -1,27 +1,34 @@
-import { Emote, Player } from "./objects/player";
-import { type Vec2, v2 } from "../../shared/utils/v2";
+import { Emote, PlayerBarn } from "./objects/player";
 import { Grid } from "./utils/grid";
-import { type BaseGameObject } from "./objects/gameObject";
-import { SpawnMode, type ConfigType } from "./config";
+import { Config, TeamMode } from "./config";
+import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { GameMap } from "./map";
-import { BulletManager } from "./objects/bullet";
+import { BullletBarn } from "./objects/bullet";
 import { Logger } from "./utils/logger";
-import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net";
 import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
-import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
 import { EmoteMsg } from "../../shared/msgs/emoteMsg";
 import { JoinMsg } from "../../shared/msgs/joinMsg";
 import { InputMsg } from "../../shared/msgs/inputMsg";
-import { type Explosion } from "./objects/explosion";
 import { LootBarn } from "./objects/loot";
 import { Gas } from "./objects/gas";
-import { UnlockDefs } from "../../shared/defs/gameObjects/unlockDefs";
-import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { IDAllocator } from "./IDAllocator";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 import { util } from "../../shared/utils/util";
+import { ProjectileBarn } from "./objects/projectile";
+import { DeadBodyBarn } from "./objects/deadBody";
+import { ExplosionBarn } from "./objects/explosion";
+import { ObjectType } from "../../shared/utils/objectSerializeFns";
+import { SmokeBarn } from "./objects/smoke";
+import { AirdropBarn } from "./objects/airdrop";
+import { DecalBarn } from "./objects/decal";
+import { Group } from "./group";
+import { type PlayerContainer } from "./abstractServer";
+import { type MapDefs } from "../../shared/defs/mapDefs";
+
+export interface ServerGameConfig {
+    readonly mapName: keyof typeof MapDefs
+    readonly teamMode: TeamMode
+}
 
 export class Game {
     started = false;
@@ -29,138 +36,116 @@ export class Game {
     allowJoin = true;
     over = false;
     startedTime = 0;
-    id: number;
+    id: string;
+    teamMode: TeamMode;
+    gameModeIdx: number;
+    isTeamMode: boolean;
+    config: ServerGameConfig;
 
-    objectIdAllocator = new IDAllocator(16);
-    groupIdAllocator = new IDAllocator(8);
+    grid: Grid;
+    objectRegister: ObjectRegister;
 
-    players = new Set<Player>();
-    connectedPlayers = new Set<Player>();
-    livingPlayers = new Set<Player>();
-    spectatablePlayers: Player[] = []; // array version of livingPlayers since it needs to be ordered
+    groups = new Map<string, Group>();
 
     get aliveCount(): number {
-        return this.livingPlayers.size;
+        return this.playerBarn.livingPlayers.length;
     }
-
-    aliveCountDirty = false;
 
     msgsToSend: Array<{ type: number, msg: net.AbstractMsg }> = [];
 
-    partialObjs = new Set<BaseGameObject>();
-    fullObjs = new Set<BaseGameObject>();
-
+    playerBarn = new PlayerBarn(this);
     lootBarn = new LootBarn(this);
+    deadBodyBarn = new DeadBodyBarn(this);
+    decalBarn = new DecalBarn(this);
+    projectileBarn = new ProjectileBarn(this);
+    bulletBarn = new BullletBarn(this);
+    smokeBarn = new SmokeBarn(this);
+    airdropBarn = new AirdropBarn(this);
 
-    newPlayers: Player[] = [];
-
-    explosions: Explosion[] = [];
+    explosionBarn = new ExplosionBarn(this);
 
     map: GameMap;
-
-    grid: Grid;
-
-    config: ConfigType;
+    gas: Gas;
 
     now!: number;
 
     tickTimes: number[] = [];
 
-    timeouts: Timer[] = [];
-
-    bulletManager = new BulletManager(this);
-
     logger: Logger;
 
-    gas: Gas;
+    typeToPool: Record<ObjectType, GameObject[]>;
 
-    emotes: Emote[] = [];
-
-    constructor(id: number, config: ConfigType) {
+    constructor(id: string, config: ServerGameConfig) {
         this.id = id;
-        this.logger = new Logger(`Game #${this.id}`);
+        this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
         this.logger.log("Creating");
         const start = Date.now();
 
         this.config = config;
 
+        this.teamMode = config.teamMode;
+        this.gameModeIdx = Math.floor(this.teamMode / 2);
+        this.isTeamMode = this.teamMode !== TeamMode.Solo;
+
         this.grid = new Grid(1024, 1024);
+        this.objectRegister = new ObjectRegister(this.grid);
         this.map = new GameMap(this);
 
-        this.gas = new Gas(this);
+        this.gas = new Gas(this.map);
 
         this.allowJoin = true;
+
+        this.map.init();
+
+        this.typeToPool = {
+            [ObjectType.Invalid]: [],
+            [ObjectType.LootSpawner]: [],
+            [ObjectType.Player]: this.playerBarn.players,
+            [ObjectType.Obstacle]: this.map.obstacles,
+            [ObjectType.Loot]: this.lootBarn.loots,
+            [ObjectType.DeadBody]: this.deadBodyBarn.deadBodies,
+            [ObjectType.Building]: this.map.buildings,
+            [ObjectType.Structure]: this.map.structures,
+            [ObjectType.Decal]: this.decalBarn.decals,
+            [ObjectType.Projectile]: this.projectileBarn.projectiles,
+            [ObjectType.Smoke]: this.smokeBarn.smokes,
+            [ObjectType.Airdrop]: this.airdropBarn.airdrops
+        };
 
         this.logger.log(`Created in ${Date.now() - start} ms`);
     }
 
-    tick(): void {
+    update(): void {
         const now = Date.now();
         if (!this.now) this.now = now;
         const dt = (now - this.now) / 1000;
         this.now = now;
 
-        this.bulletManager.update(dt);
-
+        //
+        // Update modules
+        //
         this.gas.update(dt);
+        this.bulletBarn.update(dt);
+        this.lootBarn.update(dt);
+        this.projectileBarn.update(dt);
+        this.deadBodyBarn.update(dt);
+        this.playerBarn.update(dt);
+        this.explosionBarn.update();
 
-        for (const loot of this.grid.categories[ObjectType.Loot]) {
-            loot.update(dt);
-        }
-
-        for (const deadBody of this.grid.categories[ObjectType.DeadBody]) {
-            deadBody.update(dt);
-        }
-
-        for (const explosion of this.explosions) {
-            explosion.explode(this);
-        }
-
-        for (const player of this.players) {
-            player.update(dt);
-        }
-
-        for (const obj of this.partialObjs) {
-            if (this.fullObjs.has(obj)) {
-                this.partialObjs.delete(obj);
-                continue;
-            }
-            obj.serializePartial();
-        }
-        for (const obj of this.fullObjs) {
-            obj.serializeFull();
-        }
-
-        for (const player of this.connectedPlayers) {
-            player.sendMsgs(dt);
-        }
+        // second update:
+        // serialize objects and send msgs
+        this.objectRegister.serializeObjs();
+        this.playerBarn.sendMsgs(dt);
 
         //
         // reset stuff
         //
-        for (const player of this.players) {
-            player.healthDirty = false;
-            player.boostDirty = false;
-            player.zoomDirty = false;
-            player.actionDirty = false;
-            player.inventoryDirty = false;
-            player.weapsDirty = false;
-            player.spectatorCountDirty = false;
-            player.activeIdDirty = false;
-        }
-
-        this.fullObjs.clear();
-        this.partialObjs.clear();
-        this.newPlayers.length = 0;
-        this.bulletManager.reset();
+        this.playerBarn.flush();
+        this.bulletBarn.flush();
+        this.objectRegister.flush();
+        this.explosionBarn.flush();
+        this.gas.flush();
         this.msgsToSend.length = 0;
-        this.explosions.length = 0;
-        this.emotes.length = 0;
-        this.grid.updateObjects = false;
-        this.aliveCountDirty = false;
-
-        this.gas.dirty = false;
-        this.gas.timeDirty = false;
 
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
@@ -171,49 +156,48 @@ export class Game {
         if (this.tickTimes.length >= 200) {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / this.config.tps)) * 100).toFixed(1)}%`);
+            this.logger.log(`Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.tps)) * 100).toFixed(1)}%`);
             this.tickTimes = [];
         }
     }
 
-    randomPlayer() {
-        return this.spectatablePlayers[util.randomInt(0, this.spectatablePlayers.length - 1)];
+    canJoin(): boolean {
+        return this.aliveCount < this.map.mapDef.gameMode.maxPlayers && !this.over && this.gas.stage < 1;
     }
 
-    addPlayer(socketSend: (msg: ArrayBuffer | Uint8Array) => void, closeSocket: () => void): Player {
-        let pos: Vec2;
-
-        switch (this.config.spawn.mode) {
-        case SpawnMode.Center:
-            pos = v2.copy(this.map.center);
-            break;
-        case SpawnMode.Fixed:
-            pos = v2.copy(this.config.spawn.pos);
-            break;
-        case SpawnMode.Random:
-            pos = this.map.getRandomSpawnPos();
-            break;
-        }
-
-        const player = new Player(
-            this,
-            pos,
-            socketSend,
-            closeSocket
-        );
-
-        if (this.aliveCount >= 1 && !this.started) {
-            this.started = true;
-            this.gas.advanceGasStage();
-        }
-
-        return player;
+    nextTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(t => !t.allDeadOrDisconnected);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
+        return aliveTeams[newIndex];
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, player: Player): void {
+    prevTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(t => !t.allDeadOrDisconnected);
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
+        return aliveTeams[newIndex];
+    }
+
+    handleMsg(buff: ArrayBuffer | Buffer, socketData: PlayerContainer): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
+
+        const player = socketData.player;
+
+        if (type === net.MsgType.Join && !player) {
+            const joinMsg = new JoinMsg();
+            joinMsg.deserialize(stream);
+            this.playerBarn.addPlayer(socketData, joinMsg);
+            return;
+        }
+
+        if (!player) {
+            socketData.closeSocket();
+            return;
+        }
+
         switch (type) {
         case net.MsgType.Input: {
             const inputMsg = new InputMsg();
@@ -221,87 +205,16 @@ export class Game {
             player.handleInput(inputMsg);
             break;
         }
-        case net.MsgType.Join: {
-            // Ignore joinMsgs from players that already joined
-            // I was too lazy to create a `joined` field so just check for that
-            // The initial value is 0 and its set to Date.now() on this code
-            if (player.joinedTime !== 0) return;
-            const joinMsg = new JoinMsg();
-            joinMsg.deserialize(stream);
-
-            if (joinMsg.protocol !== GameConfig.protocolVersion) {
-                const disconnectMsg = new DisconnectMsg();
-                disconnectMsg.reason = "index-invalid-protocol";
-                player.sendMsg(net.MsgType.Disconnect, disconnectMsg);
-                setTimeout(() => {
-                    player.closeSocket();
-                }, 1);
-                return;
-            }
-
-            let name = joinMsg.name;
-            if (name.trim() === "") name = "Player";
-            player.name = name;
-
-            this.logger.log(`Player ${name} joined`);
-
-            player.joinedTime = Date.now();
-
-            player.isMobile = joinMsg.isMobile;
-
-            /**
-            * Checks if an item is present in the player's loadout
-            */
-            const isItemInLoadout = (item: string, category: string) => {
-                if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-                const def = GameObjectDefs[item];
-                if (!def || def.type !== category) return false;
-
-                return true;
-            };
-
-            if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
-                player.outfit = joinMsg.loadout.outfit;
-            }
-
-            if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
-                player.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-            }
-
-            if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-                player.loadout.heal = joinMsg.loadout.heal;
-            }
-            if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-                player.loadout.boost = joinMsg.loadout.boost;
-            }
-
-            const emotes = joinMsg.loadout.emotes;
-            for (let i = 0; i < emotes.length; i++) {
-                const emote = emotes[i];
-
-                if ((i < 4 && emote === "") || (!isItemInLoadout(emote, "emote") && emote !== "")) {
-                    player.loadout.emotes.push(GameConfig.defaultEmoteLoadout[i]);
-                    continue;
-                }
-
-                player.loadout.emotes.push(emote);
-            }
-
-            this.newPlayers.push(player);
-            this.grid.addObject(player);
-            this.connectedPlayers.add(player);
-            this.players.add(player);
-            this.livingPlayers.add(player);
-            this.spectatablePlayers.push(player);
-            this.aliveCountDirty = true;
-            break;
-        }
         case net.MsgType.Emote: {
             const emoteMsg = new EmoteMsg();
             emoteMsg.deserialize(stream);
 
-            this.emotes.push(new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing));
+            this.playerBarn.emotes.push(new Emote(
+                player.__id,
+                emoteMsg.pos,
+                emoteMsg.type,
+                emoteMsg.isPing
+            ));
             break;
         }
         case net.MsgType.DropItem: {
@@ -319,54 +232,57 @@ export class Game {
         }
     }
 
-    isGameOver() {
-        return !this.stopped && this.started && this.aliveCount == 1;
-    }
-
-    removePlayer(player: Player): void {
-        if (!player.dead) {
-            this.aliveCountDirty = true;
-            this.livingPlayers.delete(player);
-            this.spectatablePlayers.splice(this.spectatablePlayers.indexOf(player), 1);
-        }
-        player.spectating = undefined;
-        this.connectedPlayers.delete(player);
-
-        if (this.aliveCount == 0) {
-            this.end();
-            return;
-        }
-
-        if (!player.dead && this.isGameOver()) {
-            this.initGameEnd(this.spectatablePlayers[0], player);
+    checkGameOver(): void {
+        if (this.over) return;
+        if (!this.isTeamMode) {
+            if (this.started && this.aliveCount <= 1) {
+                this.initGameOver();
+            }
+        } else {
+            const groupAlives = [...this.groups.values()].filter(group => !group.allDeadOrDisconnected);
+            if (groupAlives.length <= 1) {
+                this.initGameOver(groupAlives[0]);
+            }
         }
     }
 
-    /**
-     * sends out GameOverMsgs to 1st place, 2nd place, and all their spectators before actually ending the game and closing all sockets
-     */
-    initGameEnd(winner: Player, runnerUp: Player): void {
-        if (runnerUp.dead) { // if not dead, means they left while still alive and their socket closed
-            runnerUp.addGameOverMsg(winner.teamId);
-        }
-        for (const spectator of runnerUp.spectators) {
-            spectator.addGameOverMsg(winner.teamId);
-        }
-
-        winner.addGameOverMsg(winner.teamId);
-        for (const spectator of winner.spectators) {
-            spectator.addGameOverMsg(winner.teamId);
+    initGameOver(winningGroup?: Group): void {
+        if (this.over) return;
+        this.over = true;
+        if (!this.isTeamMode) {
+            const winningPlayer = this.playerBarn.livingPlayers[0];
+            if (winningPlayer) {
+                winningPlayer.addGameOverMsg(winningPlayer.teamId);
+            }
+        } else if (winningGroup) {
+            for (const player of winningGroup.players) {
+                player.addGameOverMsg(winningGroup.groupId);
+            }
         }
         setTimeout(() => {
-            this.end();
+            this.stop();
         }, 750);
     }
 
-    end(): void {
+    addGroup(hash: string, autoFill: boolean) {
+        const groupId = this.playerBarn.groupIdAllocator.getNextId();
+        let teamId = groupId;
+        if (this.map.factionMode) {
+            teamId = util.randomInt(1, 2);
+        }
+        const group = new Group(hash, groupId, teamId, autoFill);
+        this.groups.set(hash, group);
+        return group;
+    }
+
+    stop(): void {
+        if (this.stopped) return;
         this.stopped = true;
         this.allowJoin = false;
-        for (const player of this.connectedPlayers) {
-            player.closeSocket();
+        for (const player of this.playerBarn.players) {
+            if (!player.disconnected) {
+                player.closeSocket();
+            }
         }
         this.logger.log("Game Ended");
     }

@@ -2479,7 +2479,7 @@ export class PlayerBarn {
         const keys = Object.keys(this.playerStatus);
         for (let i = 0; i < keys.length; i++) {
             const status = this.playerStatus[keys[i] as unknown as number];
-            const playerId = status.playerId;
+            const playerId = status.playerId!;
             const playerInfo = this.getPlayerInfo(playerId);
 
             const player = this.getPlayerById(playerId);
@@ -2509,16 +2509,15 @@ export class PlayerBarn {
             status.timeSinceVisible! += dt;
             status.timeSinceUpdate! += dt;
 
-            //     const fade =
-            // !status.dead ||
-            // (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
-            //     ? 0
-            //     : 0.6;
+            const fade =
+            !status.dead ||
+            (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
+                ? 0
+                : 0.6;
 
-            //     status.minimapAlpha =
-            // math.smoothstep(status.timeSinceVisible!, 0, 0.1) *
-            // math.lerp(math.smoothstep(status.timeSinceUpdate!, 2, 2.5), 1, fade);
-            status.minimapAlpha = 1;
+            status.minimapAlpha =
+            math.smoothstep(status.timeSinceVisible!, 0, 0.1) *
+            math.lerp(math.smoothstep(status.timeSinceUpdate!, 2, 2.5), 1, fade);
 
             // @HACK: Fix issue in non-faction mode when spectating and swapping
             // between teams. We don't want the old player indicators to fade out

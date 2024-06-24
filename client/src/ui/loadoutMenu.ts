@@ -12,7 +12,6 @@ import { type Account } from "../account";
 import { crosshair } from "../crosshair";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import { type CrosshairDef } from "./../../../shared/defs/gameObjects/crosshairDefs";
 import loadout, { type ItemStatus, type Loadout } from "./loadouts";
 import { type Localization } from "./localization";
 import { MenuModal } from "./menuModal";

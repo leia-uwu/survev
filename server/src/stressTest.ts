@@ -24,6 +24,7 @@ import { ObjectType, type ObjectsFullData, type ObjectsPartialData } from "../..
 const config = {
     address: "http://127.0.0.1:8000",
     region: "local",
+    gameModeIdx: 0,
     botCount: 79,
     joinDelay: 100
 };
@@ -374,10 +375,10 @@ void (async() => {
         setTimeout(async() => {
             const response = await (await fetch(`${config.address}/api/find_game`, {
                 method: "POST",
-                body: JSON.stringify({ region: config.region })
+                body: JSON.stringify({ region: config.region, gameModeIdx: config.gameModeIdx })
             })).json();
 
-            bots.add(new Bot(i, response.res[0].gameID));
+            bots.add(new Bot(i, response.res[0].gameId));
             if (i === config.botCount) allBotsJoined = true;
         }, i * config.joinDelay);
     }

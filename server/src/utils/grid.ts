@@ -1,19 +1,8 @@
-import { type DeadBody } from "../objects/deadBody";
-import { type Airdrop } from "../objects/airdrop";
-import { type Building } from "../objects/building";
-import { type Decal } from "../objects/decal";
 import { type GameObject } from "../objects/gameObject";
-import { type Loot } from "../objects/loot";
-import { type Obstacle } from "../objects/obstacle";
-import { type Player } from "../objects/player";
-import { type Projectile } from "../objects/projectile";
-import { type Smoke } from "../objects/smoke";
-import { type Structure } from "../objects/structure";
 import { coldet, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 /**
  * A Grid to filter collision detection of game objects
@@ -31,25 +20,6 @@ export class Grid {
     // so removing the object from the grid is faster
     private readonly _objectsCells = new Map<number, Vec2[]>();
 
-    private readonly objects = new Map<number, GameObject>();
-
-    updateObjects = false;
-
-    readonly categories = {
-        [ObjectType.Invalid]: new Set(),
-        [ObjectType.Player]: new Set<Player>(),
-        [ObjectType.Obstacle]: new Set<Obstacle>(),
-        [ObjectType.Loot]: new Set<Loot>(),
-        [ObjectType.LootSpawner]: new Set(),
-        [ObjectType.DeadBody]: new Set<DeadBody>(),
-        [ObjectType.Building]: new Set<Building>(),
-        [ObjectType.Structure]: new Set<Structure>(),
-        [ObjectType.Decal]: new Set<Decal>(),
-        [ObjectType.Projectile]: new Set<Projectile>(),
-        [ObjectType.Smoke]: new Set<Smoke>(),
-        [ObjectType.Airdrop]: new Set<Airdrop>()
-    };
-
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
         this.height = Math.floor(height / this.cellSize);
@@ -60,24 +30,15 @@ export class Grid {
         );
     }
 
-    getById(id: number) {
-        return this.objects.get(id);
-    }
-
     addObject(obj: GameObject): void {
-        if (this.objects.has(obj.__id)) return;
-        this.objects.set(obj.__id, obj);
-        (this.categories[obj.__type] as Set<typeof obj>).add(obj);
-        this.updateObjects = true;
         this.updateObject(obj);
-        obj.init();
     }
 
     /**
      * Add an object to the grid system
      */
     updateObject(obj: GameObject): void {
-        this.removeFromGrid(obj);
+        this.remove(obj);
 
         const cells: Vec2[] = [];
 
@@ -99,18 +60,10 @@ export class Grid {
         this._objectsCells.set(obj.__id, cells);
     }
 
-    remove(obj: GameObject): void {
-        this.objects.delete(obj.__id);
-        this.removeFromGrid(obj);
-        this.updateObjects = true;
-        obj.game.objectIdAllocator.give(obj.__id);
-        (this.categories[obj.__type] as Set<typeof obj>).delete(obj);
-    }
-
     /**
      * Remove an object from the grid system
      */
-    removeFromGrid(obj: GameObject): void {
+    remove(obj: GameObject): void {
         const cells = this._objectsCells.get(obj.__id);
         if (!cells) return;
 

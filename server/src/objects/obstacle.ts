@@ -12,7 +12,6 @@ import { type Building } from "./building";
 import { BaseGameObject, type DamageParams } from "./gameObject";
 import { type Player } from "./player";
 import * as net from "../../../shared/net";
-import { Explosion } from "./explosion";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class Obstacle extends BaseGameObject {
@@ -109,7 +108,7 @@ export class Obstacle extends BaseGameObject {
         this.originalLayer = layer;
         this.parentBuildingId = parentBuildingId;
 
-        const building = this.game.grid.getById(this.parentBuildingId ?? 0);
+        const building = this.game.objectRegister.getById(this.parentBuildingId ?? 0);
         if (building?.__type === ObjectType.Building) {
             this.parentBuilding = building;
         }
@@ -255,7 +254,7 @@ export class Obstacle extends BaseGameObject {
         if (def.armorPlated && !armorPiercing) return;
         if (def.stonePlated && !stonePiercing) return;
 
-        this.health -= params.amount;
+        this.health -= params.amount!;
 
         if (this.health <= 0) {
             this.kill(params);
@@ -322,7 +321,7 @@ export class Obstacle extends BaseGameObject {
         }
 
         if (def.explosion) {
-            const explosion = new Explosion(def.explosion,
+            this.game.explosionBarn.addExplosion(def.explosion,
                 this.pos,
                 this.layer,
                 "",
@@ -330,7 +329,6 @@ export class Obstacle extends BaseGameObject {
                 params.damageType,
                 params.source
             );
-            this.game.explosions.push(explosion);
         }
 
         this.parentBuilding?.obstacleDestroyed(this);
