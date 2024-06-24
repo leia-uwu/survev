@@ -1838,9 +1838,9 @@ export class Player extends BaseGameObject {
             }
 
             this.weapons[newGunIdx].cooldown = 0;
-            //always select primary slot if melee or secondary is selected
+            // always select primary slot if melee or secondary is selected
             if (this.curWeapIdx === GameConfig.WeaponSlot.Melee || this.curWeapIdx === GameConfig.WeaponSlot.Secondary) {
-                this.weaponManager.setCurWeapIndex(newGunIdx);//primary
+                this.weaponManager.setCurWeapIndex(newGunIdx);// primary
             }
 
             this.weapsDirty = true;

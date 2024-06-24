@@ -171,7 +171,7 @@ export class WeaponManager {
         }
     }
 
-    delayScheduledReload(delay: number): void{
+    delayScheduledReload(delay: number): void {
         this.timeouts.push(
             setTimeout(() => {
                 this.tryReload();
