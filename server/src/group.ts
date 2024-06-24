@@ -97,13 +97,7 @@ export class Group {
 
     checkPlayers(): void {
         if (this.allDeadOrDisconnected) return;
-
-        for (const player of this.players) {
-            if (player.dead || player.disconnected) {
-                this.allDeadOrDisconnected = true;
-                break;
-            }
-        }
+        this.allDeadOrDisconnected = this.players.every(p => p.dead || p.disconnected);
     }
 
     /**
