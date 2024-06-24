@@ -1,9 +1,9 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { GameConfig } from "../../../shared/gameConfig";
+import { type Bullet } from "../../../shared/msgs/updateMsg";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type AudioManager } from "../audioManager";
-import { type BulletParams } from "./../../../server/src/objects/bullet";
 import { type ParticleBarn } from "./particles";
 import { type PlayerBarn } from "./player";
 
@@ -68,7 +68,7 @@ export function createCasingParticle(
 export class ShotBarn {
     shots: Shot[] = [];
 
-    addShot(bullet: BulletParams) {
+    addShot(bullet: Bullet) {
         let shot: Shot | null = null;
         for (let i = 0; i < this.shots.length; i++) {
             if (!this.shots[i].active) {
@@ -81,7 +81,7 @@ export class ShotBarn {
             this.shots.push(shot);
         }
 
-        const weaponType = bullet.shotSourceType!;
+        const weaponType = bullet.shotSourceType;
         const weaponDef = GameObjectDefs[weaponType] as GunDef;
 
         shot.active = true;

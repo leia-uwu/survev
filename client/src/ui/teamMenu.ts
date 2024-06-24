@@ -425,12 +425,12 @@ export class TeamMenu {
             setButtonState(
                 this.queueMode1,
                 this.roomData.gameModeIdx == 1,
-                this.isLeader && this.roomData.enabledGameModeIdxs!.includes(1)
+                this.isLeader && this.roomData.enabledGameModeIdxs.includes(1)
             );
             setButtonState(
                 this.queueMode2,
                 this.roomData.gameModeIdx == 2,
-                this.isLeader && this.roomData.enabledGameModeIdxs!.includes(2)
+                this.isLeader && this.roomData.enabledGameModeIdxs.includes(2)
             );
 
             // Fill mode
@@ -476,7 +476,7 @@ export class TeamMenu {
             }
             let playersInGame = false;
             for (let i = 0; i < this.players.length; i++) {
-                playersInGame |= this.players[i].inGame;
+                playersInGame = playersInGame || this.players[i].inGame;
             }
 
             const waitReason = $("#msg-wait-reason");
@@ -518,7 +518,7 @@ export class TeamMenu {
             // Player properties
             const teamMembers = $("#team-menu-member-list");
             teamMembers.empty();
-            for (let t = 0; t < this.roomData.maxPlayers!; t++) {
+            for (let t = 0; t < this.roomData.maxPlayers; t++) {
                 let playerStatus = {
                     name: "",
                     playerId: 0,

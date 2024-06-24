@@ -9,7 +9,6 @@ import { coldet } from "../../shared/utils/coldet";
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
 import { v2, type Vec2 } from "../../shared/utils/v2";
-import { type Emote } from "./../../server/src/objects/player";
 import { type AudioManager } from "./audioManager";
 import { type Camera } from "./camera";
 import { device } from "./device";
@@ -21,6 +20,7 @@ import { type DeadBodyBarn } from "./objects/deadBody";
 import { type Player, type PlayerBarn } from "./objects/player";
 import { type Renderer } from "./renderer";
 import { type UiManager } from "./ui/ui";
+import { type Emote } from "../../shared/msgs/updateMsg";
 
 const airdropIdx = 4;
 const airstrikeIdx = 5;
@@ -606,7 +606,7 @@ export class EmoteBarn {
             if (pingData) {
                 this.uiManager.createPing(
                     ping.type,
-                    ping.pos,
+                    ping.pos!,
                     ping.playerId,
                     this.activePlayer.__id,
                     this.playerBarn,
@@ -654,7 +654,7 @@ export class EmoteBarn {
                     });
                 }
                 if (indicator) {
-                    indicator.pos = ping.pos;
+                    indicator.pos = ping.pos!;
                     indicator.pingSprite.sprite.texture = PIXI.Texture.from(
                         pingData.texture!
                     );

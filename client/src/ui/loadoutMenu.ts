@@ -1088,7 +1088,7 @@ export class LoadoutMenu {
             this.equippedItems = [];
 
             for (let T = 0; T < this.loadout.emotes.length; T++) {
-                this.equippedItems.push({});
+                this.equippedItems.push({} as EquippedItem);
                 const emote = this.loadout.emotes[T];
                 if (GameObjectDefs[emote]) {
                     const svg = helpers.getSvgFromGameType(emote);

@@ -416,7 +416,7 @@ export class Pass {
             .queue((el) => {
                 quest.elems.main.addClass("pass-bg-pulse");
                 quest.elems.xp.addClass("pass-text-pulse");
-                quest.elems.refresh.css(
+                quest.elems.refresh.animate(
                     {
                         opacity: 0.25
                     },

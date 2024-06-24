@@ -31,7 +31,10 @@ class ConfigTypeMap {
     }
 
     addType(type: string) {
-        assert(this._typeToId[type] === undefined, `Type ${type} has already been defined!`);
+        assert(
+            this._typeToId[type] === undefined,
+            `Type ${type} has already been defined!`
+        );
         assert(this.nextId < this.maxId);
         this._typeToId[type] = this.nextId;
         this._idToType[this.nextId] = type;
@@ -47,17 +50,29 @@ class ConfigTypeMap {
     idToType(id: number) {
         const type = this._idToType[id];
         if (type === undefined) {
-            console.error("Invalid id given to idToType", id, "max", Object.keys(this._idToType).length);
+            console.error(
+                "Invalid id given to idToType",
+                id,
+                "max",
+                Object.keys(this._idToType).length
+            );
         }
         return type;
     }
 }
 
-function createTypeSerialization(type: string, typeList: Record<string, unknown>, bitsPerType: number) {
+function createTypeSerialization(
+    type: string,
+    typeList: Record<string, unknown>,
+    bitsPerType: number
+) {
     const typeMap = new ConfigTypeMap(bitsPerType);
 
     const types = Object.keys(typeList);
-    assert(types.length <= typeMap.maxId, `${type} contains ${types.length} types, max ${typeMap.maxId}`);
+    assert(
+        types.length <= typeMap.maxId,
+        `${type} contains ${types.length} types, max ${typeMap.maxId}`
+    );
     for (let i = 0; i < types.length; i++) {
         typeMap.addType(types[i]);
     }
@@ -77,7 +92,11 @@ function createTypeSerialization(type: string, typeList: Record<string, unknown>
     return typeMap;
 }
 
-const gameTypeSerialization = createTypeSerialization("Game", GameObjectDefs, 10);
+const gameTypeSerialization = createTypeSerialization(
+    "Game",
+    GameObjectDefs,
+    10
+);
 const mapTypeSerialization = createTypeSerialization("Map", MapObjectDefs, 12);
 
 export class BitStream extends bb.BitStream {
@@ -91,7 +110,10 @@ export class BitStream extends bb.BitStream {
 
     writeFloat(f: number, min: number, max: number, bits: number) {
         assert(bits > 0 && bits < 31);
-        assert(f >= min && f <= max, `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`);
+        assert(
+            f >= min && f <= max,
+            `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`
+        );
         const range = (1 << bits) - 1;
         const x = math.clamp(f, min, max);
         const t = (x - min) / (max - min);
@@ -108,12 +130,25 @@ export class BitStream extends bb.BitStream {
         return v;
     }
 
-    writeVec(vec: Vec2, minX: number, minY: number, maxX: number, maxY: number, bitCount: number) {
+    writeVec(
+        vec: Vec2,
+        minX: number,
+        minY: number,
+        maxX: number,
+        maxY: number,
+        bitCount: number
+    ) {
         this.writeFloat(vec.x, minX, maxX, bitCount);
         this.writeFloat(vec.y, minY, maxY, bitCount);
     }
 
-    readVec(minX: number, minY: number, maxX: number, maxY: number, bitCount: number) {
+    readVec(
+        minX: number,
+        minY: number,
+        maxX: number,
+        maxY: number,
+        bitCount: number
+    ) {
         return {
             x: this.readFloat(minX, maxX, bitCount),
             y: this.readFloat(minY, maxY, bitCount)
@@ -151,12 +186,12 @@ export class BitStream extends bb.BitStream {
     }
 
     writeAlignToNextByte() {
-        const offset = 8 - this.index % 8;
+        const offset = 8 - (this.index % 8);
         if (offset < 8) this.writeBits(0, offset);
     }
 
     readAlignToNextByte() {
-        const offset = 8 - this.index % 8;
+        const offset = 8 - (this.index % 8);
         if (offset < 8) this.readBits(offset);
     }
 
@@ -186,10 +221,17 @@ export class MsgStream {
     arrayBuf: ArrayBuffer;
 
     constructor(buf: ArrayBuffer | Uint8Array) {
-        const arrayBuf = buf instanceof ArrayBuffer ? buf : buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+        const arrayBuf =
+      buf instanceof ArrayBuffer
+          ? buf
+          : buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 
         if (!(arrayBuf instanceof ArrayBuffer)) {
-            throw new Error(`Invalid buf type ${typeof buf === "undefined" ? "undefined" : typeof (buf)}`);
+            throw new Error(
+                `Invalid buf type ${
+                    typeof buf === "undefined" ? "undefined" : typeof buf
+                }`
+            );
         }
         this.arrayBuf = arrayBuf;
         this.stream = new BitStream(arrayBuf);
@@ -262,7 +304,7 @@ export enum MsgType {
     Stats,
     UpdatePass,
     AliveCounts,
-    PerkModeRoleSelect
+    PerkModeRoleSelect,
 }
 
 export enum PickupMsgType {
@@ -271,7 +313,7 @@ export enum PickupMsgType {
     AlreadyEquipped,
     BetterItemEquipped,
     Success,
-    GunCannotFire
+    GunCannotFire,
 }
 
 // * seem to be only used when cheats are detected
@@ -309,8 +351,8 @@ export class StatsMsg extends AbstractMsg {
 }
 
 export class UpdatePassMsg {
-    serialize(_e: BitStream) { }
-    deserialize(_e: BitStream) { }
+    serialize(_e: BitStream) {}
+    deserialize(_e: BitStream) {}
 }
 
 //
@@ -319,14 +361,14 @@ export class UpdatePassMsg {
 //
 
 export interface RoomData {
-    maxPlayers?: number
-    findingGame?: boolean
     roomUrl: string
-    autoFill: boolean
-    gameModeIdx: number
+    findingGame: boolean
     lastError: string
     region: string
-    enabledGameModeIdxs?: number[]
+    autoFill: boolean
+    enabledGameModeIdxs: number[]
+    gameModeIdx: number
+    maxPlayers: number
 }
 
 //
@@ -349,30 +391,32 @@ export interface TeamJoinGameMsg {
     }
 }
 
+export interface TeamMenuPlayer {
+    name: string
+    playerId: number
+    isLeader: boolean
+    inGame: boolean
+}
+
 /**
  * Send by the server to update the client team ui
  */
 export interface TeamStateMsg {
     readonly type: "state"
     data: {
-        localPlayerId: number
+        localPlayerId: number // always -1 by default since it can only be set when the socket is actually sending state to each individual client
         room: RoomData
-        players: Array<{
-            playerId: number
-            name: string
-            isLeader: boolean
-            inGame: boolean
-        }>
+        players: TeamMenuPlayer[]
     }
 }
 
 /**
- * Send by the server to keep the connection alive
+ * Send by the client AND server to keep the connection alive
  */
 export interface TeamKeepAliveMsg {
     readonly type: "keepAlive"
     // eslint-disable-next-line @typescript-eslint/ban-types
-    data: {}
+    data: Record<string, unknown>
 }
 
 /**
@@ -390,11 +434,11 @@ export interface TeamErrorMsg {
 }
 
 export type ServerToClientTeamMsg =
-    TeamJoinGameMsg |
-    TeamStateMsg |
-    TeamKeepAliveMsg |
-    TeamKickedMsg |
-    TeamErrorMsg;
+  | TeamJoinGameMsg
+  | TeamStateMsg
+  | TeamKeepAliveMsg
+  | TeamKickedMsg
+  | TeamErrorMsg;
 
 //
 // Team Msgs that the client sends to the server
@@ -461,10 +505,21 @@ export interface TeamGameCompleteMsg {
     readonly type: "gameComplete"
 }
 
+export interface TeamPlayGameMsg {
+    readonly type: "playGame"
+    data: {
+        version: number
+        region: string
+        zones: string[]
+    }
+}
+
 export type ClientToServerTeamMsg =
-    TeamJoinMsg |
-    TeamChangeNameMsg |
-    TeamSetRoomPropsMsg |
-    TeamCreateMsg |
-    TeamKickMsg |
-    TeamGameCompleteMsg;
+  | TeamKeepAliveMsg
+  | TeamJoinMsg
+  | TeamChangeNameMsg
+  | TeamSetRoomPropsMsg
+  | TeamCreateMsg
+  | TeamKickMsg
+  | TeamGameCompleteMsg
+  | TeamPlayGameMsg;

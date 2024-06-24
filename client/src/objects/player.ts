@@ -2480,9 +2480,9 @@ export class PlayerBarn {
         for (let i = 0; i < keys.length; i++) {
             const status = this.playerStatus[keys[i] as unknown as number];
             const playerId = status.playerId;
-            const playerInfo = this.getPlayerInfo(playerId!);
+            const playerInfo = this.getPlayerInfo(playerId);
 
-            const player = this.getPlayerById(playerId!);
+            const player = this.getPlayerById(playerId);
             if (player) {
                 // Update data with latest position if on screen
                 status.posDelta = v2.length(v2.sub(player.netData.pos, status.pos));

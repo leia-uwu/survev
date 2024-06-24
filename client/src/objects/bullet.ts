@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js-legacy";
-import { type Bullet } from "../../../server/src/objects/bullet";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
@@ -18,6 +17,7 @@ import { type Renderer } from "../renderer";
 import { type FlareBarn } from "./flare";
 import { type ParticleBarn } from "./particles";
 import { type Player, type PlayerBarn } from "./player";
+import { type Bullet } from "../../../shared/msgs/updateMsg";
 
 export function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
     const ang = Math.atan2(dir.y, dir.x);

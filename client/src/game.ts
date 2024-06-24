@@ -1021,21 +1021,21 @@ export class Game {
             for (let i = 0; i < this.map.terrain!.rivers.length; i++) {
                 const river = this.map.terrain?.rivers[i]!;
                 const closestPointT = river.spline.getClosestTtoPoint(playerPos);
-                const closestPoint = river .spline.getPos(closestPointT);
+                const closestPoint = river.spline.getPos(closestPointT);
                 const distanceToRiver = v2.length(v2.sub(closestPoint, playerPos));
                 const riverWidth = river.waterWidth + 2;
                 const normalizedDistance = math.delerp(distanceToRiver, 30 + riverWidth, riverWidth);
-                const riverStrength = math.clamp(river .waterWidth / 8, 0.25, 1);
-                riverWeight = math.max(normalizedDistance * riverStrength, riverWeight );
+                const riverStrength = math.clamp(river.waterWidth / 8, 0.25, 1);
+                riverWeight = math.max(normalizedDistance * riverStrength, riverWeight);
             }
             if (this.activePlayer.layer == 1) {
                 riverWeight = 0;
             }
             windWeight = 1;
         }
-        this.ambience.getTrack("wind").weight = windWeight ;
-        this.ambience.getTrack("river").weight = riverWeight ;
-        this.ambience.getTrack("waves").weight = wavesWeight ;
+        this.ambience.getTrack("wind").weight = windWeight;
+        this.ambience.getTrack("river").weight = riverWeight;
+        this.ambience.getTrack("waves").weight = wavesWeight;
     }
 
     resize() {

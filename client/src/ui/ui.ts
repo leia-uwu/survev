@@ -1021,8 +1021,8 @@ export class UiManager {
         const keys = Object.keys(playerBarn.playerStatus);
         for (let i = 0; i < keys.length; i++) {
             const playerStatus =
-        playerBarn.playerStatus[keys[i] as unknown as number] as Required<PlayerStatus>;
-            const playerId = playerStatus.playerId;
+        playerBarn.playerStatus[keys[i] as unknown as number];
+            const playerId = playerStatus.playerId!;
             const playerInfo = playerBarn.getPlayerInfo(playerId);
             const sameGroup = playerInfo.groupId == activePlayerInfo.groupId;
             let zOrder = 65535 + playerId * 2;
@@ -1070,8 +1070,8 @@ export class UiManager {
             addSprite(
                 playerStatus.pos,
                 scale,
-                playerStatus.minimapAlpha,
-                playerStatus.minimapVisible,
+                playerStatus.minimapAlpha!,
+                playerStatus.minimapVisible!,
                 zOrder,
                 texture,
                 tint
@@ -1080,7 +1080,7 @@ export class UiManager {
             // Add an outer sprite if this player is in our group
             if (sameGroup) {
                 const scale = device.uiLayout == device.UiLayout.Sm ? 0.25 : 0.3;
-                const visible = playerStatus.minimapVisible && !customMapIcon;
+                const visible = playerStatus.minimapVisible! && !customMapIcon;
 
                 addSprite(
                     playerStatus.pos,

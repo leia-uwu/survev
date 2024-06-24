@@ -808,7 +808,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     }
 };
 
-const SkinDefs = {
+const SkinDefs: Record<string, BulletDef> = {
     bullet_mp5_bonus: defineBulletSkin("bullet_mp5", {
         speed: 106.25,
         distance: 125
