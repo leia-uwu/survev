@@ -1,7 +1,7 @@
 import { Emote, PlayerBarn } from "./objects/player";
 import { Grid } from "./utils/grid";
 import { Config, TeamMode } from "./config";
-import { type GameObject, ObjectRegister } from "./objects/gameObject";
+import { ObjectRegister } from "./objects/gameObject";
 import { GameMap } from "./map";
 import { BullletBarn } from "./objects/bullet";
 import { Logger } from "./utils/logger";
@@ -17,7 +17,6 @@ import { util } from "../../shared/utils/util";
 import { ProjectileBarn } from "./objects/projectile";
 import { DeadBodyBarn } from "./objects/deadBody";
 import { ExplosionBarn } from "./objects/explosion";
-import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { SmokeBarn } from "./objects/smoke";
 import { AirdropBarn } from "./objects/airdrop";
 import { DecalBarn } from "./objects/decal";
@@ -73,8 +72,6 @@ export class Game {
 
     logger: Logger;
 
-    typeToPool: Record<ObjectType, GameObject[]>;
-
     constructor(id: string, config: ServerGameConfig) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
@@ -97,21 +94,6 @@ export class Game {
 
         this.map.init();
 
-        this.typeToPool = {
-            [ObjectType.Invalid]: [],
-            [ObjectType.LootSpawner]: [],
-            [ObjectType.Player]: this.playerBarn.players,
-            [ObjectType.Obstacle]: this.map.obstacles,
-            [ObjectType.Loot]: this.lootBarn.loots,
-            [ObjectType.DeadBody]: this.deadBodyBarn.deadBodies,
-            [ObjectType.Building]: this.map.buildings,
-            [ObjectType.Structure]: this.map.structures,
-            [ObjectType.Decal]: this.decalBarn.decals,
-            [ObjectType.Projectile]: this.projectileBarn.projectiles,
-            [ObjectType.Smoke]: this.smokeBarn.smokes,
-            [ObjectType.Airdrop]: this.airdropBarn.airdrops
-        };
-
         this.logger.log(`Created in ${Date.now() - start} ms`);
     }
 
@@ -125,12 +107,12 @@ export class Game {
         // Update modules
         //
         this.gas.update(dt);
-        this.bulletBarn.update(dt);
-        this.lootBarn.update(dt);
-        this.projectileBarn.update(dt);
-        this.deadBodyBarn.update(dt);
         this.playerBarn.update(dt);
+        this.lootBarn.update(dt);
+        this.bulletBarn.update(dt);
+        this.projectileBarn.update(dt);
         this.explosionBarn.update();
+        this.deadBodyBarn.update(dt);
 
         // second update:
         // serialize objects and send msgs
