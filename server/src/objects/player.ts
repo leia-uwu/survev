@@ -968,7 +968,7 @@ export class Player extends BaseGameObject {
             const emotePlayer = game.objectRegister.getById(emote.playerId) as Player | undefined;
             if (emotePlayer) {
                 if (((emote.isPing || emote.itemType) && emotePlayer.groupId === this.groupId) ||
-                    this.visibleObjects.has(emotePlayer)
+                    (this.visibleObjects.has(emotePlayer) && !emote.isPing)
                 ) {
                     updateMsg.emotes.push(emote);
                 }
