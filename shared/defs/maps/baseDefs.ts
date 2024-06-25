@@ -462,19 +462,20 @@ export const Main: MapDef = {
             }
         ],
         fixedSpawns: [
-            {
+            { // small is spawn count for solos and duos, large is spawn count for squads
                 warehouse_01: 2,
                 house_red_01: { small: 3, large: 4 },
                 house_red_02: { small: 3, large: 4 },
                 barn_01: { small: 1, large: 3 },
                 barn_02: 1,
                 hut_01: 4,
-                hut_02: 1,
+                hut_02: 1, // spas hut
+                hut_03: 1, // scout hut
                 shack_03a: 2,
                 shack_03b: { small: 2, large: 3 },
                 greenhouse_01: 1,
                 cache_01: 1,
-                cache_02: 1,
+                cache_02: 1, // mosin tree
                 cache_07: 1,
                 bunker_structure_01: { odds: 0.05 },
                 bunker_structure_02: 1,
