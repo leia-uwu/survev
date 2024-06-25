@@ -1079,8 +1079,8 @@ export class Player extends BaseGameObject {
                     }
                 }
             }
-            this.spectating = playerToSpec;
         }
+        this.spectating = playerToSpec;
     }
 
     damage(params: DamageParams) {
