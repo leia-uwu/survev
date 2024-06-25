@@ -16,6 +16,7 @@ import { ExplosionBarn } from "./objects/explosion";
 import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
+import { PlaneBarn } from "./objects/plane";
 import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
@@ -73,6 +74,7 @@ export class Game {
     airdropBarn = new AirdropBarn(this);
 
     explosionBarn = new ExplosionBarn(this);
+    planeBarn = new PlaneBarn(this);
 
     map: GameMap;
     gas: Gas;
@@ -133,6 +135,7 @@ export class Game {
         this.smokeBarn.update(dt);
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
+        this.planeBarn.update(dt);
 
         if (Config.perfLogging.enabled) {
             // Record performance and start the next tick
