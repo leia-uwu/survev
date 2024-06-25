@@ -726,13 +726,13 @@ export class Player extends BaseGameObject {
                 let layer = this.layer;
                 if (this.layer > 2) layer = 0;
                 if (!util.sameLayer(util.toGroundLayer(layer), obj.layer)) continue;
-                
-                if (obj.healRegions){
+
+                if (obj.healRegions) {
                     const healRegion = obj.healRegions.find(hr => {
                         return coldet.testCircleAabb(this.pos, this.rad, hr.collision.min, hr.collision.max);
                     });
 
-                    if (healRegion){
+                    if (healRegion) {
                         this.health += healRegion.healRate * dt;
                     }
                 }

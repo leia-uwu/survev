@@ -55,7 +55,7 @@ export class Building extends BaseGameObject {
     }> = [];
 
     healRegions?: Array<{
-        collision: AABB,
+        collision: AABB
         healRate: number
     }> = [];
 
@@ -93,12 +93,12 @@ export class Building extends BaseGameObject {
             1
         );
 
-        //transforms heal region local coordinates to world coordinates
+        // transforms heal region local coordinates to world coordinates
         this.healRegions = def.healRegions?.map(hr => {
             return {
                 collision: collider.transform(hr.collision, this.pos, this.rot, this.scale) as AABB,
                 healRate: hr.healRate
-            }
+            };
         });
 
         this.wallsToDestroy = def.ceiling.destroy?.wallCount ?? Infinity;
