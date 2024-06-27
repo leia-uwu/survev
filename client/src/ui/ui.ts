@@ -51,7 +51,7 @@ function Interpolate(start: number, end: number, steps: number, count: number) {
 }
 
 class Color {
-    constructor(public r: number, public g: number, public b: number) {}
+    constructor(public r: number, public g: number, public b: number) { }
 
     getColors() {
         return {
@@ -699,7 +699,7 @@ export class UiManager {
         };
         if (
             this.gasState.mode != gasState.mode ||
-      this.gasState.time != gasState.time
+            this.gasState.time != gasState.time
         ) {
             this.gasState = gasState;
             const gasMoving = this.gasState.mode == GasMode.Moving;
@@ -734,9 +734,9 @@ export class UiManager {
         // Action pie timer
         if (
             this.actionSeq != player.action.seq &&
-      ((this.actionSeq = player.action.seq),
-      this.pieTimer.stop(),
-      player.action.type != Action.None && !this.displayingStats)
+            ((this.actionSeq = player.action.seq),
+            this.pieTimer.stop(),
+            player.action.type != Action.None && !this.displayingStats)
         ) {
             let desc = "";
             let actionTxt1 = "";
@@ -781,13 +781,13 @@ export class UiManager {
 
         if (!this.bigmapDisplayed) {
             this.mapSprite.x =
-        this.minimapPos.x +
-        this.mapSprite.width / 2 -
-        (player.pos.x / map.width) * this.mapSprite.width;
+                this.minimapPos.x +
+                this.mapSprite.width / 2 -
+                (player.pos.x / map.width) * this.mapSprite.width;
             this.mapSprite.y =
-        this.minimapPos.y -
-        this.mapSprite.height / 2 +
-        (player.pos.y / map.height) * this.mapSprite.height;
+                this.minimapPos.y -
+                this.mapSprite.height / 2 +
+                (player.pos.y / map.height) * this.mapSprite.height;
         }
 
         const camExtents = v2.create(
@@ -939,8 +939,8 @@ export class UiManager {
         // Set the spectate options height if player count changed
         if (
             teamMode > 1 &&
-      this.groupPlayerCount != groupPlayerCount &&
-      device.uiLayout == device.UiLayout.Lg
+            this.groupPlayerCount != groupPlayerCount &&
+            device.uiLayout == device.UiLayout.Lg
         ) {
             this.groupPlayerCount = groupPlayerCount;
             this.spectateOptionsWrapper.css({
@@ -969,7 +969,7 @@ export class UiManager {
             }
             if (
                 !this.roleMenuInst &&
-        this.audioManager.isSoundLoaded("ambient_lab_01", "ambient")
+                this.audioManager.isSoundLoaded("ambient_lab_01", "ambient")
             ) {
                 this.roleMenuInst = this.audioManager.playSound("ambient_lab_01", {
                     channel: "ambient"
@@ -1016,7 +1016,7 @@ export class UiManager {
         const keys = Object.keys(playerBarn.playerStatus);
         for (let i = 0; i < keys.length; i++) {
             const playerStatus =
-        playerBarn.playerStatus[keys[i] as unknown as number];
+                playerBarn.playerStatus[keys[i] as unknown as number];
             const playerId = playerStatus.playerId!;
             const playerInfo = playerBarn.getPlayerInfo(playerId);
             const sameGroup = playerInfo.groupId == activePlayerInfo.groupId;
@@ -1155,7 +1155,7 @@ export class UiManager {
                 // Map-event pings free themselves after they are finished;
                 // there's no limit to the number that an occur simultaneously.
                 const scale =
-          (device.uiLayout == device.UiLayout.Sm ? 0.15 : 0.2) * 1.5;
+                    (device.uiLayout == device.UiLayout.Sm ? 0.15 : 0.2) * 1.5;
                 createPingSprite(scale, pingDef.tint!).release();
 
                 createPulseSprite(pingDef.tint!).release();
@@ -1240,13 +1240,13 @@ export class UiManager {
 
     getMapPosFromWorldPos(worldPos: Vec2, map: Map) {
         const xPos =
-      this.mapSprite.x -
-      this.mapSprite.width / 2 +
-      (worldPos.x / map.width) * this.mapSprite.width;
+            this.mapSprite.x -
+            this.mapSprite.width / 2 +
+            (worldPos.x / map.width) * this.mapSprite.width;
         const yPos =
-      this.mapSprite.y +
-      this.mapSprite.height / 2 -
-      (worldPos.y / map.height) * this.mapSprite.height;
+            this.mapSprite.y +
+            this.mapSprite.height / 2 -
+            (worldPos.y / map.height) * this.mapSprite.height;
         return v2.create(xPos, yPos);
     }
 
@@ -1259,20 +1259,20 @@ export class UiManager {
                 yBuffer = 0;
             }
             insideMap =
-        screenPos.x > xBuffer &&
-        screenPos.x < camera.screenWidth - xBuffer &&
-        screenPos.y > yBuffer &&
-        screenPos.y < camera.screenHeight - yBuffer;
+                screenPos.x > xBuffer &&
+                screenPos.x < camera.screenWidth - xBuffer &&
+                screenPos.y > yBuffer &&
+                screenPos.y < camera.screenHeight - yBuffer;
         } else if (this.minimapDisplayed) {
             const thisMinimapSize = this.getMinimapSize();
             const thisMinimapMargin = this.getMinimapMargin();
             const minimapSize = thisMinimapSize * this.screenScaleFactor;
             const halfSize = (minimapSize + thisMinimapMargin) * 0.5;
             insideMap =
-        screenPos.x > this.minimapPos.x - halfSize &&
-        screenPos.x < this.minimapPos.x + halfSize &&
-        screenPos.y > this.minimapPos.y - halfSize &&
-        screenPos.y < this.minimapPos.y + halfSize;
+                screenPos.x > this.minimapPos.x - halfSize &&
+                screenPos.x < this.minimapPos.x + halfSize &&
+                screenPos.y > this.minimapPos.y - halfSize &&
+                screenPos.y < this.minimapPos.y + halfSize;
         }
         if (insideMap) {
             const mapOrigin = v2.create(
@@ -1280,9 +1280,9 @@ export class UiManager {
                 this.mapSprite.y + this.mapSprite.height / 2
             );
             const xWorldPos =
-        ((screenPos.x - mapOrigin.x) / this.mapSprite.width) * map.width;
+                ((screenPos.x - mapOrigin.x) / this.mapSprite.width) * map.width;
             const yWorldPos =
-        ((mapOrigin.y - screenPos.y) / this.mapSprite.height) * map.height;
+                ((mapOrigin.y - screenPos.y) / this.mapSprite.height) * map.height;
             return v2.create(xWorldPos, yWorldPos);
         }
         // @ts-expect-error why? just why?
@@ -1416,8 +1416,8 @@ export class UiManager {
         map: Map,
         ui2: unknown
     ) {
-    // If we're spectating a team that's not our own, and the game isn't over yet,
-    // don't display the stats screen again.
+        // If we're spectating a team that's not our own, and the game isn't over yet,
+        // don't display the stats screen again.
         if (!spectating || teamId == localTeamId || gameOver) {
             this.toggleEscMenu(true);
             this.displayingStats = true;
@@ -1439,7 +1439,7 @@ export class UiManager {
             const victory = localTeamId == winningTeamId;
             const statsDelay = victory ? 1750 : 2500;
             const isLocalTeamWinner =
-        localTeamId == winningTeamId || (spectating && winningTeamId == teamId);
+                localTeamId == winningTeamId || (spectating && winningTeamId == teamId);
             const spectatingAnotherTeam = spectating && localTeamId != teamId;
             const S = isLocalTeamWinner
                 ? this.getTitleVictoryText(spectatingAnotherTeam, map.getMapDef().gameMode)
@@ -1484,7 +1484,7 @@ export class UiManager {
                     );
             };
             const M =
-        device.uiLayout != device.UiLayout.Sm || device.tablet ? 250 : 125;
+                device.uiLayout != device.UiLayout.Sm || device.tablet ? 250 : 125;
             let P = 0;
             P -= ((playerStats.length - 1) * M) / 2;
             P -= (playerStats.length - 1) * 10;
@@ -1520,7 +1520,7 @@ export class UiManager {
                         B.append(
                             $("<div/>", {
                                 class:
-                    "ui-stats-info-player-badge ui-stats-info-player-red-leader"
+                                        "ui-stats-info-player-badge ui-stats-info-player-red-leader"
                             })
                         );
                         break;
@@ -1528,15 +1528,15 @@ export class UiManager {
                         B.append(
                             $("<div/>", {
                                 class:
-                    "ui-stats-info-player-badge ui-stats-info-player-blue-leader"
+                                        "ui-stats-info-player-badge ui-stats-info-player-blue-leader"
                             })
                         );
                         break;
                     case 3: {
                         const R =
-                playerInfo.teamId == 1
-                    ? "ui-stats-info-player-red-ribbon"
-                    : "ui-stats-info-player-blue-ribbon";
+                                playerInfo.teamId == 1
+                                    ? "ui-stats-info-player-red-ribbon"
+                                    : "ui-stats-info-player-blue-ribbon";
                         B.append(
                             $("<div/>", {
                                 class: `ui-stats-info-player-badge ${R}`
@@ -1559,12 +1559,12 @@ export class UiManager {
             if (gameOver || this.waitingForPlayers) {
                 restartButton.css({
                     width:
-            device.uiLayout != device.UiLayout.Sm || device.tablet ? 225 : 130
+                        device.uiLayout != device.UiLayout.Sm || device.tablet ? 225 : 130
                 });
             } else {
                 restartButton.css({
                     left:
-            device.uiLayout != device.UiLayout.Sm || device.tablet ? -72 : -46
+                        device.uiLayout != device.UiLayout.Sm || device.tablet ? -72 : -46
                 });
                 const q = $("<a/>", {
                     class: "btn-green btn-darken menu-option ui-stats-spectate",
@@ -1610,7 +1610,7 @@ export class UiManager {
                 const e = $(elem);
                 e.hide();
                 const delay =
-          statsDelay + baseDelay + (elemIdx + idx) * elemDelay + 500;
+                    statsDelay + baseDelay + (elemIdx + idx) * elemDelay + 500;
                 e.delay(delay).fadeIn(elemFadeTime);
                 elemIdx++;
             });
@@ -1789,9 +1789,9 @@ export class UiManager {
             if (displayStats.hasOwnProperty(k)) {
                 const text = displayStats[k as keyof typeof displayStats];
                 const stat =
-          k == "timeAlive"
-              ? humanizeTime(stats[k])
-              : stats[k as keyof typeof displayStats];
+                    k == "timeAlive"
+                        ? humanizeTime(stats[k])
+                        : stats[k as keyof typeof displayStats];
                 const html = `<tr><td class="ui-spectate-stats-category">${text}</td><td class="ui-spectate-stats-value">${stat}</td></tr>`;
                 this.spectateModeStatsData.append(html);
             }
@@ -1859,9 +1859,9 @@ export class UiManager {
             this.container.alpha = this.minimapDisplayed ? 1 : 0;
         }
         let mapHidden =
-      device.uiLayout == device.UiLayout.Sm
-          ? ".js-ui-mobile-map-hidden"
-          : "js-ui-desktop-map-hidden";
+            device.uiLayout == device.UiLayout.Sm
+                ? ".js-ui-mobile-map-hidden"
+                : "js-ui-desktop-map-hidden";
         mapHidden += ", .js-ui-map-hidden";
         $(this.visibilityMode == 2 ? ".js-ui-hud-show" : mapHidden).css(
             "display",
@@ -1878,9 +1878,9 @@ export class UiManager {
     updateSpectatorCountDisplay(dirty: boolean) {
         const displayCounter = !this.bigmapDisplayed && this.spectatorCount > 0;
         dirty =
-      dirty ||
-      (this.spectatorCount > 0 && !this.spectatorCounterDisplayed) ||
-      (this.spectatorCount == 0 && this.spectatorCounterDisplayed);
+            dirty ||
+            (this.spectatorCount > 0 && !this.spectatorCounterDisplayed) ||
+            (this.spectatorCount == 0 && this.spectatorCounterDisplayed);
 
         if (this.spectatorCount != this.prevSpectatorCount) {
             this.spectatorCounter.html(this.spectatorCount as unknown as string);
@@ -1973,19 +1973,19 @@ export class UiManager {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft - minutes * 60;
             message +=
-          minutes > 1
-              ? ` ${minutes} ${this.localization.translate("game-minutes")}`
-              : "";
+                    minutes > 1
+                        ? ` ${minutes} ${this.localization.translate("game-minutes")}`
+                        : "";
             message +=
-          minutes == 1
-              ? ` ${minutes} ${this.localization.translate("game-minute")}`
-              : "";
+                    minutes == 1
+                        ? ` ${minutes} ${this.localization.translate("game-minute")}`
+                        : "";
             message +=
-          seconds > 0
-              ? ` ${Math.floor(seconds)} ${this.localization.translate(
-                  "game-seconds"
-              )}`
-              : "";
+                    seconds > 0
+                        ? ` ${Math.floor(seconds)} ${this.localization.translate(
+                            "game-seconds"
+                        )}`
+                        : "";
             break;
         }
         case GasMode.Moving:
@@ -2008,7 +2008,7 @@ export class UiManager {
         planeBarn: PlaneBarn,
         debug: unknown
     ) {
-    // Gas
+        // Gas
         const circle = gas.getCircle();
         const gasPos = this.getMapPosFromWorldPos(circle.pos, map);
         const gasEdge = this.getMapPosFromWorldPos(
@@ -2108,14 +2108,14 @@ export class UiManager {
         const prevStatus = this.teamSelectors[slotIdx].prevStatus;
 
         const statusChange =
-      status.dead != prevStatus.dead ||
-      status.disconnected != prevStatus.disconnected ||
-      status.downed != prevStatus.downed ||
-      status.role != prevStatus.role;
+            status.dead != prevStatus.dead ||
+            status.disconnected != prevStatus.disconnected ||
+            status.downed != prevStatus.downed ||
+            status.role != prevStatus.role;
         if (
             this.teamSelectors[slotIdx].playerId != playerId ||
-      health != prevHealth ||
-      statusChange
+            health != prevHealth ||
+            statusChange
         ) {
             const teamStatus = this.teamSelectors[slotIdx].teamStatus;
             const teamHealthInner = this.teamSelectors[slotIdx].teamHealthInner;
@@ -2164,13 +2164,13 @@ export class UiManager {
 
     resize(map: Map, camera: Camera) {
         this.screenScaleFactor =
-      device.uiLayout == device.UiLayout.Sm
-          ? 0.5626
-          : math.min(
-              1,
-              math.clamp(camera.screenWidth / 1280, 0.75, 1) *
-              math.clamp(camera.screenHeight / 1024, 0.75, 1)
-          );
+            device.uiLayout == device.UiLayout.Sm
+                ? 0.5626
+                : math.min(
+                    1,
+                    math.clamp(camera.screenWidth / 1280, 0.75, 1) *
+                    math.clamp(camera.screenHeight / 1024, 0.75, 1)
+                );
         this.pieTimer.resize(this.touch, this.screenScaleFactor);
 
         this.gasRenderer.resize();
@@ -2267,20 +2267,20 @@ export class UiManager {
                 ? minimapSize / 2 + thisMinimapMargin
                 : screenHeight - minimapSize / 2 - thisMinimapMargin;
             this.minimapPos.x =
-        thisMinimapMargin + minimapSize / 2 + thisMinimapMarginXAdjust;
+                thisMinimapMargin + minimapSize / 2 + thisMinimapMarginXAdjust;
             this.minimapPos.y = minimapPosY + thisMinimapMarginYAdjust;
             this.display.border.lineStyle(thisMinimapBorderWidth, 0);
             this.display.border.beginFill(0, 0);
             const u = layoutSm
                 ? thisMinimapMargin + thisMinimapBorderWidth / 2
                 : screenHeight -
-          minimapSize -
-          thisMinimapMargin +
-          thisMinimapBorderWidth / 2;
+                minimapSize -
+                thisMinimapMargin +
+                thisMinimapBorderWidth / 2;
             this.display.border.drawRect(
                 thisMinimapMargin +
-          thisMinimapBorderWidth / 2 +
-          thisMinimapMarginXAdjust,
+                thisMinimapBorderWidth / 2 +
+                thisMinimapMarginXAdjust,
                 u + thisMinimapMarginYAdjust,
                 minimapSize - thisMinimapBorderWidth,
                 minimapSize - thisMinimapBorderWidth

@@ -96,8 +96,8 @@ export class Renderer {
 
         if (
             obj.parent == this.layers[layerIdx] &&
-      obj.__zOrd == zOrd &&
-      (zIdx === undefined || obj.__zIdx == zIdx)
+            obj.__zOrd == zOrd &&
+            (zIdx === undefined || obj.__zIdx == zIdx)
         ) {
             return;
         }
@@ -219,7 +219,7 @@ export class Renderer {
     }
 
     update(dt: number, camera: Camera, map: Map, debug: unknown) {
-    // Adjust layer alpha
+        // Adjust layer alpha
         const alphaTarget = this.layer > 0 ? 1.0 : 0.0;
         this.layerAlpha += step(this.layerAlpha, alphaTarget, dt * 12.0);
         const groundTarget = this.layer == 1 && this.underground ? 1.0 : 0.0;

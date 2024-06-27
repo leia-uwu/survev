@@ -61,7 +61,7 @@ class DeadBody implements AbstractObject {
         this.container.visible = this.sprite;
     }
 
-    init() {}
+    init() { }
     free() {
         this.container.visible = false;
     }

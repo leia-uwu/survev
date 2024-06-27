@@ -59,7 +59,7 @@ export class Structure implements AbstractObject {
         this.soundTransitionT = 0;
     }
 
-    free() {}
+    free() { }
 
     updateData(
         data: ObjectData<ObjectType.Structure>,
@@ -93,7 +93,7 @@ export class Structure implements AbstractObject {
 
                 const inheritOri = layer?.inheritOri === undefined || layer.inheritOri;
                 const underground =
-          layer.underground !== undefined ? layer.underground : p == 1;
+                    layer.underground !== undefined ? layer.underground : p == 1;
                 const pos = v2.add(this.pos, layer.pos);
                 const rot = math.oriToRad(
                     inheritOri ? data.ori + layer.ori : layer.ori
@@ -161,21 +161,21 @@ export class Structure implements AbstractObject {
         collider.createCircle(activePlayer.pos, 0.001);
         map.buildingPool.getPool();
         const building0 =
-      this.layers.length > 0 ? map.getBuildingById(this.layers[0].objId) : null;
+            this.layers.length > 0 ? map.getBuildingById(this.layers[0].objId) : null;
         const building1 =
-      this.layers.length > 1 ? map.getBuildingById(this.layers[1].objId) : null;
+            this.layers.length > 1 ? map.getBuildingById(this.layers[1].objId) : null;
         const maxDist =
-      def.interiorSound?.outsideMaxDist !== undefined
-          ? def.interiorSound.outsideMaxDist
-          : 10;
+            def.interiorSound?.outsideMaxDist !== undefined
+                ? def.interiorSound.outsideMaxDist
+                : 10;
         const outsideVol =
-      def.interiorSound?.outsideVolume !== undefined
-          ? def.interiorSound.outsideVolume
-          : 0;
+            def.interiorSound?.outsideVolume !== undefined
+                ? def.interiorSound.outsideVolume
+                : 0;
         const undergroundVol =
-      def.interiorSound?.undergroundVolume !== undefined
-          ? def.interiorSound.undergroundVolume
-          : 1;
+            def.interiorSound?.undergroundVolume !== undefined
+                ? def.interiorSound.undergroundVolume
+                : 1;
 
         // Compute weights for the normal (weight0) and filtered (weight1) tracks
         let weight0 = 0;
@@ -203,9 +203,9 @@ export class Structure implements AbstractObject {
 
         // Transition between sound and soundAlt tracks
         const transitionTime =
-      def.interiorSound?.transitionTime !== undefined
-          ? def.interiorSound.transitionTime
-          : 1;
+            def.interiorSound?.transitionTime !== undefined
+                ? def.interiorSound.transitionTime
+                : 1;
         if (this.interiorSoundAlt) {
             this.soundTransitionT = math.clamp(
                 this.soundTransitionT + dt / transitionTime,
@@ -222,9 +222,9 @@ export class Structure implements AbstractObject {
 
         // Choose the actual track based on the state of the transition
         const sound =
-      this.soundTransitionT > 0.5
-          ? def.interiorSound?.soundAlt
-          : def.interiorSound?.sound;
+            this.soundTransitionT > 0.5
+                ? def.interiorSound?.soundAlt
+                : def.interiorSound?.sound;
 
         // Set the track data
         const track0 = ambience.getTrack("interior_0");

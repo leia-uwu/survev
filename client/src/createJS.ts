@@ -5,9 +5,9 @@ import { type ReverbDef } from "./soundDefs";
 
 // @HACK: From soundjs:
 const isIOS =
-  window.navigator.userAgent.includes("iPod") ||
-  window.navigator.userAgent.includes("iPhone") ||
-  window.navigator.userAgent.includes("iPad");
+    window.navigator.userAgent.includes("iPod") ||
+    window.navigator.userAgent.includes("iPhone") ||
+    window.navigator.userAgent.includes("iPad");
 let nullBuffer: AudioBuffer | null = null;
 
 // @HACK: More Safari work-arounds. Safari does't support the
@@ -283,7 +283,7 @@ class Reverb {
     }
 
     connect() {
-    // Create dynamic nodes
+        // Create dynamic nodes
         this.gainNode = this.ctx.createGain();
         this.gainNode.channelCount = 1;
         this.gainNode.channelCountMode = "explicit";
@@ -319,7 +319,7 @@ class Reverb {
     }
 
     disconnect() {
-    // Disconnect nodes
+        // Disconnect nodes
         this.inNode.disconnect(this.gainNode!);
         this.gainNode?.disconnect(this.convolverNode!);
         if (this.echoVolume) {
@@ -363,7 +363,7 @@ class Reverb {
             const { buffer } = this.convolverNode!;
             const duration = buffer ? buffer.duration : 0.0;
             this.drainEndTime =
-        fadeEndTime + duration + this.echoDelay + this.stereoSpread;
+                fadeEndTime + duration + this.echoDelay + this.stereoSpread;
         }
         // If the reverb was silent and draining, but is now audible again, we
         // need to make sure to turn on the echo node
@@ -432,7 +432,7 @@ class WebAudioEngine {
     startTime!: number;
 
     // Soundjs API compat:
-    onfileload = function(...args: any[]) {};
+    onfileload = function(...args: any[]) { };
 
     PLAY_INITED = "playInited";
     PLAY_SUCCEEDED = "playSucceeded";
@@ -441,7 +441,7 @@ class WebAudioEngine {
     PLAY_FAILED = "playFailed";
 
     constructor() {
-    // Fix for iOS bug: https://bugs.webkit.org/show_bug.cgi?id=168165
+        // Fix for iOS bug: https://bugs.webkit.org/show_bug.cgi?id=168165
         if (isIOS) {
             const buffer = this.ctx.createBuffer(1, 1, 44100);
             const source = this.ctx.createBufferSource();
@@ -638,13 +638,13 @@ class WebAudioEngine {
         // Verify the filter
         if (
             filter !== "none" &&
-      filter !== "reverb" &&
-      filter !== "muffled" &&
-      filter !== "club"
+            filter !== "reverb" &&
+            filter !== "muffled" &&
+            filter !== "club"
         ) {
             console.error(
                 `Invalid filter: ${filter}. ` +
-          "Only valid filters are 'none', 'reverb', 'muffled' and 'club'."
+                "Only valid filters are 'none', 'reverb', 'muffled' and 'club'."
             );
             return nullHandle;
         }
@@ -681,7 +681,7 @@ class WebAudioEngine {
         if (instance.sound) {
             console.error(
                 `All ${kMaxInstances} sound instances in use. ` +
-          "You are using way too many sounds!"
+                "You are using way too many sounds!"
             );
             return nullHandle;
         }
@@ -714,11 +714,11 @@ class WebAudioEngine {
 
         // Play the sound!
         const outNode =
-      filter === "none"
-          ? this.masterGainNode
-          : filter === "reverb"
-              ? this.reverbNode
-              : this.eqNodes[filter];
+            filter === "none"
+                ? this.masterGainNode
+                : filter === "reverb"
+                    ? this.reverbNode
+                    : this.eqNodes[filter];
         instance.start(
             outNode,
             sound.file.buffer,
@@ -757,7 +757,7 @@ class WebAudioEngine {
     // the values are relative volume levels
 
     setReverbs(reverbLevels: { cathedral: number }) {
-    // Any active reverbs that aren't in the given set should target 0
+        // Any active reverbs that aren't in the given set should target 0
         for (let i = 0; i < this.activeReverbs.length; i++) {
             const reverb = this.activeReverbs[i];
             if (!reverbLevels[reverb.name as keyof typeof reverbLevels]) {
@@ -785,8 +785,8 @@ class WebAudioEngine {
     }
 
     stop(retainAmbient = true) {
-    // Stops all sounds, despite what the symmetry with play() would
-    // have you think
+        // Stops all sounds, despite what the symmetry with play() would
+        // have you think
         for (let i = 0; i < kMaxInstances; i++) {
             const instance = this.instances[i];
             if (retainAmbient && instance.ambient) {
@@ -799,8 +799,8 @@ class WebAudioEngine {
     }
 
     update(dt: unknown) {
-    // If the audio context got suspended (as it is be default in Chrome,
-    // until the user interacts with the page), try to resume it
+        // If the audio context got suspended (as it is be default in Chrome,
+        // until the user interacts with the page), try to resume it
         if (this.ctx.state == "suspended") {
             this.ctx.resume();
         }
@@ -880,7 +880,7 @@ class WebAudioEngine {
             }
         }
 
-    // this.updatePerformanceTest();
+        // this.updatePerformanceTest();
     }
 
     setMute(mute: boolean) {
@@ -904,7 +904,7 @@ class WebAudioEngine {
     // characteristics of various WebAudio nodes
     updatePerformanceTest() {
         this.runningOfflineTest =
-      this.runningOfflineTest != undefined ? this.runningOfflineTest : false;
+            this.runningOfflineTest != undefined ? this.runningOfflineTest : false;
         if (this.runningOfflineTest) {
             return;
         }
@@ -927,8 +927,8 @@ class WebAudioEngine {
             const pcm = soundBuffer.getChannelData(channel);
             for (let i = 0; i < pcm.length; i++) {
                 pcm[i] =
-          Math.sin(i / 2333.0) * Math.sin(i / 5741.0) * 2.0 * Math.random() -
-          1.0;
+                    Math.sin(i / 2333.0) * Math.sin(i / 5741.0) * 2.0 * Math.random() -
+                    1.0;
             }
         }
         const soundNode = this.offlineCtx.createBufferSource();

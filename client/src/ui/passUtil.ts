@@ -35,9 +35,9 @@ export const passUtil = {
     timeUntilQuestRefresh: function(timeAcquired: number) {
         return (
             Math.floor((timeAcquired - 25200000 + 86400000 - 1) / 86400000) *
-        86400000 +
-      25200000 -
-      Date.now()
+            86400000 +
+            25200000 -
+            Date.now()
         );
     }
 };

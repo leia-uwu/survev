@@ -6,8 +6,8 @@ import { type Map } from "../map";
 
 class SortableSprite extends PIXI.Sprite {
     /**
-   * zindex: A higher value will mean it will be rendered on top of other displayObjects within the same container.
-   */
+     *  zindex: A higher value will mean it will be rendered on top of other displayObjects within the same container.
+     */
     __zOrder = -1;
 
     /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
@@ -105,8 +105,8 @@ export class MapSpriteBarn {
                 const pos = uiManager.getMapPosFromWorldPos(m.pos, map);
                 const scale = m.scale;
                 const fade =
-          math.smoothstep(m.ticker, 0, 0.1) *
-          (1 - math.smoothstep(m.ticker, m.lifetime - 0.5, m.lifetime));
+                    math.smoothstep(m.ticker, 0, 0.1) *
+                    (1 - math.smoothstep(m.ticker, m.lifetime - 0.5, m.lifetime));
                 m.sprite.position.set(pos.x, pos.y);
                 m.sprite.scale.set(scale, scale);
                 m.sprite.alpha = m.alpha * fade;

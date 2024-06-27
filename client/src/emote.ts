@@ -601,7 +601,7 @@ export class EmoteBarn {
     }
 
     addPing(ping: Emote, factionMode: boolean) {
-    // Given the ping position, create an indicator on the map and make a sound
+        // Given the ping position, create an indicator on the map and make a sound
         if (this.activePlayer) {
             const pingData = PingDefs[ping.type];
             if (pingData) {
@@ -695,7 +695,7 @@ export class EmoteBarn {
                 if (this.emotes[i].alive || e) {
                     if (
                         this.emotes[i].alive &&
-            this.emotes[i].playerId == emote.playerId
+                        this.emotes[i].playerId == emote.playerId
                     ) {
                         this.emotes[i].alive = false;
                     }
@@ -799,9 +799,9 @@ export class EmoteBarn {
         this.emoteCounter++;
         if (this.emoteCounter >= GameConfig.player.emoteThreshold) {
             this.emoteHardTicker =
-        this.emoteHardTicker > 0
-            ? this.emoteHardTicker
-            : GameConfig.player.emoteHardCooldown * 1.5;
+                this.emoteHardTicker > 0
+                    ? this.emoteHardTicker
+                    : GameConfig.player.emoteHardCooldown * 1.5;
         }
     }
 
@@ -842,15 +842,15 @@ export class EmoteBarn {
         }
         if (
             inputBinds.isBindReleased(Input.TeamPingSingle) &&
-      this.pingMouseTriggered
+            this.pingMouseTriggered
         ) {
             this.triggerPing();
         }
         if (inputBinds.isBindPressed(Input.EmoteMenu)) {
             if (
                 !this.pingMouseTriggered &&
-        !this.emoteMouseTriggered &&
-        !!this.pingKeyDown
+                !this.emoteMouseTriggered &&
+                !!this.pingKeyDown
             ) {
                 this.emoteScreenPos = v2.copy(mousePos);
                 this.pingMouseTriggered = true;
@@ -880,35 +880,35 @@ export class EmoteBarn {
 
         if (
             !this.disable &&
-      !perkModeDisable &&
-      ((this.wheelKeyTriggered =
-        this.pingKeyTriggered || this.emoteMouseTriggered),
-      (this.emoteSoftTicker -= dt),
-      this.emoteCounter >= GameConfig.player.emoteThreshold &&
-      this.emoteHardTicker > 0
-          ? ((this.emoteHardTicker -= dt),
-          this.emoteHardTicker < 0 && (this.emoteCounter = 0))
-          : this.emoteSoftTicker < 0 &&
-          this.emoteCounter > 0 &&
-          (this.emoteCounter--,
-          (this.emoteSoftTicker = GameConfig.player.emoteSoftCooldown * 1.5)),
-      (!this.pingMouseTriggered && !this.emoteMouseTriggered) ||
-        this.wheelDisplayed ||
-        ((this.parentDisplayed = this.pingMouseTriggered
-            ? this.teamPingWheel
-            : this.emoteWheel),
-        this.parentDisplayed.css({
-            display: "block",
-            left: this.emoteScreenPos.x,
-            top: this.emoteScreenPos.y
-        }),
-        this.displayWheel(this.parentDisplayed, true),
-        (this.wheelDisplayed = true),
-        (this.displayedSelectors = this.pingMouseTriggered
-            ? this.teamPingSelectors
-            : this.emoteWheelSelectors),
-        (this.worldPos = camera.screenToPoint(this.emoteScreenPos))),
-      this.wheelDisplayed)
+            !perkModeDisable &&
+            ((this.wheelKeyTriggered =
+                this.pingKeyTriggered || this.emoteMouseTriggered),
+            (this.emoteSoftTicker -= dt),
+            this.emoteCounter >= GameConfig.player.emoteThreshold &&
+                    this.emoteHardTicker > 0
+                ? ((this.emoteHardTicker -= dt),
+                this.emoteHardTicker < 0 && (this.emoteCounter = 0))
+                : this.emoteSoftTicker < 0 &&
+                    this.emoteCounter > 0 &&
+                    (this.emoteCounter--,
+                    (this.emoteSoftTicker = GameConfig.player.emoteSoftCooldown * 1.5)),
+            (!this.pingMouseTriggered && !this.emoteMouseTriggered) ||
+                this.wheelDisplayed ||
+                ((this.parentDisplayed = this.pingMouseTriggered
+                    ? this.teamPingWheel
+                    : this.emoteWheel),
+                this.parentDisplayed.css({
+                    display: "block",
+                    left: this.emoteScreenPos.x,
+                    top: this.emoteScreenPos.y
+                }),
+                this.displayWheel(this.parentDisplayed, true),
+                (this.wheelDisplayed = true),
+                (this.displayedSelectors = this.pingMouseTriggered
+                    ? this.teamPingSelectors
+                    : this.emoteWheelSelectors),
+                (this.worldPos = camera.screenToPoint(this.emoteScreenPos))),
+            this.wheelDisplayed)
         ) {
             this.emoteTimeoutTicker += dt;
             if (this.emoteTimeoutTicker > 10) {
@@ -972,17 +972,17 @@ export class EmoteBarn {
                         const disableInSolo = teamOnly && teamMode == 1;
                         if (
                             distToCenter <= 35 &&
-              !highlight &&
-              this.emoteHardTicker <= 0 &&
-              !disableInSolo
+                            !highlight &&
+                            this.emoteHardTicker <= 0 &&
+                            !disableInSolo
                         ) {
                             selector = E;
                         } else if (
                             isAngleBetween(angleB, E.angleC, E.angleA) &&
-              distToCenter > 35 &&
-              highlight &&
-              this.emoteHardTicker <= 0 &&
-              !disableInSolo
+                            distToCenter > 35 &&
+                            highlight &&
+                            this.emoteHardTicker <= 0 &&
+                            !disableInSolo
                         ) {
                             selector = E;
                         } else if (E.highlightDisplayed) {
@@ -1080,7 +1080,7 @@ export class EmoteBarn {
         const groupInfo = playerBarn.getGroupInfo(groupId);
 
         for (
-        // te = (groupInfo.playerIds.length, 0);
+            // te = (groupInfo.playerIds.length, 0);
             let te = 0;
             te < this.pingIndicators.length;
             te++
@@ -1157,7 +1157,7 @@ export class EmoteBarn {
 
                     // Update ping border pulse
                     const pulseAlpha =
-            borderSprite.alpha <= 0 ? 1 : borderSprite.alpha - dt;
+                        borderSprite.alpha <= 0 ? 1 : borderSprite.alpha - dt;
                     borderSprite.alpha = pulseAlpha;
                     const pulseScale = camera.pixels(
                         indicator.borderSprite.baseScale * (2 - pulseAlpha)
@@ -1276,7 +1276,7 @@ export class EmoteBarn {
                 );
                 const screenPos = camera.pointToScreen(pos);
                 const screenScale =
-          scale * emote.baseScale * math.clamp(camera.zoom, 0.9, 1.75);
+                    scale * emote.baseScale * math.clamp(camera.zoom, 0.9, 1.75);
 
                 emote.container.position.set(screenPos.x, screenPos.y);
                 emote.container.scale.set(screenScale, screenScale);

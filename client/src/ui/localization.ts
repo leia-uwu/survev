@@ -60,7 +60,7 @@ export class Localization {
 
     detectLocale() {
         let detectedLocale = // @ts-expect-error should I define userLanguage?
-    (navigator.language || navigator.userLanguage).toLowerCase();
+            (navigator.language || navigator.userLanguage).toLowerCase();
         const languageWildcards = ["pt", "de", "es", "fr", "ko", "ru", "en"];
         for (let i = 0; i < languageWildcards.length; i++) {
             if (detectedLocale.indexOf(languageWildcards[i]) != -1) {

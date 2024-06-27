@@ -193,10 +193,10 @@ export class Building implements AbstractObject {
         if (isNew) {
             this.isNew = true;
             this.playedCeilingDeadFx =
-        def.ceiling.destroy !== undefined &&
-        ctx.map.deadCeilingIds.includes(this.__id);
+                def.ceiling.destroy !== undefined &&
+                ctx.map.deadCeilingIds.includes(this.__id);
             this.playedSolvedPuzzleFx =
-        this.hasPuzzle && ctx.map.solvedPuzzleIds.includes(this.__id);
+                this.hasPuzzle && ctx.map.solvedPuzzleIds.includes(this.__id);
             const createSpriteFromDef = (imgDef: FloorImage) => {
                 const posOffset = imgDef.pos || v2.create(0, 0);
                 const rotOffset = math.oriToRad(imgDef.rot || 0);
@@ -373,13 +373,13 @@ export class Building implements AbstractObject {
         renderer: Renderer,
         camera: Camera
     ) {
-    // Puzzle effects
+        // Puzzle effects
         if (this.hasPuzzle) {
             const def = MapObjectDefs[this.type] as BuildingDef;
             // Play puzzle error effects
             if (
                 this.puzzleErrSeqModified &&
-        ((this.puzzleErrSeqModified = false), !this.isNew)
+                ((this.puzzleErrSeqModified = false), !this.isNew)
             ) {
                 // Find the nearest puzzle-piece obstacle and play the
                 // sound from that location. Fallback to the building location
@@ -455,17 +455,17 @@ export class Building implements AbstractObject {
             const zoomIn = this.ceiling.zoomRegions[i].zoomIn;
             if (
                 zoomIn &&
-        (this.layer == activePlayer.layer || activePlayer.layer & 2) &&
-        collisionHelpers.scanCollider(
-            zoomIn,
-            map.obstaclePool.getPool(),
-            activePlayer.pos,
-            activePlayer.layer,
-            0.5,
-            vision.width! * 2,
-            vision.dist!,
-            5
-        )
+                (this.layer == activePlayer.layer || activePlayer.layer & 2) &&
+                collisionHelpers.scanCollider(
+                    zoomIn,
+                    map.obstaclePool.getPool(),
+                    activePlayer.pos,
+                    activePlayer.layer,
+                    0.5,
+                    vision.width! * 2,
+                    vision.dist!,
+                    5
+                )
             ) {
                 canSeeInside = true;
                 break;
@@ -496,9 +496,9 @@ export class Building implements AbstractObject {
         // can see inside the other layer
         if (
             canSeeInside &&
-      activePlayer.noCeilingRevealTicker <= 0 &&
-      activePlayer.layer & 2 &&
-      !util.sameLayer(activePlayer.layer, this.layer)
+            activePlayer.noCeilingRevealTicker <= 0 &&
+            activePlayer.layer & 2 &&
+            !util.sameLayer(activePlayer.layer, this.layer)
         ) {
             this.ceiling.fadeAlpha = 0;
         }
@@ -517,7 +517,7 @@ export class Building implements AbstractObject {
                 // Play sound if it's loaded
                 if (
                     !soundEmitter.instance &&
-          audioManager.isSoundLoaded(soundEmitter.sound, soundEmitter.channel)
+                    audioManager.isSoundLoaded(soundEmitter.sound, soundEmitter.channel)
                 ) {
                     soundEmitter.instance = audioManager.playSound(soundEmitter.sound, {
                         channel: soundEmitter.channel,
@@ -540,11 +540,11 @@ export class Building implements AbstractObject {
                     const volumeFalloff = Math.pow(distT, soundEmitter.falloff);
                     const visibilityMult = math.lerp(this.ceiling.fadeAlpha, 1, 0.25);
                     let volume =
-            audioManager.baseVolume *
-            audioManager.getTypeVolume("sound") *
-            soundEmitter.volume *
-            volumeFalloff *
-            visibilityMult;
+                        audioManager.baseVolume *
+                        audioManager.getTypeVolume("sound") *
+                        soundEmitter.volume *
+                        volumeFalloff *
+                        visibilityMult;
                     if (!util.sameAudioLayer(this.layer, activePlayer.layer)) {
                         volume = 0;
                     }
@@ -573,8 +573,8 @@ export class Building implements AbstractObject {
             // standing on the interior mansion stairs.
             if (
                 img.isCeiling &&
-        (this.layer == activePlayer.layer ||
-          (activePlayer.layer & 2 && this.layer == 1))
+                (this.layer == activePlayer.layer ||
+                    (activePlayer.layer & 2 && this.layer == 1))
             ) {
                 layer |= 2;
             }

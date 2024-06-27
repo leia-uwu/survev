@@ -248,8 +248,8 @@ export class InputHandler {
         if (event.target == this.touchElem || type != TouchEvent.Start) {
             if (
                 event.target == this.touchElem &&
-        event.cancelable &&
-        type != TouchEvent.Cancel
+                event.cancelable &&
+                type != TouchEvent.Cancel
             ) {
                 event.preventDefault();
             }

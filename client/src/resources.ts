@@ -61,8 +61,8 @@ function selectTextureRes(renderer: PIXI.IRenderer, config: ConfigManager) {
 
     if (
         smallScreen ||
-    (device.mobile && !device.tablet) ||
-    renderer.type == PIXI.RENDERER_TYPE.CANVAS
+        (device.mobile && !device.tablet) ||
+        renderer.type == PIXI.RENDERER_TYPE.CANVAS
     ) {
         textureRes = "low";
     }
@@ -243,7 +243,7 @@ export class ResourceManager {
     }
 
     update(dt: number) {
-    // Debug
+        // Debug
         if (!this.loaded) {
             this.loadTicker += dt;
 

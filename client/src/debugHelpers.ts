@@ -17,7 +17,7 @@ import { type Structure } from "./objects/structure";
 export function renderMapBuildingBounds(mapObj: Building | Structure) {
     const def = MapObjectDefs[mapObj.type] as BuildingDef;
     const boundScale =
-    def.type == "building" || def.type == "structure" ? 1.15 : 1.0;
+        def.type == "building" || def.type == "structure" ? 1.15 : 1.0;
     const bounds = [
         collider.transform(
             mapHelpers.getBoundingCollider(mapObj.type),
@@ -45,11 +45,11 @@ export function renderMapBuildingBounds(mapObj: Building | Structure) {
 
 export function renderMapObstacleBounds(mapObj: Obstacle) {
     const def = MapObjectDefs[mapObj.type] as
-    | ObstacleDef
-    | BuildingDef
-    | StructureDef;
+        | ObstacleDef
+        | BuildingDef
+        | StructureDef;
     const boundScale =
-    def.type == "building" || def.type == "structure" ? 1.1 : 1.0;
+        def.type == "building" || def.type == "structure" ? 1.1 : 1.0;
     let bounds = [
         collider.transform(
             mapHelpers.getBoundingCollider(mapObj.type),

@@ -638,7 +638,7 @@ export class Player implements AbstractObject {
     hasActivePan() {
         return (
             this.netData.wearingPan ||
-      (this.netData.activeWeapon == "pan" && this.currentAnim() != Anim.Melee)
+            (this.netData.activeWeapon == "pan" && this.currentAnim() != Anim.Melee)
         );
     }
 
@@ -692,9 +692,9 @@ export class Player implements AbstractObject {
             for (let i = 0; i < this.netData.perks.length; i++) {
                 const perk = this.netData.perks[i];
                 const isNew =
-          this.perks.findIndex((x) => {
-              return x.type == perk.type;
-          }) === -1;
+                    this.perks.findIndex((x) => {
+                        return x.type == perk.type;
+                    }) === -1;
                 perks.push({
                     type: perk.type,
                     droppable: perk.droppable,
@@ -746,7 +746,7 @@ export class Player implements AbstractObject {
         if (!math.eqAbs(this.rad, this.bodyRad)) {
             const bodyRadDist = this.rad - this.bodyRad;
             let bodyRadStep =
-        Math.abs(bodyRadDist) > 0.0001 ? bodyRadDist * dt * 6 : bodyRadDist;
+                Math.abs(bodyRadDist) > 0.0001 ? bodyRadDist * dt * 6 : bodyRadDist;
             if (this.isNew) {
                 bodyRadStep = bodyRadDist;
             }
@@ -798,8 +798,8 @@ export class Player implements AbstractObject {
                     const res = collider.intersectCircle(H.collider, this.pos, rad);
                     if (
                         res &&
-            (H.door.locked ||
-              (H.door.openOneWay && v2.dot(toDoor, doorDir) < 0))
+                        (H.door.locked ||
+                            (H.door.openOneWay && v2.dot(toDoor, doorDir) < 0))
                     ) {
                         doorErrorObstacle = H;
                     }
@@ -815,8 +815,8 @@ export class Player implements AbstractObject {
         this.lastInsideObstacleTime -= dt;
         if (
             this.wasInsideObstacle != isInside &&
-      this.lastInsideObstacleTime < 0 &&
-      !this.isNew
+            this.lastInsideObstacleTime < 0 &&
+            !this.isNew
         ) {
             const obstacleDef = MapObjectDefs[this.insideObstacleType] as ObstacleDef;
             this.lastInsideObstacleTime = 0.2;
@@ -858,8 +858,8 @@ export class Player implements AbstractObject {
         this.doorErrorTicker -= dt;
         if (
             this.isNearDoorError &&
-      !wasNearDoorError &&
-      this.doorErrorTicker <= 0
+            !wasNearDoorError &&
+            this.doorErrorTicker <= 0
         ) {
             this.doorErrorTicker = 0.5;
 
@@ -912,9 +912,9 @@ export class Player implements AbstractObject {
         this.bleedTicker -= dt;
         if (
             !this.netData.dead &&
-      ((this.netData.downed && this.action.type == Action.None) ||
-        this.hasPerk("trick_drain")) &&
-      this.bleedTicker < 0
+            ((this.netData.downed && this.action.type == Action.None) ||
+                this.hasPerk("trick_drain")) &&
+            this.bleedTicker < 0
         ) {
             this.bleedTicker = this.hasPerk("trick_drain")
                 ? GameConfig.player.bleedTickRate * 3
@@ -950,21 +950,21 @@ export class Player implements AbstractObject {
         this.fireDelay -= dt;
         if (
             isActivePlayer &&
-      (weapTypeDirty || this.lastSwapIdx != this.localData.curWeapIdx)
+            (weapTypeDirty || this.lastSwapIdx != this.localData.curWeapIdx)
         ) {
             const lastWeapIdx = this.lastSwapIdx;
             this.lastSwapIdx = this.localData.curWeapIdx;
             const itemDef = GameObjectDefs[this.netData.activeWeapon] as
-        | GunDef
-        | MeleeDef
-        | ThrowableDef;
+                | GunDef
+                | MeleeDef
+                | ThrowableDef;
             if (itemDef.type == "melee" || itemDef.type == "throwable") {
                 // @HACK: Equipping a throwable currently plays
                 // the same SFX as picking up a throwable, leading
                 // to an echo effect
                 if (
                     itemDef.type != "throwable" ||
-          this.lastThrowablePickupSfxTicker <= 0
+                    this.lastThrowablePickupSfxTicker <= 0
                 ) {
                     // Fixes issue with melee equip sounds being offset in the loadoutMenu
                     const soundPos = this.isLoadoutAvatar ? camera.pos : this.pos;
@@ -980,18 +980,18 @@ export class Player implements AbstractObject {
                 // Check if we're using 2 guns in the same group
                 if (
                     (lastWeapIdx == 0 || lastWeapIdx == 1) &&
-          (this.lastSwapIdx == 0 || this.lastSwapIdx == 1) &&
-          this.fireDelay > 0
+                    (this.lastSwapIdx == 0 || this.lastSwapIdx == 1) &&
+                    this.fireDelay > 0
                 ) {
                     const lastWeapDef = GameObjectDefs[
                         this.localData.weapons[lastWeapIdx].type
                     ] as GunDef;
                     if (
                         itemDef &&
-            lastWeapDef &&
-            itemDef.deployGroup !== undefined &&
-            lastWeapDef.deployGroup !== undefined &&
-            itemDef.deployGroup == lastWeapDef.deployGroup
+                        lastWeapDef &&
+                        itemDef.deployGroup !== undefined &&
+                        lastWeapDef.deployGroup !== undefined &&
+                        itemDef.deployGroup == lastWeapDef.deployGroup
                     ) {
                         deployFull = true;
                     }
@@ -1113,12 +1113,12 @@ export class Player implements AbstractObject {
             // Play dry fire sound when empty
             if (
                 !this.playedDryFire &&
-        this.Ur() == "gun" &&
-        (inputBinds.isBindPressed(Input.Fire) ||
-          (inputBinds.isBindDown(Input.Fire) && itemDef.fireMode == "auto")) &&
-        this.action.type == Action.None &&
-        !preventInput &&
-        !itemDef.ammoInfinite
+                this.Ur() == "gun" &&
+                (inputBinds.isBindPressed(Input.Fire) ||
+                    (inputBinds.isBindDown(Input.Fire) && itemDef.fireMode == "auto")) &&
+                this.action.type == Action.None &&
+                !preventInput &&
+                !itemDef.ammoInfinite
             ) {
                 const ammoLeft = this.localData.inventory[itemDef.ammo] || 0;
                 const currentClip = curWeap.ammo;
@@ -1154,7 +1154,7 @@ export class Player implements AbstractObject {
         }
         if (
             (this.currentAnim() == Anim.Cook || this.currentAnim() == Anim.Throw) &&
-      curWeapDef.type != "throwable"
+            curWeapDef.type != "throwable"
         ) {
             this.playAnim(Anim.None, this.anim.seq);
         }
@@ -1164,7 +1164,7 @@ export class Player implements AbstractObject {
         const idlePoseData = IdlePoses[idlePose];
         for (let boneIdx = 0; boneIdx < this.bones.length; boneIdx++) {
             const idleBonePose =
-        idlePoseData[boneIdx as keyof typeof idlePoseData] || Pose.identity;
+                idlePoseData[boneIdx as keyof typeof idlePoseData] || Pose.identity;
             const animBone = this.anim.bones[boneIdx];
             if (animBone.weight > 0) {
                 this.bones[boneIdx].copy(
@@ -1206,9 +1206,9 @@ export class Player implements AbstractObject {
         // Special visibility rules for the aura since it doesn't clip well with
         // the bunker mask system
         const auraLayerMatch =
-      activePlayer.layer & 2 ||
-      (activePlayer.layer & 1) == 1 ||
-      (this.layer & 1) == 0;
+            activePlayer.layer & 2 ||
+            (activePlayer.layer & 1) == 1 ||
+            (this.layer & 1) == 0;
 
         this.auraContainer.visible = Boolean(!this.netData.dead && auraLayerMatch);
 
@@ -1248,10 +1248,10 @@ export class Player implements AbstractObject {
     }
 
     updateRenderLayer(isActivePlayer: boolean, activePlayer: Player, map: Map) {
-    // Give the player a larger stairs collision radius.
-    // This is a hack to reduce popping when emerging from below,
-    // and to fix sorting issues with decals and loot when near
-    // the bottom and top of stairs
+        // Give the player a larger stairs collision radius.
+        // This is a hack to reduce popping when emerging from below,
+        // and to fix sorting issues with decals and loot when near
+        // the bottom and top of stairs
         const visualCol = collider.createCircle(
             this.pos,
             GameConfig.player.maxVisualRadius
@@ -1277,15 +1277,15 @@ export class Player implements AbstractObject {
                         const dist = v2.length(dir);
                         dir = dist > 0.0001 ? v2.div(dir, dist) : v2.create(1, 0);
                         occluded =
-              collisionHelpers.intersectSegmentDist(
-                  map.obstaclePool.getPool(),
-                  this.pos,
-                  dir,
-                  dist,
-                  0.5,
-                  this.layer,
-                  false
-              ) < dist;
+                            collisionHelpers.intersectSegmentDist(
+                                map.obstaclePool.getPool(),
+                                this.pos,
+                                dir,
+                                dist,
+                                0.5,
+                                this.layer,
+                                false
+                            ) < dist;
                     }
 
                     // Disable ceiling reveals if we're near certain types
@@ -1294,9 +1294,9 @@ export class Player implements AbstractObject {
                     // when passing through the exterior walls via the stairs.
                     if (
                         isActivePlayer &&
-            stairs.noCeilingReveal &&
-            col &&
-            this.layer != 0
+                        stairs.noCeilingReveal &&
+                        col &&
+                        this.layer != 0
                     ) {
                         this.noCeilingRevealTicker = 0.25;
                     }
@@ -1313,24 +1313,24 @@ export class Player implements AbstractObject {
         let renderZOrd = 18;
         if (
             onStairs &&
-      ((renderLayer & 1 && (activePlayer.layer & 1 || !occluded)) ||
-        (activePlayer.layer & 2 && !onMask))
+            ((renderLayer & 1 && (activePlayer.layer & 1 || !occluded)) ||
+                (activePlayer.layer & 2 && !onMask))
         ) {
             renderLayer |= 2;
         }
         if (
             !!onStairs &&
-      (renderLayer & 1) == (activePlayer.layer & 1) &&
-      (!onMask || activePlayer.layer == 0)
+            (renderLayer & 1) == (activePlayer.layer & 1) &&
+            (!onMask || activePlayer.layer == 0)
         ) {
             renderLayer |= 2;
             renderZOrd += 100;
         }
         const renderZIdx =
-      this.__id +
-      (this.netData.downed ? 0 : 262144) +
-      (isActivePlayer ? 65536 : 0) +
-      (this.rad > 1 ? 131072 : 0);
+            this.__id +
+            (this.netData.downed ? 0 : 262144) +
+            (isActivePlayer ? 65536 : 0) +
+            (this.rad > 1 ? 131072 : 0);
 
         this.renderLayer = renderLayer;
         this.renderZOrd = renderZOrd;
@@ -1353,11 +1353,11 @@ export class Player implements AbstractObject {
             const frozenSprites = map.getMapDef().biome.frozenSprites || [];
             if (frozenSprites.length > 0) {
                 const sprite =
-          frozenSprites[Math.floor(Math.random() * frozenSprites.length)];
+                    frozenSprites[Math.floor(Math.random() * frozenSprites.length)];
                 const n =
-          math.oriToRad(this.netData.frozenOri) +
-          Math.PI * 0.5 +
-          (Math.random() - 0.5) * Math.PI * 0.25;
+                    math.oriToRad(this.netData.frozenOri) +
+                    Math.PI * 0.5 +
+                    (Math.random() - 0.5) * Math.PI * 0.25;
                 this.bodyEffectSprite.texture = PIXI.Texture.from(sprite);
                 this.bodyEffectSprite.rotation = n;
                 this.bodyEffectSprite.tint = 16777215;
@@ -1475,9 +1475,9 @@ export class Player implements AbstractObject {
             let helmetTint = helmetSkin.baseTint;
             if (map.factionMode) {
                 helmetTint =
-          playerBarn.getPlayerInfo(this.__id).teamId == 1
-              ? helmetSkin.baseTintRed
-              : helmetSkin.baseTintBlue;
+                    playerBarn.getPlayerInfo(this.__id).teamId == 1
+                        ? helmetSkin.baseTintRed
+                        : helmetSkin.baseTintBlue;
             }
             this.helmetSprite.tint = helmetTint;
             this.helmetSprite.visible = true;
@@ -1488,7 +1488,7 @@ export class Player implements AbstractObject {
             const bagOffsets = [10.25, 11.5, 12.75];
             const bagLevel = this.getBagLevel();
             const bagOffset =
-        bagOffsets[math.min(bagLevel - 1, bagOffsets.length - 1)];
+                bagOffsets[math.min(bagLevel - 1, bagOffsets.length - 1)];
             const scale = (0.4 + bagLevel * 0.03) * 0.5;
 
             this.backpackSprite.texture = PIXI.Texture.from(
@@ -1520,9 +1520,9 @@ export class Player implements AbstractObject {
         }
 
         const R = GameObjectDefs[this.netData.activeWeapon] as
-      | GunDef
-      | MeleeDef
-      | ThrowableDef;
+            | GunDef
+            | MeleeDef
+            | ThrowableDef;
         if (R.type == "gun") {
             this.gunRSprites.setType(this.netData.activeWeapon, bodyScale);
             this.gunRSprites.setVisible(true);
@@ -1627,18 +1627,18 @@ export class Player implements AbstractObject {
         // Role specific visuals
         if (
             (this.action.type != Action.UseItem &&
-        this.action.type != Action.Revive) ||
-      this.netData.dead ||
-      (this.netData.downed && !this.hasPerk("self_revive")) ||
-      !this.hasPerk("aoe_heal")
+                this.action.type != Action.Revive) ||
+            this.netData.dead ||
+            (this.netData.downed && !this.hasPerk("self_revive")) ||
+            !this.hasPerk("aoe_heal")
         ) {
             this.auraPulseTicker = 0;
             this.auraPulseDir = 1;
             this.auraCircle.visible = false;
         } else {
             const actionItemDef = GameObjectDefs[this.action.item] as
-        | HealDef
-        | BoostDef;
+                | HealDef
+                | BoostDef;
             // Assume if there's no item defined, it's a revive circle
             const sprite = actionItemDef?.aura
                 ? actionItemDef.aura.sprite
@@ -1658,9 +1658,9 @@ export class Player implements AbstractObject {
         // Class visors
         if (
             map.perkMode &&
-      this.netData.role != "" &&
-      this.netData.helmet != "" &&
-      !outfitDef.ghillie
+            this.netData.role != "" &&
+            this.netData.helmet != "" &&
+            !outfitDef.ghillie
         ) {
             const roleDef = GameObjectDefs[this.netData.role] as RoleDef;
             const visorSkin = roleDef.visorImg!;
@@ -1685,9 +1685,9 @@ export class Player implements AbstractObject {
     }
 
     updateAura(dt: number, isActivePlayer: boolean, activePlayer: Player) {
-    // Fade in/out when entering/exiting the screen edge of the active player.
-    // This fixes popping caused by the player being culled before the aura
-    // is off screen.
+        // Fade in/out when entering/exiting the screen edge of the active player.
+        // This fixes popping caused by the player being culled before the aura
+        // is off screen.
         let inView = true;
         if (!isActivePlayer) {
             inView = coldet.testCircleAabb(
@@ -1742,7 +1742,7 @@ export class Player implements AbstractObject {
         particleBarn: ParticleBarn,
         audioManager: AudioManager
     ) {
-    // Play action sound
+        // Play action sound
         let actionSound = null;
         switch (this.action.type) {
         case Action.Reload:
@@ -1752,9 +1752,9 @@ export class Player implements AbstractObject {
                 if (actionItemDef) {
                     actionSound = {
                         sound:
-                this.action.type == Action.ReloadAlt
-                    ? actionItemDef.sound.reloadAlt
-                    : actionItemDef.sound.reload,
+                                this.action.type == Action.ReloadAlt
+                                    ? actionItemDef.sound.reloadAlt
+                                    : actionItemDef.sound.reload,
                         channel: isActivePlayer ? "activePlayer" : "otherPlayers"
                     };
                 }
@@ -1762,8 +1762,8 @@ export class Player implements AbstractObject {
             break;
         case Action.UseItem: {
             const actionItemDef = GameObjectDefs[this.action.item] as
-          | HealDef
-          | BoostDef;
+                    | HealDef
+                    | BoostDef;
             if (actionItemDef) {
                 actionSound = {
                     sound: actionItemDef.sound.use,
@@ -1788,7 +1788,7 @@ export class Player implements AbstractObject {
         // Create a casing shell if reloading certain types of weapons
         if (
             this.action.type == Action.Reload ||
-      this.action.type == Action.ReloadAlt
+            this.action.type == Action.ReloadAlt
         ) {
             const actionItemDef = GameObjectDefs[this.action.item] as GunDef;
             if (actionItemDef && actionItemDef.caseTiming == "reload") {
@@ -1796,9 +1796,9 @@ export class Player implements AbstractObject {
                     const shellDir = n % 2 == 0 ? -1 : 1;
                     const shellAngle = Math.PI + (Math.PI / 4) * shellDir;
                     const shellSpeedMult =
-            actionItemDef.maxReload <= 2
-                ? 1
-                : math.lerp(Math.random(), 0.8, 1.2);
+                        actionItemDef.maxReload <= 2
+                            ? 1
+                            : math.lerp(Math.random(), 0.8, 1.2);
                     createCasingParticle(
                         this.action.item,
                         shellAngle,
@@ -1820,7 +1820,7 @@ export class Player implements AbstractObject {
         particleBarn: ParticleBarn,
         audioManager: AudioManager
     ) {
-    // Determine if we should have an emitter
+        // Determine if we should have an emitter
         let emitterType = "";
         const emitterProps = {} as {
             scale: number
@@ -1842,7 +1842,7 @@ export class Player implements AbstractObject {
             if (this.hasPerk("aoe_heal")) {
                 emitterProps.scale = 1.5;
                 emitterProps.radius =
-            GameConfig.player.medicHealRange / emitterProps.scale;
+                        GameConfig.player.medicHealRange / emitterProps.scale;
                 emitterProps.rateMult = 0.25;
             }
             break;
@@ -1858,7 +1858,7 @@ export class Player implements AbstractObject {
         // Add emitter
         if (
             !!emitterType &&
-      (!this.useItemEmitter || this.useItemEmitter.type != emitterType)
+            (!this.useItemEmitter || this.useItemEmitter.type != emitterType)
         ) {
             this.useItemEmitter?.stop();
             emitterProps.pos = this.pos;
@@ -1912,9 +1912,9 @@ export class Player implements AbstractObject {
 
     selectIdlePose() {
         const curWeapDef = GameObjectDefs[this.netData.activeWeapon] as
-      | GunDef
-      | MeleeDef
-      | ThrowableDef;
+            | GunDef
+            | MeleeDef
+            | ThrowableDef;
         let idlePose = "fists";
         idlePose = this.downed
             ? "downed"
@@ -2110,7 +2110,7 @@ export class Player implements AbstractObject {
         if (meleeDef && meleeDef.type == "melee") {
             const meleeCol = this.getMeleeCollider();
             const meleeDist =
-        meleeCol.rad + v2.length(v2.sub(this.pos, meleeCol.pos));
+                meleeCol.rad + v2.length(v2.sub(this.pos, meleeCol.pos));
             const hits = [];
 
             // Obstacles
@@ -2119,10 +2119,10 @@ export class Player implements AbstractObject {
                 const l = obstacles[n];
                 if (
                     !!l.active &&
-          !l.dead &&
-          !l.isSkin &&
-          l.height >= GameConfig.player.meleeHeight &&
-          util.sameLayer(l.layer, this.layer & 1)
+                    !l.dead &&
+                    !l.isSkin &&
+                    l.height >= GameConfig.player.meleeHeight &&
+                    util.sameLayer(l.layer, this.layer & 1)
                 ) {
                     let res = collider.intersectCircle(
                         l.collider,
@@ -2181,9 +2181,9 @@ export class Player implements AbstractObject {
                 const playerCol = players[i];
                 if (
                     playerCol.active &&
-          playerCol.__id != this.__id &&
-          !playerCol.netData.dead &&
-          util.sameLayer(playerCol.layer, this.layer)
+                    playerCol.__id != this.__id &&
+                    !playerCol.netData.dead &&
+                    util.sameLayer(playerCol.layer, this.layer)
                 ) {
                     const meleeDir = v2.normalizeSafe(
                         v2.sub(playerCol.pos, this.pos),
@@ -2197,18 +2197,18 @@ export class Player implements AbstractObject {
                     );
                     if (
                         col &&
-            math.eqAbs(
-                meleeDist,
-                collisionHelpers.intersectSegmentDist(
-                    animCtx.map?.obstaclePool.getPool()!,
-                    this.pos,
-                    meleeDir,
-                    meleeDist,
-                    GameConfig.player.meleeHeight,
-                    this.layer,
-                    false
-                )
-            )
+                        math.eqAbs(
+                            meleeDist,
+                            collisionHelpers.intersectSegmentDist(
+                                animCtx.map?.obstaclePool.getPool()!,
+                                this.pos,
+                                meleeDir,
+                                meleeDist,
+                                GameConfig.player.meleeHeight,
+                                this.layer,
+                                false
+                            )
+                        )
                     ) {
                         const teamId = animCtx.playerBarn?.getPlayerInfo(
                             playerCol.__id
@@ -2218,7 +2218,7 @@ export class Player implements AbstractObject {
                             ((Math.random() - 0.5) * Math.PI) / 3
                         );
                         const hitSound =
-              meleeDef.sound[args.playerHit] || meleeDef.sound.playerHit;
+                            meleeDef.sound[args.playerHit] || meleeDef.sound.playerHit;
                         hits.push({
                             pen: col.pen,
                             prio: teamId == ourTeamId ? 2 : 0,
@@ -2409,7 +2409,7 @@ export class PlayerBarn {
     playerStatus: Record<number, PlayerStatus> = {};
     anonPlayerNames = false;
 
-    onMapLoad(e: unknown) {}
+    onMapLoad(e: unknown) { }
 
     update(
         dt: number,
@@ -2426,7 +2426,7 @@ export class PlayerBarn {
         displayingStats: boolean,
         isSpectating?: boolean
     ) {
-    // Update players
+        // Update players
         const players = this.playerPool.getPool();
         for (let i = 0; i < players.length; i++) {
             const p = players[i];
@@ -2496,7 +2496,7 @@ export class PlayerBarn {
             const move = v2.sub(status.posTarget!, status.pos);
             const moveLen = v2.length(move);
             const moveDir =
-        moveLen > 0.0001 ? v2.div(move, moveLen) : v2.create(1, 0);
+                moveLen > 0.0001 ? v2.div(move, moveLen) : v2.create(1, 0);
             const moveAmt = math.min(moveLen, status.posDelta! * status.posInterp);
             status.pos = v2.add(status.pos, v2.mul(moveDir, moveAmt));
 
@@ -2504,14 +2504,14 @@ export class PlayerBarn {
             status.timeSinceUpdate! += dt;
 
             const fade =
-            !status.dead ||
-            (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
-                ? 0
-                : 0.6;
+                !status.dead ||
+                    (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
+                    ? 0
+                    : 0.6;
 
             status.minimapAlpha =
-            math.smoothstep(status.timeSinceVisible!, 0, 0.1) *
-            math.lerp(math.smoothstep(status.timeSinceUpdate!, 2, 2.5), 1, fade);
+                math.smoothstep(status.timeSinceVisible!, 0, 0.1) *
+                math.lerp(math.smoothstep(status.timeSinceUpdate!, 2, 2.5), 1, fade);
 
             // @HACK: Fix issue in non-faction mode when spectating and swapping
             // between teams. We don't want the old player indicators to fade out
@@ -2639,8 +2639,8 @@ export class PlayerBarn {
         playerStatus: { players: PlayerStatus[] },
         factionMode: boolean
     ) {
-    // In factionMode, playerStatus refers to all playerIds in the game.
-    // In all other modes, playerStatus refers to only playerIds in our team.
+        // In factionMode, playerStatus refers to all playerIds in the game.
+        // In all other modes, playerStatus refers to only playerIds in our team.
         const team = this.getTeamInfo(teamId);
         const playerIds = factionMode ? this.playerIds : team.playerIds;
 
@@ -2766,7 +2766,7 @@ export class PlayerBarn {
         // Anonymize player name if they aren't in the active player's group
         if (
             this.anonPlayerNames &&
-      this.getPlayerInfo(activePlayerId).groupId != info.groupId
+            this.getPlayerInfo(activePlayerId).groupId != info.groupId
         ) {
             name = info.anonName;
         }

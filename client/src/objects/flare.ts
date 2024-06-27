@@ -65,8 +65,8 @@ export class FlareBarn {
         const variance = 1 + bullet.varianceT * bulletDef.variance;
         const distAdj = math.remap(bullet.distAdjIdx, 0, 32, -1, 1);
         const distance =
-      bulletDef.distance /
-      Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
+            bulletDef.distance /
+            Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
         b.alive = true;
         b.isNew = true;
         b.collided = false;
@@ -142,9 +142,9 @@ export class FlareBarn {
                 // Trail alpha
                 if (d.tracerAlphaRate) {
                     const rate =
-            activePlayer.__id == d.playerId
-                ? d.tracerAlphaRate
-                : d.tracerAlphaRate * 0.9;
+                        activePlayer.__id == d.playerId
+                            ? d.tracerAlphaRate
+                            : d.tracerAlphaRate * 0.9;
                     d.bulletTrail.alpha = math.max(
                         d.tracerAlphaMin,
                         d.bulletTrail.alpha * rate
@@ -154,7 +154,7 @@ export class FlareBarn {
                 // Grow the flare size over time
                 d.timeAlive += dt;
                 d.flareScale =
-          math.easeOutExpo(d.timeAlive / d.maxTimeAlive) * d?.maxFlareScale!;
+                    math.easeOutExpo(d.timeAlive / d.maxTimeAlive) * d?.maxFlareScale!;
 
                 // Make a smoke trail
                 if (d.smokeThrottle <= 0) {
@@ -174,9 +174,9 @@ export class FlareBarn {
                 let layer = 0;
                 if (
                     (!!util.sameLayer(layer, activePlayer.layer) ||
-            !!(activePlayer.layer & 2)) &&
-          (!(activePlayer.layer & 2) ||
-            !map.insideStructureMask(collider.createCircle(d.pos, 1)))
+                        !!(activePlayer.layer & 2)) &&
+                    (!(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(collider.createCircle(d.pos, 1)))
                 ) {
                     layer |= 2;
                 }

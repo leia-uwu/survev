@@ -307,7 +307,7 @@ export class InputBindUi {
                     ];
                     if (
                         inputValue.type == InputType.Key &&
-            disallowKeys.includes(inputValue.code)
+                        disallowKeys.includes(inputValue.code)
                     ) {
                         return false;
                     }

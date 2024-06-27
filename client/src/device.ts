@@ -15,7 +15,7 @@ function isIpad() {
     const ua = navigator.userAgent.toLowerCase();
     return (
         ua.includes("ipad") ||
-    (ua.includes("macintosh") && "ontouchend" in document)
+        (ua.includes("macintosh") && "ontouchend" in document)
     );
 }
 
@@ -39,10 +39,10 @@ function detectEdge() {
 function detectiPhoneX() {
     return (
         detectiOS() &&
-    ((screen.width == 375 && screen.height == 812) ||
-      (screen.height == 375 && screen.width == 812) ||
-      (screen.width == 414 && screen.height == 896) ||
-      (screen.height == 414 && screen.width == 896))
+        ((screen.width == 375 && screen.height == 812) ||
+            (screen.height == 375 && screen.width == 812) ||
+            (screen.width == 414 && screen.height == 896) ||
+            (screen.height == 414 && screen.width == 896))
     );
 }
 
@@ -61,13 +61,13 @@ function getBrowser() {
 function setItem(key: string, value: string) {
     try {
         localStorage.setItem(key, value);
-    } catch (e) {}
+    } catch (e) { }
 }
 function getItem(key: string) {
     let item = null;
     try {
         item = localStorage.getItem(key);
-    } catch (e) {}
+    } catch (e) { }
     return item;
 }
 
@@ -111,18 +111,18 @@ class Device {
 
     onResize() {
         this.isLandscape =
-      window.innerWidth > window.innerHeight ||
-      window.orientation == 90 ||
-      window.orientation == -90;
+            window.innerWidth > window.innerHeight ||
+            window.orientation == 90 ||
+            window.orientation == -90;
         this.screenWidth = window.innerWidth;
         this.screenHeight = window.innerHeight;
         const layoutDim = this.isLandscape ? this.screenWidth : this.screenHeight;
         this.uiLayout =
-      this.mobile ||
-      layoutDim <= 850 ||
-      (layoutDim <= 900 && this.pixelRatio >= 3)
-          ? this.UiLayout.Sm
-          : this.UiLayout.Lg;
+            this.mobile ||
+                layoutDim <= 850 ||
+                (layoutDim <= 900 && this.pixelRatio >= 3)
+                ? this.UiLayout.Sm
+                : this.UiLayout.Lg;
     }
 }
 

@@ -226,9 +226,9 @@ export class Obstacle implements AbstractObject {
         }
         if (
             def.explosion !== undefined &&
-      !this.smokeEmitter &&
-      data.healthT < 0.5 &&
-      !data.dead
+            !this.smokeEmitter &&
+            data.healthT < 0.5 &&
+            !data.dead
         ) {
             const g = v2.normalize(v2.create(1, 1));
             this.smokeEmitter = ctx.particleBarn.addEmitter("smoke_barrel", {
@@ -241,9 +241,9 @@ export class Obstacle implements AbstractObject {
         let w = this.dead ? def.img.residue! : def.img.sprite!;
         if (
             this.isButton &&
-      this.button.onOff &&
-      !this.dead &&
-      def.button?.useImg
+            this.button.onOff &&
+            !this.dead &&
+            def.button?.useImg
         ) {
             w = def.button.useImg;
         } else if (this.isButton && !this.button.canUse && def.button?.offImg) {
@@ -260,7 +260,7 @@ export class Obstacle implements AbstractObject {
             }
             if (_) {
                 this.sprite.texture =
-          w == "none" || !w ? PIXI.Texture.EMPTY : PIXI.Texture.from(w);
+                    w == "none" || !w ? PIXI.Texture.EMPTY : PIXI.Texture.from(w);
                 this.sprite.anchor.set(f.x, f.y);
                 this.sprite.tint = def.img.tint!;
                 this.sprite.imgAlpha = this.dead ? 0.75 : def.img.alpha!;
@@ -349,7 +349,7 @@ export class Obstacle implements AbstractObject {
                 posMove = diffLen;
             }
             const moveDir =
-        diffLen > 0.0001 ? v2.div(posDiff, diffLen) : v2.create(1, 0);
+                diffLen > 0.0001 ? v2.div(posDiff, diffLen) : v2.create(1, 0);
             door.interpPos = v2.add(door.interpPos, v2.mul(moveDir, posMove));
 
             // Interpolate rotation
@@ -391,12 +391,12 @@ export class Obstacle implements AbstractObject {
         }
         if (
             this.dead &&
-      !this.exploded &&
-      (map.deadObstacleIds.push(this.__id),
-      (this.exploded = true),
-      this.smokeEmitter &&
-        (this.smokeEmitter.stop(), (this.smokeEmitter = null)),
-      !this.isNew)
+            !this.exploded &&
+            (map.deadObstacleIds.push(this.__id),
+            (this.exploded = true),
+            this.smokeEmitter &&
+                (this.smokeEmitter.stop(), (this.smokeEmitter = null)),
+            !this.isNew)
         ) {
             const def = MapObjectDefs[this.type] as ObstacleDef;
 
@@ -438,9 +438,9 @@ export class Obstacle implements AbstractObject {
             // viewing only the ground level
             if (
                 !this.dead &&
-        zOrd >= 50 &&
-        this.layer == 0 &&
-        activePlayer.layer == 0
+                zOrd >= 50 &&
+                this.layer == 0 &&
+                activePlayer.layer == 0
             ) {
                 zOrd += 100;
                 layer |= 2;

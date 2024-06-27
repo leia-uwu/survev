@@ -79,22 +79,22 @@ export class Pass {
             displayed: boolean
         }
         elems: Record<string, JQuery<HTMLElement>>
-    // elems: {
-    //     main: JQuery<HTMLElement>;
-    //     xp: JQuery<HTMLElement>;
-    //     info: JQuery<HTMLElement>;
-    //     desc: JQuery<HTMLElement>;
-    //     cur: JQuery<HTMLElement>;
-    //     target: JQuery<HTMLElement>;
-    //     refresh: JQuery<HTMLElement>;
-    //     refreshPrompt: JQuery<HTMLElement>;
-    //     refreshConfirm: JQuery<HTMLElement>;
-    //     refreshCancel: JQuery<HTMLElement>;
-    //     counter: JQuery<HTMLElement>;
-    //     barFill: JQuery<HTMLElement>;
-    //     timer: JQuery<HTMLElement>;
-    //     loading: JQuery<HTMLElement>;
-    // }
+        // elems: {
+        //     main: JQuery<HTMLElement>;
+        //     xp: JQuery<HTMLElement>;
+        //     info: JQuery<HTMLElement>;
+        //     desc: JQuery<HTMLElement>;
+        //     cur: JQuery<HTMLElement>;
+        //     target: JQuery<HTMLElement>;
+        //     refresh: JQuery<HTMLElement>;
+        //     refreshPrompt: JQuery<HTMLElement>;
+        //     refreshConfirm: JQuery<HTMLElement>;
+        //     refreshCancel: JQuery<HTMLElement>;
+        //     counter: JQuery<HTMLElement>;
+        //     barFill: JQuery<HTMLElement>;
+        //     timer: JQuery<HTMLElement>;
+        //     loading: JQuery<HTMLElement>;
+        // }
     }> = [];
 
     loaded = false;
@@ -198,7 +198,7 @@ export class Pass {
                 // Initialize quest UI
                 const questDef = QuestDefs[quest.data.type];
                 const title =
-          This.localization.translate(`${quest.data.type}`) || quest.data.type;
+                    This.localization.translate(`${quest.data.type}`) || quest.data.type;
                 const pct = (quest.current / quest.data.target) * 100;
                 quest.elems.main.css("display", "block");
                 quest.elems.desc.html(title);
@@ -301,7 +301,7 @@ export class Pass {
     setQuestRefreshEnabled(e: (typeof this.quests)[number]) {
         const t = this;
         const r =
-      (!e.data.rerolled && !e.data.complete) || e.refreshTime - Date.now() < 0;
+            (!e.data.rerolled && !e.data.complete) || e.refreshTime - Date.now() < 0;
         if (r != e.refreshEnabled || !e.refreshSet) {
             e.refreshEnabled = r;
             e.refreshSet = true;
@@ -486,21 +486,21 @@ export class Pass {
             }
             if (
                 fixedQuest.playCompleteAnim &&
-        !fixedQuest.completeAnimFinished &&
-        fixedQuest.ticker - fixedQuest.delay > 1.25
+                !fixedQuest.completeAnimFinished &&
+                fixedQuest.ticker - fixedQuest.delay > 1.25
             ) {
                 this.animateQuestComplete(fixedQuest);
                 fixedQuest.completeAnimFinished = true;
             }
             const m =
-        !fixedQuest.playCompleteAnim ||
-        (fixedQuest.completeAnimFinished &&
-          fixedQuest.ticker - fixedQuest.delay > 4.25);
+                !fixedQuest.playCompleteAnim ||
+                (fixedQuest.completeAnimFinished &&
+                    fixedQuest.ticker - fixedQuest.delay > 4.25);
             if (
                 fixedQuest.data.complete &&
-        m &&
-        fixedQuest.refreshEnabled &&
-        fixedQuest.shouldRequestRefresh
+                m &&
+                fixedQuest.refreshEnabled &&
+                fixedQuest.shouldRequestRefresh
             ) {
                 fixedQuest.shouldRequestRefresh = false;
                 this.account.refreshQuest(fixedQuest.data.idx);
@@ -555,8 +555,8 @@ export class Pass {
         }
         if (
             !this.account.loggingIn &&
-      !this.account.loggedIn &&
-      !this.lockDisplayed
+            !this.account.loggedIn &&
+            !this.lockDisplayed
         ) {
             $("#pass-block").css("z-index", "1");
             $("#pass-loading").css("display", "none");
@@ -565,7 +565,7 @@ export class Pass {
         }
     }
 
-    onResize() {}
+    onResize() { }
     loadPlaceholders() {
         const def = PassDefs.pass_survivr1;
         const passName = this.localization.translate("pass_survivr1").toUpperCase();

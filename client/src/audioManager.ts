@@ -159,13 +159,13 @@ export class AudioManager {
     }
 
     update(dt: number) {
-    // Clear out finished sounds from stored instances
+        // Clear out finished sounds from stored instances
         for (let i = this.soundInstances.length - 1; i >= 0; i--) {
             const inst = this.soundInstances[i];
             if (
                 inst.instance.playState == "playFinished" ||
-        inst.instance.playState == "playInterrupted" ||
-        inst.instance.playState == "playFailed"
+                inst.instance.playState == "playInterrupted" ||
+                inst.instance.playState == "playFailed"
             ) {
                 this.soundInstances.splice(i, 1);
             }
@@ -199,17 +199,17 @@ export class AudioManager {
         options.rangeMult = options.rangeMult || 1;
         options.offset = options.offset || 0;
         options.ambient =
-      options.channel == "ambient" || options.channel == "music";
+            options.channel == "ambient" || options.channel == "music";
         options.detune = options.detune || 0;
         options.volumeScale = options.volumeScale || 1;
         let instance = null;
         const a = soundDefs.Channels[options.channel];
         if (a && (!this.mute || options.forceStart)) {
             const baseVolume =
-        this.baseVolume * 1 * this.getTypeVolume(a.type) * options.volumeScale;
+                this.baseVolume * 1 * this.getTypeVolume(a.type) * options.volumeScale;
             const diffLayer =
-        options.layer !== undefined &&
-        !util.sameAudioLayer(options.layer, this.activeLayer);
+                options.layer !== undefined &&
+                !util.sameAudioLayer(options.layer, this.activeLayer);
             const filter = options.filter
                 ? diffLayer || options.forceFilter
                     ? options.filter
@@ -230,7 +230,7 @@ export class AudioManager {
                 // Play if this sound is above the accepted vol threshold
                 if (
                     clipVolume > AudioManagerMinAllowedVolume ||
-          options.ignoreMinAllowable
+                    options.ignoreMinAllowable
                 ) {
                     const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
                     instance = CreateJS.Sound.play(sound + options.channel, {
@@ -293,7 +293,7 @@ export class AudioManager {
         const a = soundDefs.Channels[channel];
         if (instance && a) {
             const baseVolume =
-        this.baseVolume * 1 * this.getTypeVolume(a.type) * options.volumeScale;
+                this.baseVolume * 1 * this.getTypeVolume(a.type) * options.volumeScale;
             const diff = v2.sub(this.cameraPos, soundPos);
             const dist = v2.length(diff);
             let range = a.maxRange * options.rangeMult;
@@ -304,12 +304,12 @@ export class AudioManager {
             const scaledVolume = Math.pow(1 - distNormal, 1 + options.fallOff * 2);
             let clipVolume = a.volume * scaledVolume * baseVolume;
             const diffLayer =
-        options.layer === undefined ||
-        util.sameAudioLayer(options.layer, this.activeLayer);
+                options.layer === undefined ||
+                util.sameAudioLayer(options.layer, this.activeLayer);
             clipVolume = diffLayer ? clipVolume : clipVolume * DiffLayerMult;
             if (
                 clipVolume > AudioManagerMinAllowedVolume ||
-        options.ignoreMinAllowable
+                options.ignoreMinAllowable
             ) {
                 const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
                 instance.volume = clipVolume;

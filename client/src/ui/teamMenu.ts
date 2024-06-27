@@ -77,7 +77,7 @@ export class TeamMenu {
         public joinGameCb: (data: MatchData) => void,
         public leaveCb: (err: string) => void
     ) {
-    // Listen for ui modifications
+        // Listen for ui modifications
         this.serverSelect.change(() => {
             const e = this.serverSelect.find(":selected").val() as string;
             this.pingTest.start([e]);
@@ -163,8 +163,7 @@ export class TeamMenu {
     connect(create: boolean, roomUrl: string) {
         if (!this.active || roomUrl !== this.roomData.roomUrl) {
             const roomHost = api.resolveRoomHost();
-            const url = `w${
-                window.location.protocol === "https:" ? "ss" : "s"
+            const url = `w${window.location.protocol === "https:" ? "ss" : "s"
             }://${roomHost}/team_v2`;
             this.active = true;
             this.joined = false;
@@ -189,7 +188,7 @@ export class TeamMenu {
             this.refreshUi();
 
             if (this.ws) {
-                this.ws.onclose = function() {};
+                this.ws.onclose = function() { };
                 this.ws.close();
                 this.ws = null;
             }
@@ -384,7 +383,7 @@ export class TeamMenu {
 
         if (
             this.roomData.lastError == "find_game_invalid_protocol" &&
-      !this.displayedInvalidProtocolModal
+            !this.displayedInvalidProtocolModal
         ) {
             $("#modal-refresh").fadeIn(200);
             this.displayedInvalidProtocolModal = true;
@@ -645,9 +644,9 @@ export class TeamMenu {
             const playJoinSound = localPlayer && !localPlayer.inGame;
             if (
                 !document.hasFocus() &&
-        this.prevPlayerCount < this.players.length &&
-        this.players.length > 1 &&
-        playJoinSound
+                this.prevPlayerCount < this.players.length &&
+                this.players.length > 1 &&
+                playJoinSound
             ) {
                 this.audioManager.playSound("notification_join_01", {
                     channel: "ui"

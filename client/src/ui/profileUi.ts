@@ -106,7 +106,7 @@ export class ProfileUi {
     }
 
     initUi() {
-    // Set username
+        // Set username
         const clearNamePrompt = function() {
             $("#modal-body-warning").css("display", "none");
             $("#modal-account-name-input").val("");
@@ -126,9 +126,9 @@ export class ProfileUi {
                         change_time_not_expired: "Username has already been set recently."
                     };
                     const message =
-            ERROR_CODE_TO_LOCALIZATION[
-                error as keyof typeof ERROR_CODE_TO_LOCALIZATION
-            ] || ERROR_CODE_TO_LOCALIZATION.failed;
+                        ERROR_CODE_TO_LOCALIZATION[
+                            error as keyof typeof ERROR_CODE_TO_LOCALIZATION
+                        ] || ERROR_CODE_TO_LOCALIZATION.failed;
                     $("#modal-body-warning").hide();
                     $("#modal-body-warning").html(message);
                     $("#modal-body-warning").fadeIn();
@@ -275,7 +275,7 @@ export class ProfileUi {
         $(".account-details-user").click(() => {
             if (
                 this.userSettingsModal!.isVisible() ||
-        this.loginOptionsModal!.isVisible()
+                this.loginOptionsModal!.isVisible()
             ) {
                 this.userSettingsModal!.hide();
                 this.loginOptionsModal!.hide();
@@ -341,13 +341,13 @@ export class ProfileUi {
         const typeText = {
             server_error: "Operation failed, please try again later.",
             facebook_account_in_use:
-        "Failed linking Facebook account.<br/>Account already in use!",
+                "Failed linking Facebook account.<br/>Account already in use!",
             google_account_in_use:
-        "Failed linking Google account.<br/>Account already in use!",
+                "Failed linking Google account.<br/>Account already in use!",
             twitch_account_in_use:
-        "Failed linking Twitch account.<br/>Account already in use!",
+                "Failed linking Twitch account.<br/>Account already in use!",
             discord_account_in_use:
-        "Failed linking Discord account.<br/>Account already in use!",
+                "Failed linking Discord account.<br/>Account already in use!",
             account_banned: `Account banned: ${data}`,
             login_failed: "Login failed."
         };
@@ -431,8 +431,8 @@ export class ProfileUi {
 
     updateUserIcon() {
         const icon =
-      helpers.getSvgFromGameType(this.account.loadout.player_icon) ||
-      "img/gui/player-gui.svg";
+            helpers.getSvgFromGameType(this.account.loadout.player_icon) ||
+            "img/gui/player-gui.svg";
         $(".account-details-user .account-avatar").css(
             "background-image",
             `url(${icon})`
@@ -440,7 +440,7 @@ export class ProfileUi {
     }
 
     render() {
-    // Loading icon
+        // Loading icon
         const loading = this.account.requestsInFlight > 0;
         $(".account-loading").css("opacity", loading ? 1 : 0);
 
