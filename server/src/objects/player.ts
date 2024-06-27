@@ -725,7 +725,19 @@ export class Player extends BaseGameObject {
             if (obj.__type === ObjectType.Building) {
                 let layer = this.layer;
                 if (this.layer > 2) layer = 0;
-                if (!util.sameLayer(util.toGroundLayer(layer), obj.layer) || obj.ceilingDead) continue;
+                if (!util.sameLayer(util.toGroundLayer(layer), obj.layer)) continue;
+
+                if (obj.healRegions) {
+                    const healRegion = obj.healRegions.find(hr => {
+                        return coldet.testCircleAabb(this.pos, this.rad, hr.collision.min, hr.collision.max);
+                    });
+
+                    if (healRegion) {
+                        this.health += healRegion.healRate * dt;
+                    }
+                }
+
+                if (obj.ceilingDead) continue;
 
                 for (let i = 0; i < obj.zoomRegions.length; i++) {
                     const zoomRegion = obj.zoomRegions[i];
@@ -956,7 +968,7 @@ export class Player extends BaseGameObject {
             const emotePlayer = game.objectRegister.getById(emote.playerId) as Player | undefined;
             if (emotePlayer) {
                 if (((emote.isPing || emote.itemType) && emotePlayer.groupId === this.groupId) ||
-                    this.visibleObjects.has(emotePlayer)
+                    (this.visibleObjects.has(emotePlayer) && !emote.isPing)
                 ) {
                     updateMsg.emotes.push(emote);
                 }
@@ -1067,8 +1079,8 @@ export class Player extends BaseGameObject {
                     }
                 }
             }
-            this.spectating = playerToSpec;
         }
+        this.spectating = playerToSpec;
     }
 
     damage(params: DamageParams) {
@@ -2008,7 +2020,12 @@ export class Player extends BaseGameObject {
         }
         }
 
+        const reloading = this.isReloading();
         this.cancelAction();
+
+        if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
+            this.weaponManager.tryReload();
+        }
     }
 
     isOnOtherSide(door: Obstacle): boolean {
