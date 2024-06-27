@@ -1366,6 +1366,16 @@ export class Player extends BaseGameObject {
             );
         }
 
+        // Building gore region (club pool)
+        const objs = this.game.grid.intersectCollider(this.collider);
+        for (const obj of objs) {
+            if (obj.__type === ObjectType.Building &&
+                obj.goreRegion &&
+                coldet.testCircleAabb(this.pos, this.rad, obj.goreRegion.min, obj.goreRegion.max)) {
+                obj.onGoreRegionKill();
+            }
+        }
+
         if (this.group) {
             this.group.checkPlayers();
         }

@@ -59,6 +59,8 @@ export class Building extends BaseGameObject {
         healRate: number
     }> = [];
 
+    goreRegion: AABB;
+
     rot: number;
 
     zIdx: number;
@@ -100,6 +102,10 @@ export class Building extends BaseGameObject {
                 healRate: hr.healRate
             };
         });
+
+        if (def.goreRegion) {
+            this.goreRegion = collider.transform(def.goreRegion, this.pos, this.rot, this.scale) as AABB;
+        }
 
         this.wallsToDestroy = def.ceiling.destroy?.wallCount ?? Infinity;
 
@@ -204,6 +210,15 @@ export class Building extends BaseGameObject {
                 this.setPartDirty();
                 setTimeout(this.resetPuzzle.bind(this), puzzleDef.errorResetDelay * 1000, this);
             }, puzzleDef.pieceResetDelay * 1000);
+        }
+    }
+
+    onGoreRegionKill() {
+        for (const obj of this.childObjects) {
+            if (obj.__type === ObjectType.Decal) {
+                obj.goreKills++;
+                obj.setDirty();
+            }
         }
     }
 
