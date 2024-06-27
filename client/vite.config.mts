@@ -50,6 +50,9 @@ export default defineConfig(() => {
         resolve: {
             extensions: ['.js', '.ts'],
         },
+        json: {
+            stringify: true,
+        },
         server: {
             port: 3000,
             strictPort: true,

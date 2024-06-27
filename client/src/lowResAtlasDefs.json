@@ -1,0 +1,234 @@
+[
+  {
+    "meta": {
+      "image": "gradient-0-50-6480bd5e.png",
+      "size": {
+        "w": 512,
+        "h": 512
+      },
+      "scale": 0.5
+    },
+    "frames": {
+      "map-barrel-res-01.img": {
+        "frame": {
+          "x": 124,
+          "y": 2,
+          "w": 114,
+          "h": 109
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 7,
+          "y": 10,
+          "w": 114,
+          "h": 109
+        },
+        "sourceSize": {
+          "w": 128,
+          "h": 128
+        }
+      },
+      "map-building-club-gradient-01.img": {
+        "frame": {
+          "x": 2,
+          "y": 2,
+          "w": 118,
+          "h": 130
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 16,
+          "y": 4,
+          "w": 118,
+          "h": 130
+        },
+        "sourceSize": {
+          "w": 146,
+          "h": 140
+        }
+      },
+      "map-building-mansion-gradient-01.img": {
+        "frame": {
+          "x": 2,
+          "y": 136,
+          "w": 118,
+          "h": 102
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 3,
+          "y": 4,
+          "w": 118,
+          "h": 102
+        },
+        "sourceSize": {
+          "w": 124,
+          "h": 110
+        }
+      },
+      "map-plane-01.img": {
+        "frame": {
+          "x": 124,
+          "y": 136,
+          "w": 92,
+          "h": 102
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 18,
+          "y": 5,
+          "w": 92,
+          "h": 102
+        },
+        "sourceSize": {
+          "w": 128,
+          "h": 128
+        }
+      },
+      "map-plane-02.img": {
+        "frame": {
+          "x": 242,
+          "y": 2,
+          "w": 42,
+          "h": 85
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 43,
+          "y": 1,
+          "w": 42,
+          "h": 85
+        },
+        "sourceSize": {
+          "w": 128,
+          "h": 128
+        }
+      },
+      "map-bush-04cb.img": {
+        "frame": {
+          "x": 147,
+          "y": 242,
+          "w": 71,
+          "h": 67
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 2,
+          "y": 4,
+          "w": 71,
+          "h": 67
+        },
+        "sourceSize": {
+          "w": 75,
+          "h": 75
+        }
+      },
+      "map-bush-01cb.img": {
+        "frame": {
+          "x": 288,
+          "y": 82,
+          "w": 72,
+          "h": 72
+        },
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 0,
+          "w": 72,
+          "h": 72
+        },
+        "sourceSize": {
+          "w": 72,
+          "h": 72
+        }
+      },
+      "map-light-01.img": {
+        "frame": {
+          "x": 288,
+          "y": 158,
+          "w": 72,
+          "h": 72
+        },
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 0,
+          "w": 72,
+          "h": 72
+        },
+        "sourceSize": {
+          "w": 72,
+          "h": 72
+        }
+      },
+      "map-bush-04.img": {
+        "frame": {
+          "x": 2,
+          "y": 242,
+          "w": 71,
+          "h": 68
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 2,
+          "y": 3,
+          "w": 71,
+          "h": 68
+        },
+        "sourceSize": {
+          "w": 75,
+          "h": 75
+        }
+      },
+      "map-bush-01.img": {
+        "frame": {
+          "x": 77,
+          "y": 242,
+          "w": 66,
+          "h": 68
+        },
+        "rotated": false,
+        "trimmed": true,
+        "spriteSourceSize": {
+          "x": 3,
+          "y": 2,
+          "w": 66,
+          "h": 68
+        },
+        "sourceSize": {
+          "w": 72,
+          "h": 72
+        }
+      },
+      "map-bush-03.img": {
+        "frame": {
+          "x": 288,
+          "y": 2,
+          "w": 76,
+          "h": 76
+        },
+        "rotated": false,
+        "trimmed": false,
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 0,
+          "w": 76,
+          "h": 76
+        },
+        "sourceSize": {
+          "w": 76,
+          "h": 76
+        }
+      }
+    }
+  }
+]

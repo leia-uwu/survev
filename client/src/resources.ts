@@ -3,9 +3,9 @@ import { MapDefs, type Atlas } from "../../shared/defs/mapDefs";
 import { type AudioManager } from "./audioManager";
 import { type ConfigManager } from "./config";
 import { device } from "./device";
-import fullResAtlasDefs from "./fullResAtlasDefs";
-import lowResAtlasDefs from "./lowResAtlasDefs";
 import SoundDefs from "./soundDefs";
+import fullResAtlasDefs from "./fullResAtlasDefs.json";
+import lowResAtlasDefs from "./lowResAtlasDefs.json";
 
 const spritesheetDefs = {
     low: lowResAtlasDefs,
