@@ -108,6 +108,7 @@ export class Game {
         //
         this.gas.update(dt);
         this.playerBarn.update(dt);
+        this.map.update();
         this.lootBarn.update(dt);
         this.bulletBarn.update(dt);
         this.projectileBarn.update(dt);

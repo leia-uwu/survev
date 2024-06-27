@@ -2,7 +2,7 @@ import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type StructureDef, type BuildingDef, type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { Puzzles } from "../../../shared/defs/puzzles";
 import { type Game } from "../game";
-import { type AABB, type Collider } from "../../../shared/utils/coldet";
+import { coldet, type AABB, type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
@@ -60,6 +60,9 @@ export class Building extends BaseGameObject {
     }> = [];
 
     goreRegion?: AABB;
+
+    hasOccupiedEmitters: boolean;
+    emitterBounds: AABB;
 
     rot: number;
 
@@ -127,17 +130,24 @@ export class Building extends BaseGameObject {
             this.surfaces.push(surface);
         }
 
+        const zoomInBounds: AABB[] = [];
         for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
             const region = def.ceiling.zoomRegions[i];
+            const zoomIn = region.zoomIn
+                ? collider.transform(
+                    region.zoomIn,
+                    this.pos,
+                    this.rot,
+                    this.scale
+                ) as AABB
+                : undefined;
+
+            if (zoomIn) {
+                zoomInBounds.push(zoomIn);
+            }
+
             this.zoomRegions.push({
-                zoomIn: region.zoomIn
-                    ? collider.transform(
-                        region.zoomIn,
-                        this.pos,
-                        this.rot,
-                        this.scale
-                    ) as AABB
-                    : undefined,
+                zoomIn,
                 zoomOut: region.zoomOut
                     ? collider.transform(
                         region.zoomOut,
@@ -149,6 +159,10 @@ export class Building extends BaseGameObject {
                 zoom: region.zoom
             });
         }
+
+        this.hasOccupiedEmitters = !!def.occupiedEmitters && def.occupiedEmitters.length > 0;
+        const emitterBounds = coldet.boundingAabb(zoomInBounds);
+        this.emitterBounds = collider.createAabb(emitterBounds.min, emitterBounds.max);
 
         if (def.puzzle) {
             this.hasPuzzle = true;
