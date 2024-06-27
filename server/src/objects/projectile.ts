@@ -10,6 +10,8 @@ import { math } from "../../../shared/utils/math";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 
+const gravity = 10;
+
 export class ProjectileBarn {
     projectiles: Projectile[] = [];
     constructor(readonly game: Game) { }
@@ -60,11 +62,14 @@ export class Projectile extends BaseGameObject {
     dir = v2.create(0, 0);
     type: string;
 
+    rad: number;
+
     playerId = 0;
     fuseTime = Infinity;
     damageType = 0;
 
     vel = v2.create(0, 0);
+    velZ: number;
     dead = false;
 
     obstacleBellowId = 0;
@@ -75,8 +80,9 @@ export class Projectile extends BaseGameObject {
         this.type = type;
 
         const def = GameObjectDefs[type] as ThrowableDef;
-
+        this.velZ = def.throwPhysics.velZ;
         this.bounds = collider.createCircle(v2.create(0, 0), def.rad);
+        this.rad = def.rad * 0.5;
     }
 
     update(dt: number) {
@@ -91,20 +97,18 @@ export class Projectile extends BaseGameObject {
         //
         // Height / posZ
         //
-
+        this.velZ -= gravity * dt;
+        this.posZ += this.velZ * dt;
+        this.posZ = math.clamp(this.posZ, 0, GameConfig.projectile.maxHeight);
         let height = this.posZ;
         if (def.throwPhysics.fixedCollisionHeight) {
             height = def.throwPhysics.fixedCollisionHeight;
-        } else {
-            this.posZ -= def.throwPhysics.velZ * dt / 10;
-            this.posZ = height = math.clamp(this.posZ, 0, GameConfig.projectile.maxHeight);
         }
 
         //
         // Collision and changing layers on stair
         //
-        const rad = math.max(def.rad * this.posZ, 0.5);
-        const coll = collider.createCircle(this.pos, rad, this.posZ);
+        const coll = collider.createCircle(this.pos, this.rad, this.posZ);
         const objs = this.game.grid.intersectCollider(coll);
 
         for (const obj of objs) {
@@ -113,7 +117,7 @@ export class Projectile extends BaseGameObject {
                 !obj.dead &&
                 obj.collidable
             ) {
-                const intersection = collider.intersectCircle(obj.collider, this.pos, rad);
+                const intersection = collider.intersectCircle(obj.collider, this.pos, this.rad);
                 if (intersection) {
                     // break obstacle if its a window
                     // resolve the collision otherwise
@@ -138,7 +142,7 @@ export class Projectile extends BaseGameObject {
                     }
                 }
             } else if (obj.__type === ObjectType.Player && def.playerCollision && obj.__id !== this.playerId) {
-                if (coldet.testCircleCircle(this.pos, rad, obj.pos, obj.rad)) {
+                if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
                     this.explode();
                 }
             }
@@ -147,7 +151,7 @@ export class Projectile extends BaseGameObject {
         this.pos = this.game.map.clampToMapBounds(this.pos);
 
         const originalLayer = this.layer;
-        this.checkStairs(objs, rad);
+        this.checkStairs(objs, this.rad);
 
         if (!this.dead) {
             if (this.layer !== originalLayer) {
@@ -157,6 +161,10 @@ export class Projectile extends BaseGameObject {
             }
 
             this.game.grid.updateObject(this);
+
+            if (this.posZ === 0 && def.explodeOnImpact) {
+                this.explode();
+            }
 
             //
             // Fuse time
