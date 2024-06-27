@@ -2,7 +2,6 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type BulletParams } from "../objects/bullet";
 import { type GameObject } from "../objects/gameObject";
-import { type Obstacle } from "../objects/obstacle";
 import { type Player } from "../objects/player";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -395,7 +394,7 @@ export class WeaponManager {
         let clipNrm = v2.mul(direction, -1.0);
         const aabb = collider.createAabbExtents(this.player.pos, v2.create(this.player.rad + gunLen + 1.5));
 
-        const nearbyObjs = this.player.game.grid.intersectCollider(aabb).filter(obj => obj.__type === ObjectType.Obstacle) as Obstacle[];
+        const nearbyObjs = this.player.game.grid.intersectCollider(aabb).filter(obj => obj.__type === ObjectType.Obstacle);
 
         for (let i = 0; i < nearbyObjs.length; i++) {
             const obj = nearbyObjs[i];
@@ -595,7 +594,7 @@ export class WeaponManager {
 
         const objs = this.player.game.grid.intersectCollider(coll);
 
-        const obstacles = objs.filter(obj => obj.__type === ObjectType.Obstacle) as Obstacle[];
+        const obstacles = objs.filter(obj => obj.__type === ObjectType.Obstacle);
 
         for (const obj of objs) {
             if (obj.__type === ObjectType.Obstacle) {

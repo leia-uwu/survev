@@ -5,7 +5,6 @@ import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { type Decal } from "./objects/decal";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { type Collider, coldet, type AABB } from "../../shared/utils/coldet";
@@ -1011,7 +1010,7 @@ export class GameMap {
         const objs = this.game.grid.intersectPos(pos);
 
         // Check decals
-        const decals = objs.filter(obj => obj.__type === ObjectType.Decal) as Decal[];
+        const decals = objs.filter(obj => obj.__type === ObjectType.Decal);
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
             if (!decal.surface) {
@@ -1028,7 +1027,7 @@ export class GameMap {
         let zIdx = 0;
         const onStairs = layer & 0x2;
 
-        const buildings = objs.filter(obj => obj.__type === ObjectType.Building) as Building[];
+        const buildings = objs.filter(obj => obj.__type === ObjectType.Building);
 
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
