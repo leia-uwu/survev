@@ -2020,7 +2020,12 @@ export class Player extends BaseGameObject {
         }
         }
 
+        const reloading = this.isReloading();
         this.cancelAction();
+
+        if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
+            this.weaponManager.tryReload();
+        }
     }
 
     isOnOtherSide(door: Obstacle): boolean {
