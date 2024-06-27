@@ -8,14 +8,14 @@ import { randomBytes } from "crypto";
 import { TeamMenu } from "./teamMenu";
 import { type Group } from "./group";
 
-export interface PlayerContainer {
+export interface GameSocketData {
     readonly gameID: string
     sendMsg: (msg: ArrayBuffer | Uint8Array) => void
     closeSocket: () => void
     player?: Player
 }
 
-export interface TeamMenuPlayerContainer {
+export interface TeamSocketData {
     sendMsg: (response: string) => void
     close: () => void
     roomUrl: string
@@ -183,14 +183,14 @@ export abstract class AbstractServer {
         return gameId;
     }
 
-    onOpen(data: PlayerContainer): void {
+    onOpen(data: GameSocketData): void {
         const game = this.gamesById.get(data.gameID);
         if (game === undefined) {
             data.closeSocket();
         }
     }
 
-    onMessage(data: PlayerContainer, message: ArrayBuffer | Buffer) {
+    onMessage(data: GameSocketData, message: ArrayBuffer | Buffer) {
         const game = this.gamesById.get(data.gameID);
         if (!game) {
             data.closeSocket();
@@ -203,7 +203,7 @@ export abstract class AbstractServer {
         }
     }
 
-    onClose(data: PlayerContainer): void {
+    onClose(data: GameSocketData): void {
         const game = this.gamesById.get(data.gameID);
         const player = data.player;
         if (game === undefined || player === undefined) return;

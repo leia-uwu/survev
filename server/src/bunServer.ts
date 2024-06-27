@@ -1,4 +1,4 @@
-import { AbstractServer, type PlayerContainer } from "./abstractServer";
+import { AbstractServer, type GameSocketData } from "./abstractServer";
 import { Config } from "./config";
 
 class BunServer extends AbstractServer {
@@ -7,7 +7,7 @@ class BunServer extends AbstractServer {
 
         const This = this;
 
-        Bun.serve<PlayerContainer>({
+        Bun.serve<GameSocketData>({
             port: Config.port,
             hostname: Config.host,
             tls: Config.ssl

@@ -10,7 +10,7 @@ import {
 import NanoTimer from "nanotimer";
 
 import { URLSearchParams } from "node:url";
-import { AbstractServer, type FindGameBody, type PlayerContainer, type TeamMenuPlayerContainer } from "./abstractServer";
+import { AbstractServer, type FindGameBody, type GameSocketData, type TeamSocketData } from "./abstractServer";
 
 /**
  * Apply CORS headers to a response.
@@ -163,7 +163,7 @@ class NodeServer extends AbstractServer {
              * Handle opening of the socket.
              * @param socket The socket being opened.
              */
-            open(socket: WebSocket<PlayerContainer>) {
+            open(socket: WebSocket<GameSocketData>) {
                 socket.getUserData().sendMsg = (data) => {
                     socket.send(data, true, false);
                 };
@@ -178,7 +178,7 @@ class NodeServer extends AbstractServer {
              * @param socket The socket in question.
              * @param message The message to handle.
              */
-            message(socket: WebSocket<PlayerContainer>, message) {
+            message(socket: WebSocket<GameSocketData>, message) {
                 This.onMessage(socket.getUserData(), message);
             },
 
@@ -186,7 +186,7 @@ class NodeServer extends AbstractServer {
              * Handle closing of the socket.
              * @param socket The socket being closed.
              */
-            close(socket: WebSocket<PlayerContainer>) {
+            close(socket: WebSocket<GameSocketData>) {
                 This.onClose(socket.getUserData());
             }
 
@@ -214,7 +214,7 @@ class NodeServer extends AbstractServer {
              * Handle opening of the socket.
              * @param socket The socket being opened.
              */
-            open(socket: WebSocket<TeamMenuPlayerContainer>) {
+            open(socket: WebSocket<TeamSocketData>) {
                 socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
             },
 
@@ -223,7 +223,7 @@ class NodeServer extends AbstractServer {
              * @param socket The socket in question.
              * @param message The message to handle.
              */
-            message(socket: WebSocket<TeamMenuPlayerContainer>, message) {
+            message(socket: WebSocket<TeamSocketData>, message) {
                 This.teamMenu.handleMsg(message, socket.getUserData());
             },
 
@@ -232,7 +232,7 @@ class NodeServer extends AbstractServer {
              * Called if player hits the leave button or if there's an error joining/creating a team
              * @param socket The socket being closed.
              */
-            close(socket: WebSocket<TeamMenuPlayerContainer>) {
+            close(socket: WebSocket<TeamSocketData>) {
                 const userData = socket.getUserData();
                 const room = This.teamMenu.rooms.get(userData.roomUrl);
                 if (room) {

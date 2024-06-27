@@ -21,7 +21,7 @@ import { SmokeBarn } from "./objects/smoke";
 import { AirdropBarn } from "./objects/airdrop";
 import { DecalBarn } from "./objects/decal";
 import { Group } from "./group";
-import { type PlayerContainer } from "./abstractServer";
+import { type GameSocketData } from "./abstractServer";
 import { type MapDefs } from "../../shared/defs/mapDefs";
 
 export interface ServerGameConfig {
@@ -162,7 +162,7 @@ export class Game {
         return aliveTeams[newIndex];
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketData: PlayerContainer): void {
+    handleMsg(buff: ArrayBuffer | Buffer, socketData: GameSocketData): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
@@ -264,7 +264,7 @@ export class Game {
         this.allowJoin = false;
         for (const player of this.playerBarn.players) {
             if (!player.disconnected) {
-                player.closeSocket();
+                player.socketData.closeSocket();
             }
         }
         this.logger.log("Game Ended");

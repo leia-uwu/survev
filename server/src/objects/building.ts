@@ -59,7 +59,7 @@ export class Building extends BaseGameObject {
         healRate: number
     }> = [];
 
-    goreRegion: AABB;
+    goreRegion?: AABB;
 
     rot: number;
 
