@@ -61,7 +61,7 @@ export class Obstacle extends BaseGameObject {
         openPos: Vec2
     };
 
-    closeTimeout?: Timer;
+    closeTimeout?: NodeJS.Timeout;
 
     isButton = false;
     button!: {
