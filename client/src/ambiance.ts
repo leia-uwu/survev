@@ -89,8 +89,8 @@ export class Ambiance {
 
             if (
                 !track.inst &&
-        track.sound &&
-        audioManager.isSoundLoaded(track.sound, track.channel)
+                track.sound &&
+                audioManager.isSoundLoaded(track.sound, track.channel)
             ) {
                 console.log("Start track", track.sound, track.channel);
                 track.inst = audioManager.playSound(track.sound, {
@@ -124,8 +124,8 @@ export class Ambiance {
             // of the track name has changed
             if (
                 track.inst &&
-        ((!track.sound && math.eqAbs(audioManager.getVolume(track.inst), 0)) ||
-          (track.sound && track.sound != track.instSound))
+                ((!track.sound && math.eqAbs(audioManager.getVolume(track.inst), 0)) ||
+                    (track.sound && track.sound != track.instSound))
             ) {
                 console.log("Stop track", track.name, track.channel);
                 audioManager.stopSound(track.inst);

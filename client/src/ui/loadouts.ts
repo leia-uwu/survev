@@ -66,8 +66,8 @@ const loadout = {
                     "crosshair_default"
                 ),
                 color:
-          parseInt(mergedLoadout.crosshair.color as unknown as string) ||
-          16777215,
+                    parseInt(mergedLoadout.crosshair.color as unknown as string) ||
+                    16777215,
                 size: getFloat(
                     mergedLoadout.crosshair.size as unknown as string,
                     1
@@ -83,7 +83,7 @@ const loadout = {
         const defaultEmotes = GameConfig.defaultEmoteLoadout.slice();
         for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
             const inputEmote =
-        i < mergedLoadout.emotes.length ? mergedLoadout.emotes[i] : "";
+                i < mergedLoadout.emotes.length ? mergedLoadout.emotes[i] : "";
             validatedLoadout.emotes.push(
                 getGameType("emote", inputEmote, defaultEmotes[i])
             );
@@ -131,7 +131,7 @@ const loadout = {
         const items = [];
         // Add default items
         const unlockDefaultDef =
-      GameObjectDefs.unlock_default as unknown as (typeof UnlockDefs)["unlock_default"];
+            GameObjectDefs.unlock_default as unknown as (typeof UnlockDefs)["unlock_default"];
         for (let i = 0; i < unlockDefaultDef.unlocks.length; i++) {
             const unlock = unlockDefaultDef.unlocks[i];
             items.push({

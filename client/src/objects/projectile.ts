@@ -70,7 +70,7 @@ class Projectile implements AbstractObject {
         this.container.addChild(this.sprite);
     }
 
-    init() {}
+    init() { }
     free() {
         this.container.visible = false;
         if (this.strobeSprite) {
@@ -84,7 +84,7 @@ class Projectile implements AbstractObject {
         isNew: boolean,
         ctx: Ctx
     ) {
-    // Copy data
+        // Copy data
         if (fullUpdate) {
             const itemDef = GameObjectDefs[data.type] as ThrowableDef;
             this.layer = data.layer;
@@ -208,7 +208,7 @@ export class ProjectileBarn {
                             const col = o.height > p.posZ ? wallCol : groundCol;
                             if (
                                 res.pen > col.pen &&
-                (!col.obj || col.obj.height <= o.height)
+                                (!col.obj || col.obj.height <= o.height)
                             ) {
                                 col.obj = o;
                                 col.pen = res.pen;
@@ -222,9 +222,9 @@ export class ProjectileBarn {
                 const speed = v2.length(vel);
                 if (
                     wallCol.obj &&
-          wallCol.obj.__id != p.lastSoundObjId &&
-          speed > 7.5 &&
-          ((p.lastSoundObjId = wallCol.obj.__id), p.playHitSfx)
+                    wallCol.obj.__id != p.lastSoundObjId &&
+                    speed > 7.5 &&
+                    ((p.lastSoundObjId = wallCol.obj.__id), p.playHitSfx)
                 ) {
                     const dir = v2.mul(v2.normalizeSafe(vel, v2.create(1, 0)), -1);
                     const mapDef = MapObjectDefs[wallCol.obj.type] as ObstacleDef;
@@ -277,7 +277,7 @@ export class ProjectileBarn {
                     } else {
                         p.grounded = true;
                         sound.name =
-              groundSounds[surface.type as keyof typeof groundSounds];
+                            groundSounds[surface.type as keyof typeof groundSounds];
                         // @HACK: Attept to use a footstep sound if we failed
                         // finding a surface
                         if (sound.name === undefined) {
@@ -316,20 +316,20 @@ export class ProjectileBarn {
                 if (itemDef.trail) {
                     const speed = v2.length(vel);
                     const trailT =
-            math.remap(
-                speed,
-                itemDef.throwPhysics.speed * 0.25,
-                itemDef.throwPhysics.speed * 1,
-                0,
-                1
-            ) *
-            math.remap(
-                p.posZ,
-                0.1,
-                GameConfig.projectile.maxHeight * 0.5,
-                0,
-                1
-            );
+                        math.remap(
+                            speed,
+                            itemDef.throwPhysics.speed * 0.25,
+                            itemDef.throwPhysics.speed * 1,
+                            0,
+                            1
+                        ) *
+                        math.remap(
+                            p.posZ,
+                            0.1,
+                            GameConfig.projectile.maxHeight * 0.5,
+                            0,
+                            1
+                        );
                     p.trail.scale.set(
                         itemDef.trail.maxLength * trailT,
                         itemDef.trail.width
@@ -349,9 +349,9 @@ export class ProjectileBarn {
                 const onMask = map.insideStructureMask(stairCollider);
                 if (
                     p.posZ >= 0.25 &&
-          !!onStairs &&
-          (p.layer & 1) == (activePlayer.layer & 1) &&
-          (!onMask || !(activePlayer.layer & 2))
+                    !!onStairs &&
+                    (p.layer & 1) == (activePlayer.layer & 1) &&
+                    (!onMask || !(activePlayer.layer & 2))
                 ) {
                     layer |= 2;
                     zOrd += 100;
@@ -362,8 +362,8 @@ export class ProjectileBarn {
                 }
                 renderer.addPIXIObj(p.container, layer, zOrd);
                 const scale =
-          p.imgScale *
-          math.remap(p.posZ, 0, GameConfig.projectile.maxHeight, 1, 4.75);
+                    p.imgScale *
+                    math.remap(p.posZ, 0, GameConfig.projectile.maxHeight, 1, 4.75);
                 const screenPos = camera.pointToScreen(p.pos);
                 const screenScale = camera.pixels(scale);
                 p.container.position.set(screenPos.x, screenPos.y);

@@ -94,7 +94,7 @@ export class ShotBarn {
         shot.shotAlt = bullet.shotAlt;
         shot.ticker = 0;
         shot.pullDelay =
-      weaponDef.pullDelay !== undefined ? weaponDef.pullDelay * 0.45 : 0;
+            weaponDef.pullDelay !== undefined ? weaponDef.pullDelay * 0.45 : 0;
         shot.splinter = bullet.splinter;
         shot.trailSaturated = bullet.trailSaturated;
     }
@@ -140,7 +140,7 @@ export class ShotBarn {
 
                     audioManager.playSound(shotSound, {
                         channel:
-              shot.playerId == activePlayerId ? "activePlayer" : "otherPlayers",
+                            shot.playerId == activePlayerId ? "activePlayer" : "otherPlayers",
                         soundPos: shot.pos,
                         layer: player ? player.layer : shot.layer,
                         filter: "muffled",
@@ -152,9 +152,9 @@ export class ShotBarn {
                     if (shot.splinter) {
                         audioManager.playSound(shotSound, {
                             channel:
-                shot.playerId == activePlayerId
-                    ? "activePlayer"
-                    : "otherPlayers",
+                                shot.playerId == activePlayerId
+                                    ? "activePlayer"
+                                    : "otherPlayers",
                             soundPos: shot.pos,
                             layer: player ? player.layer : shot.layer,
                             filter: "muffled",
@@ -169,13 +169,13 @@ export class ShotBarn {
                         // If it's our shot, play a cycling or pull sound if needed
                         if (
                             player.__id == activePlayerId &&
-              weaponDef.fireMode == "single" &&
-              weaponDef.pullDelay
+                            weaponDef.fireMode == "single" &&
+                            weaponDef.pullDelay
                         ) {
                             const ammoLeft =
-                player.localData.weapons[player.localData.curWeapIdx].ammo;
+                                player.localData.weapons[player.localData.curWeapIdx].ammo;
                             const soundName =
-                ammoLeft > 0 ? weaponDef.sound.cycle : weaponDef.sound.pull;
+                                ammoLeft > 0 ? weaponDef.sound.cycle : weaponDef.sound.pull;
                             audioManager.stopSound(player.cycleSoundInstance!);
                             player.cycleSoundInstance = audioManager.playSound(soundName!);
                         }
@@ -195,9 +195,9 @@ export class ShotBarn {
                     const player = playerBarn.getPlayerById(shot.playerId);
                     if (
                         player &&
-            !player.netData.dead &&
-            player.netData.activeWeapon == shot.weaponType &&
-            weaponDef.caseTiming == "shoot"
+                        !player.netData.dead &&
+                        player.netData.activeWeapon == shot.weaponType &&
+                        weaponDef.caseTiming == "shoot"
                     ) {
                         createCasingParticle(
                             shot.weaponType,

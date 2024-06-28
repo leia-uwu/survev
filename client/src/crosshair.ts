@@ -16,9 +16,9 @@ function getCrosshairDims(crosshairDef: Crosshair) {
     };
     return {
         width:
-      Math.round((crosshairBase.width * Number(crosshairDef.size)) / 4) * 4,
+            Math.round((crosshairBase.width * Number(crosshairDef.size)) / 4) * 4,
         height:
-      Math.round((crosshairBase.height * Number(crosshairDef.size)) / 4) * 4
+            Math.round((crosshairBase.height * Number(crosshairDef.size)) / 4) * 4
     };
 }
 function getBaseURL(crosshairDef: Crosshair) {
@@ -40,8 +40,7 @@ function getBaseURL(crosshairDef: Crosshair) {
 }
 function getCursorCSS(crosshairDef: Crosshair) {
     const dims = getCrosshairDims(crosshairDef);
-    return `${getBaseURL(crosshairDef)} ${dims.width / 2} ${
-        dims.height / 2
+    return `${getBaseURL(crosshairDef)} ${dims.width / 2} ${dims.height / 2
     }, crosshair`;
 }
 
@@ -63,7 +62,7 @@ export const crosshair = {
         });
     },
     setGameCrosshair: function(crosshairDef: Crosshair) {
-    // Set game pointer
+        // Set game pointer
         crosshair.setElemCrosshair($("#game-area-wrapper"), crosshairDef);
 
         // Adjust UI elements to use the custom crosshair as well

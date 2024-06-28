@@ -53,9 +53,9 @@
  - [x] Ceiling Zoom
  - [x] Destroying and damaging ceilings
  - [x] Puzzles
- - [ ] Occupied emitters (like Smoke from cabins when player is inside)
- - [ ] Heal regions (club pool sauna)
- - [ ] Gore regions (club pool blood on kills)
+ - [x] Occupied emitters (like Smoke from cabins when player is inside)
+ - [x] Heal regions (club pool sauna)
+ - [x] Gore regions (club pool blood on kills)
 
 ### Structures
  - [x] Generation
@@ -74,7 +74,7 @@
  - [x] Physics
  - [x] Picking up loot
  - [x] Switching layers
- - [ ] Fix loot on bridges
+ - [x] Fix loot on bridges
  - [x] River flow
 
 ### Modes defs
@@ -112,9 +112,9 @@ Modes not in the leaked definitions (need map generation code):
 won't list all that need to be competently done because lazy
 
 ### Squad / Duos
- - [ ] API
- - [ ] Map Indicators
- - [ ] Randomized duos / squads when not using create team
+ - [x] API
+ - [x] Map Indicators
+ - [x] Randomized duos / squads when not using create team
 
 ### Other features
  - [x] Explosions
@@ -129,4 +129,4 @@ won't list all that need to be competently done because lazy
  - [ ] Separating API and Game servers
  - [ ] Connections limit per ip
  - [ ] Banning Ips
- - [ ] Matchmaking algorithm
+ - [x] Matchmaking algorithm

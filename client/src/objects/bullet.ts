@@ -133,8 +133,8 @@ export class BulletBarn {
         const variance = 1 + bullet.varianceT * bulletDef.variance;
         const distAdj = math.remap(bullet.distAdjIdx, 0, 16, -1, 1);
         let distance =
-      bulletDef.distance /
-      Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
+            bulletDef.distance /
+            Math.pow(GameConfig.bullet.reflectDistDecay, bullet.reflectCount);
         if (bullet.clipDistance) {
             distance = bullet.distance;
         }
@@ -222,10 +222,10 @@ export class BulletBarn {
 
                 if (
                     !activePlayer.netData.dead &&
-          util.sameAudioLayer(activePlayer.layer, b.layer) &&
-          v2.length(v2.sub(camera.pos, b.pos)) < 7.5 &&
-          !b.whizHeard &&
-          b.playerId != activePlayer.__id
+                    util.sameAudioLayer(activePlayer.layer, b.layer) &&
+                    v2.length(v2.sub(camera.pos, b.pos)) < 7.5 &&
+                    !b.whizHeard &&
+                    b.playerId != activePlayer.__id
                 ) {
                     audioManager.playGroup("bullet_whiz", {
                         soundPos: b.pos,
@@ -261,10 +261,10 @@ export class BulletBarn {
                     const obstacle = obstacles[i];
                     if (
                         !!obstacle.active &&
-            !obstacle.dead &&
-            !!util.sameLayer(obstacle.layer, b.layer) &&
-            obstacle.height >= GameConfig.bullet.height &&
-            (b.reflectCount <= 0 || obstacle.__id != b.reflectObjId)
+                        !obstacle.dead &&
+                        !!util.sameLayer(obstacle.layer, b.layer) &&
+                        obstacle.height >= GameConfig.bullet.height &&
+                        (b.reflectCount <= 0 || obstacle.__id != b.reflectObjId)
                     ) {
                         const res = collider.intersectSegment(
                             obstacle.collider,
@@ -286,10 +286,10 @@ export class BulletBarn {
                     const player = players[C];
                     if (
                         player.active &&
-            !player.netData.dead &&
-            (util.sameLayer(player.netData.layer, b.layer) ||
-              player.netData.layer & 2) &&
-            (player.__id != b.playerId || b.damageSelf)
+                        !player.netData.dead &&
+                        (util.sameLayer(player.netData.layer, b.layer) ||
+                            player.netData.layer & 2) &&
+                        (player.__id != b.playerId || b.damageSelf)
                     ) {
                         let O = null;
                         if (player.hasActivePan()) {
@@ -326,9 +326,9 @@ export class BulletBarn {
                         );
                         if (
                             N &&
-              (!O ||
-                v2.length(v2.sub(N.point, b.startPos)) <
-                  v2.length(v2.sub(O.point, b.startPos)))
+                            (!O ||
+                                v2.length(v2.sub(N.point, b.startPos)) <
+                                v2.length(v2.sub(O.point, b.startPos)))
                         ) {
                             colObjs.push({
                                 type: "player",
@@ -456,7 +456,7 @@ export class BulletBarn {
                                 const se = re.stairs[oe];
                                 if (
                                     !se?.lootOnly &&
-                  collider.intersectSegment(se?.collision!, b.pos, posOld)
+                                    collider.intersectSegment(se?.collision!, b.pos, posOld)
                                 ) {
                                     ae = true;
                                     break;

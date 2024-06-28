@@ -2,24 +2,21 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start": "node --enable-source-maps dist/server/src/nodeServer.js",
-    "start:bun": "bun src/bunServer.ts",
-    "dev": "ts-node-dev --respawn --rs --transpile-only src/nodeServer.ts",
-    "dev:bun": "bun --watch src/bunServer.ts",
+    "start": "node --enable-source-maps dist/server/src/server.js",
+    "dev": "ts-node-dev --respawn --rs --transpile-only src/server.ts",
     "client": "cd client; pnpm dev",
     "lint": "eslint . --fix --ext .ts,.js",
     "lint:ci": "eslint . --ext .ts,.js"
   },
   "dependencies": {
-    "@types/node": "^20.14.5",
     "bit-buffer": "^0.2.5",
     "nanotimer": "^0.3.15",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.43.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.4",
+    "@types/node": "^20.14.9",
     "@types/nanotimer": "^0.3.2"
   }
 }

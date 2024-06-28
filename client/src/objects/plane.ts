@@ -67,9 +67,9 @@ class Plane {
 
         this.type = data.action;
         this.config =
-      this.type == GameConfig.Plane.Airdrop
-          ? GameConfig.airdrop
-          : GameConfig.airstrike;
+            this.type == GameConfig.Plane.Airdrop
+                ? GameConfig.airdrop
+                : GameConfig.airstrike;
 
         this.rad = this.config.planeRad;
         switch (this.type) {
@@ -89,7 +89,7 @@ class Plane {
     }
 
     n(audioManager: AudioManager) {
-    // Don't free this plane until it's fully elevated
+        // Don't free this plane until it's fully elevated
         if (this.spriteUpdateTime >= planeElevateTime) {
             if (this.soundInstance) {
                 audioManager.stopSound(this.soundInstance);
@@ -137,9 +137,9 @@ class AirstrikeZone {
     }
 
     render(uiManager: UiManager, map: Map, debug: unknown) {
-    // uiManager.getMapPosFromWorldPos is only valid after
-    // uiManager.update() is run, so this logic must be run
-    // afterward; render() is a reasonable place to do it.
+        // uiManager.getMapPosFromWorldPos is only valid after
+        // uiManager.update() is run, so this logic must be run
+        // afterward; render() is a reasonable place to do it.
         const pos = uiManager.getMapPosFromWorldPos(this.pos, map);
         const edge = uiManager.getMapPosFromWorldPos(
             v2.add(this.pos, v2.create(this.rad, 0)),
@@ -169,8 +169,8 @@ class AirstrikeZone {
         }
 
         const alpha =
-      math.smoothstep(this.ticker, 0, 0.5) *
-      (1 - math.smoothstep(this.ticker, this.duration - 0.5, this.duration));
+            math.smoothstep(this.ticker, 0, 0.5) *
+            (1 - math.smoothstep(this.ticker, this.duration - 0.5, this.duration));
         this.gfx.alpha = alpha;
     }
 }
@@ -180,7 +180,7 @@ export class PlaneBarn {
     airstrikeZones: AirstrikeZone[] = [];
     airstrikeZoneContainer = new PIXI.Container();
 
-    constructor(public audioManager: AudioManager) {}
+    constructor(public audioManager: AudioManager) { }
 
     free() {
         for (let i = 0; i < this.planes.length; i++) {
@@ -189,7 +189,7 @@ export class PlaneBarn {
     }
 
     updatePlanes(planeData: PlaneData[], map: Map) {
-    // Mark existing planes as dirty
+        // Mark existing planes as dirty
         for (let i = 0; i < this.planes.length; i++) {
             this.planes[i].dirty = true;
         }
@@ -264,9 +264,9 @@ export class PlaneBarn {
                 let layer = 0;
                 if (
                     (!!util.sameLayer(layer, activePlayer.layer) ||
-            !!(activePlayer.layer & 2)) &&
-          (!(activePlayer.layer & 2) ||
-            !map.insideStructureMask(collider.createCircle(p.pos, 1)))
+                        !!(activePlayer.layer & 2)) &&
+                    (!(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(collider.createCircle(p.pos, 1)))
                 ) {
                     layer |= 2;
                 }
@@ -318,13 +318,13 @@ export class PlaneBarn {
                         const maxSoundOffset = 2.25;
                         const distToCompare = math.max(minDist, distToPlane);
                         offset =
-              (1 -
-                math.clamp(
-                    math.max(0, distToCompare) / maxDistToOffset,
-                    0,
-                    1
-                )) *
-              maxSoundOffset;
+                            (1 -
+                                math.clamp(
+                                    math.max(0, distToCompare) / maxDistToOffset,
+                                    0,
+                                    1
+                                )) *
+                            maxSoundOffset;
                     }
                     if (distToPlane < maxRange) {
                         p.soundInstance = this.audioManager.playSound(p.planeSound, {

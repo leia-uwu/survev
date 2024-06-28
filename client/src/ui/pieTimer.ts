@@ -51,7 +51,7 @@ export class PieTimer {
     }
 
     destroy() {
-    // Don't destroy the texture being used by timerBackground
+        // Don't destroy the texture being used by timerBackground
         this.container.removeChild(this.timerBackground);
         this.timerBackground.destroy({
             children: true
@@ -102,7 +102,7 @@ export class PieTimer {
         const rectX = 0 - labelWidth / 2;
         const rectY = 87.5 - labelHeight / 2;
         const l =
-      math.min(this.elapsed / this.duration, 1) * Math.PI * 2 - Math.PI * 0.5;
+            math.min(this.elapsed / this.duration, 1) * Math.PI * 2 - Math.PI * 0.5;
         this.gfx.clear();
         this.gfx.beginFill(0, 0.5);
         this.gfx.drawRoundedRect(rectX, rectY, labelWidth, labelHeight, 5);

@@ -24,7 +24,6 @@ import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type Group } from "../group";
 import { Config, SpawnMode } from "../config";
-import { type PlayerContainer } from "../abstractServer";
 import { type JoinMsg } from "../../../shared/msgs/joinMsg";
 import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
@@ -33,6 +32,7 @@ import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type GameSocketData } from "../server";
 
 export class Emote {
     playerId: number;
@@ -65,7 +65,7 @@ export class PlayerBarn {
         return this.livingPlayers[util.randomInt(0, this.livingPlayers.length - 1)];
     }
 
-    addPlayer(socketData: PlayerContainer, joinMsg: JoinMsg) {
+    addPlayer(socketData: GameSocketData, joinMsg: JoinMsg) {
         let pos: Vec2;
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
@@ -75,7 +75,7 @@ export class PlayerBarn {
             stream.serializeMsg(MsgType.Disconnect, disconnectMsg);
             socketData.sendMsg(stream.getBuffer());
             setTimeout(() => {
-                player.closeSocket();
+                socketData.closeSocket();
             }, 1);
         }
 
@@ -109,8 +109,8 @@ export class PlayerBarn {
         const player = new Player(
             this.game,
             pos,
-            socketData.sendMsg,
-            socketData.closeSocket
+            socketData,
+            joinMsg
         );
 
         if (group) {
@@ -122,54 +122,7 @@ export class PlayerBarn {
             }
         }
 
-        let name = joinMsg.name;
-        if (name.trim() === "") name = "Player";
-        player.name = name;
-
-        this.game.logger.log(`Player ${name} joined`);
-
-        player.joinedTime = Date.now();
-
-        player.isMobile = joinMsg.isMobile;
-
-        /**
-        * Checks if an item is present in the player's loadout
-        */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
-        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
-            player.outfit = joinMsg.loadout.outfit;
-        }
-
-        if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
-            player.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        }
-
-        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-            player.loadout.heal = joinMsg.loadout.heal;
-        }
-        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-            player.loadout.boost = joinMsg.loadout.boost;
-        }
-
-        const emotes = joinMsg.loadout.emotes;
-        for (let i = 0; i < emotes.length; i++) {
-            const emote = emotes[i];
-
-            if ((i < 4 && emote === "") || (!isItemInLoadout(emote, "emote") && emote !== "")) {
-                player.loadout.emotes.push(GameConfig.defaultEmoteLoadout[i]);
-                continue;
-            }
-
-            player.loadout.emotes.push(emote);
-        }
+        this.game.logger.log(`Player ${player.name} joined`);
 
         socketData.player = player;
         this.newPlayers.push(player);
@@ -536,8 +489,10 @@ export class Player extends BaseGameObject {
         return MeleeDefs.pan.reflectSurface![type];
     }
 
-    name = "Player";
-    isMobile: boolean = false;
+    socketData: GameSocketData;
+
+    name: string;
+    isMobile: boolean;
 
     teamId = 1;
     groupId = 0;
@@ -550,9 +505,7 @@ export class Player extends BaseGameObject {
 
     damageTaken = 0;
     damageDealt = 0;
-    joinedTime = 0;
     kills = 0;
-
     timeAlive = 0;
 
     msgsToSend: Array<{ type: number, msg: Msg }> = [];
@@ -563,9 +516,60 @@ export class Player extends BaseGameObject {
     constructor(
         game: Game,
         pos: Vec2,
-        public socketSend: (msg: ArrayBuffer | Uint8Array) => void,
-        public closeSocket: () => void) {
+        socketData: GameSocketData,
+        joinMsg: JoinMsg
+    ) {
         super(game, pos);
+
+        this.socketData = socketData;
+
+        this.name = joinMsg.name;
+        if (this.name.trim() === "") {
+            this.name = "Player";
+        }
+        this.isMobile = joinMsg.isMobile;
+
+        /**
+        * Checks if an item is present in the player's loadout
+        */
+        const isItemInLoadout = (item: string, category: string) => {
+            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
+
+            const def = GameObjectDefs[item];
+            if (!def || def.type !== category) return false;
+
+            return true;
+        };
+
+        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
+            this.outfit = joinMsg.loadout.outfit;
+        }
+
+        if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
+            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
+        }
+
+        const loadout = this.loadout;
+
+        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
+            loadout.heal = joinMsg.loadout.heal;
+        }
+        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
+            loadout.boost = joinMsg.loadout.boost;
+        }
+
+        const emotes = joinMsg.loadout.emotes;
+        for (let i = 0; i < emotes.length; i++) {
+            const emote = emotes[i];
+            if (i > GameConfig.EmoteSlot.Count) break;
+
+            if (emote === "" || !isItemInLoadout(emote, "emote")) {
+                loadout.emotes.push(GameConfig.defaultEmoteLoadout[i]);
+                continue;
+            }
+
+            loadout.emotes.push(emote);
+        }
 
         this.collider = collider.createCircle(pos, this.rad);
 
@@ -725,7 +729,19 @@ export class Player extends BaseGameObject {
             if (obj.__type === ObjectType.Building) {
                 let layer = this.layer;
                 if (this.layer > 2) layer = 0;
-                if (!util.sameLayer(util.toGroundLayer(layer), obj.layer) || obj.ceilingDead) continue;
+                if (!util.sameLayer(util.toGroundLayer(layer), obj.layer)) continue;
+
+                if (obj.healRegions) {
+                    const healRegion = obj.healRegions.find(hr => {
+                        return coldet.testCircleAabb(this.pos, this.rad, hr.collision.min, hr.collision.max);
+                    });
+
+                    if (healRegion) {
+                        this.health += healRegion.healRate * dt;
+                    }
+                }
+
+                if (obj.ceilingDead) continue;
 
                 for (let i = 0; i < obj.zoomRegions.length; i++) {
                     const zoomRegion = obj.zoomRegions[i];
@@ -956,7 +972,7 @@ export class Player extends BaseGameObject {
             const emotePlayer = game.objectRegister.getById(emote.playerId) as Player | undefined;
             if (emotePlayer) {
                 if (((emote.isPing || emote.itemType) && emotePlayer.groupId === this.groupId) ||
-                    this.visibleObjects.has(emotePlayer)
+                    (this.visibleObjects.has(emotePlayer) && !emote.isPing)
                 ) {
                     updateMsg.emotes.push(emote);
                 }
@@ -1067,8 +1083,8 @@ export class Player extends BaseGameObject {
                     }
                 }
             }
-            this.spectating = playerToSpec;
         }
+        this.spectating = playerToSpec;
     }
 
     damage(params: DamageParams) {
@@ -1352,6 +1368,16 @@ export class Player extends BaseGameObject {
                     this.loadout.emotes[GameConfig.EmoteSlot.Death],
                     false)
             );
+        }
+
+        // Building gore region (club pool)
+        const objs = this.game.grid.intersectCollider(this.collider);
+        for (const obj of objs) {
+            if (obj.__type === ObjectType.Building &&
+                obj.goreRegion &&
+                coldet.testCircleAabb(this.pos, this.rad, obj.goreRegion.min, obj.goreRegion.max)) {
+                obj.onGoreRegionKill();
+            }
         }
 
         if (this.group) {
@@ -2008,7 +2034,12 @@ export class Player extends BaseGameObject {
         }
         }
 
+        const reloading = this.isReloading();
         this.cancelAction();
+
+        if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
+            this.weaponManager.tryReload();
+        }
     }
 
     isOnOtherSide(door: Obstacle): boolean {
@@ -2128,7 +2159,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer | Uint8Array): void {
         try {
-            this.socketSend(buffer);
+            this.socketData.sendMsg(buffer);
         } catch (e) {
             console.warn("Error sending packet. Details:", e);
         }

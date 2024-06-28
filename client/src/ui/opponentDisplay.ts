@@ -63,7 +63,7 @@ export class LoadoutDisplay {
         public config: ConfigManager,
         public inputBinds: InputBinds,
         public account: Account
-    ) {}
+    ) { }
 
     o() {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
@@ -301,11 +301,11 @@ export class LoadoutDisplay {
         return (
             ((document.getElementById("modal-content-left")!.getBoundingClientRect()
                 .height /
-        this.camera.screenHeight) *
-        0.2 *
-        this.camera.screenHeight *
-        0.5) /
-      this.camera.ppu
+                this.camera.screenHeight) *
+                0.2 *
+                this.camera.screenHeight *
+                0.5) /
+            this.camera.ppu
         );
     }
 
@@ -380,12 +380,12 @@ export class LoadoutDisplay {
 
         if (
             hasFocus &&
-      (this.view == this.viewOld ||
-        (this.view != "heal" && this.view != "boost") ||
-        (this.animIdleTicker = 0),
-      (this.viewOld = this.view),
-      (this.animIdleTicker -= dt),
-      this.animIdleTicker < 0)
+            (this.view == this.viewOld ||
+                (this.view != "heal" && this.view != "boost") ||
+                (this.animIdleTicker = 0),
+            (this.viewOld = this.view),
+            (this.animIdleTicker -= dt),
+            this.animIdleTicker < 0)
         ) {
             if (this.view == "heal") {
                 this.actionSeq = (this.actionSeq + 1) % 8;

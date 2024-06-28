@@ -108,16 +108,16 @@ export class AirdropBarn {
                 // Make some crate particles? = 0;
                 if (
                     (!!util.sameLayer(layer, activePlayer.layer) ||
-            !!(activePlayer.layer & 2)) &&
-          (!(activePlayer.layer & 2) ||
-            !map.insideStructureMask(collider.createCircle(airdrop.pos, 1)))
+                        !!(activePlayer.layer & 2)) &&
+                    (!(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(collider.createCircle(airdrop.pos, 1)))
                 ) {
                     layer |= 2;
                 }
                 if (
                     airdrop.landed &&
-          !airdrop.playedLandFx &&
-          ((airdrop.playedLandFx = true), !airdrop.isNew)
+                    !airdrop.playedLandFx &&
+                    ((airdrop.playedLandFx = true), !airdrop.isNew)
                 ) {
                     // Make some crate particles?
                     for (let j = 0; j < 10; j++) {
@@ -144,7 +144,7 @@ export class AirdropBarn {
 
                     // Play the crate hitting ground sound
                     const crashSound =
-            surface.type == "water" ? "airdrop_crash_02" : "airdrop_crash_01";
+                        surface.type == "water" ? "airdrop_crash_02" : "airdrop_crash_01";
                     audioManager.playSound(crashSound, {
                         channel: "sfx",
                         soundPos: airdrop.pos,

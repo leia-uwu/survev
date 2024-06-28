@@ -5,7 +5,6 @@ import { type Game } from "./game";
 import { GameConfig } from "../../shared/gameConfig";
 import { Building } from "./objects/building";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { type Decal } from "./objects/decal";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";
 import { type Collider, coldet, type AABB } from "../../shared/utils/coldet";
@@ -195,6 +194,7 @@ export class GameMap {
 
     obstacles: Obstacle[] = [];
     buildings: Building[] = [];
+    buildingsWithEmitters: Building[] = [];
     structures: Structure[] = [];
     bridges: Structure[] = [];
 
@@ -261,6 +261,39 @@ export class GameMap {
 
         this.generateObjects();
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
+    }
+
+    update() {
+        for (let i = 0; i < this.buildingsWithEmitters.length; i++) {
+            const building = this.buildingsWithEmitters[i];
+
+            const oldOccupiedState = building.occupied;
+
+            building.occupied = false;
+
+            const objs = this.game.grid.intersectCollider(building.emitterBounds);
+
+            for (let i = 0; i < objs.length; i++) {
+                const player = objs[i];
+                if (player.__type !== ObjectType.Player) continue;
+                for (let j = 0; j < building.zoomRegions.length; j++) {
+                    const region = building.zoomRegions[j];
+
+                    if (!region.zoomIn) continue;
+                    if (coldet.testCircleAabb(player.pos, player.rad, region.zoomIn.min, region.zoomIn.max)) {
+                        building.occupied = true;
+                        break;
+                    }
+                }
+                if (building.occupied) {
+                    break;
+                }
+            }
+
+            if (building.occupied !== oldOccupiedState) {
+                building.setPartDirty();
+            }
+        }
     }
 
     generateTerrain(): void {
@@ -879,6 +912,9 @@ export class GameMap {
         const building = new Building(this.game, type, pos, ori, layer, parentId);
         this.game.objectRegister.register(building);
         this.buildings.push(building);
+        if (building.hasOccupiedEmitters) {
+            this.buildingsWithEmitters.push(building);
+        }
 
         if (def.map?.display && layer === 0) this.msg.objects.push(building);
 
@@ -1011,7 +1047,7 @@ export class GameMap {
         const objs = this.game.grid.intersectPos(pos);
 
         // Check decals
-        const decals = objs.filter(obj => obj.__type === ObjectType.Decal) as Decal[];
+        const decals = objs.filter(obj => obj.__type === ObjectType.Decal);
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
             if (!decal.surface) {
@@ -1028,7 +1064,7 @@ export class GameMap {
         let zIdx = 0;
         const onStairs = layer & 0x2;
 
-        const buildings = objs.filter(obj => obj.__type === ObjectType.Building) as Building[];
+        const buildings = objs.filter(obj => obj.__type === ObjectType.Building);
 
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];

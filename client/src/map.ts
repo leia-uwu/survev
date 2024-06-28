@@ -131,10 +131,10 @@ export class Map {
     cheatDetectFrame = 0;
     cheatRanDetection = false;
     cheatDetected = false;
-    constructor(public decalBarn: DecalBarn) {}
+    constructor(public decalBarn: DecalBarn) { }
 
     free() {
-    // Buildings need to stop sound emitters
+        // Buildings need to stop sound emitters
         const buildings = this.buildingPool.getPool();
         for (let i = 0; i < buildings.length; i++) {
             buildings[i].free();
@@ -159,7 +159,7 @@ export class Map {
     ) {
         this.mapName = mapMsg.mapName;
         // Clone the source mapDef
-        const mapDef = MapDefs[this.mapName];
+        const mapDef = MapDefs[this.mapName as keyof typeof MapDefs];
         if (!mapDef) {
             throw new Error(`Failed loading mapDef ${this.mapName}`);
         }
@@ -449,8 +449,8 @@ export class Map {
     }
 
     render(camera: Camera) {
-    // Terrain
-    // Fairly robust way to get translation and scale from the camera ...
+        // Terrain
+        // Fairly robust way to get translation and scale from the camera ...
         const p0 = camera.pointToScreen(v2.create(0, 0));
         const p1 = camera.pointToScreen(v2.create(1, 1));
         const s = v2.sub(p1, p0);
@@ -462,7 +462,7 @@ export class Map {
     getMinimapRender(obj: (typeof this.mapData.objects)[number]) {
         const def = MapObjectDefs[obj.type] as ObstacleDef | BuildingDef;
         const zIdx =
-      def.type == "building" ? 750 + (def.zIdx || 0) : def.img.zIdx || 0;
+            def.type == "building" ? 750 + (def.zIdx || 0) : def.img.zIdx || 0;
         let shapes: Array<{
             scale?: number
             color: number
@@ -475,12 +475,12 @@ export class Map {
             let col = null;
             if (
                 (col =
-          def.type == "obstacle"
-              ? def.collision
-              : def.ceiling.zoomRegions.length > 0 &&
-              def.ceiling.zoomRegions[0].zoomIn
-                  ? def.ceiling.zoomRegions[0].zoomIn
-                  : mapHelpers.getBoundingCollider(obj.type))
+                    def.type == "obstacle"
+                        ? def.collision
+                        : def.ceiling.zoomRegions.length > 0 &&
+                            def.ceiling.zoomRegions[0].zoomIn
+                            ? def.ceiling.zoomRegions[0].zoomIn
+                            : mapHelpers.getBoundingCollider(obj.type))
             ) {
                 shapes.push({
                     collider: collider.copy(col) as CircleWithHeight,
@@ -667,11 +667,11 @@ export class Map {
             if (type == "water") {
                 const mapColors = this.getMapDef().biome.colors;
                 data.waterColor =
-          data.waterColor !== undefined ? data.waterColor : mapColors.water;
+                    data.waterColor !== undefined ? data.waterColor : mapColors.water;
                 data.rippleColor =
-          data.rippleColor !== undefined
-              ? data.rippleColor
-              : mapColors.waterRipple;
+                    data.rippleColor !== undefined
+                        ? data.rippleColor
+                        : mapColors.waterRipple;
             }
             return {
                 type,
@@ -688,9 +688,9 @@ export class Map {
             const decal = decals[i];
             if (
                 decal.active &&
-        decal.surface &&
-        util.sameLayer(decal.layer, layer) &&
-        collider.intersectCircle(decal.collider, pos, 0.0001)
+                decal.surface &&
+                util.sameLayer(decal.layer, layer) &&
+                collider.intersectCircle(decal.collider, pos, 0.0001)
             ) {
                 return groundSurface(decal.surface.type, decal.surface.data);
             }
@@ -705,10 +705,10 @@ export class Map {
             const building = buildings[i];
             if (
                 building.active &&
-        building.zIdx >= zIdx &&
-        // Prioritize layer0 building surfaces when on stairs
-        (building.layer == layer || !!onStairs) &&
-        (building.layer != 1 || !onStairs)
+                building.zIdx >= zIdx &&
+                // Prioritize layer0 building surfaces when on stairs
+                (building.layer == layer || !!onStairs) &&
+                (building.layer != 1 || !onStairs)
             ) {
                 for (let i = 0; i < building.surfaces.length; i++) {
                     const s = building.surfaces[i];
@@ -735,8 +735,8 @@ export class Map {
                 const river = rivers[v];
                 if (
                     coldet.testPointAabb(pos, river.aabb.min, river.aabb.max) &&
-          math.pointInsidePolygon(pos, river.shorePoly) &&
-          ((onRiverShore = true), math.pointInsidePolygon(pos, river.waterPoly))
+                    math.pointInsidePolygon(pos, river.shorePoly) &&
+                    ((onRiverShore = true), math.pointInsidePolygon(pos, river.waterPoly))
                 ) {
                     return groundSurface("water", {
                         river
@@ -804,9 +804,9 @@ export class Map {
             const building = buildings[i];
             if (
                 building.active &&
-        (!checkVisible ||
-          (building.ceiling.visionTicker > 0 && !building.ceilingDead)) &&
-        building.isInsideCeiling(collision)
+                (!checkVisible ||
+                    (building.ceiling.visionTicker > 0 && !building.ceilingDead)) &&
+                building.isInsideCeiling(collision)
             ) {
                 return true;
             }

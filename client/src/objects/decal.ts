@@ -229,7 +229,7 @@ class DecalRender {
         }
         if (
             !!this.deactivated &&
-      (!this.fadeout || !!math.eqAbs(this.fadeAlpha, 0))
+            (!this.fadeout || !!math.eqAbs(this.fadeAlpha, 0))
         ) {
             this.sprite.visible = false;
             this.active = false;
@@ -255,7 +255,7 @@ class DecalRender {
         this.sprite.scale.set(screenScale, screenScale);
         this.sprite.rotation = -this.rot;
         this.sprite.alpha =
-      this.spriteAlpha * (this.inWater ? 0.3 : 1) * this.fadeAlpha;
+            this.spriteAlpha * (this.inWater ? 0.3 : 1) * this.fadeAlpha;
         renderer.addPIXIObj(this.sprite, this.layer, this.zIdx, this.zOrd);
     }
 }
@@ -295,5 +295,5 @@ export class DecalBarn {
         }
     }
 
-    render(camera: unknown, debug: unknown, layer: number) {}
+    render(camera: unknown, debug: unknown, layer: number) { }
 }

@@ -43,87 +43,87 @@ export class PingTest {
     }
 
     update(dt: number) {
-    type Test = (typeof this.tests)[number];
-    const completeTest = (test: Test) => {
-        test.active = false;
-        test.complete = true;
-        this.testsCompleted++;
-    };
+        type Test = (typeof this.tests)[number];
+        const completeTest = (test: Test) => {
+            test.active = false;
+            test.complete = true;
+            this.testsCompleted++;
+        };
 
-    const onClose = function(test: Test) {
-        if (test.ws) {
-            test.ws.close();
-            test.ws = null;
-        }
-        if (!test.complete) {
-            if (test.retryCount++ >= test.retryCountMax) {
-                completeTest(test);
+        const onClose = function(test: Test) {
+            if (test.ws) {
+                test.ws.close();
+                test.ws = null;
             }
-        }
-    };
+            if (!test.complete) {
+                if (test.retryCount++ >= test.retryCountMax) {
+                    completeTest(test);
+                }
+            }
+        };
 
-    for (let i = 0; i < this.tests.length; i++) {
-        const test = this.tests[i];
-        if (!test.active) {
-            return "continue";
-        }
-        if (!test.ws) {
-            const ws = new WebSocket(`wss://${test.url}/ptc`);
-            ws.binaryType = "arraybuffer";
-            ws.onopen = function() {};
-            ws.onmessage = function(msg) {
-                const elapsed = (Date.now() - test.sendTime) / 1000;
-                test.ping = Math.min(test.ping, elapsed);
-                test.recvCount++;
-                test.sendDelay = 0.125;
-            };
-            ws.onerror = function(e) {
-                onClose(test);
-            };
-            ws.onclose = function() {
-                onClose(test);
-            };
-            test.ws = ws;
-            test.sendDelay = 0;
-            test.sendCount = 0;
-            test.recvCount = 0;
-        }
-        if (test.ws.readyState == test.ws.OPEN) {
-            test.sendDelay -= dt;
-            if (test.sendCount == test.recvCount && test.sendDelay < 0) {
-                test.sendTime = Date.now();
-                test.sendCount++;
-                try {
-                    test.ws.send(this.ptcDataBuf);
-                } catch (e) {
+        for (let i = 0; i < this.tests.length; i++) {
+            const test = this.tests[i];
+            if (!test.active) {
+                return "continue";
+            }
+            if (!test.ws) {
+                const ws = new WebSocket(`wss://${test.url}/ptc`);
+                ws.binaryType = "arraybuffer";
+                ws.onopen = function() { };
+                ws.onmessage = function(msg) {
+                    const elapsed = (Date.now() - test.sendTime) / 1000;
+                    test.ping = Math.min(test.ping, elapsed);
+                    test.recvCount++;
+                    test.sendDelay = 0.125;
+                };
+                ws.onerror = function(e) {
+                    onClose(test);
+                };
+                ws.onclose = function() {
+                    onClose(test);
+                };
+                test.ws = ws;
+                test.sendDelay = 0;
+                test.sendCount = 0;
+                test.recvCount = 0;
+            }
+            if (test.ws.readyState == test.ws.OPEN) {
+                test.sendDelay -= dt;
+                if (test.sendCount == test.recvCount && test.sendDelay < 0) {
+                    test.sendTime = Date.now();
+                    test.sendCount++;
+                    try {
+                        test.ws.send(this.ptcDataBuf);
+                    } catch (e) {
+                        test.ws.close();
+                    }
+                }
+                if (test.recvCount >= test.recvCountMax) {
+                    completeTest(test);
                     test.ws.close();
                 }
             }
-            if (test.recvCount >= test.recvCountMax) {
-                completeTest(test);
-                test.ws.close();
+        }
+        if (this.printSummary && this.isComplete()) {
+            const sorted = this.tests.sort((a, b) => {
+                return a.ping - b.ping;
+            });
+            console.log("Ping test results");
+            console.log("----------------------------------------");
+            for (let i = 0; i < sorted.length; i++) {
+                const test = sorted[i];
+                console.log(
+                    "region",
+                    test.region,
+                    "zone  ",
+                    test.zone,
+                    "ping  ",
+                    test.ping
+                );
             }
+            this.printSummary = false;
         }
-    }
-    if (this.printSummary && this.isComplete()) {
-        const sorted = this.tests.sort((a, b) => {
-            return a.ping - b.ping;
-        });
-        console.log("Ping test results");
-        console.log("----------------------------------------");
-        for (let i = 0; i < sorted.length; i++) {
-            const test = sorted[i];
-            console.log(
-                "region",
-                test.region,
-                "zone  ",
-                test.zone,
-                "ping  ",
-                test.ping
-            );
-        }
-        this.printSummary = false;
-    }
     }
 
     isComplete() {

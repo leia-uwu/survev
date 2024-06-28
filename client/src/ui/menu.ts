@@ -139,7 +139,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
 
     // Share button
     $(".js-btn-keybind-share").click(() => {
-    // Toggle the share screen
+        // Toggle the share screen
         if ($("#ui-modal-keybind-share").css("display") == "block") {
             $("#ui-modal-keybind-share").css("display", "none");
             $("#ui-modal-keybind-list").css("height", "420px");
@@ -218,7 +218,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
 function onResize() {
     // Add styling specific to safari in browser
     if (device.os == "ios") {
-    // iPhone X+ specific
+        // iPhone X+ specific
         if (device.model == "iphonex") {
             if (device.isLandscape) {
                 $(".main-volume-slider").css("width", "90%");
@@ -238,12 +238,12 @@ function onResize() {
         }
     }
     if (device.tablet) {
-    // Temporarily remove the youtube links
+        // Temporarily remove the youtube links
         $("#featured-youtuber").remove();
         $(".btn-youtube").remove();
     }
     if (device.touch) {
-    // Remove full screen option from main menu
+        // Remove full screen option from main menu
         $(".btn-start-fullscreen").css("display", "none");
     } else {
         $(".btn-start-fullscreen").css("display", "block");

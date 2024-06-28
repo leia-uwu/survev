@@ -7,10 +7,10 @@ import {
     type TeamMenuPlayer
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
-import { type TeamMenuPlayerContainer, type AbstractServer } from "./abstractServer";
+import { type Server, type TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
-    socketData: TeamMenuPlayerContainer
+    socketData: TeamSocketData
 }
 
 export interface Room {
@@ -53,7 +53,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: AbstractServer) {
+    constructor(public server: Server) {
 
     }
 
@@ -78,7 +78,7 @@ export class TeamMenu {
     /**
      * removes player from all necessary data structures (room, idToSocketSend map, id allocator)
      */
-    removePlayer(playerContainer: TeamMenuPlayerContainer): void {
+    removePlayer(playerContainer: TeamSocketData): void {
         const room = this.rooms.get(playerContainer.roomUrl)!;
 
         const pToRemove = room.players.find(p => p.socketData === playerContainer)!;
@@ -148,7 +148,7 @@ export class TeamMenu {
         }
     }
 
-    handleMsg(message: ArrayBuffer, localPlayerData: TeamMenuPlayerContainer): void {
+    handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData): void {
         const parsedMessage: ClientToServerTeamMsg = JSON.parse(new TextDecoder().decode(message));
         const type = parsedMessage.type;
         let response: ServerToClientTeamMsg;

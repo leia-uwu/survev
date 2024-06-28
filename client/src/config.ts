@@ -46,7 +46,7 @@ export class ConfigManager {
             let data = {};
             try {
                 data = JSON.parse(strConfig);
-            } catch (e) {}
+            } catch (e) { }
             this.config = util.mergeDeep({}, defaultConfig, data);
             this.checkUpgradeConfig();
             this.onModified();
@@ -70,7 +70,7 @@ export class ConfigManager {
             // This try/catch is here to handle that situation.
             try {
                 localStorage.setItem("surviv_config", strData);
-            } catch (e) {}
+            } catch (e) { }
         }
     }
 
@@ -117,9 +117,9 @@ export class ConfigManager {
 
     checkUpgradeConfig() {
 
-    // seem not to be implemeted yet
-    // this.get("version");
-    // // @TODO: Put upgrade code here
-    // this.set("version", 1);
+        // seem not to be implemeted yet
+        // this.get("version");
+        // // @TODO: Put upgrade code here
+        // this.set("version", 1);
     }
 }

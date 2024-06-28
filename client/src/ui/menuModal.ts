@@ -4,8 +4,8 @@ export class MenuModal {
     checkSelector = true;
     skipFade = false;
     visible = false;
-    onShowFn = function() {};
-    onHideFn = function() {};
+    onShowFn = function() { };
+    onHideFn = function() { };
     modalCloseListener: (e: JQuery.TriggeredEvent) => void;
 
     constructor(public selector: JQuery<HTMLElement>) {
@@ -16,7 +16,7 @@ export class MenuModal {
         this.modalCloseListener = (e) => {
             if (
                 $(e.target).closest(".modal-close").length == 0 &&
-        (!!$(e.target).is(this.selector) || !this.checkSelector)
+                (!!$(e.target).is(this.selector) || !this.checkSelector)
             ) {
                 e.stopPropagation();
                 this.hide();

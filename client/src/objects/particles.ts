@@ -7,7 +7,7 @@ import { type Map } from "../map";
 import { type Renderer } from "../renderer";
 
 class Range {
-    constructor(public min: number, public max: number) {}
+    constructor(public min: number, public max: number) { }
 
     getRandom() {
         return util.random(this.min, this.max);
@@ -173,7 +173,7 @@ export class Emitter {
         this.scale = options.scale !== undefined ? options.scale : 1;
         this.layer = options.layer || 0;
         this.duration =
-      options.duration !== undefined ? options.duration : Number.MAX_VALUE;
+            options.duration !== undefined ? options.duration : Number.MAX_VALUE;
         this.radius = options.radius !== undefined ? options.radius : def.radius;
         this.ticker = 0;
         this.nextSpawn = 0;
@@ -183,11 +183,11 @@ export class Emitter {
         this.rateMult = options.rateMult !== undefined ? options.rateMult : 1;
         const partDef = ParticleDefs[def.particle];
         this.zOrd =
-      def.zOrd !== undefined
-          ? def.zOrd
-          : partDef.zOrd !== undefined
-              ? partDef.zOrd
-              : 20;
+            def.zOrd !== undefined
+                ? def.zOrd
+                : partDef.zOrd !== undefined
+                    ? partDef.zOrd
+                    : 20;
     }
 
     n() {
@@ -299,7 +299,7 @@ export class ParticleBarn {
     }
 
     update(dt: number, camera: Camera, debug: unknown) {
-    // Update emitters
+        // Update emitters
         for (let i = 0; i < this.emitters.length; i++) {
             const e = this.emitters[i];
             if (e.active && e.enabled) {

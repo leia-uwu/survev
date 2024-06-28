@@ -4,7 +4,7 @@ declare global {
     }
 
     interface JQuery<TElement = HTMLElement> extends Iterable<TElement> {
-    /* eslint-disable @typescript-eslint/method-signature-style */
+        /* eslint-disable @typescript-eslint/method-signature-style */
         html(
             htmlString_function:
             | number /** Allow for number values to be passed */
@@ -53,4 +53,4 @@ declare module "pixi.js-legacy" {
         __layerIdx: number
     }
 }
-export {};
+export { };

@@ -109,9 +109,9 @@ export class GasSafeZoneRenderer {
         drawCircle: boolean,
         drawLine: boolean
     ) {
-    // Render a circle showing the safe zone, and a line pointing from
-    // the player to the center. Only update geometry if relevant data
-    // has changed.
+        // Render a circle showing the safe zone, and a line pointing from
+        // the player to the center. Only update geometry if relevant data
+        // has changed.
         this.circleGfx.visible = drawCircle;
         this.lineGfx.visible = drawLine;
         if (drawCircle || drawLine) {
@@ -207,7 +207,7 @@ export class Gas {
     }
 
     setFullState(circleT: number, data: GasData, map: unknown, ui: UiManager) {
-    // Update Ui
+        // Update Ui
         if (data.mode != this.mode) {
             const timeLeft = Math.ceil(data.duration * (1 - circleT));
             ui.setWaitingForPlayers(false);

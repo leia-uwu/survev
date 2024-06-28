@@ -26,7 +26,7 @@ class Smoke implements AbstractObject {
     layer!: number;
     interior!: number;
 
-    init() {}
+    init() { }
     free() {
         this.particle!.fadeOut();
         this.particle = null;
@@ -38,7 +38,7 @@ class Smoke implements AbstractObject {
         isNew: boolean,
         ctx: Ctx
     ) {
-    // @ts-expect-error data.type doesn't exist; this.type not used anywhere;
+        // @ts-expect-error data.type doesn't exist; this.type not used anywhere;
         this.type = data.type;
         this.pos = v2.copy(data.pos);
         this.rad = data.rad;
@@ -91,7 +91,7 @@ export class SmokeParticle {
         this.radTarget = this.rad;
         this.rot = util.random(0, Math.PI * 2);
         this.rotVel =
-      Math.PI * util.random(0.25, 0.5) * (Math.random() < 0.5 ? -1 : 1);
+            Math.PI * util.random(0.25, 0.5) * (Math.random() < 0.5 ? -1 : 1);
         this.fade = false;
         this.fadeTicker = 0;
         this.fadeDuration = util.random(0.5, 0.75);
@@ -133,10 +133,10 @@ export class SmokeBarn {
         map: Map,
         renderer: Renderer
     ) {
-    // why is this commented out?
-    // for (let o = this.e.getPool(), s = 0; s < o.length; s++) {
-    // o[s].active;
-    // }
+        // why is this commented out?
+        // for (let o = this.e.getPool(), s = 0; s < o.length; s++) {
+        // o[s].active;
+        // }
 
         // Update visual particles
         for (let m = 0; m < this.particles.length; m++) {
@@ -157,10 +157,10 @@ export class SmokeBarn {
                 let layer = p.layer;
                 if (
                     (!!util.sameLayer(p.layer, activePlayer.layer) ||
-            !!(activePlayer.layer & 2)) &&
-          (p.layer == 1 ||
-            !(activePlayer.layer & 2) ||
-            !map.insideStructureMask(collider.createCircle(p.pos, 1)))
+                        !!(activePlayer.layer & 2)) &&
+                    (p.layer == 1 ||
+                        !(activePlayer.layer & 2) ||
+                        !map.insideStructureMask(collider.createCircle(p.pos, 1)))
                 ) {
                     layer |= 2;
                 }
