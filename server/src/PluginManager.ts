@@ -35,6 +35,7 @@ export abstract class Plugin {
     protected abstract initListeners(): void;
 
     on<E extends keyof EventMap>(eventName: E, handler: EventHandler<E>): void {
+        // eslint-disable-next-line
         ((this.handlers[eventName] as Set<typeof handler>) ??= new Set()).add(handler);
     }
 }
@@ -64,5 +65,9 @@ export class PluginManager {
         for (const plugin of Config.plugins) {
             this.loadPlugin(plugin);
         }
+    }
+
+    unloadPlugins() {
+        this._plugins.clear();
     }
 }
