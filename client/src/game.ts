@@ -1,4 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
+import type { Game as ServerGame } from "../../server/src/game";
+import type { GameSocketData } from "../../server/src/server";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameConfig, Input } from "../../shared/gameConfig";
@@ -164,76 +166,41 @@ export class Game {
         this.resourceManager = resourceManager;
     }
 
-    tryJoinGame(
-        url: string,
-        matchPriv: string,
-        loadoutPriv: string,
-        questPriv: string,
-        onConnectFail: () => void
-    ) {
+    tryJoinGame(game: ServerGame) {
         if (!this.connecting && !this.connected && !this.initialized) {
-            if (this.ws) {
-                this.ws.onerror = function () {};
-                this.ws.onopen = function () {};
-                this.ws.onmessage = function () {};
-                this.ws.onclose = function () {};
-                this.ws.close();
-                this.ws = null;
-            }
-            this.connecting = true;
-            this.connected = false;
-            try {
-                this.ws = new WebSocket(url);
-                this.ws.binaryType = "arraybuffer";
-                this.ws.onerror = (_err) => {
-                    this.ws?.close();
-                };
-                this.ws.onopen = () => {
-                    this.connecting = false;
-                    this.connected = true;
-                    const name = this.config.get("playerName")!;
-                    const joinMessage = new JoinMsg();
-                    joinMessage.protocol = GameConfig.protocolVersion;
-                    joinMessage.matchPriv = matchPriv;
-                    joinMessage.loadoutPriv = loadoutPriv;
-                    joinMessage.questPriv = questPriv;
-                    joinMessage.name = name;
-                    joinMessage.useTouch = device.touch;
-                    joinMessage.isMobile = device.mobile || window.mobile!;
-                    joinMessage.bot = false;
-                    joinMessage.loadout = this.config.get("loadout")!;
-
-                    this.sendMessage(MsgType.Join, joinMessage, 8192);
-                };
-                this.ws.onmessage = (e) => {
-                    const msgStream = new MsgStream(e.data);
+            const This = this;
+            const socketData: GameSocketData = {
+                gameID: game.id,
+                sendMsg(msg: ArrayBuffer) {
+                    const msgStream = new MsgStream(msg);
                     while (true) {
                         const type = msgStream.deserializeMsgType();
                         if (type == MsgType.None) {
                             break;
                         }
-                        this.onMsg(type, msgStream.getStream());
+                        This.onMsg(type, msgStream.getStream());
                     }
-                };
-                this.ws.onclose = () => {
-                    const displayingStats = this.uiManager?.displayingStats;
-                    const connecting = this.connecting;
-                    const connected = this.connected;
-                    this.connecting = false;
-                    this.connected = false;
-                    if (connecting) {
-                        onConnectFail();
-                    } else if (connected && !this.gameOver && !displayingStats) {
-                        const errMsg = this.disconnectMsg || "index-host-closed";
-                        this.onQuit(errMsg);
-                    }
-                };
-            } catch (err) {
-                console.error(err);
-                this.connecting = false;
-                this.connected = false;
-                onConnectFail();
-            }
+                },
+                closeSocket() {}
+            };
+
+            this.ws = {
+                send(data: ArrayBuffer) {
+                    game.handleMsg(data, socketData);
+                },
+                close() {}
+            } as unknown as WebSocket;
+
+            const joinMessage = new JoinMsg();
+            const name = this.config.get("playerName")!;
+            joinMessage.protocol = GameConfig.protocolVersion;
+            joinMessage.name = name;
+            joinMessage.useTouch = device.touch;
+            joinMessage.isMobile = device.mobile || window.mobile!;
+            joinMessage.bot = false;
+            joinMessage.loadout = this.config.get("loadout")!;
+
+            this.sendMessage(MsgType.Join, joinMessage, 8192);
         }
     }
 
