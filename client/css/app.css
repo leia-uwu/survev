@@ -331,22 +331,6 @@ a:active {
   }
 }
 
-.adblock-plea {
-  display: none;
-  height: 250px;
-  width: 300px;
-}
-
-.adblock-plea span {
-  color: gold;
-  display: block;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 28px;
-  padding: 64px 24px;
-  text-align: center;
-}
-
 .ui-stats-adblock {
   background-color: rgba(0, 0, 0, 0.5);
   display: none;
