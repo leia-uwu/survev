@@ -60,7 +60,7 @@ export class SiteInfo {
         for (let i = 0; i < modes.length; i++) {
             const mode = modes[i];
             const mapDef = (
-                MapDefs[mode.mapName] || MapDefs.main
+                MapDefs[mode.mapName as keyof typeof MapDefs] || MapDefs.main
             ).desc;
             const buttonText = mapDef.buttonText
                 ? mapDef.buttonText

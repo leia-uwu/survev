@@ -36,6 +36,7 @@ export const MapDefs = {
 } satisfies Record<string, MapDef>;
 
 export type Atlas = "gradient" | "loadout" | "shared" | "main";
+
 export interface MapDef {
     mapId: number
     desc: {

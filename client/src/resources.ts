@@ -7,9 +7,11 @@ import SoundDefs from "./soundDefs";
 import fullResAtlasDefs from "./fullResAtlasDefs.json";
 import lowResAtlasDefs from "./lowResAtlasDefs.json";
 
+type AtlasDef = Record<Atlas, PIXI.ISpritesheetData[]>;
+
 const spritesheetDefs = {
-    low: lowResAtlasDefs,
-    high: fullResAtlasDefs
+    low: lowResAtlasDefs as unknown as AtlasDef,
+    high: fullResAtlasDefs as unknown as AtlasDef
 };
 
 function loadTexture(renderer: PIXI.IRenderer, url: string) {
@@ -141,11 +143,11 @@ export class ResourceManager {
         };
 
         const atlasDefs = spritesheetDefs[this.textureRes] || spritesheetDefs.low;
-        const atlasDef = atlasDefs[name as keyof typeof atlasDefs];
+        const atlasDef = atlasDefs[name];
         for (let i = 0; i < atlasDef.length; i++) {
             const atlas = loadSpritesheet(
                 this.renderer,
-                atlasDef[i] as PIXI.ISpritesheetData
+                atlasDef[i]
             );
             this.atlases[name].spritesheets.push(atlas);
         }
@@ -170,7 +172,7 @@ export class ResourceManager {
     loadMapAssets(mapName: string) {
         console.log("Load map", mapName);
 
-        const mapDef = MapDefs[mapName];
+        const mapDef = MapDefs[mapName as keyof typeof MapDefs];
         if (!mapDef) {
             throw new Error(`Failed loading mapDef ${this.mapName}`);
         }

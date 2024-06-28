@@ -32,7 +32,7 @@ import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
-import { GameSocketData } from "../server";
+import { type GameSocketData } from "../server";
 
 export class Emote {
     playerId: number;

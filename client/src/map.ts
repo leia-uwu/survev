@@ -159,7 +159,7 @@ export class Map {
     ) {
         this.mapName = mapMsg.mapName;
         // Clone the source mapDef
-        const mapDef = MapDefs[this.mapName];
+        const mapDef = MapDefs[this.mapName as keyof typeof MapDefs];
         if (!mapDef) {
             throw new Error(`Failed loading mapDef ${this.mapName}`);
         }

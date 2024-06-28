@@ -22,7 +22,7 @@ import { AirdropBarn } from "./objects/airdrop";
 import { DecalBarn } from "./objects/decal";
 import { Group } from "./group";
 import { type MapDefs } from "../../shared/defs/mapDefs";
-import { GameSocketData } from "./server";
+import { type GameSocketData } from "./server";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs

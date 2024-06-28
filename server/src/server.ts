@@ -7,7 +7,7 @@ import { version } from "../../package.json";
 import { randomBytes } from "crypto";
 import { TeamMenu } from "./teamMenu";
 import { type Group } from "./group";
-import { App, HttpResponse, SSLApp, type WebSocket } from "uWebSockets.js";
+import { App, type HttpResponse, SSLApp, type WebSocket } from "uWebSockets.js";
 import NanoTimer from "nanotimer";
 
 export interface GameSocketData {
@@ -217,7 +217,6 @@ export class Server {
     }
 }
 
-
 /**
  * Apply CORS headers to a response.
  * @param res The response sent by the server.
@@ -313,7 +312,7 @@ app.post("/api/user/profile", (res, _req) => {
     returnJson(res, server.getUserProfile());
 });
 
-app.post("/api/find_game", async (res) => {
+app.post("/api/find_game", async(res) => {
     readPostedJSON(res, (body: FindGameBody) => {
         try {
             returnJson(res, server.findGame(body));
@@ -450,4 +449,3 @@ app.listen(Config.host, Config.port, (): void => {
 
     timer.setInterval(() => { server.update(); }, "", `${1000 / Config.tps}m`);
 });
-

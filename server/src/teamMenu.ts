@@ -7,7 +7,7 @@ import {
     type TeamMenuPlayer
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
-import { Server, TeamSocketData } from "./server";
+import { type Server, type TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
     socketData: TeamSocketData
