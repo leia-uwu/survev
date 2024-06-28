@@ -1,5 +1,6 @@
 import { GunDefs } from "../../../shared/defs/gameObjects/gunDefs";
 import { Main } from "../../../shared/defs/maps/baseDefs";
+import { GameConfig } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { Events, Plugin } from "../PluginManager";
 const lootTable = {
@@ -304,7 +305,7 @@ export class SurvivReloadedPlugin extends Plugin {
         this.on(Events.Game_Created, data => {
             for (const gunData of Object.values(GunDefs)) {
                 gunData.switchDelay = 0.4;
-                gunData.barrelLength = 0; // so bullets fire from player body not gun barrel
+                gunData.barrelLength = GameConfig.player.radius; // so bullets fire from player edge not gun barrel
             }
             Main.lootTable = lootTable;
         });
