@@ -21,9 +21,9 @@ import { SmokeBarn } from "./objects/smoke";
 import { AirdropBarn } from "./objects/airdrop";
 import { DecalBarn } from "./objects/decal";
 import { Group } from "./group";
-import { type PlayerContainer } from "./abstractServer";
 import { type MapDefs } from "../../shared/defs/mapDefs";
 import { Events, Plugin, PluginManager } from "./PluginManager";
+import { type GameSocketData } from "./server";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs
@@ -112,6 +112,7 @@ export class Game {
         //
         this.gas.update(dt);
         this.playerBarn.update(dt);
+        this.map.update();
         this.lootBarn.update(dt);
         this.bulletBarn.update(dt);
         this.projectileBarn.update(dt);
@@ -166,7 +167,7 @@ export class Game {
         return aliveTeams[newIndex];
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketData: PlayerContainer): void {
+    handleMsg(buff: ArrayBuffer | Buffer, socketData: GameSocketData): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
@@ -268,7 +269,7 @@ export class Game {
         this.allowJoin = false;
         for (const player of this.playerBarn.players) {
             if (!player.disconnected) {
-                player.closeSocket();
+                player.socketData.closeSocket();
             }
         }
         this.logger.log("Game Ended");

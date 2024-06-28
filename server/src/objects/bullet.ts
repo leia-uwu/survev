@@ -323,8 +323,8 @@ export class Bullet {
 
         const objects = this.bulletManager.game.grid.intersectLineSegment(posOld, this.pos);
 
-        const obstacles = objects.filter(o => o.__type === ObjectType.Obstacle) as Obstacle[];
-        const players = objects.filter(o => o.__type === ObjectType.Player) as Player[];
+        const obstacles = objects.filter(o => o.__type === ObjectType.Obstacle);
+        const players = objects.filter(o => o.__type === ObjectType.Player);
 
         for (const obstacle of obstacles) {
             if (!(obstacle.dead ||
