@@ -23,6 +23,7 @@ import { DecalBarn } from "./objects/decal";
 import { Group } from "./group";
 import { type PlayerContainer } from "./abstractServer";
 import { type MapDefs } from "../../shared/defs/mapDefs";
+import { Events, Plugin, PluginManager } from "./PluginManager";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs
@@ -40,6 +41,7 @@ export class Game {
     gameModeIdx: number;
     isTeamMode: boolean;
     config: ServerGameConfig;
+    pluginManager = new PluginManager(this);
 
     grid: Grid;
     objectRegister: ObjectRegister;
@@ -87,6 +89,7 @@ export class Game {
         this.grid = new Grid(1024, 1024);
         this.objectRegister = new ObjectRegister(this.grid);
         this.map = new GameMap(this);
+        this.pluginManager.loadPlugins();
 
         this.gas = new Gas(this.map);
 
@@ -94,6 +97,7 @@ export class Game {
 
         this.map.init();
 
+        this.pluginManager.emit(Events.Game_Created, this);
         this.logger.log(`Created in ${Date.now() - start} ms`);
     }
 

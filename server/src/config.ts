@@ -1,5 +1,8 @@
 import { type MapDefs } from "../../shared/defs/mapDefs";
 import { type Vec2 } from "../../shared/utils/v2";
+import { Plugin } from "./PluginManager";
+import { SurvivReloadedPlugin } from "./plugins/survivReloadedPlugin";
+import { Game } from "./game";
 
 export enum SpawnMode {
     Random,
@@ -23,6 +26,8 @@ export const Config = {
         { mapName: "main", teamMode: TeamMode.Duo },
         { mapName: "main", teamMode: TeamMode.Squad }
     ],
+
+    plugins: [SurvivReloadedPlugin],
 
     regions: {
         local: {
@@ -62,6 +67,8 @@ export interface ConfigType {
         mapName: keyof typeof MapDefs
         teamMode: TeamMode
     }>
+
+    readonly plugins: Array<new (game: Game) => Plugin>;
 
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.
