@@ -7,7 +7,7 @@ import {
     type TeamMenuPlayer
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
-import { type TeamSocketData, type AbstractServer } from "./abstractServer";
+import { Server, TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
     socketData: TeamSocketData
@@ -53,7 +53,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: AbstractServer) {
+    constructor(public server: Server) {
 
     }
 
@@ -103,7 +103,7 @@ export class TeamMenu {
      * @param player player to send the response to
      */
     sendResponse(response: ServerToClientTeamMsg, player: RoomPlayer): void {
-        player.socketData.sendMsg(JSON.stringify(response));
+        player.socketData.send(JSON.stringify(response));
     }
 
     /**
@@ -144,7 +144,7 @@ export class TeamMenu {
                 }
             };
 
-            player.socketData.sendMsg(JSON.stringify(msg));
+            player.socketData.send(JSON.stringify(msg));
         }
     }
 
@@ -189,12 +189,12 @@ export class TeamMenu {
             // join fail if room doesnt exist or if room is already full
             if (!room) {
                 response = teamErrorMsg("join_failed");
-                localPlayerData.sendMsg(JSON.stringify(response));
+                localPlayerData.send(JSON.stringify(response));
                 break;
             }
             if (room.roomData.maxPlayers == room.players.length) {
                 response = teamErrorMsg("join_full");
-                localPlayerData.sendMsg(JSON.stringify(response));
+                localPlayerData.send(JSON.stringify(response));
                 break;
             }
 

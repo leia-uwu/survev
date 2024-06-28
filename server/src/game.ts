@@ -21,8 +21,8 @@ import { SmokeBarn } from "./objects/smoke";
 import { AirdropBarn } from "./objects/airdrop";
 import { DecalBarn } from "./objects/decal";
 import { Group } from "./group";
-import { type GameSocketData } from "./abstractServer";
 import { type MapDefs } from "../../shared/defs/mapDefs";
+import { GameSocketData } from "./server";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs
@@ -178,7 +178,7 @@ export class Game {
         }
 
         if (!player) {
-            socketData.closeSocket();
+            socketData.close();
             return;
         }
 
@@ -265,7 +265,7 @@ export class Game {
         this.allowJoin = false;
         for (const player of this.playerBarn.players) {
             if (!player.disconnected) {
-                player.socketData.closeSocket();
+                player.socketData.close();
             }
         }
         this.logger.log("Game Ended");

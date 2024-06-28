@@ -24,7 +24,6 @@ import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type Group } from "../group";
 import { Config, SpawnMode } from "../config";
-import { type GameSocketData } from "../abstractServer";
 import { type JoinMsg } from "../../../shared/msgs/joinMsg";
 import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
@@ -33,6 +32,7 @@ import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { GameSocketData } from "../server";
 
 export class Emote {
     playerId: number;
@@ -73,9 +73,9 @@ export class PlayerBarn {
             disconnectMsg.reason = "index-invalid-protocol";
             const stream = new MsgStream(new ArrayBuffer(128));
             stream.serializeMsg(MsgType.Disconnect, disconnectMsg);
-            socketData.sendMsg(stream.getBuffer());
+            socketData.send(stream.getBuffer());
             setTimeout(() => {
-                socketData.closeSocket();
+                socketData.close();
             }, 1);
         }
 
@@ -2159,7 +2159,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer | Uint8Array): void {
         try {
-            this.socketData.sendMsg(buffer);
+            this.socketData.send(buffer);
         } catch (e) {
             console.warn("Error sending packet. Details:", e);
         }
