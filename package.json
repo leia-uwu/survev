@@ -5,8 +5,8 @@
   "scripts": {
     "dev:server": "cd server && pnpm dev",
     "dev:client": "cd client && pnpm dev",
-    "lint": "eslint . --fix --ext .ts,.js",
-    "lint:ci": "eslint . --ext .ts,.js"
+    "lint": "biome check --write",
+    "lint:ci": "biome check"
   },
   "engines": {
     "node": ">=20.0.0",
@@ -15,14 +15,8 @@
   "author": "Leia",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
+    "@biomejs/biome": "1.8.3",
     "@types/node": "^20.14.9",
-    "@typescript-eslint/eslint-plugin": "6.6.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.0",
-    "eslint-config-love": "^43.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.2.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.2"
   }
