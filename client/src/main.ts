@@ -25,6 +25,8 @@ import { ProfileUi } from "./ui/profileUi";
 import { ResourceManager } from "./resources";
 import { SiteInfo } from "./siteInfo";
 import { TeamMenu } from "./ui/teamMenu";
+import { Game as ServerGame } from "../../server/src/game";
+import { type MapDefs } from "../../shared/defs/mapDefs";
 
 export interface MatchData {
     zone: string
@@ -95,6 +97,8 @@ class Application {
     hasFocus = true;
     newsDisplayed = false;
 
+    serverGame!: ServerGame;
+
     constructor() {
         this.account = new Account(this.config);
         this.loadoutMenu = new LoadoutMenu(this.account, this.localization);
@@ -158,6 +162,24 @@ class Application {
             this.playMode2Btn.on("click", () => {
                 this.tryQuickStartGame(2);
             });
+
+            $(".btn-play").on("click", (e) => {
+                const mapName = e.target.attributes.getNamedItem("data-mapName")!.value as keyof typeof MapDefs;
+
+                if (this.serverGame) {
+                    this.serverGame.stop();
+                }
+
+                const game = new ServerGame(mapName, {
+                    mapName,
+                    teamMode: 1
+                });
+
+                this.game!.tryJoinGame(game);
+
+                this.serverGame = game;
+            });
+
             this.serverSelect.change(() => {
                 const t = this.serverSelect.find(":selected").val();
                 this.config.set("region", t as string);
@@ -721,6 +743,10 @@ class Application {
     }
 
     update() {
+        if (this.serverGame) {
+            this.serverGame.update();
+        }
+
         const dt = math.clamp(this.pixi!.ticker.elapsedMS / 1000, 0.001, 1 / 8);
         this.pingTest.update(dt);
         if (!this.checkedPingTest && this.pingTest.isComplete()) {
