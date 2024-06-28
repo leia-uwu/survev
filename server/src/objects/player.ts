@@ -32,7 +32,7 @@ import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
-import { Events, PluginManager } from "../PluginManager";
+import { Events } from "../PluginManager";
 import { type GameSocketData } from "../server";
 
 export class Emote {
@@ -1139,8 +1139,8 @@ export class Player extends BaseGameObject {
         }
 
         this.health -= finalDamage;
-        
-        this.game.pluginManager.emit(Events.Player_Damage, {...params, player: this});
+
+        this.game.pluginManager.emit(Events.Player_Damage, { ...params, player: this });
 
         if (this.game.isTeamMode) {
             this.setGroupStatuses();
@@ -1305,7 +1305,7 @@ export class Player extends BaseGameObject {
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
 
-        this.game.pluginManager.emit(Events.Player_Kill, {...params, player: this});
+        this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
         //
         // Give spectators someone new to spectate
