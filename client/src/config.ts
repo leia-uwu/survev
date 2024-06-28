@@ -32,13 +32,13 @@ const defaultConfig = {
     version: 1
 };
 
-export type ConfigKey = keyof typeof defaultConfig;
 export type ConfigType = typeof defaultConfig;
+export type ConfigKey = keyof ConfigType;
 
 export class ConfigManager {
     loaded = false;
     localStorageAvailable = true;
-    config = {} as typeof defaultConfig;
+    config = {} as ConfigType;
     onModifiedListeners: Array<(key?: string) => void> = [];
 
     load(onLoadCompleteCb: () => void) {
@@ -74,7 +74,7 @@ export class ConfigManager {
         }
     }
 
-    set<T extends keyof typeof defaultConfig>(key: T, value: typeof defaultConfig[T]) {
+    set<T extends ConfigKey>(key: T, value: ConfigType[T]) {
         if (!key) {
             return;
         }
@@ -92,7 +92,7 @@ export class ConfigManager {
         this.onModified(key);
     }
 
-    get<T extends keyof typeof this.config>(key: T): typeof this.config[T] | undefined {
+    get<T extends ConfigKey>(key: T): ConfigType[T] | undefined {
         if (!key) {
             return undefined;
         }

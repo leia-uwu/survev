@@ -127,7 +127,7 @@ class AirstrikeZone {
         this.gfx.visible = true;
     }
 
-    update(dt: number, map: unknown, uiManager: unknown) {
+    update(dt: number, map?: unknown, uiManager?: unknown) {
         this.ticker += dt;
         this.gfx.visible = true;
         if (this.ticker >= this.duration) {
@@ -365,8 +365,7 @@ export class PlaneBarn {
         for (let i = 0; i < this.airstrikeZones.length; i++) {
             const zone = this.airstrikeZones[i];
             if (zone.active) {
-                // TODO: remove unused params ~~
-                zone.update(dt, undefined, undefined);
+                zone.update(dt);
             }
         }
     }
