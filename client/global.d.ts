@@ -1,6 +1,7 @@
 declare global {
     interface Navigator {
         standalone?: boolean
+        userLanguage: string
     }
 
     interface JQuery<TElement = HTMLElement> extends Iterable<TElement> {
