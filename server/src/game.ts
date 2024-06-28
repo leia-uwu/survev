@@ -178,7 +178,7 @@ export class Game {
         }
 
         if (!player) {
-            socketData.close();
+            socketData.closeSocket();
             return;
         }
 
@@ -265,7 +265,7 @@ export class Game {
         this.allowJoin = false;
         for (const player of this.playerBarn.players) {
             if (!player.disconnected) {
-                player.socketData.close();
+                player.socketData.closeSocket();
             }
         }
         this.logger.log("Game Ended");

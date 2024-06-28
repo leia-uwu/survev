@@ -12,14 +12,14 @@ import NanoTimer from "nanotimer";
 
 export interface GameSocketData {
     readonly gameID: string
-    send: (msg: ArrayBuffer | Uint8Array) => void
-    close: () => void
+    sendMsg: (msg: ArrayBuffer | Uint8Array) => void
+    closeSocket: () => void
     player?: Player
 }
 
 export interface TeamSocketData {
-    send: (response: string) => void
-    close: () => void
+    sendMsg: (response: string) => void
+    closeSocket: () => void
     roomUrl: string
 }
 
@@ -188,14 +188,14 @@ export class Server {
     onOpen(data: GameSocketData): void {
         const game = this.gamesById.get(data.gameID);
         if (game === undefined) {
-            data.close();
+            data.closeSocket();
         }
     }
 
     onMessage(data: GameSocketData, message: ArrayBuffer | Buffer) {
         const game = this.gamesById.get(data.gameID);
         if (!game) {
-            data.close();
+            data.closeSocket();
             return;
         }
         try {
@@ -364,10 +364,10 @@ app.ws("/play", {
      * @param socket The socket being opened.
      */
     open(socket: WebSocket<GameSocketData>) {
-        socket.getUserData().send = (data) => {
+        socket.getUserData().sendMsg = (data) => {
             socket.send(data, true, false);
         };
-        socket.getUserData().close = () => {
+        socket.getUserData().closeSocket = () => {
             socket.close();
         };
         server.onOpen(socket.getUserData());
@@ -415,7 +415,8 @@ app.ws("/team_v2", {
      * @param socket The socket being opened.
      */
     open(socket: WebSocket<TeamSocketData>) {
-        socket.getUserData().send = (data) => socket.send(data, false, false);
+        socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
+        socket.getUserData().closeSocket = () => socket.close();
     },
 
     /**

@@ -73,9 +73,9 @@ export class PlayerBarn {
             disconnectMsg.reason = "index-invalid-protocol";
             const stream = new MsgStream(new ArrayBuffer(128));
             stream.serializeMsg(MsgType.Disconnect, disconnectMsg);
-            socketData.send(stream.getBuffer());
+            socketData.sendMsg(stream.getBuffer());
             setTimeout(() => {
-                socketData.close();
+                socketData.closeSocket();
             }, 1);
         }
 
@@ -2159,7 +2159,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer | Uint8Array): void {
         try {
-            this.socketData.send(buffer);
+            this.socketData.sendMsg(buffer);
         } catch (e) {
             console.warn("Error sending packet. Details:", e);
         }
