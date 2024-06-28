@@ -2925,14 +2925,6 @@ a:active {
   visibility: visible;
 }
 
-.btn-cookie-settings {
-  display: none;
-}
-
-#view-cookie-policy {
-  cursor: pointer;
-}
-
 .cc-window {
   opacity: 1;
   transition: opacity 1s ease;
@@ -4513,42 +4505,6 @@ input [type="image"]:focus {
 
 #modal-refresh .modal-footer .close-footer {
   font-size: 18px;
-}
-
-#modal-cookie-settings {
-  background-color: #000;
-  background-color: rgba(0, 0, 0, 0.75);
-  z-index: 2;
-}
-
-#modal-cookie-settings a {
-  font-size: 16px;
-  color: grey;
-  font-weight: 700;
-}
-
-#modal-cookie-settings>.modal-content {
-  animation-name: fadeIn;
-  animation-duration: 0.2s;
-  bottom: 50%;
-  left: 50%;
-  text-decoration: none;
-  transform: translateX(-50%);
-  width: 50%;
-}
-
-#modal-cookie-settings>.modal-content>.modal-body>.modal-body-text {
-  font-size: 16px;
-}
-
-#modal-cookie-settings>.modal-content>.modal-footer>.close>.btn-cookies-close {
-  background-color: #8bed4f;
-  border-radius: 5px;
-  color: #000;
-  height: 40px;
-  line-height: 40px;
-  margin: auto;
-  width: 140px;
 }
 
 #modal-customize {
@@ -6269,18 +6225,8 @@ input [type="image"]:focus {
     bottom: 65%;
   }
 
-  #modal-cookie-settings>.modal-content {
-    bottom: 65%;
-    top: 10%;
-    width: 90%;
-  }
-
-  #modal-cookie-settings>.modal-content>.modal-body>.modal-body-text {
-    font-size: 12px;
-  }
-
   #settings-links {
-    display: none;
+    display: block;
   }
 
   .slider-container {

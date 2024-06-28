@@ -23,7 +23,6 @@ const defaultConfig = {
     prerollGamesPlayed: 0,
     totalGamesPlayed: 0,
     promptAppRate: true,
-    cookiesConsented: true,
     regionSelected: false,
     lastNewsTimestamp: 0,
     perkModeRole: "",
