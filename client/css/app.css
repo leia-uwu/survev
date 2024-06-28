@@ -331,29 +331,6 @@ a:active {
   }
 }
 
-.surviv-shirts {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  display: none;
-  height: 250px;
-  width: 300px;
-}
-
-.surviv-shirts a {
-  height: 250px;
-  position: absolute;
-  width: 300px;
-}
-
-.surviv-shirts-en {
-  background-image: url(/img/surviv_shirts_en.png);
-}
-
-.surviv-shirts-de {
-  background-image: url(/img/surviv_shirts_de.png);
-}
-
 .adblock-plea {
   display: none;
   height: 250px;
