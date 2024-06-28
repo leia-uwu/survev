@@ -4206,45 +4206,6 @@ screen and (max-width: 736px) and (orientation: landscape) {
   line-height: 40px;
 }
 
-.btn-download-app {
-  display: inline-block;
-  background-size: contain;
-  height: 60px;
-  width: 180px;
-  margin: auto;
-  margin-left: 4px;
-  margin-right: 4px;
-  box-sizing: border-box;
-  font-size: large;
-  text-align: center;
-  border: 0;
-  cursor: pointer;
-}
-
-.btn-download-ios {
-  display: block;
-  background-image: url(/img/icon_download_ios.png);
-  background-repeat: no-repeat;
-}
-
-@media (max-height: 720px) {
-  .btn-download-ios {
-    display: none;
-  }
-}
-
-.btn-download-android {
-  background-image: url(/img/icon_download_android.png);
-  background-repeat: no-repeat;
-  vertical-align: bottom;
-}
-
-@media (max-height: 720px) {
-  .btn-download-android {
-    display: none;
-  }
-}
-
 #start-bottom-middle {
   bottom: 20px;
   color: #fff;
@@ -6040,20 +6001,6 @@ input [type="image"]:focus {
     display: none;
     position: absolute;
     right: var(--side-pad);
-  }
-
-  .btn-download-app-mobile {
-    background-size: contain;
-    height: 40px;
-    width: 120px;
-    margin: auto;
-    margin-left: 4px;
-    margin-right: 4px;
-    box-sizing: border-box;
-    font-size: large;
-    text-align: center;
-    border: 0;
-    cursor: pointer;
   }
 
   .modal {
