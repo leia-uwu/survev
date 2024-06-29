@@ -9,6 +9,7 @@ import { TeamMenu } from "./teamMenu";
 import { type Group } from "./group";
 import { App, type HttpResponse, SSLApp, type WebSocket } from "uWebSockets.js";
 import NanoTimer from "nanotimer";
+import { GameConfig } from "../../shared/gameConfig";
 
 export interface GameSocketData {
     readonly gameID: string
@@ -211,7 +212,7 @@ export class Server {
         if (game === undefined || player === undefined) return;
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
-        if (player.timeAlive < 5) {
+        if (player.timeAlive < GameConfig.player.minActiveTime) {
             player.game.playerBarn.removePlayer(player);
         }
     }
