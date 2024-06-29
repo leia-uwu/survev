@@ -3,7 +3,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite dev",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-pwa-assets": "pwa-assets-generator"
   },
   "dependencies": {
     "@taufik-nurrohman/color-picker": "1.4.2",
@@ -14,6 +15,8 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.30",
-    "vite": "^5.3.2"
+    "@vite-pwa/assets-generator": "^0.2.4",
+    "vite": "^5.3.2",
+    "vite-plugin-pwa": "^0.20.0"
   }
 }
