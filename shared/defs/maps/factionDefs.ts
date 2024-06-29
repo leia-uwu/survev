@@ -8,7 +8,7 @@ const mapDef = {
     mapId: 3,
     desc: {
         name: "50v50",
-        icon: "img/modes/star.svg",
+        icon: "img/gui/star.svg",
         buttonCss: "btn-mode-faction",
         buttonText: "50v50"
     },
