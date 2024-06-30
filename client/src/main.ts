@@ -1,3 +1,4 @@
+import { Bot } from "./bot";
 import { helpers } from "./helpers";
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
@@ -175,7 +176,14 @@ class Application {
                     teamMode: 1
                 });
 
-                this.game!.tryJoinGame(game);
+                const botCount = 30;
+                const bots = new Set<Bot>();
+
+                for (let i = 0; i < botCount; i++) {
+                    bots.add(new Bot(game, i));
+                }
+
+                this.game!.tryJoinGame(game, bots);
 
                 this.serverGame = game;
             });
@@ -710,6 +718,7 @@ class Application {
             const onFailure = function() {
                 joinGameImpl(urls, matchData);
             };
+
             this.game!.tryJoinGame(
                 url,
                 matchData.data,

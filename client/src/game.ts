@@ -59,6 +59,7 @@ import { type SoundHandle } from "./createJS";
 import { Camera } from "./camera";
 import { type Game as ServerGame } from "../../server/src/game";
 import { type GameSocketData } from "../../server/src/server";
+import { type Bot } from "./bot";
 
 export interface Ctx {
     audioManager: AudioManager
@@ -157,7 +158,7 @@ export class Game {
         this.resourceManager = resourceManager;
     }
 
-    tryJoinGame(game: ServerGame) {
+    tryJoinGame(game: ServerGame, bots = new Set<Bot>()) {
         if (!this.connecting && !this.connected && !this.initialized) {
             const This = this;
             const socketData: GameSocketData = {
@@ -178,6 +179,18 @@ export class Game {
             this.ws = {
                 send(data: ArrayBuffer) {
                     game.handleMsg(data, socketData);
+
+                    for (const bot of bots) {
+                        if (Math.random() < 0.02) {
+                            console.log(bot.connected);
+                            bot.updateInputs();
+                        }
+                        bot.sendInputs();
+
+                        if (bot.disconnect) {
+                            bots.delete(bot);
+                        }
+                    }
                 },
                 close() { }
             } as unknown as WebSocket;
