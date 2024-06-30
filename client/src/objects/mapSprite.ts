@@ -10,7 +10,6 @@ class SortableSprite extends PIXI.Sprite {
      */
     __zOrder = -1;
 
-    /* eslint-disable-next-line @typescript-eslint/no-useless-constructor */
     constructor() {
         super();
     }

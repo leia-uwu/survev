@@ -2,11 +2,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start": "node --enable-source-maps dist/server/src/server.js",
-    "dev": "ts-node-dev --respawn --rs --transpile-only src/server.ts",
-    "client": "cd client; pnpm dev",
-    "lint": "eslint . --fix --ext .ts,.js",
-    "lint:ci": "eslint . --ext .ts,.js"
+    "start": "NODE_ENV=production node --enable-source-maps dist/server/src/server.js",
+    "dev": "ts-node-dev --respawn --rs --transpile-only src/server.ts"
   },
   "dependencies": {
     "bit-buffer": "^0.2.5",

@@ -1987,7 +1987,6 @@ export class Player implements AbstractObject {
             for (let _ = 0; _ < a.effects.length; _++) {
                 const x = a.effects[_];
                 if (x.time >= r && x.time < f) {
-                    // eslint-disable-next-line no-useless-call
                     (this[x.fn as keyof this] as any).apply(this, [AnimCtx, x.args]);
                 }
             }

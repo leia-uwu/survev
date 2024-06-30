@@ -1,7 +1,6 @@
 //
 // Taken from https://github.com/mapbox/earcut
 //
-/* eslint-disable no-mixed-operators */
 export function earcut(data, holeIndices, dim) {
     dim = dim || 2;
 

@@ -2,8 +2,6 @@ import { collider } from "./collider";
 import { math } from "./math";
 import { type Vec2, v2 } from "./v2";
 
-/* eslint-disable no-mixed-operators */
-
 export interface Circle {
     type: 0;
     pos: Vec2;

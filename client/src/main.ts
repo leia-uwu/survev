@@ -626,7 +626,6 @@ class Application {
     ) {
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
-                /* eslint-disable-next-line n/no-callback-literal */
                 cb("full");
                 return;
             }
