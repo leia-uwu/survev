@@ -809,15 +809,6 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     msg = msg || "undefined_error_msg";
     const stacktrace = error ? error.stack : "";
 
-    // Break a malicious iOS app and other extensions
-    if (
-        (msg as string).includes("').innerText") ||
-        stacktrace!.includes("cdn.rawgit.com") ||
-        stacktrace!.includes("chrome-extension://")
-    ) {
-        helpers.cheatDetected();
-        return;
-    }
     const errObj = {
         msg,
         id: App.sessionId,

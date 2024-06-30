@@ -59,8 +59,6 @@ function traceGroundPatch(canvas: PIXI.Graphics, patch: GroundPatch, seed: numbe
 }
 
 export class Map {
-    I = false;
-    Br = false;
     display = {
         ground: new PIXI.Graphics()
     };
@@ -111,10 +109,6 @@ export class Map {
 
     cameraEmitter: Emitter | null = null;
 
-    // Anti-cheat
-    cheatDetectFrame = 0;
-    cheatRanDetection = false;
-    cheatDetected = false;
     constructor(public decalBarn: DecalBarn) {}
 
     free() {
@@ -204,8 +198,6 @@ export class Map {
         smokeParticles: SmokeParticle[],
         debug: unknown
     ) {
-        this.I = true;
-        this.Br = true;
 
         const obstacles = this.obstaclePool.getPool();
         for (let i = 0; i < obstacles.length; i++) {
@@ -271,32 +263,6 @@ export class Map {
                 this.cameraEmitter.alpha,
                 alphaTarget
             );
-        }
-
-        this.cheatDetectFrame++;
-        if (this.cheatDetectFrame % 180 == 0) {
-            this.cheatRanDetection = true;
-            let cheatDetected = 0;
-            const detectCheatAlphaFn = mapHelpers.validateSpriteAlpha;
-
-            // Verify smoke particle alpha integrity
-            for (let i = 0; i < smokeParticles.length; i++) {
-                const p = smokeParticles[i];
-                if (p.active && !p.fade && detectCheatAlphaFn(p, mapHelpers.nt)) {
-                    cheatDetected++;
-                }
-            }
-
-            // Verify obstacle alpha integrity
-            for (let i = 0; i < obstacles.length; i++) {
-                const p = obstacles[i];
-                if (p.active && !p.dead && detectCheatAlphaFn(p, mapHelpers.lt)) {
-                    cheatDetected++;
-                }
-            }
-            if (cheatDetected) {
-                this.cheatDetected = true;
-            }
         }
     }
 

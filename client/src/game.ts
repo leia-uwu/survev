@@ -102,11 +102,6 @@ export class Game {
     debugDisplay!: PIXI.Graphics;
     canvasMode!: boolean;
 
-    m_mangle!: boolean;
-    frame!: number;
-    cheatDetected!: boolean;
-    cheatSentLoadoutMsg!: boolean;
-
     updatePass!: boolean;
     updatePassDelay!: number;
     disconnectMsg!: string;
@@ -230,11 +225,6 @@ export class Game {
 
     init() {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
-        // Anti-cheat
-        this.m_mangle = false;
-        this.frame = 0;
-        this.cheatDetected = false;
-        this.cheatSentLoadoutMsg = false;
 
         // Modules
         this.touch = new Touch(this.input, this.config);
@@ -404,9 +394,7 @@ export class Game {
     update(dt: number) {
         const smokeParticles = this.smokeBarn.particles;
         const obstacles = this.map.obstaclePool.getPool();
-        let cheatDetected = 0;
-        // End anti-cheat hacking
-        this.m_mangle = true;
+
         const debug = { render: {} };
 
         if (this.playing) {
@@ -908,21 +896,6 @@ export class Game {
         this.touch.update(dt, this.activePlayer, this.map, this.camera, this.renderer);
         this.renderer.update(dt, this.camera, this.map, debug);
 
-        // if (!this.cheatSentLoadoutMsg && this.map.cheatRanDetection && this.map.cheatDetected) {
-        //     this.cheatSentLoadoutMsg = true;
-        //     const msg = new net.LoadoutMsg();
-        //     msg.emotes = [];
-        //     for (
-        //         let i = 0;
-        //         i < this.emoteBarn.emoteLoadout.length;
-        //         i++
-        //     ) {
-        //         msg.emotes.push(this.emoteBarn.emoteLoadout[i]);
-        //     }
-        //     msg.custom = this.emoteBarn.hasCustomEmotes();
-        //     this.sendMessage(MsgType.Loadout, msg, 128);
-        // }
-
         for (let i = 0; i < this.emoteBarn.newPings.length; i++) {
             const ping = this.emoteBarn.newPings[i];
             const msg = new EmoteMsg();
@@ -942,34 +915,7 @@ export class Game {
         }
         this.emoteBarn.newEmotes = [];
 
-        // Verify the integrity of smoke alphas as a crude anti-cheat
         this.render(dt, debug);
-        this.frame++;
-
-        if (this.frame % 30 == 0) {
-            const detectCheatAlphaFn = mapHelpers.validateSpriteAlpha;
-            // Verify smoke particle alpha integrity
-            for (let i = 0; i < smokeParticles.length; i++) {
-                const be = smokeParticles[i];
-                if (be.active && !be.fade && detectCheatAlphaFn(be, mapHelpers.nt)) {
-                    cheatDetected++;
-                }
-            }
-
-            // Verify obstacle alpha integrity
-            for (let i = 0; i < obstacles.length; i++) {
-                const Se = obstacles[i];
-                if (Se.active && !Se.dead && detectCheatAlphaFn(Se, mapHelpers.lt)) {
-                    cheatDetected++;
-                }
-            }
-            if (cheatDetected) {
-                this.cheatDetected = true;
-            }
-            if (cheatDetected && this.validateAlpha) {
-                helpers.cheatDetected(this);
-            }
-        }
     }
 
     render(_dt: number, debug: unknown) {
@@ -1212,7 +1158,6 @@ export class Game {
                     this.victoryMusic.stop();
                     this.victoryMusic = null;
                 }
-
                 // Play a sound if the user in another windows or tab
                 if (!document.hasFocus()) {
                     this.audioManager.playSound("notification_start_01", {
@@ -1220,10 +1165,6 @@ export class Game {
                     });
                 }
 
-                // Update cheat detection
-                if (helpers.detectCheatWindowVars() || helpers.detectCheatScripts()) {
-                    this.cheatDetected = true;
-                }
                 break;
             }
             case MsgType.Map: {
@@ -1464,9 +1405,7 @@ export class Game {
                 break;
             }
             case MsgType.Stats: {
-                const msg = new net.StatsMsg();
-                msg.deserialize(stream);
-                helpers.J(msg.data, this);
+                stream.readString()
                 break;
             }
             case MsgType.GameOver: {

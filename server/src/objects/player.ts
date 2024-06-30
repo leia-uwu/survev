@@ -608,7 +608,7 @@ export class Player extends BaseGameObject {
 
         const movement = v2.create(0, 0);
 
-        if (this.lastInputMsg.touchMoveActive) {
+        if (this.lastInputMsg.touchMoveLen) {
             movement.x = this.lastInputMsg.touchMoveDir.x;
             movement.y = this.lastInputMsg.touchMoveDir.y;
         } else {
