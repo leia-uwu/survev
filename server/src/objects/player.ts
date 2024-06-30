@@ -134,8 +134,6 @@ export class PlayerBarn {
             }
         }
 
-        this.game.lootBarn.addLoot("usas", pos, 0, 1)
-
         this.game.logger.log(`Player ${player.name} joined`);
 
         socketData.player = player;
