@@ -756,14 +756,19 @@ export class GameMap {
 
                 if (
                     !def.terrain?.riverShore &&
-                    coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly)
-                )
+                    (math.pointInsidePolygon(pos, river.shorePoly) ||
+                        coldet.testAabbPolygon(aabb.min, aabb.max, river.shorePoly))
+                ) {
                     return false;
+                }
 
-                if (math.pointInsidePolygon(pos, river.waterPoly)) return false;
-
-                if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly))
+                if (math.pointInsidePolygon(pos, river.waterPoly)) {
                     return false;
+                }
+
+                if (coldet.testAabbPolygon(aabb.min, aabb.max, river.waterPoly)) {
+                    return false;
+                }
             }
         }
 
