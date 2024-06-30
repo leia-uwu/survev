@@ -902,6 +902,7 @@ export class Player extends BaseGameObject {
             joinedMsg.teamMode = this.game.teamMode;
             joinedMsg.playerId = this.__id;
             joinedMsg.started = game.started;
+            joinedMsg.teamMode = game.teamMode;
             joinedMsg.emotes = this.loadout.emotes;
             this.sendMsg(MsgType.Joined, joinedMsg);
 
