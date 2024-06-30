@@ -19,7 +19,6 @@ export class Airdrop extends BaseGameObject {
     fallT = 0;
     landed = false;
 
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(game: Game, pos: Vec2) {
         super(game, pos);
     }

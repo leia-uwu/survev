@@ -30,7 +30,6 @@ export const util = {
     // Objects on the same layer should interact with one another.
     sameLayer(a: number, b: number) {
         // Which is faster?
-        /* eslint-disable no-mixed-operators */
         // return (a == b && a < 2) || (a >= 2 && b >= 2);
         return (a & 0x1) === (b & 0x1) || (a & 0x2 && b & 0x2);
     },

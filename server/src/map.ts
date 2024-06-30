@@ -1204,7 +1204,6 @@ export class GameMap {
                 continue;
             }
             // Prioritize layer0 building surfaces when on stairs
-            // eslint-disable-next-line no-mixed-operators
             if (
                 (building.layer !== layer && !onStairs) ||
                 (building.layer === 1 && onStairs)

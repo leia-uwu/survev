@@ -34,7 +34,6 @@ export class Pool<T extends AbstractObject> {
             }
         }
         if (!obj) {
-            /* eslint-disable new-cap */
             obj = new this.creator.type();
             this.pool.push(obj);
         }

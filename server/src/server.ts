@@ -357,7 +357,6 @@ app.ws("/play", {
      * Upgrade the connection to WebSocket.
      */
     upgrade(res, req, context) {
-        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         res.onAborted((): void => {});
 
         const searchParams = new URLSearchParams(req.getQuery());
@@ -415,7 +414,6 @@ app.ws("/team_v2", {
      * Upgrade the connection to WebSocket.
      */
     upgrade(res, req, context) {
-        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         res.onAborted((): void => {});
 
         res.upgrade(

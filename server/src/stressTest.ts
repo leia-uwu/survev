@@ -388,7 +388,6 @@ class Bot {
 
 void (async () => {
     for (let i = 1; i <= config.botCount; i++) {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setTimeout(async () => {
             const response = await (
                 await fetch(`${config.address}/api/find_game`, {

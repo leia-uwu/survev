@@ -445,7 +445,6 @@ export class WeaponManager {
         for (let i = 0; i < nearbyObjs.length; i++) {
             const obj = nearbyObjs[i];
 
-            // eslint-disable-next-line no-mixed-operators
             if (
                 obj.dead ||
                 (!obj.collidable && obj.isWall) ||

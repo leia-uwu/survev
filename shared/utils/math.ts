@@ -4,8 +4,6 @@ import { type Vec2, v2 } from "./v2";
 
 const kEpsilon = 0.000001;
 
-/* eslint-disable no-mixed-operators */
-
 export const math = {
     clamp(a: number, min: number, max: number) {
         return a < max ? (a > min ? a : min) : max;

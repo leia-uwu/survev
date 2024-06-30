@@ -618,7 +618,6 @@ export class Building implements AbstractObject {
 
         // Spawn particles at random points inside the first surface collision
         const surface = this.surfaces[0];
-        /* eslint-disable no-unreachable-loop */
         for (let i = 0; i < surface.colliders.length; i++) {
             const aabb = collider.toAabb(surface.colliders[i]);
             for (let j = 0; j < def.particleCount; j++) {
