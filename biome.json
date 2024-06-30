@@ -12,7 +12,8 @@
       },
       "correctness": {
         "noInvalidUseBeforeDeclaration": "error",
-        "noUnusedVariables": "warn"
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn"
       },
       "style": {
         "noNamespace": "off",

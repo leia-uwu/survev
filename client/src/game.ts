@@ -20,7 +20,6 @@ import { SpectateMsg } from "../../shared/msgs/spectateMsg";
 import { UpdateMsg } from "../../shared/msgs/updateMsg";
 import * as net from "../../shared/net";
 import { type Msg, MsgStream, MsgType } from "../../shared/net";
-import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { v2 } from "../../shared/utils/v2";

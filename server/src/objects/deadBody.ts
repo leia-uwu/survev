@@ -1,7 +1,6 @@
 import { collider } from "../../../shared/utils/collider";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { Config } from "../config";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 

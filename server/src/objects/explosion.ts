@@ -13,7 +13,7 @@ export class ExplosionBarn {
     explosions: Explosion[] = [];
     newExplosions: Explosion[] = [];
 
-    constructor(readonly game: Game) { }
+    constructor(readonly game: Game) {}
 
     update() {
         const game = this.game;
@@ -179,7 +179,7 @@ export class ExplosionBarn {
             mapSourceType,
             damageType,
             source
-        }
+        };
         this.explosions.push(explosion);
         this.newExplosions.push(explosion);
     }

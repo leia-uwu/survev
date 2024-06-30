@@ -164,7 +164,7 @@ export abstract class BaseGameObject {
 
     constructor(game: Game, pos: Vec2) {
         this.game = game;
-        this._pos = pos;
+        this._pos = game.map.clampToMapBounds(pos);
     }
 
     damage(_params: DamageParams): void {}
