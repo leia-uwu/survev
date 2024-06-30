@@ -154,7 +154,6 @@ export const GameConfig = {
         reviveDuration: 8,
         reviveRange: 5,
         crawlTime: 0.75,
-        bleedDamage: 2,
         emoteSoftCooldown: 2,
         emoteHardCooldown: 6,
         emoteThreshold: 6,

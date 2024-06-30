@@ -644,7 +644,7 @@ export class Player extends BaseGameObject {
             this.bleedTicker += dt;
             if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
                 this.damage({
-                    amount: GameConfig.player.bleedDamage,
+                    amount: this.game.map.mapDef.gameConfig.bleedDamage,
                     damageType: GameConfig.DamageType.Bleeding,
                     dir: this.dir
                 });
