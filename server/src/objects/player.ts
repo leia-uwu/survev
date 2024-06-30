@@ -134,8 +134,6 @@ export class PlayerBarn {
             }
         }
 
-        this.game.lootBarn.addLoot("usas", pos, 0, 1)
-
         this.game.logger.log(`Player ${player.name} joined`);
 
         socketData.player = player;
@@ -1357,7 +1355,6 @@ export class Player extends BaseGameObject {
         this.downed = true;
         this.boost = 0;
         this.health = 100;
-        this.actionType = 0;
         this.animType = 0;
         this.setDirty();
 
