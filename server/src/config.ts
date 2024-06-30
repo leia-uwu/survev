@@ -35,7 +35,7 @@ export const Config = {
 
     spawn: { mode: SpawnMode.Random },
 
-    tps: 30
+    tps: 40
 } satisfies ConfigType as ConfigType;
 
 export interface ConfigType {
