@@ -11,6 +11,7 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
+import { debugLines } from "../debugLines";
 import { device } from "../device";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
@@ -210,6 +211,10 @@ export class LootBarn {
                 const scale = math.easeOutElastic(scaleIn, 0.75);
                 const screenPos = camera.pointToScreen(loot.pos);
                 const screenScale = camera.pixels(loot.imgScale * scale);
+
+                if (device.debug) {
+                    debugLines.addCircle(loot.pos, loot.rad, 0xff0000, 0);
+                }
 
                 loot.container.position.set(screenPos.x, screenPos.y);
                 loot.container.scale.set(screenScale, screenScale);

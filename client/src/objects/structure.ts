@@ -13,11 +13,22 @@ import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Ambiance } from "../ambiance";
 import { renderBridge, renderMapBuildingBounds, renderWaterEdge } from "../debugHelpers";
+import { debugLines } from "../debugLines";
 import { device } from "../device";
 import type { Ctx } from "../game";
 import type { Map } from "../map";
 import type { ObjectData, ObjectType } from "./../../../shared/utils/objectSerializeFns";
 import type { AbstractObject, Player } from "./player";
+
+interface Stair {
+    collision: AABB;
+    center: Vec2;
+    downDir: Vec2;
+    downAabb: AABB;
+    upAabb: AABB;
+    noCeilingReveal: boolean;
+    lootOnly: boolean;
+}
 
 export class Structure implements AbstractObject {
     __id!: number;
@@ -43,8 +54,7 @@ export class Structure implements AbstractObject {
         underground: boolean;
     }>;
 
-    // damn you
-    stairs!: any[];
+    stairs!: Stair[];
 
     mask!: AABBWithHeight[];
 
@@ -80,13 +90,13 @@ export class Structure implements AbstractObject {
             );
             const def = MapObjectDefs[this.type] as StructureDef;
             this.layers = [];
-            for (let p = 0; p < def.layers.length; p++) {
-                const layer = def.layers[p];
-                const objId = data.layerObjIds[p];
+            for (let i = 0; i < def.layers.length; i++) {
+                const layer = def.layers[i];
+                const objId = data.layerObjIds[i];
 
                 const inheritOri = layer?.inheritOri === undefined || layer.inheritOri;
                 const underground =
-                    layer.underground !== undefined ? layer.underground : p == 1;
+                    layer.underground !== undefined ? layer.underground : i == 1;
                 const pos = v2.add(this.pos, layer.pos);
                 const rot = math.oriToRad(inheritOri ? data.ori + layer.ori : layer.ori);
                 const collision = collider.transform(
@@ -102,8 +112,8 @@ export class Structure implements AbstractObject {
                 });
             }
             this.stairs = [];
-            for (let _ = 0; _ < def.stairs.length; _++) {
-                const stairsDef = def.stairs[_];
+            for (let i = 0; i < def.stairs.length; i++) {
+                const stairsDef = def.stairs[i];
                 const stairsCol = collider.transform(
                     stairsDef.collision,
                     this.pos,
@@ -234,6 +244,10 @@ export class Structure implements AbstractObject {
             renderMapBuildingBounds(this);
             renderBridge(this);
             renderWaterEdge(this);
+            for (let i = 0; i < this.stairs.length; i++) {
+                debugLines.addCollider(this.stairs[i].downAabb, 0x0000ff, 0);
+                debugLines.addCollider(this.stairs[i].upAabb, 0x00ff00, 0);
+            }
         }
     }
 
