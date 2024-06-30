@@ -16,7 +16,7 @@ import type { SoundHandle } from "../createJS";
 import { renderMapBuildingBounds } from "../debugHelpers";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { Ctx } from "../game";
+import type { Ctx, DebugOptions } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import type { Obstacle } from "./obstacle";
@@ -652,17 +652,21 @@ export class Building implements AbstractObject {
         sprite.alpha = sprite.imgAlpha * alpha;
     }
 
-    render(_camera: Camera, _debug: unknown, _layer: number) {
-        if (device.debug) {
-            renderMapBuildingBounds(this);
+    render(_camera: Camera, debug: DebugOptions, _layer: number) {
+        if (device.debug && debug.buildings) {
+            if (debug.buildings.bounds) {
+                renderMapBuildingBounds(this);
+            }
 
-            for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
-                const region = this.ceiling.zoomRegions[i];
-                if (region.zoomIn) {
-                    debugLines.addCollider(region.zoomIn, 0x00ff00, 0);
-                }
-                if (region.zoomOut) {
-                    debugLines.addCollider(region.zoomOut, 0x0000ff, 0);
+            if (debug.buildings.ceiling) {
+                for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
+                    const region = this.ceiling.zoomRegions[i];
+                    if (region.zoomIn) {
+                        debugLines.addCollider(region.zoomIn, 0x00ff00, 0);
+                    }
+                    if (region.zoomOut) {
+                        debugLines.addCollider(region.zoomOut, 0x0000ff, 0);
+                    }
                 }
             }
         }

@@ -12,10 +12,11 @@ import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Ambiance } from "../ambiance";
+import type Camera from "../camera";
 import { renderBridge, renderMapBuildingBounds, renderWaterEdge } from "../debugHelpers";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { Ctx } from "../game";
+import type { Ctx, DebugOptions } from "../game";
 import type { Map } from "../map";
 import type { ObjectData, ObjectType } from "./../../../shared/utils/objectSerializeFns";
 import type { AbstractObject, Player } from "./player";
@@ -239,14 +240,22 @@ export class Structure implements AbstractObject {
         track1.weight = sound ? weight1 * transitionWeight * this.soundEnabledT : 0;
     }
 
-    render(_camera: unknown, _debug: unknown, _layer: unknown) {
-        if (device.debug) {
-            renderMapBuildingBounds(this);
-            renderBridge(this);
-            renderWaterEdge(this);
-            for (let i = 0; i < this.stairs.length; i++) {
-                debugLines.addCollider(this.stairs[i].downAabb, 0x0000ff, 0);
-                debugLines.addCollider(this.stairs[i].upAabb, 0x00ff00, 0);
+    render(_camera: Camera, debug: DebugOptions, _layer: number) {
+        if (device.debug && debug.structures) {
+            if (debug.structures.bounds) {
+                renderMapBuildingBounds(this);
+            }
+            if (debug.structures.bridge) {
+                renderBridge(this);
+            }
+            if (debug.structures.waterEdge) {
+                renderWaterEdge(this);
+            }
+            if (debug.structures.stairs) {
+                for (let i = 0; i < this.stairs.length; i++) {
+                    debugLines.addCollider(this.stairs[i].downAabb, 0x0000ff, 0);
+                    debugLines.addCollider(this.stairs[i].upAabb, 0x00ff00, 0);
+                }
             }
         }
     }

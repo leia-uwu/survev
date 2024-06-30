@@ -36,7 +36,7 @@ import type { Camera } from "../camera";
 import type { SoundHandle } from "../createJS";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { Ctx } from "../game";
+import type { Ctx, DebugOptions } from "../game";
 import { helpers } from "../helpers";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
@@ -1189,7 +1189,7 @@ export class Player implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, _debug: unknown) {
+    render(camera: Camera, debug: DebugOptions) {
         const screenPos = camera.pointToScreen(this.pos);
         const screenScale = camera.pixels(1);
         this.container.position.set(screenPos.x, screenPos.y);
@@ -1198,7 +1198,7 @@ export class Player implements AbstractObject {
         this.auraContainer.position.set(screenPos.x, screenPos.y);
         this.auraContainer.scale.set(screenScale, screenScale);
 
-        if (device.debug) {
+        if (device.debug && debug.players) {
             debugLines.addCircle(this.pos, this.rad, 0xff0000, 0);
 
             const weapDef = GameObjectDefs[this.netData.activeWeapon];

@@ -11,7 +11,7 @@ import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { Ctx } from "../game";
+import type { Ctx, DebugOptions } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import type { Emitter, ParticleBarn } from "./particles";
@@ -447,7 +447,7 @@ export class Obstacle implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, _debug: unknown, _layer: number) {
+    render(camera: Camera, debug: DebugOptions, _layer: number) {
         const pos = this.isDoor ? this.door.interpPos : this.pos;
         const rot = this.isDoor ? this.door.interpRot : this.rot;
         const scale = this.scale;
@@ -476,7 +476,7 @@ export class Obstacle implements AbstractObject {
             this.door.casingSprite.visible = !this.dead;
         }
 
-        if (device.debug) {
+        if (device.debug && debug.obstacles) {
             debugLines.addCollider(this.collider, 0xff0000, 0);
         }
     }

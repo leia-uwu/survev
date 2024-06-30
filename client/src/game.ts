@@ -66,6 +66,21 @@ export interface Ctx {
     decalBarn: DecalBarn;
 }
 
+export interface DebugOptions {
+    players?: boolean;
+    obstacles?: boolean;
+    buildings?: {
+        ceiling?: boolean;
+        bounds?: boolean;
+    };
+    structures?: {
+        bounds?: boolean;
+        bridge?: boolean;
+        waterEdge?: boolean;
+        stairs?: boolean;
+    };
+}
+
 export class Game {
     initialized = false;
     teamMode = 0;
@@ -392,9 +407,8 @@ export class Game {
 
     update(dt: number) {
         const smokeParticles = this.smokeBarn.particles;
-        const _obstacles = this.map.obstaclePool.getPool();
 
-        const debug = { render: {} };
+        const debug: DebugOptions = {};
 
         if (this.playing) {
             this.playingTicker += dt;
@@ -917,7 +931,7 @@ export class Game {
         this.render(dt, debug);
     }
 
-    render(_dt: number, debug: unknown) {
+    render(_dt: number, debug: DebugOptions) {
         const grassColor = this.map.mapLoaded
             ? this.map.getMapDef().biome.colors.grass
             : 8433481;

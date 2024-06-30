@@ -293,22 +293,23 @@ export class GameMap {
             for (let i = 0; i < objs.length; i++) {
                 const player = objs[i];
                 if (player.__type !== ObjectType.Player) continue;
-                for (let j = 0; j < building.zoomRegions.length; j++) {
-                    const region = building.zoomRegions[j];
+                if (!util.sameLayer(player.layer, building.layer))
+                    for (let j = 0; j < building.zoomRegions.length; j++) {
+                        const region = building.zoomRegions[j];
 
-                    if (!region.zoomIn) continue;
-                    if (
-                        coldet.testCircleAabb(
-                            player.pos,
-                            player.rad,
-                            region.zoomIn.min,
-                            region.zoomIn.max
-                        )
-                    ) {
-                        building.occupied = true;
-                        break;
+                        if (!region.zoomIn) continue;
+                        if (
+                            coldet.testCircleAabb(
+                                player.pos,
+                                player.rad,
+                                region.zoomIn.min,
+                                region.zoomIn.max
+                            )
+                        ) {
+                            building.occupied = true;
+                            break;
+                        }
                     }
-                }
                 if (building.occupied) {
                     break;
                 }
