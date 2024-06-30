@@ -127,8 +127,7 @@ export const helpers = {
                 const el = $temp.get(0)!;
                 const editable = el.contentEditable;
                 const readOnly = el.readOnly;
-                // @ts-expect-error seem to expect a "true" string
-                el.contentEditable = true;
+                el.contentEditable = "true";
                 el.readOnly = true;
                 const range = document.createRange();
                 range.selectNodeContents(el);

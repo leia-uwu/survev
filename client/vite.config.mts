@@ -1,6 +1,6 @@
 import { ProxyOptions, defineConfig } from "vite";
 import { Config } from "../server/src/config";
-
+import { VitePWA } from 'vite-plugin-pwa'
 
 const proxyConfig: Record<string, ProxyOptions> = {
     "/api": {
@@ -50,6 +50,32 @@ export default defineConfig(() => {
         resolve: {
             extensions: ['.js', '.ts'],
         },
+        plugins: [
+            VitePWA({
+              registerType: 'autoUpdate',
+              includeAssets: ['favicon.ico', 'img/apple-touch-icon-180x180.png'], 
+              manifest: {
+                name: 'Resurviv',
+                short_name: 'Resurviv',
+                description: 'Describe me daddy',
+                theme_color: '#ffffff',
+                icons: [
+                  {
+                    src: 'img/pwa-192x192.png',
+                    sizes: '192x192',
+                    type: 'image/png'
+                  },
+                  {
+                    src: 'img/pwa-512x512.png',
+                    sizes: '512x512',
+                    type: 'image/png'
+                  }
+                ]
+              },
+              devOptions: {
+                enabled: true
+            }})
+        ],
         json: {
             stringify: true,
         },

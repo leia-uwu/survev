@@ -6,7 +6,7 @@ import { GameConfig } from "../../../shared/gameConfig";
 import { type MapMsg } from "../../../shared/msgs/mapMsg";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { v2 } from "../../../shared/utils/v2";
 import { type Account } from "../account";
 import { type AudioManager } from "../audioManager";
@@ -283,7 +283,7 @@ export class LoadoutDisplay {
             dir: v2.create(0, -1)
         };
 
-        this.objectCreator.updateObjFull(1, 98, obj, ctx);
+        this.objectCreator.updateObjFull(ObjectType.Player, 98, obj as unknown as ObjectData<ObjectType.Player>, ctx);
 
         this.playerBarn.setPlayerInfo({
             playerId: 98,

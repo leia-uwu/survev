@@ -59,17 +59,17 @@ export class Localization {
     }
 
     detectLocale() {
-        let detectedLocale = // @ts-expect-error should I define userLanguage?
+        let detectedLocale =
             (navigator.language || navigator.userLanguage).toLowerCase();
         const languageWildcards = ["pt", "de", "es", "fr", "ko", "ru", "en"];
         for (let i = 0; i < languageWildcards.length; i++) {
-            if (detectedLocale.indexOf(languageWildcards[i]) != -1) {
+            if (detectedLocale.includes(languageWildcards[i])) {
                 detectedLocale = languageWildcards[i];
                 break;
             }
         }
         for (let i = 0; i < this.acceptedLocales.length; i++) {
-            if (detectedLocale.indexOf(this.acceptedLocales[i]) != -1) {
+            if (detectedLocale.includes(this.acceptedLocales[i])) {
                 return this.acceptedLocales[i];
             }
         }

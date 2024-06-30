@@ -257,14 +257,6 @@ function applyMobileBrowserStyling(isTablet: boolean) {
     if (isTablet) {
         $("#start-bottom-middle").addClass("start-bottom-middle-tablet");
     }
-    if (device.os == "android") {
-        $(".btn-download-android").css("display", "block");
-        $(".btn-download-ios").css("display", "none");
-    } else if (device.os == "ios") {
-        $(".btn-download-ios").css("display", "block");
-        $(".btn-download-android").css("display", "none");
-    }
-    $("#mobile-download-app").css("display", "block");
 }
 
 export default {

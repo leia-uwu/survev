@@ -206,8 +206,7 @@ export class ParticleBarn {
 
     constructor(public renderer: Renderer) {
         for (let i = 0; i < 256; i++) {
-            // @ts-expect-error Particle doesn't accept any arguments ~~
-            this.particles[i] = new Particle(this.display);
+            this.particles[i] = new Particle();
         }
     }
 

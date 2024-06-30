@@ -1,11 +1,11 @@
 import { type BitStream } from "../../../shared/net";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { assert } from "../../../shared/utils/util";
-import { type Ctx } from "../game";
 import {
-    type ObjectsFullData,
+    type ObjectData, ObjectType,
     type ObjectsPartialData
 } from "../../../shared/utils/objectSerializeFns";
+import { assert } from "../../../shared/utils/util";
+import { type Ctx } from "../game";
+
 import { type AbstractObject } from "./player";
 
 type C<T extends AbstractObject> = new () => T;
@@ -91,10 +91,10 @@ export class Creator {
         return obj.__type;
     }
 
-    updateObjFull(
-        type: ObjectType,
+    updateObjFull<Type extends ObjectType>(
+        type: Type,
         id: number,
-        data: ObjectsFullData[ObjectType],
+        data: ObjectData<Type>,
         ctx: Ctx
     ) {
         let obj = this.getObjById(id);
