@@ -262,21 +262,6 @@ export class GameMap {
         this.desertMode = !!this.mapDef.gameMode.desertMode;
         this.potatoMode = !!this.mapDef.gameMode.potatoMode;
         this.sniperMode = !!this.mapDef.gameMode.sniperMode;
-
-        /* const lootPos = v2.create(this.width / 2, this.height / 2);
-        for (const loot in GameObjectDefs) {
-            const def = GameObjectDefs[loot];
-            if ("lootImg" in def) {
-                this.game.grid.addObject(new Loot(this.game, loot, lootPos, 0, 100, 0));
-                // this.game.grid.addObject(new Loot(this.game, loot, v2.add(lootPos, { x: 1, y: 1 }), 0, 1, 0));
-
-                lootPos.x += 3.5;
-                if (lootPos.x > this.width / 2 + 80) {
-                    lootPos.x = this.width / 2;
-                    lootPos.y -= 3.5;
-                }
-            }
-        } */
     }
 
     init() {
@@ -485,33 +470,59 @@ export class GameMap {
         //
         for (const river of this.terrain.rivers) {
             if (river.looped) continue;
+            const width = river.waterWidth;
 
-            for (let i = 0.2; i < 0.8; i += 0.05) {
-                if (Math.random() > 0.3) continue;
+            const maxBridges = {
+                medium: 4,
+                large: 3,
+                xlarge: 2
+            };
 
-                const pos = river.spline.getPos(i);
+            let bridgeSize: keyof typeof maxBridges | undefined;
+            if (width < 9 && width > 4) {
+                bridgeSize = "medium";
+            } else if (width < 20 && width > 8) {
+                bridgeSize = "large";
+            } else if (width > 20) {
+                bridgeSize = "xlarge";
+            }
+            if (!bridgeSize) continue;
+            const bridgeType = mapDef.mapGen.bridgeTypes[bridgeSize];
+            if (!bridgeType) continue;
 
-                const rot = river.spline.getNormal(i);
-                const ori = math.radToOri(Math.atan2(rot.y, rot.x));
-
-                const width = river.waterWidth;
-
-                let bridgeType: string | undefined;
-                if (width < 9 && width > 4) {
-                    bridgeType = mapDef.mapGen.bridgeTypes.medium;
-                } else if (width < 20 && width > 8) {
-                    bridgeType = mapDef.mapGen.bridgeTypes.large;
-                } else if (width > 20) {
-                    bridgeType = mapDef.mapGen.bridgeTypes.xlarge;
-                }
-                if (!bridgeType) continue;
-
-                if (bridgeType && this.canSpawn(bridgeType, pos, ori)) {
-                    const bridge = this.genStructure(bridgeType, pos, 0, ori);
-                    this.bridges.push(bridge);
+            for (
+                let attempts = 0, bridgesGenerated = 0, max = maxBridges[bridgeSize];
+                attempts < 50 && bridgesGenerated < max;
+                attempts++
+            ) {
+                if (this.genBridge(bridgeType, river)) {
+                    bridgesGenerated++;
                 }
             }
         }
+
+        //
+        // generate river objects
+        //
+        const riverObjs = {
+            stone_03: 3,
+            bush_04: 1.2
+        };
+        for (const type in riverObjs) {
+            for (const river of this.terrain.rivers) {
+                const amount = math.min(
+                    river.waterWidth * riverObjs[type as keyof typeof riverObjs],
+                    20
+                );
+
+                for (let i = 0; i < amount; i++) {
+                    this.genOnRiver(type, river);
+                }
+            }
+        }
+        //
+        // Generate river
+        //
 
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
             let pos: Vec2 | undefined;
@@ -579,14 +590,18 @@ export class GameMap {
 
             if (def.terrain?.waterEdge) {
                 this.genOnWaterEdge(type);
-            } else if (def.terrain?.bridge) {
+            } else if (def.terrain?.river) {
                 this.genOnRiver(type);
+            } else if (def.terrain?.bridge) {
+                this.genBridge(type);
             } else if (def.terrain?.lakeCenter) {
                 this.genOnLakeCenter(type);
             } else if (def.terrain?.grass) {
                 this.genOnGrass(type);
             } else if (def.terrain?.beach) {
                 this.genOnBeach(type);
+            } else {
+                console.log(`Unknown map spawn rules for ${type}`);
             }
         }
     }
@@ -940,7 +955,7 @@ export class GameMap {
         }
     }
 
-    genOnRiver(type: string) {
+    genBridge(type: string, river?: River): boolean {
         let { ori, scale } = this.getOriAndScale(type);
 
         const def = MapObjectDefs[type];
@@ -950,9 +965,10 @@ export class GameMap {
             ori = oriAndScale.ori;
             scale = oriAndScale.scale;
 
-            const river =
+            river =
+                river ??
                 this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
-            const t = util.random(0.2, 0.8);
+            const t = util.random(0, 1);
             let pos = river.spline.getPos(t);
 
             if (def.terrain?.nearbyRiver) {
@@ -985,9 +1001,24 @@ export class GameMap {
         }
 
         if (pos && attempts < GameMap.MaxSpawnAttempts) {
-            this.genAuto(type, pos, 0, ori, scale);
-        } else {
-            console.warn(`Failed to generate ${type} on river`);
+            const obj = this.genAuto(type, pos, 0, ori, scale);
+            if (obj?.__type === ObjectType.Structure) {
+                this.bridges.push(obj);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    genOnRiver(type: string, river?: River) {
+        river =
+            river ??
+            this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+        const t = util.random(0, 1);
+        const offset = util.random(0, river.waterWidth);
+        const pos = v2.add(river.spline.getPos(t), v2.mul(v2.randomUnit(), offset));
+        if (this.canSpawn(type, pos, 0)) {
+            this.genAuto(type, pos, 0);
         }
     }
 
