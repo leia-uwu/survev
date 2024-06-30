@@ -207,19 +207,9 @@ export const GameConfig = {
         height: 0.25
     },
     gun: {
-        customSwitchDelay: 0.35,
-        customBarrelLength: 1,
-        headshotBlacklist: [
-            "spas12",
-            "m870",
-            "mp220",
-            "saiga",
-            "usas",
-            "mosin",
-            "sv98",
-            "pkp",
-            "m249"
-        ]
+        customSwitchDelay: undefined,
+        customBarrelLength: undefined,
+        headshotBlacklist: [] as string[]
     },
     projectile: {
         maxHeight: 5
