@@ -206,6 +206,21 @@ export const GameConfig = {
         reflectDistDecay: 1.5,
         height: 0.25
     },
+    gun: {
+        customSwitchDelay: 0.35,
+        customBarrelLength: 1,
+        headshotBlacklist: [
+            "spas12",
+            "m870",
+            "mp220",
+            "saiga",
+            "usas",
+            "mosin",
+            "sv98",
+            "pkp",
+            "m249"
+        ]
+    },
     projectile: {
         maxHeight: 5
     },
@@ -333,4 +348,4 @@ export const GameConfig = {
         perk: 1.25,
         xp: 1
     } as Record<string, number>
-} as const;
+};
