@@ -328,7 +328,8 @@ app.post("/api/find_game", async (res) => {
         (body: FindGameBody) => {
             try {
                 returnJson(res, server.findGame(body));
-            } catch {
+            } catch (err) {
+                console.error("Find game error:", err);
                 returnJson(res, {
                     res: [
                         {
