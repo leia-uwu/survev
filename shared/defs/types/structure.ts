@@ -1,6 +1,6 @@
-import { type AABBWithHeight } from "../../utils/coldet";
-import { type Vec2 } from "../../utils/v2";
-import { type TerrainSpawnDef } from "../mapObjectsTyping";
+import type { AABBWithHeight } from "../../utils/coldet";
+import type { Vec2 } from "../../utils/v2";
+import type { TerrainSpawnDef } from "../mapObjectsTyping";
 
 export interface StructureDef {
     readonly type: "structure";

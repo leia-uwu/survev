@@ -723,9 +723,8 @@ export class UpdateMsg extends AbstractMsg {
 export function getPlayerStatusUpdateRate(factionMode: boolean) {
     if (factionMode) {
         return 0.5;
-    } else {
-        return 0.25;
     }
+    return 0.25;
 }
 
 export interface Bullet {

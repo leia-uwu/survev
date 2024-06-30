@@ -1,5 +1,5 @@
 import { MapObjectDefs } from "../defs/mapObjectDefs";
-import { type BuildingDef } from "../defs/mapObjectsTyping";
+import type { BuildingDef } from "../defs/mapObjectsTyping";
 import { type AABB, type Collider, coldet } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";

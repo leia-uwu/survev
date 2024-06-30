@@ -3,7 +3,7 @@ import { GameObjectDefs } from "./defs/gameObjectDefs";
 import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { math } from "./utils/math";
 import { assert } from "./utils/util";
-import { type Vec2 } from "./utils/v2";
+import type { Vec2 } from "./utils/v2";
 
 const DEV_MODE = false;
 

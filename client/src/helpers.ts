@@ -1,10 +1,10 @@
 import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { type MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
-import { type OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
+import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
+import type { OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
 import * as net from "../../shared/net";
 import { device } from "./device";
-import { type Game } from "./game";
+import type { Game } from "./game";
 const truncateCanvas = document.createElement("canvas");
 
 export const helpers = {
@@ -179,5 +179,5 @@ export const helpers = {
             return Math.floor(Math.random() * Math.pow(2, 32)).toString(16);
         }
         return r32() + r32();
-    },
+    }
 };

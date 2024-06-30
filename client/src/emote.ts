@@ -2,26 +2,26 @@ import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
-import { type AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
-import { type GunDef } from "../../shared/defs/gameObjects/gunDefs";
+import type { AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
+import type { GunDef } from "../../shared/defs/gameObjects/gunDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
 import { EmoteSlot, GameConfig, Input } from "../../shared/gameConfig";
-import { type Emote } from "../../shared/msgs/updateMsg";
+import type { Emote } from "../../shared/msgs/updateMsg";
 import { coldet } from "../../shared/utils/coldet";
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import { type AudioManager } from "./audioManager";
-import { type Camera } from "./camera";
+import type { AudioManager } from "./audioManager";
+import type { Camera } from "./camera";
 import { device } from "./device";
 import { helpers } from "./helpers";
-import { type InputHandler } from "./input";
-import { type InputBinds } from "./inputBinds";
-import { type Map } from "./map";
-import { type DeadBodyBarn } from "./objects/deadBody";
-import { type Player, type PlayerBarn } from "./objects/player";
-import { type Renderer } from "./renderer";
-import { type UiManager } from "./ui/ui";
+import type { InputHandler } from "./input";
+import type { InputBinds } from "./inputBinds";
+import type { Map } from "./map";
+import type { DeadBodyBarn } from "./objects/deadBody";
+import type { Player, PlayerBarn } from "./objects/player";
+import type { Renderer } from "./renderer";
+import type { UiManager } from "./ui/ui";
 
 const airdropIdx = 4;
 const airstrikeIdx = 5;
@@ -85,9 +85,8 @@ interface EmoteWheelData {
 function getImgUrlFromSelector(data: EmoteWheelData | TeamPingSelector) {
     if (data.displayCloseIcon) {
         return "img/gui/close.svg";
-    } else {
-        return helpers.getSvgFromGameType(data.ping || data.emote);
     }
+    return helpers.getSvgFromGameType(data.ping || data.emote);
 }
 function vectorToDegreeAngle(vector: Vec2) {
     let angle = (Math.atan2(vector.y, vector.x) * 180) / Math.PI;
@@ -101,14 +100,13 @@ function isAngleBetween(target: number, angle1: number, angle2: number) {
     if (angle1 <= angle2) {
         if (angle2 - angle1 <= 180) {
             return angle1 <= target && target <= angle2;
-        } else {
-            return angle2 <= target || target <= angle1;
         }
-    } else if (angle1 - angle2 <= 180) {
-        return angle2 <= target && target <= angle1;
-    } else {
-        return angle1 <= target || target <= angle2;
+        return angle2 <= target || target <= angle1;
     }
+    if (angle1 - angle2 <= 180) {
+        return angle2 <= target && target <= angle1;
+    }
+    return angle1 <= target || target <= angle2;
 }
 export class EmoteBarn {
     gameElem = $("#ui-game");

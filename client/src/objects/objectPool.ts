@@ -1,13 +1,13 @@
-import { type BitStream } from "../../../shared/net";
+import type { BitStream } from "../../../shared/net";
 import {
     type ObjectData,
     ObjectType,
     type ObjectsPartialData
 } from "../../../shared/utils/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
-import { type Ctx } from "../game";
+import type { Ctx } from "../game";
 
-import { type AbstractObject } from "./player";
+import type { AbstractObject } from "./player";
 
 type C<T extends AbstractObject> = new () => T;
 

@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import { type Atlas, MapDefs } from "../../shared/defs/mapDefs";
-import { type AudioManager } from "./audioManager";
-import { type ConfigManager } from "./config";
+import type { AudioManager } from "./audioManager";
+import type { ConfigManager } from "./config";
 import { device } from "./device";
 import fullResAtlasDefs from "./fullResAtlasDefs.json";
 import lowResAtlasDefs from "./lowResAtlasDefs.json";

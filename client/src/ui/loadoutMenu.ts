@@ -2,18 +2,18 @@ import "@taufik-nurrohman/color-picker";
 import $ from "jquery";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
+import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import type { UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
-import { type Account } from "../account";
+import type { Account } from "../account";
 import { crosshair } from "../crosshair";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import loadout, { type ItemStatus, type Loadout } from "./loadouts";
-import { type Localization } from "./localization";
+import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
-import { type LoadoutDisplay } from "./opponentDisplay";
+import type { LoadoutDisplay } from "./opponentDisplay";
 
 function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
     const emoteSlotToDomId = {
@@ -964,9 +964,8 @@ export class LoadoutMenu {
             const sourceDef = GameObjectDefs[source] as EmoteDef;
             if (sourceDef?.name) {
                 return sourceDef.name;
-            } else {
-                return source;
             }
+            return source;
         };
 
         this.selectedCatItems = [];

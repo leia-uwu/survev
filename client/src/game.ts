@@ -24,18 +24,18 @@ import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { v2 } from "../../shared/utils/v2";
-import { type Ambiance } from "./ambiance";
-import { type AudioManager } from "./audioManager";
+import type { Ambiance } from "./ambiance";
+import type { AudioManager } from "./audioManager";
 import { Camera } from "./camera";
-import { type ConfigManager } from "./config";
-import { type SoundHandle } from "./createJS";
+import type { ConfigManager } from "./config";
+import type { SoundHandle } from "./createJS";
 import { debugLines } from "./debugLines";
 import { device } from "./device";
 import { EmoteBarn } from "./emote";
 import { Gas } from "./gas";
 import { helpers } from "./helpers";
 import { type InputHandler, Key } from "./input";
-import { type InputBindUi, type InputBinds } from "./inputBinds";
+import type { InputBindUi, InputBinds } from "./inputBinds";
 import { Map } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
 import { BulletBarn, createBullet } from "./objects/bullet";
@@ -52,8 +52,8 @@ import { ProjectileBarn } from "./objects/projectile";
 import { ShotBarn } from "./objects/shot";
 import { SmokeBarn } from "./objects/smoke";
 import { Renderer } from "./renderer";
-import { type ResourceManager } from "./resources";
-import { type Localization } from "./ui/localization";
+import type { ResourceManager } from "./resources";
+import type { Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
 import { UiManager2 } from "./ui/ui2";
@@ -393,7 +393,7 @@ export class Game {
 
     update(dt: number) {
         const smokeParticles = this.smokeBarn.particles;
-        const obstacles = this.map.obstaclePool.getPool();
+        const _obstacles = this.map.obstaclePool.getPool();
 
         const debug = { render: {} };
 
@@ -1405,7 +1405,7 @@ export class Game {
                 break;
             }
             case MsgType.Stats: {
-                stream.readString()
+                stream.readString();
                 break;
             }
             case MsgType.GameOver: {

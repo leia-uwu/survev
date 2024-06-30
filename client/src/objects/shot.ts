@@ -1,11 +1,11 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import { type Bullet } from "../../../shared/msgs/updateMsg";
+import type { Bullet } from "../../../shared/msgs/updateMsg";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type ParticleBarn } from "./particles";
-import { type PlayerBarn } from "./player";
+import type { AudioManager } from "../audioManager";
+import type { ParticleBarn } from "./particles";
+import type { PlayerBarn } from "./player";
 
 interface Shot {
     active: boolean;

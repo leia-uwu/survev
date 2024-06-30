@@ -1,8 +1,8 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import {
-    type BuildingDef,
-    type ObstacleDef,
-    type StructureDef
+import type {
+    BuildingDef,
+    ObstacleDef,
+    StructureDef
 } from "../../../shared/defs/mapObjectsTyping";
 import { Puzzles } from "../../../shared/defs/puzzles";
 import { type AABB, type Collider, coldet } from "../../../shared/utils/coldet";
@@ -11,12 +11,12 @@ import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Game } from "../game";
+import type { Game } from "../game";
 import { getColliders } from "../map";
-import { type Decal } from "./decal";
+import type { Decal } from "./decal";
 import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
-import { type Structure } from "./structure";
+import type { Structure } from "./structure";
 
 export class Building extends BaseGameObject {
     bounds: Collider;

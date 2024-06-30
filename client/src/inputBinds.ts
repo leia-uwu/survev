@@ -2,7 +2,7 @@ import base64 from "base64-js";
 import BitBuffer from "bit-buffer";
 import $ from "jquery";
 import { Input as GameInput, type Input } from "../../shared/gameConfig";
-import { type ConfigManager } from "./config";
+import type { ConfigManager } from "./config";
 import { crc16 } from "./crc";
 import {
     type InputHandler,

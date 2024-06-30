@@ -1,5 +1,5 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type StructureDef } from "../../../shared/defs/mapObjectsTyping";
+import type { StructureDef } from "../../../shared/defs/mapObjectsTyping";
 import {
     type AABB,
     type AABBWithHeight,
@@ -11,16 +11,13 @@ import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Ambiance } from "../ambiance";
+import type { Ambiance } from "../ambiance";
 import { renderBridge, renderMapBuildingBounds, renderWaterEdge } from "../debugHelpers";
 import { device } from "../device";
-import { type Ctx } from "../game";
-import { type Map } from "../map";
-import {
-    type ObjectData,
-    type ObjectType
-} from "./../../../shared/utils/objectSerializeFns";
-import { type AbstractObject, type Player } from "./player";
+import type { Ctx } from "../game";
+import type { Map } from "../map";
+import type { ObjectData, ObjectType } from "./../../../shared/utils/objectSerializeFns";
+import type { AbstractObject, Player } from "./player";
 
 export class Structure implements AbstractObject {
     __id!: number;

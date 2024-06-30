@@ -1,6 +1,6 @@
 import { util } from "../../shared/utils/util";
 import loadout from "./ui/loadouts";
-import { type Locale } from "./ui/localization";
+import type { Locale } from "./ui/localization";
 
 const defaultConfig = {
     muteAudio: false,

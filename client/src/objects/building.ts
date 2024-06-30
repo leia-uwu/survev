@@ -1,30 +1,27 @@
 import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type BuildingDef } from "../../../shared/defs/mapObjectsTyping";
-import { type FloorImage } from "../../../shared/defs/types/building";
-import { type Collider, type ColliderWithHeight } from "../../../shared/utils/coldet";
+import type { BuildingDef } from "../../../shared/defs/mapObjectsTyping";
+import type { FloorImage } from "../../../shared/defs/types/building";
+import type { Collider, ColliderWithHeight } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
-import {
-    type ObjectData,
-    type ObjectType
-} from "../../../shared/utils/objectSerializeFns";
+import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type SoundHandle } from "../createJS";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
+import type { SoundHandle } from "../createJS";
 import { renderMapBuildingBounds } from "../debugHelpers";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import { type Ctx } from "../game";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import { type Obstacle } from "./obstacle";
-import { type Emitter, type ParticleBarn } from "./particles";
-import { type AbstractObject, type Player } from "./player";
+import type { Ctx } from "../game";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
+import type { Obstacle } from "./obstacle";
+import type { Emitter, ParticleBarn } from "./particles";
+import type { AbstractObject, Player } from "./player";
 
 function step(cur: number, target: number, rate: number) {
     const delta = target - cur;

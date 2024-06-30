@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js-legacy";
 import { math } from "../../../shared/utils/math";
-import { type Camera } from "../camera";
+import type { Camera } from "../camera";
 import { device } from "../device";
-import { type Touch } from "./touch";
+import type { Touch } from "./touch";
 
 const fontWidth = 24;
 

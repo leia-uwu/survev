@@ -2,20 +2,20 @@ import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Camera } from "../camera";
-import { type ConfigManager } from "../config";
+import type { Camera } from "../camera";
+import type { ConfigManager } from "../config";
 import { device } from "../device";
-import { type Map } from "../map";
-import { type Player } from "../objects/player";
-import { type Renderer } from "../renderer";
-import { type InputHandler } from "./../input";
+import type { Map } from "../map";
+import type { Player } from "../objects/player";
+import type { Renderer } from "../renderer";
+import type { InputHandler } from "./../input";
 
 interface Pad {
     touched: boolean;
@@ -111,9 +111,8 @@ export class Touch {
         const validateTouchStyle = function (style: "locked" | "anywhere") {
             if (!["locked", "anywhere"].includes(style)) {
                 return "anywhere";
-            } else {
-                return style;
             }
+            return style;
         };
         const moveStyle = validateTouchStyle(config.get("touchMoveStyle")!);
         const aimStyle = validateTouchStyle(config.get("touchAimStyle")!);

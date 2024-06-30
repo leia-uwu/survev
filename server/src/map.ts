@@ -1,9 +1,9 @@
 import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
-import {
-    type BuildingDef,
-    type ObstacleDef,
-    type StructureDef
+import type {
+    BuildingDef,
+    ObstacleDef,
+    StructureDef
 } from "../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../shared/gameConfig";
 import { MapMsg } from "../../shared/msgs/mapMsg";
@@ -13,11 +13,11 @@ import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { type River } from "../../shared/utils/river";
+import type { River } from "../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import { type Game } from "./game";
+import type { Game } from "./game";
 import { Building } from "./objects/building";
 import { Obstacle } from "./objects/obstacle";
 import { Structure } from "./objects/structure";

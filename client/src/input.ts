@@ -679,13 +679,14 @@ export class InputValue {
     toString() {
         if (this.type == InputType.None) {
             return "";
-        } else if (this.type == InputType.Key) {
-            return KeyNames[this.code] || `Key ${this.code}`;
-        } else if (this.type == InputType.MouseButton) {
-            return MouseButtonNames[this.code] || `Mouse ${this.code}`;
-        } else {
-            return MouseWheelNames[this.code] || `Mouse Wheel ${this.code}`;
         }
+        if (this.type == InputType.Key) {
+            return KeyNames[this.code] || `Key ${this.code}`;
+        }
+        if (this.type == InputType.MouseButton) {
+            return MouseButtonNames[this.code] || `Mouse ${this.code}`;
+        }
+        return MouseWheelNames[this.code] || `Mouse Wheel ${this.code}`;
     }
 }
 

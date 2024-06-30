@@ -1,30 +1,30 @@
 import * as PIXI from "pixi.js-legacy";
 import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
-import { type BuildingDef, type ObstacleDef } from "../../shared/defs/mapObjectsTyping";
+import type { BuildingDef, ObstacleDef } from "../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../shared/gameConfig";
-import { type GroundPatch, type MapMsg } from "../../shared/msgs/mapMsg";
+import type { GroundPatch, MapMsg } from "../../shared/msgs/mapMsg";
 import { type CircleWithHeight, type Collider, coldet } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
-import { type River } from "../../shared/utils/river";
+import type { River } from "../../shared/utils/river";
 import { generateJaggedAabbPoints, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import { type Ambiance } from "./ambiance";
-import { type AudioManager } from "./audioManager";
-import { type Camera } from "./camera";
+import type { Ambiance } from "./ambiance";
+import type { AudioManager } from "./audioManager";
+import type { Camera } from "./camera";
 import { device } from "./device";
 import { Building } from "./objects/building";
-import { type DecalBarn } from "./objects/decal";
+import type { DecalBarn } from "./objects/decal";
 import { Pool } from "./objects/objectPool";
 import { Obstacle } from "./objects/obstacle";
-import { type Emitter, type ParticleBarn } from "./objects/particles";
-import { type Player, type PlayerBarn } from "./objects/player";
-import { type SmokeParticle } from "./objects/smoke";
+import type { Emitter, ParticleBarn } from "./objects/particles";
+import type { Player, PlayerBarn } from "./objects/player";
+import type { SmokeParticle } from "./objects/smoke";
 import { Structure } from "./objects/structure";
-import { type Renderer } from "./renderer";
+import type { Renderer } from "./renderer";
 
 // Drawing
 
@@ -195,10 +195,9 @@ export class Map {
         ambience: Ambiance,
         renderer: Renderer,
         camera: Camera,
-        smokeParticles: SmokeParticle[],
+        _smokeParticles: SmokeParticle[],
         debug: unknown
     ) {
-
         const obstacles = this.obstaclePool.getPool();
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];

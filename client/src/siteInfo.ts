@@ -1,9 +1,9 @@
 import $ from "jquery";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import { api } from "./api";
-import { type ConfigManager } from "./config";
+import type { ConfigManager } from "./config";
 import { device } from "./device";
-import { type Localization } from "./ui/localization";
+import type { Localization } from "./ui/localization";
 export enum TeamMode {
     Solo = 1,
     Duo = 2,

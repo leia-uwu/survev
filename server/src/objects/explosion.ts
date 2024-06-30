@@ -1,13 +1,13 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ExplosionDef } from "../../../shared/defs/gameObjects/explosionsDefs";
+import type { ExplosionDef } from "../../../shared/defs/gameObjects/explosionsDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Game } from "../game";
-import { type GameObject } from "./gameObject";
+import type { Game } from "../game";
+import type { GameObject } from "./gameObject";
 
 export class ExplosionBarn {
     explosions: Explosion[] = [];

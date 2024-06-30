@@ -1,6 +1,6 @@
 import { math } from "../../shared/utils/math";
-import { type AudioManager } from "./audioManager";
-import { type SoundHandle } from "./createJS";
+import type { AudioManager } from "./audioManager";
+import type { SoundHandle } from "./createJS";
 
 export class Ambiance {
     introMusic = true;

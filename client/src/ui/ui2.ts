@@ -7,11 +7,11 @@ import {
     type HealDef,
     SCOPE_LEVELS
 } from "../../../shared/defs/gameObjects/gearDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { Action, DamageType, GameConfig, Input } from "../../../shared/gameConfig";
 import { PickupMsgType } from "../../../shared/net";
 import { collider } from "../../../shared/utils/collider";
@@ -20,12 +20,12 @@ import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import { type InputBinds } from "../inputBinds";
-import { type Map } from "../map";
-import { type Loot, type LootBarn } from "../objects/loot";
-import { type Obstacle } from "../objects/obstacle";
-import { type Player, type PlayerBarn } from "../objects/player";
-import { type Localization } from "./localization";
+import type { InputBinds } from "../inputBinds";
+import type { Map } from "../map";
+import type { Loot, LootBarn } from "../objects/loot";
+import type { Obstacle } from "../objects/obstacle";
+import type { Player, PlayerBarn } from "../objects/player";
+import type { Localization } from "./localization";
 
 const maxKillFeedLines = 6;
 const touchHoldDuration = 0.75 * 1000;
@@ -55,9 +55,8 @@ function isLmb(e: MouseEvent) {
 function isRmb(e: any) {
     if ("which" in e) {
         return e.which == 3;
-    } else {
-        return e.button == 2;
     }
+    return e.button == 2;
 }
 // These functions, copy and diff, only work if both
 // arguments have the same internal structure
@@ -1366,9 +1365,8 @@ export class UiManager2 {
     getRareLootMessageText(perk: string) {
         if (GameObjectDefs[perk]) {
             return `Acquired perk: ${this.localization.translate(`game-${perk}`)}`;
-        } else {
-            return "";
         }
+        return "";
     }
 
     addKillFeedMessage(text: string, color: string) {
@@ -1402,9 +1400,8 @@ export class UiManager2 {
                 );
                 if (killerName) {
                     return `${killerName} ${killTxt} ${targetName}`;
-                } else {
-                    return `${targetName} ${killTxt}`;
                 }
+                return `${targetName} ${killTxt}`;
             }
             case DamageType.Gas: {
                 let killName;
@@ -1419,9 +1416,8 @@ export class UiManager2 {
                 }
                 if (killName) {
                     return `${killName} ${killTxt} ${targetName}`;
-                } else {
-                    return `${targetName} ${killTxt}`;
                 }
+                return `${targetName} ${killTxt}`;
             }
             case DamageType.Airdrop: {
                 const mapObj = MapObjectDefs[sourceType] as ObstacleDef;
@@ -1441,11 +1437,10 @@ export class UiManager2 {
                     return `${killerName} ${killTxt} ${targetName} ${this.localization.translate(
                         "game-with"
                     )} ${this.localization.translate("game-an-air-strike")}`;
-                } else {
-                    return `${this.localization.translate(
-                        "game-the-air-strike"
-                    )} ${killTxt} ${targetName}`;
                 }
+                return `${this.localization.translate(
+                    "game-the-air-strike"
+                )} ${killTxt} ${targetName}`;
             }
             default:
                 return "";
@@ -1460,22 +1455,22 @@ export class UiManager2 {
     ) {
         if (factionMode) {
             return "#efeeee";
-        } else if (activeTeamId == targetTeamId) {
-            return "#d1777c";
-        } else if (activeTeamId == killerTeamId) {
-            return "#00bfff";
-        } else {
-            return "#efeeee";
         }
+        if (activeTeamId == targetTeamId) {
+            return "#d1777c";
+        }
+        if (activeTeamId == killerTeamId) {
+            return "#00bfff";
+        }
+        return "#efeeee";
     }
 
     getRoleKillFeedColor(role: string, teamId: number, playerBarn: PlayerBarn) {
         const roleDef = GameObjectDefs[role] as RoleDef;
         if (roleDef?.killFeed?.color) {
             return roleDef.killFeed.color;
-        } else {
-            return helpers.colorToHexString(playerBarn.getTeamColor(teamId));
         }
+        return helpers.colorToHexString(playerBarn.getTeamColor(teamId));
     }
 
     getRoleTranslation(role: string, teamId: number) {
@@ -1505,9 +1500,8 @@ export class UiManager2 {
             return `${killerName} ${this.localization.translate(
                 "game-killed"
             )} ${roleTxt}!`;
-        } else {
-            return `${roleTxt} ${this.localization.translate("game-is-dead")}!`;
         }
+        return `${roleTxt} ${this.localization.translate("game-is-dead")}!`;
     }
 
     getKillText(
@@ -1545,9 +1539,8 @@ export class UiManager2 {
 
         if (damageTxt && (completeKill || knockedOut)) {
             return `${youTxt} ${killTxt} ${targetTxt} ${withTxt} ${damageTxt}`;
-        } else {
-            return `${youTxt} ${killTxt} ${targetTxt}`;
         }
+        return `${youTxt} ${killTxt} ${targetTxt}`;
     }
 
     getKillCountText(killCount: number) {
@@ -1583,9 +1576,8 @@ export class UiManager2 {
         const withTxt = this.localization.translate("game-with");
         if (damageTxt) {
             return `${killerTxt} knocked ${youTxt} out ${withTxt} ${damageTxt}`;
-        } else {
-            return `${killerTxt} knocked ${youTxt} out`;
         }
+        return `${killerTxt} knocked ${youTxt} out`;
     }
 
     getPickupMessageText(type: PickupMsgType) {
@@ -1618,9 +1610,8 @@ export class UiManager2 {
                     player.hasPerk("self_revive")
                 ) {
                     return this.localization.translate("game-revive-self");
-                } else {
-                    return this.localization.translate("game-revive-teammate");
                 }
+                return this.localization.translate("game-revive-teammate");
             case InteractionType.Object: {
                 const x = (object as Obstacle).getInteraction()!;
                 return `${this.localization.translate(
@@ -1668,9 +1659,8 @@ export class UiManager2 {
 
         if (bind) {
             return bind.toString();
-        } else {
-            return "<Unbound>";
         }
+        return "<Unbound>";
     }
 }
 

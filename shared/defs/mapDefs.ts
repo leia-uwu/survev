@@ -1,4 +1,4 @@
-import { type Vec2 } from "../utils/v2";
+import type { Vec2 } from "../utils/v2";
 import { Main } from "./maps/baseDefs";
 import { Cobalt } from "./maps/cobaltDefs";
 import { Desert } from "./maps/desertDefs";

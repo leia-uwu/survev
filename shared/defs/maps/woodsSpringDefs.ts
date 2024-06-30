@@ -1,6 +1,6 @@
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { type MapDef } from "../mapDefs";
+import type { MapDef } from "../mapDefs";
 import { Woods } from "./woodsDefs";
 
 const mapDef = {

@@ -1,25 +1,22 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
-import { type AmmoDef } from "../../../shared/defs/gameObjects/gearDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type XPDef } from "../../../shared/defs/gameObjects/xpDefs";
+import type { AmmoDef } from "../../../shared/defs/gameObjects/gearDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import type { XPDef } from "../../../shared/defs/gameObjects/xpDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
-import {
-    type ObjectData,
-    type ObjectType
-} from "../../../shared/utils/objectSerializeFns";
+import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
 import { device } from "../device";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
 import { Pool } from "./objectPool";
-import { type Emitter, type ParticleBarn } from "./particles";
-import { type AbstractObject, type Player } from "./player";
+import type { Emitter, ParticleBarn } from "./particles";
+import type { AbstractObject, Player } from "./player";
 
 export class Loot implements AbstractObject {
     __id!: number;

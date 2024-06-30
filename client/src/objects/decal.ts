@@ -1,21 +1,18 @@
 import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type DecalDef } from "../../../shared/defs/mapObjectsTyping";
-import { type ColliderWithHeight } from "../../../shared/utils/coldet";
+import type { DecalDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ColliderWithHeight } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import {
-    type ObjectData,
-    type ObjectType
-} from "../../../shared/utils/objectSerializeFns";
+import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Camera } from "../camera";
-import { type Ctx } from "../game";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
+import type { Camera } from "../camera";
+import type { Ctx } from "../game";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
 import { Pool } from "./objectPool";
-import { type AbstractObject } from "./player";
+import type { AbstractObject } from "./player";
 
 function lerpColor(t: number, a: number, b: number) {
     // util.lerpColor is relatively expensive; avoid if it possible

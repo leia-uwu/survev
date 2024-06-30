@@ -9,22 +9,22 @@ import {
     SCOPE_LEVELS,
     type ScopeDef
 } from "../../../shared/defs/gameObjects/gearDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
 import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
-import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
+import type { DropItemMsg } from "../../../shared/msgs/dropItemMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
-import { type JoinMsg } from "../../../shared/msgs/joinMsg";
+import type { JoinMsg } from "../../../shared/msgs/joinMsg";
 import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { KillMsg } from "../../../shared/msgs/killMsg";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
-import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import type { SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
 import {
     Constants,
@@ -41,14 +41,14 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { IDAllocator } from "../IDAllocator";
 import { Config, SpawnMode } from "../config";
-import { type Game } from "../game";
-import { type Group } from "../group";
+import type { Game } from "../game";
+import type { Group } from "../group";
 import { Events } from "../pluginManager";
-import { type GameSocketData } from "../server";
+import type { GameSocketData } from "../server";
 import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
-import { type Loot } from "./loot";
-import { type Obstacle } from "./obstacle";
+import type { Loot } from "./loot";
+import type { Obstacle } from "./obstacle";
 
 export class Emote {
     playerId: number;
@@ -414,9 +414,8 @@ export class Player extends BaseGameObject {
         if (!type) {
             // not wearing any armor, level 0
             return 0;
-        } else {
-            return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
         }
+        return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
     }
 
     layer = 0;

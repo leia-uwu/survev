@@ -6,8 +6,8 @@ import { version } from "../../package.json";
 import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game";
-import { type Group } from "./group";
-import { type Player } from "./objects/player";
+import type { Group } from "./group";
+import type { Player } from "./objects/player";
 import { TeamMenu } from "./teamMenu";
 import { Logger } from "./utils/logger";
 

@@ -1,5 +1,5 @@
-import { type ColliderWithHeight } from "../../utils/coldet";
-import { type TerrainSpawnDef } from "../mapObjectsTyping";
+import type { ColliderWithHeight } from "../../utils/coldet";
+import type { TerrainSpawnDef } from "../mapObjectsTyping";
 
 export interface DecalDef {
     readonly type: "decal";

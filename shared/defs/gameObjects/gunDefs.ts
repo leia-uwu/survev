@@ -1,4 +1,4 @@
-import { type Vec2 } from "../../utils/v2";
+import type { Vec2 } from "../../utils/v2";
 
 export interface GunDef {
     readonly type: "gun";

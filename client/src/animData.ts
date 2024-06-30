@@ -1,5 +1,5 @@
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { type MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
+import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
 import { assert } from "../../shared/utils/util";

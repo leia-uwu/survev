@@ -1,4 +1,4 @@
-import { type MapDefs } from "../../shared/defs/mapDefs";
+import type { MapDefs } from "../../shared/defs/mapDefs";
 import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
 import { EmoteMsg } from "../../shared/msgs/emoteMsg";
 import { InputMsg } from "../../shared/msgs/inputMsg";
@@ -21,7 +21,7 @@ import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { Events, PluginManager } from "./pluginManager";
-import { type GameSocketData } from "./server";
+import type { GameSocketData } from "./server";
 import { Grid } from "./utils/grid";
 import { Logger } from "./utils/logger";
 
