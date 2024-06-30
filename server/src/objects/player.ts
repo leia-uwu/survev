@@ -43,6 +43,7 @@ import { IDAllocator } from "../IDAllocator";
 import { Config, SpawnMode } from "../config";
 import { type Game } from "../game";
 import { type Group } from "../group";
+import { Events } from "../pluginManager";
 import { type GameSocketData } from "../server";
 import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
@@ -590,8 +591,6 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-
-        this.inventory["bandage"] = 5;
     }
 
     visibleObjects = new Set<GameObject>();
@@ -1445,6 +1444,8 @@ export class Player extends BaseGameObject {
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+
+        this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
         //
         // Give spectators someone new to spectate

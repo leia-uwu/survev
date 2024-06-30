@@ -20,6 +20,7 @@ import { LootBarn } from "./objects/loot";
 import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
+import { Events, PluginManager } from "./pluginManager";
 import { type GameSocketData } from "./server";
 import { Grid } from "./utils/grid";
 import { Logger } from "./utils/logger";
@@ -40,6 +41,7 @@ export class Game {
     gameModeIdx: number;
     isTeamMode: boolean;
     config: ServerGameConfig;
+    pluginManager = new PluginManager(this);
 
     grid: Grid;
     objectRegister: ObjectRegister;
@@ -79,6 +81,8 @@ export class Game {
         const start = Date.now();
 
         this.config = config;
+        this.pluginManager.loadPlugins();
+        this.pluginManager.emit(Events.Game_Created, this);
 
         this.teamMode = config.teamMode;
         this.gameModeIdx = Math.floor(this.teamMode / 2);
