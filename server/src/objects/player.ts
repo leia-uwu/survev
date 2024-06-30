@@ -24,6 +24,7 @@ import type { JoinMsg } from "../../../shared/msgs/joinMsg";
 import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { KillMsg } from "../../../shared/msgs/killMsg";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
+import { PlayerStatsMsg } from "../../../shared/msgs/playerStatsMsg";
 import type { SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
 import {
@@ -1312,28 +1313,44 @@ export class Player extends BaseGameObject {
      * adds gameover message to "this.msgsToSend" for the player and all their spectators
      */
     addGameOverMsg(winningTeamId: number = -1): void {
-        const gameOverMsg = new GameOverMsg();
+        const targetPlayer = this.spectating ?? this;
+        let stats: PlayerStatsMsg["playerStats"][] = [targetPlayer];
 
-        if (!this.game.isTeamMode) {
-            // solo
-            gameOverMsg.playerStats.push(this);
-        } else if (this.group) {
-            this.group.players.forEach((p) => gameOverMsg.playerStats.push(p));
+        if (this.group) {
+            stats = this.group.players;
         }
 
-        const targetPlayer = this.spectating ?? this;
         const teamRank = !this.game.isTeamMode
             ? this.game.aliveCount + 1
             : this.game.groups.size;
 
-        gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
-        gameOverMsg.teamId = targetPlayer.teamId;
+        if (this.game.isTeamMode && !targetPlayer.group!.allDeadOrDisconnected) {
+            for (const stat of stats) {
+                const statsMsg = new PlayerStatsMsg();
+                statsMsg.playerStats = stat;
+                statsMsg.playerId = targetPlayer.__id;
 
-        gameOverMsg.winningTeamId = winningTeamId;
-        gameOverMsg.gameOver = winningTeamId != -1;
-        this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
-        for (const spectator of this.spectators) {
-            spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+                this.msgsToSend.push({ type: MsgType.PlayerStats, msg: statsMsg });
+
+                for (const spectator of this.spectators) {
+                    spectator.msgsToSend.push({
+                        type: MsgType.PlayerStats,
+                        msg: statsMsg
+                    });
+                }
+            }
+        } else {
+            const gameOverMsg = new GameOverMsg();
+            gameOverMsg.playerStats = stats;
+            gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
+            gameOverMsg.teamId = targetPlayer.teamId;
+            gameOverMsg.winningTeamId = winningTeamId;
+            gameOverMsg.gameOver = winningTeamId != -1;
+            this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+
+            for (const spectator of this.spectators) {
+                spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+            }
         }
     }
 
