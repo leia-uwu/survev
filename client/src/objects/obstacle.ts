@@ -1,24 +1,21 @@
 import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import { type Collider } from "../../../shared/utils/coldet";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import {
-    type ObjectData,
-    type ObjectType
-} from "../../../shared/utils/objectSerializeFns";
+import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import { type Ctx } from "../game";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import { type Emitter, type ParticleBarn } from "./particles";
-import { type AbstractObject, type Player, type PlayerBarn } from "./player";
+import type { Ctx, DebugOptions } from "../game";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
+import type { Emitter, ParticleBarn } from "./particles";
+import type { AbstractObject, Player, PlayerBarn } from "./player";
 
 interface ObstacleSprite extends PIXI.Sprite {
     zIdx: number;
@@ -275,15 +272,15 @@ export class Obstacle implements AbstractObject {
                 action: this.button.interactionText,
                 object: `game-${this.type}`
             };
-        } else if (this.isDoor && this.door.canUse && !this.door.autoOpen) {
+        }
+        if (this.isDoor && this.door.canUse && !this.door.autoOpen) {
             return {
                 rad: this.door.interactionRad,
                 action: this.door.open ? "game-close-door" : "game-open-door",
                 object: ""
             };
-        } else {
-            return null;
         }
+        return null;
     }
 
     update(
@@ -450,7 +447,7 @@ export class Obstacle implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, _debug: unknown, _layer: number) {
+    render(camera: Camera, debug: DebugOptions, _layer: number) {
         const pos = this.isDoor ? this.door.interpPos : this.pos;
         const rot = this.isDoor ? this.door.interpRot : this.rot;
         const scale = this.scale;
@@ -479,7 +476,7 @@ export class Obstacle implements AbstractObject {
             this.door.casingSprite.visible = !this.dead;
         }
 
-        if (device.debug) {
+        if (device.debug && debug.obstacles) {
             debugLines.addCollider(this.collider, 0xff0000, 0);
         }
     }

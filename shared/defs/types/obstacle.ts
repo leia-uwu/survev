@@ -1,6 +1,6 @@
-import { type AABBWithHeight, type ColliderWithHeight } from "../../utils/coldet";
-import { type Vec2 } from "../../utils/v2";
-import { type TerrainSpawnDef } from "../mapObjectsTyping";
+import type { AABBWithHeight, ColliderWithHeight } from "../../utils/coldet";
+import type { Vec2 } from "../../utils/v2";
+import type { TerrainSpawnDef } from "../mapObjectsTyping";
 
 export interface ObstacleDef {
     readonly type: "obstacle";

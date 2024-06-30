@@ -1,5 +1,5 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
+import type { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { deepEqual } from "../../../shared/utils/deepEqual";
 import type { Crosshair } from "../crosshair";

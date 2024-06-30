@@ -1,27 +1,24 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type Ctx } from "../game";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import {
-    type ObjectData,
-    type ObjectType
-} from "./../../../shared/utils/objectSerializeFns";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
+import type { Ctx } from "../game";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
+import type { ObjectData, ObjectType } from "./../../../shared/utils/objectSerializeFns";
 import { playHitFx } from "./bullet";
 import { Pool } from "./objectPool";
-import { type Obstacle } from "./obstacle";
-import { type ParticleBarn } from "./particles";
-import { type AbstractObject, type Player } from "./player";
+import type { Obstacle } from "./obstacle";
+import type { ParticleBarn } from "./particles";
+import type { AbstractObject, Player } from "./player";
 
 class Projectile implements AbstractObject {
     __id!: number;

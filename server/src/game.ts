@@ -1,4 +1,4 @@
-import { type MapDefs } from "../../shared/defs/mapDefs";
+import type { MapDefs } from "../../shared/defs/mapDefs";
 import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
 import { EmoteMsg } from "../../shared/msgs/emoteMsg";
 import { InputMsg } from "../../shared/msgs/inputMsg";
@@ -21,7 +21,7 @@ import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { Events, PluginManager } from "./pluginManager";
-import { type GameSocketData } from "./server";
+import type { GameSocketData } from "./server";
 import { Grid } from "./utils/grid";
 import { Logger } from "./utils/logger";
 
@@ -31,6 +31,8 @@ export interface ServerGameConfig {
 }
 
 export class Game {
+    static netSyncDt = 1000 / Config.netSyncTps / 1000;
+
     started = false;
     stopped = false;
     allowJoin = true;
@@ -69,6 +71,8 @@ export class Game {
     gas: Gas;
 
     now!: number;
+
+    netSyncTicker = 0;
 
     tickTimes: number[] = [];
 
@@ -120,20 +124,12 @@ export class Game {
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
 
-        // second update:
-        // serialize objects and send msgs
-        this.objectRegister.serializeObjs();
-        this.playerBarn.sendMsgs(dt);
+        this.netSyncTicker += dt;
 
-        //
-        // reset stuff
-        //
-        this.playerBarn.flush();
-        this.bulletBarn.flush();
-        this.objectRegister.flush();
-        this.explosionBarn.flush();
-        this.gas.flush();
-        this.msgsToSend.length = 0;
+        if (this.netSyncTicker > Game.netSyncDt) {
+            this.netSyncTicker = 0;
+            this.netSync();
+        }
 
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
@@ -145,10 +141,26 @@ export class Game {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
             this.logger.log(
-                `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.tps)) * 100).toFixed(1)}%`
+                `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
             );
             this.tickTimes = [];
         }
+    }
+
+    netSync() {
+        // serialize objects and send msgs
+        this.objectRegister.serializeObjs();
+        this.playerBarn.sendMsgs();
+
+        //
+        // reset stuff
+        //
+        this.playerBarn.flush();
+        this.bulletBarn.flush();
+        this.objectRegister.flush();
+        this.explosionBarn.flush();
+        this.gas.flush();
+        this.msgsToSend.length = 0;
     }
 
     canJoin(): boolean {

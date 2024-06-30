@@ -1,12 +1,12 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
-import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
+import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import {
     Action,
     Anim,
@@ -26,35 +26,32 @@ import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
-import {
-    type ObjectData,
-    type ObjectType
-} from "../../../shared/utils/objectSerializeFns";
-import { type River } from "../../../shared/utils/river";
+import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
+import type { River } from "../../../shared/utils/river";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Animations, Bones, IdlePoses, Pose } from "../animData";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type SoundHandle } from "../createJS";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
+import type { SoundHandle } from "../createJS";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import { type Ctx } from "../game";
+import type { Ctx, DebugOptions } from "../game";
 import { helpers } from "../helpers";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import { type UiManager2 } from "../ui/ui2";
-import {
-    type BackpackDef,
-    type BoostDef,
-    type ChestDef,
-    type HealDef,
-    type HelmetDef
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
+import type { UiManager2 } from "../ui/ui2";
+import type {
+    BackpackDef,
+    BoostDef,
+    ChestDef,
+    HealDef,
+    HelmetDef
 } from "./../../../shared/defs/gameObjects/gearDefs";
-import { type InputBinds } from "./../inputBinds";
+import type { InputBinds } from "./../inputBinds";
 import { Pool } from "./objectPool";
-import { type Obstacle } from "./obstacle";
-import { type Emitter, type ParticleBarn } from "./particles";
+import type { Obstacle } from "./obstacle";
+import type { Emitter, ParticleBarn } from "./particles";
 import { createCasingParticle } from "./shot";
 
 const submergeMaskScaleFactor = 0.1;
@@ -303,10 +300,6 @@ export class Player implements AbstractObject {
     renderLayer = 0;
     renderZOrd = 18;
     renderZIdx = 0;
-
-    // Anti-cheat
-    I = 0;
-    Br = 0;
 
     // * @NOTE: these were assigned in the init func
     // * I'm assigning them here to avoid type duplication, may cause erros;
@@ -592,17 +585,15 @@ export class Player implements AbstractObject {
     getHelmetLevel() {
         if (this.netData.helmet) {
             return (GameObjectDefs[this.netData.helmet] as HelmetDef).level;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     getChestLevel() {
         if (this.netData.chest) {
             return (GameObjectDefs[this.netData.chest] as ChestDef).level;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     getBagLevel() {
@@ -1198,7 +1189,7 @@ export class Player implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, _debug: unknown) {
+    render(camera: Camera, debug: DebugOptions) {
         const screenPos = camera.pointToScreen(this.pos);
         const screenScale = camera.pixels(1);
         this.container.position.set(screenPos.x, screenPos.y);
@@ -1207,7 +1198,7 @@ export class Player implements AbstractObject {
         this.auraContainer.position.set(screenPos.x, screenPos.y);
         this.auraContainer.scale.set(screenScale, screenScale);
 
-        if (device.debug) {
+        if (device.debug && debug.players) {
             debugLines.addCircle(this.pos, this.rad, 0xff0000, 0);
 
             const weapDef = GameObjectDefs[this.netData.activeWeapon];
@@ -1884,9 +1875,8 @@ export class Player implements AbstractObject {
                   : "fists";
         if (IdlePoses[idlePose]) {
             return idlePose;
-        } else {
-            return "fists";
         }
+        return "fists";
     }
 
     selectAnim(type: Anim) {
@@ -2181,9 +2171,8 @@ export class Player implements AbstractObject {
             hits.sort((a, b) => {
                 if (a.prio == b.prio) {
                     return b.pen - a.pen;
-                } else {
-                    return a.prio - b.prio;
                 }
+                return a.prio - b.prio;
             });
 
             let hitCount = hits.length;
@@ -2464,7 +2453,7 @@ export class PlayerBarn {
         }
     }
 
-    render(camera: Camera, debug: unknown) {
+    render(camera: Camera, debug: DebugOptions) {
         const players = this.playerPool.getPool();
         for (let i = 0; i < players.length; i++) {
             const p = players[i];
@@ -2675,18 +2664,16 @@ export class PlayerBarn {
         const groupIdx = group ? group.playerIds.indexOf(playerId) : 0;
         if (groupIdx >= 0 && groupIdx < GameConfig.groupColors.length) {
             return GameConfig.groupColors[groupIdx];
-        } else {
-            return 0xffffff;
         }
+        return 0xffffff;
     }
 
     getTeamColor(teamId: number) {
         const teamIdx = teamId - 1;
         if (teamIdx >= 0 && teamIdx < GameConfig.teamColors.length) {
             return GameConfig.teamColors[teamIdx];
-        } else {
-            return 0xffffff;
         }
+        return 0xffffff;
     }
 
     getPlayerName(

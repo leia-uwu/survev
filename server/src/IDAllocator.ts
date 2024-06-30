@@ -24,9 +24,8 @@ export class IDAllocator {
             id = this._freeList.shift();
             if (id) {
                 return id;
-            } else {
-                throw new Error("Ran out of ID's");
             }
+            throw new Error("Ran out of ID's");
         }
         this._currentId++;
         return id;

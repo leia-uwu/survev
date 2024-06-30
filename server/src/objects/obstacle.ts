@@ -1,6 +1,6 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import * as net from "../../../shared/net";
 import { type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -9,10 +9,10 @@ import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Game } from "../game";
-import { type Building } from "./building";
+import type { Game } from "../game";
+import type { Building } from "./building";
 import { BaseGameObject, type DamageParams } from "./gameObject";
-import { type Player } from "./player";
+import type { Player } from "./player";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;

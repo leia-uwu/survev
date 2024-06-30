@@ -1,11 +1,11 @@
 import $ from "jquery";
-import { type Account } from "../account";
+import type { Account } from "../account";
 import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import { type LoadoutMenu } from "./loadoutMenu";
+import type { LoadoutMenu } from "./loadoutMenu";
 import loadout from "./loadouts";
-import { type Localization } from "./localization";
+import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 
 function createLoginOptions(

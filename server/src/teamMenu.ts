@@ -1,13 +1,13 @@
-import {
-    type ClientToServerTeamMsg,
-    type RoomData,
-    type ServerToClientTeamMsg,
-    type TeamErrorMsg,
-    type TeamMenuPlayer,
-    type TeamStateMsg
+import type {
+    ClientToServerTeamMsg,
+    RoomData,
+    ServerToClientTeamMsg,
+    TeamErrorMsg,
+    TeamMenuPlayer,
+    TeamStateMsg
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
-import { type Server, type TeamSocketData } from "./server";
+import type { Server, TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
     socketData: TeamSocketData;

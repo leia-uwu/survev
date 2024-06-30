@@ -1,13 +1,13 @@
 import $ from "jquery";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
+import type { EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
 import { QuestDefs } from "../../../shared/defs/gameObjects/questDefs";
 import { math } from "../../../shared/utils/math";
-import { type Account } from "../account";
+import type { Account } from "../account";
 import { helpers } from "../helpers";
-import { type LoadoutMenu } from "./loadoutMenu";
-import { type Localization } from "./localization";
+import type { LoadoutMenu } from "./loadoutMenu";
+import type { Localization } from "./localization";
 import { passUtil } from "./passUtil";
 
 function i(e: string, t: number) {

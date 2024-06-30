@@ -11,9 +11,8 @@ export const passUtil = {
         const levelIdx = level - 1;
         if (levelIdx < passDef.xp.length) {
             return passDef.xp[levelIdx];
-        } else {
-            return passDef.xp[passDef.xp.length - 1];
         }
+        return passDef.xp[passDef.xp.length - 1];
     },
     getPassLevelAndXp: function (passType: string, passXp: number) {
         let xp = passXp;

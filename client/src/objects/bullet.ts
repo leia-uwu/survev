@@ -1,23 +1,23 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
-import { type Bullet } from "../../../shared/msgs/updateMsg";
+import type { Bullet } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import { type FlareBarn } from "./flare";
-import { type ParticleBarn } from "./particles";
-import { type Player, type PlayerBarn } from "./player";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
+import type { FlareBarn } from "./flare";
+import type { ParticleBarn } from "./particles";
+import type { Player, PlayerBarn } from "./player";
 
 export function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
     const ang = Math.atan2(dir.y, dir.x);

@@ -3,12 +3,12 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type SoundHandle } from "../createJS";
-import { type Map } from "../map";
-import { type Particle, type ParticleBarn } from "./particles";
-import { type PlayerBarn } from "./player";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
+import type { SoundHandle } from "../createJS";
+import type { Map } from "../map";
+import type { Particle, ParticleBarn } from "./particles";
+import type { PlayerBarn } from "./player";
 
 class PhysicsParticle {
     active: boolean;

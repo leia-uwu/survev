@@ -1,5 +1,5 @@
 import { GameConfig } from "../gameConfig";
-import { type AABB } from "./coldet";
+import type { AABB } from "./coldet";
 import { collider } from "./collider";
 import { River } from "./river";
 import { util } from "./util";

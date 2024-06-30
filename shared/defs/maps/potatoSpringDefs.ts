@@ -1,5 +1,5 @@
 import { util } from "../../utils/util";
-import { type MapDef } from "../mapDefs";
+import type { MapDef } from "../mapDefs";
 import { Potato } from "./potatoDefs";
 
 const mapDef = {

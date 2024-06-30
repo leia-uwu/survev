@@ -1,11 +1,11 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
-import { type GasData } from "../../shared/msgs/updateMsg";
+import type { GasData } from "../../shared/msgs/updateMsg";
 import { math } from "../../shared/utils/math";
 import { type Vec2, v2 } from "../../shared/utils/v2";
-import { type Camera } from "./camera";
+import type { Camera } from "./camera";
 import { helpers } from "./helpers";
-import { type UiManager } from "./ui/ui";
+import type { UiManager } from "./ui/ui";
 
 const gasMode = GameConfig.GasMode;
 

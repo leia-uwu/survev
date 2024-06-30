@@ -1,8 +1,7 @@
 import { collider } from "../../../shared/utils/collider";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { Config } from "../config";
-import { type Game } from "../game";
+import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 
 export class DeadBodyBarn {
@@ -37,7 +36,6 @@ export class DeadBody extends BaseGameObject {
 
     vel: Vec2;
     oldPos: Vec2;
-    dragConstant: number;
 
     constructor(game: Game, pos: Vec2, playerId: number, layer: number, dir: Vec2) {
         super(game, pos);
@@ -45,7 +43,6 @@ export class DeadBody extends BaseGameObject {
         this.playerId = playerId;
         this.vel = v2.mul(dir, 8);
         this.oldPos = v2.copy(this.pos);
-        this.dragConstant = Math.exp(-3.69 / Config.tps);
     }
 
     update(dt: number): void {
@@ -70,7 +67,7 @@ export class DeadBody extends BaseGameObject {
         };
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
-        this.vel = v2.mul(this.vel, this.dragConstant);
+        this.vel = v2.mul(this.vel, 0.95);
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
         this.game.map.clampToMapBounds(this.pos);

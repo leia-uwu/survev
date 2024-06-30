@@ -1,18 +1,18 @@
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
-import {
-    type BuildingDef,
-    type ObstacleDef,
-    type StructureDef
+import type {
+    BuildingDef,
+    ObstacleDef,
+    StructureDef
 } from "../../shared/defs/mapObjectsTyping";
-import { type AABBWithHeight } from "../../shared/utils/coldet";
+import type { AABBWithHeight } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
-import { type River } from "../../shared/utils/river";
+import type { River } from "../../shared/utils/river";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { debugLines } from "./debugLines";
-import { type Building } from "./objects/building";
-import { type Obstacle } from "./objects/obstacle";
-import { type Structure } from "./objects/structure";
+import type { Building } from "./objects/building";
+import type { Obstacle } from "./objects/obstacle";
+import type { Structure } from "./objects/structure";
 
 export function renderMapBuildingBounds(mapObj: Building | Structure) {
     const def = MapObjectDefs[mapObj.type] as BuildingDef;

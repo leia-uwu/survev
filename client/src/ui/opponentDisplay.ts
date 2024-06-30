@@ -1,20 +1,20 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import { type MapMsg } from "../../../shared/msgs/mapMsg";
+import type { MapMsg } from "../../../shared/msgs/mapMsg";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { v2 } from "../../../shared/utils/v2";
-import { type Account } from "../account";
-import { type AudioManager } from "../audioManager";
+import type { Account } from "../account";
+import type { AudioManager } from "../audioManager";
 import { Camera } from "../camera";
-import { type ConfigManager } from "../config";
+import type { ConfigManager } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import { type Game } from "../game";
-import { type InputBinds } from "../inputBinds";
+import type { Game } from "../game";
+import type { InputBinds } from "../inputBinds";
 import { Map } from "../map";
 import { DecalBarn } from "../objects/decal";
 import { Creator } from "../objects/objectPool";
@@ -22,7 +22,7 @@ import { ParticleBarn } from "../objects/particles";
 import { type Player, PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Renderer } from "../renderer";
-import { type LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
+import type { LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
 import loadouts, { type Loadout } from "./loadouts";
 
 export class LoadoutDisplay {

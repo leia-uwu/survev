@@ -1,4 +1,4 @@
-import { type Collider } from "./coldet";
+import type { Collider } from "./coldet";
 import { collider } from "./collider";
 import { math } from "./math";
 import { util } from "./util";

@@ -1,6 +1,6 @@
 import { GameConfig } from "../../gameConfig";
 import { v2 } from "../../utils/v2";
-import { type MapDef } from "../mapDefs";
+import type { MapDef } from "../mapDefs";
 
 // @NOTE: Entries defined as single-element arrays, like fixedSpawns: [{ }],
 // are done this way so that util.mergeDeep(...) will function as expected
@@ -432,7 +432,7 @@ export const Main: MapDef = {
                 house_red_02: { small: 3, large: 4 },
                 barn_01: { small: 1, large: 3 },
                 barn_02: 1,
-                hut_01: 4,
+                hut_01: 3,
                 hut_02: 1, // spas hut
                 hut_03: 1, // scout hut
                 shack_03a: 2,

@@ -67,16 +67,14 @@ export const math = {
     easeOutExpo(e: number) {
         if (e === 1) {
             return 1;
-        } else {
-            return 1 - Math.pow(2, e * -10);
         }
+        return 1 - Math.pow(2, e * -10);
     },
     easeInExpo(e: number) {
         if (e === 0) {
             return 0;
-        } else {
-            return Math.pow(2, (e - 1) * 10);
         }
+        return Math.pow(2, (e - 1) * 10);
     },
     easeOutQuart(e: number) {
         return 1 - Math.pow(1 - e, 4);

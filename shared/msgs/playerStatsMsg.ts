@@ -1,7 +1,6 @@
 import { AbstractMsg, type BitStream } from "../net";
 
 export class PlayerStatsMsg extends AbstractMsg {
-    playerId = 0;
     playerStats = {
         playerId: 0,
         timeAlive: 0,
@@ -12,7 +11,7 @@ export class PlayerStatsMsg extends AbstractMsg {
     };
 
     override serialize(s: BitStream) {
-        s.writeUint16(this.playerId);
+        s.writeUint16(this.playerStats.playerId);
         s.writeUint16(this.playerStats.timeAlive);
         s.writeUint8(this.playerStats.kills);
         s.writeUint8(this.playerStats.dead as unknown as number);

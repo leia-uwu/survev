@@ -12,12 +12,15 @@
       },
       "correctness": {
         "noInvalidUseBeforeDeclaration": "error",
-        "noUnusedVariables": "warn"
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn"
       },
       "style": {
         "noNamespace": "off",
         "noNonNullAssertion": "off",
-        "useTemplate": "warn"
+        "useTemplate": "warn",
+        "noUselessElse": "warn",
+        "useImportType": "error"
       },
       "suspicious": {
         "noDoubleEquals": "off",

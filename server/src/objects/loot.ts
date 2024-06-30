@@ -4,26 +4,27 @@ import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { type River } from "../../../shared/utils/river";
+import type { River } from "../../../shared/utils/river";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { Config } from "../config";
-import { type Game } from "../game";
+import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
-import { type Player } from "./player";
+import type { Player } from "./player";
 
 export class LootBarn {
     loots: Loot[] = [];
     constructor(public game: Game) {}
 
     update(dt: number) {
+        const collisions: Record<string, boolean> = {};
+
         for (let i = 0; i < this.loots.length; i++) {
             const loot = this.loots[i];
             if (loot.destroyed) {
                 this.loots.splice(i, 1);
                 continue;
             }
-            loot.update(dt);
+            loot.update(dt, collisions);
         }
     }
 
@@ -71,7 +72,7 @@ export class LootBarn {
                 halfAmmo,
                 0
             );
-            leftAmmo.push(v2.create(-1, -1), 0.5);
+            leftAmmo.push(v2.create(-1, -1), 1);
             this._addLoot(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
@@ -83,8 +84,7 @@ export class LootBarn {
                     ammoCount - halfAmmo,
                     0
                 );
-                rightAmmo.push(v2.create(1, -1), 0.5);
-
+                rightAmmo.push(v2.create(1, -1), 1);
                 this._addLoot(rightAmmo);
             }
         }
@@ -147,8 +147,6 @@ export class Loot extends BaseGameObject {
     collider: Circle;
     rad: number;
 
-    dragConstant: number;
-
     get pos() {
         return this.collider.pos;
     }
@@ -170,7 +168,7 @@ export class Loot extends BaseGameObject {
         pushSpeed = 2,
         dir?: Vec2
     ) {
-        super(game, game.map.clampToMapBounds(pos));
+        super(game, pos);
 
         const def = GameObjectDefs[type];
         if (!def) {
@@ -185,12 +183,10 @@ export class Loot extends BaseGameObject {
 
         this.rad = this.collider.rad;
 
-        this.dragConstant = Math.exp(-3.69 / Config.tps);
-
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
 
-    update(dt: number): void {
+    update(dt: number, collisions: Record<string, boolean>): void {
         if (this.ticks > 2 && !this.isOld) {
             this.isOld = true;
             this.ticks = 0;
@@ -206,10 +202,9 @@ export class Loot extends BaseGameObject {
         this.oldPos = v2.copy(this.pos);
 
         const halfDt = dt / 2;
-
         const calculateSafeDisplacement = (): Vec2 => {
             let displacement = v2.mul(this.vel, halfDt);
-            if (v2.lengthSqr(displacement) >= 1) {
+            if (v2.lengthSqr(displacement) >= 10) {
                 displacement = v2.normalizeSafe(displacement);
             }
 
@@ -217,15 +212,63 @@ export class Loot extends BaseGameObject {
         };
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
-        this.vel = v2.mul(this.vel, this.dragConstant);
-
+        this.vel = v2.mul(this.vel, 0.93);
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
 
+        let objs = this.game.grid.intersectCollider(this.collider);
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (
+                obj.__type === ObjectType.Obstacle &&
+                obj.collidable &&
+                util.sameLayer(obj.layer, this.layer) &&
+                !obj.dead
+            ) {
+                const collision = collider.intersectCircle(
+                    obj.collider,
+                    this.pos,
+                    this.rad
+                );
+                if (collision) {
+                    this.pos = v2.add(
+                        this.pos,
+                        v2.mul(collision.dir, collision.pen + 0.001)
+                    );
+                }
+            } else if (obj.__type === ObjectType.Loot && obj.__id !== this.__id) {
+                const hash1 = `${this.__id} ${obj.__id}`;
+                const hash2 = `${obj.__id} ${this.__id}`;
+                if (collisions[hash1] || collisions[hash2]) continue;
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+
+                const res = coldet.intersectCircleCircle(
+                    this.pos,
+                    this.collider.rad,
+                    obj.pos,
+                    obj.collider.rad
+                );
+                if (!res) continue;
+                collisions[hash1] = collisions[hash2] = true;
+
+                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
+                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.2));
+                const vRelativeVelocity = v2.create(
+                    this.vel.x - obj.vel.x,
+                    this.vel.y - obj.vel.y
+                );
+
+                const speed =
+                    vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y;
+                if (speed < 0) continue;
+
+                this.push(res.dir, -speed);
+                obj.push(res.dir, speed);
+            }
+        }
+
         const originalLayer = this.layer;
-
-        const objs = this.game.grid.intersectCollider(this.collider);
-
-        const stair = this.checkStairs(objs, this.rad * 2);
+        const stair = this.checkStairs(objs, this.rad);
         if (this.layer !== originalLayer) {
             this.setDirty();
         }
@@ -236,57 +279,6 @@ export class Loot extends BaseGameObject {
 
         if (stair?.lootOnly) {
             this.bellowBridge = true;
-        }
-
-        for (let i = 0; i < objs.length; i++) {
-            const obj = objs[i];
-            if (
-                moving &&
-                obj.__type === ObjectType.Obstacle &&
-                !obj.dead &&
-                util.sameLayer(obj.layer, this.layer) &&
-                obj.collidable &&
-                coldet.test(obj.collider, this.collider)
-            ) {
-                const res = collider.intersectCircle(
-                    obj.collider,
-                    this.collider.pos,
-                    this.collider.rad
-                );
-                if (res) {
-                    this.pos = v2.add(this.pos, v2.mul(res.dir, res.pen));
-                }
-            } else if (
-                obj.__type === ObjectType.Loot &&
-                obj !== this &&
-                util.sameLayer(obj.layer, this.layer) &&
-                coldet.test(this.collider, obj.collider)
-            ) {
-                const res = coldet.intersectCircleCircle(
-                    this.pos,
-                    this.collider.rad,
-                    obj.pos,
-                    obj.collider.rad
-                );
-                if (res) {
-                    this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
-                    const norm = res.dir;
-                    const vRelativeVelocity = v2.create(
-                        this.vel.x - obj.vel.x,
-                        this.vel.y - obj.vel.y
-                    );
-
-                    const speed =
-                        vRelativeVelocity.x * norm.x + vRelativeVelocity.y * norm.y;
-
-                    if (speed < 0) continue;
-
-                    this.vel.x -= speed * norm.x;
-                    this.vel.y -= speed * norm.y;
-                    obj.vel.x += speed * norm.x;
-                    obj.vel.y += speed * norm.y;
-                }
-            }
         }
 
         const surface = this.game.map.getGroundSurface(this.pos, this.layer);
@@ -300,6 +292,7 @@ export class Loot extends BaseGameObject {
                     math.pointInsidePolygon(this.pos, river.waterPoly)
                 ) {
                     finalRiver = river;
+                    break;
                 }
             }
         }
@@ -315,7 +308,7 @@ export class Loot extends BaseGameObject {
             this.game.grid.updateObject(this);
         }
 
-        this.game.map.clampToMapBounds(this.pos);
+        this.clampToMapBounds(this.rad);
     }
 
     push(dir: Vec2, velocity: number): void {

@@ -1,7 +1,7 @@
-import { type MapDefs } from "../../shared/defs/mapDefs";
-import { type Vec2 } from "../../shared/utils/v2";
-import { Game } from "./game";
-import { GamePlugin } from "./pluginManager";
+import type { MapDefs } from "../../shared/defs/mapDefs";
+import type { Vec2 } from "../../shared/utils/v2";
+import type { Game } from "./game";
+import type { GamePlugin } from "./pluginManager";
 
 export enum SpawnMode {
     Random,
@@ -39,7 +39,8 @@ export const Config = {
 
     spawn: { mode: SpawnMode.Random },
 
-    tps: 40
+    gameTps: 100,
+    netSyncTps: 33
 } satisfies ConfigType as ConfigType;
 
 export interface ConfigType {
@@ -92,5 +93,6 @@ export interface ConfigType {
     /**
      * Server tick rate
      */
-    readonly tps: number;
+    readonly gameTps: number;
+    readonly netSyncTps: number;
 }

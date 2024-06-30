@@ -1,7 +1,7 @@
 import { GameConfig } from "../gameConfig";
 import { type BitStream, Constants } from "../net";
 import { math } from "./math";
-import { type Vec2 } from "./v2";
+import type { Vec2 } from "./v2";
 
 export enum ObjectType {
     Invalid,

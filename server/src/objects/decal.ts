@@ -1,13 +1,13 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type DecalDef } from "../../../shared/defs/mapObjectsTyping";
-import { type Circle, type Collider } from "../../../shared/utils/coldet";
+import type { DecalDef } from "../../../shared/defs/mapObjectsTyping";
+import type { Circle, Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Game } from "../game";
+import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 
 export class DecalBarn {

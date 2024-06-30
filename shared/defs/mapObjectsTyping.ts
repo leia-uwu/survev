@@ -1,14 +1,15 @@
-import { type Vec2 } from "../utils/v2";
-import { type BuildingDef } from "./types/building";
-import { type DecalDef } from "./types/decal";
-import { type ObstacleDef } from "./types/obstacle";
-import { type StructureDef } from "./types/structure";
+import type { Vec2 } from "../utils/v2";
+import type { BuildingDef } from "./types/building";
+import type { DecalDef } from "./types/decal";
+import type { ObstacleDef } from "./types/obstacle";
+import type { StructureDef } from "./types/structure";
 
 interface TerrainSpawnDef {
     grass?: boolean;
     beach?: boolean;
     riverShore?: boolean;
     lakeCenter?: boolean;
+    spawnPriority?: number;
     bridge?: {
         nearbyWidthMult: number;
     };
@@ -20,7 +21,7 @@ interface TerrainSpawnDef {
     river?: {
         centerWeight: number;
     };
-    nearbyRiver: {
+    nearbyRiver?: {
         radMin: number;
         radMax: number;
         facingOri: number;

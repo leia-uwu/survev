@@ -2,8 +2,6 @@ import { math } from "../../shared/utils/math";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 
 export default class Camera {
-    // ** TODO: DELETE, angle related to anti cheat
-    I = 0;
     pos = v2.create(0, 0);
     ppu = 16;
     zoom = 1.5;

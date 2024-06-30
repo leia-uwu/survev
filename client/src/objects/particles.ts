@@ -2,9 +2,9 @@ import * as PIXI from "pixi.js-legacy";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Camera } from "../camera";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
+import type { Camera } from "../camera";
+import type { Map } from "../map";
+import type { Renderer } from "../renderer";
 
 class Range {
     constructor(
@@ -2910,9 +2910,8 @@ const ParticleDefs: Record<string, ParticleDef> = {
         color: function () {
             if (Math.random() > 0.5) {
                 return util.rgbToInt(util.hsvToRgb(0.12, 0.97, util.random(0.95, 1)));
-            } else {
-                return util.rgbToInt(util.hsvToRgb(0.16, 1, util.random(0.95, 1)));
             }
+            return util.rgbToInt(util.hsvToRgb(0.16, 1, util.random(0.95, 1)));
         },
         ignoreValueAdjust: true
     },
@@ -2939,9 +2938,8 @@ const ParticleDefs: Record<string, ParticleDef> = {
         color: function () {
             if (Math.random() > 0.5) {
                 return util.rgbToInt(util.hsvToRgb(0.05, 0.94, util.random(0.85, 0.88)));
-            } else {
-                return util.rgbToInt(util.hsvToRgb(0.06, 0.95, util.random(0.95, 1)));
             }
+            return util.rgbToInt(util.hsvToRgb(0.06, 0.95, util.random(0.95, 1)));
         },
         ignoreValueAdjust: true
     },
@@ -2968,9 +2966,8 @@ const ParticleDefs: Record<string, ParticleDef> = {
         color: function () {
             if (Math.random() > 0.5) {
                 return util.rgbToInt(util.hsvToRgb(0, 0.96, util.random(0.91, 0.94)));
-            } else {
-                return util.rgbToInt(util.hsvToRgb(0.03, 0.95, util.random(0.92, 0.95)));
             }
+            return util.rgbToInt(util.hsvToRgb(0.03, 0.95, util.random(0.92, 0.95)));
         },
         ignoreValueAdjust: true
     }

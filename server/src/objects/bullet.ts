@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type BulletDef } from "../../../shared/defs/gameObjects/bulletDefs";
+import type { BulletDef } from "../../../shared/defs/gameObjects/bulletDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -9,8 +9,8 @@ import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type Game } from "../game";
-import { type DamageParams, type GameObject } from "./gameObject";
+import type { Game } from "../game";
+import type { DamageParams, GameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { Player } from "./player";
 
@@ -99,11 +99,11 @@ export class BullletBarn {
             const damageRecord = this.damages[i];
             damageRecord.obj.damage(damageRecord);
         }
+        this.damages.length = 0;
     }
 
     flush(): void {
         this.newBullets.length = 0;
-        this.damages.length = 0;
     }
 
     fireBullet(params: BulletParams): Bullet {

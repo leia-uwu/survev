@@ -2,14 +2,14 @@ import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
 import { Constants, type RoomData } from "../../../shared/net";
 import { api } from "../api";
-import { type AudioManager } from "../audioManager";
-import { type ConfigManager } from "../config";
+import type { AudioManager } from "../audioManager";
+import type { ConfigManager } from "../config";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import { type MatchData } from "../main";
-import { type PingTest } from "../pingTest";
-import { type SiteInfo } from "../siteInfo";
-import { type Localization } from "./localization";
+import type { MatchData } from "../main";
+import type { PingTest } from "../pingTest";
+import type { SiteInfo } from "../siteInfo";
+import type { Localization } from "./localization";
 
 function errorTypeToString(type: string, localization: Localization) {
     const typeMap = {

@@ -1,4 +1,4 @@
-import { ProxyOptions, defineConfig } from "vite";
+import { type ProxyOptions, defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { Config } from "../server/src/config";
 
@@ -40,7 +40,8 @@ export default defineConfig(() => {
                     manualChunks(id, _chunkInfo) {
                         if (id.includes("node_modules")) {
                             return "vendor";
-                        } else if (id.includes("shared")) {
+                        }
+                        if (id.includes("shared")) {
                             return "shared";
                         }
                     }

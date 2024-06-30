@@ -9,22 +9,23 @@ import {
     SCOPE_LEVELS,
     type ScopeDef
 } from "../../../shared/defs/gameObjects/gearDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
 import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
-import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
+import type { DropItemMsg } from "../../../shared/msgs/dropItemMsg";
 import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
 import { InputMsg } from "../../../shared/msgs/inputMsg";
-import { type JoinMsg } from "../../../shared/msgs/joinMsg";
+import type { JoinMsg } from "../../../shared/msgs/joinMsg";
 import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
 import { KillMsg } from "../../../shared/msgs/killMsg";
 import { PickupMsg } from "../../../shared/msgs/pickupMsg";
-import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { PlayerStatsMsg } from "../../../shared/msgs/playerStatsMsg";
+import type { SpectateMsg } from "../../../shared/msgs/spectateMsg";
 import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
 import {
     Constants,
@@ -41,14 +42,14 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { IDAllocator } from "../IDAllocator";
 import { Config, SpawnMode } from "../config";
-import { type Game } from "../game";
-import { type Group } from "../group";
+import type { Game } from "../game";
+import type { Group } from "../group";
 import { Events } from "../pluginManager";
-import { type GameSocketData } from "../server";
+import type { GameSocketData } from "../server";
 import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
-import { type Loot } from "./loot";
-import { type Obstacle } from "./obstacle";
+import type { Loot } from "./loot";
+import type { Obstacle } from "./obstacle";
 
 export class Emote {
     playerId: number;
@@ -177,11 +178,11 @@ export class PlayerBarn {
         this.game.checkGameOver();
     }
 
-    sendMsgs(dt: number) {
+    sendMsgs() {
         for (let i = 0; i < this.players.length; i++) {
             const player = this.players[i];
             if (player.disconnected) continue;
-            player.sendMsgs(dt);
+            player.sendMsgs();
         }
     }
 
@@ -414,9 +415,8 @@ export class Player extends BaseGameObject {
         if (!type) {
             // not wearing any armor, level 0
             return 0;
-        } else {
-            return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
         }
+        return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
     }
 
     layer = 0;
@@ -608,7 +608,7 @@ export class Player extends BaseGameObject {
 
         const movement = v2.create(0, 0);
 
-        if (this.lastInputMsg.touchMoveActive) {
+        if (this.lastInputMsg.touchMoveLen) {
             movement.x = this.lastInputMsg.touchMoveDir.x;
             movement.y = this.lastInputMsg.touchMoveDir.y;
         } else {
@@ -644,7 +644,7 @@ export class Player extends BaseGameObject {
             this.bleedTicker += dt;
             if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
                 this.damage({
-                    amount: GameConfig.player.bleedDamage,
+                    amount: this.game.map.mapDef.gameConfig.bleedDamage,
                     damageType: GameConfig.DamageType.Bleeding,
                     dir: this.dir
                 });
@@ -717,6 +717,10 @@ export class Player extends BaseGameObject {
                 this.setDirty();
                 this._animCb?.();
             }
+        }
+
+        if (this.game.isTeamMode) {
+            this.playerStatusTicker += dt;
         }
 
         this.recalculateSpeed();
@@ -852,11 +856,7 @@ export class Player extends BaseGameObject {
         this.zoom = this.indoors ? zoom : scopeZoom;
         if (!collidesWithZoomOut) this.indoors = false;
 
-        this.pos = math.v2Clamp(
-            this.pos,
-            v2.create(this.rad, this.rad),
-            v2.create(this.game.map.width - this.rad, this.game.map.height - this.rad)
-        );
+        this.clampToMapBounds(this.rad);
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
@@ -888,7 +888,7 @@ export class Player extends BaseGameObject {
     private _firstUpdate = true;
 
     msgStream = new MsgStream(new ArrayBuffer(65536));
-    sendMsgs(dt: number): void {
+    sendMsgs(): void {
         const msgStream = this.msgStream;
         const game = this.game;
         const playerBarn = game.playerBarn;
@@ -899,6 +899,7 @@ export class Player extends BaseGameObject {
             joinedMsg.teamMode = this.game.teamMode;
             joinedMsg.playerId = this.__id;
             joinedMsg.started = game.started;
+            joinedMsg.teamMode = game.teamMode;
             joinedMsg.emotes = this.loadout.emotes;
             this.sendMsg(MsgType.Joined, joinedMsg);
 
@@ -1006,8 +1007,6 @@ export class Player extends BaseGameObject {
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
         if (this.group) {
-            this.playerStatusTicker += dt;
-
             if (
                 this.playerStatusTicker >
                 getPlayerStatusUpdateRate(this.game.map.factionMode)
@@ -1082,8 +1081,8 @@ export class Player extends BaseGameObject {
 
         updateMsg.bullets = newBullets;
 
-        for (let i = 0; i < game.explosionBarn.explosions.length; i++) {
-            const explosion = game.explosionBarn.explosions[i];
+        for (let i = 0; i < game.explosionBarn.newExplosions.length; i++) {
+            const explosion = game.explosionBarn.newExplosions[i];
             const rad = explosion.rad + extendedRadius;
             if (
                 v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad &&
@@ -1309,29 +1308,44 @@ export class Player extends BaseGameObject {
     /**
      * adds gameover message to "this.msgsToSend" for the player and all their spectators
      */
-    addGameOverMsg(winningTeamId: number = -1): void {
-        const gameOverMsg = new GameOverMsg();
+    addGameOverMsg(winningTeamId: number = 0): void {
+        const targetPlayer = this.spectating ?? this;
+        let stats: PlayerStatsMsg["playerStats"][] = [targetPlayer];
 
-        if (!this.game.isTeamMode) {
-            // solo
-            gameOverMsg.playerStats.push(this);
-        } else if (this.group) {
-            this.group.players.forEach((p) => gameOverMsg.playerStats.push(p));
+        if (this.group) {
+            stats = this.group.players;
         }
 
-        const targetPlayer = this.spectating ?? this;
         const teamRank = !this.game.isTeamMode
             ? this.game.aliveCount + 1
             : this.game.groups.size;
 
-        gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
-        gameOverMsg.teamId = targetPlayer.teamId;
+        if (this.game.isTeamMode && !targetPlayer.group!.allDeadOrDisconnected) {
+            for (const stat of stats) {
+                const statsMsg = new PlayerStatsMsg();
+                statsMsg.playerStats = stat;
 
-        gameOverMsg.winningTeamId = winningTeamId;
-        gameOverMsg.gameOver = winningTeamId != -1;
-        this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
-        for (const spectator of this.spectators) {
-            spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+                this.msgsToSend.push({ type: MsgType.PlayerStats, msg: statsMsg });
+
+                for (const spectator of this.spectators) {
+                    spectator.msgsToSend.push({
+                        type: MsgType.PlayerStats,
+                        msg: statsMsg
+                    });
+                }
+            }
+        } else {
+            const gameOverMsg = new GameOverMsg();
+            gameOverMsg.playerStats = stats;
+            gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
+            gameOverMsg.teamId = targetPlayer.teamId;
+            gameOverMsg.winningTeamId = winningTeamId;
+            gameOverMsg.gameOver = !!winningTeamId;
+            this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+
+            for (const spectator of this.spectators) {
+                spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+            }
         }
     }
 

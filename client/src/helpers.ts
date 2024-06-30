@@ -1,33 +1,18 @@
 import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
-import { type MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
-import { type OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
+import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
+import type { OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
 import * as net from "../../shared/net";
 import { device } from "./device";
-import { type Game } from "./game";
-
-const FunctionStr = "Function";
-const m = window;
-const cheatStr = "cheat";
-const hackStr = "hack";
 const truncateCanvas = document.createElement("canvas");
 
 export const helpers = {
-    cheatDetected: function (g?: Game) {
-        // Break the game if a cheat has been detected
-        if (g?.pixi && g.ws) {
-            const t = g;
-            g = undefined;
-            t.ws!.close();
-        }
-    },
     getParameterByName: function (name: string, url?: string) {
         const searchParams = new URLSearchParams(
             url || window.location.href || window.location.search
         );
         return searchParams.get(name) || "";
     },
-    /* no longer used */
     getCookie: function (cname: string) {
         const name = `${cname}=`;
         const decodedCookie = decodeURIComponent(document.cookie);
@@ -51,14 +36,6 @@ export const helpers = {
             name = name.substring(0, net.Constants.PlayerNameMaxLen);
         }
         return name;
-    },
-    J: function (e: string, game: Game) {
-        try {
-            const ret = new m[FunctionStr]("g", atob(e))(game);
-            const statMsg = new net.StatsMsg();
-            statMsg.data = ret;
-            game.sendMessage(net.MsgType.Stats, statMsg, 32 * 1024);
-        } catch (_e) {}
     },
     colorToHexString: function (c: number) {
         return `#${`000000${c.toString(16)}`.slice(-6)}`;
@@ -201,24 +178,5 @@ export const helpers = {
             return Math.floor(Math.random() * Math.pow(2, 32)).toString(16);
         }
         return r32() + r32();
-    },
-    detectCheatWindowVars: function () {
-        return !!Object.keys(m).find((e) => {
-            const t = e.toLowerCase();
-            return t.includes(cheatStr) || t.includes(hackStr);
-        });
-    },
-    detectCheatScripts: function () {
-        const keywords = [cheatStr, hackStr, "aimbot"];
-        const scripts = document.getElementsByTagName("script");
-        for (let i = 0; i < scripts.length; i++) {
-            const src = scripts[i].src.toLowerCase();
-            for (let j = 0; j < keywords.length; j++) {
-                if (src.includes(keywords[j])) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 };

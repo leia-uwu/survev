@@ -1,4 +1,4 @@
-import { type AABB } from "./coldet";
+import type { AABB } from "./coldet";
 import { math } from "./math";
 import { v2 } from "./v2";
 

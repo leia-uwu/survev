@@ -1,7 +1,7 @@
 import $ from "jquery";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
-import { type ConfigManager } from "./config";
+import type { ConfigManager } from "./config";
 import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
 
 type DataOrCallback =

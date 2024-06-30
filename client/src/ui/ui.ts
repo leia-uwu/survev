@@ -3,30 +3,30 @@ import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { PingDefs } from "../../../shared/defs/gameObjects/pingDefs";
 import { type RoleDef, RoleDefs } from "../../../shared/defs/gameObjects/roleDefs";
-import { type MapDef } from "../../../shared/defs/mapDefs";
+import type { MapDef } from "../../../shared/defs/mapDefs";
 import { Action, GameConfig, GasMode } from "../../../shared/gameConfig";
-import { type PlayerStatsMsg } from "../../../shared/msgs/playerStatsMsg";
-import { type MapIndicator, type PlayerStatus } from "../../../shared/msgs/updateMsg";
+import type { PlayerStatsMsg } from "../../../shared/msgs/playerStatsMsg";
+import type { MapIndicator, PlayerStatus } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type SoundHandle } from "../createJS";
+import type { AudioManager } from "../audioManager";
+import type { Camera } from "../camera";
+import type { SoundHandle } from "../createJS";
 import { device } from "../device";
-import { type Game } from "../game";
+import type { Game } from "../game";
 import { type Gas, GasRenderer, GasSafeZoneRenderer } from "../gas";
 import { helpers } from "../helpers";
-import { type Map } from "../map";
+import type { Map } from "../map";
 import { MapIndicatorBarn } from "../objects/mapIndicator";
 import { type MapSprite, MapSpriteBarn } from "../objects/mapSprite";
-import { type ParticleBarn } from "../objects/particles";
-import { type PlaneBarn } from "../objects/plane";
-import { type Player, type PlayerBarn } from "../objects/player";
-import { type InputBindUi, type InputBinds } from "./../inputBinds";
-import { type Localization } from "./localization";
+import type { ParticleBarn } from "../objects/particles";
+import type { PlaneBarn } from "../objects/plane";
+import type { Player, PlayerBarn } from "../objects/player";
+import type { InputBindUi, InputBinds } from "./../inputBinds";
+import type { Localization } from "./localization";
 import { PieTimer } from "./pieTimer";
-import { type Touch } from "./touch";
+import type { Touch } from "./touch";
 
 function humanizeTime(time: number) {
     const hours = Math.floor(time / 3600);
@@ -1089,25 +1089,22 @@ export class UiManager {
     getMinimapMargin() {
         if (device.uiLayout == device.UiLayout.Sm) {
             return 4;
-        } else {
-            return 16;
         }
+        return 16;
     }
 
     getMinimapSize() {
         if (device.uiLayout == device.UiLayout.Sm) {
             return 192;
-        } else {
-            return 256;
         }
+        return 256;
     }
 
     getMinimapBorderWidth() {
         if (device.uiLayout == device.UiLayout.Sm) {
             return 1;
-        } else {
-            return 4;
         }
+        return 4;
     }
 
     createPing(
@@ -1351,13 +1348,13 @@ export class UiManager {
             return `${this.spectatedPlayerName} ${this.localization.translate(
                 "game-player-died"
             )}.`;
-        } else if (teamMode > 1) {
-            return this.localization.translate("game-team-eliminated");
-        } else {
-            return `${this.localization.translate(
-                "game-You"
-            )} ${this.localization.translate("game-you-died")}.`;
         }
+        if (teamMode > 1) {
+            return this.localization.translate("game-team-eliminated");
+        }
+        return `${this.localization.translate(
+            "game-You"
+        )} ${this.localization.translate("game-you-died")}.`;
     }
 
     getOverviewElems(
@@ -1375,13 +1372,12 @@ export class UiManager {
             return `<div><span class="ui-stats-header-stat">${this.teamModeToString(
                 teamMode
             )} </span><span class="ui-stats-header-value">#${teamRank}</span></div>`;
-        } else {
-            return `<div class="ui-stats-header-right"><span class="ui-stats-header-stat">${this.teamModeToString(
-                teamMode
-            )} </span><span class="ui-stats-header-value">#${teamRank}</span></div><div class="ui-stats-header-left"><span class="ui-stats-header-stat">${this.localization.translate(
-                "game-team-kills"
-            )} </span><span class="ui-stats-header-value">${teamKills}</span></div>`;
         }
+        return `<div class="ui-stats-header-right"><span class="ui-stats-header-stat">${this.teamModeToString(
+            teamMode
+        )} </span><span class="ui-stats-header-value">#${teamRank}</span></div><div class="ui-stats-header-left"><span class="ui-stats-header-stat">${this.localization.translate(
+            "game-team-kills"
+        )} </span><span class="ui-stats-header-value">${teamKills}</span></div>`;
     }
 
     quitGame() {
