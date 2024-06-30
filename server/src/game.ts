@@ -31,7 +31,6 @@ export interface ServerGameConfig {
 }
 
 export class Game {
-    static gameDt = 1000 / Config.gameTps / 1000;
     static netSyncDt = 1000 / Config.netSyncTps / 1000;
 
     started = false;
@@ -109,12 +108,12 @@ export class Game {
     update(): void {
         const now = Date.now();
         if (!this.now) this.now = now;
+        const dt = (now - this.now) / 1000;
         this.now = now;
 
         //
         // Update modules
         //
-        const dt = Game.gameDt;
         this.gas.update(dt);
         this.playerBarn.update(dt);
         this.map.update();
