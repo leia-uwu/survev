@@ -67,6 +67,12 @@ export class Server {
         }
     }
 
+    netSync(): void {
+        for (let i = 0; i < this.games.length; i++) {
+            this.games[i].netSync();
+        }
+    }
+
     newGame(config: ServerGameConfig): Game {
         const id = randomBytes(20).toString("hex");
         const game = new Game(id, config);
@@ -461,13 +467,21 @@ app.ws("/team_v2", {
 app.listen(Config.host, Config.port, (): void => {
     server.init();
 
-    const timer = new NanoTimer();
-
-    timer.setInterval(
+    const gameTimer = new NanoTimer();
+    gameTimer.setInterval(
         () => {
             server.update();
         },
         "",
         `${1000 / Config.gameTps}m`
+    );
+
+    const netTimer = new NanoTimer();
+    netTimer.setInterval(
+        () => {
+            server.netSync();
+        },
+        "",
+        `${1000 / Config.netSyncTps}m`
     );
 });

@@ -31,8 +31,6 @@ export interface ServerGameConfig {
 }
 
 export class Game {
-    static netSyncDt = 1000 / Config.netSyncTps / 1000;
-
     started = false;
     stopped = false;
     allowJoin = true;
@@ -71,8 +69,6 @@ export class Game {
     gas: Gas;
 
     now!: number;
-
-    netSyncTicker = 0;
 
     tickTimes: number[] = [];
 
@@ -123,13 +119,6 @@ export class Game {
         this.explosionBarn.update();
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
-
-        this.netSyncTicker += dt;
-
-        if (this.netSyncTicker > Game.netSyncDt) {
-            this.netSyncTicker = 0;
-            this.netSync();
-        }
 
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
