@@ -2,7 +2,6 @@ import { type MapDefs } from "../../shared/defs/mapDefs";
 import { type Vec2 } from "../../shared/utils/v2";
 import { Game } from "./game";
 import { GamePlugin } from "./pluginManager";
-import { SurvivReloadedPlugin } from "./plugins/survivReloadedPlugin";
 
 export enum SpawnMode {
     Random,
@@ -27,7 +26,7 @@ export const Config = {
         { mapName: "main", teamMode: TeamMode.Squad }
     ],
 
-    plugins: [SurvivReloadedPlugin],
+    plugins: [],
 
     regions: {
         local: {
