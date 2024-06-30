@@ -856,11 +856,7 @@ export class Player extends BaseGameObject {
         this.zoom = this.indoors ? zoom : scopeZoom;
         if (!collidesWithZoomOut) this.indoors = false;
 
-        this.pos = math.v2Clamp(
-            this.pos,
-            v2.create(this.rad, this.rad),
-            v2.create(this.game.map.width - this.rad, this.game.map.height - this.rad)
-        );
+        this.clampToMapBounds(this.rad);
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();

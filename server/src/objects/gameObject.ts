@@ -1,8 +1,9 @@
 import { BitStream } from "../../../shared/net";
 import { type Collider, coldet } from "../../../shared/utils/coldet";
+import { math } from "../../../shared/utils/math";
 import { ObjectSerializeFns, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
-import type { Vec2 } from "../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Game } from "../game";
 import type { Grid } from "../utils/grid";
 import type { Airdrop } from "./airdrop";
@@ -164,7 +165,8 @@ export abstract class BaseGameObject {
 
     constructor(game: Game, pos: Vec2) {
         this.game = game;
-        this._pos = game.map.clampToMapBounds(pos);
+        this._pos = pos;
+        this.clampToMapBounds();
     }
 
     damage(_params: DamageParams): void {}
@@ -270,6 +272,14 @@ export abstract class BaseGameObject {
             }
         }
         return finalStair;
+    }
+
+    clampToMapBounds(rad = 0) {
+        this.pos = math.v2Clamp(
+            this.pos,
+            v2.create(rad, rad),
+            v2.create(this.game.map.width - rad, this.game.map.height - rad)
+        );
     }
 
     destroyed = false;

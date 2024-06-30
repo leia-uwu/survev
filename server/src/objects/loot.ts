@@ -308,7 +308,7 @@ export class Loot extends BaseGameObject {
             this.game.grid.updateObject(this);
         }
 
-        this.game.map.clampToMapBounds(this.pos);
+        this.clampToMapBounds(this.rad);
     }
 
     push(dir: Vec2, velocity: number): void {
