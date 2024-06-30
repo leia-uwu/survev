@@ -16,10 +16,21 @@ import { PickupMsg } from "../../shared/msgs/pickupMsg";
 import { PlayerStatsMsg } from "../../shared/msgs/playerStatsMsg";
 import { RoleAnnouncementMsg } from "../../shared/msgs/roleAnnouncementMsg";
 import { UpdateMsg } from "../../shared/msgs/updateMsg";
-import { type BitStream, type Msg, MsgStream, MsgType, StatsMsg, UpdatePassMsg } from "../../shared/net";
+import {
+    type BitStream,
+    type Msg,
+    MsgStream,
+    MsgType,
+    StatsMsg,
+    UpdatePassMsg
+} from "../../shared/net";
+import {
+    ObjectType,
+    type ObjectsFullData,
+    type ObjectsPartialData
+} from "../../shared/utils/objectSerializeFns";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
-import { ObjectType, type ObjectsFullData, type ObjectsPartialData } from "../../shared/utils/objectSerializeFns";
 
 const config = {
     address: "http://127.0.0.1:8000",
@@ -56,9 +67,9 @@ const bots = new Set<Bot>();
 let allBotsJoined = false;
 
 interface GameObject {
-    __id: number
-    __type: ObjectType
-    data: ObjectsPartialData[ObjectType] & ObjectsFullData[ObjectType]
+    __id: number;
+    __type: ObjectType;
+    data: ObjectsPartialData[ObjectType] & ObjectsFullData[ObjectType];
 }
 
 class ObjectCreator {
@@ -82,7 +93,11 @@ class ObjectCreator {
         return obj.__type;
     }
 
-    updateObjFull<Type extends ObjectType>(type: Type, id: number, data: ObjectsPartialData[Type] & ObjectsFullData[Type]) {
+    updateObjFull<Type extends ObjectType>(
+        type: Type,
+        id: number,
+        data: ObjectsPartialData[Type] & ObjectsFullData[Type]
+    ) {
         let obj = this.getObjById(id);
         if (obj === undefined) {
             obj = {} as GameObject;
@@ -182,87 +197,89 @@ class Bot {
 
     onMsg(type: number, stream: BitStream): void {
         switch (type) {
-        case MsgType.Joined: {
-            const msg = new JoinedMsg();
-            msg.deserialize(stream);
-            this.emotes = msg.emotes;
-            break;
-        }
-        case MsgType.Map: {
-            const msg = new MapMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.Update: {
-            const msg = new UpdateMsg();
-            msg.deserialize(stream, this.objectCreator);
-
-            // Delete objects
-            for (let i = 0; i < msg.delObjIds.length; i++) {
-                this.objectCreator.deleteObj(msg.delObjIds[i]);
+            case MsgType.Joined: {
+                const msg = new JoinedMsg();
+                msg.deserialize(stream);
+                this.emotes = msg.emotes;
+                break;
             }
-
-            // Update full objects
-            for (let i = 0; i < msg.fullObjects.length; i++) {
-                const obj = msg.fullObjects[i];
-                this.objectCreator.updateObjFull(obj.__type, obj.__id, obj);
+            case MsgType.Map: {
+                const msg = new MapMsg();
+                msg.deserialize(stream);
+                break;
             }
+            case MsgType.Update: {
+                const msg = new UpdateMsg();
+                msg.deserialize(stream, this.objectCreator);
 
-            // Update partial objects
-            for (let i = 0; i < msg.partObjects.length; i++) {
-                const obj = msg.partObjects[i];
-                this.objectCreator.updateObjPart(obj.__id, obj);
+                // Delete objects
+                for (let i = 0; i < msg.delObjIds.length; i++) {
+                    this.objectCreator.deleteObj(msg.delObjIds[i]);
+                }
+
+                // Update full objects
+                for (let i = 0; i < msg.fullObjects.length; i++) {
+                    const obj = msg.fullObjects[i];
+                    this.objectCreator.updateObjFull(obj.__type, obj.__id, obj);
+                }
+
+                // Update partial objects
+                for (let i = 0; i < msg.partObjects.length; i++) {
+                    const obj = msg.partObjects[i];
+                    this.objectCreator.updateObjPart(obj.__id, obj);
+                }
+
+                break;
             }
-
-            break;
-        }
-        case MsgType.Kill: {
-            const msg = new KillMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.RoleAnnouncement: {
-            const msg = new RoleAnnouncementMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.PlayerStats: {
-            const msg = new PlayerStatsMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.Stats: {
-            const msg = new StatsMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.GameOver: {
-            const msg = new GameOverMsg();
-            msg.deserialize(stream);
-            console.log(`Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${msg.playerStats[0].kills} | rank: ${msg.teamRank}`);
-            this.disconnect = true;
-            this.connected = false;
-            this.ws.close();
-            break;
-        }
-        case MsgType.Pickup: {
-            const msg = new PickupMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.UpdatePass: {
-            new UpdatePassMsg().deserialize(stream);
-            break;
-        }
-        case MsgType.AliveCounts: {
-            const msg = new AliveCountsMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.Disconnect: {
-            const msg = new DisconnectMsg();
-            msg.deserialize(stream);
-        }
+            case MsgType.Kill: {
+                const msg = new KillMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.RoleAnnouncement: {
+                const msg = new RoleAnnouncementMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.PlayerStats: {
+                const msg = new PlayerStatsMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.Stats: {
+                const msg = new StatsMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.GameOver: {
+                const msg = new GameOverMsg();
+                msg.deserialize(stream);
+                console.log(
+                    `Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${msg.playerStats[0].kills} | rank: ${msg.teamRank}`
+                );
+                this.disconnect = true;
+                this.connected = false;
+                this.ws.close();
+                break;
+            }
+            case MsgType.Pickup: {
+                const msg = new PickupMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.UpdatePass: {
+                new UpdatePassMsg().deserialize(stream);
+                break;
+            }
+            case MsgType.AliveCounts: {
+                const msg = new AliveCountsMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.Disconnect: {
+                const msg = new DisconnectMsg();
+                msg.deserialize(stream);
+            }
         }
     }
 
@@ -337,46 +354,51 @@ class Bot {
         this.emote = Math.random() < 0.5;
 
         switch (util.randomInt(1, 8)) {
-        case 1:
-            this.moving.up = true;
-            break;
-        case 2:
-            this.moving.down = true;
-            break;
-        case 3:
-            this.moving.left = true;
-            break;
-        case 4:
-            this.moving.right = true;
-            break;
-        case 5:
-            this.moving.up = true;
-            this.moving.left = true;
-            break;
-        case 6:
-            this.moving.up = true;
-            this.moving.right = true;
-            break;
-        case 7:
-            this.moving.down = true;
-            this.moving.left = true;
-            break;
-        case 8:
-            this.moving.down = true;
-            this.moving.right = true;
-            break;
+            case 1:
+                this.moving.up = true;
+                break;
+            case 2:
+                this.moving.down = true;
+                break;
+            case 3:
+                this.moving.left = true;
+                break;
+            case 4:
+                this.moving.right = true;
+                break;
+            case 5:
+                this.moving.up = true;
+                this.moving.left = true;
+                break;
+            case 6:
+                this.moving.up = true;
+                this.moving.right = true;
+                break;
+            case 7:
+                this.moving.down = true;
+                this.moving.left = true;
+                break;
+            case 8:
+                this.moving.down = true;
+                this.moving.right = true;
+                break;
         }
     }
 }
 
-void (async() => {
+void (async () => {
     for (let i = 1; i <= config.botCount; i++) {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        setTimeout(async() => {
-            const response = await (await fetch(`${config.address}/api/find_game`, {
-                method: "POST",
-                body: JSON.stringify({ region: config.region, gameModeIdx: config.gameModeIdx })
-            })).json();
+        setTimeout(async () => {
+            const response = await (
+                await fetch(`${config.address}/api/find_game`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        region: config.region,
+                        gameModeIdx: config.gameModeIdx
+                    })
+                })
+            ).json();
 
             bots.add(new Bot(i, response.res[0].gameId));
             if (i === config.botCount) allBotsJoined = true;

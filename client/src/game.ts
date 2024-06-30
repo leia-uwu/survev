@@ -1,70 +1,70 @@
 import * as PIXI from "pixi.js-legacy";
+import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameConfig, Input } from "../../shared/gameConfig";
-import { mapHelpers } from "../../shared/utils/mapHelpers";
-import { math } from "../../shared/utils/math";
-import * as net from "../../shared/net";
-import { MsgStream, MsgType, type Msg } from "../../shared/net";
-import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
-import { PlayerStatsMsg } from "../../shared/msgs/playerStatsMsg";
-import { MapMsg } from "../../shared/msgs/mapMsg";
-import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
-import { UpdateMsg } from "../../shared/msgs/updateMsg";
-import { PerkModeRoleSelectMsg } from "../../shared/msgs/perkModeRoleSelectMsg";
-import { KillMsg } from "../../shared/msgs/killMsg";
 import { AliveCountsMsg } from "../../shared/msgs/aliveCountsMsg";
-import { SpectateMsg } from "../../shared/msgs/spectateMsg";
+import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
+import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
 import { EmoteMsg } from "../../shared/msgs/emoteMsg";
-import { PickupMsg } from "../../shared/msgs/pickupMsg";
-import { RoleAnnouncementMsg } from "../../shared/msgs/roleAnnouncementMsg";
+import { GameOverMsg } from "../../shared/msgs/gameOverMsg";
+import { InputMsg } from "../../shared/msgs/inputMsg";
 import { JoinMsg } from "../../shared/msgs/joinMsg";
 import { JoinedMsg } from "../../shared/msgs/joinedMsg";
-import { InputMsg } from "../../shared/msgs/inputMsg";
-import { GameOverMsg } from "../../shared/msgs/gameOverMsg";
+import { KillMsg } from "../../shared/msgs/killMsg";
+import { MapMsg } from "../../shared/msgs/mapMsg";
+import { PerkModeRoleSelectMsg } from "../../shared/msgs/perkModeRoleSelectMsg";
+import { PickupMsg } from "../../shared/msgs/pickupMsg";
+import { PlayerStatsMsg } from "../../shared/msgs/playerStatsMsg";
+import { RoleAnnouncementMsg } from "../../shared/msgs/roleAnnouncementMsg";
+import { SpectateMsg } from "../../shared/msgs/spectateMsg";
+import { UpdateMsg } from "../../shared/msgs/updateMsg";
+import * as net from "../../shared/net";
+import { type Msg, MsgStream, MsgType } from "../../shared/net";
+import { mapHelpers } from "../../shared/utils/mapHelpers";
+import { math } from "../../shared/utils/math";
+import { ObjectType } from "../../shared/utils/objectSerializeFns";
 import { v2 } from "../../shared/utils/v2";
+import { type Ambiance } from "./ambiance";
+import { type AudioManager } from "./audioManager";
+import { Camera } from "./camera";
+import { type ConfigManager } from "./config";
+import { type SoundHandle } from "./createJS";
+import { debugLines } from "./debugLines";
 import { device } from "./device";
+import { EmoteBarn } from "./emote";
+import { Gas } from "./gas";
 import { helpers } from "./helpers";
-import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
-import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { type InputHandler, Key } from "./input";
+import { type InputBindUi, type InputBinds } from "./inputBinds";
+import { Map } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
 import { BulletBarn, createBullet } from "./objects/bullet";
 import { DeadBodyBarn } from "./objects/deadBody";
-import { debugLines } from "./debugLines";
 import { DecalBarn } from "./objects/decal";
-import { EmoteBarn } from "./emote";
 import { ExplosionBarn } from "./objects/explosion";
 import { FlareBarn } from "./objects/flare";
-import { Gas } from "./gas";
-import { type InputHandler, Key } from "./input";
 import { LootBarn } from "./objects/loot";
-import { Map } from "./map";
 import { Creator } from "./objects/objectPool";
 import { ParticleBarn } from "./objects/particles";
 import { PlaneBarn } from "./objects/plane";
 import { type Player, PlayerBarn } from "./objects/player";
-import { ShotBarn } from "./objects/shot";
 import { ProjectileBarn } from "./objects/projectile";
+import { ShotBarn } from "./objects/shot";
 import { SmokeBarn } from "./objects/smoke";
 import { Renderer } from "./renderer";
+import { type ResourceManager } from "./resources";
+import { type Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
 import { UiManager2 } from "./ui/ui2";
-import { ObjectType } from "../../shared/utils/objectSerializeFns";
-import { type AudioManager } from "./audioManager";
-import { type ConfigManager } from "./config";
-import { type InputBindUi, type InputBinds } from "./inputBinds";
-import { type Ambiance } from "./ambiance";
-import { type ResourceManager } from "./resources";
-import { type Localization } from "./ui/localization";
-import { type SoundHandle } from "./createJS";
-import { Camera } from "./camera";
 
 export interface Ctx {
-    audioManager: AudioManager
-    renderer: Renderer
-    particleBarn: ParticleBarn
-    map: Map
-    smokeBarn: SmokeBarn
-    decalBarn: DecalBarn
+    audioManager: AudioManager;
+    renderer: Renderer;
+    particleBarn: ParticleBarn;
+    map: Map;
+    smokeBarn: SmokeBarn;
+    decalBarn: DecalBarn;
 }
 
 export class Game {
@@ -164,10 +164,10 @@ export class Game {
     ) {
         if (!this.connecting && !this.connected && !this.initialized) {
             if (this.ws) {
-                this.ws.onerror = function() { };
-                this.ws.onopen = function() { };
-                this.ws.onmessage = function() { };
-                this.ws.onclose = function() { };
+                this.ws.onerror = function () {};
+                this.ws.onopen = function () {};
+                this.ws.onmessage = function () {};
+                this.ws.onclose = function () {};
                 this.ws.close();
                 this.ws = null;
             }
@@ -360,7 +360,7 @@ export class Game {
 
     free() {
         if (this.ws) {
-            this.ws.onmessage = function() { };
+            this.ws.onmessage = function () {};
             this.ws.close();
             this.ws = null;
         }
@@ -551,10 +551,7 @@ export class Game {
                 v2.create(1, 0)
             );
             inputMsg.touchMoveLen = math.clamp(inputMsg.touchMoveLen, 0, 255);
-            inputMsg.toMouseDir = v2.normalizeSafe(
-                inputMsg.toMouseDir,
-                v2.create(1, 0)
-            );
+            inputMsg.toMouseDir = v2.normalizeSafe(inputMsg.toMouseDir, v2.create(1, 0));
             inputMsg.toMouseLen = math.clamp(
                 inputMsg.toMouseLen,
                 0,
@@ -640,7 +637,9 @@ export class Game {
                             3: Input.EquipThrowable
                         };
                         const input =
-                            weapIdxToInput[e.data as unknown as keyof typeof weapIdxToInput];
+                            weapIdxToInput[
+                                e.data as unknown as keyof typeof weapIdxToInput
+                            ];
                         if (input) {
                             inputMsg.addInput(input);
                         }
@@ -673,7 +672,7 @@ export class Game {
                     } else if (uiEvent.type == "perk") {
                         const eventData = uiEvent.data as unknown as number;
                         const J = this.activePlayer.netData.perks;
-                        const Q = J.length > (eventData) ? J[eventData] : null;
+                        const Q = J.length > eventData ? J[eventData] : null;
                         if (Q?.droppable) {
                             dropMsg.item = Q.type;
                         }
@@ -682,8 +681,8 @@ export class Game {
                             uiEvent.data == "helmet"
                                 ? this.activePlayer.netData.helmet
                                 : uiEvent.data == "chest"
-                                    ? this.activePlayer.netData.chest
-                                    : uiEvent.data;
+                                  ? this.activePlayer.netData.chest
+                                  : uiEvent.data;
                         dropMsg.item = item as string;
                     }
                     if (dropMsg.item != "") {
@@ -906,13 +905,7 @@ export class Game {
             this.inputBinds,
             this.spectating
         );
-        this.touch.update(
-            dt,
-            this.activePlayer,
-            this.map,
-            this.camera,
-            this.renderer
-        );
+        this.touch.update(dt, this.activePlayer, this.map, this.camera, this.renderer);
         this.renderer.update(dt, this.camera, this.map, debug);
 
         // if (!this.cheatSentLoadoutMsg && this.map.cheatRanDetection && this.map.cheatDetected) {
@@ -979,7 +972,7 @@ export class Game {
         }
     }
 
-    render(dt: number, debug: unknown) {
+    render(_dt: number, debug: unknown) {
         const grassColor = this.map.mapLoaded
             ? this.map.getMapDef().biome.colors.grass
             : 8433481;
@@ -1025,7 +1018,11 @@ export class Game {
                 const closestPoint = river.spline.getPos(closestPointT);
                 const distanceToRiver = v2.length(v2.sub(closestPoint, playerPos));
                 const riverWidth = river.waterWidth + 2;
-                const normalizedDistance = math.delerp(distanceToRiver, 30 + riverWidth, riverWidth);
+                const normalizedDistance = math.delerp(
+                    distanceToRiver,
+                    30 + riverWidth,
+                    riverWidth
+                );
                 const riverStrength = math.clamp(river.waterWidth / 8, 0.25, 1);
                 riverWeight = math.max(normalizedDistance * riverStrength, riverWeight);
             }
@@ -1200,353 +1197,355 @@ export class Game {
     // Socket functions
     onMsg(type: MsgType, stream: net.BitStream) {
         switch (type) {
-        case MsgType.Joined: {
-            const msg = new JoinedMsg();
-            msg.deserialize(stream);
-            this.onJoin();
-            this.teamMode = msg.teamMode;
-            this.localId = msg.playerId;
-            this.validateAlpha = true;
-            this.emoteBarn.updateEmoteWheel(msg.emotes);
-            if (!msg.started) {
-                this.uiManager.setWaitingForPlayers(true);
-            }
-            if (this.victoryMusic) {
-                this.victoryMusic.stop();
-                this.victoryMusic = null;
-            }
+            case MsgType.Joined: {
+                const msg = new JoinedMsg();
+                msg.deserialize(stream);
+                this.onJoin();
+                this.teamMode = msg.teamMode;
+                this.localId = msg.playerId;
+                this.validateAlpha = true;
+                this.emoteBarn.updateEmoteWheel(msg.emotes);
+                if (!msg.started) {
+                    this.uiManager.setWaitingForPlayers(true);
+                }
+                if (this.victoryMusic) {
+                    this.victoryMusic.stop();
+                    this.victoryMusic = null;
+                }
 
-            // Play a sound if the user in another windows or tab
-            if (!document.hasFocus()) {
-                this.audioManager.playSound("notification_start_01", {
-                    channel: "ui"
-                });
-            }
+                // Play a sound if the user in another windows or tab
+                if (!document.hasFocus()) {
+                    this.audioManager.playSound("notification_start_01", {
+                        channel: "ui"
+                    });
+                }
 
-            // Update cheat detection
-            if (helpers.detectCheatWindowVars() || helpers.detectCheatScripts()) {
-                this.cheatDetected = true;
+                // Update cheat detection
+                if (helpers.detectCheatWindowVars() || helpers.detectCheatScripts()) {
+                    this.cheatDetected = true;
+                }
+                break;
             }
-            break;
-        }
-        case MsgType.Map: {
-            const msg = new MapMsg();
-            msg.deserialize(stream);
-            this.map.loadMap(msg, this.camera, this.canvasMode, this.particleBarn);
-            this.resourceManager.loadMapAssets(this.map.mapName);
-            this.map.renderMap(this.pixi.renderer, this.canvasMode);
-            this.playerBarn.onMapLoad(this.map);
-            this.bulletBarn.onMapLoad(this.map);
-            this.particleBarn.onMapLoad(this.map);
-            this.uiManager.onMapLoad(this.map, this.camera);
-            if (this.map.perkMode) {
-                const role = this.config.get("perkModeRole")!;
-                this.uiManager.setRoleMenuOptions(
-                    role,
-                    this.map.getMapDef().gameMode.perkModeRoles!
-                );
-                this.uiManager.setRoleMenuActive(true);
-            } else {
-                this.uiManager.setRoleMenuActive(false);
+            case MsgType.Map: {
+                const msg = new MapMsg();
+                msg.deserialize(stream);
+                this.map.loadMap(msg, this.camera, this.canvasMode, this.particleBarn);
+                this.resourceManager.loadMapAssets(this.map.mapName);
+                this.map.renderMap(this.pixi.renderer, this.canvasMode);
+                this.playerBarn.onMapLoad(this.map);
+                this.bulletBarn.onMapLoad(this.map);
+                this.particleBarn.onMapLoad(this.map);
+                this.uiManager.onMapLoad(this.map, this.camera);
+                if (this.map.perkMode) {
+                    const role = this.config.get("perkModeRole")!;
+                    this.uiManager.setRoleMenuOptions(
+                        role,
+                        this.map.getMapDef().gameMode.perkModeRoles!
+                    );
+                    this.uiManager.setRoleMenuActive(true);
+                } else {
+                    this.uiManager.setRoleMenuActive(false);
+                }
+                break;
             }
-            break;
-        }
-        case MsgType.Update: {
-            const msg = new UpdateMsg();
-            msg.deserialize(stream, this.objectCreator);
-            this.playing = true;
-            this.processGameUpdate(msg);
-            break;
-        }
-        case MsgType.Kill: {
-            const msg = new KillMsg();
-            msg.deserialize(stream);
-            const sourceType = msg.itemSourceType || msg.mapSourceType;
-            const activeTeamId = this.playerBarn.getPlayerInfo(
-                this.activeId
-            ).teamId;
-            const useKillerInfoInFeed =
+            case MsgType.Update: {
+                const msg = new UpdateMsg();
+                msg.deserialize(stream, this.objectCreator);
+                this.playing = true;
+                this.processGameUpdate(msg);
+                break;
+            }
+            case MsgType.Kill: {
+                const msg = new KillMsg();
+                msg.deserialize(stream);
+                const sourceType = msg.itemSourceType || msg.mapSourceType;
+                const activeTeamId = this.playerBarn.getPlayerInfo(this.activeId).teamId;
+                const useKillerInfoInFeed =
                     (msg.downed && !msg.killed) ||
                     msg.damageType == GameConfig.DamageType.Gas ||
                     msg.damageType == GameConfig.DamageType.Bleeding ||
                     msg.damageType == GameConfig.DamageType.Airdrop;
-            const targetInfo = this.playerBarn.getPlayerInfo(msg.targetId);
-            const killerInfo = this.playerBarn.getPlayerInfo(msg.killCreditId);
-            const killfeedKillerInfo = useKillerInfoInFeed
-                ? killerInfo
-                : this.playerBarn.getPlayerInfo(msg.killerId);
-            let targetName = this.playerBarn.getPlayerName(
-                targetInfo.playerId,
-                this.activeId,
-                true
-            );
-            let killerName = this.playerBarn.getPlayerName(
-                killerInfo.playerId,
-                this.activeId,
-                true
-            );
-            let killfeedKillerName = this.playerBarn.getPlayerName(
-                killfeedKillerInfo.playerId,
-                this.activeId,
-                true
-            );
-            targetName = helpers.htmlEscape(targetName);
-            killerName = helpers.htmlEscape(killerName);
-            killfeedKillerName = helpers.htmlEscape(killfeedKillerName);
-            // Display the kill / downed notification for the active player
-            if (msg.killCreditId == this.activeId) {
-                const completeKill = msg.killerId == this.activeId;
-                const suicide =
-                        msg.killerId == msg.targetId || msg.killCreditId == msg.targetId;
-                const killText = this.ui2Manager.getKillText(
-                    killerName,
-                    targetName,
-                    completeKill,
-                    msg.downed,
-                    msg.killed,
-                    suicide,
-                    sourceType,
-                    msg.damageType,
-                    this.spectating
+                const targetInfo = this.playerBarn.getPlayerInfo(msg.targetId);
+                const killerInfo = this.playerBarn.getPlayerInfo(msg.killCreditId);
+                const killfeedKillerInfo = useKillerInfoInFeed
+                    ? killerInfo
+                    : this.playerBarn.getPlayerInfo(msg.killerId);
+                let targetName = this.playerBarn.getPlayerName(
+                    targetInfo.playerId,
+                    this.activeId,
+                    true
                 );
-                const killCountText =
+                let killerName = this.playerBarn.getPlayerName(
+                    killerInfo.playerId,
+                    this.activeId,
+                    true
+                );
+                let killfeedKillerName = this.playerBarn.getPlayerName(
+                    killfeedKillerInfo.playerId,
+                    this.activeId,
+                    true
+                );
+                targetName = helpers.htmlEscape(targetName);
+                killerName = helpers.htmlEscape(killerName);
+                killfeedKillerName = helpers.htmlEscape(killfeedKillerName);
+                // Display the kill / downed notification for the active player
+                if (msg.killCreditId == this.activeId) {
+                    const completeKill = msg.killerId == this.activeId;
+                    const suicide =
+                        msg.killerId == msg.targetId || msg.killCreditId == msg.targetId;
+                    const killText = this.ui2Manager.getKillText(
+                        killerName,
+                        targetName,
+                        completeKill,
+                        msg.downed,
+                        msg.killed,
+                        suicide,
+                        sourceType,
+                        msg.damageType,
+                        this.spectating
+                    );
+                    const killCountText =
                         msg.killed && !suicide
                             ? this.ui2Manager.getKillCountText(msg.killerKills)
                             : "";
-                this.ui2Manager.displayKillMessage(killText, killCountText);
-            } else if (msg.targetId == this.activeId && msg.downed && !msg.killed) {
-                const downedText = this.ui2Manager.getDownedText(
-                    killerName,
+                    this.ui2Manager.displayKillMessage(killText, killCountText);
+                } else if (msg.targetId == this.activeId && msg.downed && !msg.killed) {
+                    const downedText = this.ui2Manager.getDownedText(
+                        killerName,
+                        targetName,
+                        sourceType,
+                        msg.damageType,
+                        this.spectating
+                    );
+                    this.ui2Manager.displayKillMessage(downedText, "");
+                }
+
+                // Update local kill counter
+                if (msg.killCreditId == this.localId && msg.killed) {
+                    this.uiManager.setLocalKills(msg.killerKills);
+                }
+
+                // Add killfeed entry for this kill
+                const killText = this.ui2Manager.getKillFeedText(
                     targetName,
+                    killfeedKillerInfo.teamId ? killfeedKillerName : "",
                     sourceType,
                     msg.damageType,
-                    this.spectating
+                    msg.downed && !msg.killed
                 );
-                this.ui2Manager.displayKillMessage(downedText, "");
-            }
-
-            // Update local kill counter
-            if (msg.killCreditId == this.localId && msg.killed) {
-                this.uiManager.setLocalKills(msg.killerKills);
-            }
-
-            // Add killfeed entry for this kill
-            const killText = this.ui2Manager.getKillFeedText(
-                targetName,
-                killfeedKillerInfo.teamId ? killfeedKillerName : "",
-                sourceType,
-                msg.damageType,
-                msg.downed && !msg.killed
-            );
-            const killColor = this.ui2Manager.getKillFeedColor(
-                activeTeamId,
-                targetInfo.teamId,
-                killerInfo.teamId,
-                this.map.factionMode
-            );
-            this.ui2Manager.addKillFeedMessage(killText, killColor);
-            if (msg.killed) {
-                this.playerBarn.addDeathEffect(
-                    msg.targetId,
-                    msg.killerId,
-                    sourceType,
-                    this.audioManager,
-                    this.particleBarn
+                const killColor = this.ui2Manager.getKillFeedColor(
+                    activeTeamId,
+                    targetInfo.teamId,
+                    killerInfo.teamId,
+                    this.map.factionMode
                 );
-            }
+                this.ui2Manager.addKillFeedMessage(killText, killColor);
+                if (msg.killed) {
+                    this.playerBarn.addDeathEffect(
+                        msg.targetId,
+                        msg.killerId,
+                        sourceType,
+                        this.audioManager,
+                        this.particleBarn
+                    );
+                }
 
-            // Bullets often don't play hit sounds on the frame that a player dies
-            if (msg.damageType == GameConfig.DamageType.Player) {
-                this.bulletBarn.createBulletHit(
-                    this.playerBarn,
-                    msg.targetId,
-                    this.audioManager
-                );
-            }
-            break;
-        }
-        case MsgType.RoleAnnouncement: {
-            const msg = new RoleAnnouncementMsg();
-            msg.deserialize(stream);
-            const roleDef = RoleDefs[msg.role];
-            if (!roleDef) {
+                // Bullets often don't play hit sounds on the frame that a player dies
+                if (msg.damageType == GameConfig.DamageType.Player) {
+                    this.bulletBarn.createBulletHit(
+                        this.playerBarn,
+                        msg.targetId,
+                        this.audioManager
+                    );
+                }
                 break;
             }
-            const playerInfo = this.playerBarn.getPlayerInfo(msg.playerId);
-            const nameText = helpers.htmlEscape(
-                this.playerBarn.getPlayerName(msg.playerId, this.activeId, true)
-            );
-            if (msg.assigned) {
-                if (roleDef.sound?.assign) {
-                    if (
-                        msg.role == "kill_leader" &&
-                            this.map.getMapDef().gameMode.spookyKillSounds
-                    ) {
-                        // Halloween map has special logic for the kill leader sounds
-                        this.audioManager.playGroup("kill_leader_assigned", {
-                            channel: "ui"
-                        });
-                    } else if (
-                    // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
-                        msg.role == "kill_leader" ||
-                            !this.map.perkMode ||
-                            this.localId == msg.playerId
-                    ) {
-                        this.audioManager.playSound(roleDef.sound.assign, {
-                            channel: "ui"
-                        });
-                    }
-                }
-                if (this.map.perkMode && this.localId == msg.playerId) {
-                    this.uiManager.setRoleMenuActive(false);
-                }
-                if (roleDef.killFeed?.assign) {
-                    // In addition to playing a sound, display a notification on the killfeed
-                    const killText = this.ui2Manager.getRoleAssignedKillFeedText(
-                        msg.role,
-                        playerInfo.teamId,
-                        nameText
-                    );
-                    const killColor = this.ui2Manager.getRoleKillFeedColor(
-                        msg.role,
-                        playerInfo.teamId,
-                        this.playerBarn
-                    );
-                    this.ui2Manager.addKillFeedMessage(killText, killColor);
-                }
-                // Show an announcement if you've been assigned a role
-                if (roleDef.announce && this.localId == msg.playerId) {
-                    const assignText = this.ui2Manager.getRoleAnnouncementText(
-                        msg.role,
-                        playerInfo.teamId
-                    );
-                    this.uiManager.displayAnnouncement(assignText.toUpperCase());
-                }
-            } else if (msg.killed) {
-                if (roleDef.killFeed?.dead) {
-                    let killerName = helpers.htmlEscape(
-                        this.playerBarn.getPlayerName(msg.killerId, this.activeId, true)
-                    );
-
-                    if (msg.playerId == msg.killerId) {
-                        killerName = "";
-                    }
-                    const killText = this.ui2Manager.getRoleKilledKillFeedText(
-                        msg.role,
-                        playerInfo.teamId,
-                        killerName
-                    );
-                    const killColor = this.ui2Manager.getRoleKillFeedColor(
-                        msg.role,
-                        playerInfo.teamId,
-                        this.playerBarn
-                    );
-                    this.ui2Manager.addKillFeedMessage(killText, killColor);
-                }
-                if (roleDef.sound?.dead) {
-                    if (this.map.getMapDef().gameMode.spookyKillSounds) {
-                        this.audioManager.playGroup("kill_leader_dead", {
-                            channel: "ui"
-                        });
-                    } else {
-                        this.audioManager.playSound(roleDef.sound.dead, {
-                            channel: "ui"
-                        });
-                    }
-                }
-            }
-            break;
-        }
-        case MsgType.PlayerStats: {
-            const msg = new PlayerStatsMsg();
-            msg.deserialize(stream);
-            this.uiManager.setLocalStats(msg.playerStats);
-            this.uiManager.showTeamAd(msg.playerStats, this.ui2Manager);
-            break;
-        }
-        case MsgType.Stats: {
-            const msg = new net.StatsMsg();
-            msg.deserialize(stream);
-            helpers.J(msg.data, this);
-            break;
-        }
-        case MsgType.GameOver: {
-            const msg = new GameOverMsg();
-            msg.deserialize(stream);
-            this.gameOver = msg.gameOver;
-            const localTeamId = this.playerBarn.getPlayerInfo(this.localId).teamId;
-
-            // Set local stats based on final results.
-            // This is necessary because the last person on a team to die
-            // will not receive a PlayerStats message, they will only receive
-            // the GameOver message.
-            for (let j = 0; j < msg.playerStats.length; j++) {
-                const stats = msg.playerStats[j];
-                if (stats.playerId == this.localId) {
-                    this.uiManager.setLocalStats(stats);
+            case MsgType.RoleAnnouncement: {
+                const msg = new RoleAnnouncementMsg();
+                msg.deserialize(stream);
+                const roleDef = RoleDefs[msg.role];
+                if (!roleDef) {
                     break;
                 }
-            }
-            this.uiManager.showStats(
-                msg.playerStats,
-                msg.teamId,
-                msg.teamRank,
-                msg.winningTeamId,
-                msg.gameOver,
-                localTeamId,
-                this.teamMode,
-                this.spectating,
-                this.playerBarn,
-                this.audioManager,
-                this.map,
-                this.ui2Manager
-            );
-            if (localTeamId == msg.winningTeamId) {
-                this.victoryMusic = this.audioManager.playSound("menu_music", {
-                    channel: "music",
-                    delay: 1300,
-                    forceStart: true
-                });
-            }
-            this.touch.hideAll();
-            break;
-        }
-        case MsgType.Pickup: {
-            const msg = new PickupMsg();
-            msg.deserialize(stream);
-            if (msg.type == net.PickupMsgType.Success && msg.item) {
-                this.activePlayer.playItemPickupSound(msg.item, this.audioManager);
-                const itemDef = GameObjectDefs[msg.item];
-                if (itemDef && itemDef.type == "xp") {
-                    this.ui2Manager.addRareLootMessage(msg.item, true);
+                const playerInfo = this.playerBarn.getPlayerInfo(msg.playerId);
+                const nameText = helpers.htmlEscape(
+                    this.playerBarn.getPlayerName(msg.playerId, this.activeId, true)
+                );
+                if (msg.assigned) {
+                    if (roleDef.sound?.assign) {
+                        if (
+                            msg.role == "kill_leader" &&
+                            this.map.getMapDef().gameMode.spookyKillSounds
+                        ) {
+                            // Halloween map has special logic for the kill leader sounds
+                            this.audioManager.playGroup("kill_leader_assigned", {
+                                channel: "ui"
+                            });
+                        } else if (
+                            // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
+                            msg.role == "kill_leader" ||
+                            !this.map.perkMode ||
+                            this.localId == msg.playerId
+                        ) {
+                            this.audioManager.playSound(roleDef.sound.assign, {
+                                channel: "ui"
+                            });
+                        }
+                    }
+                    if (this.map.perkMode && this.localId == msg.playerId) {
+                        this.uiManager.setRoleMenuActive(false);
+                    }
+                    if (roleDef.killFeed?.assign) {
+                        // In addition to playing a sound, display a notification on the killfeed
+                        const killText = this.ui2Manager.getRoleAssignedKillFeedText(
+                            msg.role,
+                            playerInfo.teamId,
+                            nameText
+                        );
+                        const killColor = this.ui2Manager.getRoleKillFeedColor(
+                            msg.role,
+                            playerInfo.teamId,
+                            this.playerBarn
+                        );
+                        this.ui2Manager.addKillFeedMessage(killText, killColor);
+                    }
+                    // Show an announcement if you've been assigned a role
+                    if (roleDef.announce && this.localId == msg.playerId) {
+                        const assignText = this.ui2Manager.getRoleAnnouncementText(
+                            msg.role,
+                            playerInfo.teamId
+                        );
+                        this.uiManager.displayAnnouncement(assignText.toUpperCase());
+                    }
+                } else if (msg.killed) {
+                    if (roleDef.killFeed?.dead) {
+                        let killerName = helpers.htmlEscape(
+                            this.playerBarn.getPlayerName(
+                                msg.killerId,
+                                this.activeId,
+                                true
+                            )
+                        );
+
+                        if (msg.playerId == msg.killerId) {
+                            killerName = "";
+                        }
+                        const killText = this.ui2Manager.getRoleKilledKillFeedText(
+                            msg.role,
+                            playerInfo.teamId,
+                            killerName
+                        );
+                        const killColor = this.ui2Manager.getRoleKillFeedColor(
+                            msg.role,
+                            playerInfo.teamId,
+                            this.playerBarn
+                        );
+                        this.ui2Manager.addKillFeedMessage(killText, killColor);
+                    }
+                    if (roleDef.sound?.dead) {
+                        if (this.map.getMapDef().gameMode.spookyKillSounds) {
+                            this.audioManager.playGroup("kill_leader_dead", {
+                                channel: "ui"
+                            });
+                        } else {
+                            this.audioManager.playSound(roleDef.sound.dead, {
+                                channel: "ui"
+                            });
+                        }
+                    }
                 }
-            } else {
-                this.ui2Manager.displayPickupMessage(msg.type);
+                break;
             }
-            break;
-        }
-        case MsgType.UpdatePass: {
-            new net.UpdatePassMsg().deserialize(stream);
-            this.updatePass = true;
-            this.updatePassDelay = 0;
-            break;
-        }
-        case MsgType.AliveCounts: {
-            const msg = new AliveCountsMsg();
-            msg.deserialize(stream);
-            if (msg.teamAliveCounts.length == 1) {
-                this.uiManager.updatePlayersAlive(msg.teamAliveCounts[0]);
-            } else if (msg.teamAliveCounts.length >= 2) {
-                this.uiManager.updatePlayersAliveRed(msg.teamAliveCounts[0]);
-                this.uiManager.updatePlayersAliveBlue(msg.teamAliveCounts[1]);
+            case MsgType.PlayerStats: {
+                const msg = new PlayerStatsMsg();
+                msg.deserialize(stream);
+                this.uiManager.setLocalStats(msg.playerStats);
+                this.uiManager.showTeamAd(msg.playerStats, this.ui2Manager);
+                break;
             }
-            break;
-        }
-        case MsgType.Disconnect: {
-            const msg = new DisconnectMsg();
-            msg.deserialize(stream);
-            this.disconnectMsg = msg.reason;
-        }
+            case MsgType.Stats: {
+                const msg = new net.StatsMsg();
+                msg.deserialize(stream);
+                helpers.J(msg.data, this);
+                break;
+            }
+            case MsgType.GameOver: {
+                const msg = new GameOverMsg();
+                msg.deserialize(stream);
+                this.gameOver = msg.gameOver;
+                const localTeamId = this.playerBarn.getPlayerInfo(this.localId).teamId;
+
+                // Set local stats based on final results.
+                // This is necessary because the last person on a team to die
+                // will not receive a PlayerStats message, they will only receive
+                // the GameOver message.
+                for (let j = 0; j < msg.playerStats.length; j++) {
+                    const stats = msg.playerStats[j];
+                    if (stats.playerId == this.localId) {
+                        this.uiManager.setLocalStats(stats);
+                        break;
+                    }
+                }
+                this.uiManager.showStats(
+                    msg.playerStats,
+                    msg.teamId,
+                    msg.teamRank,
+                    msg.winningTeamId,
+                    msg.gameOver,
+                    localTeamId,
+                    this.teamMode,
+                    this.spectating,
+                    this.playerBarn,
+                    this.audioManager,
+                    this.map,
+                    this.ui2Manager
+                );
+                if (localTeamId == msg.winningTeamId) {
+                    this.victoryMusic = this.audioManager.playSound("menu_music", {
+                        channel: "music",
+                        delay: 1300,
+                        forceStart: true
+                    });
+                }
+                this.touch.hideAll();
+                break;
+            }
+            case MsgType.Pickup: {
+                const msg = new PickupMsg();
+                msg.deserialize(stream);
+                if (msg.type == net.PickupMsgType.Success && msg.item) {
+                    this.activePlayer.playItemPickupSound(msg.item, this.audioManager);
+                    const itemDef = GameObjectDefs[msg.item];
+                    if (itemDef && itemDef.type == "xp") {
+                        this.ui2Manager.addRareLootMessage(msg.item, true);
+                    }
+                } else {
+                    this.ui2Manager.displayPickupMessage(msg.type);
+                }
+                break;
+            }
+            case MsgType.UpdatePass: {
+                new net.UpdatePassMsg().deserialize(stream);
+                this.updatePass = true;
+                this.updatePassDelay = 0;
+                break;
+            }
+            case MsgType.AliveCounts: {
+                const msg = new AliveCountsMsg();
+                msg.deserialize(stream);
+                if (msg.teamAliveCounts.length == 1) {
+                    this.uiManager.updatePlayersAlive(msg.teamAliveCounts[0]);
+                } else if (msg.teamAliveCounts.length >= 2) {
+                    this.uiManager.updatePlayersAliveRed(msg.teamAliveCounts[0]);
+                    this.uiManager.updatePlayersAliveBlue(msg.teamAliveCounts[1]);
+                }
+                break;
+            }
+            case MsgType.Disconnect: {
+                const msg = new DisconnectMsg();
+                msg.deserialize(stream);
+                this.disconnectMsg = msg.reason;
+            }
         }
     }
 

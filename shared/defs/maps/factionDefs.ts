@@ -1,8 +1,8 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { Main } from "./baseDefs";
 import { type MapDef } from "../mapDefs";
+import { Main } from "./baseDefs";
 
 const mapDef = {
     mapId: 3,
@@ -180,9 +180,7 @@ const mapDef = {
                     }
                 }
             ],
-            crates: [
-                { name: "airdrop_crate_03", weight: 1 }
-            ]
+            crates: [{ name: "airdrop_crate_03", weight: 1 }]
         },
         bagSizes: {},
         bleedDamage: 2,
@@ -301,12 +299,8 @@ const mapDef = {
             { name: "50AE", count: 21, weight: 1 },
             { name: "308sub", count: 5, weight: 1 }
         ],
-        tier_mansion_floor: [
-            { name: "outfitCamo", count: 1, weight: 1 }
-        ],
-        tier_conch: [
-            { name: "outfitKeyLime", count: 1, weight: 1 }
-        ],
+        tier_mansion_floor: [{ name: "outfitCamo", count: 1, weight: 1 }],
+        tier_conch: [{ name: "outfitKeyLime", count: 1, weight: 1 }],
         tier_chrys_01: [
             {
                 name: "outfitCarbonFiber",

@@ -1,9 +1,11 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
+import { type Bullet } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -16,8 +18,6 @@ import { type Renderer } from "../renderer";
 import { type FlareBarn } from "./flare";
 import { type ParticleBarn } from "./particles";
 import { type Player, type PlayerBarn } from "./player";
-import { type Bullet } from "../../../shared/msgs/updateMsg";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 
 export function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
     const ang = Math.atan2(dir.y, dir.x);
@@ -65,38 +65,38 @@ export function playHitFx(
 }
 export class BulletBarn {
     bullets: Array<{
-        alive: boolean
-        container: PIXI.Container
-        bulletTrail: PIXI.Sprite
-        isNew: boolean
-        collided: boolean
-        scale: number
-        playerId: number
-        pos: Vec2
-        dir: Vec2
-        layer: number
-        speed: number
-        distance: number
-        damageSelf: boolean
-        reflectCount: number
-        reflectObjId: number
-        whizHeard: boolean
-        startPos: Vec2
-        tracerLength: number
-        suppressed: boolean
-        tracerAlphaRate: number
-        tracerAlphaMin: number
+        alive: boolean;
+        container: PIXI.Container;
+        bulletTrail: PIXI.Sprite;
+        isNew: boolean;
+        collided: boolean;
+        scale: number;
+        playerId: number;
+        pos: Vec2;
+        dir: Vec2;
+        layer: number;
+        speed: number;
+        distance: number;
+        damageSelf: boolean;
+        reflectCount: number;
+        reflectObjId: number;
+        whizHeard: boolean;
+        startPos: Vec2;
+        tracerLength: number;
+        suppressed: boolean;
+        tracerAlphaRate: number;
+        tracerAlphaMin: number;
     }> = [];
 
     tracerColors: Record<
-    string,
-    {
-        regular: number
-        saturated: number
-        chambered: number
-        alphaRate: number
-        alphaMin: number
-    }
+        string,
+        {
+            regular: number;
+            saturated: number;
+            chambered: number;
+            alphaRate: number;
+            alphaMin: number;
+        }
     > = {};
 
     onMapLoad(map: Map) {
@@ -245,14 +245,14 @@ export class BulletBarn {
 
                 // Gather colliding obstacles and players
                 const colObjs: Array<{
-                    type: string
-                    obstacleType?: string
-                    collidable: boolean
-                    point: Vec2
-                    normal: Vec2
-                    dist?: number
-                    player?: Player
-                    layer?: number
+                    type: string;
+                    obstacleType?: string;
+                    collidable: boolean;
+                    point: Vec2;
+                    normal: Vec2;
+                    dist?: number;
+                    player?: Player;
+                    layer?: number;
                 }> = [];
 
                 // Obstacles
@@ -328,7 +328,7 @@ export class BulletBarn {
                             N &&
                             (!O ||
                                 v2.length(v2.sub(N.point, b.startPos)) <
-                                v2.length(v2.sub(O.point, b.startPos)))
+                                    v2.length(v2.sub(O.point, b.startPos)))
                         ) {
                             colObjs.push({
                                 type: "player",
@@ -456,14 +456,20 @@ export class BulletBarn {
                                 const se = re.stairs[oe];
                                 if (
                                     !se?.lootOnly &&
-                                    collider.intersectSegment(se?.collision!, b.pos, posOld)
+                                    collider.intersectSegment(
+                                        se?.collision!,
+                                        b.pos,
+                                        posOld
+                                    )
                                 ) {
                                     ae = true;
                                     break;
                                 }
                             }
                             for (let ne = 0; ne < re.mask.length; ne++) {
-                                if (collider.intersectSegment(re.mask[ne], b.pos, posOld)) {
+                                if (
+                                    collider.intersectSegment(re.mask[ne], b.pos, posOld)
+                                ) {
                                     ie = true;
                                     break;
                                 }
@@ -503,7 +509,7 @@ export class BulletBarn {
         }
     }
 
-    render(camera: Camera, debug: unknown) {
+    render(camera: Camera, _debug: unknown) {
         camera.pixels(1);
         for (let i = 0; i < this.bullets.length; i++) {
             const b = this.bullets[i];

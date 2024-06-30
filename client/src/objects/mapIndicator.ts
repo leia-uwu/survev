@@ -1,34 +1,32 @@
 import * as PIXI from "pixi.js-legacy";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
+import { type MapIndicator } from "../../../shared/msgs/updateMsg";
+import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { device } from "../device";
-import { math } from "../../../shared/utils/math";
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { type MapSpriteBarn } from "./mapSprite";
-import { type MapIndicator } from "../../../shared/msgs/updateMsg";
-import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 
 interface Indicator {
-    id: number
-    type: string
-    pos: Vec2
-    equipped: boolean
-    mapSprite: any
-    pulseSprite: any
-    pulseScale: number
-    pulseScaleMin: number
-    pulseScaleMax: number
-    pulseTicker: number
-    pulseDir: number
-    pulseSpeed: number
+    id: number;
+    type: string;
+    pos: Vec2;
+    equipped: boolean;
+    mapSprite: any;
+    pulseSprite: any;
+    pulseScale: number;
+    pulseScaleMin: number;
+    pulseScaleMax: number;
+    pulseTicker: number;
+    pulseDir: number;
+    pulseSpeed: number;
 }
 
 export class MapIndicatorBarn {
     mapIndicators: Indicator[] = [];
     idToMapIdicator: Record<number, Indicator> = {};
 
-    constructor(
-        public mapSpriteBarn: MapSpriteBarn) {
-    }
+    constructor(public mapSpriteBarn: MapSpriteBarn) {}
 
     updateIndicatorData(indicatorData: MapIndicator[]) {
         for (let i = 0; i < indicatorData.length; i++) {
@@ -91,9 +89,7 @@ export class MapIndicatorBarn {
         mapSprite.alpha = 1;
         mapSprite.zOrder = zOrder;
         mapSprite.visible = true;
-        mapSprite.sprite.texture = PIXI.Texture.from(
-            objDef.mapIndicator?.sprite!
-        );
+        mapSprite.sprite.texture = PIXI.Texture.from(objDef.mapIndicator?.sprite!);
 
         mapSprite.sprite.tint = objDef.mapIndicator?.tint;
         if (objDef.mapIndicator?.pulse) {
@@ -102,8 +98,7 @@ export class MapIndicatorBarn {
             pulseSprite.scale = 1;
             pulseSprite.zOrder = zOrder - 1;
             pulseSprite.visible = true;
-            pulseSprite.sprite.texture =
-                PIXI.Texture.from("part-pulse-01.img");
+            pulseSprite.sprite.texture = PIXI.Texture.from("part-pulse-01.img");
             pulseSprite.sprite.tint = objDef.mapIndicator.pulseTint;
         }
     }

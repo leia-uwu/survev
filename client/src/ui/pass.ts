@@ -1,14 +1,14 @@
 import $ from "jquery";
-import { helpers } from "../helpers";
-import { math } from "../../../shared/utils/math";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
 import { QuestDefs } from "../../../shared/defs/gameObjects/questDefs";
-import { passUtil } from "./passUtil";
+import { math } from "../../../shared/utils/math";
+import { type Account } from "../account";
+import { helpers } from "../helpers";
 import { type LoadoutMenu } from "./loadoutMenu";
 import { type Localization } from "./localization";
-import { type Account } from "../account";
-import { type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
+import { passUtil } from "./passUtil";
 
 function i(e: string, t: number) {
     for (let r = PassDefs[e], a = 0; a < r.items.length; a++) {
@@ -24,9 +24,7 @@ function humanizeTime(time: number, minutesFloor = false) {
     //     arguments[1] !== undefined &&
     //     arguments[1];
     const hours = Math.floor(Math.ceil(time / 60) / 60);
-    const minutes = minutesFloor
-        ? Math.floor(time / 60) % 60
-        : Math.ceil(time / 60) % 60;
+    const minutes = minutesFloor ? Math.floor(time / 60) % 60 : Math.ceil(time / 60) % 60;
     Math.floor(time);
     let timeText = "";
     if (hours > 0) {
@@ -45,40 +43,40 @@ export class Pass {
         levelXp: 0,
         ticker: 0,
         animSteps: [] as Array<{
-            startXp: number
-            targetXp: number
-            levelXp: number
-            targetLevel: number
+            startXp: number;
+            targetXp: number;
+            levelXp: number;
+            targetLevel: number;
         }>,
         elems: {}
     };
 
     quests: Array<{
         data: {
-            idx: number
-            type: string
-            complete: boolean
-            progress: number
-            target: number
-            rerolled: boolean
-        }
-        start: number
-        current: number
-        ticker: number
-        delay: number
-        playCompleteAnim: boolean
-        progressAnimFinished: boolean
-        completeAnimFinished: boolean
-        shouldRequestRefresh: boolean
-        refreshTime: number
-        refreshSet: boolean
-        refreshEnabled: boolean
+            idx: number;
+            type: string;
+            complete: boolean;
+            progress: number;
+            target: number;
+            rerolled: boolean;
+        };
+        start: number;
+        current: number;
+        ticker: number;
+        delay: number;
+        playCompleteAnim: boolean;
+        progressAnimFinished: boolean;
+        completeAnimFinished: boolean;
+        shouldRequestRefresh: boolean;
+        refreshTime: number;
+        refreshSet: boolean;
+        refreshEnabled: boolean;
         timer: {
-            enabled: boolean
-            str: string
-            displayed: boolean
-        }
-        elems: Record<string, JQuery<HTMLElement>>
+            enabled: boolean;
+            str: string;
+            displayed: boolean;
+        };
+        elems: Record<string, JQuery<HTMLElement>>;
         // elems: {
         //     main: JQuery<HTMLElement>;
         //     xp: JQuery<HTMLElement>;
@@ -233,10 +231,7 @@ export class Pass {
         this.pass.data = pass;
         this.pass.animSteps = [];
         this.pass.currentXp = Math.round(this.pass.currentXp);
-        this.pass.levelXp = passUtil.getPassLevelXp(
-            pass.type,
-            this.pass.currentLevel
-        );
+        this.pass.levelXp = passUtil.getPassLevelXp(pass.type, this.pass.currentLevel);
         if (!this.loaded) {
             const u = passUtil.getPassLevelXp(pass.type, pass.level);
             this.pass.currentXp = 0;
@@ -343,18 +338,16 @@ export class Pass {
         });
         const o = t
             ? this.localization
-                .translate(
-                    `loadout-title-${this.loadoutMenu.getCategory(t.type)!.loadoutType}`
-                )
-                .toUpperCase()
+                  .translate(
+                      `loadout-title-${this.loadoutMenu.getCategory(t.type)!.loadoutType}`
+                  )
+                  .toUpperCase()
             : "";
         const s = $("#pass-unlock-tooltip");
         s.css("opacity", t ? 1 : 0);
         s.find(".tooltip-pass-title").html(o);
         s.find(".tooltip-pass-desc").html(t ? t.name! : "");
-        const c = t
-            ? `url(${this.loadoutMenu.getCategory(t.type)!.categoryImage})`
-            : "";
+        const c = t ? `url(${this.loadoutMenu.getCategory(t.type)!.categoryImage})` : "";
         $("#pass-progress-unlock-type-image").css({
             "background-image": c
         });
@@ -532,11 +525,7 @@ export class Pass {
         if (this.pass.animSteps.length > 0 && this.pass.ticker >= 0) {
             const y = this.pass.animSteps[0];
             const w = math.clamp(this.pass.ticker / 1.5, 0, 1);
-            this.pass.currentXp = math.lerp(
-                math.easeOutExpo(w),
-                y.startXp,
-                y.targetXp
-            );
+            this.pass.currentXp = math.lerp(math.easeOutExpo(w), y.startXp, y.targetXp);
             this.pass.levelXp = y.levelXp;
             const f = (this.pass.currentXp / y.levelXp) * 100;
             $("#pass-progress-xp-current").html(Math.round(this.pass.currentXp));
@@ -553,11 +542,7 @@ export class Pass {
                 this.pass.ticker -= 3;
             }
         }
-        if (
-            !this.account.loggingIn &&
-            !this.account.loggedIn &&
-            !this.lockDisplayed
-        ) {
+        if (!this.account.loggingIn && !this.account.loggedIn && !this.lockDisplayed) {
             $("#pass-block").css("z-index", "1");
             $("#pass-loading").css("display", "none");
             $("#pass-locked").css("display", "block");
@@ -565,7 +550,7 @@ export class Pass {
         }
     }
 
-    onResize() { }
+    onResize() {}
     loadPlaceholders() {
         const def = PassDefs.pass_survivr1;
         const passName = this.localization.translate("pass_survivr1").toUpperCase();

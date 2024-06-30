@@ -1,12 +1,12 @@
+import { GameConfig } from "../gameConfig";
+import { AbstractMsg, type BitStream, Constants } from "../net";
 import {
-    type ObjectType,
     ObjectSerializeFns,
+    type ObjectType,
     type ObjectsFullData,
     type ObjectsPartialData
 } from "../utils/objectSerializeFns";
-import { GameConfig } from "../gameConfig";
-import { AbstractMsg, Constants, type BitStream } from "../net";
-import { v2, type Vec2 } from "./../utils/v2";
+import { type Vec2, v2 } from "./../utils/v2";
 
 function serializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
     s.writeBoolean(data.healthDirty);
@@ -104,10 +104,7 @@ function deserializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
     s.readAlignToNextByte();
 }
 
-function serializePlayerStatus(
-    s: BitStream,
-    data: { players: PlayerStatus[] }
-) {
+function serializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) {
     s.writeUint8(data.players.length);
     for (let i = 0; i < data.players.length; i++) {
         const info = data.players[i];
@@ -128,10 +125,7 @@ function serializePlayerStatus(
     s.writeAlignToNextByte();
 }
 
-function deserializePlayerStatus(
-    s: BitStream,
-    data: { players: PlayerStatus[] }
-) {
+function deserializePlayerStatus(s: BitStream, data: { players: PlayerStatus[] }) {
     data.players = [];
     const count = s.readUint8();
     for (let i = 0; i < count; i++) {
@@ -162,10 +156,7 @@ function serializeGroupStatus(s: BitStream, data: { players: GroupStatus[] }) {
     }
 }
 
-function deserializeGroupStatus(
-    s: BitStream,
-    data: { players: GroupStatus[] }
-) {
+function deserializeGroupStatus(s: BitStream, data: { players: GroupStatus[] }) {
     data.players = [];
     const count = s.readUint8();
     for (let i = 0; i < count; i++) {
@@ -177,15 +168,15 @@ function deserializeGroupStatus(
 }
 
 export interface PlayerInfo {
-    playerId: number
-    teamId: number
-    groupId: number
-    name: string
+    playerId: number;
+    teamId: number;
+    groupId: number;
+    name: string;
 
     loadout: {
-        heal: string
-        boost: string
-    }
+        heal: string;
+        boost: string;
+    };
 }
 
 function serializePlayerInfo(s: BitStream, data: PlayerInfo) {
@@ -212,12 +203,12 @@ function deserializePlayerInfo(s: BitStream, data: PlayerInfo) {
 }
 
 export interface GasData {
-    mode: number
-    duration: number
-    posOld: Vec2
-    posNew: Vec2
-    radOld: number
-    radNew: number
+    mode: number;
+    duration: number;
+    posOld: Vec2;
+    posNew: Vec2;
+    radOld: number;
+    radNew: number;
 }
 
 function serializeGasData(s: BitStream, data: GasData) {
@@ -260,21 +251,21 @@ export const UpdateExtFlags = {
 export class UpdateMsg extends AbstractMsg {
     delObjIds: number[] = [];
     fullObjects: Array<
-    ObjectsFullData[ObjectType] &
-    ObjectsPartialData[ObjectType] & {
-        __id: number
-        __type: ObjectType
-        partialStream: BitStream
-        fullStream: BitStream
-    }
+        ObjectsFullData[ObjectType] &
+            ObjectsPartialData[ObjectType] & {
+                __id: number;
+                __type: ObjectType;
+                partialStream: BitStream;
+                fullStream: BitStream;
+            }
     > = [];
 
     partObjects: Array<
-    ObjectsPartialData[ObjectType] & {
-        __id: number
-        __type: ObjectType
-        partialStream: BitStream
-    }
+        ObjectsPartialData[ObjectType] & {
+            __id: number;
+            __type: ObjectType;
+            partialStream: BitStream;
+        }
     > = [];
 
     activePlayerId = 0;
@@ -513,7 +504,10 @@ export class UpdateMsg extends AbstractMsg {
     }
 
     // @ts-expect-error deserialize only accept one argument for now
-    override deserialize(s: BitStream, objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType }) {
+    override deserialize(
+        s: BitStream,
+        objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType }
+    ) {
         const flags = s.readUint16();
 
         if ((flags & UpdateExtFlags.DeletedObjects) != 0) {
@@ -735,129 +729,129 @@ export function getPlayerStatusUpdateRate(factionMode: boolean) {
 }
 
 export interface Bullet {
-    playerId: number
-    startPos: Vec2
-    pos: Vec2
-    dir: Vec2
-    bulletType: string
-    layer: number
-    varianceT: number
-    distAdjIdx: number
-    clipDistance: boolean
-    distance: number
-    shotFx: boolean
-    shotSourceType: string
-    shotOffhand: boolean
-    lastShot: boolean
-    reflectCount: number
-    reflectObjId: number
-    hasSpecialFx: boolean
-    shotAlt: boolean
-    splinter: boolean
-    trailSaturated: boolean
-    trailSmall: boolean
-    trailThick: boolean
+    playerId: number;
+    startPos: Vec2;
+    pos: Vec2;
+    dir: Vec2;
+    bulletType: string;
+    layer: number;
+    varianceT: number;
+    distAdjIdx: number;
+    clipDistance: boolean;
+    distance: number;
+    shotFx: boolean;
+    shotSourceType: string;
+    shotOffhand: boolean;
+    lastShot: boolean;
+    reflectCount: number;
+    reflectObjId: number;
+    hasSpecialFx: boolean;
+    shotAlt: boolean;
+    splinter: boolean;
+    trailSaturated: boolean;
+    trailSmall: boolean;
+    trailThick: boolean;
 }
 
 export interface Explosion {
-    pos: Vec2
-    type: string
-    layer: number
+    pos: Vec2;
+    type: string;
+    layer: number;
 }
 
 export interface Emote {
-    playerId: number
-    type: string
-    itemType: string
-    isPing: boolean
-    pos?: Vec2
+    playerId: number;
+    type: string;
+    itemType: string;
+    isPing: boolean;
+    pos?: Vec2;
 }
 
 export interface Airstrike {
-    pos: Vec2
-    duration: number
-    rad: number
+    pos: Vec2;
+    duration: number;
+    rad: number;
 }
 
 export interface Plane {
-    planeDir: Vec2
-    pos: Vec2
-    actionComplete: boolean
-    action: number
-    id: number
+    planeDir: Vec2;
+    pos: Vec2;
+    actionComplete: boolean;
+    action: number;
+    id: number;
 }
 
 export interface MapIndicator {
-    id: number
-    dead: boolean
-    equipped: boolean
-    type: string
-    pos: Vec2
+    id: number;
+    dead: boolean;
+    equipped: boolean;
+    type: string;
+    pos: Vec2;
 }
 
 export interface Action {
-    type: Action
-    seq: number
-    seqOld: number
-    item: string
-    skin: string
-    targetId: number
-    time: number
-    duration: number
-    throttleCount: number
-    throttleTicker: number
+    type: Action;
+    seq: number;
+    seqOld: number;
+    item: string;
+    skin: string;
+    targetId: number;
+    time: number;
+    duration: number;
+    throttleCount: number;
+    throttleTicker: number;
 }
 
 export interface LocalData {
-    health: number
-    zoom: number
-    boost: number
-    scope: string
-    curWeapIdx: number
-    inventory: Record<string, number>
+    health: number;
+    zoom: number;
+    boost: number;
+    scope: string;
+    curWeapIdx: number;
+    inventory: Record<string, number>;
     weapons: Array<{
-        type: string
-        ammo: number
-    }>
-    spectatorCount: number
+        type: string;
+        ammo: number;
+    }>;
+    spectatorCount: number;
 }
 
 export interface LocalDataWithDirty extends LocalData {
-    healthDirty: boolean
-    boostDirty: boolean
-    zoomDirty: boolean
-    actionDirty: boolean
+    healthDirty: boolean;
+    boostDirty: boolean;
+    zoomDirty: boolean;
+    actionDirty: boolean;
     action: {
-        time: number
-        duration: number
-        targetId: number
-    }
-    inventoryDirty: boolean
-    weapsDirty: boolean
-    spectatorCountDirty: boolean
+        time: number;
+        duration: number;
+        targetId: number;
+    };
+    inventoryDirty: boolean;
+    weapsDirty: boolean;
+    spectatorCountDirty: boolean;
 }
 
 // the non-optional properties are used by both server and client
 export interface PlayerStatus {
-    playerId?: number
-    pos: Vec2
-    posTarget?: Vec2
-    posDelta?: number
-    health?: number
-    posInterp?: number
-    visible: boolean
-    dead: boolean
-    downed: boolean
-    disconnected?: boolean
-    role: string
-    timeSinceUpdate?: number
-    timeSinceVisible?: number
-    minimapAlpha?: number
-    minimapVisible?: boolean
-    hasData: boolean
+    playerId?: number;
+    pos: Vec2;
+    posTarget?: Vec2;
+    posDelta?: number;
+    health?: number;
+    posInterp?: number;
+    visible: boolean;
+    dead: boolean;
+    downed: boolean;
+    disconnected?: boolean;
+    role: string;
+    timeSinceUpdate?: number;
+    timeSinceVisible?: number;
+    minimapAlpha?: number;
+    minimapVisible?: boolean;
+    hasData: boolean;
 }
 
 export interface GroupStatus {
-    health: number
-    disconnected: boolean
+    health: number;
+    disconnected: boolean;
 }

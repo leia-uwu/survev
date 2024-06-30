@@ -123,9 +123,7 @@ export const GameConfig = {
         widthDecay: 0.5,
         widthMin: 10,
         damageTickRate: 2,
-        damage: [
-            1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22
-        ]
+        damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22]
     },
     map: {
         gridSize: 16,
@@ -169,7 +167,14 @@ export const GameConfig = {
         medicReviveRange: 6,
         spectateDeadTimeout: 2
     },
-    defaultEmoteLoadout: ["emote_happyface", "emote_thumbsup", "emote_surviv", "emote_sadface", "", ""],
+    defaultEmoteLoadout: [
+        "emote_happyface",
+        "emote_thumbsup",
+        "emote_surviv",
+        "emote_sadface",
+        "",
+        ""
+    ],
     airdrop: {
         actionOffset: 0,
         fallTime: 8,

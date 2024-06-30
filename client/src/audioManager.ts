@@ -1,6 +1,6 @@
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
-import { v2, type Vec2 } from "../../shared/utils/v2";
+import { type Vec2, v2 } from "../../shared/utils/v2";
 import { CreateJS, type SoundHandle } from "./createJS";
 import soundDefs from "./soundDefs";
 
@@ -8,23 +8,23 @@ const AudioManagerMinAllowedVolume = 0.003;
 const DiffLayerMult = 0.5;
 
 interface Options {
-    channel?: string
-    startSilent?: boolean
-    forceStart?: boolean
-    loop?: boolean
-    soundPos: Vec2 | null
-    fallOff?: number
-    filter?: string
-    delay?: number
-    ignoreMinAllowable?: boolean
-    rangeMult?: number
-    offset?: number
-    ambient?: boolean
-    detune?: number
-    volumeScale?: number
-    layer?: number
-    forceFilter?: boolean
-    muffled?: boolean
+    channel?: string;
+    startSilent?: boolean;
+    forceStart?: boolean;
+    loop?: boolean;
+    soundPos: Vec2 | null;
+    fallOff?: number;
+    filter?: string;
+    delay?: number;
+    ignoreMinAllowable?: boolean;
+    rangeMult?: number;
+    offset?: number;
+    ambient?: boolean;
+    detune?: number;
+    volumeScale?: number;
+    layer?: number;
+    forceFilter?: boolean;
+    muffled?: boolean;
 }
 
 export class AudioManager {
@@ -34,12 +34,12 @@ export class AudioManager {
     musicVolume = 1;
     baseVolume = 0.5;
     sounds: Record<
-    string,
-    {
-        path: string
-        name: string
-        channel: string
-    }
+        string,
+        {
+            path: string;
+            name: string;
+            channel: string;
+        }
     > = {};
 
     loadedFiles: Record<string, boolean> = {};
@@ -48,11 +48,11 @@ export class AudioManager {
     activeLayer = 0;
     underground = false;
     soundInstances: Array<{
-        instance: SoundHandle
-        type: string
+        instance: SoundHandle;
+        type: string;
     }> = [];
 
-    constructor(options?: unknown) {
+    constructor(_options?: unknown) {
         CreateJS.Sound.volume = 0.5;
         CreateJS.Sound.on("fileload", this.loadHandler, this);
     }
@@ -78,16 +78,16 @@ export class AudioManager {
                 }
             }
             const loadList: Array<{
-                name: string
-                path: string
-                channel: string
+                name: string;
+                path: string;
+                channel: string;
                 options?: {
-                    canCoalesce: boolean
-                    volume: number
-                    channels: number
-                    maxInstances?: number
-                }
-                priority?: number
+                    canCoalesce: boolean;
+                    volume: number;
+                    channels: number;
+                    maxInstances?: number;
+                };
+                priority?: number;
             }> = [];
             const channelKeys = Object.keys(soundDefs.Channels);
             for (let i = 0; i < channelKeys.length; i++) {
@@ -133,15 +133,15 @@ export class AudioManager {
     }
 
     loadSound(sound: {
-        name: string
-        path: string
-        channel: string
+        name: string;
+        path: string;
+        channel: string;
         options?: {
-            canCoalesce: boolean
-            volume: number
-            maxInstances?: number
-            channels?: number
-        }
+            canCoalesce: boolean;
+            volume: number;
+            maxInstances?: number;
+            channels?: number;
+        };
     }) {
         const name = sound.name + sound.channel;
         if (!this.sounds[name]) {
@@ -173,9 +173,7 @@ export class AudioManager {
 
         // Update reverb, simply based on the current terrain layer
         const layerVolumeMap = [0, 1, 1 / 3, 2 / 3];
-        const reverbVolume = this.underground
-            ? layerVolumeMap[this.activeLayer]
-            : 0;
+        const reverbVolume = this.underground ? layerVolumeMap[this.activeLayer] : 0;
         CreateJS.Sound.setReverbs({
             cathedral: reverbVolume
         });
@@ -198,8 +196,7 @@ export class AudioManager {
         options.ignoreMinAllowable = options.ignoreMinAllowable || false;
         options.rangeMult = options.rangeMult || 1;
         options.offset = options.offset || 0;
-        options.ambient =
-            options.channel == "ambient" || options.channel == "music";
+        options.ambient = options.channel == "ambient" || options.channel == "music";
         options.detune = options.detune || 0;
         options.volumeScale = options.volumeScale || 1;
         let instance = null;
@@ -307,10 +304,7 @@ export class AudioManager {
                 options.layer === undefined ||
                 util.sameAudioLayer(options.layer, this.activeLayer);
             clipVolume = diffLayer ? clipVolume : clipVolume * DiffLayerMult;
-            if (
-                clipVolume > AudioManagerMinAllowedVolume ||
-                options.ignoreMinAllowable
-            ) {
+            if (clipVolume > AudioManagerMinAllowedVolume || options.ignoreMinAllowable) {
                 const stereoNorm = math.clamp((diff.x / range) * -1, -1, 1);
                 instance.volume = clipVolume;
                 instance.pan = stereoNorm;
@@ -415,12 +409,12 @@ export class AudioManager {
 
     getTypeVolume(type: string) {
         switch (type) {
-        case "music":
-            return this.musicVolume;
-        case "sound":
-            return this.soundVolume;
-        default:
-            return this.soundVolume;
+            case "music":
+                return this.musicVolume;
+            case "sound":
+                return this.soundVolume;
+            default:
+                return this.soundVolume;
         }
     }
 }

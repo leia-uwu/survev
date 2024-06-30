@@ -1,38 +1,38 @@
-import { helpers } from "./helpers";
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
-import { math } from "../../shared/utils/math";
 import * as net from "../../shared/net";
+import { math } from "../../shared/utils/math";
 import { Account } from "./account";
-import { api } from "./api";
 import { Ambiance } from "./ambiance";
+import { api } from "./api";
 import { AudioManager } from "./audioManager";
-import { device } from "./device";
 import { ConfigManager, type ConfigType } from "./config";
+import { device } from "./device";
 import { Game } from "./game";
+import { helpers } from "./helpers";
 import { InputHandler } from "./input";
-import { InputBinds, InputBindUi } from "./inputBinds";
-import { loadStaticDomImages } from "./ui/ui2";
-import { LoadoutDisplay } from "./ui/opponentDisplay";
+import { InputBindUi, InputBinds } from "./inputBinds";
+import { PingTest } from "./pingTest";
+import { ResourceManager } from "./resources";
+import { SiteInfo } from "./siteInfo";
 import { LoadoutMenu } from "./ui/loadoutMenu";
 import { Localization } from "./ui/localization";
 import Menu from "./ui/menu";
 import { MenuModal } from "./ui/menuModal";
+import { LoadoutDisplay } from "./ui/opponentDisplay";
 import { Pass } from "./ui/pass";
-import { PingTest } from "./pingTest";
 import { ProfileUi } from "./ui/profileUi";
-import { ResourceManager } from "./resources";
-import { SiteInfo } from "./siteInfo";
 import { TeamMenu } from "./ui/teamMenu";
+import { loadStaticDomImages } from "./ui/ui2";
 
 export interface MatchData {
-    zone: string
-    gameId: number
-    useHttps: boolean
-    hosts: string[]
-    addrs: string[]
-    data: string
+    zone: string;
+    gameId: number;
+    useHttps: boolean;
+    hosts: string[];
+    addrs: string[];
+    data: string;
 }
 
 class Application {
@@ -81,7 +81,7 @@ class Application {
     initialized = false;
     active = false;
     sessionId = helpers.random64();
-    contextListener = function(e: MouseEvent) {
+    contextListener = function (e: MouseEvent) {
         e.preventDefault();
     };
 
@@ -162,10 +162,10 @@ class Application {
                 const t = this.serverSelect.find(":selected").val();
                 this.config.set("region", t as string);
             });
-            this.nameInput.on("blur", (t) => {
+            this.nameInput.on("blur", (_t) => {
                 this.setConfigFromDOM();
             });
-            this.muteBtns.on("click", (t) => {
+            this.muteBtns.on("click", (_t) => {
                 this.config.set("muteAudio", !this.config.get("muteAudio"));
             });
             this.muteBtns.on("mousedown", (e) => {
@@ -197,7 +197,7 @@ class Application {
             });
             $(".modal-settings-item")
                 .children("input")
-                .each((t, r) => {
+                .each((_t, r) => {
                     const a = $(r);
                     a.prop("checked", this.config.get(a.prop("id")));
                 });
@@ -280,7 +280,7 @@ class Application {
             let pixi = null;
             try {
                 pixi = createPixiApplication(false);
-            } catch (e) {
+            } catch (_e) {
                 pixi = createPixiApplication(true);
             }
             this.pixi = pixi;
@@ -293,9 +293,7 @@ class Application {
                 this.config
             );
             this.resourceManager.loadMapAssets("main");
-            this.input = new InputHandler(
-                document.getElementById("game-touch-area")!
-            );
+            this.input = new InputHandler(document.getElementById("game-touch-area")!);
             this.inputBinds = new InputBinds(this.input, this.config);
             this.inputBindUi = new InputBindUi(this.input, this.inputBinds);
             const onJoin = () => {
@@ -434,9 +432,7 @@ class Application {
 
     // Config
     setConfigFromDOM() {
-        const playerName = helpers.sanitizeNameInput(
-            this.nameInput.val() as string
-        );
+        const playerName = helpers.sanitizeNameInput(this.nameInput.val() as string);
         this.config.set("playerName", playerName);
         const region = this.serverSelect.find(":selected").val();
         this.config.set("region", region as string);
@@ -444,7 +440,7 @@ class Application {
 
     setDOMFromConfig() {
         this.nameInput.val(this.config.get("playerName")!);
-        this.serverSelect.find("option").each((i, ele) => {
+        this.serverSelect.find("option").each((_i, ele) => {
             ele.selected = ele.value == this.config.get("region");
         });
         this.languageSelect.val(this.config.get("language")!);
@@ -634,7 +630,7 @@ class Application {
                 cb("full");
                 return;
             }
-            const retry = function() {
+            const retry = function () {
                 setTimeout(() => {
                     findGameImpl(iter + 1, maxAttempts);
                 }, 500);
@@ -645,7 +641,7 @@ class Application {
                 data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
-                success: function(data: { err?: string, res: [MatchData] }) {
+                success: function (data: { err?: string; res: [MatchData] }) {
                     if (data?.err && data.err != "full") {
                         cb(data.err);
                         return;
@@ -657,7 +653,7 @@ class Application {
                         retry();
                     }
                 },
-                error: function(e) {
+                error: function (_e) {
                     retry();
                 }
             });
@@ -675,7 +671,8 @@ class Application {
         const urls: string[] = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
-                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${matchData.gameId
+                `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${
+                    matchData.gameId
                 }`
             );
         }
@@ -685,7 +682,7 @@ class Application {
                 this.onJoinGameError("join_game_failed");
                 return;
             }
-            const onFailure = function() {
+            const onFailure = function () {
                 joinGameImpl(urls, matchData);
             };
             this.game!.tryJoinGame(
@@ -703,9 +700,7 @@ class Application {
         const errMap = {
             full: this.localization.translate("index-failed-finding-game"),
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
-            join_game_failed: this.localization.translate(
-                "index-failed-joining-game"
-            )
+            join_game_failed: this.localization.translate("index-failed-joining-game")
         };
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
@@ -749,12 +744,7 @@ class Application {
         }
 
         // LoadoutDisplay update
-        if (
-            this.active &&
-            this.loadoutDisplay &&
-            this.game &&
-            !this.game.initialized
-        ) {
+        if (this.active && this.loadoutDisplay && this.game && !this.game.initialized) {
             if (this.loadoutMenu.active) {
                 if (!this.loadoutDisplay.initialized) {
                     this.loadoutDisplay.o();
@@ -784,7 +774,7 @@ function onPageLoad() {
 
 document.addEventListener("DOMContentLoaded", onPageLoad);
 window.addEventListener("load", onPageLoad);
-window.addEventListener("unload", (e) => {
+window.addEventListener("unload", (_e) => {
     App.onUnload();
 });
 if (window.location.hash == "#_=_") {
@@ -816,7 +806,7 @@ window.addEventListener("onblur", () => {
 });
 
 const reportedErrors: string[] = [];
-window.onerror = function(msg, url, lineNo, columnNo, error) {
+window.onerror = function (msg, url, lineNo, columnNo, error) {
     msg = msg || "undefined_error_msg";
     const stacktrace = error ? error.stack : "";
 

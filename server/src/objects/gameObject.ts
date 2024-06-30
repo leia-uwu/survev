@@ -1,9 +1,13 @@
-import { type Game } from "../game";
-import { coldet, type Collider } from "../../../shared/utils/coldet";
+import { BitStream } from "../../../shared/net";
+import { type Collider, coldet } from "../../../shared/utils/coldet";
+import { ObjectSerializeFns, ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { assert } from "../../../shared/utils/util";
 import { type Vec2 } from "../../../shared/utils/v2";
-import { type DeadBody } from "./deadBody";
+import { type Game } from "../game";
+import { type Grid } from "../utils/grid";
 import { type Airdrop } from "./airdrop";
 import { type Building } from "./building";
+import { type DeadBody } from "./deadBody";
 import { type Decal } from "./decal";
 import { type Loot } from "./loot";
 import { type Obstacle } from "./obstacle";
@@ -11,20 +15,26 @@ import { type Player } from "./player";
 import { type Projectile } from "./projectile";
 import { type Smoke } from "./smoke";
 import { type Structure } from "./structure";
-import { ObjectSerializeFns, ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { BitStream } from "../../../shared/net";
-import { type Grid } from "../utils/grid";
-import { assert } from "../../../shared/utils/util";
 
-export type GameObject = Player | Obstacle | Loot | DeadBody | Building | Structure | Decal | Projectile | Smoke | Airdrop;
+export type GameObject =
+    | Player
+    | Obstacle
+    | Loot
+    | DeadBody
+    | Building
+    | Structure
+    | Decal
+    | Projectile
+    | Smoke
+    | Airdrop;
 
 export interface DamageParams {
-    amount?: number
-    damageType: number
-    dir: Vec2
-    gameSourceType?: string
-    mapSourceType?: string
-    source?: GameObject
+    amount?: number;
+    damageType: number;
+    dir: Vec2;
+    gameSourceType?: string;
+    mapSourceType?: string;
+    source?: GameObject;
 }
 
 const MAX_ID = 65535;
@@ -157,7 +167,7 @@ export abstract class BaseGameObject {
         this._pos = pos;
     }
 
-    damage(_params: DamageParams): void { }
+    damage(_params: DamageParams): void {}
 
     init(): void {
         this.initialized = true;
@@ -168,24 +178,38 @@ export abstract class BaseGameObject {
 
     serializePartial(): void {
         if (!this.initialized) {
-            console.warn("Tried to partially serialized object that has not been initialized");
+            console.warn(
+                "Tried to partially serialized object that has not been initialized"
+            );
             return;
         }
         assert(this.__id !== 0 && this.__type !== 0, "Object not registered");
         this.partialStream.index = 0;
         this.partialStream.writeUint16(this.__id);
-        (ObjectSerializeFns[this.__type].serializePart as (s: BitStream, data: this) => void)(this.partialStream, this);
+        (
+            ObjectSerializeFns[this.__type].serializePart as (
+                s: BitStream,
+                data: this
+            ) => void
+        )(this.partialStream, this);
     }
 
     serializeFull(): void {
         if (!this.initialized) {
-            console.warn("Tried to fully serialized object that has not been initialized");
+            console.warn(
+                "Tried to fully serialized object that has not been initialized"
+            );
             return;
         }
         assert(this.__id !== 0 && this.__type !== 0, "Object not registered");
         this.serializePartial();
         this.fullStream.index = 0;
-        (ObjectSerializeFns[this.__type].serializeFull as (s: BitStream, data: this) => void)(this.fullStream, this);
+        (
+            ObjectSerializeFns[this.__type].serializeFull as (
+                s: BitStream,
+                data: this
+            ) => void
+        )(this.fullStream, this);
     }
 
     setDirty() {
@@ -206,12 +230,31 @@ export abstract class BaseGameObject {
                 const stair = obj.stairs[j];
                 if (stair.lootOnly && this.__type !== ObjectType.Loot) continue;
 
-                const collides = coldet.testCircleAabb(this.pos, rad, stair.collision.min, stair.collision.max);
+                const collides = coldet.testCircleAabb(
+                    this.pos,
+                    rad,
+                    stair.collision.min,
+                    stair.collision.max
+                );
 
                 if (collides) {
-                    if (coldet.testCircleAabb(this.pos, rad, stair.downAabb.min, stair.downAabb.max)) {
+                    if (
+                        coldet.testCircleAabb(
+                            this.pos,
+                            rad,
+                            stair.downAabb.min,
+                            stair.downAabb.max
+                        )
+                    ) {
                         this.layer = 3;
-                    } else if (coldet.testCircleAabb(this.pos, rad, stair.upAabb.min, stair.upAabb.max)) {
+                    } else if (
+                        coldet.testCircleAabb(
+                            this.pos,
+                            rad,
+                            stair.upAabb.min,
+                            stair.upAabb.max
+                        )
+                    ) {
                         this.layer = 2;
                     }
                 }

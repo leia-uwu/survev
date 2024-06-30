@@ -1,25 +1,25 @@
 export interface SoundDef {
-    path: string
-    volume: number
-    canCoalesce?: boolean
-    maxInstances?: number
-    preload?: boolean
-    loadPriority?: number
+    path: string;
+    volume: number;
+    canCoalesce?: boolean;
+    maxInstances?: number;
+    preload?: boolean;
+    loadPriority?: number;
 }
 interface ChannelDef {
-    volume: number
-    maxRange: number
-    list: string
-    type: "sound" | "music"
+    volume: number;
+    maxRange: number;
+    list: string;
+    type: "sound" | "music";
 }
 
 export interface ReverbDef {
-    path?: string
-    volume: number
-    stereoSpread: number
-    echoVolume?: number
-    echoDelay?: number
-    echoLowPass?: number
+    path?: string;
+    volume: number;
+    stereoSpread: number;
+    echoVolume?: number;
+    echoDelay?: number;
+    echoLowPass?: number;
 }
 const Sounds: Record<string, Record<string, SoundDef>> = {
     players: {
@@ -1797,7 +1797,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
         }
     }
 };
-const Groups: Record<string, { channel: string, sounds: string[] }> = {
+const Groups: Record<string, { channel: string; sounds: string[] }> = {
     footstep_grass: {
         channel: "sfx",
         sounds: ["footstep_grass_01", "footstep_grass_02"]

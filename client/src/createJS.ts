@@ -20,7 +20,7 @@ function testSelectiveDisconnect(ctx: AudioContext) {
     try {
         ctx.createGain().disconnect(ctx.destination);
         return false;
-    } catch (error) {
+    } catch (_error) {
         return true;
     }
 }
@@ -151,7 +151,7 @@ export class SoundInstance {
         if (isIOS) {
             try {
                 this.sourceNode!.buffer = nullBuffer!;
-            } catch (e) {
+            } catch (_e) {
                 void 0;
             }
         }
@@ -180,7 +180,7 @@ export class SoundHandle {
         this.id = instance.id;
     }
 
-    check(checkCoalesce?: unknown) {
+    check(_checkCoalesce?: unknown) {
         if (this.id != this.instance.id) {
             this.instance = nullInstance!;
             this.id = nullInstance?.id!;
@@ -379,14 +379,14 @@ class Reverb {
 }
 
 interface Params {
-    filter: string
-    loop: number
-    volume: number
-    pan: number
-    delay: number
-    offset: number
-    detune: number
-    ambient: boolean
+    filter: string;
+    loop: number;
+    volume: number;
+    pan: number;
+    delay: number;
+    offset: number;
+    detune: number;
+    ambient: boolean;
 }
 
 class WebAudioEngine {
@@ -402,14 +402,14 @@ class WebAudioEngine {
     files: Record<string, { buffer: AudioBuffer | null }> = {};
 
     sounds: Record<
-    string,
-    {
-        file: { buffer: AudioBuffer | null }
-        canCoalesce: boolean
-        maxInstances: number
-        volume: number
-        instances: SoundInstance[]
-    }
+        string,
+        {
+            file: { buffer: AudioBuffer | null };
+            canCoalesce: boolean;
+            maxInstances: number;
+            volume: number;
+            instances: SoundInstance[];
+        }
     > = {};
 
     instances: SoundInstance[] = [];
@@ -432,7 +432,7 @@ class WebAudioEngine {
     startTime!: number;
 
     // Soundjs API compat:
-    onfileload = function(...args: any[]) { };
+    onfileload = function (..._args: any[]) {};
 
     PLAY_INITED = "playInited";
     PLAY_SUCCEEDED = "playSucceeded";
@@ -560,7 +560,7 @@ class WebAudioEngine {
         const xhr = new XMLHttpRequest();
         xhr.open("GET", path);
         xhr.responseType = "arraybuffer";
-        const onfailure = function onfailure(event: unknown) {
+        const onfailure = function onfailure(_event: unknown) {
             console.error(`Failed loading sound file: ${path}`);
         };
         xhr.addEventListener("load", (event) => {
@@ -593,9 +593,9 @@ class WebAudioEngine {
         path: string,
         name: string,
         params: {
-            canCoalesce?: boolean
-            volume?: number
-            channels?: number
+            canCoalesce?: boolean;
+            volume?: number;
+            channels?: number;
         }
     ) {
         const file = this.loadFile(path, this.onfileload.bind(this));
@@ -643,8 +643,7 @@ class WebAudioEngine {
             filter !== "club"
         ) {
             console.error(
-                `Invalid filter: ${filter}. ` +
-                "Only valid filters are 'none', 'reverb', 'muffled' and 'club'."
+                `Invalid filter: ${filter}. Only valid filters are 'none', 'reverb', 'muffled' and 'club'.`
             );
             return nullHandle;
         }
@@ -680,8 +679,7 @@ class WebAudioEngine {
         const instance = this.instances[this.instanceId % kMaxInstances];
         if (instance.sound) {
             console.error(
-                `All ${kMaxInstances} sound instances in use. ` +
-                "You are using way too many sounds!"
+                `All ${kMaxInstances} sound instances in use. You are using way too many sounds!`
             );
             return nullHandle;
         }
@@ -717,8 +715,8 @@ class WebAudioEngine {
             filter === "none"
                 ? this.masterGainNode
                 : filter === "reverb"
-                    ? this.reverbNode
-                    : this.eqNodes[filter];
+                  ? this.reverbNode
+                  : this.eqNodes[filter];
         instance.start(
             outNode,
             sound.file.buffer,
@@ -798,7 +796,7 @@ class WebAudioEngine {
         }
     }
 
-    update(dt: unknown) {
+    update(_dt: unknown) {
         // If the audio context got suspended (as it is be default in Chrome,
         // until the user interacts with the page), try to resume it
         if (this.ctx.state == "suspended") {
@@ -887,11 +885,7 @@ class WebAudioEngine {
         this.muted = mute;
     }
 
-    on(
-        eventName: string,
-        eventHandler: (...args: any[]) => void,
-        that?: AudioManager
-    ) {
+    on(eventName: string, eventHandler: (...args: any[]) => void, that?: AudioManager) {
         if (eventName != "fileload") {
             console.error('Only "fileload" event supported');
             return;
@@ -941,11 +935,7 @@ class WebAudioEngine {
             convolverTime * this.ctx.sampleRate,
             this.ctx.sampleRate
         );
-        for (
-            let channel = 0;
-            channel < convolverBuffer.numberOfChannels;
-            channel++
-        ) {
+        for (let channel = 0; channel < convolverBuffer.numberOfChannels; channel++) {
             const _pcm = convolverBuffer.getChannelData(channel);
             for (let _i6 = 0; _i6 < _pcm.length; _i6++) {
                 _pcm[_i6] = 2.0 * Math.random() - 1.0;
@@ -955,14 +945,14 @@ class WebAudioEngine {
 
         // Set up the audio nodes
         const reverb: ReverbDef & {
-            convolverNode?: ConvolverNode
-            echoGainNode?: GainNode
-            echoLowPassNode?: BiquadFilterNode
-            echoDelayNode?: DelayNode
-            mergerNode?: ChannelMergerNode
-            gainNode?: GainNode
-            outNode?: GainNode
-            stereoDelayNode?: DelayNode
+            convolverNode?: ConvolverNode;
+            echoGainNode?: GainNode;
+            echoLowPassNode?: BiquadFilterNode;
+            echoDelayNode?: DelayNode;
+            mergerNode?: ChannelMergerNode;
+            gainNode?: GainNode;
+            outNode?: GainNode;
+            stereoDelayNode?: DelayNode;
         } = {
             volume: 0.7,
             echoVolume: 0.5,
@@ -976,9 +966,7 @@ class WebAudioEngine {
         reverb.echoLowPassNode.type = "lowpass";
         reverb.echoLowPassNode.frequency.setValueAtTime(reverb.echoLowPass!, 0);
         reverb.echoLowPassNode.Q.setValueAtTime(-3.0102999566398125, 0);
-        reverb.echoDelayNode = this.offlineCtx.createDelay(
-            reverb.echoDelay || 0.01
-        );
+        reverb.echoDelayNode = this.offlineCtx.createDelay(reverb.echoDelay || 0.01);
         reverb.echoDelayNode.delayTime.setValueAtTime(reverb.echoDelay!, 0);
         if (reverb.stereoSpread) {
             reverb.stereoDelayNode = this.offlineCtx.createDelay(reverb.stereoSpread);
@@ -1024,7 +1012,7 @@ class WebAudioEngine {
 
         soundNode.start();
         this.startTime = performance.now();
-        this.offlineCtx.oncomplete = (e) => {
+        this.offlineCtx.oncomplete = (_e) => {
             const endTime = performance.now();
             console.log("Offline render time: ", endTime - this.startTime);
 

@@ -1,101 +1,101 @@
 import { type Vec2 } from "../../utils/v2";
 
 export interface GunDef {
-    readonly type: "gun"
-    name: string
-    quality?: number
-    fireMode: "auto" | "single" | "burst"
-    caseTiming: "shoot" | "reload"
-    ammo: string
-    ammoSpawnCount: number
-    maxClip: number
-    maxReload: number
-    extendedClip: number
-    extendedReload: number
-    reloadTime: number
-    fireDelay: number
-    switchDelay: number
-    barrelLength: number
-    barrelOffset: number
-    recoilTime: number
-    moveSpread: number
-    shotSpread: number
-    bulletCount: number
-    bulletType: string
-    bulletTypeBonus?: string
-    headshotMult: number
+    readonly type: "gun";
+    name: string;
+    quality?: number;
+    fireMode: "auto" | "single" | "burst";
+    caseTiming: "shoot" | "reload";
+    ammo: string;
+    ammoSpawnCount: number;
+    maxClip: number;
+    maxReload: number;
+    extendedClip: number;
+    extendedReload: number;
+    reloadTime: number;
+    fireDelay: number;
+    switchDelay: number;
+    barrelLength: number;
+    barrelOffset: number;
+    recoilTime: number;
+    moveSpread: number;
+    shotSpread: number;
+    bulletCount: number;
+    bulletType: string;
+    bulletTypeBonus?: string;
+    headshotMult: number;
     speed: {
-        equip: number
-        attack: number
-    }
+        equip: number;
+        attack: number;
+    };
     lootImg: {
-        sprite: string
-        tint: number
-        border: string
-        borderTint: number
-        scale: number
-        innerScale?: number
-    }
+        sprite: string;
+        tint: number;
+        border: string;
+        borderTint: number;
+        scale: number;
+        innerScale?: number;
+    };
     worldImg: {
-        sprite: string
-        scale: Vec2
-        tint: number
-        leftHandOffset?: Vec2
-        recoil: number
-        gunOffset?: Vec2
-        handsBelow?: boolean
+        sprite: string;
+        scale: Vec2;
+        tint: number;
+        leftHandOffset?: Vec2;
+        recoil: number;
+        gunOffset?: Vec2;
+        handsBelow?: boolean;
         magImg?: {
-            sprite: string
-            pos: Vec2
-            top?: boolean
-        }
-    }
+            sprite: string;
+            pos: Vec2;
+            top?: boolean;
+        };
+    };
     particle: {
-        shellScale: number
-        shellOffset: number
-        shellOffsetY?: number
-        shellForward?: number
-        shellReverse?: boolean
-    }
+        shellScale: number;
+        shellOffset: number;
+        shellOffsetY?: number;
+        shellForward?: number;
+        shellReverse?: boolean;
+    };
     sound: {
-        shoot: string
-        reload: string
-        pickup: string
-        empty: string
-        deploy: string
-        cycle?: string
-        pull?: string
-        shootLast?: string
-        shootTeam?: Record<string, string>
-        shootAlt?: string
-        fallOff?: number
-        reloadAlt?: string
-    }
-    pullDelay?: number
-    isDual?: boolean
-    pistol?: boolean
-    dualOffset?: number
-    ammoInfinite?: boolean
-    noPotatoSwap?: boolean
-    noDrop?: boolean
-    burstDelay?: number
-    burstCount?: number
-    dualWieldType?: string
-    outsideOnly?: boolean
-    ignoreEndlessAmmo?: boolean
-    noSplinter?: boolean
-    isLauncher?: boolean
-    deployGroup?: number
-    projType?: string
-    ignoreDetune?: boolean
-    aimDelay?: boolean
-    isBullpup?: boolean
-    jitter?: number
-    maxReloadAlt?: number
-    extendedReloadAlt?: number
-    reloadTimeAlt?: number
-    toMouseHit?: boolean
-    burstSounds?: number
+        shoot: string;
+        reload: string;
+        pickup: string;
+        empty: string;
+        deploy: string;
+        cycle?: string;
+        pull?: string;
+        shootLast?: string;
+        shootTeam?: Record<string, string>;
+        shootAlt?: string;
+        fallOff?: number;
+        reloadAlt?: string;
+    };
+    pullDelay?: number;
+    isDual?: boolean;
+    pistol?: boolean;
+    dualOffset?: number;
+    ammoInfinite?: boolean;
+    noPotatoSwap?: boolean;
+    noDrop?: boolean;
+    burstDelay?: number;
+    burstCount?: number;
+    dualWieldType?: string;
+    outsideOnly?: boolean;
+    ignoreEndlessAmmo?: boolean;
+    noSplinter?: boolean;
+    isLauncher?: boolean;
+    deployGroup?: number;
+    projType?: string;
+    ignoreDetune?: boolean;
+    aimDelay?: boolean;
+    isBullpup?: boolean;
+    jitter?: number;
+    maxReloadAlt?: number;
+    extendedReloadAlt?: number;
+    reloadTimeAlt?: number;
+    toMouseHit?: boolean;
+    burstSounds?: number;
 }
 
 export const GunDefs: Record<string, GunDef> = {

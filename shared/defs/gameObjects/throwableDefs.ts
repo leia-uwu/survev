@@ -1,72 +1,72 @@
 import { type Vec2 } from "../../utils/v2";
 
 export interface ThrowableDef {
-    readonly type: "throwable"
-    name: string
-    quality: number
-    explosionType: string
-    inventoryOrder: number
-    cookable: boolean
-    explodeOnImpact: boolean
-    playerCollision: boolean
-    fuseTime: number
-    aimDistance: number
-    rad: number
+    readonly type: "throwable";
+    name: string;
+    quality: number;
+    explosionType: string;
+    inventoryOrder: number;
+    cookable: boolean;
+    explodeOnImpact: boolean;
+    playerCollision: boolean;
+    fuseTime: number;
+    aimDistance: number;
+    rad: number;
     throwPhysics: {
-        playerVelMult: number
-        velZ: number
-        speed: number
-        spinVel: number
-        spinDrag: number
-        fixedCollisionHeight?: number
-        randomizeSpinDir?: boolean
-    }
+        playerVelMult: number;
+        velZ: number;
+        speed: number;
+        spinVel: number;
+        spinDrag: number;
+        fixedCollisionHeight?: number;
+        randomizeSpinDir?: boolean;
+    };
     speed: {
-        equip: number
-        attack: number
-    }
+        equip: number;
+        attack: number;
+    };
     lootImg: {
-        sprite: string
-        tint: number
-        border: "loot-circle-outer-01.img"
-        borderTint: number
-        scale: number
-    }
+        sprite: string;
+        tint: number;
+        border: "loot-circle-outer-01.img";
+        borderTint: number;
+        scale: number;
+    };
     worldImg: {
-        sprite: string
-        scale: number
-        tint: number
-    }
-    handImg?: Record<string, { right: Cook, left: Cook }>
-    useThrowParticles: boolean
+        sprite: string;
+        scale: number;
+        tint: number;
+    };
+    handImg?: Record<string, { right: Cook; left: Cook }>;
+    useThrowParticles: boolean;
     sound: {
-        pullPin: string
-        throwing: string
-        pickup: string
-        deploy: string
-    }
-    strikeDelay?: number
-    freezeOnImpact?: boolean
-    heavyType?: string
-    forceMaxThrowDistance?: boolean
-    emoteId?: number
-    noPotatoSwap?: boolean
-    destroyNonCollidables?: boolean
+        pullPin: string;
+        throwing: string;
+        pickup: string;
+        deploy: string;
+    };
+    strikeDelay?: number;
+    freezeOnImpact?: boolean;
+    heavyType?: string;
+    forceMaxThrowDistance?: boolean;
+    emoteId?: number;
+    noPotatoSwap?: boolean;
+    destroyNonCollidables?: boolean;
     trail?: {
-        maxLength: number
-        width: number
-        alpha: number
-        tint: number
-    }
-    fuseVariance?: number
-    numSplit?: number
-    splitType?: string
+        maxLength: number;
+        width: number;
+        alpha: number;
+        tint: number;
+    };
+    fuseVariance?: number;
+    numSplit?: number;
+    splitType?: string;
 }
 
 export interface Cook {
-    sprite: string
-    pos?: Vec2
-    scale?: number
+    sprite: string;
+    pos?: Vec2;
+    scale?: number;
 }
 
 export const ThrowableDefs: Record<string, ThrowableDef> = {

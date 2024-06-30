@@ -9,7 +9,7 @@ import {
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type Camera } from "../camera";
 import { type Ctx } from "../game";
 import { type Map } from "../map";
@@ -90,7 +90,7 @@ class Decal implements AbstractObject {
         }
     }
 
-    update(dt: number, map?: unknown) {
+    update(dt: number, _map?: unknown) {
         if (this.hasGore) {
             const def = MapObjectDefs[this.type] as DecalDef;
             let goreTarget = math.delerp(
@@ -166,7 +166,7 @@ class DecalRender {
         this.sprite.visible = false;
     }
 
-    o(decal: Decal, map: Map, renderer: unknown) {
+    o(decal: Decal, map: Map, _renderer: unknown) {
         const def = MapObjectDefs[decal.type] as DecalDef;
 
         this.pos = v2.copy(decal.pos);
@@ -183,9 +183,7 @@ class DecalRender {
 
         this.imgScale = def.img.scale;
         this.spriteAlpha = imgDef.alpha;
-        this.valueAdjust = imgDef.ignoreAdjust
-            ? 1
-            : map.getMapDef().biome.valueAdjust;
+        this.valueAdjust = imgDef.ignoreAdjust ? 1 : map.getMapDef().biome.valueAdjust;
         this.setTint(imgDef.tint);
 
         this.inWater = false;
@@ -227,10 +225,7 @@ class DecalRender {
                 this.fadeAlpha = 0;
             }
         }
-        if (
-            !!this.deactivated &&
-            (!this.fadeout || !!math.eqAbs(this.fadeAlpha, 0))
-        ) {
+        if (!!this.deactivated && (!this.fadeout || !!math.eqAbs(this.fadeAlpha, 0))) {
             this.sprite.visible = false;
             this.active = false;
         }
@@ -254,8 +249,7 @@ class DecalRender {
         this.sprite.position.set(screenPos.x, screenPos.y);
         this.sprite.scale.set(screenScale, screenScale);
         this.sprite.rotation = -this.rot;
-        this.sprite.alpha =
-            this.spriteAlpha * (this.inWater ? 0.3 : 1) * this.fadeAlpha;
+        this.sprite.alpha = this.spriteAlpha * (this.inWater ? 0.3 : 1) * this.fadeAlpha;
         renderer.addPIXIObj(this.sprite, this.layer, this.zIdx, this.zOrd);
     }
 }
@@ -279,7 +273,7 @@ export class DecalBarn {
         return decalRender;
     }
 
-    update(dt: number, camera: Camera, renderer: Renderer, debug: unknown) {
+    update(dt: number, camera: Camera, renderer: Renderer, _debug: unknown) {
         const decals = this.decalPool.getPool();
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
@@ -295,5 +289,5 @@ export class DecalBarn {
         }
     }
 
-    render(camera: unknown, debug: unknown, layer: number) { }
+    render(_camera: unknown, _debug: unknown, _layer: number) {}
 }

@@ -12,8 +12,13 @@ export function earcut(data, holeIndices, dim) {
 
     if (!outerNode) return triangles;
 
-    let minX; let minY; let maxX; let maxY; let x; let y; let
-        invSize;
+    let minX;
+    let minY;
+    let maxX;
+    let maxY;
+    let x;
+    let y;
+    let invSize;
 
     if (hasHoles) outerNode = eliminateHoles(data, holeIndices, outerNode, dim);
 
@@ -43,8 +48,8 @@ export function earcut(data, holeIndices, dim) {
 
 // create a circular doubly linked list from polygon points in the specified winding order
 function linkedList(data, start, end, dim, clockwise) {
-    let i; let
-        last;
+    let i;
+    let last;
 
     if (clockwise === signedArea(data, start, end, dim) > 0) {
         for (i = start; i < end; i += dim) {
@@ -153,7 +158,11 @@ function isEar(ear) {
     let p = ear.next.next;
 
     while (p !== ear.prev) {
-        if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+        if (
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0
+        )
+            return false;
         p = p.next;
     }
 
@@ -168,10 +177,10 @@ function isEarHashed(ear, minX, minY, invSize) {
     if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
 
     // triangle bbox; min & max are calculated like this for speed
-    const minTX = a.x < b.x ? a.x < c.x ? a.x : c.x : b.x < c.x ? b.x : c.x;
-    const minTY = a.y < b.y ? a.y < c.y ? a.y : c.y : b.y < c.y ? b.y : c.y;
-    const maxTX = a.x > b.x ? a.x > c.x ? a.x : c.x : b.x > c.x ? b.x : c.x;
-    const maxTY = a.y > b.y ? a.y > c.y ? a.y : c.y : b.y > c.y ? b.y : c.y;
+    const minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : b.x < c.x ? b.x : c.x;
+    const minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : b.y < c.y ? b.y : c.y;
+    const maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : b.x > c.x ? b.x : c.x;
+    const maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : b.y > c.y ? b.y : c.y;
 
     // z-order range for the current triangle bbox;
     const minZ = zOrder(minTX, minTY, minX, minY, invSize);
@@ -182,22 +191,46 @@ function isEarHashed(ear, minX, minY, invSize) {
 
     // look for points inside the triangle in both directions
     while (p && p.z >= minZ && n && n.z <= maxZ) {
-        if (p !== ear.prev && p !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+        if (
+            p !== ear.prev &&
+            p !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0
+        )
+            return false;
         p = p.prevZ;
 
-        if (n !== ear.prev && n !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
+        if (
+            n !== ear.prev &&
+            n !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
+            area(n.prev, n, n.next) >= 0
+        )
+            return false;
         n = n.nextZ;
     }
 
     // look for remaining points in decreasing z-order
     while (p && p.z >= minZ) {
-        if (p !== ear.prev && p !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+        if (
+            p !== ear.prev &&
+            p !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0
+        )
+            return false;
         p = p.prevZ;
     }
 
     // look for remaining points in increasing z-order
     while (n && n.z <= maxZ) {
-        if (n !== ear.prev && n !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
+        if (
+            n !== ear.prev &&
+            n !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
+            area(n.prev, n, n.next) >= 0
+        )
+            return false;
         n = n.nextZ;
     }
 
@@ -211,7 +244,12 @@ function cureLocalIntersections(start, triangles, dim) {
         const a = p.prev;
         const b = p.next.next;
 
-        if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
+        if (
+            !equals(a, b) &&
+            intersects(a, p, p.next, b) &&
+            locallyInside(a, b) &&
+            locallyInside(b, a)
+        ) {
             triangles.push(a.i / dim);
             triangles.push(p.i / dim);
             triangles.push(b.i / dim);
@@ -307,7 +345,7 @@ function findHoleBridge(hole, outerNode) {
     // segment's endpoint with lesser x will be potential connection point
     do {
         if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y) {
-            const x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
+            const x = p.x + ((hy - p.y) * (p.next.x - p.x)) / (p.next.y - p.y);
             if (x <= hx && x > qx) {
                 qx = x;
                 if (x === hx) {
@@ -337,10 +375,27 @@ function findHoleBridge(hole, outerNode) {
     p = m.next;
 
     while (p !== stop) {
-        if (hx >= p.x && p.x >= mx && hx !== p.x && pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
+        if (
+            hx >= p.x &&
+            p.x >= mx &&
+            hx !== p.x &&
+            pointInTriangle(
+                hy < my ? hx : qx,
+                hy,
+                mx,
+                my,
+                hy < my ? qx : hx,
+                hy,
+                p.x,
+                p.y
+            )
+        ) {
             tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
 
-            if ((tan < tanMin || tan === tanMin && p.x > m.x) && locallyInside(p, hole)) {
+            if (
+                (tan < tanMin || (tan === tanMin && p.x > m.x)) &&
+                locallyInside(p, hole)
+            ) {
                 m = p;
                 tanMin = tan;
             }
@@ -398,7 +453,7 @@ function sortLinked(list) {
             }
             qSize = inSize;
 
-            while (pSize > 0 || qSize > 0 && q) {
+            while (pSize > 0 || (qSize > 0 && q)) {
                 if (pSize !== 0 && (qSize === 0 || !q || p.z <= q.z)) {
                     e = p;
                     p = p.nextZ;
@@ -409,7 +464,8 @@ function sortLinked(list) {
                     qSize--;
                 }
 
-                if (tail) tail.nextZ = e; else list = e;
+                if (tail) tail.nextZ = e;
+                else list = e;
 
                 e.prevZ = tail;
                 tail = e;
@@ -431,17 +487,17 @@ function zOrder(x, y, minX, minY, invSize) {
     x = 32767 * (x - minX) * invSize;
     y = 32767 * (y - minY) * invSize;
 
-    x = (x | x << 8) & 0x00FF00FF;
-    x = (x | x << 4) & 0x0F0F0F0F;
-    x = (x | x << 2) & 0x33333333;
-    x = (x | x << 1) & 0x55555555;
+    x = (x | (x << 8)) & 0x00ff00ff;
+    x = (x | (x << 4)) & 0x0f0f0f0f;
+    x = (x | (x << 2)) & 0x33333333;
+    x = (x | (x << 1)) & 0x55555555;
 
-    y = (y | y << 8) & 0x00FF00FF;
-    y = (y | y << 4) & 0x0F0F0F0F;
-    y = (y | y << 2) & 0x33333333;
-    y = (y | y << 1) & 0x55555555;
+    y = (y | (y << 8)) & 0x00ff00ff;
+    y = (y | (y << 4)) & 0x0f0f0f0f;
+    y = (y | (y << 2)) & 0x33333333;
+    y = (y | (y << 1)) & 0x55555555;
 
-    return x | y << 1;
+    return x | (y << 1);
 }
 
 // find the leftmost node of a polygon ring
@@ -458,12 +514,23 @@ function getLeftmost(start) {
 
 // check if a point lies within a convex triangle
 function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
-    return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 && (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 && (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
+    return (
+        (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
+        (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
+        (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0
+    );
 }
 
 // check if a diagonal between two polygon nodes is valid (lies in polygon interior)
 function isValidDiagonal(a, b) {
-    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) && locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b);
+    return (
+        a.next.i !== b.i &&
+        a.prev.i !== b.i &&
+        !intersectsPolygon(a, b) &&
+        locallyInside(a, b) &&
+        locallyInside(b, a) &&
+        middleInside(a, b)
+    );
 }
 
 // signed area of a triangle
@@ -478,15 +545,26 @@ function equals(p1, p2) {
 
 // check if two segments intersect
 function intersects(p1, q1, p2, q2) {
-    if (equals(p1, q1) && equals(p2, q2) || equals(p1, q2) && equals(p2, q1)) return true;
-    return area(p1, q1, p2) > 0 !== area(p1, q1, q2) > 0 && area(p2, q2, p1) > 0 !== area(p2, q2, q1) > 0;
+    if ((equals(p1, q1) && equals(p2, q2)) || (equals(p1, q2) && equals(p2, q1)))
+        return true;
+    return (
+        area(p1, q1, p2) > 0 !== area(p1, q1, q2) > 0 &&
+        area(p2, q2, p1) > 0 !== area(p2, q2, q1) > 0
+    );
 }
 
 // check if a polygon diagonal intersects any polygon segments
 function intersectsPolygon(a, b) {
     let p = a;
     do {
-        if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects(p, p.next, a, b)) return true;
+        if (
+            p.i !== a.i &&
+            p.next.i !== a.i &&
+            p.i !== b.i &&
+            p.next.i !== b.i &&
+            intersects(p, p.next, a, b)
+        )
+            return true;
         p = p.next;
     } while (p !== a);
 
@@ -495,7 +573,9 @@ function intersectsPolygon(a, b) {
 
 // check if a polygon diagonal is locally inside the polygon
 function locallyInside(a, b) {
-    return area(a.prev, a, a.next) < 0 ? area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0 : area(a, b, a.prev) < 0 || area(a, a.next, b) < 0;
+    return area(a.prev, a, a.next) < 0
+        ? area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0
+        : area(a, b, a.prev) < 0 || area(a, a.next, b) < 0;
 }
 
 // check if the middle point of a polygon diagonal is inside the polygon
@@ -505,7 +585,12 @@ function middleInside(a, b) {
     const px = (a.x + b.x) / 2;
     const py = (a.y + b.y) / 2;
     do {
-        if (p.y > py !== p.next.y > py && p.next.y !== p.y && px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x) inside = !inside;
+        if (
+            p.y > py !== p.next.y > py &&
+            p.next.y !== p.y &&
+            px < ((p.next.x - p.x) * (py - p.y)) / (p.next.y - p.y) + p.x
+        )
+            inside = !inside;
         p = p.next;
     } while (p !== a);
 
@@ -584,7 +669,7 @@ function Node(i, x, y) {
 
 // return a percentage difference between the polygon area and its triangulation area;
 // used to verify correctness of triangulation
-earcut.deviation = function(data, holeIndices, dim, triangles) {
+earcut.deviation = function (data, holeIndices, dim, triangles) {
     const hasHoles = holeIndices?.length;
     const outerLen = hasHoles ? holeIndices[0] * dim : data.length;
 
@@ -602,10 +687,15 @@ earcut.deviation = function(data, holeIndices, dim, triangles) {
         const a = triangles[i] * dim;
         const b = triangles[i + 1] * dim;
         const c = triangles[i + 2] * dim;
-        trianglesArea += Math.abs((data[a] - data[c]) * (data[b + 1] - data[a + 1]) - (data[a] - data[b]) * (data[c + 1] - data[a + 1]));
+        trianglesArea += Math.abs(
+            (data[a] - data[c]) * (data[b + 1] - data[a + 1]) -
+                (data[a] - data[b]) * (data[c + 1] - data[a + 1])
+        );
     }
 
-    return polygonArea === 0 && trianglesArea === 0 ? 0 : Math.abs((trianglesArea - polygonArea) / polygonArea);
+    return polygonArea === 0 && trianglesArea === 0
+        ? 0
+        : Math.abs((trianglesArea - polygonArea) / polygonArea);
 };
 
 function signedArea(data, start, end, dim) {
@@ -618,7 +708,7 @@ function signedArea(data, start, end, dim) {
 }
 
 // turn a polygon in a multi-dimensional array form (e.g. as in GeoJSON) into a form Earcut accepts
-earcut.flatten = function(data) {
+earcut.flatten = function (data) {
     const dim = data[0][0].length;
     const result = { vertices: [], holes: [], dimensions: dim };
     let holeIndex = 0;

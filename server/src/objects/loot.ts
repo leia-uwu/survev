@@ -1,20 +1,20 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type Game } from "../game";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
+import { math } from "../../../shared/utils/math";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type River } from "../../../shared/utils/river";
 import { util } from "../../../shared/utils/util";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { Config } from "../config";
+import { type Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 import { type Player } from "./player";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { Config } from "../config";
-import { type River } from "../../../shared/utils/river";
-import { math } from "../../../shared/utils/math";
 
 export class LootBarn {
     loots: Loot[] = [];
-    constructor(public game: Game) { }
+    constructor(public game: Game) {}
 
     update(dt: number) {
         for (let i = 0; i < this.loots.length; i++) {
@@ -32,18 +32,27 @@ export class LootBarn {
         for (let i = 0; i < dropCount; i++) {
             this.addLoot(item, player.pos, player.layer, 60, undefined, -4, dir);
         }
-        if (amount % 60 !== 0) this.addLoot(item, player.pos, player.layer, amount % 60, undefined, -4, dir);
+        if (amount % 60 !== 0)
+            this.addLoot(item, player.pos, player.layer, amount % 60, undefined, -4, dir);
     }
 
     /**
-    * spawns loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
-    */
+     * spawns loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
+     */
     addLootWithoutAmmo(type: string, pos: Vec2, layer: number, count: number) {
         const loot = new Loot(this.game, type, pos, layer, count);
         this._addLoot(loot);
     }
 
-    addLoot(type: string, pos: Vec2, layer: number, count: number, useCountForAmmo?: boolean, pushSpeed?: number, dir?: Vec2) {
+    addLoot(
+        type: string,
+        pos: Vec2,
+        layer: number,
+        count: number,
+        useCountForAmmo?: boolean,
+        pushSpeed?: number,
+        dir?: Vec2
+    ) {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
 
@@ -54,12 +63,26 @@ export class LootBarn {
             if (ammoCount <= 0) return;
             const halfAmmo = Math.ceil(ammoCount / 2);
 
-            const leftAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(-0.2, -0.2)), layer, halfAmmo, 0);
+            const leftAmmo = new Loot(
+                this.game,
+                def.ammo,
+                v2.add(pos, v2.create(-0.2, -0.2)),
+                layer,
+                halfAmmo,
+                0
+            );
             leftAmmo.push(v2.create(-1, -1), 0.5);
             this._addLoot(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
-                const rightAmmo = new Loot(this.game, def.ammo, v2.add(pos, v2.create(0.2, -0.2)), layer, ammoCount - halfAmmo, 0);
+                const rightAmmo = new Loot(
+                    this.game,
+                    def.ammo,
+                    v2.add(pos, v2.create(0.2, -0.2)),
+                    layer,
+                    ammoCount - halfAmmo,
+                    0
+                );
                 rightAmmo.push(v2.create(1, -1), 0.5);
 
                 this._addLoot(rightAmmo);
@@ -72,9 +95,9 @@ export class LootBarn {
         this.loots.push(loot);
     }
 
-    getLootTable(tier: string): Array<{ name: string, count: number }> {
+    getLootTable(tier: string): Array<{ name: string; count: number }> {
         const lootTable = this.game.map.mapDef.lootTable[tier];
-        const items: Array<{ name: string, count: number }> = [];
+        const items: Array<{ name: string; count: number }> = [];
 
         if (!lootTable) {
             console.warn(`Unknown loot tier with type ${tier}`);
@@ -83,7 +106,7 @@ export class LootBarn {
 
         const weights: number[] = [];
 
-        const weightedItems: Array<{ name: string, count: number }> = [];
+        const weightedItems: Array<{ name: string; count: number }> = [];
         for (const item of lootTable) {
             weightedItems.push({
                 name: item.name,
@@ -138,7 +161,15 @@ export class Loot extends BaseGameObject {
 
     bellowBridge = false;
 
-    constructor(game: Game, type: string, pos: Vec2, layer: number, count: number, pushSpeed = 2, dir?: Vec2) {
+    constructor(
+        game: Game,
+        type: string,
+        pos: Vec2,
+        layer: number,
+        count: number,
+        pushSpeed = 2,
+        dir?: Vec2
+    ) {
         super(game, game.map.clampToMapBounds(pos));
 
         const def = GameObjectDefs[type];
@@ -165,7 +196,8 @@ export class Loot extends BaseGameObject {
             this.ticks = 0;
             this.setDirty();
         } else this.ticks++;
-        const moving = Math.abs(this.vel.x) > 0.001 ||
+        const moving =
+            Math.abs(this.vel.x) > 0.001 ||
             Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
 
@@ -216,7 +248,11 @@ export class Loot extends BaseGameObject {
                 obj.collidable &&
                 coldet.test(obj.collider, this.collider)
             ) {
-                const res = collider.intersectCircle(obj.collider, this.collider.pos, this.collider.rad);
+                const res = collider.intersectCircle(
+                    obj.collider,
+                    this.collider.pos,
+                    this.collider.rad
+                );
                 if (res) {
                     this.pos = v2.add(this.pos, v2.mul(res.dir, res.pen));
                 }
@@ -226,13 +262,22 @@ export class Loot extends BaseGameObject {
                 util.sameLayer(obj.layer, this.layer) &&
                 coldet.test(this.collider, obj.collider)
             ) {
-                const res = coldet.intersectCircleCircle(this.pos, this.collider.rad, obj.pos, obj.collider.rad);
+                const res = coldet.intersectCircleCircle(
+                    this.pos,
+                    this.collider.rad,
+                    obj.pos,
+                    obj.collider.rad
+                );
                 if (res) {
                     this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
                     const norm = res.dir;
-                    const vRelativeVelocity = v2.create(this.vel.x - obj.vel.x, this.vel.y - obj.vel.y);
+                    const vRelativeVelocity = v2.create(
+                        this.vel.x - obj.vel.x,
+                        this.vel.y - obj.vel.y
+                    );
 
-                    const speed = (vRelativeVelocity.x * norm.x + vRelativeVelocity.y * norm.y);
+                    const speed =
+                        vRelativeVelocity.x * norm.x + vRelativeVelocity.y * norm.y;
 
                     if (speed < 0) continue;
 
@@ -250,8 +295,10 @@ export class Loot extends BaseGameObject {
             const rivers = this.game.map.terrain.rivers;
             for (let i = 0; i < rivers.length; i++) {
                 const river = rivers[i];
-                if (coldet.testPointAabb(this.pos, river.aabb.min, river.aabb.max) &&
-                    math.pointInsidePolygon(this.pos, river.waterPoly)) {
+                if (
+                    coldet.testPointAabb(this.pos, river.aabb.min, river.aabb.max) &&
+                    math.pointInsidePolygon(this.pos, river.waterPoly)
+                ) {
                     finalRiver = river;
                 }
             }

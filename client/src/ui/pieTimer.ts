@@ -101,17 +101,14 @@ export class PieTimer {
         const labelHeight = fontWidth * 1.5;
         const rectX = 0 - labelWidth / 2;
         const rectY = 87.5 - labelHeight / 2;
-        const l =
-            math.min(this.elapsed / this.duration, 1) * Math.PI * 2 - Math.PI * 0.5;
+        const l = math.min(this.elapsed / this.duration, 1) * Math.PI * 2 - Math.PI * 0.5;
         this.gfx.clear();
         this.gfx.beginFill(0, 0.5);
         this.gfx.drawRoundedRect(rectX, rectY, labelWidth, labelHeight, 5);
         this.gfx.endFill();
         this.gfx.lineStyle(6, 16777215);
         this.gfx.arc(0, 0, 35, -Math.PI * 0.5, l, false);
-        this.counterText.text = math
-            .max(0, this.duration - this.elapsed)
-            .toFixed(1);
+        this.counterText.text = math.max(0, this.duration - this.elapsed).toFixed(1);
         this.labelText.position.y = 87.5;
         this.labelText.text = this.label;
         this.container.position.set(

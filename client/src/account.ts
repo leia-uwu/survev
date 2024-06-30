@@ -1,8 +1,8 @@
 import $ from "jquery";
-import { api } from "./api";
-import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
 import { util } from "../../shared/utils/util";
+import { api } from "./api";
 import { type ConfigManager } from "./config";
+import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
 
 type DataOrCallback =
     | Record<string, unknown>
@@ -59,7 +59,7 @@ export class Account {
 
     loadout = loadouts.defaultLoadout();
     loadoutPriv = "";
-    items: Array<{ type: string, status: ItemStatus }> = [];
+    items: Array<{ type: string; status: ItemStatus }> = [];
     quests = [];
     questPriv = "";
     pass = {};
@@ -67,46 +67,42 @@ export class Account {
     constructor(public config: ConfigManager) {
         const r = this;
 
-        window.login = function() {
+        window.login = function () {
             r.login();
         };
-        window.deleteAccount = function() {
+        window.deleteAccount = function () {
             r.deleteAccount();
         };
-        window.deleteItems = function() {
-            r.ajaxRequest("/api/user/delete_items", {}, (e, t) => {
+        window.deleteItems = function () {
+            r.ajaxRequest("/api/user/delete_items", {}, (_e, _t) => {
                 r.loadProfile();
             });
         };
-        window.unlock = function(type) {
+        window.unlock = function (type) {
             console.log(`Unlocking ${type}`);
             r.unlock(type);
         };
-        window.setQuest = function(questType, idx = 0) {
+        window.setQuest = function (questType, idx = 0) {
             r.ajaxRequest(
                 "/api/user/set_quest",
                 {
                     questType,
                     idx
                 },
-                (e, t) => {
+                (_e, _t) => {
                     r.getPass();
                 }
             );
         };
-        window.refreshQuest = function(idx) {
+        window.refreshQuest = function (idx) {
             r.refreshQuest(idx);
         };
-        window.setPassUnlock = function(unlockType) {
+        window.setPassUnlock = function (unlockType) {
             r.setPassUnlock(unlockType);
         };
     }
 
-    ajaxRequest(
-        url: string,
-        data: DataOrCallback,
-        cb?: (err: any, res?: any) => void
-    ) {
+    ajaxRequest(url: string, data: DataOrCallback, cb?: (err: any, res?: any) => void) {
         if (typeof data === "function") {
             cb = data;
             data = null;
@@ -203,7 +199,7 @@ export class Account {
     logout() {
         this.config.set("profile", null);
         this.config.set("sessionCookie", null);
-        this.ajaxRequest("/api/user/logout", (e, t) => {
+        this.ajaxRequest("/api/user/logout", (_e, _t) => {
             window.location.reload();
         });
     }
@@ -246,7 +242,7 @@ export class Account {
 
     resetStats() {
         const e = this;
-        this.ajaxRequest("/api/user/reset_stats", (t, r) => {
+        this.ajaxRequest("/api/user/reset_stats", (t, _r) => {
             if (t) {
                 console.error("account", "reset_stats_error");
                 e.emit("error", "server_error");
@@ -255,7 +251,7 @@ export class Account {
     }
 
     deleteAccount() {
-        this.ajaxRequest("/api/user/delete", (err, res) => {
+        this.ajaxRequest("/api/user/delete", (err, _res) => {
             if (err) {
                 console.error("account", "delete_error");
                 this.emit("error", "server_error");
@@ -338,7 +334,7 @@ export class Account {
                     status,
                     itemTypes
                 },
-                (err, res) => {
+                (err, _res) => {
                     if (err) {
                         console.error("account", "set_item_status_error");
                     }
@@ -365,7 +361,7 @@ export class Account {
         );
     }
 
-    getPass(tryRefreshQuests?: boolean) {
+    getPass(_tryRefreshQuests?: boolean) {
         /* const This = this;
             this.ajaxRequest(
                 "/api/user/get_pass",

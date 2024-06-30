@@ -1,9 +1,9 @@
 interface HealEffectDef {
-    readonly type: "heal_effect" | "boost_effect"
-    name: string
-    rarity: number
-    texture: string
-    emitter: string
+    readonly type: "heal_effect" | "boost_effect";
+    name: string;
+    rarity: number;
+    texture: string;
+    emitter: string;
 }
 
 export const HealEffectDefs: Record<string, HealEffectDef> = {

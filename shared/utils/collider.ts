@@ -1,6 +1,6 @@
-import { type Collider, type AABB, coldet, type ColliderWithHeight } from "./coldet";
+import { type AABB, type Collider, type ColliderWithHeight, coldet } from "./coldet";
 import { math } from "./math";
-import { v2, type Vec2 } from "./v2";
+import { type Vec2, v2 } from "./v2";
 
 //
 // collider

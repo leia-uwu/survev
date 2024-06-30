@@ -1,38 +1,41 @@
 import $ from "jquery";
-import { api } from "./api";
-import { device } from "./device";
 import { MapDefs } from "../../shared/defs/mapDefs";
+import { api } from "./api";
 import { type ConfigManager } from "./config";
+import { device } from "./device";
 import { type Localization } from "./ui/localization";
 export enum TeamMode {
     Solo = 1,
     Duo = 2,
-    Squad = 4,
+    Squad = 4
 }
 
 interface Info {
-    country: string
+    country: string;
     modes: Array<{
-        mapName: string
-        teamMode: TeamMode
-    }>
-    pops: Record<string, string>
+        mapName: string;
+        teamMode: TeamMode;
+    }>;
+    pops: Record<string, string>;
     youtube: {
-        name: string
-        link: string
-    }
+        name: string;
+        link: string;
+    };
     twitch: Array<{
-        name: string
-        viewers: number
-        url: string
-        img: string
-    }>
+        name: string;
+        viewers: number;
+        url: string;
+        img: string;
+    }>;
 }
 export class SiteInfo {
     info: Info = {} as Info;
     loaded = false;
 
-    constructor(public config: ConfigManager, public localization: Localization) {
+    constructor(
+        public config: ConfigManager,
+        public localization: Localization
+    ) {
         this.config = config;
         this.localization = localization;
     }
@@ -41,7 +44,7 @@ export class SiteInfo {
         const locale = this.localization.getLocale();
         const siteInfoUrl = api.resolveUrl(`/api/site_info?language=${locale}`);
 
-        $.ajax(siteInfoUrl).done((data, status) => {
+        $.ajax(siteInfoUrl).done((data, _status) => {
             this.info = data || {};
             this.loaded = true;
             this.updatePageFromInfo();
@@ -59,9 +62,8 @@ export class SiteInfo {
         const modes = this.info.modes || [];
         for (let i = 0; i < modes.length; i++) {
             const mode = modes[i];
-            const mapDef = (
-                MapDefs[mode.mapName as keyof typeof MapDefs] || MapDefs.main
-            ).desc;
+            const mapDef = (MapDefs[mode.mapName as keyof typeof MapDefs] || MapDefs.main)
+                .desc;
             const buttonText = mapDef.buttonText
                 ? mapDef.buttonText
                 : modeTypes[mode.teamMode];

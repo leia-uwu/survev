@@ -1,6 +1,6 @@
 import { earcut } from "./earcut";
 import { assert } from "./util";
-import { v2, type Vec2 } from "./v2";
+import { type Vec2, v2 } from "./v2";
 
 const kEpsilon = 0.000001;
 
@@ -8,7 +8,7 @@ const kEpsilon = 0.000001;
 
 export const math = {
     clamp(a: number, min: number, max: number) {
-        return a < max ? a > min ? a : min : max;
+        return a < max ? (a > min ? a : min) : max;
     },
 
     v2Clamp(vector: Vec2, minV2: Vec2, maxV2: Vec2) {
@@ -33,8 +33,8 @@ export const math = {
             maxY = maxV2.y;
         }
 
-        const resX = vector.x < maxX ? vector.x > minX ? vector.x : minX : maxX;
-        const resY = vector.y < maxY ? vector.y > minY ? vector.y : minY : maxY;
+        const resX = vector.x < maxX ? (vector.x > minX ? vector.x : minX) : maxX;
+        const resY = vector.y < maxY ? (vector.y > minY ? vector.y : minY) : maxY;
 
         return v2.create(resX, resY);
     },
@@ -64,11 +64,7 @@ export const math = {
         return t * t * (3.0 - 2.0 * t);
     },
     easeOutElastic(e: number, t = 0.3) {
-        return (
-            Math.pow(2, e * -10) *
-            Math.sin(((e - t / 4) * (Math.PI * 2)) / t) +
-            1
-        );
+        return Math.pow(2, e * -10) * Math.sin(((e - t / 4) * (Math.PI * 2)) / t) + 1;
     },
     easeOutExpo(e: number) {
         if (e === 1) {
@@ -101,7 +97,7 @@ export const math = {
     },
 
     deg2rad(deg: number) {
-        return deg * Math.PI / 180.0;
+        return (deg * Math.PI) / 180.0;
     },
 
     deg2vec2(deg: number) {
@@ -110,12 +106,12 @@ export const math = {
     },
 
     rad2deg(rad: number) {
-        return rad * 180.0 / Math.PI;
+        return (rad * 180.0) / Math.PI;
     },
 
     rad2degFromDirection(y: number, x: number) {
         const rad = Math.atan2(y, x);
-        let angle = rad * 180 / Math.PI;
+        let angle = (rad * 180) / Math.PI;
 
         if (angle < 0) {
             angle += 360;
@@ -132,7 +128,7 @@ export const math = {
     },
 
     mod(num: number, n: number) {
-        return (num % n + n) % n;
+        return ((num % n) + n) % n;
     },
 
     fmod(num: number, n: number) {
@@ -145,7 +141,7 @@ export const math = {
     },
 
     oriToRad(ori: number) {
-        return ori % 4 * 0.5 * Math.PI;
+        return (ori % 4) * 0.5 * Math.PI;
     },
 
     oriToAngle(ori: number) {
@@ -153,7 +149,9 @@ export const math = {
     },
 
     radToOri(rad: number) {
-        return Math.floor(math.fmod(rad + Math.PI * 0.25, Math.PI * 2.0) / (Math.PI * 0.5));
+        return Math.floor(
+            math.fmod(rad + Math.PI * 0.25, Math.PI * 2.0) / (Math.PI * 0.5)
+        );
     },
 
     quantize(f: number, min: number, max: number, bits: number) {
@@ -163,11 +161,21 @@ export const math = {
         const t = (x - min) / (max - min);
         const a = t * range + 0.5;
         const b = a < 0.0 ? Math.ceil(a) : Math.floor(a);
-        return min + b / range * (max - min);
+        return min + (b / range) * (max - min);
     },
 
-    v2Quantize(v: Vec2, minX: number, minY: number, maxX: number, maxY: number, bits: number) {
-        return v2.create(math.quantize(v.x, minX, maxX, bits), math.quantize(v.y, minY, maxY, bits));
+    v2Quantize(
+        v: Vec2,
+        minX: number,
+        minY: number,
+        maxX: number,
+        maxY: number,
+        bits: number
+    ) {
+        return v2.create(
+            math.quantize(v.x, minX, maxX, bits),
+            math.quantize(v.y, minY, maxY, bits)
+        );
     },
 
     // Ray-Line and Ray-Polygon implementations from
@@ -197,7 +205,12 @@ export const math = {
 
         let intersected = false;
         for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
-            const distance = this.rayLineIntersect(origin, direction, vertices[j], vertices[i]);
+            const distance = this.rayLineIntersect(
+                origin,
+                direction,
+                vertices[j],
+                vertices[i]
+            );
             if (distance !== undefined) {
                 if (distance < t) {
                     intersected = true;
@@ -224,7 +237,8 @@ export const math = {
             const xj = poly[j].x;
             const yj = poly[j].y;
 
-            const intersect = yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi;
+            const intersect =
+                yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
             if (intersect) {
                 inside = !inside;
             }
@@ -274,7 +288,9 @@ export const math = {
             const by = verts[idx1 * 2 + 1];
             const cx = verts[idx2 * 2 + 0];
             const cy = verts[idx2 * 2 + 1];
-            area += Math.abs((ax * by + bx * cy + cx * ay - bx * ay - cx * by - ax * cy) * 0.5);
+            area += Math.abs(
+                (ax * by + bx * cy + cx * ay - bx * ay - cx * by - ax * cy) * 0.5
+            );
         }
         return area;
     },
@@ -288,9 +304,10 @@ export const math = {
         x3: number,
         y3: number,
         x4: number,
-        y4: number) {
+        y4: number
+    ) {
         // Check if none of the lines are of length 0
-        if (x1 === x2 && y1 === y2 || x3 === x4 && y3 === y4) {
+        if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
             return false;
         }
 
@@ -321,18 +338,18 @@ export const math = {
         if (ori === 0) return v2.add(pos1, pos);
         let xOffset: number, yOffset: number;
         switch (ori) {
-        case 1:
-            xOffset = -pos.y;
-            yOffset = pos.x;
-            break;
-        case 2:
-            xOffset = -pos.x;
-            yOffset = -pos.y;
-            break;
-        case 3:
-            xOffset = pos.y;
-            yOffset = -pos.x;
-            break;
+            case 1:
+                xOffset = -pos.y;
+                yOffset = pos.x;
+                break;
+            case 2:
+                xOffset = -pos.x;
+                yOffset = -pos.y;
+                break;
+            case 3:
+                xOffset = pos.y;
+                yOffset = -pos.x;
+                break;
         }
         return v2.add(pos1, v2.create(xOffset!, yOffset!));
     }

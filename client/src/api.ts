@@ -1,8 +1,8 @@
 export const api = {
-    resolveUrl: function(url: string) {
+    resolveUrl: function (url: string) {
         return url;
     },
-    resolveRoomHost: function() {
+    resolveRoomHost: function () {
         return window.location.host;
     }
 };

@@ -1,36 +1,36 @@
 import { defineSkin } from "../../utils/util";
 
 export interface OutfitDef {
-    readonly type: "outfit"
-    name: string
+    readonly type: "outfit";
+    name: string;
     skinImg: {
-        baseTint: number
-        baseSprite: string
-        handTint: number
-        handSprite: string
-        footTint: number
-        footSprite: string
-        backpackTint: number
-        backpackSprite: string
-    }
+        baseTint: number;
+        baseSprite: string;
+        handTint: number;
+        handSprite: string;
+        footTint: number;
+        footSprite: string;
+        backpackTint: number;
+        backpackSprite: string;
+    };
     lootImg: {
-        sprite: string
-        tint: number
-        border: string
-        borderTint: number
-        scale: number
-    }
+        sprite: string;
+        tint: number;
+        border: string;
+        borderTint: number;
+        scale: number;
+    };
     sound: {
-        pickup: string
-    }
-    baseType?: string
-    noDropOnDeath?: boolean
-    rarity?: number
-    lore?: string
-    noDrop?: boolean
-    obstacleType?: string
-    baseScale?: number
-    ghillie?: boolean
+        pickup: string;
+    };
+    baseType?: string;
+    noDropOnDeath?: boolean;
+    rarity?: number;
+    lore?: string;
+    noDrop?: boolean;
+    obstacleType?: string;
+    baseScale?: number;
+    ghillie?: boolean;
 }
 
 function defineOutfitSkin(baseType: string, params: any) {

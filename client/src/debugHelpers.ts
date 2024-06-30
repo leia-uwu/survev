@@ -8,7 +8,7 @@ import { type AABBWithHeight } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { type River } from "../../shared/utils/river";
-import { v2, type Vec2 } from "../../shared/utils/v2";
+import { type Vec2, v2 } from "../../shared/utils/v2";
 import { debugLines } from "./debugLines";
 import { type Building } from "./objects/building";
 import { type Obstacle } from "./objects/obstacle";
@@ -16,8 +16,7 @@ import { type Structure } from "./objects/structure";
 
 export function renderMapBuildingBounds(mapObj: Building | Structure) {
     const def = MapObjectDefs[mapObj.type] as BuildingDef;
-    const boundScale =
-        def.type == "building" || def.type == "structure" ? 1.15 : 1.0;
+    const boundScale = def.type == "building" || def.type == "structure" ? 1.15 : 1.0;
     const bounds = [
         collider.transform(
             mapHelpers.getBoundingCollider(mapObj.type),
@@ -44,12 +43,8 @@ export function renderMapBuildingBounds(mapObj: Building | Structure) {
 }
 
 export function renderMapObstacleBounds(mapObj: Obstacle) {
-    const def = MapObjectDefs[mapObj.type] as
-        | ObstacleDef
-        | BuildingDef
-        | StructureDef;
-    const boundScale =
-        def.type == "building" || def.type == "structure" ? 1.1 : 1.0;
+    const def = MapObjectDefs[mapObj.type] as ObstacleDef | BuildingDef | StructureDef;
+    const boundScale = def.type == "building" || def.type == "structure" ? 1.1 : 1.0;
     let bounds = [
         collider.transform(
             mapHelpers.getBoundingCollider(mapObj.type),
@@ -86,10 +81,7 @@ export function renderWaterEdge(mapObj: Structure) {
             mapObj.rot,
             mapObj.scale * 1.15
         ) as AABBWithHeight;
-        const center = v2.add(
-            bounds.min,
-            v2.mul(v2.sub(bounds.max, bounds.min), 0.5)
-        );
+        const center = v2.add(bounds.min, v2.mul(v2.sub(bounds.max, bounds.min), 0.5));
         const dir = v2.rotate(waterEdge.dir, mapObj.rot);
 
         const renderRay = (center: Vec2, dir: Vec2, len: number) => {
@@ -99,11 +91,7 @@ export function renderWaterEdge(mapObj: Structure) {
             debugLines.addRay(center, dir, Math.abs(len), 0xffffff, 0.0);
         };
         renderRay(center, dir, waterEdge.distMin);
-        renderRay(
-            v2.add(center, v2.mul(v2.perp(dir), 0.5)),
-            dir,
-            waterEdge.distMax
-        );
+        renderRay(v2.add(center, v2.mul(v2.perp(dir), 0.5)), dir, waterEdge.distMax);
     }
 }
 
@@ -134,13 +122,7 @@ export function renderBridge(mapObj: Structure) {
         const dims = mapHelpers.getBridgeDims(mapObj.type);
         const dir = v2.rotate(v2.create(1.0, 0.0), mapObj.rot);
         debugLines.addRay(mapObj.pos, dir, dims.length * 0.5, 0xff0000, 0.0);
-        debugLines.addRay(
-            mapObj.pos,
-            v2.perp(dir),
-            dims.width * 0.5,
-            0x00ff00,
-            0.0
-        );
+        debugLines.addRay(mapObj.pos, v2.perp(dir), dims.width * 0.5, 0x00ff00, 0.0);
 
         const bridgeOverlapCol = mapHelpers.getBridgeOverlapCollider(
             mapObj.type,

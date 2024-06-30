@@ -1,8 +1,8 @@
-import { type GameObject } from "../objects/gameObject";
-import { coldet, type Collider } from "../../../shared/utils/coldet";
+import { type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type GameObject } from "../objects/gameObject";
 
 /**
  * A Grid to filter collision detection of game objects
@@ -24,9 +24,8 @@ export class Grid {
         this.width = Math.floor(width / this.cellSize);
         this.height = Math.floor(height / this.cellSize);
 
-        this._grid = Array.from(
-            { length: this.width + 1 },
-            () => Array.from({ length: this.height + 1 }, () => new Map())
+        this._grid = Array.from({ length: this.width + 1 }, () =>
+            Array.from({ length: this.height + 1 }, () => new Map())
         );
     }
 

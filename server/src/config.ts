@@ -36,32 +36,34 @@ export const Config = {
     spawn: { mode: SpawnMode.Random },
 
     tps: 30
-
 } satisfies ConfigType as ConfigType;
 
 export interface ConfigType {
-    readonly host: string
-    readonly port: number
+    readonly host: string;
+    readonly port: number;
 
     /**
      * HTTPS/SSL options. Not used if running locally or with nginx.
      */
     readonly ssl?: {
-        readonly keyFile: string
-        readonly certFile: string
-    }
+        readonly keyFile: string;
+        readonly certFile: string;
+    };
 
-    readonly regions: Record<string, {
-        readonly https: boolean
-        readonly address: string
-    }>
+    readonly regions: Record<
+        string,
+        {
+            readonly https: boolean;
+            readonly address: string;
+        }
+    >;
 
-    readonly defaultRegion: string
+    readonly defaultRegion: string;
 
     readonly modes: Array<{
-        mapName: keyof typeof MapDefs
-        teamMode: TeamMode
-    }>
+        mapName: keyof typeof MapDefs;
+        teamMode: TeamMode;
+    }>;
 
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.
@@ -69,17 +71,20 @@ export interface ConfigType {
      * SpawnMode.Fixed always spawns the player at the exact position given.
      * SpawnMode.Center always spawns the player in the center of the map.
      */
-    readonly spawn: {
-        readonly mode: SpawnMode.Random
-    } | {
-        readonly mode: SpawnMode.Fixed
-        readonly pos: Vec2
-    } | {
-        readonly mode: SpawnMode.Center
-    }
+    readonly spawn:
+        | {
+              readonly mode: SpawnMode.Random;
+          }
+        | {
+              readonly mode: SpawnMode.Fixed;
+              readonly pos: Vec2;
+          }
+        | {
+              readonly mode: SpawnMode.Center;
+          };
 
     /**
      * Server tick rate
      */
-    readonly tps: number
+    readonly tps: number;
 }

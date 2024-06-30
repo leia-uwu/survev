@@ -16,7 +16,13 @@ export class River {
     shoreWidths: number[];
     aabb: AABB;
 
-    constructor(splinePts: Vec2[], riverWidth: number, looped: boolean, otherRivers: River[], mapBounds: AABB) {
+    constructor(
+        splinePts: Vec2[],
+        riverWidth: number,
+        looped: boolean,
+        otherRivers: River[],
+        mapBounds: AABB
+    ) {
         this.spline = new Spline(splinePts, looped);
         this.waterWidth = riverWidth;
         this.shoreWidth = math.clamp(riverWidth * 0.75, 4.0, 8.0);
@@ -58,10 +64,16 @@ export class River {
                 let edgePos = v2.create(0.0, 0.0);
                 let edgeNorm = v2.create(1.0, 0.0);
                 if (Math.abs(e.x) > Math.abs(e.y)) {
-                    edgePos = v2.create(e.x > 0.0 ? mapBounds.max.x : mapBounds.min.x, vert.y);
+                    edgePos = v2.create(
+                        e.x > 0.0 ? mapBounds.max.x : mapBounds.min.x,
+                        vert.y
+                    );
                     edgeNorm = v2.create(e.x > 0.0 ? 1.0 : -1.0, 0.0);
                 } else {
-                    edgePos = v2.create(vert.x, e.y > 0.0 ? mapBounds.max.y : mapBounds.min.y);
+                    edgePos = v2.create(
+                        vert.x,
+                        e.y > 0.0 ? mapBounds.max.y : mapBounds.min.y
+                    );
                     edgeNorm = v2.create(0.0, e.y > 0.0 ? 1.0 : -1.0);
                 }
                 if (v2.lengthSqr(v2.sub(edgePos, vert)) < 1.0) {
@@ -100,7 +112,11 @@ export class River {
                 if (_len < river.waterWidth * 2.0) {
                     shoreWidth = math.max(shoreWidth, river.shoreWidth);
                 }
-                if ((i === 0 || i === splinePts.length - 1) && _len < 1.5 && !nearMapEdge) {
+                if (
+                    (i === 0 || i === splinePts.length - 1) &&
+                    _len < 1.5 &&
+                    !nearMapEdge
+                ) {
                     boundingRiver = river;
                 }
             }
@@ -111,7 +127,11 @@ export class River {
             shoreWidth += waterWidth;
 
             // Poly verts
-            const clipRayToPoly = function clipRayToPoly(pt: Vec2, dir: Vec2, poly: Vec2[]) {
+            const clipRayToPoly = function clipRayToPoly(
+                pt: Vec2,
+                dir: Vec2,
+                poly: Vec2[]
+            ) {
                 const end = v2.add(pt, dir);
                 if (!math.pointInsidePolygon(end, poly)) {
                     const _t = math.rayPolygonIntersect(pt, dir, poly);
@@ -132,8 +152,16 @@ export class River {
                 const _dist = v2.length(toVert);
                 toVert = _dist > 0.0001 ? v2.div(toVert, _dist) : v2.create(1.0, 0.0);
 
-                const interiorWaterWidth = math.lerp(math.min(waterWidth / avgDistToCenter, 1.0) ** 0.5, waterWidth, (1.0 - (avgDistToCenter - waterWidth) / _dist) * _dist);
-                const interiorShoreWidth = math.lerp(math.min(shoreWidth / avgDistToCenter, 1.0) ** 0.5, shoreWidth, (1.0 - (avgDistToCenter - shoreWidth) / _dist) * _dist);
+                const interiorWaterWidth = math.lerp(
+                    math.min(waterWidth / avgDistToCenter, 1.0) ** 0.5,
+                    waterWidth,
+                    (1.0 - (avgDistToCenter - waterWidth) / _dist) * _dist
+                );
+                const interiorShoreWidth = math.lerp(
+                    math.min(shoreWidth / avgDistToCenter, 1.0) ** 0.5,
+                    shoreWidth,
+                    (1.0 - (avgDistToCenter - shoreWidth) / _dist) * _dist
+                );
 
                 waterPtA = v2.add(vert, v2.mul(toVert, waterWidth));
                 waterPtB = v2.add(vert, v2.mul(toVert, -interiorWaterWidth));

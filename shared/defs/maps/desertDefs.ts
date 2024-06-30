@@ -1,8 +1,8 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { Main } from "./baseDefs";
 import { type MapDef } from "../mapDefs";
+import { Main } from "./baseDefs";
 
 const mapDef = {
     mapId: 1,
@@ -18,12 +18,7 @@ const mapDef = {
             { name: "log_04", channel: "sfx" },
             { name: "piano_music_01", channel: "ambient" }
         ],
-        atlases: [
-            "gradient",
-            "loadout",
-            "shared",
-            "desert"
-        ]
+        atlases: ["gradient", "loadout", "shared", "desert"]
     },
     biome: {
         colors: {
@@ -211,9 +206,7 @@ const mapDef = {
                         widths: [8, 8, 8, 6, 4]
                     }
                 ],
-                masks: [
-                    { pos: v2.create(0.5, 0.5), rad: 80 }
-                ]
+                masks: [{ pos: v2.create(0.5, 0.5), rad: 80 }]
             }
         },
         places: [
@@ -243,10 +236,7 @@ const mapDef = {
                     retryOnFailure: false
                 }
             ],
-            placeSpawns: [
-                "desert_town_01",
-                "desert_town_02"
-            ]
+            placeSpawns: ["desert_town_01", "desert_town_02"]
         },
         densitySpawns: [
             {
@@ -303,11 +293,7 @@ const mapDef = {
                 stone_03: "stone_03b"
             }
         ],
-        importantSpawns: [
-            "desert_town_01",
-            "desert_town_02",
-            "river_town_02"
-        ]
+        importantSpawns: ["desert_town_01", "desert_town_02", "river_town_02"]
     }
 };
 

@@ -7,8 +7,8 @@ function max(a: number, b: number) {
 }
 
 export interface Vec2 {
-    x: number
-    y: number
+    x: number;
+    y: number;
 }
 
 export const v2 = {
@@ -119,7 +119,10 @@ export const v2 = {
     },
 
     randomUnit() {
-        return v2.normalizeSafe(v2.create(Math.random() - 0.5, Math.random() - 0.5), v2.create(1.0, 0.0));
+        return v2.normalizeSafe(
+            v2.create(Math.random() - 0.5, Math.random() - 0.5),
+            v2.create(1.0, 0.0)
+        );
     },
 
     lerp(t: number, a: Vec2, b: Vec2) {

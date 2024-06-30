@@ -3,10 +3,10 @@ import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
 const passMaxLevel = 99;
 
 export const passUtil = {
-    getPassMaxLevel: function() {
+    getPassMaxLevel: function () {
         return passMaxLevel;
     },
-    getPassLevelXp: function(passType: string, level: number) {
+    getPassLevelXp: function (passType: string, level: number) {
         const passDef = PassDefs[passType];
         const levelIdx = level - 1;
         if (levelIdx < passDef.xp.length) {
@@ -15,7 +15,7 @@ export const passUtil = {
             return passDef.xp[passDef.xp.length - 1];
         }
     },
-    getPassLevelAndXp: function(passType: string, passXp: number) {
+    getPassLevelAndXp: function (passType: string, passXp: number) {
         let xp = passXp;
         let level = 1;
         while (level < passMaxLevel) {
@@ -32,10 +32,9 @@ export const passUtil = {
             nextLevelXp: passUtil.getPassLevelXp(passType, level)
         };
     },
-    timeUntilQuestRefresh: function(timeAcquired: number) {
+    timeUntilQuestRefresh: function (timeAcquired: number) {
         return (
-            Math.floor((timeAcquired - 25200000 + 86400000 - 1) / 86400000) *
-            86400000 +
+            Math.floor((timeAcquired - 25200000 + 86400000 - 1) / 86400000) * 86400000 +
             25200000 -
             Date.now()
         );

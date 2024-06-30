@@ -1,4 +1,16 @@
-const _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) { return typeof obj; } : function(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+const _typeof =
+    typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
+        ? function (obj) {
+              return typeof obj;
+          }
+        : function (obj) {
+              return obj &&
+                  typeof Symbol === "function" &&
+                  obj.constructor === Symbol &&
+                  obj !== Symbol.prototype
+                  ? "symbol"
+                  : typeof obj;
+          };
 
 //
 // Taken from https://github.com/substack/node-deep-equal
@@ -6,30 +18,46 @@ const _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symb
 const pSlice = Array.prototype.slice;
 const objectKeys = Object.keys;
 
-const supportsArgumentsClass = (function() {
-    return Object.prototype.toString.call(arguments);
-}()) == "[object Arguments]";
+const supportsArgumentsClass =
+    (function () {
+        return Object.prototype.toString.call(arguments);
+    })() == "[object Arguments]";
 
 function supported(object) {
     return Object.prototype.toString.call(object) == "[object Arguments]";
 }
 
 function unsupported(object) {
-    return object && (typeof object === "undefined" ? "undefined" : _typeof(object)) == "object" && typeof object.length === "number" && Object.prototype.hasOwnProperty.call(object, "callee") && !Object.prototype.propertyIsEnumerable.call(object, "callee") || false;
+    return (
+        (object &&
+            (typeof object === "undefined" ? "undefined" : _typeof(object)) == "object" &&
+            typeof object.length === "number" &&
+            Object.prototype.hasOwnProperty.call(object, "callee") &&
+            !Object.prototype.propertyIsEnumerable.call(object, "callee")) ||
+        false
+    );
 }
 const isArguments = supportsArgumentsClass ? supported : unsupported;
 
-export const deepEqual = function(actual, expected, opts) {
+export const deepEqual = function (actual, expected, opts) {
     if (!opts) opts = {};
     // 7.1. All identical values are equivalent, as determined by ===.
     if (actual === expected) {
         return true;
-    } if (actual instanceof Date && expected instanceof Date) {
+    }
+    if (actual instanceof Date && expected instanceof Date) {
         return actual.getTime() === expected.getTime();
 
         // 7.3. Other pairs that do not both pass typeof value == 'object',
         // equivalence is determined by ==.
-    } if (!actual || !expected || (typeof actual === "undefined" ? "undefined" : _typeof(actual)) != "object" && (typeof expected === "undefined" ? "undefined" : _typeof(expected)) != "object") {
+    }
+    if (
+        !actual ||
+        !expected ||
+        ((typeof actual === "undefined" ? "undefined" : _typeof(actual)) != "object" &&
+            (typeof expected === "undefined" ? "undefined" : _typeof(expected)) !=
+                "object")
+    ) {
         return opts.strict ? actual === expected : actual == expected;
 
         // 7.4. For all other Object pairs, including Array objects, equivalence is
@@ -47,7 +75,12 @@ function isUndefinedOrNull(value) {
 }
 
 function isBuffer(x) {
-    if (!x || (typeof x === "undefined" ? "undefined" : _typeof(x)) !== "object" || typeof x.length !== "number") return false;
+    if (
+        !x ||
+        (typeof x === "undefined" ? "undefined" : _typeof(x)) !== "object" ||
+        typeof x.length !== "number"
+    )
+        return false;
     if (typeof x.copy !== "function" || typeof x.slice !== "function") {
         return false;
     }
@@ -56,8 +89,8 @@ function isBuffer(x) {
 }
 
 function objEquiv(a, b, opts) {
-    let i; let
-        key;
+    let i;
+    let key;
     if (isUndefinedOrNull(a) || isUndefinedOrNull(b)) return false;
     // an identical 'prototype' property.
     if (a.prototype !== b.prototype) return false;
@@ -86,7 +119,7 @@ function objEquiv(a, b, opts) {
     try {
         ka = objectKeys(a);
         kb = objectKeys(b);
-    } catch (e) {
+    } catch (_e) {
         // happens when one is a string literal and the other isn't
         return false;
     }
@@ -106,5 +139,8 @@ function objEquiv(a, b, opts) {
         key = ka[i];
         if (!deepEqual(a[key], b[key], opts)) return false;
     }
-    return (typeof a === "undefined" ? "undefined" : _typeof(a)) === (typeof b === "undefined" ? "undefined" : _typeof(b));
+    return (
+        (typeof a === "undefined" ? "undefined" : _typeof(a)) ===
+        (typeof b === "undefined" ? "undefined" : _typeof(b))
+    );
 }

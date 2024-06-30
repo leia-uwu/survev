@@ -1,19 +1,15 @@
 export default {
     "word-order": "svo",
     "index-create-account": "Create Account",
-    "index-create-account-prompt-1":
-        "Log in to access this feature!",
+    "index-create-account-prompt-1": "Log in to access this feature!",
     "index-set-account-name": "Set your account name",
     "index-enter-name": "Enter name",
     "index-finish": "Finish",
     "index-reset-stats": "Reset Stats",
-    "index-reset-stats-desc":
-        'Enter "RESET STATS" to reset your stats:',
-    "index-reset-stats-desc-2":
-        "(This does not reset pass progress.)",
+    "index-reset-stats-desc": 'Enter "RESET STATS" to reset your stats:',
+    "index-reset-stats-desc-2": "(This does not reset pass progress.)",
     "index-delete-account": "Delete Account",
-    "index-delete-account-desc":
-        'Enter "DELETE" to delete your account:',
+    "index-delete-account-desc": 'Enter "DELETE" to delete your account:',
     "index-confirm": "Confirm",
     "index-customize-avatar": "Customize Avatar",
     "index-done": "Done",
@@ -51,8 +47,7 @@ export default {
     "index-creating-team": "Creating Team",
     "index-invite-link": "Invite link",
     "index-invite-code": "Invite code",
-    "index-join-team-help":
-        "Got a team link or code? Paste it here:",
+    "index-join-team-help": "Got a team link or code? Paste it here:",
     "index-solo": "Solo",
     "index-duo": "Duo",
     "index-squad": "Squad",
@@ -79,7 +74,8 @@ export default {
     "index-sfx-volume": "SFX Volume",
     "index-music-volume": "Music Volume",
     "index-mobile-announce": "Now available on mobile!",
-    "index-mobile-tooltip": "Visit <span>resurviv.io</span> on your mobile device to play on the go!",
+    "index-mobile-tooltip":
+        "Visit <span>resurviv.io</span> on your mobile device to play on the go!",
     "index-version": "ver",
     "index-privacy": "privacy",
     "index-attributions": "attributions",
@@ -146,8 +142,7 @@ export default {
     "index-use-ping-ctrl":
         "Hold C, then hold Right-Click and drag mouse, then release Right-Click",
     "index-use-emote": "Use Emote Wheel",
-    "index-use-emote-ctrl":
-        "Hold Right-Click and drag mouse, then release Right-Click",
+    "index-use-emote-ctrl": "Hold Right-Click and drag mouse, then release Right-Click",
     "index-how-to-play": "How to Play",
     "index-tips-1-desc":
         "The goal of resurviv.io is to be the last player standing. You only live once per game - there is no respawn!",
@@ -162,13 +157,11 @@ export default {
         "Players aren't the only thing that can hurt you. The deadly red zone will move in from the sides of the map and deal increasingly greater damage if you stand in it. Keep an eye on the map and stay safe.",
     "index-movement-ctrl-touch": "Left stick",
     "index-aim-ctrl-touch": "Right stick",
-    "index-shoot-ctrl-touch":
-        "Drag right stick outside stick border",
+    "index-shoot-ctrl-touch": "Drag right stick outside stick border",
     "index-change-weapons-ctrl-touch": "Tap weapon slot",
     "index-reload-ctrl-touch": "Tap equipped ammo counter",
     "index-scope-zoom-ctrl-touch": "Tap zoom item",
-    "index-pickup-ctrl-touch":
-        "Tap interaction button or loot name",
+    "index-pickup-ctrl-touch": "Tap interaction button or loot name",
     "index-use-medical-ctrl-touch": "Tap medical item",
     "index-drop-item-ctrl-touch": "Touch and hold item",
     "index-cancel-action-ctrl-touch": "Tap interaction button",
@@ -198,17 +191,13 @@ export default {
     "loadout-category": "Category",
     "loadout-standard-issue": "Standard Issue",
     "loadout-instagram-follow": "+15 XP",
-    "loadout-instagram-reward":
-        "Follow us on Instagram and get 15 Pass XP!",
+    "loadout-instagram-reward": "Follow us on Instagram and get 15 Pass XP!",
     "loadout-youtube-subscribe": "+15 XP",
-    "loadout-youtube-reward":
-        "Subscribe to us on YouTube and get 15 Pass XP!",
+    "loadout-youtube-reward": "Subscribe to us on YouTube and get 15 Pass XP!",
     "loadout-twitter-follow": "+15 XP",
-    "loadout-twitter-reward":
-        "Follow us on Twitter and get 15 Pass XP!",
+    "loadout-twitter-reward": "Follow us on Twitter and get 15 Pass XP!",
     "loadout-facebook-like": "+15 XP",
-    "loadout-facebook-reward":
-        "Like us on Facebook and get 15 Pass XP!",
+    "loadout-facebook-reward": "Like us on Facebook and get 15 Pass XP!",
     "loadout-new-account": "Account Created",
     "quest-login-prompt": "Log in to get quests!",
     "quest-refresh-prompt": "Get a new quest?",
@@ -270,8 +259,7 @@ export default {
     "game-waiting-for-players": "Waiting for players",
     "game-spectating": "Spectating",
     "game-red-zone-advances": "Red zone advances in",
-    "game-red-zone-advancing":
-        "Red zone advancing! Move to the safe zone",
+    "game-red-zone-advancing": "Red zone advancing! Move to the safe zone",
     "game-seconds": "seconds",
     "game-minutes": "minutes",
     "game-minute": "minute",
@@ -325,11 +313,9 @@ export default {
     "game-healthkit-tooltip": "Left-click to restore 100 health.",
     "game-soda": "Soda",
     "game-soda-tooltip": "Left-click to boost adrenaline by 25.",
-    "game-adrenaline-tooltip":
-        "Adrenaline restores health over time.",
+    "game-adrenaline-tooltip": "Adrenaline restores health over time.",
     "game-painkiller": "Pills",
-    "game-painkiller-tooltip":
-        "Left-click to boost adrenaline by 50.",
+    "game-painkiller-tooltip": "Left-click to boost adrenaline by 50.",
     "game-9mm": "9mm",
     "game-9mm-tooltip":
         "Ammo for M9, G18C, M93R, P30L, MP5, MAC-10, UMP9, CZ-3A1 and Vector.",
@@ -349,8 +335,7 @@ export default {
     "game-flare": "Flare",
     "game-flare-tooltip": "Ammo for Flare Gun.",
     "game-45acp": ".45 ACP",
-    "game-45acp-tooltip":
-        "Ammo for M1911, M1A1, Model 94, Vector and Peacemaker.",
+    "game-45acp-tooltip": "Ammo for M1911, M1A1, Model 94, Vector and Peacemaker.",
     "game-chest01": "Level 1 Vest",
     "game-chest02": "Level 2 Vest",
     "game-chest03": "Level 3 Vest",
@@ -640,39 +625,30 @@ export default {
     "game-firepower": "Firepower",
     "game-firepower-desc": "High-capacity magazines.",
     "game-gotw": "Gift of the Woods",
-    "game-gotw-desc":
-        "Restore health over time.</br>Increased size.",
+    "game-gotw-desc": "Restore health over time.</br>Increased size.",
     "game-windwalk": "Windwalk",
-    "game-windwalk-desc":
-        "When taking fire, gain a short burst of speed.",
+    "game-windwalk-desc": "When taking fire, gain a short burst of speed.",
     "game-rare_potato": "Rare Potato",
-    "game-rare_potato-desc":
-        "Always rotate to a high quality weapon.",
+    "game-rare_potato-desc": "Always rotate to a high quality weapon.",
     "game-aoe_heal": "Mass Medicate",
-    "game-aoe_heal-desc":
-        "Reviving and using medical items affects all nearby players.",
+    "game-aoe_heal-desc": "Reviving and using medical items affects all nearby players.",
     "game-endless_ammo": "Endless Ammo",
     "game-endless_ammo-desc": "Guns always reload to full.",
     "game-steelskin": "Cast Ironskin",
     "game-steelskin-desc":
         "Take reduced damage and reflect enemy bullets.</br>Increased size.",
     "game-splinter": "Splinter Rounds",
-    "game-splinter-desc":
-        "Rounds fragment into three less powerful bullets.",
+    "game-splinter-desc": "Rounds fragment into three less powerful bullets.",
     "game-small_arms": "Small Arms",
-    "game-small_arms-desc":
-        "Move faster with weapons deployed.</br>Decreased size.",
+    "game-small_arms-desc": "Move faster with weapons deployed.</br>Decreased size.",
     "game-takedown": "Takedown",
-    "game-takedown-desc":
-        "Kills grant health, boost and a short burst of speed.",
+    "game-takedown-desc": "Kills grant health, boost and a short burst of speed.",
     "game-field_medic": "Combat Medic",
     "game-field_medic-desc": "Move quickly while healing.",
     "game-tree_climbing": "One With Nature",
-    "game-tree_climbing-desc":
-        "Move through trees. Move faster in water.",
+    "game-tree_climbing-desc": "Move through trees. Move faster in water.",
     "game-scavenger": "Scavenger",
-    "game-scavenger-desc":
-        "Obstacles drop additional items when destroyed.",
+    "game-scavenger-desc": "Obstacles drop additional items when destroyed.",
     "game-scavenger_adv": "Master Scavenger",
     "game-scavenger_adv-desc":
         "Obstacles drop additional high-quality items when destroyed.",
@@ -682,32 +658,25 @@ export default {
     "game-chambered-desc":
         "First and last round in each magazine deal bonus damage.</br>Does not apply to shotguns.",
     "game-martyrdom": "Martyrdom",
-    "game-martyrdom-desc":
-        "Release several live grenades upon death.",
+    "game-martyrdom-desc": "Release several live grenades upon death.",
     "game-targeting": "High-Value Targets",
-    "game-targeting-desc":
-        "Bullets deal bonus damage to players with perks.",
+    "game-targeting-desc": "Bullets deal bonus damage to players with perks.",
     "game-bonus_45": ".45 In The Chamber",
     "game-bonus_45-desc": ".45 ACP bullets deal bonus damage.",
     "game-broken_arrow": "Broken Arrow",
-    "game-broken_arrow-desc":
-        "Air strikes call in two additional fighters.",
+    "game-broken_arrow-desc": "Air strikes call in two additional fighters.",
     "game-fabricate": "Fabricate",
-    "game-fabricate-desc":
-        "Periodically fill your pack with frag grenades.",
+    "game-fabricate-desc": "Periodically fill your pack with frag grenades.",
     "game-self_revive": "Revivify",
     "game-self_revive-desc": "You can revive yourself when downed.",
     "game-bonus_9mm": "9mm Overpressure",
-    "game-bonus_9mm-desc":
-        "9mm bullets have increased speed, range, damage and spread.",
+    "game-bonus_9mm-desc": "9mm bullets have increased speed, range, damage and spread.",
     "game-flak_jacket": "Flak Jacket",
-    "game-flak_jacket-desc":
-        "Greatly reduces damage from explosions and shrapnel.",
+    "game-flak_jacket-desc": "Greatly reduces damage from explosions and shrapnel.",
     "game-explosive": "Explosive Rounds",
     "game-explosive-desc": "Bullets explode on impact.",
     "game-bonus_assault": "Hollow-points",
-    "game-bonus_assault-desc":
-        "All your bullets deal bonus damage.",
+    "game-bonus_assault-desc": "All your bullets deal bonus damage.",
     "game-inspiration": "Inspiration",
     "game-inspiration-desc":
         "Your bugle call grants nearby allies a short burst of speed.",
@@ -717,34 +686,25 @@ export default {
     "game-halloween_mystery": "Trick or Treat?",
     "game-halloween_mystery-desc": "Could be either.",
     "game-trick_nothing": "One With Nothing",
-    "game-trick_nothing-desc":
-        "Tricked! This perk does absolutely nothing!",
+    "game-trick_nothing-desc": "Tricked! This perk does absolutely nothing!",
     "game-trick_size": "Feedership",
-    "game-trick_size-desc":
-        "Tricked! You ate too much chicken and grew in size!",
+    "game-trick_size-desc": "Tricked! You ate too much chicken and grew in size!",
     "game-trick_m9": "Dev Troll Special",
-    "game-trick_m9-desc":
-        "Tricked! You've been cursed with a developer 'treat'!",
+    "game-trick_m9-desc": "Tricked! You've been cursed with a developer 'treat'!",
     "game-trick_chatty": "Gabby Ghost",
     "game-trick_chatty-desc": "Tricked! You're emoting randomly!",
     "game-trick_drain": "That Sucks",
-    "game-trick_drain-desc":
-        "Tricked! You're bleeding very, very, VERY slowly!",
+    "game-trick_drain-desc": "Tricked! You're bleeding very, very, VERY slowly!",
     "game-treat_9mm": "Candy Corn",
-    "game-treat_9mm-desc":
-        "Treat! 9mm bullets are darker and deadlier.",
+    "game-treat_9mm-desc": "Treat! 9mm bullets are darker and deadlier.",
     "game-treat_12g": "Red Jelly Beans",
-    "game-treat_12g-desc":
-        "Treat! 12 gauge pellets are darker and deadlier.",
+    "game-treat_12g-desc": "Treat! 12 gauge pellets are darker and deadlier.",
     "game-treat_556": "Sour Apple Belt",
-    "game-treat_556-desc":
-        "Treat! 5.56mm bullets are darker and deadlier.",
+    "game-treat_556-desc": "Treat! 5.56mm bullets are darker and deadlier.",
     "game-treat_762": "Blueberry Taffy",
-    "game-treat_762-desc":
-        "Treat! 7.62mm bullets are darker and deadlier.",
+    "game-treat_762-desc": "Treat! 7.62mm bullets are darker and deadlier.",
     "game-treat_super": "Full Size OKAMI Bar",
-    "game-treat_super-desc":
-        "Super Treat! ALL your bullets are darker and deadlier.",
+    "game-treat_super-desc": "Super Treat! ALL your bullets are darker and deadlier.",
     "game-turkey_shoot": "Perky Shoot",
     "game-turkey_shoot-desc": "Gobble, gobble!",
     "game-xp-drop-desc": "Pass XP",

@@ -1,34 +1,34 @@
-import { type InputHandler } from "./../input";
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
-import { collider } from "../../../shared/utils/collider";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { GameConfig } from "../../../shared/gameConfig";
+import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { device } from "../device";
-import { BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type ConfigManager } from "../config";
 import { type Camera } from "../camera";
+import { type ConfigManager } from "../config";
+import { device } from "../device";
+import { type Map } from "../map";
 import { type Player } from "../objects/player";
 import { type Renderer } from "../renderer";
-import { type Map } from "../map";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type InputHandler } from "./../input";
 
 interface Pad {
-    touched: boolean
+    touched: boolean;
     centerPos: {
-        x: number
-        y: number
-    }
+        x: number;
+        y: number;
+    };
     touchPos: {
-        x: number
-        y: number
-    }
-    centerSprite: PIXI.Sprite
-    touchSprite: PIXI.Sprite
+        x: number;
+        y: number;
+    };
+    centerSprite: PIXI.Sprite;
+    touchSprite: PIXI.Sprite;
 }
 
 const deadZone = 2;
@@ -84,8 +84,11 @@ export class Touch {
     lockedPadOffsetYLandscapeSafari = 120;
     lockedPadOffsetYPortraitSafari = 240;
 
-    constructor(public input: InputHandler, public config: ConfigManager) {
-        const createPadSprite = function(parent: PIXI.Container, tint: number) {
+    constructor(
+        public input: InputHandler,
+        public config: ConfigManager
+    ) {
+        const createPadSprite = function (parent: PIXI.Container, tint: number) {
             const pad = PIXI.Sprite.from("pad.img");
             pad.anchor.set(0.5, 0.5);
             pad.scale.set(1, 1);
@@ -105,7 +108,7 @@ export class Touch {
             };
         };
         this.touchPads = [createPad(), createPad()];
-        const validateTouchStyle = function(style: "locked" | "anywhere") {
+        const validateTouchStyle = function (style: "locked" | "anywhere") {
             if (!["locked", "anywhere"].includes(style)) {
                 return "anywhere";
             } else {
@@ -250,7 +253,7 @@ export class Touch {
     }
 
     update(
-        dt: number,
+        _dt: number,
         activePlayer: Player,
         map: Map,
         camera: Camera,
@@ -292,10 +295,7 @@ export class Touch {
 
     getConstrainedPosDown(posDown: Vec2, dir: Vec2, dist: number) {
         const normalDir = v2.normalizeSafe(dir);
-        return v2.add(
-            posDown,
-            v2.mul(normalDir, Math.max(0, dist - this.padPosRange))
-        );
+        return v2.add(posDown, v2.mul(normalDir, Math.max(0, dist - this.padPosRange)));
     }
 
     toggleMoveStyle() {
@@ -394,8 +394,7 @@ export class Touch {
             } else {
                 let lockedPadOffsetYLandscapeSafari =
                     this.lockedPadOffsetYLandscapeSafari;
-                let lockedPadOffsetYPortraitSafari =
-                    this.lockedPadOffsetYPortraitSafari;
+                let lockedPadOffsetYPortraitSafari = this.lockedPadOffsetYPortraitSafari;
 
                 if (device.tablet) {
                     lockedPadOffsetYLandscapeSafari *= 1;
@@ -487,9 +486,7 @@ export class Touch {
                 $("#ui-bottom-left").removeClass("ui-bottom-left-tablet");
                 $("#ui-bottom-right").removeClass("ui-bottom-right-tablet");
                 $("#ui-right-center").removeClass("ui-right-center-tablet");
-                $("#ui-bottom-center-right").removeClass(
-                    "ui-bottom-center-right-tablet"
-                );
+                $("#ui-bottom-center-right").removeClass("ui-bottom-center-right-tablet");
                 $("#ui-top-left").removeClass("ui-top-left-tablet");
                 $("#ui-spectate-options-wrapper").removeClass(
                     "ui-spectate-options-wrapper-tablet"

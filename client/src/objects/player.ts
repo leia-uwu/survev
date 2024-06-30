@@ -1,6 +1,10 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import {
@@ -8,15 +12,15 @@ import {
     Anim,
     GameConfig,
     HasteType,
-    type WeaponSlot,
-    Input
+    Input,
+    type WeaponSlot
 } from "../../../shared/gameConfig";
 import {
-    type PlayerInfo,
-    getPlayerStatusUpdateRate,
+    type GroupStatus,
     type LocalDataWithDirty,
+    type PlayerInfo,
     type PlayerStatus,
-    type GroupStatus
+    getPlayerStatusUpdateRate
 } from "../../../shared/msgs/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -26,11 +30,14 @@ import {
     type ObjectData,
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
+import { type River } from "../../../shared/utils/river";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Animations, Bones, IdlePoses, Pose } from "../animData";
 import { type AudioManager } from "../audioManager";
 import { type Camera } from "../camera";
+import { type SoundHandle } from "../createJS";
+import { debugLines } from "../debugLines";
 import { device } from "../device";
 import { type Ctx } from "../game";
 import { helpers } from "../helpers";
@@ -38,24 +45,17 @@ import { type Map } from "../map";
 import { type Renderer } from "../renderer";
 import { type UiManager2 } from "../ui/ui2";
 import {
+    type BackpackDef,
+    type BoostDef,
     type ChestDef,
     type HealDef,
-    type HelmetDef,
-    type BackpackDef,
-    type BoostDef
+    type HelmetDef
 } from "./../../../shared/defs/gameObjects/gearDefs";
 import { type InputBinds } from "./../inputBinds";
 import { Pool } from "./objectPool";
 import { type Obstacle } from "./obstacle";
 import { type Emitter, type ParticleBarn } from "./particles";
 import { createCasingParticle } from "./shot";
-import { type River } from "../../../shared/utils/river";
-import { type SoundHandle } from "../createJS";
-import { debugLines } from "../debugLines";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
-import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 
 const submergeMaskScaleFactor = 0.1;
 
@@ -130,10 +130,7 @@ class Gun {
         this.gunBarrel.texture = PIXI.Texture.from(imgDef.sprite);
         this.gunBarrel.anchor.set(0.5, 1);
         this.gunBarrel.position.set(0, 0);
-        this.gunBarrel.scale.set(
-            (imgDef.scale.x * 0.5) / t,
-            (imgDef.scale.y * 0.5) / t
-        );
+        this.gunBarrel.scale.set((imgDef.scale.x * 0.5) / t, (imgDef.scale.y * 0.5) / t);
 
         this.gunBarrel.tint = imgDef.tint;
         this.gunBarrel.visible = true;
@@ -156,9 +153,7 @@ class Gun {
 
         this.magTop = imgDef.magImg?.top!;
 
-        const handOffset = gunDef.isDual
-            ? v2.create(-5.95, 0)
-            : v2.create(-4.25, -1.75);
+        const handOffset = gunDef.isDual ? v2.create(-5.95, 0) : v2.create(-4.25, -1.75);
         if (imgDef.gunOffset) {
             handOffset.x += imgDef.gunOffset.x;
             handOffset.y += imgDef.gunOffset.y;
@@ -168,10 +163,10 @@ class Gun {
 }
 
 interface AnimCtx {
-    playerBarn: PlayerBarn
-    map: Map
-    audioManager: AudioManager
-    particleBarn: ParticleBarn
+    playerBarn: PlayerBarn;
+    map: Map;
+    audioManager: AudioManager;
+    particleBarn: ParticleBarn;
 }
 
 export abstract class AbstractObject {
@@ -236,34 +231,34 @@ export class Player implements AbstractObject {
     anim = {
         type: Anim.None,
         data: {} as {
-            type: string
-            mirror: boolean
+            type: string;
+            mirror: boolean;
         },
         seq: -1,
         ticker: 0,
         bones: [] as Array<{
-            weight: number
-            pose: Pose
+            weight: number;
+            pose: Pose;
         }>
     };
 
     perks: Array<{
-        type: string
-        droppable: boolean
-        isNew: boolean
+        type: string;
+        droppable: boolean;
+        isNew: boolean;
     }> = [];
 
     // Maintain a list of just the perk types as a hasPerk() optimization
     perkTypes: string[] = [];
     perksDirty = false;
     surface: {
-        type: string
+        type: string;
         data: {
-            river?: River
-            waterColor?: number
-            isBright?: boolean
-            rippleColor?: number
-        }
+            river?: River;
+            waterColor?: number;
+            isBright?: boolean;
+            rippleColor?: number;
+        };
     } | null = null;
 
     wasInWater = false;
@@ -353,8 +348,8 @@ export class Player implements AbstractObject {
         scale: 1,
         role: "",
         perks: [] as Array<{
-            type: string
-            droppable: boolean
+            type: string;
+            droppable: boolean;
         }>
     };
 
@@ -366,8 +361,8 @@ export class Player implements AbstractObject {
         curWeapIdx: 0,
         inventory: {} as Record<string, number>,
         weapons: [] as Array<{
-            type: string
-            ammo: number
+            type: string;
+            ammo: number;
         }>,
         spectatorCount: 0
     };
@@ -479,7 +474,7 @@ export class Player implements AbstractObject {
         data: ObjectData<ObjectType.Player>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        _ctx: Ctx
     ) {
         this.netData.pos = v2.copy(data.pos);
         this.netData.dir = v2.copy(data.dir);
@@ -529,7 +524,7 @@ export class Player implements AbstractObject {
         }
     }
 
-    setLocalData(data: LocalDataWithDirty, playerBarn: unknown) {
+    setLocalData(data: LocalDataWithDirty, _playerBarn: unknown) {
         const scopeOld = this.localData.scope;
 
         if (data.healthDirty) {
@@ -651,11 +646,7 @@ export class Player implements AbstractObject {
         return !this.netData.dead && (!map.perkMode || this.netData.role);
     }
 
-    updatePerks(
-        isActivePlayer: boolean,
-        isSpectating: boolean,
-        ui2Manager: UiManager2
-    ) {
+    updatePerks(isActivePlayer: boolean, isSpectating: boolean, ui2Manager: UiManager2) {
         for (let i = 0; i < this.perks.length; i++) {
             this.perks[i].isNew = false;
         }
@@ -856,11 +847,7 @@ export class Player implements AbstractObject {
         const wasNearDoorError = this.isNearDoorError;
         this.isNearDoorError = doorErrorObstacle != null;
         this.doorErrorTicker -= dt;
-        if (
-            this.isNearDoorError &&
-            !wasNearDoorError &&
-            this.doorErrorTicker <= 0
-        ) {
+        if (this.isNearDoorError && !wasNearDoorError && this.doorErrorTicker <= 0) {
             this.doorErrorTicker = 0.5;
 
             const doorDef = MapObjectDefs[doorErrorObstacle?.type!] as ObstacleDef;
@@ -1030,12 +1017,7 @@ export class Player implements AbstractObject {
             }
         }
         this.action.seqOld = this.action.seq;
-        this.updateActionEffect(
-            isActivePlayer,
-            playerInfo,
-            particleBarn,
-            audioManager
-        );
+        this.updateActionEffect(isActivePlayer, playerInfo, particleBarn, audioManager);
         this.action.throttleTicker -= dt;
         if (this.action.throttleTicker < 0 && this.action.throttleCount > 0) {
             this.action.throttleCount--;
@@ -1133,14 +1115,8 @@ export class Player implements AbstractObject {
         }
 
         // Decay gun recoil
-        this.gunRecoilL = math.max(
-            0,
-            this.gunRecoilL - this.gunRecoilL * dt * 5 - dt
-        );
-        this.gunRecoilR = math.max(
-            0,
-            this.gunRecoilR - this.gunRecoilR * dt * 5 - dt
-        );
+        this.gunRecoilL = math.max(0, this.gunRecoilL - this.gunRecoilL * dt * 5 - dt);
+        this.gunRecoilR = math.max(0, this.gunRecoilR - this.gunRecoilR * dt * 5 - dt);
 
         const xe: AnimCtx = {
             playerBarn,
@@ -1222,7 +1198,7 @@ export class Player implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, debug: unknown) {
+    render(camera: Camera, _debug: unknown) {
         const screenPos = camera.pointToScreen(this.pos);
         const screenScale = camera.pixels(1);
         this.container.position.set(screenPos.x, screenPos.y);
@@ -1236,13 +1212,7 @@ export class Player implements AbstractObject {
 
             const weapDef = GameObjectDefs[this.netData.activeWeapon];
             if (weapDef.type === "gun") {
-                debugLines.addRay(
-                    this.pos,
-                    this.dir,
-                    weapDef.barrelLength,
-                    0xff0000,
-                    0
-                );
+                debugLines.addRay(this.pos, this.dir, weapDef.barrelLength, 0xff0000, 0);
             }
         }
     }
@@ -1384,11 +1354,7 @@ export class Player implements AbstractObject {
         }
 
         // Hands
-        const setHandSprite = function(
-            sprite: PIXI.Sprite,
-            img: string,
-            tint: number
-        ) {
+        const setHandSprite = function (sprite: PIXI.Sprite, img: string, tint: number) {
             sprite.texture = PIXI.Texture.from(img);
             sprite.scale.set(0.175, 0.175);
             sprite.tint = tint;
@@ -1401,7 +1367,7 @@ export class Player implements AbstractObject {
         setHandSprite(this.handRSprite, outfitImg.handSprite, handTint);
 
         // Feet
-        const setFootSprite = function(
+        const setFootSprite = function (
             sprite: PIXI.Sprite,
             tint: number,
             downed: boolean
@@ -1444,9 +1410,7 @@ export class Player implements AbstractObject {
 
         // Steelskin
         if (this.hasPerk("steelskin") && !outfitDef.ghillie) {
-            this.steelskinSprite.texture = PIXI.Texture.from(
-                "loot-melee-pan-black.img"
-            );
+            this.steelskinSprite.texture = PIXI.Texture.from("loot-melee-pan-black.img");
             this.steelskinSprite.scale.set(0.4, 0.4);
             this.steelskinSprite.anchor.set(0.575, 0.5);
             this.steelskinSprite.tint = 0xffffff;
@@ -1487,18 +1451,15 @@ export class Player implements AbstractObject {
         if (this.getBagLevel() > 0 && !outfitDef.ghillie && !this.downed) {
             const bagOffsets = [10.25, 11.5, 12.75];
             const bagLevel = this.getBagLevel();
-            const bagOffset =
-                bagOffsets[math.min(bagLevel - 1, bagOffsets.length - 1)];
+            const bagOffset = bagOffsets[math.min(bagLevel - 1, bagOffsets.length - 1)];
             const scale = (0.4 + bagLevel * 0.03) * 0.5;
 
-            this.backpackSprite.texture = PIXI.Texture.from(
-                "player-circle-base-01.img"
-            );
+            this.backpackSprite.texture = PIXI.Texture.from("player-circle-base-01.img");
             this.backpackSprite.position.set(-bagOffset, 0);
             this.backpackSprite.scale.set(scale, scale);
             this.backpackSprite.tint = outfitImg.backpackTint;
             this.backpackSprite.visible = true;
-            (function(sprite, img, tint) {
+            (function (sprite, img, tint) {
                 sprite.texture = PIXI.Texture.from(img);
                 sprite.tint = tint;
             })(this.backpackSprite, outfitImg.backpackSprite, outfitImg.backpackTint);
@@ -1584,12 +1545,12 @@ export class Player implements AbstractObject {
             this.meleeSprite.visible = false;
         }
         if (R.type == "throwable") {
-            const K = function(
+            const K = function (
                 e: PIXI.Sprite,
                 t: {
-                    sprite: string
-                    pos?: Vec2
-                    scale?: number
+                    sprite: string;
+                    pos?: Vec2;
+                    scale?: number;
                 }
             ) {
                 if (t.sprite && t.sprite != "none") {
@@ -1626,8 +1587,7 @@ export class Player implements AbstractObject {
 
         // Role specific visuals
         if (
-            (this.action.type != Action.UseItem &&
-                this.action.type != Action.Revive) ||
+            (this.action.type != Action.UseItem && this.action.type != Action.Revive) ||
             this.netData.dead ||
             (this.netData.downed && !this.hasPerk("self_revive")) ||
             !this.hasPerk("aoe_heal")
@@ -1636,9 +1596,7 @@ export class Player implements AbstractObject {
             this.auraPulseDir = 1;
             this.auraCircle.visible = false;
         } else {
-            const actionItemDef = GameObjectDefs[this.action.item] as
-                | HealDef
-                | BoostDef;
+            const actionItemDef = GameObjectDefs[this.action.item] as HealDef | BoostDef;
             // Assume if there's no item defined, it's a revive circle
             const sprite = actionItemDef?.aura
                 ? actionItemDef.aura.sprite
@@ -1670,10 +1628,7 @@ export class Player implements AbstractObject {
                 this.visorSprite.position.set(helmetOffset, 0);
             }
             if (visorSkin.spriteScale) {
-                this.visorSprite.scale.set(
-                    visorSkin.spriteScale,
-                    visorSkin.spriteScale
-                );
+                this.visorSprite.scale.set(visorSkin.spriteScale, visorSkin.spriteScale);
             } else {
                 this.visorSprite.scale.set(0.15, 0.15);
             }
@@ -1716,7 +1671,7 @@ export class Player implements AbstractObject {
     }
 
     Zr() {
-        const e = function(e: PIXI.Container, t: Pose) {
+        const e = function (e: PIXI.Container, t: Pose) {
             e.position.set(t.pos.x, t.pos.y);
             e.pivot.set(-t.pivot.x, -t.pivot.y);
             e.rotation = t.rot;
@@ -1745,32 +1700,32 @@ export class Player implements AbstractObject {
         // Play action sound
         let actionSound = null;
         switch (this.action.type) {
-        case Action.Reload:
-        case Action.ReloadAlt:
-            {
-                const actionItemDef = GameObjectDefs[this.action.item] as GunDef;
-                if (actionItemDef) {
-                    actionSound = {
-                        sound:
+            case Action.Reload:
+            case Action.ReloadAlt:
+                {
+                    const actionItemDef = GameObjectDefs[this.action.item] as GunDef;
+                    if (actionItemDef) {
+                        actionSound = {
+                            sound:
                                 this.action.type == Action.ReloadAlt
                                     ? actionItemDef.sound.reloadAlt
                                     : actionItemDef.sound.reload,
+                            channel: isActivePlayer ? "activePlayer" : "otherPlayers"
+                        };
+                    }
+                }
+                break;
+            case Action.UseItem: {
+                const actionItemDef = GameObjectDefs[this.action.item] as
+                    | HealDef
+                    | BoostDef;
+                if (actionItemDef) {
+                    actionSound = {
+                        sound: actionItemDef.sound.use,
                         channel: isActivePlayer ? "activePlayer" : "otherPlayers"
                     };
                 }
             }
-            break;
-        case Action.UseItem: {
-            const actionItemDef = GameObjectDefs[this.action.item] as
-                    | HealDef
-                    | BoostDef;
-            if (actionItemDef) {
-                actionSound = {
-                    sound: actionItemDef.sound.use,
-                    channel: isActivePlayer ? "activePlayer" : "otherPlayers"
-                };
-            }
-        }
         }
 
         audioManager.stopSound(this.actionSoundInstance!);
@@ -1786,10 +1741,7 @@ export class Player implements AbstractObject {
         }
 
         // Create a casing shell if reloading certain types of weapons
-        if (
-            this.action.type == Action.Reload ||
-            this.action.type == Action.ReloadAlt
-        ) {
+        if (this.action.type == Action.Reload || this.action.type == Action.ReloadAlt) {
             const actionItemDef = GameObjectDefs[this.action.item] as GunDef;
             if (actionItemDef && actionItemDef.caseTiming == "reload") {
                 for (let n = 0; n < actionItemDef.maxReload; n++) {
@@ -1823,36 +1775,36 @@ export class Player implements AbstractObject {
         // Determine if we should have an emitter
         let emitterType = "";
         const emitterProps = {} as {
-            scale: number
-            radius: number
-            rateMult: number
-            layer: number
-            pos: Vec2
+            scale: number;
+            radius: number;
+            rateMult: number;
+            layer: number;
+            pos: Vec2;
         };
 
         switch (this.action.type) {
-        case Action.UseItem: {
-            const actionItemDef = GameObjectDefs[this.action.item];
-            const loadout = playerInfo.loadout;
-            if (actionItemDef.type == "heal") {
-                emitterType = (GameObjectDefs[loadout.heal] as HealDef).emitter;
-            } else if (actionItemDef.type == "boost") {
-                emitterType = (GameObjectDefs[loadout.boost] as BoostDef).emitter;
-            }
-            if (this.hasPerk("aoe_heal")) {
-                emitterProps.scale = 1.5;
-                emitterProps.radius =
+            case Action.UseItem: {
+                const actionItemDef = GameObjectDefs[this.action.item];
+                const loadout = playerInfo.loadout;
+                if (actionItemDef.type == "heal") {
+                    emitterType = (GameObjectDefs[loadout.heal] as HealDef).emitter;
+                } else if (actionItemDef.type == "boost") {
+                    emitterType = (GameObjectDefs[loadout.boost] as BoostDef).emitter;
+                }
+                if (this.hasPerk("aoe_heal")) {
+                    emitterProps.scale = 1.5;
+                    emitterProps.radius =
                         GameConfig.player.medicHealRange / emitterProps.scale;
-                emitterProps.rateMult = 0.25;
+                    emitterProps.rateMult = 0.25;
+                }
+                break;
             }
-            break;
-        }
-        case Action.Revive: {
-            if (this.netData.downed) {
-                emitterType = "revive_basic";
+            case Action.Revive: {
+                if (this.netData.downed) {
+                    emitterType = "revive_basic";
+                }
+                break;
             }
-            break;
-        }
         }
 
         // Add emitter
@@ -1885,16 +1837,11 @@ export class Player implements AbstractObject {
         }
 
         if (this.actionSoundInstance && !isActivePlayer) {
-            audioManager.updateSound(
-                this.actionSoundInstance,
-                "otherPlayers",
-                this.pos,
-                {
-                    layer: this.layer,
-                    fallOff: 2,
-                    filter: "muffled"
-                }
-            );
+            audioManager.updateSound(this.actionSoundInstance, "otherPlayers", this.pos, {
+                layer: this.layer,
+                fallOff: 2,
+                filter: "muffled"
+            });
         }
     }
 
@@ -1919,22 +1866,22 @@ export class Player implements AbstractObject {
         idlePose = this.downed
             ? "downed"
             : (curWeapDef as any).anim?.idlePose
-                ? (curWeapDef as any).anim.idlePose
-                : curWeapDef.type == "gun"
-                    ? curWeapDef.pistol
-                        ? curWeapDef.isDual
-                            ? "dualPistol"
-                            : "pistol"
-                        : curWeapDef.isBullpup
-                            ? "bullpup"
-                            : curWeapDef.isLauncher
-                                ? "launcher"
-                                : curWeapDef.isDual
-                                    ? "dualRifle"
-                                    : "rifle"
-                    : curWeapDef.type == "throwable"
-                        ? "throwable"
-                        : "fists";
+              ? (curWeapDef as any).anim.idlePose
+              : curWeapDef.type == "gun"
+                ? curWeapDef.pistol
+                    ? curWeapDef.isDual
+                        ? "dualPistol"
+                        : "pistol"
+                    : curWeapDef.isBullpup
+                      ? "bullpup"
+                      : curWeapDef.isLauncher
+                        ? "launcher"
+                        : curWeapDef.isDual
+                          ? "dualRifle"
+                          : "rifle"
+                : curWeapDef.type == "throwable"
+                  ? "throwable"
+                  : "fists";
         if (IdlePoses[idlePose]) {
             return idlePose;
         } else {
@@ -1943,37 +1890,37 @@ export class Player implements AbstractObject {
     }
 
     selectAnim(type: Anim) {
-        const t = function(e: string, t: boolean) {
+        const t = function (e: string, t: boolean) {
             return {
                 type: e,
                 mirror: !!t && Math.random() < 0.5
             };
         };
         switch (type) {
-        case Anim.None:
-            return t("none", false);
-        case Anim.Cook:
-            return t("cook", false);
-        case Anim.Throw:
-            return t("throw", false);
-        case Anim.Revive:
-            return t("revive", false);
-        case Anim.CrawlForward:
-            return t("crawl_forward", true);
-        case Anim.CrawlBackward:
-            return t("crawl_backward", true);
-        case Anim.Melee: {
-            const r = GameObjectDefs[this.netData.activeWeapon] as MeleeDef;
-            if (!r.anim?.attackAnims) {
-                return t("fists", true);
+            case Anim.None:
+                return t("none", false);
+            case Anim.Cook:
+                return t("cook", false);
+            case Anim.Throw:
+                return t("throw", false);
+            case Anim.Revive:
+                return t("revive", false);
+            case Anim.CrawlForward:
+                return t("crawl_forward", true);
+            case Anim.CrawlBackward:
+                return t("crawl_backward", true);
+            case Anim.Melee: {
+                const r = GameObjectDefs[this.netData.activeWeapon] as MeleeDef;
+                if (!r.anim?.attackAnims) {
+                    return t("fists", true);
+                }
+                const a = r.anim.attackAnims;
+                const i = Math.floor(Math.random() * a.length);
+                const o = a[i];
+                return t(o, o == "fists" && a.length == 1);
             }
-            const a = r.anim.attackAnims;
-            const i = Math.floor(Math.random() * a.length);
-            const o = a[i];
-            return t(o, o == "fists" && a.length == 1);
-        }
-        default:
-            return t("none", false);
+            default:
+                return t("none", false);
         }
     }
 
@@ -2005,7 +1952,7 @@ export class Player implements AbstractObject {
             const i = a.keyframes;
             let o = -1;
             let s = 0;
-            for (; this.anim.ticker >= i[s].time && s < i.length - 1;) {
+            for (; this.anim.ticker >= i[s].time && s < i.length - 1; ) {
                 o++;
                 s++;
             }
@@ -2064,14 +2011,13 @@ export class Player implements AbstractObject {
         }
     }
 
-    animSetThrowableState(animCtx: unknown, args: { state: string }) {
+    animSetThrowableState(_animCtx: unknown, args: { state: string }) {
         this.throwableState = args.state;
     }
 
-    animThrowableParticles(animCtx: Partial<AnimCtx>, args: unknown) {
+    animThrowableParticles(animCtx: Partial<AnimCtx>, _args: unknown) {
         if (
-            (GameObjectDefs[this.netData.activeWeapon] as ThrowableDef)
-                .useThrowParticles
+            (GameObjectDefs[this.netData.activeWeapon] as ThrowableDef).useThrowParticles
         ) {
             // Pin
             const pinOff = v2.rotate(
@@ -2109,8 +2055,7 @@ export class Player implements AbstractObject {
         const meleeDef = GameObjectDefs[this.netData.activeWeapon] as MeleeDef;
         if (meleeDef && meleeDef.type == "melee") {
             const meleeCol = this.getMeleeCollider();
-            const meleeDist =
-                meleeCol.rad + v2.length(v2.sub(this.pos, meleeCol.pos));
+            const meleeDist = meleeCol.rad + v2.length(v2.sub(this.pos, meleeCol.pos));
             const hits = [];
 
             // Obstacles
@@ -2271,7 +2216,7 @@ export class Player implements AbstractObject {
     }
 
     initSubmergeSprites() {
-        const initSprite = function(sprite: PIXI.Sprite, img: string) {
+        const initSprite = function (sprite: PIXI.Sprite, img: string) {
             sprite.texture = PIXI.Texture.from(img);
             sprite.anchor.set(0.5, 0.5);
             sprite.tint = 16777215;
@@ -2384,37 +2329,35 @@ export class Player implements AbstractObject {
 
 export class PlayerBarn {
     playerPool = new Pool(Player);
-    playerInfo: Record<
-    number,
-    PlayerInfo & { nameTruncated: string, anonName: string }
-    > = {};
+    playerInfo: Record<number, PlayerInfo & { nameTruncated: string; anonName: string }> =
+        {};
 
     playerIds: number[] = [];
     teamInfo: Record<
-    number,
-    {
-        teamId: number
-        playerIds: number[]
-    }
+        number,
+        {
+            teamId: number;
+            playerIds: number[];
+        }
     > = {};
 
     groupInfo: Record<
-    number,
-    {
-        groupId: number
-        playerIds: number[]
-    }
+        number,
+        {
+            groupId: number;
+            playerIds: number[];
+        }
     > = {};
 
     playerStatus: Record<number, PlayerStatus> = {};
     anonPlayerNames = false;
 
-    onMapLoad(e: unknown) { }
+    onMapLoad(_e: unknown) {}
 
     update(
         dt: number,
         activeId: number,
-        r: unknown,
+        _r: unknown,
         renderer: Renderer,
         particleBarn: ParticleBarn,
         camera: Camera,
@@ -2495,8 +2438,7 @@ export class PlayerBarn {
             // Interpolate position
             const move = v2.sub(status.posTarget!, status.pos);
             const moveLen = v2.length(move);
-            const moveDir =
-                moveLen > 0.0001 ? v2.div(move, moveLen) : v2.create(1, 0);
+            const moveDir = moveLen > 0.0001 ? v2.div(move, moveLen) : v2.create(1, 0);
             const moveAmt = math.min(moveLen, status.posDelta! * status.posInterp);
             status.pos = v2.add(status.pos, v2.mul(moveDir, moveAmt));
 
@@ -2505,7 +2447,7 @@ export class PlayerBarn {
 
             const fade =
                 !status.dead ||
-                    (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
+                (playerInfo.teamId != activeInfo.teamId && status.role != "leader")
                     ? 0
                     : 0.6;
 
@@ -2776,7 +2718,7 @@ export class PlayerBarn {
     addDeathEffect(
         targetId: number,
         killerId: number,
-        sourceType: unknown,
+        _sourceType: unknown,
         audioManager: AudioManager,
         particleBarn: ParticleBarn
     ) {

@@ -6,9 +6,9 @@ import { util } from "./util";
 import { type Vec2, v2 } from "./v2";
 
 export interface MapRiverData {
-    width: number
-    looped: boolean
-    points: Vec2[]
+    width: number;
+    looped: boolean;
+    points: Vec2[];
 }
 
 export function generateJaggedAabbPoints(
@@ -16,7 +16,7 @@ export function generateJaggedAabbPoints(
     divisionsX: number,
     divisionsY: number,
     variation: number,
-    rand: typeof util["random"]
+    rand: (typeof util)["random"]
 ) {
     const ll = v2.create(aabb.min.x, aabb.min.y);
     const lr = v2.create(aabb.max.x, aabb.min.y);
@@ -60,7 +60,8 @@ export function generateTerrain(
     shoreInset: number,
     grassInset: number,
     riverDescs: MapRiverData[],
-    seed: number) {
+    seed: number
+) {
     // Subdivisions along one edge of the shore
     const shoreDivisions = 64.0;
     const { shoreVariation } = GameConfig.map;
@@ -77,7 +78,13 @@ export function generateTerrain(
     const aabbMin = v2.create(ll.x, ll.y);
     const aabbMax = v2.create(ur.x, ur.y);
     const aabb = collider.createAabb(aabbMin, aabbMax);
-    const shore = generateJaggedAabbPoints(aabb, shoreDivisions, shoreDivisions, shoreVariation, seededRand);
+    const shore = generateJaggedAabbPoints(
+        aabb,
+        shoreDivisions,
+        shoreDivisions,
+        shoreVariation,
+        seededRand
+    );
 
     // Create grass path by insetting the shore path
     // The beach lies between the shore and grass.
@@ -90,10 +97,7 @@ export function generateTerrain(
     });
 
     // Calculate river forms from the given river splines
-    const mapBounds = collider.createAabb(
-        v2.create(0.0, 0.0),
-        v2.create(width, height)
-    );
+    const mapBounds = collider.createAabb(v2.create(0.0, 0.0), v2.create(width, height));
 
     const rivers: River[] = [];
     for (let i = 0; i < riverDescs.length; i++) {

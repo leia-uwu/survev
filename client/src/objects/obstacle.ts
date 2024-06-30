@@ -4,29 +4,29 @@ import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { type Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import { util } from "../../../shared/utils/util";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { type AudioManager } from "../audioManager";
-import { type Camera } from "../camera";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import { type Emitter, type ParticleBarn } from "./particles";
-import { type AbstractObject, type Player, type PlayerBarn } from "./player";
-import { type Ctx } from "../game";
 import {
     type ObjectData,
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
-import { device } from "../device";
+import { util } from "../../../shared/utils/util";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type AudioManager } from "../audioManager";
+import { type Camera } from "../camera";
 import { debugLines } from "../debugLines";
+import { device } from "../device";
+import { type Ctx } from "../game";
+import { type Map } from "../map";
+import { type Renderer } from "../renderer";
+import { type Emitter, type ParticleBarn } from "./particles";
+import { type AbstractObject, type Player, type PlayerBarn } from "./player";
 
 interface ObstacleSprite extends PIXI.Sprite {
-    zIdx: number
-    zOrd: number
-    imgAlpha: number
-    imgScale: number
-    alpha: number
-    posOffset: Vec2
+    zIdx: number;
+    zOrd: number;
+    imgAlpha: number;
+    imgScale: number;
+    alpha: number;
+    posOffset: Vec2;
 }
 
 export class Obstacle implements AbstractObject {
@@ -65,31 +65,31 @@ export class Obstacle implements AbstractObject {
     parentBuildingId!: number;
 
     button!: {
-        interactionRad: number
-        interactionText: string
-        seq: number
-        seqOld: number
-        useItem?: string
-        useId?: number
-        canUse?: boolean
-        onOff?: boolean
+        interactionRad: number;
+        interactionText: string;
+        seq: number;
+        seqOld: number;
+        useItem?: string;
+        useId?: number;
+        canUse?: boolean;
+        onOff?: boolean;
     };
 
     door!: {
-        openOneWay: boolean | number
-        closedPos: Vec2
-        autoOpen: boolean
-        interactionRad: number
-        interpSpeed: number
-        interpPos: Vec2
-        interpRot: number
-        seq: number
-        seqOld: number
-        open: boolean
-        wasOpen: boolean
-        locked: boolean
-        casingSprite: ObstacleSprite | null
-        canUse?: boolean
+        openOneWay: boolean | number;
+        closedPos: Vec2;
+        autoOpen: boolean;
+        interactionRad: number;
+        interpSpeed: number;
+        interpPos: Vec2;
+        interpRot: number;
+        seq: number;
+        seqOld: number;
+        open: boolean;
+        wasOpen: boolean;
+        locked: boolean;
+        casingSprite: ObstacleSprite | null;
+        canUse?: boolean;
     };
 
     imgScale!: number;
@@ -147,12 +147,7 @@ export class Obstacle implements AbstractObject {
         this.imgScale = def.img.scale!;
         this.imgMirrorY = def.img.mirrorY!;
         this.imgMirrorX = def.img.mirrorX!;
-        this.collider = collider.transform(
-            def.collision,
-            this.pos,
-            this.rot,
-            this.scale
-        );
+        this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
         if (isNew) {
             this.isNew = true;
             this.exploded = ctx.map.deadObstacleIds.includes(this.__id);
@@ -239,12 +234,7 @@ export class Obstacle implements AbstractObject {
         }
         let y = false;
         let w = this.dead ? def.img.residue! : def.img.sprite!;
-        if (
-            this.isButton &&
-            this.button.onOff &&
-            !this.dead &&
-            def.button?.useImg
-        ) {
+        if (this.isButton && this.button.onOff && !this.dead && def.button?.useImg) {
             w = def.button.useImg;
         } else if (this.isButton && !this.button.canUse && def.button?.offImg) {
             w = def.button.offImg;
@@ -348,8 +338,7 @@ export class Obstacle implements AbstractObject {
             if (diffLen < posMove) {
                 posMove = diffLen;
             }
-            const moveDir =
-                diffLen > 0.0001 ? v2.div(posDiff, diffLen) : v2.create(1, 0);
+            const moveDir = diffLen > 0.0001 ? v2.div(posDiff, diffLen) : v2.create(1, 0);
             door.interpPos = v2.add(door.interpPos, v2.mul(moveDir, posMove));
 
             // Interpolate rotation
@@ -394,8 +383,7 @@ export class Obstacle implements AbstractObject {
             !this.exploded &&
             (map.deadObstacleIds.push(this.__id),
             (this.exploded = true),
-            this.smokeEmitter &&
-                (this.smokeEmitter.stop(), (this.smokeEmitter = null)),
+            this.smokeEmitter && (this.smokeEmitter.stop(), (this.smokeEmitter = null)),
             !this.isNew)
         ) {
             const def = MapObjectDefs[this.type] as ObstacleDef;
@@ -409,8 +397,8 @@ export class Obstacle implements AbstractObject {
                 const vel = v2.mul(v2.randomUnit(), util.random(5, 15));
                 const particle = Array.isArray(this.explodeParticle)
                     ? this.explodeParticle[
-                        Math.floor(Math.random() * this.explodeParticle.length)
-                    ]
+                          Math.floor(Math.random() * this.explodeParticle.length)
+                      ]
                     : this.explodeParticle;
                 particleBarn.addParticle(particle, this.layer, center, vel);
             }
@@ -436,12 +424,7 @@ export class Obstacle implements AbstractObject {
 
             // Render trees, bushes, etc above stair elements when
             // viewing only the ground level
-            if (
-                !this.dead &&
-                zOrd >= 50 &&
-                this.layer == 0 &&
-                activePlayer.layer == 0
-            ) {
+            if (!this.dead && zOrd >= 50 && this.layer == 0 && activePlayer.layer == 0) {
                 zOrd += 100;
                 layer |= 2;
             }
@@ -467,7 +450,7 @@ export class Obstacle implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, debug: unknown, layer: number) {
+    render(camera: Camera, _debug: unknown, _layer: number) {
         const pos = this.isDoor ? this.door.interpPos : this.pos;
         const rot = this.isDoor ? this.door.interpRot : this.rot;
         const scale = this.scale;
@@ -489,9 +472,7 @@ export class Obstacle implements AbstractObject {
             const casingPos = camera.pointToScreen(
                 v2.add(this.door.closedPos, this.door.casingSprite.posOffset)
             );
-            const casingScale = camera.pixels(
-                scale * this.door.casingSprite.imgScale
-            );
+            const casingScale = camera.pixels(scale * this.door.casingSprite.imgScale);
             this.door.casingSprite.position.set(casingPos.x, casingPos.y);
             this.door.casingSprite.scale.set(casingScale, casingScale);
             this.door.casingSprite.rotation = -rot;

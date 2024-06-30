@@ -2,33 +2,33 @@ import {
     type ClientToServerTeamMsg,
     type RoomData,
     type ServerToClientTeamMsg,
-    type TeamStateMsg,
     type TeamErrorMsg,
-    type TeamMenuPlayer
+    type TeamMenuPlayer,
+    type TeamStateMsg
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
 import { type Server, type TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
-    socketData: TeamSocketData
+    socketData: TeamSocketData;
 }
 
 export interface Room {
-    roomData: RoomData
-    players: RoomPlayer[]
+    roomData: RoomData;
+    players: RoomPlayer[];
 }
 
 type ErrorType =
-    "join_full" |
-    "join_not_found" |
-    "create_failed" |
-    "join_failed" |
-    "join_game_failed" |
-    "lost_conn" |
-    "find_game_error" |
-    "find_game_full" |
-    "find_game_invalid_protocol" |
-    "kicked";
+    | "join_full"
+    | "join_not_found"
+    | "create_failed"
+    | "join_failed"
+    | "join_game_failed"
+    | "lost_conn"
+    | "find_game_error"
+    | "find_game_full"
+    | "find_game_invalid_protocol"
+    | "kicked";
 
 function teamErrorMsg(type: ErrorType): TeamErrorMsg {
     return {
@@ -53,9 +53,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: Server) {
-
-    }
+    constructor(public server: Server) {}
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
         const value = {
@@ -81,7 +79,7 @@ export class TeamMenu {
     removePlayer(playerContainer: TeamSocketData): void {
         const room = this.rooms.get(playerContainer.roomUrl)!;
 
-        const pToRemove = room.players.find(p => p.socketData === playerContainer)!;
+        const pToRemove = room.players.find((p) => p.socketData === playerContainer)!;
         const pToRemoveIndex = room.players.indexOf(pToRemove);
         room.players.splice(pToRemoveIndex, 1);
 
@@ -149,182 +147,203 @@ export class TeamMenu {
     }
 
     handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData): void {
-        const parsedMessage: ClientToServerTeamMsg = JSON.parse(new TextDecoder().decode(message));
+        const parsedMessage: ClientToServerTeamMsg = JSON.parse(
+            new TextDecoder().decode(message)
+        );
         const type = parsedMessage.type;
         let response: ServerToClientTeamMsg;
 
         switch (type) {
-        case "create": {
-            const name = parsedMessage.data.playerData.name != "" ? parsedMessage.data.playerData.name : "Player";
+            case "create": {
+                const name =
+                    parsedMessage.data.playerData.name != ""
+                        ? parsedMessage.data.playerData.name
+                        : "Player";
 
-            const player: RoomPlayer = {
-                name,
-                isLeader: true,
-                inGame: false,
-                playerId: 0,
-                socketData: localPlayerData
-            };
+                const player: RoomPlayer = {
+                    name,
+                    isLeader: true,
+                    inGame: false,
+                    playerId: 0,
+                    socketData: localPlayerData
+                };
 
-            const activeCodes = new Set(this.rooms.keys());
-            let roomUrl = `#${randomString(4)}`;
-            while (activeCodes.has(roomUrl)) {
-                roomUrl = `#${randomString(4)}`;
-            }
-
-            localPlayerData.roomUrl = roomUrl;
-
-            const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
-            if (!room) {
-                response = teamErrorMsg("create_failed");
-                this.sendResponse(response, player);
-                break;
-            }
-
-            this.sendRoomState(room);
-            break;
-        }
-        case "join": {
-            const roomUrl = `#${parsedMessage.data.roomUrl}`;
-            const room = this.rooms.get(roomUrl);
-            // join fail if room doesnt exist or if room is already full
-            if (!room) {
-                response = teamErrorMsg("join_failed");
-                localPlayerData.sendMsg(JSON.stringify(response));
-                break;
-            }
-            if (room.roomData.maxPlayers == room.players.length) {
-                response = teamErrorMsg("join_full");
-                localPlayerData.sendMsg(JSON.stringify(response));
-                break;
-            }
-
-            let name = parsedMessage.data.playerData.name;
-            name = name != "" ? name : "Player";
-
-            const player = {
-                name,
-                isLeader: false,
-                inGame: false,
-                playerId: room.players.length - 1,
-                socketData: localPlayerData
-            } as RoomPlayer;
-            room.players.push(player);
-
-            localPlayerData.roomUrl = roomUrl;
-
-            this.sendRoomState(room);
-            break;
-        }
-        case "changeName": {
-            const newName = parsedMessage.data.name;
-            const room = this.rooms.get(localPlayerData.roomUrl)!;
-            const player = room.players.find(p => p.socketData === localPlayerData)!;
-            player.name = newName;
-
-            this.sendRoomState(room);
-            break;
-        }
-        case "setRoomProps": {
-            const newRoomData = parsedMessage.data;
-            const room = this.rooms.get(localPlayerData.roomUrl)!;
-            const player = room.players.find(p => p.socketData === localPlayerData)!;
-            if (!player.isLeader) {
-                return;
-            }
-
-            // do nothing if player tries to select disabled gamemode
-            if (!room.roomData.enabledGameModeIdxs.includes(newRoomData.gameModeIdx)) {
-                return;
-            }
-
-            this.modifyRoom(newRoomData, room);
-            this.sendRoomState(room);
-            break;
-        }
-        case "kick": {
-            const room = this.rooms.get(localPlayerData.roomUrl)!;
-            const player = room.players.find(p => p.socketData === localPlayerData)!;
-            if (!player.isLeader) {
-                return;
-            }
-            const pToKick = room.players[parsedMessage.data.playerId];
-            if (!pToKick || pToKick === player) {
-                return;
-            }
-            this.removePlayer(localPlayerData);
-
-            response = {
-                type: "kicked"
-            };
-            this.sendResponse(response, pToKick);
-            break;
-        }
-        case "keepAlive": {
-            const room = this.rooms.get(localPlayerData.roomUrl);
-            if (!room) return;
-            response = {
-                type: "keepAlive",
-                data: {}
-            };
-            this.sendResponses(response, room.players);
-            break;
-        }
-        case "playGame": { // this message can only ever be sent by the leader
-            const room = this.rooms.get(localPlayerData.roomUrl)!;
-            const player = room.players.find(p => p.socketData === localPlayerData)!;
-
-            if (!player.isLeader) {
-                return;
-            }
-
-            room.roomData.findingGame = true;
-            this.sendRoomState(room);
-
-            const data = parsedMessage.data;
-            const playData = this.server.findGame({
-                version: data.version,
-                region: data.region,
-                zones: data.zones,
-                gameModeIdx: room.roomData.gameModeIdx,
-                autoFill: room.roomData.autoFill,
-                playerCount: room.players.length
-            }).res[0];
-
-            if ("err" in playData) {
-                response = teamErrorMsg("find_game_error");
-                this.sendResponse(response, player);
-                return;
-            }
-            const game = this.server.gamesById.get(playData.gameId)!;
-
-            if (game.teamMode !== room.roomData.gameModeIdx * 2) {
-                response = teamErrorMsg("find_game_error");
-                this.sendResponse(response, player);
-                return;
-            }
-
-            response = {
-                type: "joinGame",
-                data: {
-                    ...playData,
-                    data: playData.data
+                const activeCodes = new Set(this.rooms.keys());
+                let roomUrl = `#${randomString(4)}`;
+                while (activeCodes.has(roomUrl)) {
+                    roomUrl = `#${randomString(4)}`;
                 }
-            };
-            this.sendResponses(response, room.players);
 
-            room.players.forEach((p) => { p.inGame = true; });
-            room.roomData.findingGame = false;
-            this.sendRoomState(room);
-            break;
-        }
-        case "gameComplete": { // doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
-            const room = this.rooms.get(localPlayerData.roomUrl)!;
-            const player = room.players.find(p => p.socketData === localPlayerData)!;
-            player.inGame = false;
+                localPlayerData.roomUrl = roomUrl;
 
-            this.sendRoomState(room);
-            break;
-        }
+                const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
+                if (!room) {
+                    response = teamErrorMsg("create_failed");
+                    this.sendResponse(response, player);
+                    break;
+                }
+
+                this.sendRoomState(room);
+                break;
+            }
+            case "join": {
+                const roomUrl = `#${parsedMessage.data.roomUrl}`;
+                const room = this.rooms.get(roomUrl);
+                // join fail if room doesnt exist or if room is already full
+                if (!room) {
+                    response = teamErrorMsg("join_failed");
+                    localPlayerData.sendMsg(JSON.stringify(response));
+                    break;
+                }
+                if (room.roomData.maxPlayers == room.players.length) {
+                    response = teamErrorMsg("join_full");
+                    localPlayerData.sendMsg(JSON.stringify(response));
+                    break;
+                }
+
+                let name = parsedMessage.data.playerData.name;
+                name = name != "" ? name : "Player";
+
+                const player = {
+                    name,
+                    isLeader: false,
+                    inGame: false,
+                    playerId: room.players.length - 1,
+                    socketData: localPlayerData
+                } as RoomPlayer;
+                room.players.push(player);
+
+                localPlayerData.roomUrl = roomUrl;
+
+                this.sendRoomState(room);
+                break;
+            }
+            case "changeName": {
+                const newName = parsedMessage.data.name;
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const player = room.players.find(
+                    (p) => p.socketData === localPlayerData
+                )!;
+                player.name = newName;
+
+                this.sendRoomState(room);
+                break;
+            }
+            case "setRoomProps": {
+                const newRoomData = parsedMessage.data;
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const player = room.players.find(
+                    (p) => p.socketData === localPlayerData
+                )!;
+                if (!player.isLeader) {
+                    return;
+                }
+
+                // do nothing if player tries to select disabled gamemode
+                if (
+                    !room.roomData.enabledGameModeIdxs.includes(newRoomData.gameModeIdx)
+                ) {
+                    return;
+                }
+
+                this.modifyRoom(newRoomData, room);
+                this.sendRoomState(room);
+                break;
+            }
+            case "kick": {
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const player = room.players.find(
+                    (p) => p.socketData === localPlayerData
+                )!;
+                if (!player.isLeader) {
+                    return;
+                }
+                const pToKick = room.players[parsedMessage.data.playerId];
+                if (!pToKick || pToKick === player) {
+                    return;
+                }
+                this.removePlayer(localPlayerData);
+
+                response = {
+                    type: "kicked"
+                };
+                this.sendResponse(response, pToKick);
+                break;
+            }
+            case "keepAlive": {
+                const room = this.rooms.get(localPlayerData.roomUrl);
+                if (!room) return;
+                response = {
+                    type: "keepAlive",
+                    data: {}
+                };
+                this.sendResponses(response, room.players);
+                break;
+            }
+            case "playGame": {
+                // this message can only ever be sent by the leader
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const player = room.players.find(
+                    (p) => p.socketData === localPlayerData
+                )!;
+
+                if (!player.isLeader) {
+                    return;
+                }
+
+                room.roomData.findingGame = true;
+                this.sendRoomState(room);
+
+                const data = parsedMessage.data;
+                const playData = this.server.findGame({
+                    version: data.version,
+                    region: data.region,
+                    zones: data.zones,
+                    gameModeIdx: room.roomData.gameModeIdx,
+                    autoFill: room.roomData.autoFill,
+                    playerCount: room.players.length
+                }).res[0];
+
+                if ("err" in playData) {
+                    response = teamErrorMsg("find_game_error");
+                    this.sendResponse(response, player);
+                    return;
+                }
+                const game = this.server.gamesById.get(playData.gameId)!;
+
+                if (game.teamMode !== room.roomData.gameModeIdx * 2) {
+                    response = teamErrorMsg("find_game_error");
+                    this.sendResponse(response, player);
+                    return;
+                }
+
+                response = {
+                    type: "joinGame",
+                    data: {
+                        ...playData,
+                        data: playData.data
+                    }
+                };
+                this.sendResponses(response, room.players);
+
+                room.players.forEach((p) => {
+                    p.inGame = true;
+                });
+                room.roomData.findingGame = false;
+                this.sendRoomState(room);
+                break;
+            }
+            case "gameComplete": {
+                // doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
+                const room = this.rooms.get(localPlayerData.roomUrl)!;
+                const player = room.players.find(
+                    (p) => p.socketData === localPlayerData
+                )!;
+                player.inGame = false;
+
+                this.sendRoomState(room);
+                break;
+            }
         }
     }
 }

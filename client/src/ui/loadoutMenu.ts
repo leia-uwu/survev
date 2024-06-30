@@ -1,10 +1,9 @@
 import "@taufik-nurrohman/color-picker";
 import $ from "jquery";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import {
-    EmoteCategory,
-    type EmoteDef
-} from "../../../shared/defs/gameObjects/emoteDefs";
+import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
 import { type Account } from "../account";
@@ -15,8 +14,6 @@ import loadout, { type ItemStatus, type Loadout } from "./loadouts";
 import { type Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 import { type LoadoutDisplay } from "./opponentDisplay";
-import { type UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 
 function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
     const emoteSlotToDomId = {
@@ -32,7 +29,7 @@ function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
 }
 
 function itemSort(sortFn: (a: Item, b: Item) => void) {
-    return function(a: Item, b: Item) {
+    return function (a: Item, b: Item) {
         // Always put stock items at the front of the list;
         // if not stock, sort by the given sort routine
         const rarityA = (GameObjectDefs[a.type] as EmoteDef).rarity || 0;
@@ -95,34 +92,34 @@ const sortTypes: Record<string, any> = {
 };
 
 interface Item {
-    type: string
-    source: string
-    ackd: number
-    timeAcquired: number
-    status?: ItemStatus
+    type: string;
+    source: string;
+    ackd: number;
+    timeAcquired: number;
+    status?: ItemStatus;
 }
 interface ItemInfo {
-    type: string
-    loadoutType: string
-    rarity: number
-    displayName: string
-    displaySource: string
-    displayLore: string
-    timeAcquired: number
-    idx: number
-    subcat: EmoteCategory
-    outerDiv: JQuery<HTMLElement> | null
+    type: string;
+    loadoutType: string;
+    rarity: number;
+    displayName: string;
+    displaySource: string;
+    displayLore: string;
+    timeAcquired: number;
+    idx: number;
+    subcat: EmoteCategory;
+    outerDiv: JQuery<HTMLElement> | null;
 }
 
 // use itemInfo?
 interface EquippedItem {
-    loadoutType: string
-    type: string
-    rarity: number
-    displayName: string
-    displayLore?: string
-    subcat: EmoteCategory
-    displaySource?: string
+    loadoutType: string;
+    type: string;
+    rarity: number;
+    displayName: string;
+    displayLore?: string;
+    subcat: EmoteCategory;
+    displaySource?: string;
 }
 export class LoadoutMenu {
     initialized = false;
@@ -165,20 +162,20 @@ export class LoadoutMenu {
     ];
 
     selectedItem: {
-        prevSlot: JQuery<HTMLElement> | null
-        img: string
-        type: string
-        rarity?: number
-        displayName?: string
-        displaySource?: string
-        loadoutType?: string
-        displayLore?: string
-        subcat?: number
+        prevSlot: JQuery<HTMLElement> | null;
+        img: string;
+        type: string;
+        rarity?: number;
+        displayName?: string;
+        displaySource?: string;
+        loadoutType?: string;
+        displayLore?: string;
+        subcat?: number;
     } = {
-            prevSlot: null,
-            img: "",
-            type: ""
-        };
+        prevSlot: null,
+        img: "",
+        type: ""
+    };
 
     emotesLoaded = false;
     selectedCatIdx = 0;
@@ -207,7 +204,10 @@ export class LoadoutMenu {
     itemSelected!: boolean;
 
     highlightOpacityMin!: number;
-    constructor(public account: Account, public localization: Localization) {
+    constructor(
+        public account: Account,
+        public localization: Localization
+    ) {
         if (!device.touch) {
             this.categories.push({
                 loadoutType: "crosshair",
@@ -234,7 +234,7 @@ export class LoadoutMenu {
         this.modal.onHide(() => {
             this.onHide();
         });
-        const displayBlockingElem = function() {
+        const displayBlockingElem = function () {
             $("#modal-screen-block").fadeIn(200);
         };
         const confirmNextNewItem = () => {
@@ -467,9 +467,7 @@ export class LoadoutMenu {
         for (let i = 0; i < unlocks.length; i++) {
             const unlockType = unlocks[i];
             const hasUnlock = !!pass.unlocks[unlockType as keyof typeof pass.unlocks];
-            const el = $(
-                `.customize-social-unlock[data-lock-reason='${unlockType}']`
-            );
+            const el = $(`.customize-social-unlock[data-lock-reason='${unlockType}']`);
             el.css({
                 display: hasUnlock ? "none" : "inline-block"
             });
@@ -505,10 +503,7 @@ export class LoadoutMenu {
             }
         }
         if (confirmItemTypes.length > 0) {
-            this.account.setItemStatus(
-                loadout.ItemStatus.Confirmed,
-                confirmItemTypes
-            );
+            this.account.setItemStatus(loadout.ItemStatus.Confirmed, confirmItemTypes);
         }
     }
 
@@ -556,9 +551,7 @@ export class LoadoutMenu {
             };
             const svg = helpers.getSvgFromGameType(currentNewItem.type);
             const imageUrl = `url(${svg})`;
-            const transform = helpers.getCssTransformFromGameType(
-                currentNewItem.type
-            );
+            const transform = helpers.getCssTransformFromGameType(currentNewItem.type);
             setTimeout(() => {
                 $("#modal-item-confirm-name").html(itemInfo.displayName);
                 $("#modal-item-confirm-image-inner").css({
@@ -612,7 +605,10 @@ export class LoadoutMenu {
                 this.droppableSlots.on("mouseup", (e) => {
                     const elem = e.currentTarget;
                     if (!$(elem).hasClass("customize-list-item-locked")) {
-                        if (this.itemSelected && !$(elem).hasClass("customize-list-item")) {
+                        if (
+                            this.itemSelected &&
+                            !$(elem).hasClass("customize-list-item")
+                        ) {
                             this.deselectItem();
                             return;
                         }
@@ -644,7 +640,7 @@ export class LoadoutMenu {
                         this.updateLoadoutFromDOM();
                     }
                 });
-                this.droppableSlots.on("dragover", function(e) {
+                this.droppableSlots.on("dragover", function (e) {
                     e.originalEvent?.preventDefault();
                     $(this).parent().find(".ui-emote-hl").css("opacity", 1);
                 });
@@ -763,9 +759,7 @@ export class LoadoutMenu {
             this.localization.translate(`loadout-${selectedItem.displaySource}`) ||
             this.localization.translate(`${selectedItem.displaySource}`) ||
             this.selectedItem.displaySource;
-        const sourceTxt = `${this.localization.translate(
-            "loadout-acquired"
-        )}: ${source}`;
+        const sourceTxt = `${this.localization.translate("loadout-acquired")}: ${source}`;
         this.modalCustomizeItemSource.html(sourceTxt);
 
         // Use the 2nd line on emotes to display the subcategory
@@ -781,18 +775,12 @@ export class LoadoutMenu {
         };
         const localizedLore =
             selectedItem.loadoutType == "emote"
-                ? `${this.localization.translate("loadout-category")}: ${emoteSubcatNames[selectedItem.subcat]
-                }`
+                ? `${this.localization.translate("loadout-category")}: ${
+                      emoteSubcatNames[selectedItem.subcat]
+                  }`
                 : this.selectedItem.displayLore;
         this.modalCustomizeItemLore.html(localizedLore!);
-        const rarityNames = [
-            "stock",
-            "common",
-            "uncommon",
-            "rare",
-            "epic",
-            "mythic"
-        ];
+        const rarityNames = ["stock", "common", "uncommon", "rare", "epic", "mythic"];
         const Rarities = [
             "#c5c5c5",
             "#c5c5c5",
@@ -849,7 +837,7 @@ export class LoadoutMenu {
 
     updateSlot(parent: JQuery<HTMLElement>, img: string, type: string) {
         const prevParent = this.selectedItem.prevSlot;
-        this.selectedItem = {} as typeof this["selectedItem"];
+        this.selectedItem = {} as (typeof this)["selectedItem"];
         if (prevParent) {
             const image = parent.find(".customize-item-image");
             const slotIdx = parent.data("idx");
@@ -865,7 +853,7 @@ export class LoadoutMenu {
 
     deselectItem() {
         this.itemSelected = false;
-        this.selectedItem = {} as typeof this["selectedItem"];
+        this.selectedItem = {} as (typeof this)["selectedItem"];
         this.selectableSlots.removeClass("customize-list-item-selected");
         this.highlightedSlots.css({
             display: "none",
@@ -923,10 +911,7 @@ export class LoadoutMenu {
         const displaySubcatSort =
             category.loadoutType == "emote" || category.loadoutType == "player_icon";
 
-        $("#customize-sort-subcat").css(
-            "display",
-            displaySubcatSort ? "block" : "none"
-        );
+        $("#customize-sort-subcat").css("display", displaySubcatSort ? "block" : "none");
 
         let sortType = this.itemSort.val() as string;
         if (!displaySubcatSort && sortType == "subcat") {
@@ -944,9 +929,7 @@ export class LoadoutMenu {
 
         const _ = $(`.modal-customize-cat[data-idx='${this.selectedCatIdx}']`);
         this.selectableCats.removeClass("modal-customize-cat-selected");
-        this.selectableCatConnects.removeClass(
-            "modal-customize-cat-connect-selected"
-        );
+        this.selectableCatConnects.removeClass("modal-customize-cat-connect-selected");
         this.selectableCatImages.removeClass("modal-customize-cat-image-selected");
         _.addClass("modal-customize-cat-selected");
         _.find(".modal-customize-cat-connect").addClass(
@@ -967,10 +950,7 @@ export class LoadoutMenu {
             "display",
             category.loadoutType == "emote" ? "block" : "none"
         );
-        $("#customize-emote-parent").css(
-            "display",
-            displayEmoteWheel ? "block" : "none"
-        );
+        $("#customize-emote-parent").css("display", displayEmoteWheel ? "block" : "none");
         $("#customize-crosshair-parent").css(
             "display",
             displayCrosshairAdjust ? "block" : "none"
@@ -980,7 +960,7 @@ export class LoadoutMenu {
         this.modalCustomizeItemLore.html("");
         this.modalCustomizeItemRarity.html("");
 
-        const getItemSourceName = function(source: string) {
+        const getItemSourceName = function (source: string) {
             const sourceDef = GameObjectDefs[source] as EmoteDef;
             if (sourceDef?.name) {
                 return sourceDef.name;
@@ -1069,7 +1049,7 @@ export class LoadoutMenu {
                 } else if (
                     category.loadoutType != "emote" &&
                     itemInfo.type ==
-                    this.loadout[category.loadoutType as keyof typeof this.loadout]
+                        this.loadout[category.loadoutType as keyof typeof this.loadout]
                 ) {
                     loadoutItemDiv = itemInfo.outerDiv;
                 }
@@ -1117,7 +1097,7 @@ export class LoadoutMenu {
         // Disable crosshair elements on Edge
         if (device.browser == "edge") {
             if (category.loadoutType == "crosshair") {
-                const disableElem = function(
+                const disableElem = function (
                     parentElem: JQuery<HTMLElement>,
                     disableElem: JQuery<HTMLElement>
                 ) {
@@ -1158,7 +1138,7 @@ export class LoadoutMenu {
     }
 
     setEmoteDraggable(selector: JQuery<HTMLElement>, that: LoadoutMenu) {
-        selector.on("dragstart", function(e) {
+        selector.on("dragstart", function (e) {
             if (
                 !$(this).hasClass("customize-list-item-locked") &&
                 (that.selectItem($(this), false), device.browser != "edge")
@@ -1166,9 +1146,9 @@ export class LoadoutMenu {
                 const imgDiv = document.createElement("img");
                 imgDiv.src = that.selectedItem.img
                     ? that.selectedItem.img
-                        .replace("url(", "")
-                        .replace(")", "")
-                        .replace(/\'/gi, "")
+                          .replace("url(", "")
+                          .replace(")", "")
+                          .replace(/\'/gi, "")
                     : "";
                 e.originalEvent?.dataTransfer?.setDragImage(imgDiv, 64, 64);
             }
@@ -1182,9 +1162,6 @@ export class LoadoutMenu {
             .css({
                 "background-image": crosshair.getCursorURL(crosshairDef)
             });
-        crosshair.setElemCrosshair(
-            $("#customize-crosshair-selected"),
-            crosshairDef
-        );
+        crosshair.setElemCrosshair($("#customize-crosshair-selected"), crosshairDef);
     }
 }

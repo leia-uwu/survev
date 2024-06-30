@@ -1,20 +1,20 @@
-import { type SoundHandle } from "./createJS";
 import { math } from "../../shared/utils/math";
 import { type AudioManager } from "./audioManager";
+import { type SoundHandle } from "./createJS";
 
 export class Ambiance {
     introMusic = true;
     soundUpdateThrottle = 0;
     tracks: Array<{
-        name: string
-        sound: string
-        channel: string
-        immediateMode: boolean
-        inst: SoundHandle | null
-        instSound: string
-        filter: string
-        weight: number
-        volume: number
+        name: string;
+        sound: string;
+        channel: string;
+        immediateMode: boolean;
+        inst: SoundHandle | null;
+        instSound: string;
+        filter: string;
+        weight: number;
+        volume: number;
     }>;
 
     trackToIdx: Record<string, number>;
@@ -65,7 +65,7 @@ export class Ambiance {
         this.soundUpdateThrottle = 0;
     }
 
-    onGameComplete(audioManager: AudioManager) {
+    onGameComplete(_audioManager: AudioManager) {
         for (let i = 0; i < this.tracks.length; i++) {
             const track = this.tracks[i];
             if (track.immediateMode) {
@@ -75,7 +75,7 @@ export class Ambiance {
         this.getTrack("river").weight = 0;
     }
 
-    update(dt: number, audioManager: AudioManager, inGame: boolean) {
+    update(dt: number, audioManager: AudioManager, _inGame: boolean) {
         let updateVolume = false;
         this.soundUpdateThrottle -= dt;
         if (this.soundUpdateThrottle <= 0) {

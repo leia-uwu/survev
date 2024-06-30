@@ -5,10 +5,7 @@ import english from "../english";
 
 function downloadFile(
     file: string,
-    onComplete: (
-        err: null | JQuery.jqXHR<any>,
-        data?: Record<string, string>
-    ) => void
+    onComplete: (err: null | JQuery.jqXHR<any>, data?: Record<string, string>) => void
 ) {
     const opts = {
         url: api.resolveUrl(file),
@@ -59,8 +56,7 @@ export class Localization {
     }
 
     detectLocale() {
-        let detectedLocale =
-            (navigator.language || navigator.userLanguage).toLowerCase();
+        let detectedLocale = (navigator.language || navigator.userLanguage).toLowerCase();
         const languageWildcards = ["pt", "de", "es", "fr", "ko", "ru", "en"];
         for (let i = 0; i < languageWildcards.length; i++) {
             if (detectedLocale.includes(languageWildcards[i])) {
@@ -102,14 +98,12 @@ export class Localization {
     }
 
     translate(key: string) {
-        return (
-            this.translations[this.locale][key] || this.translations.en[key] || ""
-        );
+        return this.translations[this.locale][key] || this.translations.en[key] || "";
     }
 
     localizeIndex() {
         const localizedElements = $("*[data-l10n]");
-        localizedElements.each((idx, el) => {
+        localizedElements.each((_idx, el) => {
             const el$ = $(el);
             let datal10n = el$.attr("data-l10n")!;
             if (el$.hasClass("help-control") && device.touch) {

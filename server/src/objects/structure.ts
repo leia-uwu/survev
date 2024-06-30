@@ -1,25 +1,25 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type StructureDef } from "../../../shared/defs/mapObjectsTyping";
-import { type Game } from "../game";
-import { type AABB, coldet, type Collider } from "../../../shared/utils/coldet";
+import { type AABB, type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
-import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type Game } from "../game";
 import { getColliders } from "../map";
+import { BaseGameObject } from "./gameObject";
 
 interface Stair {
-    collision: AABB
-    center: Vec2
-    downDir: Vec2
-    downOri: number
-    upOri: number
-    downAabb: AABB
-    upAabb: AABB
-    noCeilingReveal: boolean
-    lootOnly: boolean
+    collision: AABB;
+    center: Vec2;
+    downDir: Vec2;
+    downOri: number;
+    upOri: number;
+    downAabb: AABB;
+    upAabb: AABB;
+    noCeilingReveal: boolean;
+    lootOnly: boolean;
 }
 
 export class Structure extends BaseGameObject {
@@ -62,7 +62,12 @@ export class Structure extends BaseGameObject {
         this.stairs = [];
         for (let i = 0; i < def.stairs.length; i++) {
             const stairsDef = def.stairs[i];
-            const stairsCol = collider.transform(stairsDef.collision, this.pos, this.rot, this.scale) as AABB;
+            const stairsCol = collider.transform(
+                stairsDef.collision,
+                this.pos,
+                this.rot,
+                this.scale
+            ) as AABB;
             const downDir = v2.rotate(stairsDef.downDir, this.rot);
 
             const downRot = Math.atan2(downDir.y, downDir.x);
@@ -71,7 +76,10 @@ export class Structure extends BaseGameObject {
             const childAabbs = coldet.splitAabb(stairsCol, downDir);
             this.stairs.push({
                 collision: stairsCol,
-                center: v2.add(stairsCol.min, v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)),
+                center: v2.add(
+                    stairsCol.min,
+                    v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)
+                ),
                 downDir,
                 downOri,
                 upOri: (downOri + 2) % 4,
@@ -82,7 +90,7 @@ export class Structure extends BaseGameObject {
             });
         }
 
-        this.mapObstacleBounds = getColliders(type).ground.map(coll => {
+        this.mapObstacleBounds = getColliders(type).ground.map((coll) => {
             return collider.transform(coll, pos, this.rot, 1);
         });
     }

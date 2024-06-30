@@ -1,23 +1,18 @@
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
 import {
-    GEAR_TYPES,
-    SCOPE_LEVELS,
     type AmmoDef,
     type BoostDef,
     type ChestDef,
-    type HealDef
+    GEAR_TYPES,
+    type HealDef,
+    SCOPE_LEVELS
 } from "../../../shared/defs/gameObjects/gearDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { type RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import {
-    Action,
-    DamageType,
-    GameConfig,
-    Input
-} from "../../../shared/gameConfig";
+import { Action, DamageType, GameConfig, Input } from "../../../shared/gameConfig";
 import { PickupMsgType } from "../../../shared/net";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -31,6 +26,25 @@ import { type Loot, type LootBarn } from "../objects/loot";
 import { type Obstacle } from "../objects/obstacle";
 import { type Player, type PlayerBarn } from "../objects/player";
 import { type Localization } from "./localization";
+
+const maxKillFeedLines = 6;
+const touchHoldDuration = 0.75 * 1000;
+const perkUiCount = 3;
+
+enum InteractionType {
+    None,
+    Cancel,
+    Loot,
+    Revive,
+    Object
+}
+
+const WeaponSlotToBind = {
+    [GameConfig.WeaponSlot.Primary]: Input.EquipPrimary,
+    [GameConfig.WeaponSlot.Secondary]: Input.EquipSecondary,
+    [GameConfig.WeaponSlot.Melee]: Input.EquipMelee,
+    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable
+};
 
 function domElemById(id: string) {
     return document.getElementById(id)!;
@@ -203,9 +217,9 @@ class UiState {
 interface EventListeners<
     T extends keyof HTMLElementEventMap = keyof HTMLElementEventMap
 > {
-    event: T
-    elem: HTMLElement
-    fn: (e: any) => void
+    event: T;
+    elem: HTMLElement;
+    fn: (e: any) => void;
 }
 export class UiManager2 {
     // Ui state
@@ -236,14 +250,14 @@ export class UiManager2 {
         },
         killFeed: {
             div: domElemById("ui-killfeed-contents"),
-            lines: [] as Array<{ line: HTMLElement, text: HTMLElement }>
+            lines: [] as Array<{ line: HTMLElement; text: HTMLElement }>
         },
         weapons: [] as Array<{
-            div: HTMLElement
-            type: HTMLElement
-            number: HTMLElement
-            image: HTMLImageElement
-            ammo: HTMLElement
+            div: HTMLElement;
+            type: HTMLElement;
+            number: HTMLElement;
+            image: HTMLImageElement;
+            ammo: HTMLElement;
         }>,
         ammo: {
             current: domElemById("ui-current-clip"),
@@ -269,33 +283,33 @@ export class UiManager2 {
             ] as unknown as HTMLElement[]
         },
         scopes: [] as Array<{
-            scopeType: string
-            div: HTMLElement
+            scopeType: string;
+            div: HTMLElement;
         }>,
         loot: [] as Array<{
-            lootType: string
-            div: HTMLElement
-            count: HTMLElement
-            image: HTMLImageElement
-            overlay: HTMLElement
+            lootType: string;
+            div: HTMLElement;
+            count: HTMLElement;
+            image: HTMLImageElement;
+            overlay: HTMLElement;
         }>,
         gear: [] as Array<{
-            gearType: (typeof GEAR_TYPES)[number]
-            div: HTMLElement
-            level: HTMLElement
-            image: HTMLImageElement
+            gearType: (typeof GEAR_TYPES)[number];
+            div: HTMLElement;
+            level: HTMLElement;
+            image: HTMLImageElement;
         }>,
         perks: [] as Array<{
-            perkType: string
-            div: HTMLElement
-            divTitle: HTMLElement
-            divDesc: HTMLElement
-            image: HTMLImageElement
+            perkType: string;
+            div: HTMLElement;
+            divTitle: HTMLElement;
+            divDesc: HTMLElement;
+            image: HTMLImageElement;
         }>
     };
 
     rareLootMessageQueue: string[] = [];
-    uiEvents: Array<{ action: string, type: string, data: string | number }> = [];
+    uiEvents: Array<{ action: string; type: string; data: string | number }> = [];
 
     eventListeners = [] as EventListeners[];
     clearQueuedItemActions: () => void;
@@ -303,13 +317,13 @@ export class UiManager2 {
     // Game-item handling. Game item UIs support two actions:
     // left-click to use, and right-click to drop.
     itemActions = [] as Array<{
-        action: string
-        type: string
-        data: string
-        div: HTMLElement
-        actionQueued: boolean
-        actionTime: number
-        touchOsId?: number
+        action: string;
+        type: string;
+        data: string;
+        div: HTMLElement;
+        actionQueued: boolean;
+        actionTime: number;
+        touchOsId?: number;
     }>;
 
     constructor(
@@ -378,9 +392,7 @@ export class UiManager2 {
                     image: T.getElementsByClassName(
                         "ui-loot-image"
                     )[0] as HTMLImageElement,
-                    overlay: T.getElementsByClassName(
-                        "ui-loot-overlay"
-                    )[0] as HTMLElement
+                    overlay: T.getElementsByClassName("ui-loot-overlay")[0] as HTMLElement
                 };
                 this.dom.loot.push(P);
             }
@@ -392,9 +404,7 @@ export class UiManager2 {
                 gearType,
                 div,
                 level: div.getElementsByClassName("ui-armor-level")[0] as HTMLElement,
-                image: div.getElementsByClassName(
-                    "ui-armor-image"
-                )[0] as HTMLImageElement
+                image: div.getElementsByClassName("ui-armor-image")[0] as HTMLImageElement
             };
             this.dom.gear.push(L);
         }
@@ -403,9 +413,7 @@ export class UiManager2 {
             const perkData = {
                 perkType: "",
                 div: perk,
-                divTitle: perk.getElementsByClassName(
-                    "tooltip-title"
-                )[0] as HTMLElement,
+                divTitle: perk.getElementsByClassName("tooltip-title")[0] as HTMLElement,
                 divDesc: perk.getElementsByClassName("tooltip-desc")[0] as HTMLElement,
                 image: perk.getElementsByClassName(
                     "ui-armor-image"
@@ -481,12 +489,7 @@ export class UiManager2 {
             }
         }
         for (let i = 0; i < this.dom.perks.length; i++) {
-            addItemAction(
-                "drop",
-                "perk",
-                i as unknown as string,
-                this.dom.perks[i].div
-            );
+            addItemAction("drop", "perk", i as unknown as string, this.dom.perks[i].div);
         }
         for (let i = 0; i < this.itemActions.length; i++) {
             const item = this.itemActions[i];
@@ -518,7 +521,7 @@ export class UiManager2 {
                     item.touchOsId = e.changedTouches[0].identifier;
                 }
             });
-            setEventListener("click", item.div, (e) => {
+            setEventListener("click", item.div, (_e) => {
                 if (
                     new Date().getTime() - item.actionTime < touchHoldDuration &&
                     item.actionQueued &&
@@ -528,7 +531,7 @@ export class UiManager2 {
                 }
                 item.actionQueued = false;
             });
-            setEventListener("touchcancel", item.div, (e) => {
+            setEventListener("touchcancel", item.div, (_e) => {
                 item.actionQueued = false;
             });
         }
@@ -572,7 +575,7 @@ export class UiManager2 {
         window.removeEventListener("keyup", this.onKeyUp);
     }
 
-    pushAction(itemAction: { action: string, type: string, data: string }) {
+    pushAction(itemAction: { action: string; type: string; data: string }) {
         this.uiEvents.push({
             action: itemAction.action,
             type: itemAction.type,
@@ -623,8 +626,7 @@ export class UiManager2 {
             const lootType = this.rareLootMessageQueue.shift()!;
             state.rareLootMessage.lootType = lootType;
             state.rareLootMessage.ticker = 0;
-            state.rareLootMessage.duration =
-                this.rareLootMessageQueue.length > 0 ? 2 : 4;
+            state.rareLootMessage.duration = this.rareLootMessageQueue.length > 0 ? 2 : 4;
             state.rareLootMessage.opacity = 0;
         }
 
@@ -648,8 +650,7 @@ export class UiManager2 {
         const I = state.killMessage.ticker;
         const T = state.killMessage.duration;
         state.killMessage.opacity =
-            (1 - math.smoothstep(I, T - 0.2, T)) *
-            (1 - state.rareLootMessage.opacity);
+            (1 - math.smoothstep(I, T - 0.2, T)) * (1 - state.rareLootMessage.opacity);
 
         // KillFeed
         let offset = 0;
@@ -658,8 +659,7 @@ export class UiManager2 {
             line.ticker += dt;
             const E = line.ticker;
             line.offset = offset;
-            line.opacity =
-                math.smoothstep(E, 0, 0.25) * (1 - math.smoothstep(E, 6, 6.5));
+            line.opacity = math.smoothstep(E, 0, 0.25) * (1 - math.smoothstep(E, 6, 6.5));
             offset += math.min(E / 0.25, 1);
 
             // Shorter animation on mobile
@@ -723,8 +723,7 @@ export class UiManager2 {
                 const X = activePlayer.Wr(GameConfig.WeaponSlot.Primary);
                 const K = activePlayer.Wr(GameConfig.WeaponSlot.Secondary);
                 const Z = X && K;
-                const usable =
-                    itemDef.type != "gun" || !Z || activePlayer.Ur() == "gun";
+                const usable = itemDef.type != "gun" || !Z || activePlayer.Ur() == "gun";
 
                 let J = false;
                 if (
@@ -862,7 +861,7 @@ export class UiManager2 {
         const fe =
             weaponDef.type == "gun"
                 ? weaponDef.ammoInfinite ||
-                    (activePlayer.hasPerk("endless_ammo") && !weaponDef.ignoreEndlessAmmo)
+                  (activePlayer.hasPerk("endless_ammo") && !weaponDef.ignoreEndlessAmmo)
                     ? Number.MAX_VALUE
                     : activePlayer.localData.inventory[weaponDef.ammo]
                 : 0;
@@ -876,11 +875,7 @@ export class UiManager2 {
             be.equipped = be.visible && activePlayer.localData.scope == be.type;
             be.selectable = be.visible && !spectating;
         }
-        for (
-            let xe = activePlayer.getBagLevel(), Se = 0;
-            Se < state.loot.length;
-            Se++
-        ) {
+        for (let xe = activePlayer.getBagLevel(), Se = 0; Se < state.loot.length; Se++) {
             const ve = state.loot[Se];
             const ke = ve.count;
             ve.count = activePlayer.localData.inventory[ve.type] || 0;
@@ -1197,15 +1192,11 @@ export class UiManager2 {
         }
         if (patch.ammo.remaining) {
             const V = state.ammo.remaining;
-            dom.ammo.remaining.innerHTML = String(
-                V == Number.MAX_VALUE ? "&#8734;" : V
-            );
+            dom.ammo.remaining.innerHTML = String(V == Number.MAX_VALUE ? "&#8734;" : V);
             dom.ammo.remaining.style.color = V != 0 ? "white" : "red";
         }
         if (patch.ammo.displayCurrent) {
-            dom.ammo.current.style.opacity = String(
-                state.ammo.displayCurrent ? 1 : 0
-            );
+            dom.ammo.current.style.opacity = String(state.ammo.displayCurrent ? 1 : 0);
         }
         if (patch.ammo.displayRemaining) {
             dom.ammo.remaining.style.opacity = String(
@@ -1250,8 +1241,8 @@ export class UiManager2 {
                         (GameObjectDefs[Y.lootType] as AmmoDef).special && J.count == 0
                             ? 0
                             : J.count > 0
-                                ? 1
-                                : 0.25
+                              ? 1
+                              : 0.25
                     );
                     Y.div.style.color = J.count == J.maximum ? "#ff9900" : "#ffffff";
                 }
@@ -1354,8 +1345,7 @@ export class UiManager2 {
 
     addRareLootMessage(lootType: string, clearQueue?: boolean) {
         if (clearQueue) {
-            this.newState.rareLootMessage.ticker =
-                this.newState.rareLootMessage.duration;
+            this.newState.rareLootMessage.ticker = this.newState.rareLootMessage.duration;
             this.rareLootMessageQueue = [];
         }
         this.rareLootMessageQueue.push(lootType);
@@ -1369,8 +1359,7 @@ export class UiManager2 {
         }
 
         if (this.newState.rareLootMessage.lootType == lootType) {
-            this.newState.rareLootMessage.ticker =
-                this.newState.rareLootMessage.duration;
+            this.newState.rareLootMessage.ticker = this.newState.rareLootMessage.duration;
         }
     }
 
@@ -1401,65 +1390,65 @@ export class UiManager2 {
         downed: boolean
     ) {
         switch (damageType) {
-        case DamageType.Player:
-            return `${killerName} ${this.localization.translate(
-                downed ? "game-knocked-out" : "game-killed"
-            )} ${targetName} ${this.localization.translate(
-                "game-with"
-            )} ${this.localization.translate(`game-${sourceType}`)}`;
-        case DamageType.Bleeding: {
-            const killTxt = this.localization.translate(
-                killerName ? "game-finally-killed" : "game-finally-bled-out"
-            );
-            if (killerName) {
-                return `${killerName} ${killTxt} ${targetName}`;
-            } else {
-                return `${targetName} ${killTxt}`;
-            }
-        }
-        case DamageType.Gas: {
-            let killName;
-            let killTxt;
-            if (downed) {
-                killName = this.localization.translate("game-the-red-zone");
-                killTxt = this.localization.translate("game-knocked-out");
-            } else {
-                killTxt = this.localization.translate(
-                    killerName ? "game-finally-killed" : "game-died-outside"
-                );
-            }
-            if (killName) {
-                return `${killName} ${killTxt} ${targetName}`;
-            } else {
-                return `${targetName} ${killTxt}`;
-            }
-        }
-        case DamageType.Airdrop: {
-            const mapObj = MapObjectDefs[sourceType] as ObstacleDef;
-            const killName = this.localization.translate("game-the-air-drop");
-            const killTxt = downed
-                ? this.localization.translate("game-knocked-out")
-                : mapObj && !mapObj.airdropCrate
-                    ? this.localization.translate("game-killed")
-                    : this.localization.translate("game-crushed");
-            return `${killName} ${killTxt} ${targetName}`;
-        }
-        case DamageType.Airstrike: {
-            const killTxt = this.localization.translate(
-                downed ? "game-knocked-out" : "game-killed"
-            );
-            if (killerName) {
-                return `${killerName} ${killTxt} ${targetName} ${this.localization.translate(
+            case DamageType.Player:
+                return `${killerName} ${this.localization.translate(
+                    downed ? "game-knocked-out" : "game-killed"
+                )} ${targetName} ${this.localization.translate(
                     "game-with"
-                )} ${this.localization.translate("game-an-air-strike")}`;
-            } else {
-                return `${this.localization.translate(
-                    "game-the-air-strike"
-                )} ${killTxt} ${targetName}`;
+                )} ${this.localization.translate(`game-${sourceType}`)}`;
+            case DamageType.Bleeding: {
+                const killTxt = this.localization.translate(
+                    killerName ? "game-finally-killed" : "game-finally-bled-out"
+                );
+                if (killerName) {
+                    return `${killerName} ${killTxt} ${targetName}`;
+                } else {
+                    return `${targetName} ${killTxt}`;
+                }
             }
-        }
-        default:
-            return "";
+            case DamageType.Gas: {
+                let killName;
+                let killTxt;
+                if (downed) {
+                    killName = this.localization.translate("game-the-red-zone");
+                    killTxt = this.localization.translate("game-knocked-out");
+                } else {
+                    killTxt = this.localization.translate(
+                        killerName ? "game-finally-killed" : "game-died-outside"
+                    );
+                }
+                if (killName) {
+                    return `${killName} ${killTxt} ${targetName}`;
+                } else {
+                    return `${targetName} ${killTxt}`;
+                }
+            }
+            case DamageType.Airdrop: {
+                const mapObj = MapObjectDefs[sourceType] as ObstacleDef;
+                const killName = this.localization.translate("game-the-air-drop");
+                const killTxt = downed
+                    ? this.localization.translate("game-knocked-out")
+                    : mapObj && !mapObj.airdropCrate
+                      ? this.localization.translate("game-killed")
+                      : this.localization.translate("game-crushed");
+                return `${killName} ${killTxt} ${targetName}`;
+            }
+            case DamageType.Airstrike: {
+                const killTxt = this.localization.translate(
+                    downed ? "game-knocked-out" : "game-killed"
+                );
+                if (killerName) {
+                    return `${killerName} ${killTxt} ${targetName} ${this.localization.translate(
+                        "game-with"
+                    )} ${this.localization.translate("game-an-air-strike")}`;
+                } else {
+                    return `${this.localization.translate(
+                        "game-the-air-strike"
+                    )} ${killTxt} ${targetName}`;
+                }
+            }
+            default:
+                return "";
         }
     }
 
@@ -1503,11 +1492,7 @@ export class UiManager2 {
         )} ${this.getRoleTranslation(role, teamId)}!`;
     }
 
-    getRoleAssignedKillFeedText(
-        role: string,
-        teamId: number,
-        playerName: string
-    ) {
+    getRoleAssignedKillFeedText(role: string, teamId: number, playerName: string) {
         const roleTxt = this.getRoleTranslation(role, teamId);
         return `${playerName} ${this.localization.translate(
             "game-promoted-to"
@@ -1543,8 +1528,8 @@ export class UiManager2 {
         const killKey = knockedOut
             ? "game-knocked-out"
             : completeKill
-                ? "game-killed"
-                : "game-finally-killed";
+              ? "game-killed"
+              : "game-finally-killed";
         const killTxt = this.localization.translate(killKey);
         const targetTxt = suicide
             ? spectating
@@ -1621,64 +1606,64 @@ export class UiManager2 {
         player: Player
     ) {
         switch (type) {
-        case InteractionType.None:
-            return "";
-        case InteractionType.Cancel:
-            return this.localization.translate("game-cancel");
-        case InteractionType.Revive:
-            if (
-                object &&
+            case InteractionType.None:
+                return "";
+            case InteractionType.Cancel:
+                return this.localization.translate("game-cancel");
+            case InteractionType.Revive:
+                if (
+                    object &&
                     player &&
                     object == player &&
                     player.hasPerk("self_revive")
-            ) {
-                return this.localization.translate("game-revive-self");
-            } else {
-                return this.localization.translate("game-revive-teammate");
+                ) {
+                    return this.localization.translate("game-revive-self");
+                } else {
+                    return this.localization.translate("game-revive-teammate");
+                }
+            case InteractionType.Object: {
+                const x = (object as Obstacle).getInteraction()!;
+                return `${this.localization.translate(
+                    x.action
+                )} ${this.localization.translate(x.object)}`;
             }
-        case InteractionType.Object: {
-            const x = (object as Obstacle).getInteraction()!;
-            return `${this.localization.translate(
-                x.action
-            )} ${this.localization.translate(x.object)}`;
-        }
-        case InteractionType.Loot: {
-            const loot = object as Loot;
-            let txt = this.localization.translate(`game-${loot.type}`) || loot.type;
-            if (loot.count > 1) {
-                txt += ` (${loot.count})`;
+            case InteractionType.Loot: {
+                const loot = object as Loot;
+                let txt = this.localization.translate(`game-${loot.type}`) || loot.type;
+                if (loot.count > 1) {
+                    txt += ` (${loot.count})`;
+                }
+                return txt;
             }
-            return txt;
-        }
-        default:
-            return "";
+            default:
+                return "";
         }
     }
 
     getInteractionKey(type: InteractionType) {
         let bind = null;
         switch (type) {
-        case InteractionType.Cancel:
-            bind = this.inputBinds.getBind(Input.Cancel);
-            break;
-        case InteractionType.Loot:
-            bind =
+            case InteractionType.Cancel:
+                bind = this.inputBinds.getBind(Input.Cancel);
+                break;
+            case InteractionType.Loot:
+                bind =
                     this.inputBinds.getBind(Input.Loot) ||
                     this.inputBinds.getBind(Input.Interact);
-            break;
-        case InteractionType.Object:
-            bind =
+                break;
+            case InteractionType.Object:
+                bind =
                     this.inputBinds.getBind(Input.Use) ||
                     this.inputBinds.getBind(Input.Interact);
-            break;
-        case InteractionType.Revive:
-            bind =
+                break;
+            case InteractionType.Revive:
+                bind =
                     this.inputBinds.getBind(Input.Revive) ||
                     this.inputBinds.getBind(Input.Interact);
-            break;
-        case InteractionType.None:
-        default:
-            bind = this.inputBinds.getBind(Input.Use);
+                break;
+            case InteractionType.None:
+            default:
+                bind = this.inputBinds.getBind(Input.Use);
         }
 
         if (bind) {
@@ -1708,32 +1693,10 @@ export function loadStaticDomImages() {
 
     for (const [id, img] of Object.entries(lootImages)) {
         (
-            domElemById(id).getElementsByClassName(
-                "ui-loot-image"
-            )[0] as HTMLImageElement
+            domElemById(id).getElementsByClassName("ui-loot-image")[0] as HTMLImageElement
         ).src = img;
     }
 
-    (domElemById("mag-glass-white") as HTMLImageElement).src =
-        "img/gui/mag-glass.svg";
-    (domElemById("ui-minimize-img") as HTMLImageElement).src =
-        "img/gui/minimize.svg";
+    (domElemById("mag-glass-white") as HTMLImageElement).src = "img/gui/mag-glass.svg";
+    (domElemById("ui-minimize-img") as HTMLImageElement).src = "img/gui/minimize.svg";
 }
-const maxKillFeedLines = 6;
-const touchHoldDuration = 0.75 * 1000;
-const perkUiCount = 3;
-
-enum InteractionType {
-    None,
-    Cancel,
-    Loot,
-    Revive,
-    Object,
-}
-
-const WeaponSlotToBind = {
-    [GameConfig.WeaponSlot.Primary]: Input.EquipPrimary,
-    [GameConfig.WeaponSlot.Secondary]: Input.EquipSecondary,
-    [GameConfig.WeaponSlot.Melee]: Input.EquipMelee,
-    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable
-};

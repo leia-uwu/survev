@@ -1,7 +1,7 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
-import { Main } from "./baseDefs";
 import { type MapDef } from "../mapDefs";
+import { Main } from "./baseDefs";
 
 const mapDef = {
     assets: {
@@ -31,11 +31,7 @@ const mapDef = {
             planeSound: "plane_02",
             airdropImg: "map-chute-01x.img"
         },
-        frozenSprites: [
-            "player-snow-01.img",
-            "player-snow-02.img",
-            "player-snow-03.img"
-        ]
+        frozenSprites: ["player-snow-01.img", "player-snow-02.img", "player-snow-03.img"]
     },
     gameConfig: {
         planes: {

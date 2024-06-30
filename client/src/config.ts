@@ -46,7 +46,7 @@ export class ConfigManager {
             let data = {};
             try {
                 data = JSON.parse(strConfig);
-            } catch (e) { }
+            } catch (_e) {}
             this.config = util.mergeDeep({}, defaultConfig, data);
             this.checkUpgradeConfig();
             this.onModified();
@@ -56,7 +56,7 @@ export class ConfigManager {
         let storedConfig: string | null = "{}";
         try {
             storedConfig = localStorage.getItem("surviv_config")!;
-        } catch (err) {
+        } catch (_err) {
             this.localStorageAvailable = false;
         }
         onLoaded(storedConfig);
@@ -70,7 +70,7 @@ export class ConfigManager {
             // This try/catch is here to handle that situation.
             try {
                 localStorage.setItem("surviv_config", strData);
-            } catch (e) { }
+            } catch (_e) {}
         }
     }
 
@@ -116,7 +116,6 @@ export class ConfigManager {
     }
 
     checkUpgradeConfig() {
-
         // seem not to be implemeted yet
         // this.get("version");
         // // @TODO: Put upgrade code here

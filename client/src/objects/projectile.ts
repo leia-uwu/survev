@@ -19,9 +19,9 @@ import {
 } from "./../../../shared/utils/objectSerializeFns";
 import { playHitFx } from "./bullet";
 import { Pool } from "./objectPool";
+import { type Obstacle } from "./obstacle";
 import { type ParticleBarn } from "./particles";
 import { type AbstractObject, type Player } from "./player";
-import { type Obstacle } from "./obstacle";
 
 class Projectile implements AbstractObject {
     __id!: number;
@@ -70,7 +70,7 @@ class Projectile implements AbstractObject {
         this.container.addChild(this.sprite);
     }
 
-    init() { }
+    init() {}
     free() {
         this.container.visible = false;
         if (this.strobeSprite) {
@@ -185,15 +185,15 @@ export class ProjectileBarn {
 
                 // Detect overlapping obstacles for sound effects
                 const wallCol: {
-                    obj: Obstacle | null
-                    pen: number
+                    obj: Obstacle | null;
+                    pen: number;
                 } = {
                     obj: null,
                     pen: 0
                 };
                 const groundCol: {
-                    obj: Obstacle | null
-                    pen: number
+                    obj: Obstacle | null;
+                    pen: number;
                 } = {
                     obj: null,
                     pen: 0
@@ -260,9 +260,9 @@ export class ProjectileBarn {
                     // sounds, and we have to know which one to call for
                     // particular sound names. Same with the channel.
                     const sound: {
-                        fn: "playGroup"
-                        channel: string
-                        name: string
+                        fn: "playGroup";
+                        channel: string;
+                        name: string;
                     } = {
                         fn: "playGroup",
                         channel: "hits",

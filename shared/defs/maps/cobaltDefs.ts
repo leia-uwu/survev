@@ -47,14 +47,7 @@ const mapDef = {
     gameMode: {
         maxPlayers: 80,
         perkMode: true,
-        perkModeRoles: [
-            "scout",
-            "sniper",
-            "healer",
-            "demo",
-            "assault",
-            "tank"
-        ]
+        perkModeRoles: ["scout", "sniper", "healer", "demo", "assault", "tank"]
     }
 };
 

@@ -1,17 +1,15 @@
 import * as PIXI from "pixi.js-legacy";
 import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
+import { type BuildingDef, type ObstacleDef } from "../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../shared/gameConfig";
 import { type GroundPatch, type MapMsg } from "../../shared/msgs/mapMsg";
-import { type Collider, coldet, type CircleWithHeight } from "../../shared/utils/coldet";
+import { type CircleWithHeight, type Collider, coldet } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";
 import { math } from "../../shared/utils/math";
 import { type River } from "../../shared/utils/river";
-import {
-    generateJaggedAabbPoints,
-    generateTerrain
-} from "../../shared/utils/terrainGen";
+import { generateJaggedAabbPoints, generateTerrain } from "../../shared/utils/terrainGen";
 import { util } from "../../shared/utils/util";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 import { type Ambiance } from "./ambiance";
@@ -27,10 +25,6 @@ import { type Player, type PlayerBarn } from "./objects/player";
 import { type SmokeParticle } from "./objects/smoke";
 import { Structure } from "./objects/structure";
 import { type Renderer } from "./renderer";
-import {
-    type BuildingDef,
-    type ObstacleDef
-} from "../../shared/defs/mapObjectsTyping";
 
 // Drawing
 
@@ -47,11 +41,7 @@ function tracePath(canvas: PIXI.Graphics, path: Vec2[]) {
     }
     canvas.closePath();
 }
-function traceGroundPatch(
-    canvas: PIXI.Graphics,
-    patch: GroundPatch,
-    seed: number
-) {
+function traceGroundPatch(canvas: PIXI.Graphics, patch: GroundPatch, seed: number) {
     const width = patch.max.x - patch.min.x;
     const height = patch.max.y - patch.min.y;
 
@@ -64,13 +54,7 @@ function traceGroundPatch(
     const seededRand = util.seededRand(seed);
     tracePath(
         canvas,
-        generateJaggedAabbPoints(
-            patch as any,
-            divisionsX,
-            divisionsY,
-            offset,
-            seededRand
-        )
+        generateJaggedAabbPoints(patch as any, divisionsX, divisionsY, offset, seededRand)
     );
 }
 
@@ -91,21 +75,21 @@ export class Map {
     height = 0;
     mapData: {
         places: Array<{
-            name: string
-            pos: Vec2
-        }>
+            name: string;
+            pos: Vec2;
+        }>;
         objects: Array<{
-            ori: number
-            pos: Vec2
-            scale: number
-            type: string
-        }>
-        groundPatches: GroundPatch[]
+            ori: number;
+            pos: Vec2;
+            scale: number;
+            type: string;
+        }>;
+        groundPatches: GroundPatch[];
     } = {
-            places: [],
-            objects: [],
-            groundPatches: []
-        };
+        places: [],
+        objects: [],
+        groundPatches: []
+    };
 
     mapLoaded = false;
     mapTexture: PIXI.RenderTexture | null = null;
@@ -117,12 +101,12 @@ export class Map {
     solvedPuzzleIds: number[] = [];
     lootDropSfxIds: number[] = [];
     terrain: {
-        shore: Vec2[]
+        shore: Vec2[];
         grass: Array<{
-            x: number
-            y: number
-        }>
-        rivers: River[]
+            x: number;
+            y: number;
+        }>;
+        rivers: River[];
     } | null = null;
 
     cameraEmitter: Emitter | null = null;
@@ -131,7 +115,7 @@ export class Map {
     cheatDetectFrame = 0;
     cheatRanDetection = false;
     cheatDetected = false;
-    constructor(public decalBarn: DecalBarn) { }
+    constructor(public decalBarn: DecalBarn) {}
 
     free() {
         // Buildings need to stop sound emitters
@@ -461,12 +445,11 @@ export class Map {
 
     getMinimapRender(obj: (typeof this.mapData.objects)[number]) {
         const def = MapObjectDefs[obj.type] as ObstacleDef | BuildingDef;
-        const zIdx =
-            def.type == "building" ? 750 + (def.zIdx || 0) : def.img.zIdx || 0;
+        const zIdx = def.type == "building" ? 750 + (def.zIdx || 0) : def.img.zIdx || 0;
         let shapes: Array<{
-            scale?: number
-            color: number
-            collider: CircleWithHeight
+            scale?: number;
+            color: number;
+            collider: CircleWithHeight;
         }> = [];
         if ((def as BuildingDef).map?.shapes !== undefined) {
             // @ts-expect-error stfu
@@ -479,8 +462,8 @@ export class Map {
                         ? def.collision
                         : def.ceiling.zoomRegions.length > 0 &&
                             def.ceiling.zoomRegions[0].zoomIn
-                            ? def.ceiling.zoomRegions[0].zoomIn
-                            : mapHelpers.getBoundingCollider(obj.type))
+                          ? def.ceiling.zoomRegions[0].zoomIn
+                          : mapHelpers.getBoundingCollider(obj.type))
             ) {
                 shapes.push({
                     collider: collider.copy(col) as CircleWithHeight,
@@ -571,25 +554,25 @@ export class Map {
                     const scale = shape.scale !== undefined ? shape.scale : 1;
                     gfx.beginFill(shape.color, 1);
                     switch (col.type) {
-                    case collider.Type.Circle:
-                        gfx.drawCircle(
-                            col.pos.x,
-                            this.height - col.pos.y,
-                            col.rad * scale
-                        );
-                        break;
-                    case collider.Type.Aabb: {
-                        let A = v2.mul(v2.sub(col.max, col.min), 0.5);
-                        const O = v2.add(col.min, A);
-                        A = v2.mul(A, scale);
-                        gfx.drawRect(
-                            O.x - A.x,
-                            this.height - O.y - A.y,
-                            A.x * 2,
-                            A.y * 2
-                        );
-                        gfx.endFill();
-                    }
+                        case collider.Type.Circle:
+                            gfx.drawCircle(
+                                col.pos.x,
+                                this.height - col.pos.y,
+                                col.rad * scale
+                            );
+                            break;
+                        case collider.Type.Aabb: {
+                            let A = v2.mul(v2.sub(col.max, col.min), 0.5);
+                            const O = v2.add(col.min, A);
+                            A = v2.mul(A, scale);
+                            gfx.drawRect(
+                                O.x - A.x,
+                                this.height - O.y - A.y,
+                                A.x * 2,
+                                A.y * 2
+                            );
+                            gfx.endFill();
+                        }
                     }
                 }
             }
@@ -660,10 +643,7 @@ export class Map {
     }
 
     getGroundSurface(pos: Vec2, layer: number) {
-        const groundSurface = (
-            type: string,
-            data: Record<string, any> = {}
-        ) => {
+        const groundSurface = (type: string, data: Record<string, any> = {}) => {
             if (type == "water") {
                 const mapColors = this.getMapDef().biome.colors;
                 data.waterColor =
@@ -677,8 +657,8 @@ export class Map {
                 type,
                 data
             } as {
-                type: string
-                data: Required<typeof data>
+                type: string;
+                data: Required<typeof data>;
             };
         };
 
@@ -752,8 +732,8 @@ export class Map {
                     ? this.mapDef.biome.sound.riverShore
                     : "grass"
                 : math.pointInsidePolygon(pos, this.terrain?.shore!)
-                    ? "sand"
-                    : "water"
+                  ? "sand"
+                  : "water"
         );
     }
 

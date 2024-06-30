@@ -1,23 +1,23 @@
 import { defineSkin } from "../../utils/util";
 
 export interface BulletDef {
-    readonly type: "bullet"
-    damage: number
-    obstacleDamage: number
-    falloff: number
-    distance: number
-    speed: number
-    variance: number
-    shrapnel: boolean
-    tracerColor: string
-    tracerWidth: number
-    tracerLength: number
-    suppressed?: boolean
-    flareColor?: number
-    addFlare?: boolean
-    maxFlareScale?: number
-    skipCollision?: boolean
-    onHit?: string
+    readonly type: "bullet";
+    damage: number;
+    obstacleDamage: number;
+    falloff: number;
+    distance: number;
+    speed: number;
+    variance: number;
+    shrapnel: boolean;
+    tracerColor: string;
+    tracerWidth: number;
+    tracerLength: number;
+    suppressed?: boolean;
+    flareColor?: number;
+    addFlare?: boolean;
+    maxFlareScale?: number;
+    skipCollision?: boolean;
+    onHit?: string;
 }
 
 function defineBulletSkin(baseType: string, params: Partial<BulletDef>) {

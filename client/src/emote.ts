@@ -2,12 +2,15 @@ import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
+import { type AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
+import { type GunDef } from "../../shared/defs/gameObjects/gunDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
 import { EmoteSlot, GameConfig, Input } from "../../shared/gameConfig";
+import { type Emote } from "../../shared/msgs/updateMsg";
 import { coldet } from "../../shared/utils/coldet";
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
-import { v2, type Vec2 } from "../../shared/utils/v2";
+import { type Vec2, v2 } from "../../shared/utils/v2";
 import { type AudioManager } from "./audioManager";
 import { type Camera } from "./camera";
 import { device } from "./device";
@@ -19,67 +22,64 @@ import { type DeadBodyBarn } from "./objects/deadBody";
 import { type Player, type PlayerBarn } from "./objects/player";
 import { type Renderer } from "./renderer";
 import { type UiManager } from "./ui/ui";
-import { type Emote } from "../../shared/msgs/updateMsg";
-import { type AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
-import { type GunDef } from "../../shared/defs/gameObjects/gunDefs";
 
 const airdropIdx = 4;
 const airstrikeIdx = 5;
 
 interface Indicator {
-    elem: JQuery<HTMLElement>
-    borderElem: JQuery<HTMLElement>
-    pingContainer: PIXI.Container
-    indContainer: PIXI.Container
+    elem: JQuery<HTMLElement>;
+    borderElem: JQuery<HTMLElement>;
+    pingContainer: PIXI.Container;
+    indContainer: PIXI.Container;
     borderSprite: {
-        sprite: PIXI.Sprite
-        baseScale: number
-    }
+        sprite: PIXI.Sprite;
+        baseScale: number;
+    };
     pingSprite: {
-        sprite: PIXI.Sprite
-        baseScale: number
-    }
+        sprite: PIXI.Sprite;
+        baseScale: number;
+    };
     indSpriteOuter: {
-        sprite: PIXI.Sprite
-        baseScale: number
-        baseTint: number
-    }
+        sprite: PIXI.Sprite;
+        baseScale: number;
+        baseTint: number;
+    };
     indSpriteInner: {
-        sprite: PIXI.Sprite
-        baseScale: number
-        baseTint: number
-    }
-    displayed: boolean
-    fadeIn: number
-    life: number
-    fadeOut: number
-    pos: Vec2
-    mapEvent?: boolean
-    worldDisplay?: boolean
+        sprite: PIXI.Sprite;
+        baseScale: number;
+        baseTint: number;
+    };
+    displayed: boolean;
+    fadeIn: number;
+    life: number;
+    fadeOut: number;
+    pos: Vec2;
+    mapEvent?: boolean;
+    worldDisplay?: boolean;
 }
 
 interface TeamPingSelector {
-    parent: JQuery<HTMLElement>
-    angleA: number
-    angleC: number
-    highlight: any
-    highlightDisplayed: boolean
-    ping: string
-    emote: string
-    ammoEmote?: boolean
-    displayCloseIcon?: boolean
-    texture?: string
+    parent: JQuery<HTMLElement>;
+    angleA: number;
+    angleC: number;
+    highlight: any;
+    highlightDisplayed: boolean;
+    ping: string;
+    emote: string;
+    ammoEmote?: boolean;
+    displayCloseIcon?: boolean;
+    texture?: string;
 }
 
 interface EmoteWheelData {
-    parent: JQuery<HTMLElement>
-    vA: Vec2
-    vC: Vec2
-    ping: string
-    emote: string
-    emoteSlot?: EmoteSlot
-    displayCloseIcon?: boolean
-    ammoEmote?: boolean
+    parent: JQuery<HTMLElement>;
+    vA: Vec2;
+    vC: Vec2;
+    ping: string;
+    emote: string;
+    emoteSlot?: EmoteSlot;
+    displayCloseIcon?: boolean;
+    ammoEmote?: boolean;
 }
 
 function getImgUrlFromSelector(data: EmoteWheelData | TeamPingSelector) {
@@ -173,7 +173,7 @@ export class EmoteBarn {
 
     // !
     pingIndicators: Array<{
-        ping: Indicator
+        ping: Indicator;
     }> = [];
 
     airdropIndicator: Indicator;
@@ -188,37 +188,37 @@ export class EmoteBarn {
     wedgeOpacityReset = device.touch ? 1 : 0.75;
     teamEmoteOpacityReset = 0.2;
     emotes: Array<{
-        alive: boolean
-        pos: Vec2
-        container: PIXI.Container
-        circleOuter: PIXI.Sprite
-        baseScale: number
-        sprite: PIXI.Sprite
-        posOffset: Vec2
-        isNew: boolean
-        type: string
-        playerId: number
-        lifeIn: number
-        life: number
-        lifeOut: number
-        zIdx: number
-        sound: string
-        channel: string
+        alive: boolean;
+        pos: Vec2;
+        container: PIXI.Container;
+        circleOuter: PIXI.Sprite;
+        baseScale: number;
+        sprite: PIXI.Sprite;
+        posOffset: Vec2;
+        isNew: boolean;
+        type: string;
+        playerId: number;
+        lifeIn: number;
+        life: number;
+        lifeOut: number;
+        zIdx: number;
+        sound: string;
+        channel: string;
     }> = [];
 
-    newPings: Array<{ type: string, pos: Vec2 }> = [];
-    newEmotes: Array<{ type: string, pos: Vec2 }> = [];
+    newPings: Array<{ type: string; pos: Vec2 }> = [];
+    newEmotes: Array<{ type: string; pos: Vec2 }> = [];
     emoteLoadout: string[] = [];
     unlockTypes = {};
     socialUnlocked = false;
 
     emoteWheelSelectors!: Array<
-    {
-        angleA: number
-        angleC: number
-        highlight: JQuery<HTMLElement>
-        highlightDisplayed: boolean
-    } & EmoteWheelData
+        {
+            angleA: number;
+            angleC: number;
+            highlight: JQuery<HTMLElement>;
+            highlightDisplayed: boolean;
+        } & EmoteWheelData
     >;
 
     parentDisplayed!: JQuery<HTMLElement>;
@@ -370,16 +370,16 @@ export class EmoteBarn {
 
         // Set ping wheel specific data
         const teamPingData: Record<
-        string,
-        {
-            parent: JQuery<HTMLElement>
-            vA: Vec2
-            vC: Vec2
-            ping: string
-            emote: string
-            displayCloseIcon?: boolean
-            ammoEmote?: boolean
-        }
+            string,
+            {
+                parent: JQuery<HTMLElement>;
+                vA: Vec2;
+                vC: Vec2;
+                ping: string;
+                emote: string;
+                displayCloseIcon?: boolean;
+                ammoEmote?: boolean;
+            }
         > = {
             middle: {
                 parent: $("#ui-team-ping-middle"),
@@ -450,7 +450,7 @@ export class EmoteBarn {
 
         this.container.scale.set(this.baseScale, this.baseScale);
         this.container.addChild(this.pingContainer);
-        const createIndicator = function(idx: number, indTint = 16777215) {
+        const createIndicator = function (idx: number, indTint = 16777215) {
             const pingContainer = new PIXI.Container();
             const indContainer = new PIXI.Container();
             const tint = GameConfig.groupColors[idx] || indTint;
@@ -486,9 +486,7 @@ export class EmoteBarn {
             indSpriteOuter.visible = true;
             indContainer.addChild(indSpriteOuter);
             return {
-                elem: $("#ui-team-indicators").find(
-                    `.ui-indicator-ping[data-id=${idx}]`
-                ),
+                elem: $("#ui-team-indicators").find(`.ui-indicator-ping[data-id=${idx}]`),
                 borderElem: $("#ui-team-indicators").find(
                     `.ui-indicator-ping-border[data-id=${idx}]`
                 ),
@@ -529,10 +527,7 @@ export class EmoteBarn {
                 ping: indicator
             });
         }
-        this.airdropIndicator = createIndicator(
-            airdropIdx,
-            PingDefs.ping_airdrop.tint
-        );
+        this.airdropIndicator = createIndicator(airdropIdx, PingDefs.ping_airdrop.tint);
         this.pingContainer.addChild(this.airdropIndicator.pingContainer);
         this.indContainer.addChild(this.airdropIndicator.indContainer);
         this.pingIndicators.push({
@@ -678,7 +673,7 @@ export class EmoteBarn {
         }
     }
 
-    sendEmote(emote: { type: string, pos: Vec2 }) {
+    sendEmote(emote: { type: string; pos: Vec2 }) {
         this.newEmotes.push({
             type: emote.type,
             pos: emote.pos
@@ -840,10 +835,7 @@ export class EmoteBarn {
                 this.pingMouseTriggered = true;
             }
         }
-        if (
-            inputBinds.isBindReleased(Input.TeamPingSingle) &&
-            this.pingMouseTriggered
-        ) {
+        if (inputBinds.isBindReleased(Input.TeamPingSingle) && this.pingMouseTriggered) {
             this.triggerPing();
         }
         if (inputBinds.isBindPressed(Input.EmoteMenu)) {
@@ -881,17 +873,16 @@ export class EmoteBarn {
         if (
             !this.disable &&
             !perkModeDisable &&
-            ((this.wheelKeyTriggered =
-                this.pingKeyTriggered || this.emoteMouseTriggered),
+            ((this.wheelKeyTriggered = this.pingKeyTriggered || this.emoteMouseTriggered),
             (this.emoteSoftTicker -= dt),
             this.emoteCounter >= GameConfig.player.emoteThreshold &&
-                    this.emoteHardTicker > 0
+            this.emoteHardTicker > 0
                 ? ((this.emoteHardTicker -= dt),
-                this.emoteHardTicker < 0 && (this.emoteCounter = 0))
+                  this.emoteHardTicker < 0 && (this.emoteCounter = 0))
                 : this.emoteSoftTicker < 0 &&
-                    this.emoteCounter > 0 &&
-                    (this.emoteCounter--,
-                    (this.emoteSoftTicker = GameConfig.player.emoteSoftCooldown * 1.5)),
+                  this.emoteCounter > 0 &&
+                  (this.emoteCounter--,
+                  (this.emoteSoftTicker = GameConfig.player.emoteSoftCooldown * 1.5)),
             (!this.pingMouseTriggered && !this.emoteMouseTriggered) ||
                 this.wheelDisplayed ||
                 ((this.parentDisplayed = this.pingMouseTriggered

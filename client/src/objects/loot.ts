@@ -1,25 +1,25 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
+import { type AmmoDef } from "../../../shared/defs/gameObjects/gearDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type XPDef } from "../../../shared/defs/gameObjects/xpDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
+import {
+    type ObjectData,
+    type ObjectType
+} from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type AudioManager } from "../audioManager";
 import { type Camera } from "../camera";
 import { device } from "../device";
 import { type Map } from "../map";
-import { Pool } from "./objectPool";
-import { type AbstractObject, type Player } from "./player";
-import { type Emitter, type ParticleBarn } from "./particles";
 import { type Renderer } from "../renderer";
-import {
-    type ObjectData,
-    type ObjectType
-} from "../../../shared/utils/objectSerializeFns";
-import { type XPDef } from "../../../shared/defs/gameObjects/xpDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type AmmoDef } from "../../../shared/defs/gameObjects/gearDefs";
+import { Pool } from "./objectPool";
+import { type Emitter, type ParticleBarn } from "./particles";
+import { type AbstractObject, type Player } from "./player";
 
 export class Loot implements AbstractObject {
     __id!: number;
@@ -69,9 +69,9 @@ export class Loot implements AbstractObject {
         fullUpdate: boolean,
         isNew: boolean,
         ctx: {
-            map: Map
-            renderer: Renderer
-            particleBarn: ParticleBarn
+            map: Map;
+            renderer: Renderer;
+            particleBarn: ParticleBarn;
         }
     ) {
         this.updatedData = true;
@@ -103,12 +103,13 @@ export class Loot implements AbstractObject {
                 this.playDropSfx = true;
             }
 
-            this.rad = GameConfig.lootRadius[
-                itemDef.type as keyof typeof GameConfig.lootRadius
-            ];
+            this.rad =
+                GameConfig.lootRadius[itemDef.type as keyof typeof GameConfig.lootRadius];
             this.imgScale = itemDef.lootImg?.scale * 1.25;
 
-            const innerScale = (itemDef as { lootImg: { innerScale?: number } }).lootImg.innerScale || 0.8;
+            const innerScale =
+                (itemDef as { lootImg: { innerScale?: number } }).lootImg.innerScale ||
+                0.8;
             this.sprite.scale.set(innerScale, innerScale);
             this.sprite.texture = PIXI.Texture.from(itemDef.lootImg?.sprite);
             this.sprite.tint = itemDef.lootImg?.tint;
@@ -162,7 +163,7 @@ export class LootBarn {
         map: Map,
         audioManager: AudioManager,
         camera: Camera,
-        debug: unknown
+        _debug: unknown
     ) {
         this.closestLoot = null;
         let closestDist = Number.MAX_VALUE;

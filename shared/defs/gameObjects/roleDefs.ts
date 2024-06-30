@@ -1,33 +1,33 @@
 export interface RoleDef {
-    readonly type: "role"
-    announce: boolean
+    readonly type: "role";
+    announce: boolean;
     killFeed?: {
-        assign?: boolean
-        dead?: boolean
-        color?: string
-    }
+        assign?: boolean;
+        dead?: boolean;
+        color?: string;
+    };
     sound: {
-        assign?: string
-        dead?: string
-    }
+        assign?: string;
+        dead?: string;
+    };
 
     mapIcon?: {
-        alive: string
-        dead: string
-    }
-    perks?: string[]
+        alive: string;
+        dead: string;
+    };
+    perks?: string[];
     mapIndicator?: {
-        sprite: string
-        tint: number
-        pulse: boolean
-        pulseTint: number
-    }
+        sprite: string;
+        tint: number;
+        pulse: boolean;
+        pulseTint: number;
+    };
     visorImg?: {
-        baseSprite: string
-        spriteScale: number
-    }
-    guiImg?: string
-    color?: number
+        baseSprite: string;
+        spriteScale: number;
+    };
+    guiImg?: string;
+    color?: number;
 }
 
 export const RoleDefs: Record<string, RoleDef> = {

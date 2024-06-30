@@ -12,13 +12,7 @@ const mapDef = {
             { name: "snowball_02", channel: "sfx" },
             { name: "snowball_pickup_01", channel: "ui" }
         ],
-        atlases: [
-            "gradient",
-            "loadout",
-            "shared",
-            "woods",
-            "snow"
-        ]
+        atlases: ["gradient", "loadout", "shared", "woods", "snow"]
     },
     biome: {
         colors: {

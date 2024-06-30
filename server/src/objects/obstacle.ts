@@ -1,18 +1,18 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
-import { type Game } from "../game";
-import { coldet, type Collider } from "../../../shared/utils/coldet";
+import * as net from "../../../shared/net";
+import { type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type Game } from "../game";
 import { type Building } from "./building";
 import { BaseGameObject, type DamageParams } from "./gameObject";
 import { type Player } from "./player";
-import * as net from "../../../shared/net";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
@@ -41,37 +41,37 @@ export class Obstacle extends BaseGameObject {
     interactionRad = 0;
 
     door!: {
-        open: boolean
-        canUse: boolean
-        locked: boolean
-        hinge: Vec2
-        closedOri: number
-        openOri: number
-        openAltOri: number
-        openOneWay: number | boolean
-        openDelay: number
-        seq: number
-        openOnce: boolean
-        autoOpen: boolean
-        autoClose: boolean
-        autoCloseDelay: number
-        slideToOpen: boolean
-        slideOffset: number
-        closedPos: Vec2
-        openPos: Vec2
+        open: boolean;
+        canUse: boolean;
+        locked: boolean;
+        hinge: Vec2;
+        closedOri: number;
+        openOri: number;
+        openAltOri: number;
+        openOneWay: number | boolean;
+        openDelay: number;
+        seq: number;
+        openOnce: boolean;
+        autoOpen: boolean;
+        autoClose: boolean;
+        autoCloseDelay: number;
+        slideToOpen: boolean;
+        slideOffset: number;
+        closedPos: Vec2;
+        openPos: Vec2;
     };
 
     closeTimeout?: NodeJS.Timeout;
 
     isButton = false;
     button!: {
-        onOff: boolean
-        canUse: boolean
-        seq: number
-        useOnce: boolean
-        useType: string
-        useDelay: number
-        useDir: Vec2
+        onOff: boolean;
+        canUse: boolean;
+        seq: number;
+        useOnce: boolean;
+        useType: string;
+        useDelay: number;
+        useDir: Vec2;
     };
 
     isPuzzlePiece = false;
@@ -99,7 +99,16 @@ export class Obstacle extends BaseGameObject {
         return this.button?.canUse ?? this.door?.canUse;
     }
 
-    constructor(game: Game, pos: Vec2, type: string, layer: number, ori = 0, scale = 1, parentBuildingId?: number, puzzlePiece?: string) {
+    constructor(
+        game: Game,
+        pos: Vec2,
+        type: string,
+        layer: number,
+        ori = 0,
+        scale = 1,
+        parentBuildingId?: number,
+        puzzlePiece?: string
+    ) {
         super(game, pos);
         this.type = type;
         this.ori = ori;
@@ -175,22 +184,22 @@ export class Obstacle extends BaseGameObject {
 
             if (!this.door.slideToOpen) {
                 switch (ori) {
-                case 0:
-                    this.door.openOri = 1;
-                    this.door.openAltOri = 3;
-                    break;
-                case 1:
-                    this.door.openOri = 2;
-                    this.door.openAltOri = 0;
-                    break;
-                case 2:
-                    this.door.openOri = 3;
-                    this.door.openAltOri = 1;
-                    break;
-                case 3:
-                    this.door.openOri = 0;
-                    this.door.openAltOri = 2;
-                    break;
+                    case 0:
+                        this.door.openOri = 1;
+                        this.door.openAltOri = 3;
+                        break;
+                    case 1:
+                        this.door.openOri = 2;
+                        this.door.openAltOri = 0;
+                        break;
+                    case 2:
+                        this.door.openOri = 3;
+                        this.door.openAltOri = 1;
+                        break;
+                    case 3:
+                        this.door.openOri = 0;
+                        this.door.openAltOri = 2;
+                        break;
                 }
             }
             this.checkLayer();
@@ -243,10 +252,12 @@ export class Obstacle extends BaseGameObject {
         let stonePiercing = false;
 
         if (params.gameSourceType) {
-            const sourceDef = GameObjectDefs[params.gameSourceType] as {
-                armorPiercing?: boolean
-                stonePiercing?: boolean
-            } | undefined;
+            const sourceDef = GameObjectDefs[params.gameSourceType] as
+                | {
+                      armorPiercing?: boolean;
+                      stonePiercing?: boolean;
+                  }
+                | undefined;
             armorPiercing = sourceDef?.armorPiercing ?? false;
             stonePiercing = sourceDef?.stonePiercing ?? false;
         }
@@ -261,8 +272,14 @@ export class Obstacle extends BaseGameObject {
         } else {
             this.healthT = this.health / this.maxHealth;
             if (this.minScale < 1) {
-                this.scale = this.healthT * (this.maxScale - this.minScale) + this.minScale;
-                this.collider = collider.transform(def.collision, this.pos, math.oriToRad(this.ori), this.scale);
+                this.scale =
+                    this.healthT * (this.maxScale - this.minScale) + this.minScale;
+                this.collider = collider.transform(
+                    def.collision,
+                    this.pos,
+                    math.oriToRad(this.ori),
+                    this.scale
+                );
             }
 
             // need to send full object for obstacles with explosions
@@ -321,7 +338,8 @@ export class Obstacle extends BaseGameObject {
         }
 
         if (def.explosion) {
-            this.game.explosionBarn.addExplosion(def.explosion,
+            this.game.explosionBarn.addExplosion(
+                def.explosion,
                 this.pos,
                 this.layer,
                 "",
@@ -351,7 +369,10 @@ export class Obstacle extends BaseGameObject {
 
             if (this.door.autoOpen && this.door.open) return;
 
-            if (this.door.canUse && (player?.isOnOtherSide(this) || !(this.door.openOneWay === true))) {
+            if (
+                this.door.canUse &&
+                (player?.isOnOtherSide(this) || !(this.door.openOneWay === true))
+            ) {
                 this.door.seq++;
                 if (this.door.openOnce) {
                     this.door.canUse = false;
@@ -359,9 +380,13 @@ export class Obstacle extends BaseGameObject {
 
                 this.setDirty();
                 if (this.door.openDelay > 0) {
-                    setTimeout(() => {
-                        this.toggleDoor(player);
-                    }, this.door.openDelay * 1000, this);
+                    setTimeout(
+                        () => {
+                            this.toggleDoor(player);
+                        },
+                        this.door.openDelay * 1000,
+                        this
+                    );
                 } else {
                     this.toggleDoor(player);
                 }
@@ -402,8 +427,10 @@ export class Obstacle extends BaseGameObject {
 
         if (!this.door.slideToOpen) {
             if (this.door.open) {
-                if ((player?.isOnOtherSide(this) && !this.door.openOneWay) ??
-                    useDir?.x === 1) {
+                if (
+                    (player?.isOnOtherSide(this) && !this.door.openOneWay) ??
+                    useDir?.x === 1
+                ) {
                     this.ori = this.door.openAltOri;
                 } else {
                     this.ori = this.door.openOri;
@@ -421,20 +448,14 @@ export class Obstacle extends BaseGameObject {
             if (this.door.open) {
                 this.pos = v2.add(
                     this.pos,
-                    v2.rotate(
-                        v2.create(0, -this.door.slideOffset), this.rot)
+                    v2.rotate(v2.create(0, -this.door.slideOffset), this.rot)
                 );
             } else {
                 this.pos = this.door.closedPos;
             }
         }
         this.rot = math.oriToRad(this.ori);
-        this.collider = collider.transform(
-            def.collision,
-            this.pos,
-            this.rot,
-            this.scale
-        );
+        this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
 
         this.bounds = collider.transform(def.collision, v2.create(0, 0), this.rot, 1);
         this.game.grid.updateObject(this);

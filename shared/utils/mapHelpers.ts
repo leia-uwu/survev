@@ -16,7 +16,12 @@ function computeBoundingCollider(type: string): Collider {
         for (let i = 0; i < def.layers.length; i++) {
             const obj = def.layers[i];
             const rot = math.oriToRad(obj.ori);
-            const col = collider.transform(mapHelpers.getBoundingCollider(obj.type), obj.pos, rot, 1.0);
+            const col = collider.transform(
+                mapHelpers.getBoundingCollider(obj.type),
+                obj.pos,
+                rot,
+                1.0
+            );
             aabbs.push(collider.toAabb(col));
         }
         for (let i = 0; i < def.stairs.length; i++) {
@@ -31,7 +36,8 @@ function computeBoundingCollider(type: string): Collider {
         aabb.min = v2.sub(aabb.min, margin);
         aabb.max = v2.add(aabb.max, margin);
         return collider.createAabb(aabb.min, aabb.max);
-    } if (def.type === "building") {
+    }
+    if (def.type === "building") {
         const aabbs: AABB[] = [];
         for (let i = 0; i < def.floor.surfaces.length; i++) {
             const collisions = def.floor.surfaces[i].collision;
@@ -57,15 +63,22 @@ function computeBoundingCollider(type: string): Collider {
             }
             if (mt !== "") {
                 const rot = math.oriToRad(mapObj.ori);
-                const col = collider.transform(mapHelpers.getBoundingCollider(mt), mapObj.pos, rot, mapObj.scale);
+                const col = collider.transform(
+                    mapHelpers.getBoundingCollider(mt),
+                    mapObj.pos,
+                    rot,
+                    mapObj.scale
+                );
                 aabbs.push(collider.toAabb(col));
             }
         }
         const aabb = coldet.boundingAabb(aabbs);
         return collider.createAabb(aabb.min, aabb.max);
-    } if (def.type === "decal") {
+    }
+    if (def.type === "decal") {
         return collider.toAabb(def.collision);
-    } if (def.type === "loot_spawner") {
+    }
+    if (def.type === "loot_spawner") {
         return collider.createCircle(v2.create(0.0, 0.0), 3.0);
     }
     assert(def.collision !== undefined);
@@ -102,13 +115,16 @@ export const mapHelpers = {
         const def = MapObjectDefs[type] as BuildingDef;
         const dims = mapHelpers.getBridgeDims(type);
         const dir = v2.create(1.0, 0.0);
-        const ext = v2.add(v2.mul(dir, dims.length * 1.5), v2.mul(v2.perp(dir), dims.width * def.terrain.bridge!.nearbyWidthMult));
+        const ext = v2.add(
+            v2.mul(dir, dims.length * 1.5),
+            v2.mul(v2.perp(dir), dims.width * def.terrain.bridge!.nearbyWidthMult)
+        );
         const col = collider.createAabbExtents(v2.create(0.0, 0.0), v2.mul(ext, 0.5));
         return collider.transform(col, pos, rot, scale) as AABB;
     },
     nt: 0.8,
     lt: 0.9,
-    validateSpriteAlpha: function(e: any, t: number) {
+    validateSpriteAlpha: function (e: any, t: number) {
         return e.sprite?.visible && e.sprite.alpha < t;
     }
 };

@@ -1,11 +1,11 @@
 import * as PIXI from "pixi.js-legacy";
-import { MapDefs, type Atlas } from "../../shared/defs/mapDefs";
+import { type Atlas, MapDefs } from "../../shared/defs/mapDefs";
 import { type AudioManager } from "./audioManager";
 import { type ConfigManager } from "./config";
 import { device } from "./device";
-import SoundDefs from "./soundDefs";
 import fullResAtlasDefs from "./fullResAtlasDefs.json";
 import lowResAtlasDefs from "./lowResAtlasDefs.json";
+import SoundDefs from "./soundDefs";
 
 type AtlasDef = Record<Atlas, PIXI.ISpritesheetData[]>;
 
@@ -28,22 +28,22 @@ function loadTexture(renderer: PIXI.IRenderer, url: string) {
         baseTex.on("error", (baseTex) => {
             console.log("BaseTex load error, retrying", url);
             if (loadAttempts++ <= 3) {
-                setTimeout(() => {
-                    if (baseTex.source) {
-                        baseTex.updateSourceImage("");
-                        baseTex.updateSourceImage(url.substring(5, url.length));
-                    }
-                }, (loadAttempts - 1) * 1000);
+                setTimeout(
+                    () => {
+                        if (baseTex.source) {
+                            baseTex.updateSourceImage("");
+                            baseTex.updateSourceImage(url.substring(5, url.length));
+                        }
+                    },
+                    (loadAttempts - 1) * 1000
+                );
             }
         });
     }
     return baseTex;
 }
 
-function loadSpritesheet(
-    renderer: PIXI.IRenderer,
-    data: PIXI.ISpritesheetData
-) {
+function loadSpritesheet(renderer: PIXI.IRenderer, data: PIXI.ISpritesheetData) {
     const baseTex = loadTexture(renderer, `assets/${data.meta.image}`);
 
     const sheet = new PIXI.Spritesheet(baseTex, data);
@@ -86,11 +86,11 @@ function selectTextureRes(renderer: PIXI.IRenderer, config: ConfigManager) {
 
 export class ResourceManager {
     atlases = {} as Record<
-    Atlas,
-    {
-        loaded: boolean
-        spritesheets: PIXI.Spritesheet[]
-    }
+        Atlas,
+        {
+            loaded: boolean;
+            spritesheets: PIXI.Spritesheet[];
+        }
     >;
 
     loadTicker = 0;
@@ -145,10 +145,7 @@ export class ResourceManager {
         const atlasDefs = spritesheetDefs[this.textureRes] || spritesheetDefs.low;
         const atlasDef = atlasDefs[name];
         for (let i = 0; i < atlasDef.length; i++) {
-            const atlas = loadSpritesheet(
-                this.renderer,
-                atlasDef[i]
-            );
+            const atlas = loadSpritesheet(this.renderer, atlasDef[i]);
             this.atlases[name].spritesheets.push(atlas);
         }
         this.atlases[name].loaded = true;

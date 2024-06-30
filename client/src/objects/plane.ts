@@ -1,21 +1,18 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
+import { type Plane as PlaneData, type UpdateMsg } from "../../../shared/msgs/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import { type AudioManager } from "../audioManager";
-import { type Map } from "../map";
-import { type Vec2 } from "./../../../shared/utils/v2";
 import { type Camera } from "../camera";
-import { type Player } from "./player";
+import { type SoundHandle } from "../createJS";
+import { type Map } from "../map";
 import { type Renderer } from "../renderer";
 import { type UiManager } from "../ui/ui";
-import { type SoundHandle } from "../createJS";
-import {
-    type UpdateMsg,
-    type Plane as PlaneData
-} from "../../../shared/msgs/updateMsg";
+import { type Vec2 } from "./../../../shared/utils/v2";
+import { type Player } from "./player";
 
 const planeElevateTime = 2;
 
@@ -73,15 +70,15 @@ class Plane {
 
         this.rad = this.config.planeRad;
         switch (this.type) {
-        case GameConfig.Plane.Airdrop:
-            this.sprite.texture = PIXI.Texture.from(
-                map.getMapDef().biome.airdrop.planeImg
-            );
-            this.planeSound = map.getMapDef().biome.airdrop.planeSound;
-            break;
-        case GameConfig.Plane.Airstrike:
-            this.sprite.texture = PIXI.Texture.from("map-plane-02.img");
-            this.planeSound = "fighter_01";
+            case GameConfig.Plane.Airdrop:
+                this.sprite.texture = PIXI.Texture.from(
+                    map.getMapDef().biome.airdrop.planeImg
+                );
+                this.planeSound = map.getMapDef().biome.airdrop.planeSound;
+                break;
+            case GameConfig.Plane.Airstrike:
+                this.sprite.texture = PIXI.Texture.from("map-plane-02.img");
+                this.planeSound = "fighter_01";
         }
 
         this.sprite.visible = true;
@@ -127,7 +124,7 @@ class AirstrikeZone {
         this.gfx.visible = true;
     }
 
-    update(dt: number, map?: unknown, uiManager?: unknown) {
+    update(dt: number, _map?: unknown, _uiManager?: unknown) {
         this.ticker += dt;
         this.gfx.visible = true;
         if (this.ticker >= this.duration) {
@@ -136,7 +133,7 @@ class AirstrikeZone {
         }
     }
 
-    render(uiManager: UiManager, map: Map, debug: unknown) {
+    render(uiManager: UiManager, map: Map, _debug: unknown) {
         // uiManager.getMapPosFromWorldPos is only valid after
         // uiManager.update() is run, so this logic must be run
         // afterward; render() is a reasonable place to do it.
@@ -180,7 +177,7 @@ export class PlaneBarn {
     airstrikeZones: AirstrikeZone[] = [];
     airstrikeZoneContainer = new PIXI.Container();
 
-    constructor(public audioManager: AudioManager) { }
+    constructor(public audioManager: AudioManager) {}
 
     free() {
         for (let i = 0; i < this.planes.length; i++) {

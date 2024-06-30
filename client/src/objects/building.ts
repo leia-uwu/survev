@@ -2,10 +2,7 @@ import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type BuildingDef } from "../../../shared/defs/mapObjectsTyping";
 import { type FloorImage } from "../../../shared/defs/types/building";
-import {
-    type Collider,
-    type ColliderWithHeight
-} from "../../../shared/utils/coldet";
+import { type Collider, type ColliderWithHeight } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
@@ -15,7 +12,7 @@ import {
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type AudioManager } from "../audioManager";
 import { type Camera } from "../camera";
 import { type SoundHandle } from "../createJS";
@@ -36,13 +33,13 @@ function step(cur: number, target: number, rate: number) {
 }
 
 type BuildingSprite = PIXI.Sprite & {
-    posOffset: Vec2
-    rotOffset: number
-    imgAlpha: number
-    alpha: number
-    defScale: number
-    mirrorY: boolean
-    mirrorX: boolean
+    posOffset: Vec2;
+    rotOffset: number;
+    imgAlpha: number;
+    alpha: number;
+    defScale: number;
+    mirrorY: boolean;
+    mirrorX: boolean;
 };
 
 export class Building implements AbstractObject {
@@ -51,19 +48,19 @@ export class Building implements AbstractObject {
     active!: boolean;
 
     sprites: Array<{
-        active: boolean
-        sprite: PIXI.Sprite
+        active: boolean;
+        sprite: PIXI.Sprite;
     }> = [];
 
     particleEmitters: Emitter[] = [];
     soundEmitters: Array<{
-        instance: SoundHandle | null
-        sound: string
-        channel: string
-        pos: Vec2
-        range: { min: number, max: number }
-        falloff: number
-        volume: number
+        instance: SoundHandle | null;
+        sound: string;
+        channel: string;
+        pos: Vec2;
+        range: { min: number; max: number };
+        falloff: number;
+        volume: number;
     }> = [];
 
     isNew!: boolean;
@@ -87,11 +84,11 @@ export class Building implements AbstractObject {
     occupied!: boolean;
 
     imgs: Array<{
-        sprite: BuildingSprite
-        isCeiling: boolean
-        removeOnDamaged?: boolean
-        zOrd: number
-        zIdx: number
+        sprite: BuildingSprite;
+        isCeiling: boolean;
+        removeOnDamaged?: boolean;
+        zOrd: number;
+        zIdx: number;
     }> = [];
 
     zIdx!: number;
@@ -99,19 +96,19 @@ export class Building implements AbstractObject {
 
     ceiling!: {
         zoomRegions: Array<{
-            zoomIn?: Collider | null
-            zoomOut?: Collider | null
-        }>
-        type?: string
-        vision: BuildingDef["ceiling"]["vision"]
-        visionTicker: number
-        fadeAlpha: number
+            zoomIn?: Collider | null;
+            zoomOut?: Collider | null;
+        }>;
+        type?: string;
+        vision: BuildingDef["ceiling"]["vision"];
+        visionTicker: number;
+        fadeAlpha: number;
     };
 
     surfaces!: Array<{
-        type: string
-        data: Record<string, unknown>
-        colliders: ColliderWithHeight[]
+        type: string;
+        data: Record<string, unknown>;
+        colliders: ColliderWithHeight[];
     }>;
 
     init() {
@@ -276,10 +273,20 @@ export class Building implements AbstractObject {
                 const region = def.ceiling.zoomRegions[i];
                 this.ceiling.zoomRegions?.push({
                     zoomIn: region.zoomIn
-                        ? collider.transform(region.zoomIn, this.pos, this.rot, this.scale)
+                        ? collider.transform(
+                              region.zoomIn,
+                              this.pos,
+                              this.rot,
+                              this.scale
+                          )
                         : null,
                     zoomOut: region.zoomOut
-                        ? collider.transform(region.zoomOut, this.pos, this.rot, this.scale)
+                        ? collider.transform(
+                              region.zoomOut,
+                              this.pos,
+                              this.rot,
+                              this.scale
+                          )
                         : null
                 });
             }
@@ -368,7 +375,7 @@ export class Building implements AbstractObject {
         map: Map,
         particleBarn: ParticleBarn,
         audioManager: AudioManager,
-        ambience: unknown,
+        _ambience: unknown,
         activePlayer: Player,
         renderer: Renderer,
         camera: Camera
@@ -649,7 +656,7 @@ export class Building implements AbstractObject {
         sprite.alpha = sprite.imgAlpha * alpha;
     }
 
-    render(camera: Camera, debug: unknown, layer: number) {
+    render(_camera: Camera, _debug: unknown, _layer: number) {
         if (device.debug) {
             renderMapBuildingBounds(this);
 

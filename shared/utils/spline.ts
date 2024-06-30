@@ -36,11 +36,23 @@ function getControlPoints(t: number, points: Vec2[], looped: boolean) {
 
 // Taken from https://www.mvps.org/directx/articles/catmull/
 function catmullRom(t: number, p0: number, p1: number, p2: number, p3: number) {
-    return 0.5 * (2.0 * p1 + t * (-p0 + p2) + t * t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) + t * t * t * (-p0 + 3.0 * p1 - 3.0 * p2 + p3));
+    return (
+        0.5 *
+        (2.0 * p1 +
+            t * (-p0 + p2) +
+            t * t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) +
+            t * t * t * (-p0 + 3.0 * p1 - 3.0 * p2 + p3))
+    );
 }
 
 function catmullRomDerivative(t: number, p0: number, p1: number, p2: number, p3: number) {
-    return 0.5 * (-p0 + p2 + 2.0 * t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) + 3.0 * t * t * (-p0 + 3.0 * p1 - 3.0 * p2 + p3));
+    return (
+        0.5 *
+        (-p0 +
+            p2 +
+            2.0 * t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) +
+            3.0 * t * t * (-p0 + 3.0 * p1 - 3.0 * p2 + p3))
+    );
 }
 
 //
@@ -83,7 +95,10 @@ export class Spline {
         const { p2 } = _getControlPoints;
         const { p3 } = _getControlPoints;
 
-        return v2.create(catmullRom(pt, p0.x, p1.x, p2.x, p3.x), catmullRom(pt, p0.y, p1.y, p2.y, p3.y));
+        return v2.create(
+            catmullRom(pt, p0.x, p1.x, p2.x, p3.x),
+            catmullRom(pt, p0.y, p1.y, p2.y, p3.y)
+        );
     }
 
     getTangent(t: number) {
@@ -94,7 +109,10 @@ export class Spline {
         const { p2 } = _getControlPoints2;
         const { p3 } = _getControlPoints2;
 
-        return v2.create(catmullRomDerivative(pt, p0.x, p1.x, p2.x, p3.x), catmullRomDerivative(pt, p0.y, p1.y, p2.y, p3.y));
+        return v2.create(
+            catmullRomDerivative(pt, p0.x, p1.x, p2.x, p3.x),
+            catmullRomDerivative(pt, p0.y, p1.y, p2.y, p3.y)
+        );
     }
 
     getNormal(t: number) {
@@ -144,7 +162,10 @@ export class Spline {
             const nearest = this.getPos(nearestT);
             const offset = v2.dot(tangent, v2.sub(pos, nearest)) / tanLen;
             const offsetT = nearestT + offset / (tanLen * len);
-            if (v2.lengthSqr(v2.sub(pos, this.getPos(offsetT))) < v2.lengthSqr(v2.sub(pos, nearest))) {
+            if (
+                v2.lengthSqr(v2.sub(pos, this.getPos(offsetT))) <
+                v2.lengthSqr(v2.sub(pos, nearest))
+            ) {
                 nearestT = offsetT;
             }
         }

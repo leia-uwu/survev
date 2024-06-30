@@ -2,13 +2,13 @@ import bb from "bit-buffer";
 import { GameObjectDefs } from "./defs/gameObjectDefs";
 import { MapObjectDefs } from "./defs/mapObjectDefs";
 import { math } from "./utils/math";
-import { type Vec2 } from "./utils/v2";
 import { assert } from "./utils/util";
+import { type Vec2 } from "./utils/v2";
 
 const DEV_MODE = false;
 
 export interface Msg {
-    serialize: (s: BitStream) => void
+    serialize: (s: BitStream) => void;
 }
 
 export abstract class AbstractMsg {
@@ -92,11 +92,7 @@ function createTypeSerialization(
     return typeMap;
 }
 
-const gameTypeSerialization = createTypeSerialization(
-    "Game",
-    GameObjectDefs,
-    10
-);
+const gameTypeSerialization = createTypeSerialization("Game", GameObjectDefs, 10);
 const mapTypeSerialization = createTypeSerialization("Map", MapObjectDefs, 12);
 
 export class BitStream extends bb.BitStream {
@@ -142,13 +138,7 @@ export class BitStream extends bb.BitStream {
         this.writeFloat(vec.y, minY, maxY, bitCount);
     }
 
-    readVec(
-        minX: number,
-        minY: number,
-        maxX: number,
-        maxY: number,
-        bitCount: number
-    ) {
+    readVec(minX: number, minY: number, maxX: number, maxY: number, bitCount: number) {
         return {
             x: this.readFloat(minX, maxX, bitCount),
             y: this.readFloat(minY, maxY, bitCount)
@@ -222,9 +212,9 @@ export class MsgStream {
 
     constructor(buf: ArrayBuffer | Uint8Array) {
         const arrayBuf =
-      buf instanceof ArrayBuffer
-          ? buf
-          : buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+            buf instanceof ArrayBuffer
+                ? buf
+                : buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 
         if (!(arrayBuf instanceof ArrayBuffer)) {
             throw new Error(
@@ -304,7 +294,7 @@ export enum MsgType {
     Stats,
     UpdatePass,
     AliveCounts,
-    PerkModeRoleSelect,
+    PerkModeRoleSelect
 }
 
 export enum PickupMsgType {
@@ -313,7 +303,7 @@ export enum PickupMsgType {
     AlreadyEquipped,
     BetterItemEquipped,
     Success,
-    GunCannotFire,
+    GunCannotFire
 }
 
 // * seem to be only used when cheats are detected
@@ -361,14 +351,14 @@ export class UpdatePassMsg {
 //
 
 export interface RoomData {
-    roomUrl: string
-    findingGame: boolean
-    lastError: string
-    region: string
-    autoFill: boolean
-    enabledGameModeIdxs: number[]
-    gameModeIdx: number
-    maxPlayers: number
+    roomUrl: string;
+    findingGame: boolean;
+    lastError: string;
+    region: string;
+    autoFill: boolean;
+    enabledGameModeIdxs: number[];
+    gameModeIdx: number;
+    maxPlayers: number;
 }
 
 //
@@ -379,66 +369,66 @@ export interface RoomData {
  * send by the server to all clients to make them join the game
  */
 export interface TeamJoinGameMsg {
-    readonly type: "joinGame"
+    readonly type: "joinGame";
     data: {
-        zone: string
-        gameId: string
-        hosts: string[]
-        addrs: string[]
+        zone: string;
+        gameId: string;
+        hosts: string[];
+        addrs: string[];
         // server generated data that gets sent back to the server on `joinMsg.matchPriv`
-        data: string
-        useHttps: boolean
-    }
+        data: string;
+        useHttps: boolean;
+    };
 }
 
 export interface TeamMenuPlayer {
-    name: string
-    playerId: number
-    isLeader: boolean
-    inGame: boolean
+    name: string;
+    playerId: number;
+    isLeader: boolean;
+    inGame: boolean;
 }
 
 /**
  * Send by the server to update the client team ui
  */
 export interface TeamStateMsg {
-    readonly type: "state"
+    readonly type: "state";
     data: {
-        localPlayerId: number // always -1 by default since it can only be set when the socket is actually sending state to each individual client
-        room: RoomData
-        players: TeamMenuPlayer[]
-    }
+        localPlayerId: number; // always -1 by default since it can only be set when the socket is actually sending state to each individual client
+        room: RoomData;
+        players: TeamMenuPlayer[];
+    };
 }
 
 /**
  * Send by the client AND server to keep the connection alive
  */
 export interface TeamKeepAliveMsg {
-    readonly type: "keepAlive"
+    readonly type: "keepAlive";
     // eslint-disable-next-line @typescript-eslint/ban-types
-    data: Record<string, unknown>
+    data: Record<string, unknown>;
 }
 
 /**
  * Send by the server when the player gets kicked from the team room
  */
 export interface TeamKickedMsg {
-    readonly type: "kicked"
+    readonly type: "kicked";
 }
 
 export interface TeamErrorMsg {
-    readonly type: "error"
+    readonly type: "error";
     data: {
-        type: string
-    }
+        type: string;
+    };
 }
 
 export type ServerToClientTeamMsg =
-  | TeamJoinGameMsg
-  | TeamStateMsg
-  | TeamKeepAliveMsg
-  | TeamKickedMsg
-  | TeamErrorMsg;
+    | TeamJoinGameMsg
+    | TeamStateMsg
+    | TeamKeepAliveMsg
+    | TeamKickedMsg
+    | TeamErrorMsg;
 
 //
 // Team Msgs that the client sends to the server
@@ -448,78 +438,78 @@ export type ServerToClientTeamMsg =
  * send by the client to join a team room
  */
 export interface TeamJoinMsg {
-    readonly type: "join"
+    readonly type: "join";
     data: {
-        roomUrl: string
+        roomUrl: string;
         playerData: {
-            name: string
-        }
-    }
+            name: string;
+        };
+    };
 }
 
 /**
  * Send by the client to change the player name
  */
 export interface TeamChangeNameMsg {
-    readonly type: "changeName"
+    readonly type: "changeName";
     data: {
-        name: string
-    }
+        name: string;
+    };
 }
 
 /**
  * Send by the client to set the room properties
  */
 export interface TeamSetRoomPropsMsg {
-    readonly type: "setRoomProps"
-    data: RoomData
+    readonly type: "setRoomProps";
+    data: RoomData;
 }
 
 /**
  * Send by the client to create a room
  */
 export interface TeamCreateMsg {
-    readonly type: "create"
+    readonly type: "create";
     data: {
-        roomData: RoomData
+        roomData: RoomData;
         playerData: {
-            name: string
-        }
-    }
+            name: string;
+        };
+    };
 }
 
 /**
  * Send by the client when the team leader kicks someone from the team
  */
 export interface TeamKickMsg {
-    readonly type: "kick"
+    readonly type: "kick";
     data: {
-        playerId: number
-    }
+        playerId: number;
+    };
 }
 
 /**
  * Send by the client when the game is completed
  */
 export interface TeamGameCompleteMsg {
-    readonly type: "gameComplete"
+    readonly type: "gameComplete";
 }
 
 export interface TeamPlayGameMsg {
-    readonly type: "playGame"
+    readonly type: "playGame";
     data: {
-        version: number
-        region: string
-        zones: string[]
-    }
+        version: number;
+        region: string;
+        zones: string[];
+    };
 }
 
 export type ClientToServerTeamMsg =
-  | TeamKeepAliveMsg
-  | TeamJoinMsg
-  | TeamChangeNameMsg
-  | TeamSetRoomPropsMsg
-  | TeamCreateMsg
-  | TeamKickMsg
-  | TeamGameCompleteMsg
-  | TeamPlayGameMsg;
+    | TeamKeepAliveMsg
+    | TeamJoinMsg
+    | TeamChangeNameMsg
+    | TeamSetRoomPropsMsg
+    | TeamCreateMsg
+    | TeamKickMsg
+    | TeamGameCompleteMsg
+    | TeamPlayGameMsg;

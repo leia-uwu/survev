@@ -1,8 +1,8 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import { Main } from "./baseDefs";
 import { type MapDef } from "../mapDefs";
+import { Main } from "./baseDefs";
 
 const mapDef = {
     mapId: 2,

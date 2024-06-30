@@ -4,12 +4,12 @@ export class MenuModal {
     checkSelector = true;
     skipFade = false;
     visible = false;
-    onShowFn = function() { };
-    onHideFn = function() { };
+    onShowFn = function () {};
+    onHideFn = function () {};
     modalCloseListener: (e: JQuery.TriggeredEvent) => void;
 
     constructor(public selector: JQuery<HTMLElement>) {
-        selector.find(".close").click((e) => {
+        selector.find(".close").click((_e) => {
             this.hide();
         });
 

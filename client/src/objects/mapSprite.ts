@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js-legacy";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
-import { type UiManager } from "../ui/ui";
 import { type Map } from "../map";
+import { type UiManager } from "../ui/ui";
 
 class SortableSprite extends PIXI.Sprite {
     /**

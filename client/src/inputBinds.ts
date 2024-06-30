@@ -45,14 +45,8 @@ const BindDefs = {
     [GameInput.EquipSecondary]: def("Equip Secondary", inputKey(Key.Two)),
     [GameInput.EquipMelee]: def("Equip Melee", inputKey(Key.Three)),
     [GameInput.EquipThrowable]: def("Equip Throwable", inputKey(Key.Four)),
-    [GameInput.EquipNextWeap]: def(
-        "Equip Next Weapon",
-        mouseWheel(MouseWheel.Down)
-    ),
-    [GameInput.EquipPrevWeap]: def(
-        "Equip Previous Weapon",
-        mouseWheel(MouseWheel.Up)
-    ),
+    [GameInput.EquipNextWeap]: def("Equip Next Weapon", mouseWheel(MouseWheel.Down)),
+    [GameInput.EquipPrevWeap]: def("Equip Previous Weapon", mouseWheel(MouseWheel.Up)),
     [GameInput.EquipLastWeap]: def("Equip Last Weapon", inputKey(Key.Q)),
     [GameInput.StowWeapons]: def("Stow Weapons", inputKey(Key.E)),
     [GameInput.EquipPrevScope]: def("Equip Previous Scope", null),
@@ -77,7 +71,10 @@ export class InputBinds {
     boundKeys: Record<number, boolean | null> = {};
     menuHovered = false;
 
-    constructor(public input: InputHandler, public config: ConfigManager) {
+    constructor(
+        public input: InputHandler,
+        public config: ConfigManager
+    ) {
         this.input = input;
         this.config = config;
         this.loadBinds();
@@ -123,7 +120,7 @@ export class InputBinds {
         const stream = new BitBuffer.BitStream(arrayBuf);
         const version = stream.readUint8();
         this.clearAllBinds();
-        for (let idx = 0; stream.length - stream.index >= 10;) {
+        for (let idx = 0; stream.length - stream.index >= 10; ) {
             const bind = idx++;
             const type = stream.readBits(2);
             const code = stream.readUint8();
@@ -163,7 +160,7 @@ export class InputBinds {
         }
     }
 
-    upgradeBinds(version: unknown) {
+    upgradeBinds(_version: unknown) {
         const newBinds: GameInput[] = [];
 
         // Set default inputs for the new binds, as long as those
@@ -249,7 +246,10 @@ export class InputBinds {
 }
 
 export class InputBindUi {
-    constructor(public input: InputHandler, public inputBinds: InputBinds) {
+    constructor(
+        public input: InputHandler,
+        public inputBinds: InputBinds
+    ) {
         this.input = input;
         this.inputBinds = inputBinds;
         $(".js-btn-keybind-restore").on("click", () => {

@@ -1,17 +1,17 @@
 export interface PerkDef {
-    readonly type: "perk"
-    name: string
+    readonly type: "perk";
+    name: string;
     lootImg: {
-        sprite: string
-        tint: number
-        border: string
-        borderTint: number
-        scale: number
-    }
+        sprite: string;
+        tint: number;
+        border: string;
+        borderTint: number;
+        scale: number;
+    };
     sound: {
-        pickup: string
-    }
-    emoteOnPickup?: string
+        pickup: string;
+    };
+    emoteOnPickup?: string;
 }
 
 export const PerkDefs: Record<string, PerkDef> = {

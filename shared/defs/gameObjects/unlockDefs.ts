@@ -196,10 +196,10 @@ const allowedEmotes = [
 ];
 
 export interface UnlockDef {
-    readonly type: "unlock"
-    name: string
-    unlocks: string[]
-    free?: boolean
+    readonly type: "unlock";
+    name: string;
+    unlocks: string[];
+    free?: boolean;
 }
 
 export const UnlockDefs: Record<string, UnlockDef> = {

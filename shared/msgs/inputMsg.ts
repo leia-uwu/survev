@@ -1,5 +1,5 @@
-import { v2 } from "../utils/v2";
 import { AbstractMsg, type BitStream, Constants } from "../net";
+import { v2 } from "../utils/v2";
 
 export class InputMsg extends AbstractMsg {
     seq = 0;
@@ -19,8 +19,7 @@ export class InputMsg extends AbstractMsg {
     useItem = "";
 
     addInput(input: number) {
-        if (this.inputs.length < 7 &&
-            !this.inputs.includes(input)) {
+        if (this.inputs.length < 7 && !this.inputs.includes(input)) {
             this.inputs.push(input);
         }
     }

@@ -1,9 +1,9 @@
-import { type Game } from "../game";
 import { collider } from "../../../shared/utils/collider";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
-import { BaseGameObject } from "./gameObject";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
+import { type Game } from "../game";
+import { BaseGameObject } from "./gameObject";
 
 export class DeadBodyBarn {
     deadBodies: DeadBody[] = [];
@@ -49,7 +49,8 @@ export class DeadBody extends BaseGameObject {
     }
 
     update(dt: number): void {
-        const moving = Math.abs(this.vel.x) > 0.001 ||
+        const moving =
+            Math.abs(this.vel.x) > 0.001 ||
             Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
 
@@ -75,7 +76,9 @@ export class DeadBody extends BaseGameObject {
         this.game.map.clampToMapBounds(this.pos);
 
         const originalLayer = this.layer;
-        const objs = this.game.grid.intersectCollider(collider.createCircle(this.pos, 0.1));
+        const objs = this.game.grid.intersectCollider(
+            collider.createCircle(this.pos, 0.1)
+        );
         this.checkStairs(objs, 2);
 
         this.pos = this.game.map.clampToMapBounds(this.pos);

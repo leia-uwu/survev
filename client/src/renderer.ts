@@ -22,13 +22,7 @@ function createLayerMask() {
     return mask;
 }
 
-function drawRect(
-    gfx: PIXI.Graphics,
-    x: number,
-    y: number,
-    w: number,
-    h: number
-) {
+function drawRect(gfx: PIXI.Graphics, x: number, y: number, w: number, h: number) {
     gfx.moveTo(x, y);
     gfx.lineTo(x, y + h);
     gfx.lineTo(x + w, y + h);
@@ -51,7 +45,10 @@ export class Renderer {
     layerMaskDirty = true;
     layerMaskActive = false;
 
-    constructor(public game: Game, public canvasMode: boolean) {
+    constructor(
+        public game: Game,
+        public canvasMode: boolean
+    ) {
         for (let i = 0; i < 4; i++) {
             this.layers.push(new RenderGroup(`layer_${i}`));
         }
@@ -218,7 +215,7 @@ export class Renderer {
         r.scale.set(w, -w);
     }
 
-    update(dt: number, camera: Camera, map: Map, debug: unknown) {
+    update(dt: number, camera: Camera, map: Map, _debug: unknown) {
         // Adjust layer alpha
         const alphaTarget = this.layer > 0 ? 1.0 : 0.0;
         this.layerAlpha += step(this.layerAlpha, alphaTarget, dt * 12.0);

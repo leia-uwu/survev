@@ -12,7 +12,7 @@ import { type GameObject } from "./gameObject";
 export class ExplosionBarn {
     explosions: Explosion[] = [];
 
-    constructor(readonly game: Game) { }
+    constructor(readonly game: Game) {}
 
     update() {
         const game = this.game;
@@ -29,21 +29,33 @@ export class ExplosionBarn {
             for (let angle = -Math.PI; angle < Math.PI; angle += 0.1) {
                 // All objects that collided with this line
                 const lineCollisions: Array<{
-                    obj: GameObject
-                    pos: Vec2
-                    distance: number
-                    dir: Vec2
+                    obj: GameObject;
+                    pos: Vec2;
+                    distance: number;
+                    dir: Vec2;
                 }> = [];
 
-                const lineEnd = v2.add(explosion.pos, v2.rotate(v2.create(explosion.rad, 0), angle));
+                const lineEnd = v2.add(
+                    explosion.pos,
+                    v2.rotate(v2.create(explosion.rad, 0), angle)
+                );
 
                 for (const obj of objects) {
                     if (!util.sameLayer(obj.layer, explosion.layer)) continue;
                     if ((obj as { dead?: boolean }).dead) continue;
-                    if (obj.__type === ObjectType.Obstacle && obj.height <= 0.25) continue;
-                    if (obj.__type === ObjectType.Player || obj.__type === ObjectType.Obstacle || obj.__type === ObjectType.Loot) {
+                    if (obj.__type === ObjectType.Obstacle && obj.height <= 0.25)
+                        continue;
+                    if (
+                        obj.__type === ObjectType.Player ||
+                        obj.__type === ObjectType.Obstacle ||
+                        obj.__type === ObjectType.Loot
+                    ) {
                         // check if the object hitbox collides with a line from the explosion center to the explosion max distance
-                        const intersection = collider.intersectSegment(obj.collider, explosion.pos, lineEnd);
+                        const intersection = collider.intersectSegment(
+                            obj.collider,
+                            explosion.pos,
+                            lineEnd
+                        );
                         if (intersection) {
                             lineCollisions.push({
                                 pos: intersection.point,
@@ -65,11 +77,20 @@ export class ExplosionBarn {
                         damagedObjects.set(obj.__id, true);
                         const dist = collision.distance;
 
-                        if (obj.__type === ObjectType.Player || obj.__type === ObjectType.Obstacle) {
+                        if (
+                            obj.__type === ObjectType.Player ||
+                            obj.__type === ObjectType.Obstacle
+                        ) {
                             let damage = def.damage;
 
                             if (dist > def.rad.min) {
-                                damage = math.remap(dist, def.rad.min, def.rad.max, damage, 0);
+                                damage = math.remap(
+                                    dist,
+                                    def.rad.min,
+                                    def.rad.max,
+                                    damage,
+                                    0
+                                );
                             }
 
                             if (obj.__type === ObjectType.Obstacle) {
@@ -87,7 +108,10 @@ export class ExplosionBarn {
                         }
 
                         if (obj.__type === ObjectType.Loot) {
-                            obj.push(v2.normalize(v2.sub(collision.pos, explosion.pos)), (def.rad.max - dist) * 4);
+                            obj.push(
+                                v2.normalize(v2.sub(collision.pos, explosion.pos)),
+                                (def.rad.max - dist) * 4
+                            );
                         }
                     }
 
@@ -98,21 +122,19 @@ export class ExplosionBarn {
             const bulletDef = GameObjectDefs[def.shrapnelType];
             if (bulletDef && bulletDef.type === "bullet") {
                 for (let i = 0, count = def.shrapnelCount ?? 0; i < count; i++) {
-                    game.bulletBarn.fireBullet(
-                        {
-                            bulletType: def.shrapnelType,
-                            pos: explosion.pos,
-                            layer: explosion.layer,
-                            damageType: explosion.damageType,
-                            playerId: explosion.source?.__id ?? 0,
-                            shotFx: false,
-                            damageMult: 1,
-                            varianceT: Math.random(),
-                            gameSourceType: explosion.gameSourceType,
-                            mapSourceType: explosion.mapSourceType,
-                            dir: v2.randomUnit()
-                        }
-                    );
+                    game.bulletBarn.fireBullet({
+                        bulletType: def.shrapnelType,
+                        pos: explosion.pos,
+                        layer: explosion.layer,
+                        damageType: explosion.damageType,
+                        playerId: explosion.source?.__id ?? 0,
+                        shotFx: false,
+                        damageMult: 1,
+                        varianceT: Math.random(),
+                        gameSourceType: explosion.gameSourceType,
+                        mapSourceType: explosion.mapSourceType,
+                        dir: v2.randomUnit()
+                    });
                 }
             }
 
@@ -139,7 +161,8 @@ export class ExplosionBarn {
         gameSourceType = "",
         mapSourceType = "",
         damageType: number = GameConfig.DamageType.Player,
-        source?: GameObject) {
+        source?: GameObject
+    ) {
         const def = GameObjectDefs[type];
 
         if (def.type !== "explosion") {
@@ -159,12 +182,12 @@ export class ExplosionBarn {
 }
 
 interface Explosion {
-    rad: number
-    type: string
-    pos: Vec2
-    layer: number
-    gameSourceType: string
-    mapSourceType: string
-    damageType: number
-    source?: GameObject
+    rad: number;
+    type: string;
+    pos: Vec2;
+    layer: number;
+    gameSourceType: string;
+    mapSourceType: string;
+    damageType: number;
+    source?: GameObject;
 }

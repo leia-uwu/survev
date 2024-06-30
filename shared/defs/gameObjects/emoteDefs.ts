@@ -6,19 +6,19 @@ export enum EmoteCategory {
     Logos,
     Other,
     Flags,
-    Default,
+    Default
 }
 
 export interface EmoteDef {
-    readonly type: "emote"
-    name?: string
-    rarity?: number
-    texture: string
-    sound: string
-    channel: string
-    teamOnly?: boolean
-    category: number
-    noCustom?: boolean
+    readonly type: "emote";
+    name?: string;
+    rarity?: number;
+    texture: string;
+    sound: string;
+    channel: string;
+    teamOnly?: boolean;
+    category: number;
+    noCustom?: boolean;
 }
 
 export const EmotesDefs: Record<string, EmoteDef> = {

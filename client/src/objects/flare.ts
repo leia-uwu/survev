@@ -1,43 +1,43 @@
 import * as PIXI from "pixi.js-legacy";
+import { type BulletDef, BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 import { GameConfig } from "../../../shared/gameConfig";
+import { type Bullet } from "../../../shared/msgs/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type Camera } from "../camera";
+import { type Map } from "../map";
 import { type Renderer } from "../renderer";
 import { type Player, type PlayerBarn } from "./player";
-import { type Map } from "../map";
-import { type Camera } from "../camera";
-import { type Bullet } from "../../../shared/msgs/updateMsg";
-import { type BulletDef, BulletDefs } from "../../../shared/defs/gameObjects/bulletDefs";
 
 interface FlareBullet extends BulletDef {
-    flareContainer: PIXI.Container
-    flare: PIXI.Sprite
-    trailContainer: PIXI.Container
-    bulletTrail: PIXI.Sprite
-    alive: boolean
-    isNew: boolean
-    collided: boolean
-    flareScale: number
-    trailScale: number
-    timeAlive: number
-    maxTimeAlive: number
-    startPos: Vec2
-    pos: Vec2
-    dir: Vec2
-    layer: number
-    speed: number
-    tracerAlphaRate: number
-    tracerAlphaMin: number
-    smokeThrottle: number
-    playerId?: number
+    flareContainer: PIXI.Container;
+    flare: PIXI.Sprite;
+    trailContainer: PIXI.Container;
+    bulletTrail: PIXI.Sprite;
+    alive: boolean;
+    isNew: boolean;
+    collided: boolean;
+    flareScale: number;
+    trailScale: number;
+    timeAlive: number;
+    maxTimeAlive: number;
+    startPos: Vec2;
+    pos: Vec2;
+    dir: Vec2;
+    layer: number;
+    speed: number;
+    tracerAlphaRate: number;
+    tracerAlphaMin: number;
+    smokeThrottle: number;
+    playerId?: number;
 }
 
 export class FlareBarn {
     bullets: FlareBullet[] = [];
 
-    addFlare(bullet: Bullet, playerBarn: PlayerBarn, renderer: unknown) {
+    addFlare(bullet: Bullet, playerBarn: PlayerBarn, _renderer: unknown) {
         let b: FlareBullet | null = null;
         for (let i = 0; i < this.bullets.length; i++) {
             if (!this.bullets[i].alive && !this.bullets[i].collided) {
@@ -116,13 +116,13 @@ export class FlareBarn {
 
     update(
         dt: number,
-        playerBarn: unknown,
+        _playerBarn: unknown,
         map: Map,
-        camera: unknown,
+        _camera: unknown,
         activePlayer: Player,
         renderer: Renderer,
-        particleBarn: unknown,
-        audioManager: unknown
+        _particleBarn: unknown,
+        _audioManager: unknown
     ) {
         for (let h = 0; h < this.bullets.length; h++) {
             const d = this.bullets[h];

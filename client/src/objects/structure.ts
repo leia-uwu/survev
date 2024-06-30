@@ -1,22 +1,18 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import { type StructureDef } from "../../../shared/defs/mapObjectsTyping";
 import {
-    coldet,
     type AABB,
     type AABBWithHeight,
     type Collider,
-    type ColliderWithHeight
+    type ColliderWithHeight,
+    coldet
 } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { type Ambiance } from "../ambiance";
-import {
-    renderBridge,
-    renderMapBuildingBounds,
-    renderWaterEdge
-} from "../debugHelpers";
+import { renderBridge, renderMapBuildingBounds, renderWaterEdge } from "../debugHelpers";
 import { device } from "../device";
 import { type Ctx } from "../game";
 import { type Map } from "../map";
@@ -45,9 +41,9 @@ export class Structure implements AbstractObject {
     aabb!: Collider & { height: number };
 
     layers!: Array<{
-        objId: number
-        collision: ColliderWithHeight
-        underground: boolean
+        objId: number;
+        collision: ColliderWithHeight;
+        underground: boolean;
     }>;
 
     // damn you
@@ -59,7 +55,7 @@ export class Structure implements AbstractObject {
         this.soundTransitionT = 0;
     }
 
-    free() { }
+    free() {}
 
     updateData(
         data: ObjectData<ObjectType.Structure>,
@@ -95,9 +91,7 @@ export class Structure implements AbstractObject {
                 const underground =
                     layer.underground !== undefined ? layer.underground : p == 1;
                 const pos = v2.add(this.pos, layer.pos);
-                const rot = math.oriToRad(
-                    inheritOri ? data.ori + layer.ori : layer.ori
-                );
+                const rot = math.oriToRad(inheritOri ? data.ori + layer.ori : layer.ori);
                 const collision = collider.transform(
                     mapHelpers.getBoundingCollider(layer.type),
                     pos,
@@ -138,7 +132,12 @@ export class Structure implements AbstractObject {
             this.mask = [];
             for (let i = 0; i < def.mask.length; i++) {
                 this.mask.push(
-                    collider.transform(def.mask[i], this.pos, this.rot, this.scale) as AABB
+                    collider.transform(
+                        def.mask[i],
+                        this.pos,
+                        this.rot,
+                        this.scale
+                    ) as AABB
                 );
             }
             ctx.renderer.layerMaskDirty = true;
@@ -151,12 +150,7 @@ export class Structure implements AbstractObject {
         }
     }
 
-    updateInteriorSounds(
-        dt: number,
-        map: Map,
-        activePlayer: Player,
-        ambience: Ambiance
-    ) {
+    updateInteriorSounds(dt: number, map: Map, activePlayer: Player, ambience: Ambiance) {
         const def = MapObjectDefs[this.type] as StructureDef;
         collider.createCircle(activePlayer.pos, 0.001);
         map.buildingPool.getPool();
@@ -238,7 +232,7 @@ export class Structure implements AbstractObject {
         track1.weight = sound ? weight1 * transitionWeight * this.soundEnabledT : 0;
     }
 
-    render(camera: unknown, debug: unknown, layer: unknown) {
+    render(_camera: unknown, _debug: unknown, _layer: unknown) {
         if (device.debug) {
             renderMapBuildingBounds(this);
             renderBridge(this);

@@ -1,7 +1,6 @@
-import { type LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { type MapMsg } from "../../../shared/msgs/mapMsg";
 import { collider } from "../../../shared/utils/collider";
@@ -20,9 +19,10 @@ import { Map } from "../map";
 import { DecalBarn } from "../objects/decal";
 import { Creator } from "../objects/objectPool";
 import { ParticleBarn } from "../objects/particles";
-import { PlayerBarn, type Player } from "../objects/player";
+import { type Player, PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Renderer } from "../renderer";
+import { type LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
 import loadouts, { type Loadout } from "./loadouts";
 
 export class LoadoutDisplay {
@@ -63,7 +63,7 @@ export class LoadoutDisplay {
         public config: ConfigManager,
         public inputBinds: InputBinds,
         public account: Account
-    ) { }
+    ) {}
 
     o() {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
@@ -232,11 +232,11 @@ export class LoadoutDisplay {
 
     updateCharDisplay(
         options = {} as Partial<{
-            animType: number
-            animSeq: number
-            actionSeq: number
-            actionType: number
-            actionItem: string
+            animType: number;
+            animSeq: number;
+            actionSeq: number;
+            actionType: number;
+            actionItem: string;
         }>
     ) {
         const ctx = {
@@ -283,7 +283,12 @@ export class LoadoutDisplay {
             dir: v2.create(0, -1)
         };
 
-        this.objectCreator.updateObjFull(ObjectType.Player, 98, obj as unknown as ObjectData<ObjectType.Player>, ctx);
+        this.objectCreator.updateObjFull(
+            ObjectType.Player,
+            98,
+            obj as unknown as ObjectData<ObjectType.Player>,
+            ctx
+        );
 
         this.playerBarn.setPlayerInfo({
             playerId: 98,
@@ -367,11 +372,7 @@ export class LoadoutDisplay {
 
         // Camera
         this.camera.pos = v2.sub(this.activePlayer.pos, this.cameraOffset);
-        this.camera.zoom = math.lerp(
-            dt * 5,
-            this.camera.zoom,
-            this.camera.targetZoom
-        );
+        this.camera.zoom = math.lerp(dt * 5, this.camera.zoom, this.camera.targetZoom);
 
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
 
@@ -458,7 +459,7 @@ export class LoadoutDisplay {
         this.render(dt, debug);
     }
 
-    render(dt: number, debug: unknown) {
+    render(_dt: number, debug: unknown) {
         const grassColor = this.map.mapLoaded
             ? this.map.getMapDef().biome.colors.grass
             : 8433481;

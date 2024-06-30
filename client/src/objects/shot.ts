@@ -8,18 +8,18 @@ import { type ParticleBarn } from "./particles";
 import { type PlayerBarn } from "./player";
 
 interface Shot {
-    active: boolean
-    pos: Vec2
-    layer: number
-    playerId: number
-    weaponType: string
-    offhand?: boolean
-    lastShot?: boolean
-    shotAlt?: boolean
-    ticker: number
-    pullDelay: number
-    splinter?: boolean
-    trailSaturated?: boolean
+    active: boolean;
+    pos: Vec2;
+    layer: number;
+    playerId: number;
+    weaponType: string;
+    offhand?: boolean;
+    lastShot?: boolean;
+    shotAlt?: boolean;
+    ticker: number;
+    pullDelay: number;
+    splinter?: boolean;
+    trailSaturated?: boolean;
 }
 
 export function createCasingParticle(
@@ -45,10 +45,7 @@ export function createCasingParticle(
             v2.mul(dir, GameConfig.player.radius + weapDef.particle.shellOffset)
         );
         if (weapDef.particle.shellOffsetY) {
-            shellPos = v2.add(
-                shellPos,
-                v2.mul(shellDir, weapDef.particle.shellOffsetY)
-            );
+            shellPos = v2.add(shellPos, v2.mul(shellDir, weapDef.particle.shellOffsetY));
         }
         if (weapDef.particle.shellReverse) {
             vel = v2.mul(vel, -1);
@@ -140,7 +137,9 @@ export class ShotBarn {
 
                     audioManager.playSound(shotSound, {
                         channel:
-                            shot.playerId == activePlayerId ? "activePlayer" : "otherPlayers",
+                            shot.playerId == activePlayerId
+                                ? "activePlayer"
+                                : "otherPlayers",
                         soundPos: shot.pos,
                         layer: player ? player.layer : shot.layer,
                         filter: "muffled",
@@ -158,7 +157,9 @@ export class ShotBarn {
                             soundPos: shot.pos,
                             layer: player ? player.layer : shot.layer,
                             filter: "muffled",
-                            fallOff: weaponDef.sound.fallOff ? weaponDef.sound.fallOff : 0,
+                            fallOff: weaponDef.sound.fallOff
+                                ? weaponDef.sound.fallOff
+                                : 0,
                             detune: 1200,
                             delay: 30,
                             volumeScale: 0.75
@@ -173,11 +174,16 @@ export class ShotBarn {
                             weaponDef.pullDelay
                         ) {
                             const ammoLeft =
-                                player.localData.weapons[player.localData.curWeapIdx].ammo;
+                                player.localData.weapons[player.localData.curWeapIdx]
+                                    .ammo;
                             const soundName =
-                                ammoLeft > 0 ? weaponDef.sound.cycle : weaponDef.sound.pull;
+                                ammoLeft > 0
+                                    ? weaponDef.sound.cycle
+                                    : weaponDef.sound.pull;
                             audioManager.stopSound(player.cycleSoundInstance!);
-                            player.cycleSoundInstance = audioManager.playSound(soundName!);
+                            player.cycleSoundInstance = audioManager.playSound(
+                                soundName!
+                            );
                         }
 
                         // Hands and gun recoil

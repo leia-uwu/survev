@@ -1,18 +1,18 @@
 import * as PIXI from "pixi.js-legacy";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import { util } from "../../../shared/utils/util";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { Pool } from "./objectPool";
-import { type Camera } from "../camera";
-import { type AbstractObject, type Player } from "./player";
-import { type Map } from "../map";
-import { type Renderer } from "../renderer";
-import { type Ctx } from "../game";
 import {
     type ObjectData,
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
+import { util } from "../../../shared/utils/util";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type Camera } from "../camera";
+import { type Ctx } from "../game";
+import { type Map } from "../map";
+import { type Renderer } from "../renderer";
+import { Pool } from "./objectPool";
+import { type AbstractObject, type Player } from "./player";
 
 class Smoke implements AbstractObject {
     __id!: number;
@@ -26,7 +26,7 @@ class Smoke implements AbstractObject {
     layer!: number;
     interior!: number;
 
-    init() { }
+    init() {}
     free() {
         this.particle!.fadeOut();
         this.particle = null;
@@ -61,9 +61,7 @@ const particles = ["part-smoke-02.img", "part-smoke-03.img"];
 export class SmokeParticle {
     active = false;
     zIdx = 0;
-    sprite = PIXI.Sprite.from(
-        particles[Math.floor(Math.random() * particles.length)]
-    );
+    sprite = PIXI.Sprite.from(particles[Math.floor(Math.random() * particles.length)]);
 
     pos!: Vec2;
     posTarget!: Vec2;
@@ -90,8 +88,7 @@ export class SmokeParticle {
         this.rad = rad;
         this.radTarget = this.rad;
         this.rot = util.random(0, Math.PI * 2);
-        this.rotVel =
-            Math.PI * util.random(0.25, 0.5) * (Math.random() < 0.5 ? -1 : 1);
+        this.rotVel = Math.PI * util.random(0.25, 0.5) * (Math.random() < 0.5 ? -1 : 1);
         this.fade = false;
         this.fadeTicker = 0;
         this.fadeDuration = util.random(0.5, 0.75);

@@ -1,18 +1,18 @@
 import * as PIXI from "pixi.js-legacy";
 import { collider } from "../../../shared/utils/collider";
-import { util } from "../../../shared/utils/util";
-import { v2 } from "../../../shared/utils/v2";
-import { device } from "../device";
-import { Pool } from "./objectPool";
-import { type AbstractObject, type Player, type PlayerBarn } from "./player";
-import { type Camera } from "../camera";
-import { type Renderer } from "../renderer";
-import { type Map } from "../map";
-import { type Ctx } from "../game";
 import {
     type ObjectData,
     type ObjectType
 } from "../../../shared/utils/objectSerializeFns";
+import { util } from "../../../shared/utils/util";
+import { v2 } from "../../../shared/utils/v2";
+import { type Camera } from "../camera";
+import { device } from "../device";
+import { type Ctx } from "../game";
+import { type Map } from "../map";
+import { type Renderer } from "../renderer";
+import { Pool } from "./objectPool";
+import { type AbstractObject, type Player, type PlayerBarn } from "./player";
 
 function createDeadBodyText() {
     const nameStyle: Partial<PIXI.TextStyle> = {
@@ -61,7 +61,7 @@ class DeadBody implements AbstractObject {
         this.container.visible = this.sprite;
     }
 
-    init() { }
+    init() {}
     free() {
         this.container.visible = false;
     }
@@ -70,7 +70,7 @@ class DeadBody implements AbstractObject {
         data: ObjectData<ObjectType.DeadBody>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        _ctx: Ctx
     ) {
         this.pos = v2.copy(data.pos);
         if (fullUpdate) {
@@ -88,7 +88,7 @@ export class DeadBodyBarn {
     deadBodyPool = new Pool(DeadBody);
 
     update(
-        dt: number,
+        _dt: number,
         playerBarn: PlayerBarn,
         activePlayer: Player,
         map: Map,

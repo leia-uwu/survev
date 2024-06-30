@@ -116,7 +116,7 @@ class Explosion {
     soundInstance!: SoundHandle | null;
     soundUpdateThrottle!: number;
 
-    constructor(e: unknown) {
+    constructor(_e: unknown) {
         this.active = false;
     }
 
@@ -302,7 +302,7 @@ export class ExplosionBarn {
         camera: Camera,
         particleBarn: ParticleBarn,
         audioManager: AudioManager,
-        debug: unknown
+        _debug: unknown
     ) {
         for (let i = 0; i < this.explosions.length; i++) {
             const e = this.explosions[i];
@@ -324,27 +324,27 @@ export class ExplosionBarn {
 
 export interface ExplotionDef {
     burst: {
-        particle: string
-        scale: number
+        particle: string;
+        scale: number;
         sound: {
-            grass: string
-            water: string
-            detune?: number
-            volume?: number
-        }
-    }
+            grass: string;
+            water: string;
+            detune?: number;
+            volume?: number;
+        };
+    };
     scatter?: {
-        particle: string
-        count: number
+        particle: string;
+        count: number;
         speed: {
-            min: number
-            max: number
-        }
-    }
-    rippleCount: number
-    shakeStr: number
-    shakeDur: number
-    lifetime: number
+            min: number;
+            max: number;
+        };
+    };
+    rippleCount: number;
+    shakeStr: number;
+    shakeDur: number;
+    lifetime: number;
 }
 
 const ExplosionEffectDefs: Record<string, ExplotionDef> = {

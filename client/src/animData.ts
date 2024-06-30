@@ -1,9 +1,9 @@
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { type MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { math } from "../../shared/utils/math";
-import { type Vec2, v2 } from "../../shared/utils/v2";
 import { assert } from "../../shared/utils/util";
-import { type MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
+import { type Vec2, v2 } from "../../shared/utils/v2";
 
 function frame(time: number, bones: Partial<Record<Bones, Pose>>) {
     return {
@@ -61,7 +61,7 @@ export enum Bones {
     HandL,
     HandR,
     FootL,
-    FootR,
+    FootR
 }
 assert(Object.keys(Bones).length % 2 == 0);
 
@@ -129,18 +129,18 @@ export const IdlePoses: Record<string, Partial<Record<Bones, Pose>>> = {
 const def = GameObjectDefs as unknown as Record<string, MeleeDef>;
 
 export const Animations: Record<
-string,
-{
-    keyframes: Array<{
-        time: number
-        bones: Partial<Record<Bones, Pose>>
-    }>
-    effects: Array<{
-        time: number
-        fn: string
-        args?: Record<string, unknown>
-    }>
-}
+    string,
+    {
+        keyframes: Array<{
+            time: number;
+            bones: Partial<Record<Bones, Pose>>;
+        }>;
+        effects: Array<{
+            time: number;
+            fn: string;
+            args?: Record<string, unknown>;
+        }>;
+    }
 > = {
     none: {
         keyframes: [],

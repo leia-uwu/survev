@@ -5,19 +5,19 @@ function defineSkin(baseType: string, params: unknown) {
 }
 
 export interface ChestDef {
-    readonly type: "chest"
-    name: string
-    noDrop?: boolean
-    level: number
-    damageReduction: number
+    readonly type: "chest";
+    name: string;
+    noDrop?: boolean;
+    level: number;
+    damageReduction: number;
     skinImg: {
-        baseTint: number
-        baseSprite: string
-    }
-    lootImg: LootImg
+        baseTint: number;
+        baseSprite: string;
+    };
+    lootImg: LootImg;
     sound: {
-        pickup: string
-    }
+        pickup: string;
+    };
 }
 
 const ChestDefs: Record<string, ChestDef> = {
@@ -105,23 +105,23 @@ const ChestDefs: Record<string, ChestDef> = {
 };
 
 export interface HelmetDef {
-    name: string
-    type: "helmet"
-    noDrop?: boolean
-    level: number
-    damageReduction: number
+    name: string;
+    type: "helmet";
+    noDrop?: boolean;
+    level: number;
+    damageReduction: number;
     skinImg: {
-        baseTint: number
-        baseTintRed: number
-        baseTintBlue: number
-        baseSprite: string
-        spriteScale?: number
-    }
+        baseTint: number;
+        baseTintRed: number;
+        baseTintBlue: number;
+        baseSprite: string;
+        spriteScale?: number;
+    };
 
-    lootImg: LootImg
+    lootImg: LootImg;
     sound: {
-        pickup: string
-    }
+        pickup: string;
+    };
 }
 
 const HelmetDefs: Record<string, HelmetDef> = {
@@ -216,15 +216,15 @@ const HelmetDefs: Record<string, HelmetDef> = {
 };
 
 export interface BackpackDef {
-    name: string
-    type: "backpack"
-    level: number
-    playerRad: number
-    tint: number
-    lootImg: LootImg
+    name: string;
+    type: "backpack";
+    level: number;
+    playerRad: number;
+    tint: number;
+    lootImg: LootImg;
     sound: {
-        pickup: string
-    }
+        pickup: string;
+    };
 }
 
 const BackpackDefs: Record<string, BackpackDef> = {
@@ -299,17 +299,17 @@ const BackpackDefs: Record<string, BackpackDef> = {
 };
 
 export interface BoostDef {
-    name: string
-    type: "boost"
-    useTime: number
-    boost: number
-    lootImg: LootImg
-    sound: Sound
-    emitter: string
+    name: string;
+    type: "boost";
+    useTime: number;
+    boost: number;
+    lootImg: LootImg;
+    sound: Sound;
+    emitter: string;
     aura: {
-        sprite: string
-        tint: number
-    }
+        sprite: string;
+        tint: number;
+    };
 }
 
 const BoostDefs: Record<string, BoostDef> = {
@@ -360,34 +360,34 @@ const BoostDefs: Record<string, BoostDef> = {
 };
 
 export interface HealDef {
-    name: string
-    type: "heal"
-    useTime: number
-    heal: number
-    maxHeal: number
-    lootImg: LootImg
-    sound: Sound
-    emitter: string
+    name: string;
+    type: "heal";
+    useTime: number;
+    heal: number;
+    maxHeal: number;
+    lootImg: LootImg;
+    sound: Sound;
+    emitter: string;
     aura: {
-        sprite: string
-        tint: number
-    }
+        sprite: string;
+        tint: number;
+    };
 }
 
 // shared
 export interface LootImg {
-    sprite: string
-    scale: number
-    tint: number
-    border?: string
-    borderTint?: number
-    tintDark?: number
-    innerScale?: number
+    sprite: string;
+    scale: number;
+    tint: number;
+    border?: string;
+    borderTint?: number;
+    tintDark?: number;
+    innerScale?: number;
 }
 
 export interface Sound {
-    pickup: string
-    use: string
+    pickup: string;
+    use: string;
 }
 
 const HealDefs: Record<string, HealDef> = {
@@ -440,15 +440,15 @@ const HealDefs: Record<string, HealDef> = {
 };
 
 export interface AmmoDef {
-    name: string
-    type: "ammo"
-    special?: boolean
-    minStackSize: number
-    lootImg: LootImg
+    name: string;
+    type: "ammo";
+    special?: boolean;
+    minStackSize: number;
+    lootImg: LootImg;
     sound: {
-        pickup: string
-    }
-    hideUi?: boolean
+        pickup: string;
+    };
+    hideUi?: boolean;
 }
 
 const AmmoDefs: Record<string, AmmoDef> = {
@@ -596,13 +596,13 @@ const BaseDefs = {
 };
 
 export interface ScopeDef {
-    name: string
-    readonly type: "scope"
-    level: number
-    lootImg: LootImg
+    name: string;
+    readonly type: "scope";
+    level: number;
+    lootImg: LootImg;
     sound: {
-        pickup: string
-    }
+        pickup: string;
+    };
 }
 
 const ScopeDefs: Record<string, ScopeDef> = {
@@ -901,13 +901,7 @@ const SkinDefs = {
 export const GEAR_TYPES = ["chest", "helmet", "backpack"] as const;
 export const SCOPE_LEVELS = Object.keys(ScopeDefs);
 
-type GearDef =
-    | HealDef
-    | AmmoDef
-    | BoostDef
-    | BackpackDef
-    | HelmetDef
-    | ChestDef;
+type GearDef = HealDef | AmmoDef | BoostDef | BackpackDef | HelmetDef | ChestDef;
 
 export const GearDefs: Record<string, GearDef> = {
     ...BaseDefs,

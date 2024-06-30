@@ -29,9 +29,9 @@ export const util = {
     //
     // Objects on the same layer should interact with one another.
     sameLayer(a: number, b: number) {
-    // Which is faster?
-    /* eslint-disable no-mixed-operators */
-    // return (a == b && a < 2) || (a >= 2 && b >= 2);
+        // Which is faster?
+        /* eslint-disable no-mixed-operators */
+        // return (a == b && a < 2) || (a >= 2 && b >= 2);
         return (a & 0x1) === (b & 0x1) || (a & 0x2 && b & 0x2);
     },
 
@@ -40,13 +40,13 @@ export const util = {
     },
 
     toGroundLayer(a: number) {
-    // return a < 2 ? a : (a == 2 ? 0 : 1);
+        // return a < 2 ? a : (a == 2 ? 0 : 1);
         return a & 0x1;
     },
 
     toStairsLayer(a: number) {
-    // return a >= 2 ? a : (a == 0 ? 2 : 3);
-    //  return a | 0x2;
+        // return a >= 2 ? a : (a == 0 ? 2 : 3);
+        //  return a | 0x2;
         return a & 0x1;
     },
 
@@ -85,9 +85,9 @@ export const util = {
     },
 
     seededRand(seed: number) {
-    // Park-Miller PRNG
+        // Park-Miller PRNG
         let rng = seed;
-        return function(min = 0, max = 1) {
+        return function (min = 0, max = 1) {
             rng = (rng * 16807) % 2147483647;
             const t = rng / 2147483647;
             return math.lerp(t, min, max);
@@ -113,15 +113,15 @@ export const util = {
             h = 0; // achromatic
         } else {
             switch (max) {
-            case r:
-                h = (g - b) / d + (g < b ? 6 : 0);
-                break;
-            case g:
-                h = (b - r) / d + 2;
-                break;
-            case b:
-                h = (r - g) / d + 4;
-                break;
+                case r:
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                    break;
+                case g:
+                    h = (b - r) / d + 2;
+                    break;
+                case b:
+                    h = (r - g) / d + 4;
+                    break;
             }
 
             h /= 6;
@@ -151,36 +151,36 @@ export const util = {
         q = v * (1.0 - f * s);
         t = v * (1.0 - (1.0 - f) * s);
         switch (i % 6) {
-        case 0:
-            r = v;
-            g = t;
-            b = p;
-            break;
-        case 1:
-            r = q;
-            g = v;
-            b = p;
-            break;
-        case 2:
-            r = p;
-            g = v;
-            b = t;
-            break;
-        case 3:
-            r = p;
-            g = q;
-            b = v;
-            break;
-        case 4:
-            r = t;
-            g = p;
-            b = v;
-            break;
-        case 5:
-            r = v;
-            g = p;
-            b = q;
-            break;
+            case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
+            case 5:
+                r = v;
+                g = p;
+                b = q;
+                break;
         }
         return {
             r: Math.round(r * 255.0),
@@ -200,14 +200,14 @@ export const util = {
     },
 
     lerpColor(t: number, start: number, end: number) {
-        const toLinear = function toLinear(c: { r: number, g: number, b: number }) {
+        const toLinear = function toLinear(c: { r: number; g: number; b: number }) {
             return {
                 r: c.r ** 2.2,
                 g: c.g ** 2.2,
                 b: c.b ** 2.2
             };
         };
-        const toSRGB = function toSRGB(c: { r: number, g: number, b: number }) {
+        const toSRGB = function toSRGB(c: { r: number; g: number; b: number }) {
             return {
                 r: c.r ** (1.0 / 2.2),
                 g: c.g ** (1.0 / 2.2),
@@ -227,7 +227,7 @@ export const util = {
         );
     },
 
-    rgbToInt(c: { r: number, g: number, b: number }) {
+    rgbToInt(c: { r: number; g: number; b: number }) {
         return (c.r << 16) + (c.g << 8) + c.b;
     },
 
@@ -240,7 +240,7 @@ export const util = {
     },
 
     // https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-    rgbToHex(c: { r: number, g: number, b: number }) {
+    rgbToHex(c: { r: number; g: number; b: number }) {
         const rgb = util.rgbToInt(c);
         return `#${(0x1000000 + rgb).toString(16).slice(-6)}`;
     },
@@ -250,10 +250,10 @@ export const util = {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result
             ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            }
+                  r: parseInt(result[1], 16),
+                  g: parseInt(result[2], 16),
+                  b: parseInt(result[3], 16)
+              }
             : null;
     },
 
@@ -283,8 +283,8 @@ export const util = {
     isObject(item: unknown) {
         return (
             item &&
-      (typeof item === "undefined" ? "undefined" : typeof item) === "object" &&
-      !Array.isArray(item)
+            (typeof item === "undefined" ? "undefined" : typeof item) === "object" &&
+            !Array.isArray(item)
         );
     },
 
@@ -307,7 +307,7 @@ export const util = {
     },
 
     cloneDeep(source: unknown) {
-    // @TODO: This does not properly handle arrays
+        // @TODO: This does not properly handle arrays
         return util.mergeDeep({}, source);
     },
 
@@ -323,11 +323,11 @@ export const util = {
     // functions not copied from surviv
     // https://stackoverflow.com/a/55671924/5905216
     /**
-   * Pick a random element from a weighted series of elements.
-   * @param items The elements to choose from.
-   * @param weights A legend of the elements' relative weight.
-   * @param random The random number generator
-   */
+     * Pick a random element from a weighted series of elements.
+     * @param items The elements to choose from.
+     * @param weights A legend of the elements' relative weight.
+     * @param random The random number generator
+     */
     weightedRandom<T>(items: T[], weights: number[], random = Math.random): T {
         let i: number;
         for (i = 1; i < weights.length; i++) weights[i] += weights[i - 1];

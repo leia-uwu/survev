@@ -6,10 +6,10 @@ import { type AudioManager } from "../audioManager";
 import { type ConfigManager } from "../config";
 import { device } from "../device";
 import { helpers } from "../helpers";
+import { type MatchData } from "../main";
 import { type PingTest } from "../pingTest";
 import { type SiteInfo } from "../siteInfo";
 import { type Localization } from "./localization";
-import { type MatchData } from "../main";
 
 function errorTypeToString(type: string, localization: Localization) {
     const typeMap = {
@@ -21,9 +21,7 @@ function errorTypeToString(type: string, localization: Localization) {
         lost_conn: localization.translate("index-lost-connection"),
         find_game_error: localization.translate("index-failed-finding-game"),
         find_game_full: localization.translate("index-failed-finding-game"),
-        find_game_invalid_protocol: localization.translate(
-            "index-invalid-protocol"
-        ),
+        find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
         kicked: localization.translate("index-team-kicked")
     };
     return typeMap[type as keyof typeof typeMap] || typeMap.lost_conn;
@@ -54,10 +52,10 @@ export class TeamMenu {
     playerData = {};
     roomData = {} as RoomData;
     players: Array<{
-        playerId: number
-        inGame: boolean
-        name: string
-        isLeader: boolean
+        playerId: number;
+        inGame: boolean;
+        name: string;
+        isLeader: boolean;
     }> = [];
 
     prevPlayerCount = 0;
@@ -116,8 +114,8 @@ export class TeamMenu {
                 {
                     queue: false,
                     duration: 300,
-                    complete: function() {
-                        $(this).fadeOut(250, function() {
+                    complete: function () {
+                        $(this).fadeOut(250, function () {
                             $(this).remove();
                         });
                     }
@@ -163,7 +161,8 @@ export class TeamMenu {
     connect(create: boolean, roomUrl: string) {
         if (!this.active || roomUrl !== this.roomData.roomUrl) {
             const roomHost = api.resolveRoomHost();
-            const url = `w${window.location.protocol === "https:" ? "ss" : "s"
+            const url = `w${
+                window.location.protocol === "https:" ? "ss" : "s"
             }://${roomHost}/team_v2`;
             this.active = true;
             this.joined = false;
@@ -188,14 +187,14 @@ export class TeamMenu {
             this.refreshUi();
 
             if (this.ws) {
-                this.ws.onclose = function() { };
+                this.ws.onclose = function () {};
                 this.ws.close();
                 this.ws = null;
             }
 
             try {
                 this.ws = new WebSocket(url);
-                this.ws.onerror = (e) => {
+                this.ws.onerror = (_e) => {
                     this.ws?.close();
                 };
                 this.ws.onclose = () => {
@@ -204,8 +203,8 @@ export class TeamMenu {
                         errMsg = this.joined
                             ? "lost_conn"
                             : this.create
-                                ? "create_failed"
-                                : "join_failed";
+                              ? "create_failed"
+                              : "join_failed";
                     }
                     this.leave(errMsg);
                 };
@@ -228,7 +227,7 @@ export class TeamMenu {
                         this.onMessage(msg.type, msg.data);
                     }
                 };
-            } catch (e) {
+            } catch (_e) {
                 this.leave(this.create ? "create_failed" : "join_failed");
             }
         }
@@ -266,39 +265,39 @@ export class TeamMenu {
 
     onMessage(type: string, data: any) {
         switch (type) {
-        case "state": {
-            this.joined = true;
-            const ourRoomData = this.roomData;
-            this.roomData = data.room;
-            this.players = data.players;
-            this.localPlayerId = data.localPlayerId;
-            this.isLeader = this.getPlayerById(this.localPlayerId)!.isLeader;
+            case "state": {
+                this.joined = true;
+                const ourRoomData = this.roomData;
+                this.roomData = data.room;
+                this.players = data.players;
+                this.localPlayerId = data.localPlayerId;
+                this.isLeader = this.getPlayerById(this.localPlayerId)!.isLeader;
 
-            // Override room properties with local values if we're
-            // the leader; otherwise, the server may override a
-            // recent change.
-            //
-            // A better solution here would be just a sequence
-            // number and we can ignore updates that don't include our
-            // most recent change request.
-            if (this.isLeader) {
-                this.roomData.region = ourRoomData.region;
-                this.roomData.autoFill = ourRoomData.autoFill;
+                // Override room properties with local values if we're
+                // the leader; otherwise, the server may override a
+                // recent change.
+                //
+                // A better solution here would be just a sequence
+                // number and we can ignore updates that don't include our
+                // most recent change request.
+                if (this.isLeader) {
+                    this.roomData.region = ourRoomData.region;
+                    this.roomData.autoFill = ourRoomData.autoFill;
+                }
+                this.refreshUi();
+                break;
             }
-            this.refreshUi();
-            break;
-        }
-        case "joinGame":
-            this.joiningGame = true;
-            this.joinGameCb(data);
-            break;
-        case "keepAlive":
-            break;
-        case "kicked":
-            this.leave("kicked");
-            break;
-        case "error":
-            this.leave(data.type);
+            case "joinGame":
+                this.joiningGame = true;
+                this.joinGameCb(data);
+                break;
+            case "keepAlive":
+                break;
+            case "kicked":
+                this.leave("kicked");
+                break;
+            case "error":
+                this.leave(data.type);
         }
     }
 
@@ -348,7 +347,7 @@ export class TeamMenu {
     }
 
     refreshUi() {
-        const setButtonState = function(
+        const setButtonState = function (
             el: JQuery<HTMLElement>,
             selected: boolean,
             enabled: boolean
@@ -374,10 +373,7 @@ export class TeamMenu {
 
         // Error text
         const hasError = this.roomData.lastError != "";
-        const errorTxt = errorTypeToString(
-            this.roomData.lastError,
-            this.localization
-        );
+        const errorTxt = errorTypeToString(this.roomData.lastError, this.localization);
         this.serverWarning.css("opacity", hasError ? 1 : 0);
         this.serverWarning.html(errorTxt);
 
@@ -391,14 +387,8 @@ export class TeamMenu {
 
         // Show/hide team connecting/contents
         if (this.active) {
-            $("#team-menu-joining-text").css(
-                "display",
-                this.create ? "none" : "block"
-            );
-            $("#team-menu-creating-text").css(
-                "display",
-                this.create ? "block" : "none"
-            );
+            $("#team-menu-joining-text").css("display", this.create ? "none" : "block");
+            $("#team-menu-creating-text").css("display", this.create ? "block" : "none");
             $("#team-menu-connecting").css("display", this.joined ? "none" : "block");
             $("#team-menu-contents").css("display", this.joined ? "block" : "none");
             $("#btn-team-leave").css("display", this.joined ? "block" : "none");
@@ -411,13 +401,11 @@ export class TeamMenu {
             for (let i = 0; i < regions.length; i++) {
                 const region = regions[i];
                 const count = regionPops[region];
-                const sel = $("#team-server-opts").children(
-                    `option[value="${region}"]`
-                );
+                const sel = $("#team-server-opts").children(`option[value="${region}"]`);
                 sel.html(`${sel.attr("data-label")} [${count}]`);
             }
 
-            this.serverSelect.find("option").each((idx, ele) => {
+            this.serverSelect.find("option").each((_idx, ele) => {
                 ele.selected = ele.value == this.roomData.region;
             });
 

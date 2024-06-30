@@ -1,10 +1,10 @@
 export interface CrosshairDef {
-    readonly type: "crosshair"
-    name: string
-    rarity: number
-    cursor?: string
-    texture: string
-    code: string
+    readonly type: "crosshair";
+    name: string;
+    rarity: number;
+    cursor?: string;
+    texture: string;
+    code: string;
 }
 
 export const CrosshairDefs: Record<string, CrosshairDef> = {

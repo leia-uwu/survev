@@ -7,9 +7,7 @@ function internalLog(...message: string[]): void {
 }
 
 export class Logger {
-    constructor(public prefix: string) {
-
-    }
+    constructor(public prefix: string) {}
 
     log(...message: string[]): void {
         internalLog(`${this.prefix} |`, message.join(" "));

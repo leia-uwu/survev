@@ -1,11 +1,11 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
+import { type GasData } from "../../shared/msgs/updateMsg";
 import { math } from "../../shared/utils/math";
 import { type Vec2, v2 } from "../../shared/utils/v2";
+import { type Camera } from "./camera";
 import { helpers } from "./helpers";
 import { type UiManager } from "./ui/ui";
-import { type Camera } from "./camera";
-import { type GasData } from "../../shared/msgs/updateMsg";
 
 const gasMode = GameConfig.GasMode;
 
@@ -17,7 +17,10 @@ export class GasRenderer {
     display: PIXI.DisplayObject | null = null;
     canvas: HTMLCanvasElement | null = null;
 
-    constructor(public canvasMode: boolean, public gasColor: number) {
+    constructor(
+        public canvasMode: boolean,
+        public gasColor: number
+    ) {
         if (canvasMode) {
             this.canvas = document.createElement("canvas");
             this.canvas.width = window.innerWidth;
@@ -160,13 +163,13 @@ export class Gas {
 
     gasRenderer!: GasRenderer;
     circleOld: {
-        pos: Vec2
-        rad: number
+        pos: Vec2;
+        rad: number;
     };
 
     circleNew: {
-        pos: Vec2
-        rad: number
+        pos: Vec2;
+        rad: number;
     };
 
     constructor(canvasMode: boolean) {
@@ -206,7 +209,7 @@ export class Gas {
         this.circleT = circleT;
     }
 
-    setFullState(circleT: number, data: GasData, map: unknown, ui: UiManager) {
+    setFullState(circleT: number, data: GasData, _map: unknown, ui: UiManager) {
         // Update Ui
         if (data.mode != this.mode) {
             const timeLeft = Math.ceil(data.duration * (1 - circleT));

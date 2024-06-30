@@ -1,8 +1,8 @@
 import $ from "jquery";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import { MenuModal } from "./menuModal";
 import { type InputBindUi, type InputBinds } from "../inputBinds";
+import { MenuModal } from "./menuModal";
 
 function createToast(
     text: string,
@@ -27,8 +27,8 @@ function createToast(
         {
             queue: false,
             duration: 300,
-            complete: function() {
-                $(this).fadeOut(250, function() {
+            complete: function () {
+                $(this).fadeOut(250, function () {
                     $(this).remove();
                 });
             }
@@ -81,7 +81,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
     });
 
     // Auto submit link or code on enter
-    $("#team-link-input").on("keypress", function(e) {
+    $("#team-link-input").on("keypress", function (e) {
         if ((e.which || e.keyCode) === 13) {
             $("#btn-team-mobile-link-join").trigger("click");
             $(this).blur();
@@ -89,7 +89,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
     });
 
     // Blur name input on enter
-    $("#player-name-input-solo").on("keypress", function(e) {
+    $("#player-name-input-solo").on("keypress", function (e) {
         if ((e.which || e.keyCode) === 13) {
             $(this).blur();
         }
@@ -97,7 +97,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
 
     // Scroll to name input on mobile
     if (device.mobile && device.os != "ios") {
-        $("#player-name-input-solo").on("focus", function() {
+        $("#player-name-input-solo").on("focus", function () {
             if (device.isLandscape) {
                 const height = device.screenHeight;
                 const offset = height <= 282 ? 18 : 36;
@@ -163,12 +163,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
         const success = inputBinds.fromBase64(String(code));
         $("#keybind-warning").css("display", success ? "none" : "block");
         if (success) {
-            createToast(
-                "Loaded!",
-                modalKeybind.selector,
-                $("#btn-keybind-code-load"),
-                e
-            );
+            createToast("Loaded!", modalKeybind.selector, $("#btn-keybind-code-load"), e);
             inputBinds.saveBinds();
         }
         inputBindUi.refresh();
@@ -188,7 +183,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
         modalSettings.show();
         return false;
     });
-    $(".modal-settings-text").click(function(e) {
+    $(".modal-settings-text").click(function (_e) {
         const checkbox = $(this).siblings("input:checkbox");
         checkbox.prop("checked", !checkbox.is(":checked"));
         checkbox.trigger("change");
@@ -206,7 +201,7 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
         modalHamburger.show();
         return false;
     });
-    $(".modal-body-text").click(function() {
+    $(".modal-body-text").click(function () {
         const checkbox = $(this).siblings("input:checkbox");
         checkbox.prop("checked", !checkbox.is(":checked"));
         checkbox.trigger("change");

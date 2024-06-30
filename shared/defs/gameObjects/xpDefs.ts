@@ -5,21 +5,21 @@ function defineXpSkin(baseType: string, params: any) {
 }
 
 export interface XPDef {
-    readonly type: "xp"
-    name: string
-    xp: number
+    readonly type: "xp";
+    name: string;
+    xp: number;
     lootImg: {
-        sprite: string
-        tint: number
-        border: string
-        borderTint: number
-        scale: number
-    }
+        sprite: string;
+        tint: number;
+        border: string;
+        borderTint: number;
+        scale: number;
+    };
     sound: {
-        drop: string
-        pickup: string
-    }
-    emitter: string
+        drop: string;
+        pickup: string;
+    };
+    emitter: string;
 }
 
 const BaseDefs: Record<string, XPDef> = {

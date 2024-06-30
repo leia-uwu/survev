@@ -1,7 +1,7 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
-import { Main } from "./baseDefs";
 import { type MapDef } from "../mapDefs";
+import { Main } from "./baseDefs";
 
 const mapDef = {
     mapId: 4,
@@ -25,12 +25,7 @@ const mapDef = {
             { name: "log_11", channel: "sfx" },
             { name: "log_12", channel: "sfx" }
         ],
-        atlases: [
-            "gradient",
-            "loadout",
-            "shared",
-            "potato"
-        ]
+        atlases: ["gradient", "loadout", "shared", "potato"]
     },
     biome: {
         colors: {
@@ -44,11 +39,7 @@ const mapDef = {
             playerSubmerge: 2854052
         },
         particles: { camera: "falling_potato" },
-        frozenSprites: [
-            "player-mash-01.img",
-            "player-mash-02.img",
-            "player-mash-03.img"
-        ]
+        frozenSprites: ["player-mash-01.img", "player-mash-02.img", "player-mash-03.img"]
     },
     gameMode: { maxPlayers: 80, potatoMode: true },
     gameConfig: {
@@ -148,12 +139,8 @@ const mapDef = {
             { name: "chest03", count: 1, weight: 1 },
             { name: "backpack03", count: 1, weight: 1 }
         ],
-        tier_ring_case: [
-            { name: "potato_cannon", count: 1, weight: 1 }
-        ],
-        tier_airdrop_rare: [
-            { name: "potato_cannon", count: 1, weight: 1 }
-        ]
+        tier_ring_case: [{ name: "potato_cannon", count: 1, weight: 1 }],
+        tier_airdrop_rare: [{ name: "potato_cannon", count: 1, weight: 1 }]
     },
     mapGen: {
         densitySpawns: [
@@ -213,11 +200,7 @@ const mapDef = {
         ],
         randomSpawns: [
             {
-                spawns: [
-                    "mansion_structure_01",
-                    "police_01",
-                    "bank_01"
-                ],
+                spawns: ["mansion_structure_01", "police_01", "bank_01"],
                 choose: 2
             }
         ],

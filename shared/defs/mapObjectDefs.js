@@ -4,12 +4,17 @@ import { v2 } from "../utils/v2";
 
 // Helpers
 function tierLoot(tier, min, max, props) {
-    props = props || {}; return {
-        tier, min, max, props
+    props = props || {};
+    return {
+        tier,
+        min,
+        max,
+        props
     };
 }
 function autoLoot(type, count, props) {
-    props = props || {}; return { type, count, props };
+    props = props || {};
+    return { type, count, props };
 }
 
 function randomObstacleType(types) {
@@ -23,23 +28,31 @@ function randomObstacleType(types) {
             arr.push({ type: key, weight: types[key] });
         }
     }
-    if (arr.length === 0) { throw new Error("Invalid obstacle types"); }
+    if (arr.length === 0) {
+        throw new Error("Invalid obstacle types");
+    }
     let total = 0.0;
     for (let i = 0; i < arr.length; i++) {
         total += arr[i].weight;
     }
-    return function() {
+    return function () {
         let rng = util.random(0, total);
         let idx = 0;
         while (rng > arr[idx].weight) {
-            rng -= arr[idx].weight; idx++;
-        } return arr[idx].type;
+            rng -= arr[idx].weight;
+            idx++;
+        }
+        return arr[idx].type;
     };
 }
 
 function wallImg(img, tint = 0xffffff, alpha = 1, zIdx = 10) {
     return {
-        sprite: img, scale: 0.5, alpha, tint, zIdx
+        sprite: img,
+        scale: 0.5,
+        alpha,
+        tint,
+        zIdx
     };
 }
 
@@ -114,10 +127,7 @@ function createBed(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.9 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.8, 3.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.8, 3.4)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -150,10 +160,7 @@ function createBookShelf(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3.5, 1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.5, 1)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -203,10 +210,7 @@ function createBunkerStairs(e) {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 1),
-                            v2.create(2, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 1), v2.create(2, 3.25))
                     ]
                 }
             ],
@@ -274,10 +278,7 @@ function createStatue(e) {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-0.5, 0),
-                            v2.create(3.25, 2)
-                        )
+                        collider.createAabbExtents(v2.create(-0.5, 0), v2.create(3.25, 2))
                     ]
                 }
             ],
@@ -333,10 +334,7 @@ function createStatueUnderground(e) {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(6.5, 0),
-                            v2.create(4, 3)
-                        )
+                        collider.createAabbExtents(v2.create(6.5, 0), v2.create(4, 3))
                     ]
                 }
             ],
@@ -354,10 +352,7 @@ function createStatueUnderground(e) {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(6.5, 0),
-                        v2.create(4, 3)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(6.5, 0), v2.create(4, 3))
                 }
             ],
             imgs: [
@@ -480,10 +475,7 @@ function createCase(e) {
         type: "obstacle",
         obstacleType: "crate",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.6)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.6)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -516,10 +508,7 @@ function createChest(e) {
         type: "obstacle",
         obstacleType: "crate",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.6)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.6)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -549,15 +538,9 @@ function createChest(e) {
 }
 function createRiverChest(e) {
     const t = createChest({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.8),
-            v2.create(2.25, 0.8)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.8), v2.create(2.25, 0.8)),
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0.8),
-                v2.create(2.25, 1.6)
-            )
+            collider.createAabbExtents(v2.create(0, 0.8), v2.create(2.25, 1.6))
         ],
         terrain: { river: { centerWeight: 1 } }
     });
@@ -638,13 +621,13 @@ function createContainer(e) {
                     collision: [
                         e.open
                             ? collider.createAabbExtents(
-                                v2.create(0, 0),
-                                v2.create(2.5, 11)
-                            )
+                                  v2.create(0, 0),
+                                  v2.create(2.5, 11)
+                              )
                             : collider.createAabbExtents(
-                                v2.create(0, 0),
-                                v2.create(2.5, 8)
-                            )
+                                  v2.create(0, 0),
+                                  v2.create(2.5, 8)
+                              )
                     ]
                 }
             ],
@@ -664,22 +647,19 @@ function createContainer(e) {
                 {
                     zoomIn: e.open
                         ? collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(2.5, 5.75)
-                        )
+                              v2.create(0, 0),
+                              v2.create(2.5, 5.75)
+                          )
                         : collider.createAabbExtents(
-                            v2.create(0, 2.25),
-                            v2.create(2.5, 5.5)
-                        ),
+                              v2.create(0, 2.25),
+                              v2.create(2.5, 5.5)
+                          ),
                     zoomOut: e.open
-                        ? collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(2.5, 11)
-                        )
+                        ? collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 11))
                         : collider.createAabbExtents(
-                            v2.create(0, -0.5),
-                            v2.create(2.5, 8.75)
-                        )
+                              v2.create(0, -0.5),
+                              v2.create(2.5, 8.75)
+                          )
                 }
             ],
             imgs: e.ceilingImgs || [
@@ -699,10 +679,7 @@ function createCouch(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.85 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 1.5)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -735,10 +712,7 @@ function createCrate(e) {
         type: "obstacle",
         obstacleType: "crate",
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 2.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 2.25)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -769,14 +743,8 @@ function createCrate(e) {
 function createAirdrop(e) {
     const t = {
         obstacleType: "airdrop",
-        dropCollision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2.5)
-        ),
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2.5)
-        ),
+        dropCollision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2.5)),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2.5)),
         airdropCrate: true,
         scale: { destroy: 1 },
         destructible: false,
@@ -843,10 +811,7 @@ function createDepositBox(e) {
         type: "obstacle",
         obstacleType: "locker",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.15),
-            v2.create(2.5, 1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.15), v2.create(2.5, 1)),
         height: 10,
         collidable: true,
         destructible: true,
@@ -923,7 +888,9 @@ function createDoor(e) {
             enter: "none"
         }
     };
-    if (!MaterialDefs[e.material]) { throw new Error(`Invalid material ${e.material}`); }
+    if (!MaterialDefs[e.material]) {
+        throw new Error(`Invalid material ${e.material}`);
+    }
     return util.mergeDeep(t, MaterialDefs[e.material], e || {});
 }
 function createLabDoor(e) {
@@ -962,10 +929,7 @@ function createDrawer(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.15),
-            v2.create(2.5, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.15), v2.create(2.5, 1.25)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -998,10 +962,7 @@ function createGunMount(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.9 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.2),
-            v2.create(2.25, 0.7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.2), v2.create(2.25, 0.7)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -1035,10 +996,7 @@ function createLocker(e) {
         type: "obstacle",
         obstacleType: "locker",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.15),
-            v2.create(1.5, 0.6)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.15), v2.create(1.5, 0.6)),
         height: 10,
         collidable: true,
         destructible: true,
@@ -1071,10 +1029,7 @@ function createControlPanel(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1, 1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1, 1)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -1108,10 +1063,7 @@ function createOven(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.15),
-            v2.create(1.7, 1.3)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.15), v2.create(1.7, 1.3)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -1144,10 +1096,7 @@ function createPlanter(e) {
         type: "obstacle",
         obstacleType: "pot",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 4.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 4.25)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -1212,10 +1161,7 @@ function createBottle2(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.5, 0.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.5, 0.5)),
         height: 0.3,
         collidable: true,
         destructible: false,
@@ -1328,10 +1274,7 @@ function createRecorder(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.9, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.9, 1.5)),
         height: 0.5,
         collidable: true,
         destructible: false,
@@ -1374,10 +1317,7 @@ function createRefrigerator(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.15),
-            v2.create(1.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.15), v2.create(1.7, 1.25)),
         height: 0.5,
         collidable: true,
         destructible: false,
@@ -1410,10 +1350,7 @@ function createSandBags(e) {
         type: "obstacle",
         map: { display: true, color: 13278307, scale: 1 },
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3.1, 1.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.1, 1.4)),
         height: 0.5,
         collidable: true,
         destructible: false,
@@ -1543,10 +1480,7 @@ function createTable(e) {
         type: "obstacle",
         obstacleType: "furniture",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2)),
         height: 0.5,
         collidable: false,
         destructible: true,
@@ -1612,10 +1546,7 @@ function createTree(e) {
         type: "obstacle",
         scale: { createMin: 0.8, createMax: 1, destroy: 0.5 },
         collision: collider.createCircle(v2.create(0, 0), 1.55),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(5.75, 5.75)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(5.75, 5.75)),
         height: 10,
         collidable: true,
         destructible: true,
@@ -1649,10 +1580,7 @@ function createTreeSwitch(e) {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
         collision: collider.createCircle(v2.create(0, 0), 1.6),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(5.75, 5.75)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(5.75, 5.75)),
         button: {
             interactionRad: 0.2,
             interactionText: "game-use",
@@ -1697,10 +1625,7 @@ function createWall(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.copy(e.extents)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.copy(e.extents)),
         height: 10,
         isWall: true,
         collidable: true,
@@ -1719,7 +1644,9 @@ function createWall(e) {
             enter: "none"
         }
     };
-    if (!MaterialDefs[e.material]) { throw new Error(`Invalid material ${e.material}`); }
+    if (!MaterialDefs[e.material]) {
+        throw new Error(`Invalid material ${e.material}`);
+    }
     return util.mergeDeep(t, MaterialDefs[e.material], e || {});
 }
 function createWheel(e) {
@@ -1757,10 +1684,7 @@ function createWoodPile(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 0.75 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -2385,9 +2309,7 @@ function createBankVault(e) {
                 ori: 2
             },
             {
-                type:
-                    e.floor_loot ||
-                    randomObstacleType({ loot_tier_vault_floor: 1 }),
+                type: e.floor_loot || randomObstacleType({ loot_tier_vault_floor: 1 }),
                 pos: v2.create(-3.5, 0),
                 scale: 1,
                 ori: 0
@@ -2420,14 +2342,8 @@ function createBarn(e) {
         },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, -2),
-                v2.create(28, 16.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 14),
-                v2.create(7, 5)
-            )
+            collider.createAabbExtents(v2.create(0, -2), v2.create(28, 16.5)),
+            collider.createAabbExtents(v2.create(0, 14), v2.create(7, 5))
         ],
         zIdx: 1,
         floor: {
@@ -2435,14 +2351,8 @@ function createBarn(e) {
                 {
                     type: "house",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -2),
-                            v2.create(25, 13.2)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(0, 12),
-                            v2.create(5.5, 2.5)
-                        )
+                        collider.createAabbExtents(v2.create(0, -2), v2.create(25, 13.2)),
+                        collider.createAabbExtents(v2.create(0, 12), v2.create(5.5, 2.5))
                     ]
                 }
             ],
@@ -2899,14 +2809,8 @@ function createBarnBasement(e) {
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-3, 0),
-                            v2.create(12, 7)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(12, -3.5),
-                            v2.create(3, 2)
-                        )
+                        collider.createAabbExtents(v2.create(-3, 0), v2.create(12, 7)),
+                        collider.createAabbExtents(v2.create(12, -3.5), v2.create(3, 2))
                     ]
                 }
             ],
@@ -2923,10 +2827,7 @@ function createBarnBasement(e) {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(2, 0),
-                        v2.create(6, 7)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(2, 0), v2.create(6, 7))
                 },
                 {
                     zoomIn: collider.createAabbExtents(
@@ -3078,10 +2979,7 @@ function createBridgeLarge(e) {
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(31.5, 8)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(31.5, 8))
                     ]
                 }
             ],
@@ -3324,23 +3222,14 @@ function createCabin(e) {
                 {
                     type: "house",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -1.5),
-                            v2.create(18, 14)
-                        )
+                        collider.createAabbExtents(v2.create(0, -1.5), v2.create(18, 14))
                     ]
                 },
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(4, -14),
-                            v2.create(3, 2.5)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(-4, 13.5),
-                            v2.create(2, 1)
-                        )
+                        collider.createAabbExtents(v2.create(4, -14), v2.create(3, 2.5)),
+                        collider.createAabbExtents(v2.create(-4, 13.5), v2.create(2, 1))
                     ]
                 }
             ],
@@ -3367,10 +3256,7 @@ function createCabin(e) {
                     )
                 },
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(4, -13),
-                        v2.create(3, 2)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(4, -13), v2.create(3, 2))
                 }
             ],
             vision: {
@@ -3531,15 +3417,13 @@ function createCabin(e) {
                 ori: 0
             },
             {
-                type:
-                    e.cabin_wall_int_10 || "cabin_wall_int_10",
+                type: e.cabin_wall_int_10 || "cabin_wall_int_10",
                 pos: v2.create(-13, 2),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.cabin_wall_int_13 || "cabin_wall_int_13",
+                type: e.cabin_wall_int_13 || "cabin_wall_int_13",
                 pos: v2.create(-3.5, -4),
                 scale: 1,
                 ori: 0
@@ -3674,14 +3558,8 @@ function createHut(e) {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(7, 7)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(0, -18.9),
-                            v2.create(2, 12)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(7, 7)),
+                        collider.createAabbExtents(v2.create(0, -18.9), v2.create(2, 12))
                     ]
                 }
             ],
@@ -3705,18 +3583,13 @@ function createHut(e) {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(6, 6)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(6, 6))
                 }
             ],
             vision: { width: 4 },
             imgs: [
                 {
-                    sprite:
-                        e.ceilingImg ||
-                        "map-building-hut-ceiling-01.img",
+                    sprite: e.ceilingImg || "map-building-hut-ceiling-01.img",
                     scale: 0.667,
                     alpha: 1,
                     tint: 16777215
@@ -3849,22 +3722,13 @@ function createShack3(e) {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(1, 1.5),
-                            v2.create(8, 5.5)
-                        ),
+                        collider.createAabbExtents(v2.create(1, 1.5), v2.create(8, 5.5)),
                         collider.createAabbExtents(
                             v2.create(-10.65, 7),
                             v2.create(2, 12)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(-7.75, 3),
-                            v2.create(1, 2)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(5, -4.75),
-                            v2.create(2, 1)
-                        )
+                        collider.createAabbExtents(v2.create(-7.75, 3), v2.create(1, 2)),
+                        collider.createAabbExtents(v2.create(5, -4.75), v2.create(2, 1))
                     ]
                 }
             ],
@@ -3911,16 +3775,10 @@ function createShack3(e) {
             }
         },
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(-1.75, -4.25),
-                v2.create(11.25, 4.75)
-            )
+            collider.createAabbExtents(v2.create(-1.75, -4.25), v2.create(11.25, 4.75))
         ],
         bridgeWaterBounds: [
-            collider.createAabbExtents(
-                v2.create(-10.5, 15.5),
-                v2.create(3.5, 6)
-            )
+            collider.createAabbExtents(v2.create(-10.5, 15.5), v2.create(3.5, 6))
         ],
         mapObjects: [
             {
@@ -4005,18 +3863,9 @@ function createGreenhouse(e) {
         map: { display: true, color: 1995644, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(15, 25)
-            ),
-            collider.createAabbExtents(
-                v2.create(-15, 9),
-                v2.create(2.5, 4.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(17.5, -7),
-                v2.create(4.5, 2.5)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(15, 25)),
+            collider.createAabbExtents(v2.create(-15, 9), v2.create(2.5, 4.5)),
+            collider.createAabbExtents(v2.create(17.5, -7), v2.create(4.5, 2.5))
         ],
         zIdx: 1,
         floor: {
@@ -4024,19 +3873,13 @@ function createGreenhouse(e) {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(13, 20)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(13, 20))
                     ]
                 },
                 {
                     type: "house",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(2, 20)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(2, 20))
                     ]
                 }
             ],
@@ -4323,10 +4166,7 @@ function createBunkerChrys(e) {
         terrain: { grass: true, beach: false },
         ori: 0,
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(5, 5),
-                v2.create(15, 15)
-            )
+            collider.createAabbExtents(v2.create(5, 5), v2.create(15, 15))
         ],
         layers: [
             {
@@ -4335,8 +4175,7 @@ function createBunkerChrys(e) {
                 ori: 0
             },
             {
-                type:
-                    e.bunkerType || "bunker_chrys_sublevel_01",
+                type: e.bunkerType || "bunker_chrys_sublevel_01",
                 pos: v2.create(0, 0),
                 ori: 0
             }
@@ -4351,14 +4190,8 @@ function createBunkerChrys(e) {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(10.5, -12.25),
-                v2.create(15, 9.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(40, 20),
-                v2.create(14.45, 35)
-            )
+            collider.createAabbExtents(v2.create(10.5, -12.25), v2.create(15, 9.5)),
+            collider.createAabbExtents(v2.create(40, 20), v2.create(14.45, 35))
         ]
     };
     return util.mergeDeep(t, e || {});
@@ -4369,32 +4202,20 @@ function createLoggingComplex(e) {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false, spawnPriority: 10 },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, -4),
-                v2.create(55, 50)
-            )
+            collider.createAabbExtents(v2.create(0, -4), v2.create(55, 50))
         ],
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(0, -4),
-                v2.create(55, 50)
-            )
+            collider.createAabbExtents(v2.create(0, -4), v2.create(55, 50))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(55, 55)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(55, 55)),
                 color: e.groundTintLt || 5195792,
                 roughness: 0.05,
                 offsetDist: 0.5
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-28.5, 7),
-                    v2.create(7, 5)
-                ),
+                bound: collider.createAabbExtents(v2.create(-28.5, 7), v2.create(7, 5)),
                 color: e.groundTintDk || 5986827,
                 roughness: 0.05,
                 offsetDist: 0.5
@@ -4409,10 +4230,7 @@ function createLoggingComplex(e) {
                 offsetDist: 0.5
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(20, 10),
-                    v2.create(20, 30)
-                ),
+                bound: collider.createAabbExtents(v2.create(20, 10), v2.create(20, 30)),
                 color: e.groundTintDk || 5986827,
                 roughness: 0.05,
                 offsetDist: 0.5
@@ -4423,10 +4241,7 @@ function createLoggingComplex(e) {
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(55, 55)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(55, 55))
                     ]
                 }
             ],
@@ -4765,15 +4580,10 @@ function createLoggingComplex2(e) {
         type: "building",
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false, spawnPriority: 10 },
-        mapObstacleBounds: [
-            collider.createCircle(v2.create(0, 0), 40)
-        ],
+        mapObstacleBounds: [collider.createCircle(v2.create(0, 0), 40)],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(5, 21.5),
-                    v2.create(5.5, 6)
-                ),
+                bound: collider.createAabbExtents(v2.create(5, 21.5), v2.create(5.5, 6)),
                 color: e.groundTintDk || 7563810,
                 roughness: 0.05,
                 offsetDist: 0.5
@@ -4916,49 +4726,28 @@ function createMansion(e) {
                             v2.create(-1.5, 20.5),
                             v2.create(12.5, 4.5)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(20, 20)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(20, 20))
                     ]
                 },
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-21, -17),
-                            v2.create(11, 8)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(-23, -6),
-                            v2.create(8, 3)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(-2, -24),
-                            v2.create(2, 3)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(28, 1.5),
-                            v2.create(3, 3)
-                        )
+                        collider.createAabbExtents(v2.create(-21, -17), v2.create(11, 8)),
+                        collider.createAabbExtents(v2.create(-23, -6), v2.create(8, 3)),
+                        collider.createAabbExtents(v2.create(-2, -24), v2.create(2, 3)),
+                        collider.createAabbExtents(v2.create(28, 1.5), v2.create(3, 3))
                     ]
                 },
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-2, 4),
-                            v2.create(5, 5)
-                        )
+                        collider.createAabbExtents(v2.create(-2, 4), v2.create(5, 5))
                     ]
                 },
                 {
                     type: "house",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(1, 13),
-                            v2.create(2, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(1, 13), v2.create(2, 3.25))
                     ]
                 }
             ],
@@ -5205,9 +4994,7 @@ function createMansion(e) {
                 ori: 0
             },
             {
-                type:
-                    e.mansion_wall_int_12 ||
-                    "mansion_wall_int_12",
+                type: e.mansion_wall_int_12 || "mansion_wall_int_12",
                 pos: v2.create(-25, -2.5),
                 scale: 1,
                 ori: 1
@@ -5219,9 +5006,7 @@ function createMansion(e) {
                 ori: 3
             },
             {
-                type:
-                    e.mansion_wall_int_1 ||
-                    "mansion_wall_int_1",
+                type: e.mansion_wall_int_1 || "mansion_wall_int_1",
                 pos: v2.create(-30.5, 5.5),
                 scale: 1,
                 ori: 1
@@ -5233,17 +5018,13 @@ function createMansion(e) {
                 ori: 3
             },
             {
-                type:
-                    e.mansion_wall_int_13 ||
-                    "mansion_wall_int_13",
+                type: e.mansion_wall_int_13 || "mansion_wall_int_13",
                 pos: v2.create(-20.5, 5.5),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.mansion_wall_int_7 ||
-                    "mansion_wall_int_7",
+                type: e.mansion_wall_int_7 || "mansion_wall_int_7",
                 pos: v2.create(-19.5, 1.5),
                 scale: 1,
                 ori: 0
@@ -5255,33 +5036,25 @@ function createMansion(e) {
                 ori: 0
             },
             {
-                type:
-                    e.mansion_wall_int_6 ||
-                    "mansion_wall_int_6",
+                type: e.mansion_wall_int_6 || "mansion_wall_int_6",
                 pos: v2.create(-14.5, 13),
                 scale: 1,
                 ori: 0
             },
             {
-                type:
-                    e.mansion_wall_int_6 ||
-                    "mansion_wall_int_6",
+                type: e.mansion_wall_int_6 || "mansion_wall_int_6",
                 pos: v2.create(-14.5, -5),
                 scale: 1,
                 ori: 0
             },
             {
-                type:
-                    e.mansion_wall_int_10 ||
-                    "mansion_wall_int_10",
+                type: e.mansion_wall_int_10 || "mansion_wall_int_10",
                 pos: v2.create(-10, -8.5),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.mansion_wall_int_11 ||
-                    "mansion_wall_int_11",
+                type: e.mansion_wall_int_11 || "mansion_wall_int_11",
                 pos: v2.create(-9.5, -14.5),
                 scale: 1,
                 ori: 0
@@ -5341,9 +5114,7 @@ function createMansion(e) {
                 ori: 2
             },
             {
-                type:
-                    e.mansion_wall_int_9 ||
-                    "mansion_wall_int_9",
+                type: e.mansion_wall_int_9 || "mansion_wall_int_9",
                 pos: v2.create(10.5, 7.5),
                 scale: 1,
                 ori: 0
@@ -5355,33 +5126,25 @@ function createMansion(e) {
                 ori: 0
             },
             {
-                type:
-                    e.mansion_wall_int_8 ||
-                    "mansion_wall_int_8",
+                type: e.mansion_wall_int_8 || "mansion_wall_int_8",
                 pos: v2.create(10.5, -5),
                 scale: 1,
                 ori: 0
             },
             {
-                type:
-                    e.mansion_wall_int_9 ||
-                    "mansion_wall_int_9",
+                type: e.mansion_wall_int_9 || "mansion_wall_int_9",
                 pos: v2.create(15.5, 4.5),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.mansion_wall_int_9 ||
-                    "mansion_wall_int_9",
+                type: e.mansion_wall_int_9 || "mansion_wall_int_9",
                 pos: v2.create(15.5, -1.5),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.mansion_wall_int_5 ||
-                    "mansion_wall_int_5",
+                type: e.mansion_wall_int_5 || "mansion_wall_int_5",
                 pos: v2.create(19.5, 1.5),
                 scale: 1,
                 ori: 0
@@ -5393,9 +5156,7 @@ function createMansion(e) {
                 ori: 1
             },
             {
-                type:
-                    e.mansion_wall_int_5 ||
-                    "mansion_wall_int_5",
+                type: e.mansion_wall_int_5 || "mansion_wall_int_5",
                 pos: v2.create(3.5, -8.5),
                 scale: 1,
                 ori: 1
@@ -5407,9 +5168,7 @@ function createMansion(e) {
                 ori: 3
             },
             {
-                type:
-                    e.mansion_wall_int_11 ||
-                    "mansion_wall_int_11",
+                type: e.mansion_wall_int_11 || "mansion_wall_int_11",
                 pos: v2.create(5.5, -14.5),
                 scale: 1,
                 ori: 0
@@ -5493,9 +5252,7 @@ function createMansion(e) {
                 ori: 0
             },
             {
-                type:
-                    e.decoration_02 ||
-                    "loot_tier_mansion_floor",
+                type: e.decoration_02 || "loot_tier_mansion_floor",
                 pos: v2.create(-2, -8.5),
                 scale: 1,
                 ori: 0
@@ -5681,14 +5438,8 @@ function createMansionCellar(e) {
                 {
                     type: "brick",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(18, 3),
-                            v2.create(7, 13)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(5, 0),
-                            v2.create(6, 10)
-                        )
+                        collider.createAabbExtents(v2.create(18, 3), v2.create(7, 13)),
+                        collider.createAabbExtents(v2.create(5, 0), v2.create(6, 10))
                     ]
                 }
             ],
@@ -5726,10 +5477,7 @@ function createMansionCellar(e) {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(18, 3),
-                        v2.create(7, 13)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(18, 3), v2.create(7, 13))
                 },
                 {
                     zoomIn: collider.createAabbExtents(
@@ -5956,10 +5704,7 @@ function createOutHouse(e) {
         map: { display: true, color: 8145976, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 1.4),
-                v2.create(5.5, 6.5)
-            )
+            collider.createAabbExtents(v2.create(0, 1.4), v2.create(5.5, 6.5))
         ],
         zIdx: 1,
         floor: {
@@ -6043,8 +5788,7 @@ function createOutHouse(e) {
                 ori: 0
             },
             {
-                type:
-                    e.obs || randomObstacleType({ toilet_01: 5, toilet_02: 1 }),
+                type: e.obs || randomObstacleType({ toilet_01: 5, toilet_02: 1 }),
                 pos: v2.create(0, 2),
                 scale: 0.95,
                 ori: 0
@@ -6084,14 +5828,8 @@ function createTeaPavilion(e) {
         },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(11, 11)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, -20),
-                v2.create(4, 12)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(11, 11)),
+            collider.createAabbExtents(v2.create(0, -20), v2.create(4, 12))
         ],
         ori: 0,
         floor: {
@@ -6099,10 +5837,7 @@ function createTeaPavilion(e) {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(9, 9)
-                        ),
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(9, 9)),
                         collider.createAabbExtents(
                             v2.create(0, -10.15),
                             v2.create(2, 1.5)
@@ -6130,14 +5865,8 @@ function createTeaPavilion(e) {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(7, 7)
-                    ),
-                    zoomOut: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(9, 9)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(7, 7)),
+                    zoomOut: collider.createAabbExtents(v2.create(0, 0), v2.create(9, 9))
                 }
             ],
             vision: { width: 4 },
@@ -6206,8 +5935,7 @@ function createTeaPavilion(e) {
                 ori: 0
             },
             {
-                type:
-                    e.center_loot || "loot_tier_airdrop_armor",
+                type: e.center_loot || "loot_tier_airdrop_armor",
                 pos: v2.create(0, 0),
                 scale: 1,
                 ori: 0
@@ -6222,17 +5950,11 @@ function createTeaHouseComplex(e) {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(24, 18)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(24, 18))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(21, 15)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(21, 15)),
                 color: e.grass_color || 6066442,
                 roughness: 0.05,
                 offsetDist: 0.25
@@ -6275,29 +5997,25 @@ function createTeaHouseComplex(e) {
                 ori: 0
             },
             {
-                type:
-                    e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
+                type: e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
                 pos: v2.create(-10, -13),
                 scale: 1,
                 ori: 0
             },
             {
-                type:
-                    e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
+                type: e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
                 pos: v2.create(-17.5, 2.5),
                 scale: 1.2,
                 ori: 0
             },
             {
-                type:
-                    e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
+                type: e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
                 pos: v2.create(18, -6.5),
                 scale: 1,
                 ori: 0
             },
             {
-                type:
-                    e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
+                type: e.tree_large || randomObstacleType({ tree_08sp: 2, "": 1 }),
                 pos: v2.create(17.5, 5),
                 scale: 1.2,
                 ori: 0
@@ -6324,17 +6042,11 @@ function createGrassyCover(e) {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(10, 10)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(10, 10))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(8, 8)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(8, 8)),
                 color: 7696926,
                 roughness: 0.1,
                 offsetDist: 0.2
@@ -6395,17 +6107,11 @@ function createPoliceStation(e) {
                     color: 6310464
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-30.5, -18),
-                        1.5
-                    ),
+                    collider: collider.createCircle(v2.create(-30.5, -18), 1.5),
                     color: 8026746
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-20.5, -10.5),
-                        1.5
-                    ),
+                    collider: collider.createCircle(v2.create(-20.5, -10.5), 1.5),
                     color: 8026746
                 },
                 {
@@ -6456,10 +6162,7 @@ function createPoliceStation(e) {
                             v2.create(-21.5, -13),
                             v2.create(21, 11.5)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(-3.5, 2),
-                            v2.create(3, 3.5)
-                        )
+                        collider.createAabbExtents(v2.create(-3.5, 2), v2.create(3, 3.5))
                     ]
                 }
             ],
@@ -7068,10 +6771,7 @@ function createHouseRed(e) {
         map: { display: true, color: 6429724, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(19, 17.5)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(19, 17.5))
         ],
         zIdx: 1,
         floor: {
@@ -7079,10 +6779,7 @@ function createHouseRed(e) {
                 {
                     type: "house",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(14.5, 13)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(14.5, 13))
                     ]
                 }
             ],
@@ -7416,10 +7113,7 @@ function createHouseRed2(e) {
         map: { display: true, color: 4656911, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, -1),
-                v2.create(19, 18.5)
-            )
+            collider.createAabbExtents(v2.create(0, -1), v2.create(19, 18.5))
         ],
         zIdx: 1,
         floor: {
@@ -7427,10 +7121,7 @@ function createHouseRed2(e) {
                 {
                     type: "house",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(14.5, 13)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(14.5, 13))
                     ]
                 }
             ],
@@ -7673,15 +7364,13 @@ function createHouseRed2(e) {
                 ori: 0
             },
             {
-                type:
-                    e.house_wall_int_14 || "house_wall_int_14",
+                type: e.house_wall_int_14 || "house_wall_int_14",
                 pos: v2.create(-7, 3),
                 scale: 1,
                 ori: 1
             },
             {
-                type:
-                    e.house_wall_int_11 || "house_wall_int_11",
+                type: e.house_wall_int_11 || "house_wall_int_11",
                 pos: v2.create(-8.5, -2),
                 scale: 1,
                 ori: 1
@@ -7821,10 +7510,7 @@ function createShack2(e) {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0.9),
-                            v2.create(5.6, 3.5)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0.9), v2.create(5.6, 3.5))
                     ]
                 },
                 {
@@ -7940,19 +7626,13 @@ function createShack(e) {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 1),
-                            v2.create(5, 4)
-                        )
+                        collider.createAabbExtents(v2.create(0, 1), v2.create(5, 4))
                     ]
                 },
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -4),
-                            v2.create(2, 1)
-                        )
+                        collider.createAabbExtents(v2.create(0, -4), v2.create(2, 1))
                     ]
                 }
             ],
@@ -8069,20 +7749,14 @@ function createWarehouse(e) {
         zIdx: 1,
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(35, 16)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(35, 16))
         ],
         floor: {
             surfaces: [
                 {
                     type: "warehouse",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(32, 12.5)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(32, 12.5))
                     ]
                 }
             ],
@@ -8170,8 +7844,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: "crate_04",
@@ -8185,8 +7858,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: "barrel_01",
@@ -8200,8 +7872,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: "barrel_01",
@@ -8221,8 +7892,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: randomObstacleType({ crate_02: 1, crate_01: 3 }),
@@ -8230,8 +7900,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: "crate_01",
@@ -8239,8 +7908,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: "crate_01",
@@ -8248,8 +7916,7 @@ function createWarehouse(e) {
                 scale: 1,
                 ori: 0,
                 inheritOri: false,
-                ignoreMapSpawnReplacement:
-                    e.ignoreMapSpawnReplacement
+                ignoreMapSpawnReplacement: e.ignoreMapSpawnReplacement
             },
             {
                 type: "crate_04",
@@ -8315,10 +7982,7 @@ function createWarehouse2(e) {
                 {
                     type: "warehouse",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(27.5, 12.5)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(27.5, 12.5))
                     ]
                 }
             ],
@@ -8510,10 +8174,7 @@ function createWindow(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 2)),
         height: 10,
         collidable: true,
         destructible: true,
@@ -8545,10 +8206,7 @@ function createLowWall(e) {
     const t = {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 2)),
         height: 0.2,
         isWall: true,
         collidable: true,
@@ -8685,10 +8343,7 @@ export const MapObjectDefs = {
     }),
     barrel_02: createWoodBarrel({ health: 60 }),
     barrel_03: createWoodBarrel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.25, 0.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.25, 0.5)),
         health: 20,
         img: {
             sprite: "map-barrel-03.img",
@@ -8697,10 +8352,7 @@ export const MapObjectDefs = {
         }
     }),
     barrel_04: createWoodBarrel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.25, 0.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.25, 0.5)),
         health: 20,
         loot: [tierLoot("tier_soviet", 2, 3)],
         img: {
@@ -8716,10 +8368,7 @@ export const MapObjectDefs = {
         img: { sprite: "map-propane-01.img", scale: 0.4 }
     }),
     bed_sm_01: createBed({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.4, 3.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.4, 3.4)),
         img: { sprite: "map-bed-01.img" }
     }),
     bed_lg_01: createBed({
@@ -8787,10 +8436,7 @@ export const MapObjectDefs = {
             destroy: 0.75
         },
         health: 150,
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.75, 1.75)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.75, 1.75)),
         hitParticle: "leaf",
         explodeParticle: "leaf",
         img: {
@@ -8806,10 +8452,7 @@ export const MapObjectDefs = {
             destroy: 0.75
         },
         health: 150,
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.75, 1.75)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.75, 1.75)),
         hitParticle: "leaf",
         explodeParticle: "leaf",
         img: {
@@ -8949,10 +8592,7 @@ export const MapObjectDefs = {
     case_06: createCase({
         health: 140,
         img: { sprite: "map-case-chrys-01.img" },
-        loot: [
-            tierLoot("tier_chest", 2, 3),
-            tierLoot("tier_chrys_case", 1, 1)
-        ],
+        loot: [tierLoot("tier_chest", 2, 3), tierLoot("tier_chrys_case", 1, 1)],
         hitParticle: "blackChip",
         map: { display: false, color: 7025920, scale: 0.85 }
     }),
@@ -8971,10 +8611,7 @@ export const MapObjectDefs = {
         ]
     }),
     chest_01cb: createChest({
-        loot: [
-            tierLoot("tier_chest", 3, 4),
-            tierLoot("tier_pirate_melee", 1, 1)
-        ]
+        loot: [tierLoot("tier_chest", 3, 4), tierLoot("tier_pirate_melee", 1, 1)]
     }),
     chest_02: createChest({
         img: { sprite: "map-chest-02.img" },
@@ -8983,10 +8620,7 @@ export const MapObjectDefs = {
     }),
     chest_03: createRiverChest({
         img: { sprite: "map-chest-03.img" },
-        loot: [
-            tierLoot("tier_chest", 3, 5),
-            autoLoot("outfitWaterElem", 1)
-        ]
+        loot: [tierLoot("tier_chest", 3, 5), autoLoot("outfitWaterElem", 1)]
     }),
     chest_03cb: createRiverChest({
         img: { sprite: "map-chest-03.img" },
@@ -8994,10 +8628,7 @@ export const MapObjectDefs = {
     }),
     chest_03d: createRiverChest({
         img: { sprite: "map-chest-03d.img" },
-        loot: [
-            tierLoot("tier_chest", 3, 5),
-            autoLoot("outfitWaterElem", 1)
-        ]
+        loot: [tierLoot("tier_chest", 3, 5), autoLoot("outfitWaterElem", 1)]
     }),
     chest_03f: createRiverChest({
         img: { sprite: "map-chest-03f.img" },
@@ -9005,10 +8636,7 @@ export const MapObjectDefs = {
     }),
     chest_03x: createRiverChest({
         img: { sprite: "map-chest-03x.img" },
-        loot: [
-            tierLoot("tier_chest", 3, 5),
-            autoLoot("outfitWaterElem", 1)
-        ]
+        loot: [tierLoot("tier_chest", 3, 5), autoLoot("outfitWaterElem", 1)]
     }),
     chest_04: createChest({
         health: 200,
@@ -9034,10 +8662,7 @@ export const MapObjectDefs = {
         map: { display: false, color: 7025920, scale: 0.85 }
     }),
     control_panel_01: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.7)),
         button: {
             interactionRad: 0.75,
             interactionText: "game-use",
@@ -9051,18 +8676,12 @@ export const MapObjectDefs = {
         img: { sprite: "map-control-panel-01.img" }
     }),
     control_panel_02: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.7)),
         health: 175,
         img: { sprite: "map-control-panel-02.img" }
     }),
     control_panel_02b: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.7)),
         destructible: false,
         button: {
             interactionRad: 0.2,
@@ -9080,18 +8699,12 @@ export const MapObjectDefs = {
         img: { sprite: "map-control-panel-02.img" }
     }),
     control_panel_03: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.25, 1.2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.25, 1.2)),
         health: 150,
         img: { sprite: "map-control-panel-03.img" }
     }),
     control_panel_04: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.7)),
         button: {
             interactionRad: 0.75,
             interactionText: "game-use",
@@ -9105,18 +8718,12 @@ export const MapObjectDefs = {
         img: { sprite: "map-control-panel-04.img" }
     }),
     control_panel_06: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 1.2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 1.2)),
         health: 200,
         img: { sprite: "map-control-panel-06.img" }
     }),
     switch_01: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.45, 0.55)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.45, 0.55)),
         destructible: false,
         button: {
             interactionRad: 0.2,
@@ -9135,18 +8742,12 @@ export const MapObjectDefs = {
         img: { sprite: "map-switch-01.img" }
     }),
     switch_02: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.45, 0.55)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.45, 0.55)),
         destructible: false,
         img: { sprite: "map-switch-02.img" }
     }),
     switch_03: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.45, 0.55)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.45, 0.55)),
         destructible: false,
         button: {
             interactionRad: 0.2,
@@ -9163,24 +8764,15 @@ export const MapObjectDefs = {
     }),
     couch_01: createCouch({}),
     couch_02: createCouch({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3, 1.5)),
         img: { sprite: "map-couch-02.img" }
     }),
     couch_02b: createCouch({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3, 1.5)),
         img: { sprite: "map-couch-02.img", mirrorY: true }
     }),
     couch_03: createCouch({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         img: { sprite: "map-couch-03.img" }
     }),
     crate_01: createCrate({}),
@@ -9195,10 +8787,7 @@ export const MapObjectDefs = {
     }),
     crate_02sv: createCrate({
         health: 140,
-        loot: [
-            tierLoot("tier_soviet", 4, 5),
-            tierLoot("tier_world", 1, 1)
-        ],
+        loot: [tierLoot("tier_soviet", 4, 5), tierLoot("tier_world", 1, 1)],
         map: { display: true, color: 16760832 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02sv.img" },
@@ -9247,10 +8836,7 @@ export const MapObjectDefs = {
     }),
     crate_03: createCrate({
         health: 100,
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.575, 1.575)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.575, 1.575)),
         loot: [tierLoot("tier_throwables", 2, 4)],
         map: { color: 5066014, scale: 0.875 },
         terrain: { grass: true, beach: false },
@@ -9261,10 +8847,7 @@ export const MapObjectDefs = {
         health: 100,
         hitParticle: "glassChip",
         explodeParticle: ["glassPlank"],
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.575, 1.575)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.575, 1.575)),
         loot: [
             autoLoot("snowball", 4, 4),
             autoLoot("snowball", 4, 4),
@@ -9290,10 +8873,7 @@ export const MapObjectDefs = {
         }
     }),
     crate_05: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2, 2)),
         destructible: false,
         hitParticle: "goldChip",
         loot: [],
@@ -9305,10 +8885,7 @@ export const MapObjectDefs = {
         }
     }),
     crate_06: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 1.1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.1)),
         health: 175,
         destructible: true,
         armorPlated: true,
@@ -9379,10 +8956,7 @@ export const MapObjectDefs = {
     }),
     crate_09: createCrate({
         health: 140,
-        loot: [
-            tierLoot("tier_chest", 1, 2),
-            tierLoot("tier_conch", 1, 1)
-        ],
+        loot: [tierLoot("tier_chest", 1, 2), tierLoot("tier_conch", 1, 1)],
         map: { display: false },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-09.img" },
@@ -9537,10 +9111,7 @@ export const MapObjectDefs = {
         sound: { explode: "crate_break_01" }
     }),
     crate_12: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3.5, 3.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.5, 3.5)),
         scale: { destroy: 0.75 },
         health: 500,
         loot: [
@@ -9567,10 +9138,7 @@ export const MapObjectDefs = {
         sound: { explode: "crate_break_01" }
     }),
     crate_13: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3.5, 3.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.5, 3.5)),
         scale: { destroy: 0.75 },
         health: 200,
         loot: [
@@ -9612,10 +9180,7 @@ export const MapObjectDefs = {
         sound: { explode: "window_break_02" }
     }),
     crate_15: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
         loot: [tierLoot("tier_knives", 4, 4)],
         map: { display: false },
@@ -9624,10 +9189,7 @@ export const MapObjectDefs = {
         sound: { explode: "crate_break_01" }
     }),
     crate_16: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
         loot: [tierLoot("tier_knives", 4, 4)],
         map: { display: false },
@@ -9637,10 +9199,7 @@ export const MapObjectDefs = {
     }),
     crate_18: createCrate({
         health: 140,
-        loot: [
-            tierLoot("tier_cattle_crate", 2, 3),
-            tierLoot("tier_soviet", 1, 2)
-        ],
+        loot: [tierLoot("tier_cattle_crate", 2, 3), tierLoot("tier_soviet", 1, 2)],
         map: { display: true, color: 12867840, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-18.img" },
@@ -9648,27 +9207,18 @@ export const MapObjectDefs = {
     }),
     crate_19: createCrate({
         health: 140,
-        loot: [
-            tierLoot("tier_guns", 1, 3),
-            tierLoot("tier_surviv", 2, 3)
-        ],
+        loot: [tierLoot("tier_guns", 1, 3), tierLoot("tier_surviv", 2, 3)],
         map: { display: true, color: 4500224, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-19.img" },
         sound: { explode: "crate_break_01" }
     }),
     crate_20: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.7, 1.7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.7, 1.7)),
         health: 75,
         hitParticle: "greenChip",
         explodeParticle: "greenPlank",
-        loot: [
-            tierLoot("tier_armor", 1, 1),
-            tierLoot("tier_world", 1, 1)
-        ],
+        loot: [tierLoot("tier_armor", 1, 1), tierLoot("tier_world", 1, 1)],
         map: { display: true, color: 3884335, scale: 1 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-20.img" },
@@ -9752,10 +9302,7 @@ export const MapObjectDefs = {
         explodeParticle: "airdropCrate02"
     }),
     airdrop_crate_03: createAirdrop({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4, 4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 4)),
         button: {
             useImg: "map-airdrop-04.img",
             useParticle: "airdropCrate03",
@@ -9769,10 +9316,7 @@ export const MapObjectDefs = {
         explodeParticle: "airdropCrate04"
     }),
     airdrop_crate_04: createAirdrop({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4, 4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 4)),
         button: {
             useImg: "map-airdrop-04.img",
             useParticle: "airdropCrate03",
@@ -10067,10 +9611,7 @@ export const MapObjectDefs = {
         img: { sprite: "map-class-crate-03.img" }
     }),
     mil_crate_01: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
         loot: [tierLoot("tier_knives", 1, 1)],
         map: { display: false },
@@ -10079,10 +9620,7 @@ export const MapObjectDefs = {
         sound: { explode: "crate_break_01" }
     }),
     mil_crate_02: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
         loot: [
             autoLoot("ot38", 1),
@@ -10096,10 +9634,7 @@ export const MapObjectDefs = {
         sound: { explode: "crate_break_01" }
     }),
     mil_crate_03: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
         loot: [autoLoot("ots38_dual", 1)],
         map: { display: false },
@@ -10108,30 +9643,18 @@ export const MapObjectDefs = {
         sound: { explode: "crate_break_01" }
     }),
     mil_crate_04: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
-        loot: [
-            tierLoot("tier_guns", 1, 1),
-            tierLoot("tier_throwables", 2, 3)
-        ],
+        loot: [tierLoot("tier_guns", 1, 1), tierLoot("tier_throwables", 2, 3)],
         map: { display: false },
         terrain: { grass: true, beach: true },
         img: { sprite: "map-crate-mil-04.img" },
         sound: { explode: "crate_break_01" }
     }),
     mil_crate_05: createCrate({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.7, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
-        loot: [
-            tierLoot("tier_guns", 1, 2),
-            tierLoot("tier_snipers", 1, 2)
-        ],
+        loot: [tierLoot("tier_guns", 1, 2), tierLoot("tier_snipers", 1, 2)],
         map: { display: true, color: 3622438 },
         terrain: { grass: true, beach: true },
         img: { sprite: "map-crate-mil-05.img" },
@@ -10155,10 +9678,7 @@ export const MapObjectDefs = {
         }
     }),
     bottle_02: createBottle({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.5, 0.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.5, 0.5)),
         health: 20,
         hitParticle: "bottleBlueChip",
         explodeParticle: "bottleBlueBreak",
@@ -10208,10 +9728,7 @@ export const MapObjectDefs = {
         }
     }),
     bottle_05: createBottle({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.5, 0.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.5, 0.5)),
         health: 20,
         hitParticle: "bottleWhiteChip",
         explodeParticle: "bottleWhiteBreak",
@@ -10261,10 +9778,7 @@ export const MapObjectDefs = {
     deposit_box_02: createDepositBox({
         explodeParticle: "depositBoxGoldBreak",
         img: { sprite: "map-deposit-box-02.img" },
-        loot: [
-            tierLoot("tier_soviet", 1, 2),
-            tierLoot("tier_guns", 1, 1)
-        ]
+        loot: [tierLoot("tier_soviet", 1, 2), tierLoot("tier_guns", 1, 1)]
     }),
     drawers_01: createDrawer({
         img: { sprite: "map-drawers-01.img" },
@@ -10348,10 +9862,7 @@ export const MapObjectDefs = {
             createMax: 1,
             destroy: 0.75
         },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3.75, 1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.75, 1)),
         height: 0.5,
         collidable: true,
         destructible: false,
@@ -10385,10 +9896,7 @@ export const MapObjectDefs = {
         img: { sprite: "map-planter-03.img" }
     }),
     planter_04: createPlanter({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         img: { sprite: "map-planter-04.img" },
         destructible: false,
         button: {
@@ -10412,10 +9920,7 @@ export const MapObjectDefs = {
         }
     }),
     planter_07: createPlanter({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         img: {
             sprite: "map-planter-07.img",
             residue: "map-planter-res-03.img"
@@ -10430,10 +9935,7 @@ export const MapObjectDefs = {
     pot_03: createBottle({ img: { sprite: "map-pot-03.img" } }),
     pot_03b: createBottle({
         img: { sprite: "map-pot-03.img" },
-        loot: [
-            autoLoot("outfitWoodsCloak", 1),
-            autoLoot("backpack03", 1)
-        ]
+        loot: [autoLoot("outfitWoodsCloak", 1), autoLoot("backpack03", 1)]
     }),
     pot_03c: createBottle({
         img: { sprite: "map-pot-03.img" },
@@ -10442,20 +9944,14 @@ export const MapObjectDefs = {
     pot_04: createBottle({ img: { sprite: "map-pot-04.img" } }),
     pot_05: createBottle({
         img: { sprite: "map-pot-05.img" },
-        loot: [
-            autoLoot("scout_elite", 1),
-            tierLoot("tier_islander_outfit", 1, 1)
-        ]
+        loot: [autoLoot("scout_elite", 1), tierLoot("tier_islander_outfit", 1, 1)]
     }),
     potato_01: createPotato({}),
     potato_02: createPotato({ img: { sprite: "map-potato-02.img" } }),
     potato_03: createPotato({ img: { sprite: "map-potato-03.img" } }),
     power_box_01: createControlPanel(),
     pumpkin_01: createPumpkin({
-        loot: [
-            tierLoot("tier_outfits", 1, 1),
-            tierLoot("tier_pumpkin_candy", 1, 1)
-        ]
+        loot: [tierLoot("tier_outfits", 1, 1), tierLoot("tier_pumpkin_candy", 1, 1)]
     }),
     pumpkin_02: createPumpkin({
         health: 140,
@@ -10473,10 +9969,7 @@ export const MapObjectDefs = {
             sprite: "map-pumpkin-03.img",
             residue: "map-pumpkin-res-03.img"
         },
-        loot: [
-            tierLoot("tier_pumpkin_perks", 1, 1),
-            tierLoot("tier_fruit_xp", 1, 1)
-        ]
+        loot: [tierLoot("tier_pumpkin_perks", 1, 1), tierLoot("tier_fruit_xp", 1, 1)]
     }),
     squash_01: createPumpkin({
         collision: collider.createCircle(v2.create(0, 0), 1.25),
@@ -10487,10 +9980,7 @@ export const MapObjectDefs = {
         },
         hitParticle: "squashChip",
         explodeParticle: "squashBreak",
-        loot: [
-            autoLoot("turkey_shoot", 1, 1),
-            tierLoot("tier_fruit_xp", 1, 1)
-        ]
+        loot: [autoLoot("turkey_shoot", 1, 1), tierLoot("tier_fruit_xp", 1, 1)]
     }),
     refrigerator_01: createRefrigerator(),
     refrigerator_01b: createRefrigerator({
@@ -10521,10 +10011,7 @@ export const MapObjectDefs = {
             useImg: "map-recorder-04.img"
         },
         img: { sprite: "map-recorder-03.img" },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 1.25)
-        )
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 1.25))
     }),
     recorder_12: createRecorder({
         button: {
@@ -10532,10 +10019,7 @@ export const MapObjectDefs = {
             useImg: "map-recorder-04.img"
         },
         img: { sprite: "map-recorder-03.img" },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 1.25)
-        )
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 1.25))
     }),
     recorder_13: createRecorder({
         button: {
@@ -10543,10 +10027,7 @@ export const MapObjectDefs = {
             useImg: "map-recorder-04.img"
         },
         img: { sprite: "map-recorder-03.img" },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 1.25)
-        )
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 1.25))
     }),
     recorder_14: createRecorder({
         button: {
@@ -10554,10 +10035,7 @@ export const MapObjectDefs = {
             useImg: "map-recorder-04.img"
         },
         img: { sprite: "map-recorder-03.img" },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 1.25)
-        )
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 1.25))
     }),
     screen_01: {
         type: "obstacle",
@@ -10567,10 +10045,7 @@ export const MapObjectDefs = {
             createMax: 1,
             destroy: 0.85
         },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.05),
-            v2.create(4, 0.2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.05), v2.create(4, 0.2)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -10598,10 +10073,7 @@ export const MapObjectDefs = {
     },
     sandbags_01: createSandBags({}),
     sandbags_02: createSandBags({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.1, 1.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.1, 1.4)),
         img: { sprite: "map-sandbags-02.img" }
     }),
     silo_01: createSilo({}),
@@ -10618,10 +10090,7 @@ export const MapObjectDefs = {
     stairs_01: {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2)),
         height: 0.5,
         collidable: false,
         destructible: true,
@@ -10655,10 +10124,7 @@ export const MapObjectDefs = {
             createMax: 1,
             destroy: 0.75
         },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0.15),
-            v2.create(1.25, 1.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0.15), v2.create(1.25, 1.25)),
         height: 0.5,
         collidable: true,
         destructible: true,
@@ -10761,10 +10227,7 @@ export const MapObjectDefs = {
         loot: [tierLoot("tier_eye_block", 1, 1)],
         terrain: { grass: true, beach: true, riverShore: true },
         map: { display: true, color: 1512466, scale: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.8, 1.8)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.8, 1.8)),
         img: {
             sprite: "map-stone-04.img",
             residue: "map-stone-res-04.img"
@@ -10789,10 +10252,7 @@ export const MapObjectDefs = {
         height: 10,
         terrain: { grass: true, beach: true, riverShore: true },
         map: { display: true, color: 3618615, scale: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.5, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 2)),
         img: {
             sprite: "map-stone-06.img",
             scale: 0.5,
@@ -10821,10 +10281,7 @@ export const MapObjectDefs = {
             createMax: 1,
             destroy: 0.85
         },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3, 2.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3, 2.25)),
         disableBuildingOccupied: true,
         damageCeiling: true,
         explosion: "explosion_stove",
@@ -10857,10 +10314,7 @@ export const MapObjectDefs = {
     table_01: createTable(),
     table_01x: createTable({ img: { sprite: "map-table-01x.img" } }),
     table_02: createTable({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.5, 2.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 2.5)),
         health: 125,
         img: {
             sprite: "map-table-02.img",
@@ -10872,10 +10326,7 @@ export const MapObjectDefs = {
         }
     }),
     table_02x: createTable({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.5, 2.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 2.5)),
         health: 125,
         img: {
             sprite: "map-table-02x.img",
@@ -10910,7 +10361,7 @@ export const MapObjectDefs = {
             zIdx: 60
         }
     }),
-    tire_01: (function(e) {
+    tire_01: (function (e) {
         const t = {
             type: "obstacle",
             scale: {
@@ -10918,10 +10369,7 @@ export const MapObjectDefs = {
                 createMax: 1,
                 destroy: 0.8
             },
-            collision: collider.createCircle(
-                v2.create(0, 0),
-                1.75
-            ),
+            collision: collider.createCircle(v2.create(0, 0), 1.75),
             height: 0.5,
             collidable: true,
             destructible: true,
@@ -10994,10 +10442,7 @@ export const MapObjectDefs = {
         }
     }),
     towelrack_01: createBookShelf({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3, 1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3, 1)),
         img: { sprite: "map-towelrack-01.img" },
         explodeParticle: ["woodPlank", "clothBreak"]
     }),
@@ -11009,10 +10454,7 @@ export const MapObjectDefs = {
             destroy: 0.5
         },
         collision: collider.createCircle(v2.create(0, 0), 1.2),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(7.75, 7.75)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(7.75, 7.75)),
         map: { color: 2900834 },
         img: { sprite: "map-tree-03cb.img" }
     }),
@@ -11025,10 +10467,7 @@ export const MapObjectDefs = {
     tree_02: createTree({
         health: 120,
         collision: collider.createCircle(v2.create(0, 0), 1.6),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.6, 1.6)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(1.6, 1.6)),
         height: 0.5,
         loot: [autoLoot("woodaxe", 1)],
         map: { display: false },
@@ -11043,10 +10482,7 @@ export const MapObjectDefs = {
     tree_02h: createTree({
         health: 120,
         collision: collider.createCircle(v2.create(0, 0), 1.6),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.6, 1.6)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(1.6, 1.6)),
         height: 0.5,
         loot: [autoLoot("woodaxe_bloody", 1)],
         map: { display: false },
@@ -11072,10 +10508,7 @@ export const MapObjectDefs = {
     }),
     tree_05: createTree({
         collision: collider.createCircle(v2.create(0, 0), 2.3),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(12, 12)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(12, 12)),
         scale: { createMin: 1.2, createMax: 1.3 },
         health: 400,
         map: { color: 5911831, scale: 3 },
@@ -11089,10 +10522,7 @@ export const MapObjectDefs = {
     }),
     tree_05b: createTree({
         collision: collider.createCircle(v2.create(0, 0), 2.3),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(12, 12)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(12, 12)),
         scale: { createMin: 1, createMax: 1 },
         health: 500,
         loot: [
@@ -11111,10 +10541,7 @@ export const MapObjectDefs = {
     }),
     tree_05c: createTree({
         collision: collider.createCircle(v2.create(0, 0), 1.05),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4, 4)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 4)),
         scale: { createMin: 1.6, createMax: 1.6 },
         health: 200,
         map: { color: 9064739, scale: 3 },
@@ -11281,10 +10708,7 @@ export const MapObjectDefs = {
     tree_09: createTree({
         health: 120,
         collision: collider.createCircle(v2.create(0, 0), 1.6),
-        aabb: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(5.75, 5.75)
-        ),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(5.75, 5.75)),
         height: 0.5,
         map: { display: true, color: 8602624, scale: 1 },
         scale: {
@@ -11402,7 +10826,7 @@ export const MapObjectDefs = {
             enter: "none"
         }
     },
-    vending_01: (function() {
+    vending_01: (function () {
         const t = {
             type: "obstacle",
             obstacleType: "vending",
@@ -11422,10 +10846,7 @@ export const MapObjectDefs = {
             hitParticle: "blueChip",
             explodeParticle: ["windowBreak", "lockerBreak"],
             reflectBullets: true,
-            loot: [
-                tierLoot("tier_vending_soda", 1, 3),
-                autoLoot("soda", 1)
-            ],
+            loot: [tierLoot("tier_vending_soda", 1, 3), autoLoot("soda", 1)],
             map: {
                 display: false,
                 color: 10925,
@@ -11465,10 +10886,7 @@ export const MapObjectDefs = {
     wheel_03: createWheel({ img: { sprite: "map-wheel-03.img" } }),
     woodpile_01: createWoodPile({}),
     woodpile_02: createWoodPile({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(6, 3)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(6, 3)),
         health: 400,
         destructible: true,
         img: {
@@ -11479,10 +10897,7 @@ export const MapObjectDefs = {
     bank_window_01: {
         type: "obstacle",
         scale: { createMin: 1, createMax: 1, destroy: 1 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 2)),
         height: 10,
         collidable: true,
         destructible: true,
@@ -11628,10 +11043,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 }
             ],
@@ -11900,10 +11312,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(1.5, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 3.25))
                     ]
                 }
             ],
@@ -11997,10 +11406,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(11, -12),
-                            v2.create(14.5, 9)
-                        )
+                        collider.createAabbExtents(v2.create(11, -12), v2.create(14.5, 9))
                     ]
                 }
             ],
@@ -12201,10 +11607,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(11, -12),
-                            v2.create(14.5, 9)
-                        )
+                        collider.createAabbExtents(v2.create(11, -12), v2.create(14.5, 9))
                     ]
                 }
             ],
@@ -12408,10 +11811,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 2),
-                            v2.create(14, 13)
-                        )
+                        collider.createAabbExtents(v2.create(0, 2), v2.create(14, 13))
                     ]
                 }
             ],
@@ -12435,10 +11835,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 2),
-                        v2.create(14, 13)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 2), v2.create(14, 13))
                 }
             ],
             imgs: [
@@ -12561,10 +11958,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 2),
-                            v2.create(14, 13)
-                        )
+                        collider.createAabbExtents(v2.create(0, 2), v2.create(14, 13))
                     ]
                 }
             ],
@@ -12588,10 +11982,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 2),
-                        v2.create(14, 13)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 2), v2.create(14, 13))
                 }
             ],
             imgs: [
@@ -12756,10 +12147,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(10, 10)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(10, 10))
                     ]
                 }
             ],
@@ -12783,10 +12171,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(10, 11)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 11))
                 }
             ],
             imgs: [
@@ -12873,10 +12258,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(10, 10)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(10, 10))
                     ]
                 }
             ],
@@ -12900,10 +12282,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(10, 11)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 11))
                 }
             ],
             imgs: [
@@ -12996,27 +12375,15 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -1),
-                            v2.create(10, 14)
-                        )
+                        collider.createAabbExtents(v2.create(0, -1), v2.create(10, 14))
                     ]
                 },
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 11),
-                            v2.create(10, 4)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(-7, -3),
-                            v2.create(3, 3)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(8, -3),
-                            v2.create(2, 3)
-                        )
+                        collider.createAabbExtents(v2.create(0, 11), v2.create(10, 4)),
+                        collider.createAabbExtents(v2.create(-7, -3), v2.create(3, 3)),
+                        collider.createAabbExtents(v2.create(8, -3), v2.create(2, 3))
                     ]
                 }
             ],
@@ -13033,10 +12400,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(10, 13)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 13))
                 }
             ],
             imgs: [
@@ -13155,27 +12519,15 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -1),
-                            v2.create(10, 14)
-                        )
+                        collider.createAabbExtents(v2.create(0, -1), v2.create(10, 14))
                     ]
                 },
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 11),
-                            v2.create(10, 4)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(-7, -3),
-                            v2.create(3, 3)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(8, -3),
-                            v2.create(2, 3)
-                        )
+                        collider.createAabbExtents(v2.create(0, 11), v2.create(10, 4)),
+                        collider.createAabbExtents(v2.create(-7, -3), v2.create(3, 3)),
+                        collider.createAabbExtents(v2.create(8, -3), v2.create(2, 3))
                     ]
                 }
             ],
@@ -13192,10 +12544,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(10, 13)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 13))
                 }
             ],
             imgs: [
@@ -13846,31 +13195,19 @@ export const MapObjectDefs = {
                     color: 16109568
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-39, 55),
-                        1.25
-                    ),
+                    collider: collider.createCircle(v2.create(-39, 55), 1.25),
                     color: 6310464
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-39, 20.5),
-                        1.25
-                    ),
+                    collider: collider.createCircle(v2.create(-39, 20.5), 1.25),
                     color: 6310464
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-39, 2),
-                        1.25
-                    ),
+                    collider: collider.createCircle(v2.create(-39, 2), 1.25),
                     color: 6310464
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-39, -31.5),
-                        1.25
-                    ),
+                    collider: collider.createCircle(v2.create(-39, -31.5), 1.25),
                     color: 6310464
                 },
                 {
@@ -13902,38 +13239,23 @@ export const MapObjectDefs = {
                     color: 6697728
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-26.5, 54.75),
-                        1.75
-                    ),
+                    collider: collider.createCircle(v2.create(-26.5, 54.75), 1.75),
                     color: 8026746
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(-23.5, 57),
-                        1.75
-                    ),
+                    collider: collider.createCircle(v2.create(-23.5, 57), 1.75),
                     color: 8026746
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(84, -15.5),
-                        1.75
-                    ),
+                    collider: collider.createCircle(v2.create(84, -15.5), 1.75),
                     color: 8026746
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(40, -35),
-                        1.5
-                    ),
+                    collider: collider.createCircle(v2.create(40, -35), 1.5),
                     color: 8026746
                 },
                 {
-                    collider: collider.createCircle(
-                        v2.create(65, 61),
-                        1.5
-                    ),
+                    collider: collider.createCircle(v2.create(65, 61), 1.5),
                     color: 8026746
                 },
                 {
@@ -13960,29 +13282,14 @@ export const MapObjectDefs = {
             }
         },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(26, 70.5),
-                v2.create(47, 7.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(15.5, 52.5),
-                v2.create(57.5, 10.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(33, 11),
-                v2.create(75, 31)
-            ),
-            collider.createAabbExtents(
-                v2.create(5, -30),
-                v2.create(47, 10)
-            )
+            collider.createAabbExtents(v2.create(26, 70.5), v2.create(47, 7.5)),
+            collider.createAabbExtents(v2.create(15.5, 52.5), v2.create(57.5, 10.5)),
+            collider.createAabbExtents(v2.create(33, 11), v2.create(75, 31)),
+            collider.createAabbExtents(v2.create(5, -30), v2.create(47, 10))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(26, 60),
-                    v2.create(47, 18)
-                ),
+                bound: collider.createAabbExtents(v2.create(26, 60), v2.create(47, 18)),
                 color: 9340275,
                 order: 1
             },
@@ -13995,18 +13302,12 @@ export const MapObjectDefs = {
                 order: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(80, 11),
-                    v2.create(28, 31)
-                ),
+                bound: collider.createAabbExtents(v2.create(80, 11), v2.create(28, 31)),
                 color: 9340275,
                 order: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(26, 58),
-                    v2.create(46, 19)
-                ),
+                bound: collider.createAabbExtents(v2.create(26, 58), v2.create(46, 19)),
                 color: 5855577,
                 order: 1
             },
@@ -14019,10 +13320,7 @@ export const MapObjectDefs = {
                 order: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(78, 11),
-                    v2.create(29, 30)
-                ),
+                bound: collider.createAabbExtents(v2.create(78, 11), v2.create(29, 30)),
                 color: 5855577,
                 order: 1
             },
@@ -14064,18 +13362,12 @@ export const MapObjectDefs = {
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(26, 60),
-                            v2.create(47, 18)
-                        ),
+                        collider.createAabbExtents(v2.create(26, 60), v2.create(47, 18)),
                         collider.createAabbExtents(
                             v2.create(5, 11.5),
                             v2.create(47, 51.5)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(80, 11),
-                            v2.create(28, 31)
-                        )
+                        collider.createAabbExtents(v2.create(80, 11), v2.create(28, 31))
                     ]
                 }
             ],
@@ -14593,7 +13885,7 @@ export const MapObjectDefs = {
         tree_08c: "tree_08spc"
     }),
     logging_complex_02su: createLoggingComplex2({ groundTintDk: 5143827 }),
-    logging_complex_03: (function(e) {
+    logging_complex_03: (function (e) {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
@@ -14602,9 +13894,7 @@ export const MapObjectDefs = {
                 beach: false,
                 spawnPriority: 10
             },
-            mapObstacleBounds: [
-                collider.createCircle(v2.create(0, 0), 32)
-            ],
+            mapObstacleBounds: [collider.createCircle(v2.create(0, 0), 32)],
             mapGroundPatches: [
                 {
                     bound: collider.createAabbExtents(
@@ -14617,9 +13907,7 @@ export const MapObjectDefs = {
                 }
             ],
             floor: {
-                surfaces: [
-                    { type: "grass", collision: [] }
-                ],
+                surfaces: [{ type: "grass", collision: [] }],
                 imgs: []
             },
             ceiling: { zoomRegions: [], imgs: [] },
@@ -14659,15 +13947,10 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         ori: 0,
-        mapObstacleBounds: [
-            collider.createCircle(v2.create(0, 0), 37)
-        ],
+        mapObstacleBounds: [collider.createCircle(v2.create(0, 0), 37)],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-8.5, 24),
-                    v2.create(13, 9)
-                ),
+                bound: collider.createAabbExtents(v2.create(-8.5, 24), v2.create(13, 9)),
                 color: 1184769
             },
             {
@@ -14984,10 +14267,9 @@ export const MapObjectDefs = {
     archway_column_1: createWall({
         material: "wood",
         extents: v2.create(1, 1),
-        img: Object.assign(
-            wallImg("map-column-01.img", 7290644),
-            { residue: "map-drawers-res.img" }
-        )
+        img: Object.assign(wallImg("map-column-01.img", 7290644), {
+            residue: "map-drawers-res.img"
+        })
     }),
     archway_01: {
         type: "building",
@@ -14998,10 +14280,7 @@ export const MapObjectDefs = {
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(10, 1)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(10, 1))
                     ]
                 }
             ],
@@ -15009,12 +14288,7 @@ export const MapObjectDefs = {
         },
         ceiling: {
             zoomRegions: [],
-            collision: [
-                collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(10.5, 2)
-                )
-            ],
+            collision: [collider.createAabbExtents(v2.create(0, 0), v2.create(10.5, 2))],
             imgs: [
                 {
                     sprite: "map-building-archway-ceiling-01.img",
@@ -15056,43 +14330,25 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(65, 102)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(20, 120)
-            ),
-            collider.createAabbExtents(
-                v2.create(-60, 40),
-                v2.create(10, 5)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(65, 102)),
+            collider.createAabbExtents(v2.create(0, 0), v2.create(20, 120)),
+            collider.createAabbExtents(v2.create(-60, 40), v2.create(10, 5))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(60, 95)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(60, 95)),
                 color: 12813354,
                 roughness: 0.1,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(10, 96)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 96)),
                 color: 9396511,
                 roughness: 0.1,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-33, 40),
-                    v2.create(27, 5)
-                ),
+                bound: collider.createAabbExtents(v2.create(-33, 40), v2.create(27, 5)),
                 color: 9396511,
                 roughness: 0.1,
                 offsetDist: 1
@@ -15103,10 +14359,7 @@ export const MapObjectDefs = {
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(55, 25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(55, 25))
                     ]
                 }
             ],
@@ -15279,39 +14532,24 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, -3),
-                v2.create(50, 60)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(60, 15)
-            )
+            collider.createAabbExtents(v2.create(0, -3), v2.create(50, 60)),
+            collider.createAabbExtents(v2.create(0, 0), v2.create(60, 15))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, -3),
-                    v2.create(45, 55)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, -3), v2.create(45, 55)),
                 color: 12813354,
                 roughness: 0.1,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(46, 10)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(46, 10)),
                 color: 9396511,
                 roughness: 0.1,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 2),
-                    v2.create(5, 50.5)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 2), v2.create(5, 50.5)),
                 color: 9396511,
                 roughness: 0.1,
                 offsetDist: 1
@@ -15322,10 +14560,7 @@ export const MapObjectDefs = {
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 }
             ],
@@ -15428,10 +14663,7 @@ export const MapObjectDefs = {
     },
     statue_01: createStone({
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.4, 4.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.4, 4.4)),
         destructible: false,
         map: { display: true, color: 5723991, scale: 1 },
         img: { sprite: "map-statue-01.img", scale: 0.5 }
@@ -15445,10 +14677,7 @@ export const MapObjectDefs = {
             createMax: 1,
             destroy: 0.85
         },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.4, 4.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.4, 4.4)),
         destructible: true,
         map: { display: true, color: 5723991, scale: 1 },
         img: {
@@ -15466,10 +14695,7 @@ export const MapObjectDefs = {
             createMax: 1,
             destroy: 0.85
         },
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4.4, 4.4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.4, 4.4)),
         destructible: true,
         map: { display: true, color: 5723991, scale: 1 },
         img: {
@@ -15574,10 +14800,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 5),
-                v2.create(7.5, 12.5)
-            )
+            collider.createAabbExtents(v2.create(0, 5), v2.create(7.5, 12.5))
         ],
         layers: [
             {
@@ -15600,12 +14823,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(1, 0)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(5.7, 0),
-                v2.create(4, 4)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(5.7, 0), v2.create(4, 4))]
     },
     statue_building_04: createStatue({ statue: "statue_04" }),
     statue_underground_04: createStatueUnderground({ crate: "crate_22d" }),
@@ -15613,10 +14831,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 5),
-                v2.create(7.5, 12.5)
-            )
+            collider.createAabbExtents(v2.create(0, 5), v2.create(7.5, 12.5))
         ],
         layers: [
             {
@@ -15639,12 +14854,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(1, 0)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(5.7, 0),
-                v2.create(4, 4)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(5.7, 0), v2.create(4, 4))]
     },
     river_town_01: {
         type: "building",
@@ -15686,111 +14896,43 @@ export const MapObjectDefs = {
             spawnPriority: 100
         },
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(-41, 0),
-                v2.create(6, 10)
-            ),
-            collider.createAabbExtents(
-                v2.create(41, 0),
-                v2.create(6, 10)
-            ),
-            collider.createAabbExtents(
-                v2.create(81, 0),
-                v2.create(40, 54)
-            ),
-            collider.createAabbExtents(
-                v2.create(78, 64),
-                v2.create(23, 10)
-            ),
-            collider.createAabbExtents(
-                v2.create(-76, -22),
-                v2.create(36, 24)
-            ),
-            collider.createAabbExtents(
-                v2.create(-72, 22),
-                v2.create(27, 25)
-            )
+            collider.createAabbExtents(v2.create(-41, 0), v2.create(6, 10)),
+            collider.createAabbExtents(v2.create(41, 0), v2.create(6, 10)),
+            collider.createAabbExtents(v2.create(81, 0), v2.create(40, 54)),
+            collider.createAabbExtents(v2.create(78, 64), v2.create(23, 10)),
+            collider.createAabbExtents(v2.create(-76, -22), v2.create(36, 24)),
+            collider.createAabbExtents(v2.create(-72, 22), v2.create(27, 25))
         ],
-        bridgeWaterBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(5, 5)
-            )
-        ],
+        bridgeWaterBounds: [collider.createAabbExtents(v2.create(0, 0), v2.create(5, 5))],
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(71, 0),
-                v2.create(31, 56)
-            ),
-            collider.createAabbExtents(
-                v2.create(77, 65),
-                v2.create(24, 10)
-            ),
-            collider.createAabbExtents(
-                v2.create(112, -30),
-                v2.create(10, 26)
-            ),
-            collider.createAabbExtents(
-                v2.create(106, 19.5),
-                v2.create(8, 7.25)
-            ),
-            collider.createAabbExtents(
-                v2.create(-71, 32),
-                v2.create(27, 15)
-            ),
-            collider.createAabbExtents(
-                v2.create(-71, 16),
-                v2.create(8, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(-75, -34),
-                v2.create(40, 19)
-            ),
-            collider.createAabbExtents(
-                v2.create(-57, -10),
-                v2.create(5, 11)
-            ),
-            collider.createAabbExtents(
-                v2.create(-86, -10),
-                v2.create(5, 11)
-            ),
-            collider.createAabbExtents(
-                v2.create(-21, 0),
-                v2.create(100, 8)
-            ),
-            collider.createAabbExtents(
-                v2.create(-109, 30),
-                v2.create(7, 7.25)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(40, 15)
-            )
+            collider.createAabbExtents(v2.create(71, 0), v2.create(31, 56)),
+            collider.createAabbExtents(v2.create(77, 65), v2.create(24, 10)),
+            collider.createAabbExtents(v2.create(112, -30), v2.create(10, 26)),
+            collider.createAabbExtents(v2.create(106, 19.5), v2.create(8, 7.25)),
+            collider.createAabbExtents(v2.create(-71, 32), v2.create(27, 15)),
+            collider.createAabbExtents(v2.create(-71, 16), v2.create(8, 6)),
+            collider.createAabbExtents(v2.create(-75, -34), v2.create(40, 19)),
+            collider.createAabbExtents(v2.create(-57, -10), v2.create(5, 11)),
+            collider.createAabbExtents(v2.create(-86, -10), v2.create(5, 11)),
+            collider.createAabbExtents(v2.create(-21, 0), v2.create(100, 8)),
+            collider.createAabbExtents(v2.create(-109, 30), v2.create(7, 7.25)),
+            collider.createAabbExtents(v2.create(0, 0), v2.create(40, 15))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-20, 0),
-                    v2.create(100, 6)
-                ),
+                bound: collider.createAabbExtents(v2.create(-20, 0), v2.create(100, 6)),
                 color: 6632211,
                 roughness: 0.05,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-71, 10),
-                    v2.create(2, 9)
-                ),
+                bound: collider.createAabbExtents(v2.create(-71, 10), v2.create(2, 9)),
                 color: 6632211,
                 roughness: 0,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-57, -10),
-                    v2.create(2, 9)
-                ),
+                bound: collider.createAabbExtents(v2.create(-57, -10), v2.create(2, 9)),
                 color: 6632211,
                 roughness: 0,
                 offsetDist: 1
@@ -15805,10 +14947,7 @@ export const MapObjectDefs = {
                 offsetDist: 0.5
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-86, -10),
-                    v2.create(2, 9)
-                ),
+                bound: collider.createAabbExtents(v2.create(-86, -10), v2.create(2, 9)),
                 color: 6632211,
                 roughness: 0,
                 offsetDist: 1
@@ -15828,10 +14967,7 @@ export const MapObjectDefs = {
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 },
                 {
@@ -16066,76 +15202,37 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         oris: [0, 1],
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(61, -3),
-                v2.create(24, 21)
-            ),
-            collider.createAabbExtents(
-                v2.create(46, -36),
-                v2.create(6, 14)
-            ),
-            collider.createAabbExtents(
-                v2.create(-68, 0),
-                v2.create(27, 8)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(14, 14)
-            ),
-            collider.createAabbExtents(
-                v2.create(-80, 32),
-                v2.create(4, 4)
-            ),
-            collider.createAabbExtents(
-                v2.create(-16, 13),
-                v2.create(5, 2.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(16, -13),
-                v2.create(5, 2.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-76.5, 19.5),
-                v2.create(2.5, 2.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-62, -18),
-                v2.create(2.5, 2.5)
-            )
+            collider.createAabbExtents(v2.create(61, -3), v2.create(24, 21)),
+            collider.createAabbExtents(v2.create(46, -36), v2.create(6, 14)),
+            collider.createAabbExtents(v2.create(-68, 0), v2.create(27, 8)),
+            collider.createAabbExtents(v2.create(0, 0), v2.create(14, 14)),
+            collider.createAabbExtents(v2.create(-80, 32), v2.create(4, 4)),
+            collider.createAabbExtents(v2.create(-16, 13), v2.create(5, 2.5)),
+            collider.createAabbExtents(v2.create(16, -13), v2.create(5, 2.5)),
+            collider.createAabbExtents(v2.create(-76.5, 19.5), v2.create(2.5, 2.5)),
+            collider.createAabbExtents(v2.create(-62, -18), v2.create(2.5, 2.5))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-5, 0),
-                    v2.create(70, 6)
-                ),
+                bound: collider.createAabbExtents(v2.create(-5, 0), v2.create(70, 6)),
                 color: 9585940,
                 roughness: 0.05,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-71, 10),
-                    v2.create(2, 9)
-                ),
+                bound: collider.createAabbExtents(v2.create(-71, 10), v2.create(2, 9)),
                 color: 9585940,
                 roughness: 0.05,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-76, 19),
-                    v2.create(10.5, 8)
-                ),
+                bound: collider.createAabbExtents(v2.create(-76, 19), v2.create(10.5, 8)),
                 color: 9585940,
                 roughness: 0.1,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(-57, -10),
-                    v2.create(2, 9)
-                ),
+                bound: collider.createAabbExtents(v2.create(-57, -10), v2.create(2, 9)),
                 color: 9585940,
                 roughness: 0.05,
                 offsetDist: 1
@@ -16150,37 +15247,25 @@ export const MapObjectDefs = {
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(14, 10)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(14, 10)),
                 color: 8405016,
                 roughness: 0.3,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(9, 22)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(9, 22)),
                 color: 8405016,
                 roughness: 0.3,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(4, 33)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 33)),
                 color: 8405016,
                 roughness: 0.3,
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(61, -3),
-                    v2.create(22, 19)
-                ),
+                bound: collider.createAabbExtents(v2.create(61, -3), v2.create(22, 19)),
                 color: 3815994,
                 roughness: 0.15,
                 offsetDist: 1
@@ -16195,10 +15280,7 @@ export const MapObjectDefs = {
                 offsetDist: 1
             },
             {
-                bound: collider.createAabbExtents(
-                    v2.create(69, -10),
-                    v2.create(4, 3.75)
-                ),
+                bound: collider.createAabbExtents(v2.create(69, -10), v2.create(4, 3.75)),
                 color: 14657367,
                 roughness: 0.2,
                 offsetDist: 1
@@ -16209,19 +15291,13 @@ export const MapObjectDefs = {
                 {
                     type: "grass",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 },
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(61, -3),
-                            v2.create(22, 19)
-                        ),
+                        collider.createAabbExtents(v2.create(61, -3), v2.create(22, 19)),
                         collider.createAabbExtents(
                             v2.create(45, -34),
                             v2.create(5.75, 14)
@@ -16429,26 +15505,20 @@ export const MapObjectDefs = {
             ]
         }
     }),
-    shilo_01: (function(e) {
+    shilo_01: (function (e) {
         const t = {
             type: "building",
             map: { display: true, color: 3240224, scale: 1 },
             terrain: { grass: true, beach: false },
             mapObstacleBounds: [
-                collider.createAabbExtents(
-                    v2.create(0, -1),
-                    v2.create(17, 15)
-                )
+                collider.createAabbExtents(v2.create(0, -1), v2.create(17, 15))
             ],
             floor: {
                 surfaces: [
                     {
                         type: "shack",
                         collision: [
-                            collider.createAabbExtents(
-                                v2.create(0, 0),
-                                v2.create(15, 12)
-                            )
+                            collider.createAabbExtents(v2.create(0, 0), v2.create(15, 12))
                         ]
                     }
                 ],
@@ -16637,22 +15707,13 @@ export const MapObjectDefs = {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(1, 1.5),
-                            v2.create(8, 5.5)
-                        ),
+                        collider.createAabbExtents(v2.create(1, 1.5), v2.create(8, 5.5)),
                         collider.createAabbExtents(
                             v2.create(-10.65, 9),
                             v2.create(2, 12)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(-7.75, 3),
-                            v2.create(1, 2)
-                        ),
-                        collider.createAabbExtents(
-                            v2.create(5, -4.75),
-                            v2.create(2, 1)
-                        )
+                        collider.createAabbExtents(v2.create(-7.75, 3), v2.create(1, 2)),
+                        collider.createAabbExtents(v2.create(5, -4.75), v2.create(2, 1))
                     ]
                 }
             ],
@@ -16792,16 +15853,13 @@ export const MapObjectDefs = {
         },
         obs: "toilet_02b"
     }),
-    perch_01: (function(e) {
+    perch_01: (function (e) {
         const t = {
             type: "building",
             map: { display: true, color: 1915136, scale: 1 },
             terrain: { grass: true, beach: false },
             mapObstacleBounds: [
-                collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(7, 8)
-                )
+                collider.createAabbExtents(v2.create(0, 0), v2.create(7, 8))
             ],
             zIdx: 1,
             floor: {
@@ -17497,10 +16555,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(4.5, 6)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 6))
                     ]
                 }
             ],
@@ -17516,10 +16571,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(4.5, 6)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 6))
                 }
             ],
             imgs: [
@@ -17623,10 +16675,7 @@ export const MapObjectDefs = {
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 }
             ],
@@ -17643,10 +16692,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(-1, -1),
-                        v2.create(5, 6)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(-1, -1), v2.create(5, 6))
                 }
             ],
             imgs: [
@@ -17678,10 +16724,7 @@ export const MapObjectDefs = {
                 {
                     type: "asphalt",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 }
             ],
@@ -17698,10 +16741,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(-1, -1),
-                        v2.create(5, 6)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(-1, -1), v2.create(5, 6))
                 }
             ],
             imgs: [
@@ -17727,10 +16767,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(30, 30)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(30, 30))
         ],
         layers: [
             {
@@ -17754,24 +16791,15 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(-12.5, -1),
-                v2.create(12, 8.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(3.51, -6),
-                v2.create(4, 4)
-            )
+            collider.createAabbExtents(v2.create(-12.5, -1), v2.create(12, 8.5)),
+            collider.createAabbExtents(v2.create(3.51, -6), v2.create(4, 4))
         ]
     },
     barn_basement_structure_01d: {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(30, 30)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(30, 30))
         ],
         layers: [
             {
@@ -17795,14 +16823,8 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(-12.5, -1),
-                v2.create(12, 8.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(3.51, -6),
-                v2.create(4, 4)
-            )
+            collider.createAabbExtents(v2.create(-12.5, -1), v2.create(12, 8.5)),
+            collider.createAabbExtents(v2.create(3.51, -6), v2.create(4, 4))
         ]
     },
     barn_wall_int_2: createWall({
@@ -18350,16 +17372,10 @@ export const MapObjectDefs = {
             bridge: { nearbyWidthMult: 0.75 }
         },
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(2.5, -10.5),
-                v2.create(2.5, 1.5)
-            )
+            collider.createAabbExtents(v2.create(2.5, -10.5), v2.create(2.5, 1.5))
         ],
         bridgeWaterBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 7.75),
-                v2.create(5.5, 3.5)
-            )
+            collider.createAabbExtents(v2.create(0, 7.75), v2.create(5.5, 3.5))
         ],
         zIdx: 1,
         floor: {
@@ -18487,10 +17503,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(6, 4)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(6, 4))
                     ]
                 }
             ],
@@ -18506,10 +17519,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(5, 3)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(5, 3))
                 }
             ],
             imgs: [
@@ -18676,14 +17686,8 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(10, -0.1),
-                v2.create(15, 10.1)
-            ),
-            collider.createAabbExtents(
-                v2.create(17.5, 13.5),
-                v2.create(7.49, 3.49)
-            )
+            collider.createAabbExtents(v2.create(10, -0.1), v2.create(15, 10.1)),
+            collider.createAabbExtents(v2.create(17.5, 13.5), v2.create(7.49, 3.49))
         ]
     },
     mansion_structure_02: {
@@ -18719,14 +17723,8 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(10, -0.1),
-                v2.create(15, 10.1)
-            ),
-            collider.createAabbExtents(
-                v2.create(17.5, 13.5),
-                v2.create(7.49, 3.49)
-            )
+            collider.createAabbExtents(v2.create(10, -0.1), v2.create(15, 10.1)),
+            collider.createAabbExtents(v2.create(17.5, 13.5), v2.create(7.49, 3.49))
         ]
     },
     saloon_column_1: createWall({
@@ -18736,10 +17734,7 @@ export const MapObjectDefs = {
         img: wallImg("map-column-01.img", 1710618)
     }),
     saloon_bar_small: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 5)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -18749,10 +17744,7 @@ export const MapObjectDefs = {
         }
     }),
     saloon_bar_large: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 7.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 7.5)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -18762,10 +17754,7 @@ export const MapObjectDefs = {
         }
     }),
     saloon_bar_back_large: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 5)),
         img: {
             sprite: "map-saloon-bar-01.img",
             scale: 0.5,
@@ -18775,10 +17764,7 @@ export const MapObjectDefs = {
         }
     }),
     saloon_bar_back_small: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 1.5)),
         img: {
             sprite: "map-saloon-bar-02.img",
             scale: 0.5,
@@ -18919,10 +17905,7 @@ export const MapObjectDefs = {
         },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(22.5, 22.5)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(22.5, 22.5))
         ],
         zIdx: 1,
         floor: {
@@ -18934,10 +17917,7 @@ export const MapObjectDefs = {
                             v2.create(0, 0),
                             v2.create(20.5, 20.5)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(-23.5, 1),
-                            v2.create(3, 2)
-                        )
+                        collider.createAabbExtents(v2.create(-23.5, 1), v2.create(3, 2))
                     ]
                 }
             ],
@@ -19443,10 +18423,7 @@ export const MapObjectDefs = {
                 {
                     type: "brick",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(15, 9)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(15, 9))
                     ]
                 }
             ],
@@ -19463,10 +18440,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(15, 9)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(15, 9))
                 }
             ],
             imgs: [
@@ -19615,12 +18589,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(-1, 0)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(-30, 0.75),
-                v2.create(10, 5)
-            )
-        ],
+        mask: [collider.createAabbExtents(v2.create(-30, 0.75), v2.create(10, 5))],
         interiorSound: {
             sound: "piano_music_01",
             soundAlt: "",
@@ -19706,7 +18675,7 @@ export const MapObjectDefs = {
     teahouse_window_open_01: createLowWall({
         img: { tint: 12216619 }
     }),
-    teahouse_01: (function(e) {
+    teahouse_01: (function (e) {
         const t = {
             type: "building",
             map: {
@@ -19748,10 +18717,7 @@ export const MapObjectDefs = {
                     {
                         type: "shack",
                         collision: [
-                            collider.createAabbExtents(
-                                v2.create(0, 0),
-                                v2.create(14, 9)
-                            ),
+                            collider.createAabbExtents(v2.create(0, 0), v2.create(14, 9)),
                             collider.createAabbExtents(
                                 v2.create(9, -10.15),
                                 v2.create(2, 1.5)
@@ -19814,8 +18780,7 @@ export const MapObjectDefs = {
                     wallCount: 3,
                     particle: "teahouseBreak",
                     particleCount: 25,
-                    residue:
-                        "map-building-teahouse-res-01.img"
+                    residue: "map-building-teahouse-res-01.img"
                 }
             },
             mapObjects: [
@@ -19920,23 +18885,17 @@ export const MapObjectDefs = {
         tree_small: "tree_08su",
         tree_large: "tree_08su"
     }),
-    savannah_patch_01: (function(e) {
+    savannah_patch_01: (function (e) {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
             terrain: { grass: true, beach: false },
             mapObstacleBounds: [
-                collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(20, 16)
-                )
+                collider.createAabbExtents(v2.create(0, 0), v2.create(20, 16))
             ],
             mapGroundPatches: [
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(8, 15),
-                        v2.create(5, 4)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(8, 15), v2.create(5, 4)),
                     color: 13084454,
                     roughness: 0.1,
                     offsetDist: 0.5
@@ -19951,28 +18910,19 @@ export const MapObjectDefs = {
                     offsetDist: 0.5
                 },
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(-18, 8),
-                        v2.create(3, 4)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(-18, 8), v2.create(3, 4)),
                     color: 13084454,
                     roughness: 0.1,
                     offsetDist: 0.5
                 },
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(16, -8),
-                        v2.create(3, 6)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(16, -8), v2.create(3, 6)),
                     color: 13084454,
                     roughness: 0.1,
                     offsetDist: 0.5
                 },
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(16, 12)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(0, 0), v2.create(16, 12)),
                     color: e.grass_color || 16762368,
                     roughness: 0.1,
                     offsetDist: 0.5
@@ -19984,10 +18934,7 @@ export const MapObjectDefs = {
                         type: "grass",
                         data: { isBright: true },
                         collision: [
-                            collider.createAabbExtents(
-                                v2.create(0, 0),
-                                v2.create(16, 12)
-                            )
+                            collider.createAabbExtents(v2.create(0, 0), v2.create(16, 12))
                         ]
                     }
                 ],
@@ -20033,41 +18980,30 @@ export const MapObjectDefs = {
         grass_color: 15451700,
         terrain: { grass: true, beach: false, spawnPriority: 1 }
     }),
-    kopje_patch_01: (function(e) {
+    kopje_patch_01: (function (e) {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
             terrain: { grass: true, beach: false },
             mapObstacleBounds: [
-                collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(45, 35)
-                )
+                collider.createAabbExtents(v2.create(0, 0), v2.create(45, 35))
             ],
             mapGroundPatches: [
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(40, 30)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(0, 0), v2.create(40, 30)),
                     color: e.grass_color || 16762368,
                     roughness: 0.2,
                     offsetDist: 3
                 },
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(16, 12)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(0, 0), v2.create(16, 12)),
                     color: 5862162,
                     roughness: 0.2,
                     offsetDist: 1
                 }
             ],
             floor: {
-                surfaces: [
-                    { type: "grass", collision: [] }
-                ],
+                surfaces: [{ type: "grass", collision: [] }],
                 imgs: []
             },
             ceiling: { zoomRegions: [], imgs: [] },
@@ -20236,10 +19172,7 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(18, 18)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(18, 18))
         ],
         mapGroundPatches: [],
         floor: {
@@ -20459,10 +19392,7 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(30, 10)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(30, 10))
         ],
         mapGroundPatches: [],
         floor: {
@@ -20508,10 +19438,7 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(17, 17)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(17, 17))
         ],
         mapGroundPatches: [],
         floor: {
@@ -20707,10 +19634,7 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(17, 17)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(17, 17))
         ],
         mapGroundPatches: [],
         floor: {
@@ -20896,10 +19820,7 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(17, 17)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(17, 17))
         ],
         mapGroundPatches: [],
         floor: {
@@ -21035,21 +19956,12 @@ export const MapObjectDefs = {
         map: { display: true, shapes: [] },
         terrain: { lakeCenter: true },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(14, 14)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, -20),
-                v2.create(4, 12)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(14, 14)),
+            collider.createAabbExtents(v2.create(0, -20), v2.create(4, 12))
         ],
         mapGroundPatches: [
             {
-                bound: collider.createAabbExtents(
-                    v2.create(0, 0),
-                    v2.create(12.5, 12.5)
-                ),
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(12.5, 12.5)),
                 color: 6066442,
                 roughness: 0.1,
                 offsetDist: 0.25
@@ -21113,10 +20025,7 @@ export const MapObjectDefs = {
         img: wallImg("map-wall-10-rounded.img", 7218988)
     }),
     club_bar_small: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 4.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 4.5)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -21126,10 +20035,7 @@ export const MapObjectDefs = {
         }
     }),
     club_bar_large: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 7)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 7)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -21139,10 +20045,7 @@ export const MapObjectDefs = {
         }
     }),
     club_bar_back_large: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.75, 7.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.75, 7.5)),
         img: {
             sprite: "map-club-bar-01.img",
             scale: 0.5,
@@ -21193,10 +20096,7 @@ export const MapObjectDefs = {
         img: wallImg("map-bathhouse-column-02.img", 13481337)
     }),
     bathhouse_rocks_01: createControlPanel({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.55, 1.55)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.55, 1.55)),
         destructible: false,
         img: { sprite: "map-bathrocks-01.img" }
     }),
@@ -21229,7 +20129,7 @@ export const MapObjectDefs = {
         },
         img: { tint: 4934475 }
     }),
-    club_01: (function(e) {
+    club_01: (function (e) {
         const t = {
             type: "building",
             map: {
@@ -21320,10 +20220,7 @@ export const MapObjectDefs = {
                     order: 1
                 },
                 {
-                    bound: collider.createAabbExtents(
-                        v2.create(1.5, 7),
-                        v2.create(3, 3)
-                    ),
+                    bound: collider.createAabbExtents(v2.create(1.5, 7), v2.create(3, 3)),
                     color: 5855577,
                     order: 1
                 },
@@ -22299,7 +21196,7 @@ export const MapObjectDefs = {
         };
         return util.mergeDeep(t, e || {});
     })({}),
-    bathhouse_01: (function(e) {
+    bathhouse_01: (function (e) {
         const t = {
             type: "building",
             map: { display: false },
@@ -22437,10 +21334,7 @@ export const MapObjectDefs = {
                     parentToCeiling: false
                 }
             ],
-            goreRegion: collider.createAabbExtents(
-                v2.create(2, 8.5),
-                v2.create(20, 23)
-            ),
+            goreRegion: collider.createAabbExtents(v2.create(2, 8.5), v2.create(20, 23)),
             puzzle: {
                 name: "club_02",
                 completeUseType: "vault_door_bathhouse",
@@ -22831,7 +21725,7 @@ export const MapObjectDefs = {
         };
         return util.mergeDeep(t, e || {});
     })({}),
-    bathhouse_sideroom_01: (function(e) {
+    bathhouse_sideroom_01: (function (e) {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
@@ -22950,7 +21844,7 @@ export const MapObjectDefs = {
         };
         return util.mergeDeep(t, e || {});
     })({}),
-    bathhouse_sideroom_02: (function(e) {
+    bathhouse_sideroom_02: (function (e) {
         const t = {
             type: "building",
             map: { display: true, shapes: [] },
@@ -22962,10 +21856,7 @@ export const MapObjectDefs = {
                     {
                         type: "container",
                         collision: [
-                            collider.createAabbExtents(
-                                v2.create(0, 0),
-                                v2.create(14, 10)
-                            )
+                            collider.createAabbExtents(v2.create(0, 0), v2.create(14, 10))
                         ]
                     }
                 ],
@@ -23142,10 +22033,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(3, 4)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(3, 4))
                     ]
                 }
             ],
@@ -23161,10 +22049,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(3, 4)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(3, 4))
                 }
             ],
             imgs: [
@@ -23224,14 +22109,8 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(-5, 8),
-                v2.create(25, 50)
-            ),
-            collider.createAabbExtents(
-                v2.create(23.01, -35.5),
-                v2.create(3, 4)
-            )
+            collider.createAabbExtents(v2.create(-5, 8), v2.create(25, 50)),
+            collider.createAabbExtents(v2.create(23.01, -35.5), v2.create(3, 4))
         ],
         interiorSound: {
             sound: "club_music_01",
@@ -23254,46 +22133,16 @@ export const MapObjectDefs = {
             spawnPriority: 10
         },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(-16, 15),
-                v2.create(19, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(-8, -15.5),
-                v2.create(26.5, 27.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-2, -47),
-                v2.create(10, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-37, -26),
-                v2.create(4, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(23, -7),
-                v2.create(8, 10)
-            ),
-            collider.createAabbExtents(
-                v2.create(22, -29),
-                v2.create(6, 12)
-            ),
-            collider.createAabbExtents(
-                v2.create(-8, -23),
-                v2.create(28, 21)
-            ),
-            collider.createAabbExtents(
-                v2.create(2, 0),
-                v2.create(16, 12)
-            ),
-            collider.createAabbExtents(
-                v2.create(-16, 0),
-                v2.create(4, 4)
-            ),
-            collider.createAabbExtents(
-                v2.create(-28.5, 12.5),
-                v2.create(3.5, 3.5)
-            )
+            collider.createAabbExtents(v2.create(-16, 15), v2.create(19, 6)),
+            collider.createAabbExtents(v2.create(-8, -15.5), v2.create(26.5, 27.5)),
+            collider.createAabbExtents(v2.create(-2, -47), v2.create(10, 5)),
+            collider.createAabbExtents(v2.create(-37, -26), v2.create(4, 5)),
+            collider.createAabbExtents(v2.create(23, -7), v2.create(8, 10)),
+            collider.createAabbExtents(v2.create(22, -29), v2.create(6, 12)),
+            collider.createAabbExtents(v2.create(-8, -23), v2.create(28, 21)),
+            collider.createAabbExtents(v2.create(2, 0), v2.create(16, 12)),
+            collider.createAabbExtents(v2.create(-16, 0), v2.create(4, 4)),
+            collider.createAabbExtents(v2.create(-28.5, 12.5), v2.create(3.5, 3.5))
         ],
         mapGroundPatches: [],
         floor: { surfaces: [], imgs: [] },
@@ -23323,10 +22172,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 7.75),
-                            v2.create(2, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 7.75), v2.create(2, 3.25))
                     ]
                 }
             ],
@@ -23424,10 +22270,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -4.5),
-                            v2.create(10, 9)
-                        )
+                        collider.createAabbExtents(v2.create(0, -4.5), v2.create(10, 9))
                     ]
                 }
             ],
@@ -23547,10 +22390,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -4.5),
-                            v2.create(10, 9)
-                        )
+                        collider.createAabbExtents(v2.create(0, -4.5), v2.create(10, 9))
                     ]
                 }
             ],
@@ -23670,10 +22510,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -4.5),
-                            v2.create(10, 9)
-                        )
+                        collider.createAabbExtents(v2.create(0, -4.5), v2.create(10, 9))
                     ]
                 }
             ],
@@ -23787,10 +22624,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 5),
-                v2.create(7.5, 12.5)
-            )
+            collider.createAabbExtents(v2.create(0, 5), v2.create(7.5, 12.5))
         ],
         layers: [
             {
@@ -23813,21 +22647,13 @@ export const MapObjectDefs = {
                 downDir: v2.create(0, -1)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, -3.7),
-                v2.create(10, 9.5)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, -3.7), v2.create(10, 9.5))]
     },
     bunker_structure_01b: {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 5),
-                v2.create(7.5, 12.5)
-            )
+            collider.createAabbExtents(v2.create(0, 5), v2.create(7.5, 12.5))
         ],
         layers: [
             {
@@ -23850,21 +22676,13 @@ export const MapObjectDefs = {
                 downDir: v2.create(0, -1)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, -3.7),
-                v2.create(10, 9.5)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, -3.7), v2.create(10, 9.5))]
     },
     bunker_structure_01sv: {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 5),
-                v2.create(7.5, 12.5)
-            )
+            collider.createAabbExtents(v2.create(0, 5), v2.create(7.5, 12.5))
         ],
         layers: [
             {
@@ -23887,12 +22705,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(0, -1)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, -3.7),
-                v2.create(10, 9.5)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, -3.7), v2.create(10, 9.5))]
     },
     bunker_hydra_01: {
         type: "building",
@@ -24230,10 +23043,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(3.5, 3),
-                            v2.create(9.5, 9)
-                        )
+                        collider.createAabbExtents(v2.create(3.5, 3), v2.create(9.5, 9))
                     ]
                 },
                 {
@@ -24749,18 +23559,12 @@ export const MapObjectDefs = {
                     type: "tile",
                     data: { isBright: true },
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-2.5, 16),
-                            v2.create(22, 4)
-                        ),
+                        collider.createAabbExtents(v2.create(-2.5, 16), v2.create(22, 4)),
                         collider.createAabbExtents(
                             v2.create(-2.5, 9.5),
                             v2.create(6, 2.5)
                         ),
-                        collider.createAabbExtents(
-                            v2.create(0, -4.5),
-                            v2.create(25, 17)
-                        )
+                        collider.createAabbExtents(v2.create(0, -4.5), v2.create(25, 17))
                     ]
                 }
             ],
@@ -25042,10 +23846,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 2),
-                            v2.create(9, 8.75)
-                        )
+                        collider.createAabbExtents(v2.create(0, 2), v2.create(9, 8.75))
                     ]
                 }
             ],
@@ -25135,22 +23936,10 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(25.5, 3.5),
-                v2.create(16, 11.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-16.5, -89.5),
-                v2.create(7, 7.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(40, -47.25),
-                v2.create(6.5, 7.25)
-            ),
-            collider.createAabbExtents(
-                v2.create(3.5, -48.5),
-                v2.create(3, 3)
-            )
+            collider.createAabbExtents(v2.create(25.5, 3.5), v2.create(16, 11.5)),
+            collider.createAabbExtents(v2.create(-16.5, -89.5), v2.create(7, 7.5)),
+            collider.createAabbExtents(v2.create(40, -47.25), v2.create(6.5, 7.25)),
+            collider.createAabbExtents(v2.create(3.5, -48.5), v2.create(3, 3))
         ],
         layers: [
             {
@@ -25188,26 +23977,11 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(3.5, -7.2),
-                v2.create(10.75, 20)
-            ),
-            collider.createAabbExtents(
-                v2.create(-15, -79.75),
-                v2.create(5, 8.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(39, -61.85),
-                v2.create(12, 9)
-            ),
-            collider.createAabbExtents(
-                v2.create(3.5, -49.2),
-                v2.create(23.49, 21.99)
-            ),
-            collider.createAabbExtents(
-                v2.create(10.5, -76.7),
-                v2.create(10, 5.5)
-            )
+            collider.createAabbExtents(v2.create(3.5, -7.2), v2.create(10.75, 20)),
+            collider.createAabbExtents(v2.create(-15, -79.75), v2.create(5, 8.5)),
+            collider.createAabbExtents(v2.create(39, -61.85), v2.create(12, 9)),
+            collider.createAabbExtents(v2.create(3.5, -49.2), v2.create(23.49, 21.99)),
+            collider.createAabbExtents(v2.create(10.5, -76.7), v2.create(10, 5.5))
         ]
     },
     bunker_storm_01: {
@@ -25231,10 +24005,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 7.75),
-                            v2.create(2, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 7.75), v2.create(2, 3.25))
                     ]
                 },
                 {
@@ -25395,19 +24166,13 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(1, -4.4),
-                            v2.create(10.5, 9)
-                        )
+                        collider.createAabbExtents(v2.create(1, -4.4), v2.create(10.5, 9))
                     ]
                 },
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(19, -5.5),
-                            v2.create(7.5, 8)
-                        )
+                        collider.createAabbExtents(v2.create(19, -5.5), v2.create(7.5, 8))
                     ]
                 }
             ],
@@ -25606,10 +24371,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 6),
-                v2.create(7, 16.5)
-            )
+            collider.createAabbExtents(v2.create(0, 6), v2.create(7, 16.5))
         ],
         layers: [
             {
@@ -25632,12 +24394,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(0, -1)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(8.5, -3.7),
-                v2.create(18, 9.5)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(8.5, -3.7), v2.create(18, 9.5))]
     },
     bunker_conch_01: {
         type: "building",
@@ -25825,10 +24582,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(1, 4),
-                            v2.create(12.5, 3.5)
-                        ),
+                        collider.createAabbExtents(v2.create(1, 4), v2.create(12.5, 3.5)),
                         collider.createAabbExtents(
                             v2.create(28, -30),
                             v2.create(13.5, 4.5)
@@ -26262,14 +25016,8 @@ export const MapObjectDefs = {
             }
         },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(21, 3.5),
-                v2.create(9.5, 8)
-            ),
-            collider.createAabbExtents(
-                v2.create(48, -32.5),
-                v2.create(10, 8)
-            )
+            collider.createAabbExtents(v2.create(21, 3.5), v2.create(9.5, 8)),
+            collider.createAabbExtents(v2.create(48, -32.5), v2.create(10, 8))
         ],
         layers: [
             {
@@ -26300,14 +25048,8 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(-1.5, -9.2),
-                v2.create(15.7, 22)
-            ),
-            collider.createAabbExtents(
-                v2.create(28.25, -32),
-                v2.create(14, 8)
-            )
+            collider.createAabbExtents(v2.create(-1.5, -9.2), v2.create(15.7, 22)),
+            collider.createAabbExtents(v2.create(28.25, -32), v2.create(14, 8))
         ]
     },
     bunker_crossing_stairs_01: createBunkerStairs({}),
@@ -26399,10 +25141,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 3.25),
-                            v2.create(38, 28)
-                        )
+                        collider.createAabbExtents(v2.create(0, 3.25), v2.create(38, 28))
                     ]
                 }
             ],
@@ -26736,10 +25475,7 @@ export const MapObjectDefs = {
                 {
                     type: "water",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 }
             ],
@@ -26789,10 +25525,7 @@ export const MapObjectDefs = {
                 {
                     type: "water",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-1, 3),
-                            v2.create(17, 17.5)
-                        )
+                        collider.createAabbExtents(v2.create(-1, 3), v2.create(17, 17.5))
                     ]
                 }
             ],
@@ -27110,51 +25843,19 @@ export const MapObjectDefs = {
             spawnPriority: 100
         },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(35.5, 28.5),
-                v2.create(6, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(-36, 19),
-                v2.create(6, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(36, -13),
-                v2.create(6, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(-35.5, -22.5),
-                v2.create(6, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(6, 6)
-            )
+            collider.createAabbExtents(v2.create(35.5, 28.5), v2.create(6, 6)),
+            collider.createAabbExtents(v2.create(-36, 19), v2.create(6, 6)),
+            collider.createAabbExtents(v2.create(36, -13), v2.create(6, 6)),
+            collider.createAabbExtents(v2.create(-35.5, -22.5), v2.create(6, 6)),
+            collider.createAabbExtents(v2.create(0, 0), v2.create(6, 6))
         ],
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(35.5, 28.5),
-                v2.create(5, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-36, 19),
-                v2.create(5, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(36, -13),
-                v2.create(5, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-35.5, -22.5),
-                v2.create(5, 5)
-            )
+            collider.createAabbExtents(v2.create(35.5, 28.5), v2.create(5, 5)),
+            collider.createAabbExtents(v2.create(-36, 19), v2.create(5, 5)),
+            collider.createAabbExtents(v2.create(36, -13), v2.create(5, 5)),
+            collider.createAabbExtents(v2.create(-35.5, -22.5), v2.create(5, 5))
         ],
-        bridgeWaterBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(5, 5)
-            )
-        ],
+        bridgeWaterBounds: [collider.createAabbExtents(v2.create(0, 0), v2.create(5, 5))],
         layers: [
             {
                 type: "bunker_crossing_01",
@@ -27198,18 +25899,9 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(-3.7, 27),
-                v2.create(36.5, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(3.7, -21),
-                v2.create(36.5, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 3),
-                v2.create(30, 18.95)
-            )
+            collider.createAabbExtents(v2.create(-3.7, 27), v2.create(36.5, 5)),
+            collider.createAabbExtents(v2.create(3.7, -21), v2.create(36.5, 5)),
+            collider.createAabbExtents(v2.create(0, 3), v2.create(30, 18.95))
         ]
     },
     bunker_hatchet_01: {
@@ -27233,10 +25925,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 7.75),
-                            v2.create(2, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 7.75), v2.create(2, 3.25))
                     ]
                 },
                 {
@@ -27385,10 +26074,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(-3, -4.4),
-                            v2.create(13, 9)
-                        )
+                        collider.createAabbExtents(v2.create(-3, -4.4), v2.create(13, 9))
                     ]
                 }
             ],
@@ -27552,10 +26238,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(16, 13)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(16, 13))
                     ]
                 }
             ],
@@ -27716,10 +26399,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(16, 15)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(16, 15))
                     ]
                 }
             ],
@@ -27951,10 +26631,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(19, 10)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(19, 10))
                     ]
                 }
             ],
@@ -28083,10 +26760,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(1, 6),
-                v2.create(7, 13.5)
-            )
+            collider.createAabbExtents(v2.create(1, 6), v2.create(7, 13.5))
         ],
         layers: [
             {
@@ -28110,14 +26784,8 @@ export const MapObjectDefs = {
             }
         ],
         mask: [
-            collider.createAabbExtents(
-                v2.create(-3, -3.7),
-                v2.create(13, 9.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-48.025, 6),
-                v2.create(32, 24.95)
-            )
+            collider.createAabbExtents(v2.create(-3, -3.7), v2.create(13, 9.5)),
+            collider.createAabbExtents(v2.create(-48.025, 6), v2.create(32, 24.95))
         ]
     },
     bunker_eye_01: {
@@ -28141,10 +26809,7 @@ export const MapObjectDefs = {
                 {
                     type: "container",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 7.75),
-                            v2.create(2, 3.25)
-                        )
+                        collider.createAabbExtents(v2.create(0, 7.75), v2.create(2, 3.25))
                     ]
                 }
             ],
@@ -28253,10 +26918,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, -12),
-                            v2.create(14, 17)
-                        )
+                        collider.createAabbExtents(v2.create(0, -12), v2.create(14, 17))
                     ]
                 }
             ],
@@ -28518,10 +27180,7 @@ export const MapObjectDefs = {
                 {
                     type: "tile",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(10, 10)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(10, 10))
                     ]
                 }
             ],
@@ -28538,10 +27197,7 @@ export const MapObjectDefs = {
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(10, 10)
-                    )
+                    zoomIn: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 10))
                 }
             ],
             imgs: [
@@ -28592,26 +27248,11 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         ori: 2,
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(-1, 8),
-                v2.create(7, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(-40, -70),
-                v2.create(2, 2)
-            ),
-            collider.createAabbExtents(
-                v2.create(40, -70),
-                v2.create(2, 2)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, -30),
-                v2.create(2, 2)
-            ),
-            collider.createAabbExtents(
-                v2.create(5, 23),
-                v2.create(2, 2)
-            )
+            collider.createAabbExtents(v2.create(-1, 8), v2.create(7, 6)),
+            collider.createAabbExtents(v2.create(-40, -70), v2.create(2, 2)),
+            collider.createAabbExtents(v2.create(40, -70), v2.create(2, 2)),
+            collider.createAabbExtents(v2.create(0, -30), v2.create(2, 2)),
+            collider.createAabbExtents(v2.create(5, 23), v2.create(2, 2))
         ],
         layers: [
             {
@@ -28634,12 +27275,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(0, -1)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, -22.2),
-                v2.create(13.5, 28)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, -22.2), v2.create(13.5, 28))]
     },
     bunker_twins_stairs_01: createBunkerStairs({
         map: {
@@ -28745,10 +27381,7 @@ export const MapObjectDefs = {
                     type: "tile",
                     data: { isBright: true },
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(16, 11)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(16, 11))
                     ]
                 }
             ],
@@ -29027,10 +27660,7 @@ export const MapObjectDefs = {
                 {
                     type: "bunker",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(0, 0)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(0, 0))
                     ]
                 }
             ],
@@ -29057,26 +27687,11 @@ export const MapObjectDefs = {
         terrain: { grass: true, beach: false },
         ori: 0,
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(5, 15.4),
-                v2.create(3.5, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(-5, -15.4),
-                v2.create(3.5, 6)
-            ),
-            collider.createAabbExtents(
-                v2.create(20.5, 0),
-                v2.create(6, 3.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(-20.5, 0),
-                v2.create(6, 3.5)
-            ),
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(2.5, 2.5)
-            )
+            collider.createAabbExtents(v2.create(5, 15.4), v2.create(3.5, 6)),
+            collider.createAabbExtents(v2.create(-5, -15.4), v2.create(3.5, 6)),
+            collider.createAabbExtents(v2.create(20.5, 0), v2.create(6, 3.5)),
+            collider.createAabbExtents(v2.create(-20.5, 0), v2.create(6, 3.5)),
+            collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2.5))
         ],
         layers: [
             {
@@ -29120,12 +27735,7 @@ export const MapObjectDefs = {
                 downDir: v2.create(1, 0)
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(16.75, 11.75)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, 0), v2.create(16.75, 11.75))]
     },
     bridge_lg_under_column: createWall({
         material: "concrete",
@@ -29136,10 +27746,7 @@ export const MapObjectDefs = {
         extents: v2.create(2.5, 2)
     }),
     bridge_rail_3: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 2)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 2)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -29149,10 +27756,7 @@ export const MapObjectDefs = {
         }
     }),
     bridge_rail_12: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 6.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 6.5)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -29254,14 +27858,8 @@ export const MapObjectDefs = {
             }
         ],
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(-34, 0),
-                v2.create(6, 9)
-            ),
-            collider.createAabbExtents(
-                v2.create(34, 0),
-                v2.create(6, 9)
-            )
+            collider.createAabbExtents(v2.create(-34, 0), v2.create(6, 9)),
+            collider.createAabbExtents(v2.create(34, 0), v2.create(6, 9))
         ],
         stairs: [
             {
@@ -29281,12 +27879,7 @@ export const MapObjectDefs = {
                 lootOnly: true
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(12, 8)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, 0), v2.create(12, 8))]
     },
     bridge_xlg_under_column: createWall({
         material: "concrete",
@@ -29297,10 +27890,7 @@ export const MapObjectDefs = {
         extents: v2.create(4.5, 2)
     }),
     bridge_rail_20: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 10)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 10)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -29309,7 +27899,7 @@ export const MapObjectDefs = {
             zIdx: 10
         }
     }),
-    bridge_xlg_01: (function(e) {
+    bridge_xlg_01: (function (e) {
         const t = {
             type: "building",
             map: {
@@ -29633,21 +28223,10 @@ export const MapObjectDefs = {
             }
         ],
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(-41, 0),
-                v2.create(5, 10)
-            ),
-            collider.createAabbExtents(
-                v2.create(41, 0),
-                v2.create(5, 10)
-            )
+            collider.createAabbExtents(v2.create(-41, 0), v2.create(5, 10)),
+            collider.createAabbExtents(v2.create(41, 0), v2.create(5, 10))
         ],
-        bridgeWaterBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(5, 5)
-            )
-        ],
+        bridgeWaterBounds: [collider.createAabbExtents(v2.create(0, 0), v2.create(5, 5))],
         stairs: [
             {
                 collision: collider.createAabbExtents(
@@ -29666,18 +28245,10 @@ export const MapObjectDefs = {
                 lootOnly: true
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(12, 12)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, 0), v2.create(12, 12))]
     },
     bridge_rail_28: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.4, 14)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.4, 14)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -29687,10 +28258,7 @@ export const MapObjectDefs = {
         }
     }),
     brick_wall_ext_3_0_low: createLowWall({
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.5, 1.5)),
         img: {
             sprite: "",
             scale: 0.5,
@@ -29724,10 +28292,7 @@ export const MapObjectDefs = {
                 {
                     type: "shack",
                     collision: [
-                        collider.createAabbExtents(
-                            v2.create(0, 0),
-                            v2.create(13.5, 3.5)
-                        )
+                        collider.createAabbExtents(v2.create(0, 0), v2.create(13.5, 3.5))
                     ]
                 }
             ],
@@ -29821,10 +28386,7 @@ export const MapObjectDefs = {
         type: "structure",
         terrain: { bridge: { nearbyWidthMult: 8 } },
         mapObstacleBounds: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(23, 7)
-            )
+            collider.createAabbExtents(v2.create(0, 0), v2.create(23, 7))
         ],
         layers: [
             {
@@ -29840,14 +28402,8 @@ export const MapObjectDefs = {
             }
         ],
         bridgeLandBounds: [
-            collider.createAabbExtents(
-                v2.create(-15.5, 0),
-                v2.create(3, 5)
-            ),
-            collider.createAabbExtents(
-                v2.create(15.5, 0),
-                v2.create(3, 5)
-            )
+            collider.createAabbExtents(v2.create(-15.5, 0), v2.create(3, 5)),
+            collider.createAabbExtents(v2.create(15.5, 0), v2.create(3, 5))
         ],
         stairs: [
             {
@@ -29867,12 +28423,7 @@ export const MapObjectDefs = {
                 lootOnly: true
             }
         ],
-        mask: [
-            collider.createAabbExtents(
-                v2.create(0, 0),
-                v2.create(6.5, 3.6)
-            )
-        ]
+        mask: [collider.createAabbExtents(v2.create(0, 0), v2.create(6.5, 3.6))]
     },
     container_wall_top: createWall({
         material: "metal",
@@ -29929,8 +28480,7 @@ export const MapObjectDefs = {
     container_06: createContainer({
         open: false,
         tint: 12227840,
-        ceilingSprite:
-            "map-building-container-ceiling-01.img",
+        ceilingSprite: "map-building-container-ceiling-01.img",
         loot_spawner_01: "loot_tier_sv98",
         loot_spawner_02: "loot_tier_scopes_sniper"
     }),
@@ -30266,10 +28816,7 @@ export const MapObjectDefs = {
     },
     decal_pipes_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1, 4.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1, 4.5)),
         height: 1,
         img: {
             sprite: "map-pipes-01.img",
@@ -30281,10 +28828,7 @@ export const MapObjectDefs = {
     },
     decal_pipes_02: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4, 3)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 3)),
         height: 1,
         img: {
             sprite: "map-pipes-02.img",
@@ -30296,10 +28840,7 @@ export const MapObjectDefs = {
     },
     decal_pipes_03: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(10.5, 4)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(10.5, 4)),
         height: 1,
         img: {
             sprite: "map-pipes-03.img",
@@ -30311,10 +28852,7 @@ export const MapObjectDefs = {
     },
     decal_pipes_04: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1, 5.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1, 5.5)),
         height: 1,
         img: {
             sprite: "map-pipes-04.img",
@@ -30326,10 +28864,7 @@ export const MapObjectDefs = {
     },
     decal_pipes_05: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1, 3.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1, 3.5)),
         height: 1,
         img: {
             sprite: "map-pipes-05.img",
@@ -30353,10 +28888,7 @@ export const MapObjectDefs = {
     },
     decal_web_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         height: 1,
         img: {
             sprite: "map-web-01.img",
@@ -30368,10 +28900,7 @@ export const MapObjectDefs = {
     },
     decal_light_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(3.25, 3.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.25, 3.25)),
         height: 1,
         lifetime: 1e10,
         img: {
@@ -30389,10 +28918,7 @@ export const MapObjectDefs = {
     },
     decal_light_02: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2.5)),
         height: 1,
         lifetime: 1e10,
         img: {
@@ -30410,10 +28936,7 @@ export const MapObjectDefs = {
     },
     decal_light_03: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2.5)),
         height: 1,
         lifetime: 1e10,
         img: {
@@ -30431,10 +28954,7 @@ export const MapObjectDefs = {
     },
     decal_light_04: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.5, 2.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 2.5)),
         height: 1,
         lifetime: 1e10,
         img: {
@@ -30452,10 +28972,7 @@ export const MapObjectDefs = {
     },
     decal_blood_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         height: 0,
         img: {
             sprite: "part-splat-01.img",
@@ -30467,10 +28984,7 @@ export const MapObjectDefs = {
     },
     decal_blood_02: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         height: 0,
         img: {
             sprite: "part-splat-02.img",
@@ -30482,10 +28996,7 @@ export const MapObjectDefs = {
     },
     decal_blood_03: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(1.5, 1.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 1.5)),
         height: 0,
         img: {
             sprite: "part-splat-03.img",
@@ -30581,10 +29092,7 @@ export const MapObjectDefs = {
     },
     decal_bathhouse_pool_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(9, 15)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(9, 15)),
         height: 1,
         surface: {
             type: "water",
@@ -30622,10 +29130,7 @@ export const MapObjectDefs = {
     },
     decal_club_02: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(4, 10.5)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 10.5)),
         height: 1,
         img: {
             sprite: "map-decal-club-02.img",
@@ -30646,10 +29151,7 @@ export const MapObjectDefs = {
     },
     decal_plank_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(2.25, 2.25)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 2.25)),
         height: 0,
         img: {
             sprite: "part-plank-01.img",
@@ -30661,10 +29163,7 @@ export const MapObjectDefs = {
     },
     decal_flyer_01: {
         type: "decal",
-        collision: collider.createAabbExtents(
-            v2.create(0, 0),
-            v2.create(0.5, 1)
-        ),
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.5, 1)),
         height: 0,
         img: {
             sprite: "map-decal-flyer-01.img",

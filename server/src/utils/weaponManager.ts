@@ -1,25 +1,28 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import {
+    type ThrowableDef,
+    ThrowableDefs
+} from "../../../shared/defs/gameObjects/throwableDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import { type BulletParams } from "../objects/bullet";
-import { type GameObject } from "../objects/gameObject";
-import { type Player } from "../objects/player";
+import { PickupMsg } from "../../../shared/msgs/pickupMsg";
+import * as net from "../../../shared/net";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import * as net from "../../../shared/net";
-import { PickupMsg } from "../../../shared/msgs/pickupMsg";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { type ThrowableDef, ThrowableDefs } from "../../../shared/defs/gameObjects/throwableDefs";
-import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type BulletParams } from "../objects/bullet";
+import { type GameObject } from "../objects/gameObject";
+import { type Player } from "../objects/player";
 
 /**
  * List of throwables to cycle based on the definition `inventoryOrder`
  */
-export const throwableList = Object.keys(ThrowableDefs).filter(a => {
+export const throwableList = Object.keys(ThrowableDefs).filter((a) => {
     const def = ThrowableDefs[a];
     // Trying to pickup a throwable that has no `handImg` will crash the client
     // so filter them out
@@ -61,19 +64,25 @@ export class WeaponManager {
         const nextWeapon = this.weapons[idx];
         let effectiveSwitchDelay = 0;
 
-        if (curWeapon.type && nextWeapon.type) { // ensure that player is still holding both weapons (didnt drop one)
-            const curWeaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-            const nextWeaponDef = GameObjectDefs[this.weapons[idx].type] as GunDef | MeleeDef | ThrowableDef;
+        if (curWeapon.type && nextWeapon.type) {
+            // ensure that player is still holding both weapons (didnt drop one)
+            const curWeaponDef = GameObjectDefs[this.activeWeapon] as
+                | GunDef
+                | MeleeDef
+                | ThrowableDef;
+            const nextWeaponDef = GameObjectDefs[this.weapons[idx].type] as
+                | GunDef
+                | MeleeDef
+                | ThrowableDef;
 
             const swappingToGun = nextWeaponDef.type == "gun";
 
-            effectiveSwitchDelay = swappingToGun
-                ? nextWeaponDef.switchDelay
-                : 0;
+            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
 
             if (this.player.freeSwitchTimer < this.player.game.now) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
-                this.player.freeSwitchTimer = this.player.game.now + (GameConfig.player.freeSwitchCooldown * 1000);
+                this.player.freeSwitchTimer =
+                    this.player.game.now + GameConfig.player.freeSwitchCooldown * 1000;
             }
 
             if (
@@ -86,7 +95,7 @@ export class WeaponManager {
                 effectiveSwitchDelay = nextWeaponDef.switchDelay;
             }
 
-            nextWeapon.cooldown = this.player.game.now + (effectiveSwitchDelay * 1000);
+            nextWeapon.cooldown = this.player.game.now + effectiveSwitchDelay * 1000;
         }
 
         this.player.shotSlowdownTimer = -1;
@@ -107,9 +116,9 @@ export class WeaponManager {
     }
 
     weapons: Array<{
-        type: string
-        ammo: number
-        cooldown: number
+        type: string;
+        ammo: number;
+        cooldown: number;
     }> = [];
 
     get activeWeapon(): string {
@@ -154,14 +163,14 @@ export class WeaponManager {
 
         if (def) {
             switch (def.type) {
-            case "melee": {
-                this.meleeAttack();
-                break;
-            }
-            case "gun": {
-                this.fireWeapon();
-                break;
-            }
+                case "melee": {
+                    this.meleeAttack();
+                    break;
+                }
+                case "gun": {
+                    this.fireWeapon();
+                    break;
+                }
                 // case "throwable": {
                 //     this.cookThrowable();
                 //     break;
@@ -182,7 +191,11 @@ export class WeaponManager {
      * Try to schedule a reload action if all conditions are met
      */
     tryReload() {
-        if (([GameConfig.Action.Reload, GameConfig.Action.ReloadAlt] as number[]).includes(this.player.actionType)) {
+        if (
+            (
+                [GameConfig.Action.Reload, GameConfig.Action.ReloadAlt] as number[]
+            ).includes(this.player.actionType)
+        ) {
             return;
         }
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
@@ -190,17 +203,20 @@ export class WeaponManager {
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
             this.player.inventory[weaponDef.ammo] == 0,
-            this.curWeapIdx == GameConfig.WeaponSlot.Melee || this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+            this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
+                this.curWeapIdx == GameConfig.WeaponSlot.Throwable
         ];
-        if (conditions.some(c => c)) {
+        if (conditions.some((c) => c)) {
             return;
         }
 
         let duration = weaponDef.reloadTime;
         let action: number = GameConfig.Action.Reload;
-        if (weaponDef.reloadTimeAlt &&
+        if (
+            weaponDef.reloadTimeAlt &&
             this.weapons[this.curWeapIdx].ammo === 0 &&
-            this.player.inventory[weaponDef.ammo] > 1) {
+            this.player.inventory[weaponDef.ammo] > 1
+        ) {
             duration = weaponDef.reloadTimeAlt!;
             action = GameConfig.Action.ReloadAlt;
         }
@@ -223,22 +239,36 @@ export class WeaponManager {
             amountToReload = weaponDef.maxReloadAlt;
         }
 
-        if (inv[weaponDef.ammo] < spaceLeft) { // 27/30, inv = 2
-            if (weaponDef.maxClip != amountToReload) { // m870, mosin, spas: only refill by one bullet at a time
+        if (inv[weaponDef.ammo] < spaceLeft) {
+            // 27/30, inv = 2
+            if (weaponDef.maxClip != amountToReload) {
+                // m870, mosin, spas: only refill by one bullet at a time
                 this.weapons[this.curWeapIdx].ammo++;
                 inv[weaponDef.ammo]--;
-            } else { // mp5, sv98, ak47: refill to as much as you have left in your inventory
+            } else {
+                // mp5, sv98, ak47: refill to as much as you have left in your inventory
                 this.weapons[this.curWeapIdx].ammo += inv[weaponDef.ammo];
                 inv[weaponDef.ammo] = 0;
             }
-        } else { // 27/30, inv = 100
-            this.weapons[this.curWeapIdx].ammo += math.clamp(amountToReload, 0, spaceLeft);
+        } else {
+            // 27/30, inv = 100
+            this.weapons[this.curWeapIdx].ammo += math.clamp(
+                amountToReload,
+                0,
+                spaceLeft
+            );
             inv[weaponDef.ammo] -= math.clamp(amountToReload, 0, spaceLeft);
         }
 
         // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
-        const realMaxClip = inv[weaponDef.ammo] == 0 ? this.weapons[this.curWeapIdx].ammo : weaponDef.maxClip;
-        if (weaponDef.maxClip != amountToReload && this.weapons[this.curWeapIdx].ammo != realMaxClip) {
+        const realMaxClip =
+            inv[weaponDef.ammo] == 0
+                ? this.weapons[this.curWeapIdx].ammo
+                : weaponDef.maxClip;
+        if (
+            weaponDef.maxClip != amountToReload &&
+            this.weapons[this.curWeapIdx].ammo != realMaxClip
+        ) {
             this.player.reloadAgain = true;
         }
 
@@ -325,7 +355,11 @@ export class WeaponManager {
     burstCount = 0;
 
     fireWeapon(skipDelayCheck = false) {
-        if (this.weapons[this.curWeapIdx].cooldown > this.player.game.now && !skipDelayCheck) return;
+        if (
+            this.weapons[this.curWeapIdx].cooldown > this.player.game.now &&
+            !skipDelayCheck
+        )
+            return;
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         if (this.weapons[this.curWeapIdx].ammo <= 1) {
@@ -337,7 +371,8 @@ export class WeaponManager {
         }
         if (this.weapons[this.curWeapIdx].ammo <= 0) return;
 
-        this.weapons[this.curWeapIdx].cooldown = this.player.game.now + (itemDef.fireDelay * 1000);
+        this.weapons[this.curWeapIdx].cooldown =
+            this.player.game.now + itemDef.fireDelay * 1000;
 
         if (this.player.shootHold && itemDef.fireMode === "burst") {
             this.burstCount++;
@@ -345,12 +380,16 @@ export class WeaponManager {
                 this.timeouts.push(
                     setTimeout(() => {
                         this.fireWeapon(true);
-                    }, itemDef.burstDelay! * 1000));
+                    }, itemDef.burstDelay! * 1000)
+                );
             }
         }
 
-        if (this.player.shootHold &&
-            (itemDef.fireMode === "auto" || (itemDef.fireMode === "burst") && this.burstCount >= itemDef.burstCount!)) {
+        if (
+            this.player.shootHold &&
+            (itemDef.fireMode === "auto" ||
+                (itemDef.fireMode === "burst" && this.burstCount >= itemDef.burstCount!))
+        ) {
             this.burstCount = 0;
 
             this.clearTimeouts();
@@ -382,7 +421,9 @@ export class WeaponManager {
         const collisionLayer = util.toGroundLayer(this.player.layer);
         const bulletLayer = this.player.aimLayer;
 
-        const gunOff = itemDef.isDual ? itemDef.dualOffset! * (this.offHand ? 1.0 : -1.0) : itemDef.barrelOffset;
+        const gunOff = itemDef.isDual
+            ? itemDef.dualOffset! * (this.offHand ? 1.0 : -1.0)
+            : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));
         const gunLen = itemDef.barrelLength;
 
@@ -392,15 +433,25 @@ export class WeaponManager {
         let clipLen = gunLen + 1.5;
         let clipPt = v2.add(gunPos, v2.mul(direction, clipLen));
         let clipNrm = v2.mul(direction, -1.0);
-        const aabb = collider.createAabbExtents(this.player.pos, v2.create(this.player.rad + gunLen + 1.5));
+        const aabb = collider.createAabbExtents(
+            this.player.pos,
+            v2.create(this.player.rad + gunLen + 1.5)
+        );
 
-        const nearbyObjs = this.player.game.grid.intersectCollider(aabb).filter(obj => obj.__type === ObjectType.Obstacle);
+        const nearbyObjs = this.player.game.grid
+            .intersectCollider(aabb)
+            .filter((obj) => obj.__type === ObjectType.Obstacle);
 
         for (let i = 0; i < nearbyObjs.length; i++) {
             const obj = nearbyObjs[i];
 
             // eslint-disable-next-line no-mixed-operators
-            if (obj.dead || !obj.collidable && obj.isWall || !util.sameLayer(obj.layer, bulletLayer) || obj.height < GameConfig.bullet.height) {
+            if (
+                obj.dead ||
+                (!obj.collidable && obj.isWall) ||
+                !util.sameLayer(obj.layer, bulletLayer) ||
+                obj.height < GameConfig.bullet.height
+            ) {
                 continue;
             }
             // @NOTE: The player can sometimes be inside a collider.
@@ -409,7 +460,10 @@ export class WeaponManager {
             // stairwell. In this case we'll just ignore that particular
             // collider.
             // Create fake circle for detecting collision between guns and map objects.
-            if (!util.sameLayer(collisionLayer, bulletLayer) && collider.intersectCircle(obj.collider, gunPos, GameConfig.player.radius)) {
+            if (
+                !util.sameLayer(collisionLayer, bulletLayer) &&
+                collider.intersectCircle(obj.collider, gunPos, GameConfig.player.radius)
+            ) {
                 continue;
             }
 
@@ -452,7 +506,10 @@ export class WeaponManager {
             let bltStart = v2.add(gunPos, v2.mul(direction, gunLen));
             if (i > 0) {
                 // Add shotgun jitter
-                const offset = v2.mul(v2.create(util.random(-jitter, jitter), util.random(-jitter, jitter)), 1.11);
+                const offset = v2.mul(
+                    v2.create(util.random(-jitter, jitter), util.random(-jitter, jitter)),
+                    1.11
+                );
                 bltStart = v2.add(bltStart, offset);
             }
 
@@ -524,7 +581,10 @@ export class WeaponManager {
                 for (let j = 0; j < 2; j++) {
                     const sParams = { ...params };
 
-                    const _deviation = util.random(0.2, 0.25) * splinterSpread * (j % 2 === 0 ? -1.0 : 1.0);
+                    const _deviation =
+                        util.random(0.2, 0.25) *
+                        splinterSpread *
+                        (j % 2 === 0 ? -1.0 : 1.0);
                     sParams.dir = v2.rotate(sParams.dir, math.deg2rad(_deviation));
                     sParams.lastShot = false;
                     sParams.shotFx = false;
@@ -563,14 +623,20 @@ export class WeaponManager {
         const damageTimes = meleeDef.attack.damageTimes;
         for (let i = 0; i < damageTimes.length; i++) {
             const damageTime = damageTimes[i];
-            this.timeouts.push(setTimeout(() => {
-                this.meleeDamage();
-            }, damageTime * 1000));
+            this.timeouts.push(
+                setTimeout(() => {
+                    this.meleeDamage();
+                }, damageTime * 1000)
+            );
         }
         if (meleeDef.autoAttack && this.player.shootHold) {
-            this.timeouts.push(setTimeout(() => {
-                if (this.player.shootHold) { this.meleeAttack(true); }
-            }, meleeDef.attack.cooldownTime * 1000));
+            this.timeouts.push(
+                setTimeout(() => {
+                    if (this.player.shootHold) {
+                        this.meleeAttack(true);
+                    }
+                }, meleeDef.attack.cooldownTime * 1000)
+            );
         }
     }
 
@@ -585,24 +651,28 @@ export class WeaponManager {
         const lineEnd = coll.rad + v2.length(v2.sub(this.player.pos, coll.pos));
 
         const hits: Array<{
-            obj: GameObject
-            prio: number
-            pos: Vec2
-            pen: number
-            dir: Vec2
+            obj: GameObject;
+            prio: number;
+            pos: Vec2;
+            pen: number;
+            dir: Vec2;
         }> = [];
 
         const objs = this.player.game.grid.intersectCollider(coll);
 
-        const obstacles = objs.filter(obj => obj.__type === ObjectType.Obstacle);
+        const obstacles = objs.filter((obj) => obj.__type === ObjectType.Obstacle);
 
         for (const obj of objs) {
             if (obj.__type === ObjectType.Obstacle) {
                 const obstacle = obj;
-                if (!(obstacle.dead ||
-                    obstacle.isSkin ||
-                    obstacle.height < GameConfig.player.meleeHeight) &&
-                    util.sameLayer(obstacle.layer, 1 & this.player.layer)) {
+                if (
+                    !(
+                        obstacle.dead ||
+                        obstacle.isSkin ||
+                        obstacle.height < GameConfig.player.meleeHeight
+                    ) &&
+                    util.sameLayer(obstacle.layer, 1 & this.player.layer)
+                ) {
                     let collision = collider.intersectCircle(
                         obstacle.collider,
                         coll.pos,
@@ -623,15 +693,14 @@ export class WeaponManager {
                             this.player.layer,
                             false
                         );
-                        intersectedObstacle && intersectedObstacle.id !== obstacle.__id && (collision = null);
+                        intersectedObstacle &&
+                            intersectedObstacle.id !== obstacle.__id &&
+                            (collision = null);
                     }
                     if (collision) {
                         const pos = v2.add(
                             coll.pos,
-                            v2.mul(
-                                v2.neg(collision.dir),
-                                coll.rad - collision.pen
-                            )
+                            v2.mul(v2.neg(collision.dir), coll.rad - collision.pen)
                         );
                         hits.push({
                             obj: obstacle,
@@ -644,7 +713,8 @@ export class WeaponManager {
                 }
             } else if (obj.__type === ObjectType.Player) {
                 const player = obj;
-                if (player.__id !== this.player.__id &&
+                if (
+                    player.__id !== this.player.__id &&
                     !player.dead &&
                     util.sameLayer(player.layer, this.player.layer)
                 ) {
@@ -658,7 +728,8 @@ export class WeaponManager {
                         player.pos,
                         player.rad
                     );
-                    if (collision &&
+                    if (
+                        collision &&
                         math.eqAbs(
                             lineEnd,
                             collisionHelpers.intersectSegmentDist(
@@ -685,9 +756,7 @@ export class WeaponManager {
         }
 
         hits.sort((a, b) => {
-            return a.prio === b.prio
-                ? b.pen - a.pen
-                : a.prio - b.prio;
+            return a.prio === b.prio ? b.pen - a.pen : a.prio - b.prio;
         });
 
         let maxHits = hits.length;
@@ -727,19 +796,23 @@ export class WeaponManager {
 
             const itemDef = GameObjectDefs[this.activeWeapon];
 
-            if (itemDef.type === "throwable" &&
-                itemDef.cookable &&
-                this.cookTicker > itemDef.fuseTime ||
-                (!this.player.shootHold &&
-                    this.cookTicker > GameConfig.player.cookTime)) {
+            if (
+                (itemDef.type === "throwable" &&
+                    itemDef.cookable &&
+                    this.cookTicker > itemDef.fuseTime) ||
+                (!this.player.shootHold && this.cookTicker > GameConfig.player.cookTime)
+            ) {
                 this.throwThrowable();
             }
         }
     }
 
     cookThrowable(): void {
-        if (this.player.animType === GameConfig.Anim.Cook ||
-            this.player.animType === GameConfig.Anim.Throw) return;
+        if (
+            this.player.animType === GameConfig.Anim.Cook ||
+            this.player.animType === GameConfig.Anim.Throw
+        )
+            return;
         const itemDef = GameObjectDefs[this.activeWeapon];
         if (itemDef.type !== "throwable") {
             throw new Error(`Invalid throwable item: ${this.activeWeapon}`);
@@ -747,9 +820,13 @@ export class WeaponManager {
         this.cookingThrowable = true;
         this.cookTicker = 0;
 
-        this.player.playAnim(GameConfig.Anim.Cook, itemDef.cookable ? itemDef.fuseTime : Infinity, () => {
-            this.throwThrowable();
-        });
+        this.player.playAnim(
+            GameConfig.Anim.Cook,
+            itemDef.cookable ? itemDef.fuseTime : Infinity,
+            () => {
+                this.throwThrowable();
+            }
+        );
     }
 
     throwThrowable(): void {
@@ -782,12 +859,21 @@ export class WeaponManager {
 
         if (!throwableDef.explosionType) return;
 
-        const pos = v2.add(this.player.pos, v2.rotate(v2.create(0.5, -1.0), Math.atan2(this.player.dir.y, this.player.dir.x)));
+        const pos = v2.add(
+            this.player.pos,
+            v2.rotate(
+                v2.create(0.5, -1.0),
+                Math.atan2(this.player.dir.y, this.player.dir.x)
+            )
+        );
 
         let { dir } = this.player;
         // Aim toward a point some distance infront of the player
         if (throwableDef.aimDistance > 0.0) {
-            const aimTarget = v2.add(this.player.pos, v2.mul(this.player.dir, throwableDef.aimDistance));
+            const aimTarget = v2.add(
+                this.player.pos,
+                v2.mul(this.player.dir, throwableDef.aimDistance)
+            );
             dir = v2.normalizeSafe(v2.sub(aimTarget, pos), v2.create(1.0, 0.0));
         }
 
@@ -799,7 +885,10 @@ export class WeaponManager {
             v2.mul(dir, throwPhysicsSpeed * throwStr)
         );
 
-        const fuseTime = math.max(0.0, throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0));
+        const fuseTime = math.max(
+            0.0,
+            throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0)
+        );
         this.player.game.projectileBarn.addProjectile(
             this.player.__id,
             throwableType,
@@ -844,7 +933,8 @@ export class WeaponManager {
         this.weapons[slot].type = "";
         this.weapons[slot].ammo = 0;
         this.weapons[slot].cooldown = 0;
-        if (this.curWeapIdx === slot) { // set weapon index to melee if run out of grenades
+        if (this.curWeapIdx === slot) {
+            // set weapon index to melee if run out of grenades
             this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
         }
     }

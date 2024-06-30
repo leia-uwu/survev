@@ -1,6 +1,7 @@
 import { type BitStream } from "../../../shared/net";
 import {
-    type ObjectData, ObjectType,
+    type ObjectData,
+    ObjectType,
     type ObjectsPartialData
 } from "../../../shared/utils/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
@@ -14,7 +15,7 @@ export class Pool<T extends AbstractObject> {
     pool: T[] = [];
     activeCount = 0;
     creator: {
-        type: C<T>
+        type: C<T>;
     };
 
     constructor(classFn: C<T>) {

@@ -85,9 +85,7 @@ const mapDef = {
                 club_complex_01: 1
             }
         ],
-        spawnReplacements: [
-            { bush_01: "bush_01f", tree_01: "tree_08su" }
-        ]
+        spawnReplacements: [{ bush_01: "bush_01f", tree_01: "tree_08su" }]
     }
 };
 

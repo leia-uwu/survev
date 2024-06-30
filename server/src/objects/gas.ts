@@ -1,7 +1,7 @@
-import { type Vec2, v2 } from "./../../../shared/utils/v2";
 import { GameConfig } from "../../../shared/gameConfig";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
+import { type Vec2, v2 } from "./../../../shared/utils/v2";
 
 const GasMode = GameConfig.GasMode;
 export class Gas {
@@ -112,17 +112,12 @@ export class Gas {
 
     doDamage = false;
 
-    constructor(
-        readonly map: { readonly width: number, height: number }
-    ) {
+    constructor(readonly map: { readonly width: number; height: number }) {
         const mapSize = (map.width + map.height) / 2;
 
         this.radNew = this.radOld = this.currentRad = GameConfig.gas.initWidth * mapSize;
 
-        this.posOld = v2.create(
-            map.width / 2,
-            map.height / 2
-        );
+        this.posOld = v2.create(map.width / 2, map.height / 2);
 
         this.posNew = v2.copy(this.posOld);
         this.currentPos = v2.copy(this.posOld);
@@ -173,7 +168,8 @@ export class Gas {
                 this.posNew = v2.add(this.posOld, util.randomPointInCircle(this.radNew));
 
                 const rad = this.radNew;
-                this.posNew = math.v2Clamp(this.posNew,
+                this.posNew = math.v2Clamp(
+                    this.posNew,
                     v2.create(rad, rad),
                     v2.create(this.map.width - rad, this.map.height - rad)
                 );
@@ -184,29 +180,38 @@ export class Gas {
         }
 
         switch (this.mode) {
-        case GasMode.Inactive: {
-            this.mode = GasMode.Waiting;
-            break;
-        }
-        case GasMode.Waiting: {
-            this.mode = GasMode.Moving;
-            this.gasTime = math.max(this.gasTime - GameConfig.gas.gasTimeDecay, GameConfig.gas.gasTimeMin);
-            if (this.radNew > 0) {
-                this.stage++;
+            case GasMode.Inactive: {
+                this.mode = GasMode.Waiting;
+                break;
             }
-            break;
-        }
-        case GasMode.Moving: {
-            this.waitTime = math.max(this.waitTime - GameConfig.gas.waitTimeDecay, GameConfig.gas.waitTimeMin);
-            this.mode = GasMode.Waiting;
-            if (this.radNew > 0) {
-                this.stage++;
+            case GasMode.Waiting: {
+                this.mode = GasMode.Moving;
+                this.gasTime = math.max(
+                    this.gasTime - GameConfig.gas.gasTimeDecay,
+                    GameConfig.gas.gasTimeMin
+                );
+                if (this.radNew > 0) {
+                    this.stage++;
+                }
+                break;
             }
-            break;
-        }
+            case GasMode.Moving: {
+                this.waitTime = math.max(
+                    this.waitTime - GameConfig.gas.waitTimeDecay,
+                    GameConfig.gas.waitTimeMin
+                );
+                this.mode = GasMode.Waiting;
+                if (this.radNew > 0) {
+                    this.stage++;
+                }
+                break;
+            }
         }
 
-        this.damage = GameConfig.gas.damage[math.clamp(this.stage - 1, 0, GameConfig.gas.damage.length - 1)];
+        this.damage =
+            GameConfig.gas.damage[
+                math.clamp(this.stage - 1, 0, GameConfig.gas.damage.length - 1)
+            ];
         this._gasTicker = 0;
         this.dirty = true;
         this.timeDirty = true;

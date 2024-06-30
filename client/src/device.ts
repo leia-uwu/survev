@@ -13,10 +13,7 @@ function detectMobile() {
 
 function isIpad() {
     const ua = navigator.userAgent.toLowerCase();
-    return (
-        ua.includes("ipad") ||
-        (ua.includes("macintosh") && "ontouchend" in document)
-    );
+    return ua.includes("ipad") || (ua.includes("macintosh") && "ontouchend" in document);
 }
 
 function detectiOS() {
@@ -61,13 +58,13 @@ function getBrowser() {
 function setItem(key: string, value: string) {
     try {
         localStorage.setItem(key, value);
-    } catch (e) { }
+    } catch (_e) {}
 }
 function getItem(key: string) {
     let item = null;
     try {
         item = localStorage.getItem(key);
-    } catch (e) { }
+    } catch (_e) {}
     return item;
 }
 
@@ -118,9 +115,7 @@ class Device {
         this.screenHeight = window.innerHeight;
         const layoutDim = this.isLandscape ? this.screenWidth : this.screenHeight;
         this.uiLayout =
-            this.mobile ||
-                layoutDim <= 850 ||
-                (layoutDim <= 900 && this.pixelRatio >= 3)
+            this.mobile || layoutDim <= 850 || (layoutDim <= 900 && this.pixelRatio >= 3)
                 ? this.UiLayout.Sm
                 : this.UiLayout.Lg;
     }

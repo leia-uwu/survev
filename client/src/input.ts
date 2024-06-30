@@ -36,11 +36,11 @@ export class InputHandler {
     touchIdCounter = 0;
     lostFocus = false;
     captureNextInputCb:
-    | ((
-        event: KeyboardEvent | MouseEvent | globalThis.TouchEvent,
-        inputValue: InputValue
-    ) => void)
-    | null = null;
+        | ((
+              event: KeyboardEvent | MouseEvent | globalThis.TouchEvent,
+              inputValue: InputValue
+          ) => void)
+        | null = null;
 
     constructor(public touchElem: HTMLElement) {
         window.addEventListener("focus", this.onWindowFocus.bind(this), false);
@@ -57,11 +57,7 @@ export class InputHandler {
         window.addEventListener("touchmove", this.onTouchMove.bind(this), false);
         window.addEventListener("touchstart", this.onTouchStart.bind(this), false);
         window.addEventListener("touchend", this.onTouchEnd.bind(this), false);
-        window.addEventListener(
-            "touchcancel",
-            this.onTouchCancel.bind(this),
-            false
-        );
+        window.addEventListener("touchcancel", this.onTouchCancel.bind(this), false);
         this.touchElem.addEventListener(
             "touchstart",
             (e) => {
@@ -114,50 +110,48 @@ export class InputHandler {
         inputCode: number
     ) {
         return (
-            !!this.captureNextInputCb?.(
-                event,
-                new InputValue(inputType, inputCode)
-            ) && !((this.captureNextInputCb = null), 0)
+            !!this.captureNextInputCb?.(event, new InputValue(inputType, inputCode)) &&
+            !((this.captureNextInputCb = null), 0)
         );
     }
 
     // InputValue
     isInputValuePressed(inputValue: InputValue) {
         switch (inputValue.type) {
-        case InputType.Key:
-            return this.keyPressed(inputValue.code);
-        case InputType.MouseButton:
-            return this.mousePressed(inputValue.code);
-        case InputType.MouseWheel:
-            return this.mouseWheel() == inputValue.code;
-        default:
-            return false;
+            case InputType.Key:
+                return this.keyPressed(inputValue.code);
+            case InputType.MouseButton:
+                return this.mousePressed(inputValue.code);
+            case InputType.MouseWheel:
+                return this.mouseWheel() == inputValue.code;
+            default:
+                return false;
         }
     }
 
     isInputValueReleased(inputValue: InputValue) {
         switch (inputValue.type) {
-        case InputType.Key:
-            return this.keyReleased(inputValue.code);
-        case InputType.MouseButton:
-            return this.mouseReleased(inputValue.code);
-        case InputType.MouseWheel:
-            return this.mouseWheel() == inputValue.code;
-        default:
-            return false;
+            case InputType.Key:
+                return this.keyReleased(inputValue.code);
+            case InputType.MouseButton:
+                return this.mouseReleased(inputValue.code);
+            case InputType.MouseWheel:
+                return this.mouseWheel() == inputValue.code;
+            default:
+                return false;
         }
     }
 
     isInputValueDown(inputValue: InputValue) {
         switch (inputValue.type) {
-        case InputType.Key:
-            return this.keyDown(inputValue.code);
-        case InputType.MouseButton:
-            return this.mouseDown(inputValue.code);
-        case InputType.MouseWheel:
-            return this.mouseWheel() == inputValue.code;
-        default:
-            return false;
+            case InputType.Key:
+                return this.keyDown(inputValue.code);
+            case InputType.MouseButton:
+                return this.mouseDown(inputValue.code);
+            case InputType.MouseWheel:
+                return this.mouseWheel() == inputValue.code;
+            default:
+                return false;
         }
     }
 
@@ -379,7 +373,7 @@ export enum Key {
     Plus = 187,
     Minus = 189,
     FwdSlash = 191,
-    Tilde = 192,
+    Tilde = 192
 }
 
 export enum MouseButton {
@@ -387,20 +381,20 @@ export enum MouseButton {
     Middle,
     Right,
     Thumb1,
-    Thumb2,
+    Thumb2
 }
 
 export enum MouseWheel {
     None,
     Up,
-    Down,
+    Down
 }
 
 export enum InputType {
     None,
     Key,
     MouseButton,
-    MouseWheel,
+    MouseWheel
 }
 const KeyNames = [
     "",
@@ -670,7 +664,10 @@ const MouseButtonNames = [
 const MouseWheelNames = ["", "Mouse Wheel Up", "Mouse Wheel Down"];
 
 export class InputValue {
-    constructor(public type: InputType, public code: number) {
+    constructor(
+        public type: InputType,
+        public code: number
+    ) {
         this.type = type;
         this.code = code;
     }
@@ -696,5 +693,5 @@ enum TouchEvent {
     Move,
     Start,
     End,
-    Cancel,
+    Cancel
 }

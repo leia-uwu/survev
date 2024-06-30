@@ -5,25 +5,25 @@ import { deepEqual } from "../../../shared/utils/deepEqual";
 import type { Crosshair } from "../crosshair";
 
 export interface Loadout {
-    player_icon: string
-    outfit: string
-    heal: string
-    boost: string
-    melee: string
-    emotes: string[]
-    crosshair: Crosshair
+    player_icon: string;
+    outfit: string;
+    heal: string;
+    boost: string;
+    melee: string;
+    emotes: string[];
+    crosshair: Crosshair;
 }
 
 export enum ItemStatus {
     New,
     Confirmed,
-    Ackd,
+    Ackd
 }
 
 const loadout = {
     ItemStatus,
-    validate: function(userLoadout: Loadout) {
-        const getGameType = function(
+    validate: function (userLoadout: Loadout) {
+        const getGameType = function (
             type: string,
             gameType: string,
             defaultValue: string
@@ -34,7 +34,7 @@ const loadout = {
             }
             return defaultValue;
         };
-        const getFloat = function(flt: string, defaultValue: number) {
+        const getFloat = function (flt: string, defaultValue: number) {
             const val = parseFloat(flt);
             if (Number.isNaN(val)) {
                 return defaultValue;
@@ -121,13 +121,13 @@ const loadout = {
         return loadout.validate(loadout);
     },
     */
-    defaultLoadout: function() {
+    defaultLoadout: function () {
         return loadout.validate({} as Loadout);
     },
-    modified: function(a: Loadout, b: Loadout) {
+    modified: function (a: Loadout, b: Loadout) {
         return !deepEqual(a, b);
     },
-    getUserAvailableItems: function(heroItems: unknown[]) {
+    getUserAvailableItems: function (heroItems: unknown[]) {
         const items = [];
         // Add default items
         const unlockDefaultDef =

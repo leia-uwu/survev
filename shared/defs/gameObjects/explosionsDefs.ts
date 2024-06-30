@@ -1,16 +1,16 @@
 export interface ExplosionDef {
-    readonly type: "explosion"
-    damage: number
-    obstacleDamage: number
+    readonly type: "explosion";
+    damage: number;
+    obstacleDamage: number;
     rad: {
-        min: number
-        max: number
-    }
-    shrapnelCount: number
-    shrapnelType: string
-    explosionEffectType: string
-    decalType: string
-    teamDamage?: boolean
+        min: number;
+        max: number;
+    };
+    shrapnelCount: number;
+    shrapnelType: string;
+    explosionEffectType: string;
+    decalType: string;
+    teamDamage?: boolean;
 }
 
 export const ExplosionDefs: Record<string, ExplosionDef> = {

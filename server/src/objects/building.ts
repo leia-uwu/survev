@@ -1,18 +1,22 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
-import { type StructureDef, type BuildingDef, type ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
+import {
+    type BuildingDef,
+    type ObstacleDef,
+    type StructureDef
+} from "../../../shared/defs/mapObjectsTyping";
 import { Puzzles } from "../../../shared/defs/puzzles";
-import { type Game } from "../game";
-import { coldet, type AABB, type Collider } from "../../../shared/utils/coldet";
+import { type AABB, type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type Game } from "../game";
+import { getColliders } from "../map";
 import { type Decal } from "./decal";
 import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import { type Structure } from "./structure";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { getColliders } from "../map";
 
 export class Building extends BaseGameObject {
     bounds: Collider;
@@ -44,19 +48,19 @@ export class Building extends BaseGameObject {
     parentStructure?: Structure;
 
     surfaces: Array<{
-        type: string
-        colliders: Collider[]
+        type: string;
+        colliders: Collider[];
     }> = [];
 
     zoomRegions: Array<{
-        zoomIn?: AABB
-        zoomOut?: AABB
-        zoom?: number
+        zoomIn?: AABB;
+        zoomOut?: AABB;
+        zoom?: number;
     }> = [];
 
     healRegions?: Array<{
-        collision: AABB
-        healRate: number
+        collision: AABB;
+        healRate: number;
     }> = [];
 
     goreRegion?: AABB;
@@ -99,20 +103,30 @@ export class Building extends BaseGameObject {
         );
 
         // transforms heal region local coordinates to world coordinates
-        this.healRegions = def.healRegions?.map(hr => {
+        this.healRegions = def.healRegions?.map((hr) => {
             return {
-                collision: collider.transform(hr.collision, this.pos, this.rot, this.scale) as AABB,
+                collision: collider.transform(
+                    hr.collision,
+                    this.pos,
+                    this.rot,
+                    this.scale
+                ) as AABB,
                 healRate: hr.healRate
             };
         });
 
         if (def.goreRegion) {
-            this.goreRegion = collider.transform(def.goreRegion, this.pos, this.rot, this.scale) as AABB;
+            this.goreRegion = collider.transform(
+                def.goreRegion,
+                this.pos,
+                this.rot,
+                this.scale
+            ) as AABB;
         }
 
         this.wallsToDestroy = def.ceiling.destroy?.wallCount ?? Infinity;
 
-        this.mapObstacleBounds = getColliders(type).ground.map(coll => {
+        this.mapObstacleBounds = getColliders(type).ground.map((coll) => {
             return collider.transform(coll, pos, this.rot, 1);
         });
 
@@ -125,7 +139,9 @@ export class Building extends BaseGameObject {
                 colliders: [] as Collider[]
             };
             for (let i = 0; i < surfaceDef.collision.length; i++) {
-                surface.colliders.push(collider.transform(surfaceDef.collision[i], this.pos, this.rot, 1));
+                surface.colliders.push(
+                    collider.transform(surfaceDef.collision[i], this.pos, this.rot, 1)
+                );
             }
             this.surfaces.push(surface);
         }
@@ -134,12 +150,12 @@ export class Building extends BaseGameObject {
         for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
             const region = def.ceiling.zoomRegions[i];
             const zoomIn = region.zoomIn
-                ? collider.transform(
-                    region.zoomIn,
-                    this.pos,
-                    this.rot,
-                    this.scale
-                ) as AABB
+                ? (collider.transform(
+                      region.zoomIn,
+                      this.pos,
+                      this.rot,
+                      this.scale
+                  ) as AABB)
                 : undefined;
 
             if (zoomIn) {
@@ -149,18 +165,19 @@ export class Building extends BaseGameObject {
             this.zoomRegions.push({
                 zoomIn,
                 zoomOut: region.zoomOut
-                    ? collider.transform(
-                        region.zoomOut,
-                        this.pos,
-                        this.rot,
-                        this.scale
-                    ) as AABB
+                    ? (collider.transform(
+                          region.zoomOut,
+                          this.pos,
+                          this.rot,
+                          this.scale
+                      ) as AABB)
                     : undefined,
                 zoom: region.zoom
             });
         }
 
-        this.hasOccupiedEmitters = !!def.occupiedEmitters && def.occupiedEmitters.length > 0;
+        this.hasOccupiedEmitters =
+            !!def.occupiedEmitters && def.occupiedEmitters.length > 0;
         const emitterBounds = coldet.boundingAabb(zoomInBounds);
         this.emitterBounds = collider.createAabb(emitterBounds.min, emitterBounds.max);
 
@@ -217,12 +234,19 @@ export class Building extends BaseGameObject {
         } else if (this.puzzleOrder.length >= puzzleOrder.length) {
             this.puzzleErrSeq++;
             this.setPartDirty();
-            this.puzzleResetTimeout = setTimeout(this.resetPuzzle.bind(this), puzzleDef.errorResetDelay * 1000);
+            this.puzzleResetTimeout = setTimeout(
+                this.resetPuzzle.bind(this),
+                puzzleDef.errorResetDelay * 1000
+            );
         } else {
             this.puzzleResetTimeout = setTimeout(() => {
                 this.puzzleErrSeq++;
                 this.setPartDirty();
-                setTimeout(this.resetPuzzle.bind(this), puzzleDef.errorResetDelay * 1000, this);
+                setTimeout(
+                    this.resetPuzzle.bind(this),
+                    puzzleDef.errorResetDelay * 1000,
+                    this
+                );
             }, puzzleDef.pieceResetDelay * 1000);
         }
     }

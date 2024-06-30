@@ -167,18 +167,10 @@ export const Main: MapDef = {
             { name: "8xscope", count: 1, weight: 0.049 },
             { name: "15xscope", count: 1, weight: 0.001 }
         ],
-        tier_mansion_floor: [
-            { name: "outfitCasanova", count: 1, weight: 1 }
-        ],
-        tier_vault_floor: [
-            { name: "outfitJester", count: 1, weight: 1 }
-        ],
-        tier_police_floor: [
-            { name: "outfitPrisoner", count: 1, weight: 1 }
-        ],
-        tier_chrys_01: [
-            { name: "outfitImperial", count: 1, weight: 1 }
-        ],
+        tier_mansion_floor: [{ name: "outfitCasanova", count: 1, weight: 1 }],
+        tier_vault_floor: [{ name: "outfitJester", count: 1, weight: 1 }],
+        tier_police_floor: [{ name: "outfitPrisoner", count: 1, weight: 1 }],
+        tier_chrys_01: [{ name: "outfitImperial", count: 1, weight: 1 }],
         tier_chrys_02: [{ name: "katana", count: 1, weight: 1 }],
         tier_chrys_03: [
             { name: "2xscope", count: 1, weight: 1 },
@@ -186,18 +178,14 @@ export const Main: MapDef = {
             { name: "8xscope", count: 1, weight: 0.05 },
             { name: "15xscope", count: 1, weight: 0.001 }
         ],
-        tier_chrys_case: [
-            { name: "", count: 1, weight: 1 }
-        ],
+        tier_chrys_case: [{ name: "", count: 1, weight: 1 }],
         tier_chrys_chest: [
             { name: "", count: 1, weight: 1 },
             { name: "katana", count: 1, weight: 1 },
             { name: "katana_rusted", count: 1, weight: 1 },
             { name: "katana_orchid", count: 1, weight: 1 }
         ],
-        tier_eye_02: [
-            { name: "stonehammer", count: 1, weight: 1 }
-        ],
+        tier_eye_02: [{ name: "stonehammer", count: 1, weight: 1 }],
         tier_eye_block: [
             { name: "m9", count: 1, weight: 1 },
             { name: "ots38_dual", count: 1, weight: 1 },
@@ -290,15 +278,9 @@ export const Main: MapDef = {
             { name: "outfitAqua", count: 1, weight: 1 },
             { name: "outfitCoral", count: 1, weight: 1 }
         ],
-        tier_noir_outfit: [
-            { name: "outfitNoir", count: 1, weight: 1 }
-        ],
-        tier_khaki_outfit: [
-            { name: "outfitKhaki", count: 1, weight: 1 }
-        ],
-        tier_pirate_melee: [
-            { name: "hook", count: 1, weight: 1 }
-        ],
+        tier_noir_outfit: [{ name: "outfitNoir", count: 1, weight: 1 }],
+        tier_khaki_outfit: [{ name: "outfitKhaki", count: 1, weight: 1 }],
+        tier_pirate_melee: [{ name: "hook", count: 1, weight: 1 }],
         tier_hatchet: [
             { name: "vector", count: 1, weight: 5 },
             { name: "hk416", count: 1, weight: 2 },
@@ -336,27 +318,13 @@ export const Main: MapDef = {
             { name: "m9", count: 1, weight: 1 },
             { name: "pkp", count: 1, weight: 1 }
         ],
-        tier_forest_helmet: [
-            { name: "helmet03_forest", count: 1, weight: 1 }
-        ],
-        tier_imperial_outfit: [
-            { name: "outfitImperial", count: 1, weight: 1 }
-        ],
-        tier_pineapple_outfit: [
-            { name: "outfitPineapple", count: 1, weight: 1 }
-        ],
-        tier_tarkhany_outfit: [
-            { name: "outfitTarkhany", count: 1, weight: 1 }
-        ],
-        tier_spetsnaz_outfit: [
-            { name: "outfitSpetsnaz", count: 1, weight: 1 }
-        ],
-        tier_lumber_outfit: [
-            { name: "outfitLumber", count: 1, weight: 1 }
-        ],
-        tier_verde_outfit: [
-            { name: "outfitVerde", count: 1, weight: 1 }
-        ]
+        tier_forest_helmet: [{ name: "helmet03_forest", count: 1, weight: 1 }],
+        tier_imperial_outfit: [{ name: "outfitImperial", count: 1, weight: 1 }],
+        tier_pineapple_outfit: [{ name: "outfitPineapple", count: 1, weight: 1 }],
+        tier_tarkhany_outfit: [{ name: "outfitTarkhany", count: 1, weight: 1 }],
+        tier_spetsnaz_outfit: [{ name: "outfitSpetsnaz", count: 1, weight: 1 }],
+        tier_lumber_outfit: [{ name: "outfitLumber", count: 1, weight: 1 }],
+        tier_verde_outfit: [{ name: "outfitVerde", count: 1, weight: 1 }]
     },
     mapGen: {
         map: {
@@ -432,12 +400,7 @@ export const Main: MapDef = {
                     retryOnFailure: true
                 }
             ],
-            placeSpawns: [
-                "warehouse_01",
-                "house_red_01",
-                "house_red_02",
-                "barn_01"
-            ]
+            placeSpawns: ["warehouse_01", "house_red_01", "house_red_02", "barn_01"]
         },
         densitySpawns: [
             {
@@ -462,7 +425,8 @@ export const Main: MapDef = {
             }
         ],
         fixedSpawns: [
-            { // small is spawn count for solos and duos, large is spawn count for squads
+            {
+                // small is spawn count for solos and duos, large is spawn count for squads
                 warehouse_01: 2,
                 house_red_01: { small: 3, large: 4 },
                 house_red_02: { small: 3, large: 4 },
@@ -497,11 +461,7 @@ export const Main: MapDef = {
         ],
         randomSpawns: [
             {
-                spawns: [
-                    "mansion_structure_01",
-                    "police_01",
-                    "bank_01"
-                ],
+                spawns: ["mansion_structure_01", "police_01", "bank_01"],
                 choose: 2
             }
         ],

@@ -1,36 +1,36 @@
+import { randomBytes } from "crypto";
 import { URLSearchParams } from "url";
+import NanoTimer from "nanotimer";
+import { App, type HttpResponse, SSLApp, type WebSocket } from "uWebSockets.js";
+import { version } from "../../package.json";
+import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game";
-import { type Player } from "./objects/player";
-import { Logger } from "./utils/logger";
-import { version } from "../../package.json";
-import { randomBytes } from "crypto";
-import { TeamMenu } from "./teamMenu";
 import { type Group } from "./group";
-import { App, type HttpResponse, SSLApp, type WebSocket } from "uWebSockets.js";
-import NanoTimer from "nanotimer";
-import { GameConfig } from "../../shared/gameConfig";
+import { type Player } from "./objects/player";
+import { TeamMenu } from "./teamMenu";
+import { Logger } from "./utils/logger";
 
 export interface GameSocketData {
-    readonly gameID: string
-    sendMsg: (msg: ArrayBuffer | Uint8Array) => void
-    closeSocket: () => void
-    player?: Player
+    readonly gameID: string;
+    sendMsg: (msg: ArrayBuffer | Uint8Array) => void;
+    closeSocket: () => void;
+    player?: Player;
 }
 
 export interface TeamSocketData {
-    sendMsg: (response: string) => void
-    closeSocket: () => void
-    roomUrl: string
+    sendMsg: (response: string) => void;
+    closeSocket: () => void;
+    roomUrl: string;
 }
 
 export interface FindGameBody {
-    region: string
-    zones: string[]
-    version: number
-    playerCount: number
-    autoFill: boolean
-    gameModeIdx: number
+    region: string;
+    zones: string[];
+    version: number;
+    playerCount: number;
+    autoFill: boolean;
+    gameModeIdx: number;
 }
 
 export class Server {
@@ -49,7 +49,7 @@ export class Server {
         setInterval(() => {
             const memoryUsage = process.memoryUsage().rss;
 
-            const perfString = `Memory usage: ${Math.round(memoryUsage / 1024 / 1024 * 100) / 100} MB`;
+            const perfString = `Memory usage: ${Math.round((memoryUsage / 1024 / 1024) * 100) / 100} MB`;
 
             this.logger.log(perfString);
         }, 60000);
@@ -97,14 +97,16 @@ export class Server {
     }
 
     findGame(body: FindGameBody) {
-        let response: {
-            zone: string
-            gameId: string
-            useHttps: boolean
-            hosts: string[]
-            addrs: string[]
-            data: string
-        } | { err: string } = {
+        let response:
+            | {
+                  zone: string;
+                  gameId: string;
+                  useHttps: boolean;
+                  hosts: string[];
+                  addrs: string[];
+                  data: string;
+              }
+            | { err: string } = {
             zone: "",
             data: "",
             gameId: "",
@@ -113,17 +115,20 @@ export class Server {
             addrs: []
         };
 
-        const region = (Config.regions[body.region] ?? Config.regions[Config.defaultRegion]);
+        const region =
+            Config.regions[body.region] ?? Config.regions[Config.defaultRegion];
         if (region !== undefined) {
             response.hosts.push(region.address);
             response.addrs.push(region.address);
             response.useHttps = region.https;
 
-            let game = this.games.filter(game => {
-                return game.canJoin() && game.gameModeIdx === body.gameModeIdx;
-            }).sort((a, b) => {
-                return a.startedTime - b.startedTime;
-            })[0];
+            let game = this.games
+                .filter((game) => {
+                    return game.canJoin() && game.gameModeIdx === body.gameModeIdx;
+                })
+                .sort((a, b) => {
+                    return a.startedTime - b.startedTime;
+                })[0];
 
             if (!game) {
                 const mode = Config.modes[body.gameModeIdx];
@@ -148,9 +153,8 @@ export class Server {
                     let group: Group | undefined;
 
                     if (body.autoFill) {
-                        group = [...game.groups.values()].filter(group => {
-                            return group.autoFill &&
-                                group.players.length < mode.teamMode;
+                        group = [...game.groups.values()].filter((group) => {
+                            return group.autoFill && group.players.length < mode.teamMode;
                         })[0];
                     }
 
@@ -225,7 +229,10 @@ export class Server {
 function cors(res: HttpResponse): void {
     res.writeHeader("Access-Control-Allow-Origin", "*")
         .writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        .writeHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with")
+        .writeHeader(
+            "Access-Control-Allow-Headers",
+            "origin, content-type, accept, x-requested-with"
+        )
         .writeHeader("Access-Control-Max-Age", "3600");
 }
 
@@ -259,7 +266,7 @@ function readPostedJSON<T>(
                 try {
                     // @ts-expect-error JSON.parse can accept a Buffer as an argument
                     json = JSON.parse(Buffer.concat([buffer, chunk]));
-                } catch (e) {
+                } catch (_e) {
                     /* res.close calls onAborted */
                     res.close();
                     return;
@@ -269,7 +276,7 @@ function readPostedJSON<T>(
                 try {
                     // @ts-expect-error JSON.parse can accept a Buffer as an argument
                     json = JSON.parse(chunk);
-                } catch (e) {
+                } catch (_e) {
                     /* res.close calls onAborted */
                     res.close();
                     return;
@@ -293,14 +300,16 @@ const server = new Server();
 
 const app = Config.ssl
     ? SSLApp({
-        key_file_name: Config.ssl.keyFile,
-        cert_file_name: Config.ssl.certFile
-    })
+          key_file_name: Config.ssl.keyFile,
+          cert_file_name: Config.ssl.certFile
+      })
     : App();
 
 app.get("/api/site_info", (res) => {
     let aborted = false;
-    res.onAborted(() => { aborted = true; });
+    res.onAborted(() => {
+        aborted = true;
+    });
     cors(res);
     const data = server.getSiteInfo();
     if (!aborted) {
@@ -313,35 +322,43 @@ app.post("/api/user/profile", (res, _req) => {
     returnJson(res, server.getUserProfile());
 });
 
-app.post("/api/find_game", async(res) => {
-    readPostedJSON(res, (body: FindGameBody) => {
-        try {
-            returnJson(res, server.findGame(body));
-        } catch {
+app.post("/api/find_game", async (res) => {
+    readPostedJSON(
+        res,
+        (body: FindGameBody) => {
+            try {
+                returnJson(res, server.findGame(body));
+            } catch {
+                returnJson(res, {
+                    res: [
+                        {
+                            err: "Failed finding game"
+                        }
+                    ]
+                });
+            }
+        },
+        () => {
+            server.logger.warn("/api/find_game: Error retrieving body");
             returnJson(res, {
-                res: [{
-                    err: "Failed finding game"
-                }]
+                res: [
+                    {
+                        err: "Error retriving body"
+                    }
+                ]
             });
         }
-    }, () => {
-        server.logger.warn("/api/find_game: Error retrieving body");
-        returnJson(res, {
-            res: [{
-                err: "Error retriving body"
-            }]
-        });
-    });
+    );
 });
 
 app.ws("/play", {
     idleTimeout: 30,
     /**
-    * Upgrade the connection to WebSocket.
-    */
+     * Upgrade the connection to WebSocket.
+     */
     upgrade(res, req, context) {
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-        res.onAborted((): void => { });
+        res.onAborted((): void => {});
 
         const searchParams = new URLSearchParams(req.getQuery());
         const gameID = server.validateGameId(searchParams);
@@ -390,17 +407,16 @@ app.ws("/play", {
     close(socket: WebSocket<GameSocketData>) {
         server.onClose(socket.getUserData());
     }
-
 });
 
 app.ws("/team_v2", {
     idleTimeout: 30,
     /**
-    * Upgrade the connection to WebSocket.
-    */
+     * Upgrade the connection to WebSocket.
+     */
     upgrade(res, req, context) {
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-        res.onAborted((): void => { });
+        res.onAborted((): void => {});
 
         res.upgrade(
             {},
@@ -441,7 +457,6 @@ app.ws("/team_v2", {
             server.teamMenu.removePlayer(userData);
         }
     }
-
 });
 
 app.listen(Config.host, Config.port, (): void => {
@@ -449,5 +464,11 @@ app.listen(Config.host, Config.port, (): void => {
 
     const timer = new NanoTimer();
 
-    timer.setInterval(() => { server.update(); }, "", `${1000 / Config.tps}m`);
+    timer.setInterval(
+        () => {
+            server.update();
+        },
+        "",
+        `${1000 / Config.tps}m`
+    );
 });

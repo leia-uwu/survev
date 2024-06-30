@@ -1,20 +1,20 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { type Game } from "../game";
-import { coldet, type Collider } from "../../../shared/utils/coldet";
+import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { GameConfig } from "../../../shared/gameConfig";
+import { type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
-import { v2, type Vec2 } from "../../../shared/utils/v2";
-import { BaseGameObject } from "./gameObject";
+import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
-import { math } from "../../../shared/utils/math";
-import { GameConfig } from "../../../shared/gameConfig";
-import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { type Game } from "../game";
+import { BaseGameObject } from "./gameObject";
 
 const gravity = 10;
 
 export class ProjectileBarn {
     projectiles: Projectile[] = [];
-    constructor(readonly game: Game) { }
+    constructor(readonly game: Game) {}
 
     update(dt: number) {
         for (let i = 0; i < this.projectiles.length; i++) {
@@ -112,12 +112,17 @@ export class Projectile extends BaseGameObject {
         const objs = this.game.grid.intersectCollider(coll);
 
         for (const obj of objs) {
-            if (obj.__type === ObjectType.Obstacle &&
+            if (
+                obj.__type === ObjectType.Obstacle &&
                 util.sameLayer(this.layer, obj.layer) &&
                 !obj.dead &&
                 obj.collidable
             ) {
-                const intersection = collider.intersectCircle(obj.collider, this.pos, this.rad);
+                const intersection = collider.intersectCircle(
+                    obj.collider,
+                    this.pos,
+                    this.rad
+                );
                 if (intersection) {
                     // break obstacle if its a window
                     // resolve the collision otherwise
@@ -131,7 +136,10 @@ export class Projectile extends BaseGameObject {
                         });
                     } else {
                         if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
-                            this.pos = v2.add(this.pos, v2.mul(intersection.dir, intersection.pen));
+                            this.pos = v2.add(
+                                this.pos,
+                                v2.mul(intersection.dir, intersection.pen)
+                            );
 
                             if (def.explodeOnImpact) {
                                 this.explode();
@@ -141,7 +149,11 @@ export class Projectile extends BaseGameObject {
                         }
                     }
                 }
-            } else if (obj.__type === ObjectType.Player && def.playerCollision && obj.__id !== this.playerId) {
+            } else if (
+                obj.__type === ObjectType.Player &&
+                def.playerCollision &&
+                obj.__id !== this.playerId
+            ) {
                 if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
                     this.explode();
                 }

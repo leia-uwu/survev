@@ -1,38 +1,53 @@
-import { type Game } from "../game";
-import { GameConfig } from "../../../shared/gameConfig";
-import { collider } from "../../../shared/utils/collider";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
-import { type Circle, coldet } from "../../../shared/utils/coldet";
-import { util } from "../../../shared/utils/util";
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
-import { type Obstacle } from "./obstacle";
-import { WeaponManager, throwableList } from "../utils/weaponManager";
-import { math } from "../../../shared/utils/math";
-import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
-import { type Loot } from "./loot";
-import { type BackpackDef, type BoostDef, type ChestDef, GEAR_TYPES, type HealDef, type HelmetDef, SCOPE_LEVELS, type ScopeDef } from "../../../shared/defs/gameObjects/gearDefs";
-import { MsgStream, MsgType, PickupMsgType, Constants, type Msg } from "../../../shared/net";
-import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
-import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
-import { KillMsg } from "../../../shared/msgs/killMsg";
-import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
-import { PickupMsg } from "../../../shared/msgs/pickupMsg";
-import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
-import { InputMsg } from "../../../shared/msgs/inputMsg";
-import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { type Group } from "../group";
-import { Config, SpawnMode } from "../config";
-import { type JoinMsg } from "../../../shared/msgs/joinMsg";
-import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
-import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
-import { IDAllocator } from "../IDAllocator";
-import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
-import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
+import {
+    type BackpackDef,
+    type BoostDef,
+    type ChestDef,
+    GEAR_TYPES,
+    type HealDef,
+    type HelmetDef,
+    SCOPE_LEVELS,
+    type ScopeDef
+} from "../../../shared/defs/gameObjects/gearDefs";
 import { type GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
+import { type OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { type ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
+import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
+import { GameConfig } from "../../../shared/gameConfig";
+import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
+import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
+import { type DropItemMsg } from "../../../shared/msgs/dropItemMsg";
+import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
+import { InputMsg } from "../../../shared/msgs/inputMsg";
+import { type JoinMsg } from "../../../shared/msgs/joinMsg";
+import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
+import { KillMsg } from "../../../shared/msgs/killMsg";
+import { PickupMsg } from "../../../shared/msgs/pickupMsg";
+import { type SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
+import {
+    Constants,
+    type Msg,
+    MsgStream,
+    MsgType,
+    PickupMsgType
+} from "../../../shared/net";
+import { type Circle, coldet } from "../../../shared/utils/coldet";
+import { collider } from "../../../shared/utils/collider";
+import { math } from "../../../shared/utils/math";
+import { ObjectType } from "../../../shared/utils/objectSerializeFns";
+import { util } from "../../../shared/utils/util";
+import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { IDAllocator } from "../IDAllocator";
+import { Config, SpawnMode } from "../config";
+import { type Game } from "../game";
+import { type Group } from "../group";
 import { type GameSocketData } from "../server";
+import { WeaponManager, throwableList } from "../utils/weaponManager";
+import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
+import { type Loot } from "./loot";
+import { type Obstacle } from "./obstacle";
 
 export class Emote {
     playerId: number;
@@ -59,7 +74,7 @@ export class PlayerBarn {
 
     emotes: Emote[] = [];
 
-    constructor(readonly game: Game) { }
+    constructor(readonly game: Game) {}
 
     randomPlayer() {
         return this.livingPlayers[util.randomInt(0, this.livingPlayers.length - 1)];
@@ -86,32 +101,27 @@ export class PlayerBarn {
         }
 
         switch (Config.spawn.mode) {
-        case SpawnMode.Center:
-            pos = v2.copy(this.game.map.center);
-            break;
-        case SpawnMode.Fixed:
-            pos = v2.copy(Config.spawn.pos);
-            break;
-        case SpawnMode.Random:
-            if (!group) {
-                pos = this.game.map.getRandomSpawnPos();
-            } else {
-                const leader = group.players[0];
-                if (leader) {
-                    pos = this.game.map.getRandomSpawnPos(leader.pos, 5);
-                } else {
+            case SpawnMode.Center:
+                pos = v2.copy(this.game.map.center);
+                break;
+            case SpawnMode.Fixed:
+                pos = v2.copy(Config.spawn.pos);
+                break;
+            case SpawnMode.Random:
+                if (!group) {
                     pos = this.game.map.getRandomSpawnPos();
+                } else {
+                    const leader = group.players[0];
+                    if (leader) {
+                        pos = this.game.map.getRandomSpawnPos(leader.pos, 5);
+                    } else {
+                        pos = this.game.map.getRandomSpawnPos();
+                    }
                 }
-            }
-            break;
+                break;
         }
 
-        const player = new Player(
-            this.game,
-            pos,
-            socketData,
-            joinMsg
-        );
+        const player = new Player(this.game, pos, socketData, joinMsg);
 
         if (group) {
             group.addPlayer(player);
@@ -198,7 +208,9 @@ export class PlayerBarn {
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
 
-    bounds = collider.toAabb(collider.createCircle(v2.create(0, 0), GameConfig.player.maxVisualRadius));
+    bounds = collider.toAabb(
+        collider.createCircle(v2.create(0, 0), GameConfig.player.maxVisualRadius)
+    );
 
     scale = 1;
 
@@ -368,7 +380,9 @@ export class Player extends BaseGameObject {
 
     set spectating(player: Player | undefined) {
         if (player === this) {
-            throw new Error(`Player ${player.name} tried spectate themselves (how tf did this happen?)`);
+            throw new Error(
+                `Player ${player.name} tried spectate themselves (how tf did this happen?)`
+            );
         }
         if (this._spectating === player) return;
 
@@ -396,7 +410,8 @@ export class Player extends BaseGameObject {
     chest = "";
 
     getGearLevel(type: string): number {
-        if (!type) { // not wearing any armor, level 0
+        if (!type) {
+            // not wearing any armor, level 0
             return 0;
         } else {
             return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
@@ -428,7 +443,10 @@ export class Player extends BaseGameObject {
     reloadAgain = false;
 
     get wearingPan(): boolean {
-        return this.weapons.find(weapon => weapon.type === "pan") !== undefined && this.activeWeapon !== "pan";
+        return (
+            this.weapons.find((weapon) => weapon.type === "pan") !== undefined &&
+            this.activeWeapon !== "pan"
+        );
     }
 
     healEffect = false;
@@ -450,7 +468,7 @@ export class Player extends BaseGameObject {
 
     role = "";
 
-    perks: Array<{ type: string, droppable: boolean }> = [];
+    perks: Array<{ type: string; droppable: boolean }> = [];
 
     perkTypes: string[] = [];
 
@@ -463,7 +481,7 @@ export class Player extends BaseGameObject {
     }
 
     removePerk(type: string): void {
-        const idx = this.perks.findIndex(perk => perk.type === type);
+        const idx = this.perks.findIndex((perk) => perk.type === type);
         this.perks.splice(idx, 1);
         this.perkTypes.splice(this.perkTypes.indexOf(type));
     }
@@ -479,8 +497,7 @@ export class Player extends BaseGameObject {
     hasActivePan() {
         return (
             this.wearingPan ||
-            (this.activeWeapon === "pan" &&
-                this.animType !== GameConfig.Anim.Melee)
+            (this.activeWeapon === "pan" && this.animType !== GameConfig.Anim.Melee)
         );
     }
 
@@ -508,17 +525,12 @@ export class Player extends BaseGameObject {
     kills = 0;
     timeAlive = 0;
 
-    msgsToSend: Array<{ type: number, msg: Msg }> = [];
+    msgsToSend: Array<{ type: number; msg: Msg }> = [];
 
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
 
-    constructor(
-        game: Game,
-        pos: Vec2,
-        socketData: GameSocketData,
-        joinMsg: JoinMsg
-    ) {
+    constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: JoinMsg) {
         super(game, pos);
 
         this.socketData = socketData;
@@ -530,8 +542,8 @@ export class Player extends BaseGameObject {
         this.isMobile = joinMsg.isMobile;
 
         /**
-        * Checks if an item is present in the player's loadout
-        */
+         * Checks if an item is present in the player's loadout
+         */
         const isItemInLoadout = (item: string, category: string) => {
             if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
 
@@ -604,7 +616,8 @@ export class Player extends BaseGameObject {
             if (input.moveLeft) movement.x--;
             if (input.moveRight) movement.x++;
 
-            if (movement.x * movement.y !== 0) { // If the product is non-zero, then both of the components must be non-zero
+            if (movement.x * movement.y !== 0) {
+                // If the product is non-zero, then both of the components must be non-zero
                 movement.x *= Math.SQRT1_2;
                 movement.y *= Math.SQRT1_2;
             }
@@ -619,7 +632,11 @@ export class Player extends BaseGameObject {
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
 
         if (this.game.isTeamMode && this.actionType == GameConfig.Action.Revive) {
-            if (this.playerBeingRevived && v2.distance(this.pos, this.playerBeingRevived.pos) > GameConfig.player.reviveRange) {
+            if (
+                this.playerBeingRevived &&
+                v2.distance(this.pos, this.playerBeingRevived.pos) >
+                    GameConfig.player.reviveRange
+            ) {
                 this.cancelAction();
             }
         } else if (this.downed) {
@@ -651,7 +668,11 @@ export class Player extends BaseGameObject {
 
         if (this.actionType !== GameConfig.Action.None) {
             this.action.time += dt;
-            this.action.time = math.clamp(this.action.time, 0, Constants.ActionMaxDuration);
+            this.action.time = math.clamp(
+                this.action.time,
+                0,
+                Constants.ActionMaxDuration
+            );
 
             if (this.action.time >= this.action.duration) {
                 if (this.actionType === GameConfig.Action.UseItem) {
@@ -662,7 +683,10 @@ export class Player extends BaseGameObject {
                     this.inventoryDirty = true;
                 } else if (this.isReloading()) {
                     this.weaponManager.reload();
-                } else if (this.actionType === GameConfig.Action.Revive && this.playerBeingRevived) {
+                } else if (
+                    this.actionType === GameConfig.Action.Revive &&
+                    this.playerBeingRevived
+                ) {
                     // player who got revived
                     this.playerBeingRevived.downed = false;
                     this.playerBeingRevived.health = GameConfig.player.reviveHealth;
@@ -673,7 +697,8 @@ export class Player extends BaseGameObject {
                 this.cancelAction();
 
                 if (
-                    (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
+                    (this.curWeapIdx == GameConfig.WeaponSlot.Primary ||
+                        this.curWeapIdx == GameConfig.WeaponSlot.Secondary) &&
                     this.weapons[this.curWeapIdx].ammo == 0
                 ) {
                     this.weaponManager.tryReload();
@@ -707,22 +732,32 @@ export class Player extends BaseGameObject {
             objs = this.game.grid.intersectCollider(this.collider);
 
             for (const obj of objs) {
-                if (obj.__type === ObjectType.Obstacle &&
+                if (
+                    obj.__type === ObjectType.Obstacle &&
                     obj.collidable &&
                     util.sameLayer(obj.layer, this.layer) &&
                     !obj.dead
                 ) {
-                    const collision = collider.intersectCircle(obj.collider, this.pos, this.rad);
+                    const collision = collider.intersectCircle(
+                        obj.collider,
+                        this.pos,
+                        this.rad
+                    );
                     if (collision) {
                         collided = true;
-                        this.pos = v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001));
+                        this.pos = v2.add(
+                            this.pos,
+                            v2.mul(collision.dir, collision.pen + 0.001)
+                        );
                     }
                 }
             }
         }
 
-        const scopeZoom = GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
-        let zoom = GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"]["1xscope"];
+        const scopeZoom =
+            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
+        let zoom =
+            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"]["1xscope"];
 
         let collidesWithZoomOut = false;
         for (const obj of objs!) {
@@ -732,8 +767,13 @@ export class Player extends BaseGameObject {
                 if (!util.sameLayer(util.toGroundLayer(layer), obj.layer)) continue;
 
                 if (obj.healRegions) {
-                    const healRegion = obj.healRegions.find(hr => {
-                        return coldet.testCircleAabb(this.pos, this.rad, hr.collision.min, hr.collision.max);
+                    const healRegion = obj.healRegions.find((hr) => {
+                        return coldet.testCircleAabb(
+                            this.pos,
+                            this.rad,
+                            hr.collision.min,
+                            hr.collision.max
+                        );
                     });
 
                     if (healRegion) {
@@ -747,13 +787,27 @@ export class Player extends BaseGameObject {
                     const zoomRegion = obj.zoomRegions[i];
 
                     if (zoomRegion.zoomIn) {
-                        if (coldet.testCircleAabb(this.pos, this.rad, zoomRegion.zoomIn.min, zoomRegion.zoomIn.max)) {
+                        if (
+                            coldet.testCircleAabb(
+                                this.pos,
+                                this.rad,
+                                zoomRegion.zoomIn.min,
+                                zoomRegion.zoomIn.max
+                            )
+                        ) {
                             this.indoors = true;
                         }
                     }
 
                     if (zoomRegion.zoomOut && this.indoors) {
-                        if (coldet.testCircleAabb(this.pos, this.rad, zoomRegion.zoomOut.min, zoomRegion.zoomOut.max)) {
+                        if (
+                            coldet.testCircleAabb(
+                                this.pos,
+                                this.rad,
+                                zoomRegion.zoomOut.min,
+                                zoomRegion.zoomOut.max
+                            )
+                        ) {
                             collidesWithZoomOut = true;
                         }
                     }
@@ -764,7 +818,11 @@ export class Player extends BaseGameObject {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
                 if (!(obj.isDoor && obj.door.autoOpen)) continue;
 
-                const res = collider.intersectCircle(obj.collider, this.pos, this.rad + obj.interactionRad);
+                const res = collider.intersectCircle(
+                    obj.collider,
+                    this.pos,
+                    this.rad + obj.interactionRad
+                );
                 if (res) {
                     obj.interact(this, true);
                 }
@@ -867,15 +925,20 @@ export class Player extends BaseGameObject {
         }
 
         let player: Player;
-        if (this.spectating == undefined) { // not spectating anyone
+        if (this.spectating == undefined) {
+            // not spectating anyone
             player = this;
-        } else if (this.spectating.dead) { // was spectating someone but they died so find new player to spectate
-            player = this.spectating.killedBy ? this.spectating.killedBy : playerBarn.randomPlayer();
+        } else if (this.spectating.dead) {
+            // was spectating someone but they died so find new player to spectate
+            player = this.spectating.killedBy
+                ? this.spectating.killedBy
+                : playerBarn.randomPlayer();
             if (player === this) {
                 player = playerBarn.randomPlayer();
             }
             this.spectating = player;
-        } else { // spectating someone currently who is still alive
+        } else {
+            // spectating someone currently who is still alive
             player = this.spectating;
         }
 
@@ -894,7 +957,10 @@ export class Player extends BaseGameObject {
         }
 
         for (const obj of newVisibleObjects) {
-            if (!this.visibleObjects.has(obj) || game.objectRegister.dirtyFull[obj.__id]) {
+            if (
+                !this.visibleObjects.has(obj) ||
+                game.objectRegister.dirtyFull[obj.__id]
+            ) {
                 updateMsg.fullObjects.push(obj);
             } else if (game.objectRegister.dirtyPart[obj.__id]) {
                 updateMsg.partObjects.push(obj);
@@ -933,13 +999,18 @@ export class Player extends BaseGameObject {
             updateMsg.activePlayerData = player;
         }
 
-        updateMsg.playerInfos = player._firstUpdate ? playerBarn.players : playerBarn.newPlayers;
+        updateMsg.playerInfos = player._firstUpdate
+            ? playerBarn.players
+            : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
         if (this.group) {
             this.playerStatusTicker += dt;
 
-            if (this.playerStatusTicker > getPlayerStatusUpdateRate(this.game.map.factionMode)) {
+            if (
+                this.playerStatusTicker >
+                getPlayerStatusUpdateRate(this.game.map.factionMode)
+            ) {
                 const teamPlayers = this.group.getPlayers();
                 for (let i = 0; i < teamPlayers.length; i++) {
                     const p = teamPlayers[i];
@@ -969,9 +1040,13 @@ export class Player extends BaseGameObject {
         }
 
         for (const emote of playerBarn.emotes) {
-            const emotePlayer = game.objectRegister.getById(emote.playerId) as Player | undefined;
+            const emotePlayer = game.objectRegister.getById(emote.playerId) as
+                | Player
+                | undefined;
             if (emotePlayer) {
-                if (((emote.isPing || emote.itemType) && emotePlayer.groupId === this.groupId) ||
+                if (
+                    ((emote.isPing || emote.itemType) &&
+                        emotePlayer.groupId === this.groupId) ||
                     (this.visibleObjects.has(emotePlayer) && !emote.isPing)
                 ) {
                     updateMsg.emotes.push(emote);
@@ -986,9 +1061,15 @@ export class Player extends BaseGameObject {
         const bullets = game.bulletBarn.newBullets;
         for (let i = 0; i < bullets.length; i++) {
             const bullet = bullets[i];
-            if (v2.lengthSqr(v2.sub(bullet.pos, player.pos)) < radiusSquared ||
+            if (
+                v2.lengthSqr(v2.sub(bullet.pos, player.pos)) < radiusSquared ||
                 v2.lengthSqr(v2.sub(bullet.clientEndPos, player.pos)) < radiusSquared ||
-                coldet.intersectSegmentCircle(bullet.pos, bullet.clientEndPos, this.pos, extendedRadius)
+                coldet.intersectSegmentCircle(
+                    bullet.pos,
+                    bullet.clientEndPos,
+                    this.pos,
+                    extendedRadius
+                )
             ) {
                 newBullets.push(bullet);
             }
@@ -1003,12 +1084,18 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < game.explosionBarn.explosions.length; i++) {
             const explosion = game.explosionBarn.explosions[i];
             const rad = explosion.rad + extendedRadius;
-            if (v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad && updateMsg.explosions.length < 255) {
+            if (
+                v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad &&
+                updateMsg.explosions.length < 255
+            ) {
                 updateMsg.explosions.push(explosion);
             }
         }
         if (updateMsg.explosions.length > 255) {
-            console.error("Too many new explosions created!", updateMsg.explosions.length);
+            console.error(
+                "Too many new explosions created!",
+                updateMsg.explosions.length
+            );
             updateMsg.explosions = updateMsg.explosions.slice(0, 255);
         }
 
@@ -1038,20 +1125,28 @@ export class Player extends BaseGameObject {
     spectate(spectateMsg: SpectateMsg): void {
         let playerToSpec: Player | undefined;
         const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        if (!this.game.isTeamMode) { // solos
+        if (!this.game.isTeamMode) {
+            // solos
             if (spectateMsg.specBegin) {
-                playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
+                playerToSpec =
+                    this.killedBy && this.killedBy != this
+                        ? this.killedBy
+                        : this.game.playerBarn.randomPlayer();
             } else if (spectateMsg.specNext && this.spectating) {
                 const playerBeingSpecIndex = spectatablePlayers.indexOf(this.spectating);
                 const newIndex = (playerBeingSpecIndex + 1) % spectatablePlayers.length;
                 playerToSpec = spectatablePlayers[newIndex];
             } else if (spectateMsg.specPrev && this.spectating) {
                 const playerBeingSpecIndex = spectatablePlayers.indexOf(this.spectating);
-                const newIndex = playerBeingSpecIndex == 0 ? spectatablePlayers.length - 1 : playerBeingSpecIndex - 1;
+                const newIndex =
+                    playerBeingSpecIndex == 0
+                        ? spectatablePlayers.length - 1
+                        : playerBeingSpecIndex - 1;
                 playerToSpec = spectatablePlayers[newIndex];
             }
         } else if (this.group) {
-            if (!this.group.checkAllDeadOrDisconnected(this)) { // team still alive
+            if (!this.group.checkAllDeadOrDisconnected(this)) {
+                // team still alive
                 if (spectateMsg.specBegin) {
                     playerToSpec = this.group.randomPlayer(this);
                 } else if (spectateMsg.specNext && this.spectating) {
@@ -1059,24 +1154,42 @@ export class Player extends BaseGameObject {
                 } else if (spectateMsg.specPrev && this.spectating) {
                     playerToSpec = this.group.prevPlayer(this.spectating);
                 }
-            } else { // team dead
+            } else {
+                // team dead
                 let specType: Group["prevPlayer"] | Group["nextPlayer"] | undefined;
                 if (spectateMsg.specBegin) {
-                    playerToSpec = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
+                    playerToSpec =
+                        this.killedBy && this.killedBy != this
+                            ? this.killedBy
+                            : this.game.playerBarn.randomPlayer();
                 } else if (spectateMsg.specNext && this.spectating) {
-                    specType = this.spectating.group!.nextPlayer.bind(this.spectating.group);
+                    specType = this.spectating.group!.nextPlayer.bind(
+                        this.spectating.group
+                    );
                     this.enemyTeamCycleCount++;
                 } else if (spectateMsg.specPrev && this.spectating) {
-                    specType = this.spectating.group!.prevPlayer.bind(this.spectating.group);
+                    specType = this.spectating.group!.prevPlayer.bind(
+                        this.spectating.group
+                    );
                     this.enemyTeamCycleCount--;
                 }
 
                 if (this.spectating) {
-                    if (this.enemyTeamCycleCount >= this.spectating.group!.getAlivePlayers().length) {
-                        playerToSpec = this.game.nextTeam(this.spectating.group!).randomPlayer();
+                    if (
+                        this.enemyTeamCycleCount >=
+                        this.spectating.group!.getAlivePlayers().length
+                    ) {
+                        playerToSpec = this.game
+                            .nextTeam(this.spectating.group!)
+                            .randomPlayer();
                         this.enemyTeamCycleCount = 0;
-                    } else if (Math.abs(this.enemyTeamCycleCount) >= this.spectating.group!.getAlivePlayers().length) {
-                        playerToSpec = this.game.prevTeam(this.spectating.group!).randomPlayer();
+                    } else if (
+                        Math.abs(this.enemyTeamCycleCount) >=
+                        this.spectating.group!.getAlivePlayers().length
+                    ) {
+                        playerToSpec = this.game
+                            .prevTeam(this.spectating.group!)
+                            .randomPlayer();
                         this.enemyTeamCycleCount = 0;
                     } else if (specType) {
                         playerToSpec = specType(this.spectating);
@@ -1094,12 +1207,14 @@ export class Player extends BaseGameObject {
         const sourceIsPlayer = params.source?.__type === ObjectType.Player;
 
         // teammates can't deal damage to each other
-        if (sourceIsPlayer && params.source !== this
-        ) {
+        if (sourceIsPlayer && params.source !== this) {
             if ((params.source as Player).groupId === this.groupId) {
                 return;
             }
-            if (this.game.map.factionMode && (params.source as Player).teamId === this.teamId) {
+            if (
+                this.game.map.factionMode &&
+                (params.source as Player).teamId === this.teamId
+            ) {
                 return;
             }
         }
@@ -1107,7 +1222,10 @@ export class Player extends BaseGameObject {
         let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
-        if (params.damageType !== GameConfig.DamageType.Gas && params.damageType !== GameConfig.DamageType.Bleeding) {
+        if (
+            params.damageType !== GameConfig.DamageType.Gas &&
+            params.damageType !== GameConfig.DamageType.Bleeding
+        ) {
             let isHeadShot = false;
 
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
@@ -1126,7 +1244,8 @@ export class Player extends BaseGameObject {
 
             const helmet = GameObjectDefs[this.helmet] as HelmetDef;
             if (helmet) {
-                finalDamage -= finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+                finalDamage -=
+                    finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
             }
         }
 
@@ -1144,7 +1263,8 @@ export class Player extends BaseGameObject {
         }
 
         if (this._health === 0) {
-            if (!this.game.isTeamMode) { // solos
+            if (!this.game.isTeamMode) {
+                // solos
                 this.kill(params);
                 return;
             }
@@ -1154,7 +1274,11 @@ export class Player extends BaseGameObject {
 
             // TODO: fix for faction mode
             if (this.downed) {
-                if (this.downedBy && sourceIsPlayer && this.downedBy.groupId === (params.source as Player).groupId) {
+                if (
+                    this.downedBy &&
+                    sourceIsPlayer &&
+                    this.downedBy.groupId === (params.source as Player).groupId
+                ) {
                     params.source = this.downedBy;
                 }
                 this.kill(params);
@@ -1181,14 +1305,17 @@ export class Player extends BaseGameObject {
     addGameOverMsg(winningTeamId: number = -1): void {
         const gameOverMsg = new GameOverMsg();
 
-        if (!this.game.isTeamMode) { // solo
+        if (!this.game.isTeamMode) {
+            // solo
             gameOverMsg.playerStats.push(this);
         } else if (this.group) {
-            this.group.players.forEach(p => gameOverMsg.playerStats.push(p));
+            this.group.players.forEach((p) => gameOverMsg.playerStats.push(p));
         }
 
         const targetPlayer = this.spectating ?? this;
-        const teamRank = !this.game.isTeamMode ? this.game.aliveCount + 1 : this.game.groups.size;
+        const teamRank = !this.game.isTeamMode
+            ? this.game.aliveCount + 1
+            : this.game.groups.size;
 
         gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
         gameOverMsg.teamId = targetPlayer.teamId;
@@ -1238,12 +1365,18 @@ export class Player extends BaseGameObject {
         if (this.spectatorCount == 0) return;
 
         let player: Player;
-        if (!this.game.isTeamMode) { // solo
-            player = (this.killedBy && this.killedBy != this) ? this.killedBy : this.game.playerBarn.randomPlayer();
+        if (!this.game.isTeamMode) {
+            // solo
+            player =
+                this.killedBy && this.killedBy != this
+                    ? this.killedBy
+                    : this.game.playerBarn.randomPlayer();
         } else if (this.group) {
-            if (!this.group.checkAllDeadOrDisconnected(this)) { // team alive
+            if (!this.group.checkAllDeadOrDisconnected(this)) {
+                // team alive
                 player = this.group.randomPlayer(this);
-            } else { // team dead
+            } else {
+                // team dead
                 if (
                     this.killedBy &&
                     this.killedBy != this &&
@@ -1277,7 +1410,10 @@ export class Player extends BaseGameObject {
         this.weaponManager.clearTimeouts();
 
         this.game.playerBarn.aliveCountDirty = true;
-        this.game.playerBarn.livingPlayers.splice(this.game.playerBarn.livingPlayers.indexOf(this), 1);
+        this.game.playerBarn.livingPlayers.splice(
+            this.game.playerBarn.livingPlayers.indexOf(this),
+            1
+        );
 
         //
         // Send kill msg
@@ -1324,13 +1460,13 @@ export class Player extends BaseGameObject {
             if (!weap.type) continue;
             const def = GameObjectDefs[weap.type];
             switch (def.type) {
-            case "gun":
-                this.weaponManager.dropGun(i);
-                break;
-            case "melee":
-                if (def.noDropOnDeath || weap.type === "fists") break;
-                this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
-                break;
+                case "gun":
+                    this.weaponManager.dropGun(i);
+                    break;
+                case "melee":
+                    if (def.noDropOnDeath || weap.type === "fists") break;
+                    this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                    break;
             }
         }
 
@@ -1341,7 +1477,12 @@ export class Player extends BaseGameObject {
             }
 
             if (this.inventory[item] > 0) {
-                this.game.lootBarn.addLoot(item, this.pos, this.layer, this.inventory[item]);
+                this.game.lootBarn.addLoot(
+                    item,
+                    this.pos,
+                    this.layer,
+                    this.inventory[item]
+                );
             }
         }
 
@@ -1363,19 +1504,28 @@ export class Player extends BaseGameObject {
         // death emote
         if (this.loadout.emotes[GameConfig.EmoteSlot.Death] != "") {
             this.game.playerBarn.emotes.push(
-                new Emote(this.__id,
+                new Emote(
+                    this.__id,
                     this.pos,
                     this.loadout.emotes[GameConfig.EmoteSlot.Death],
-                    false)
+                    false
+                )
             );
         }
 
         // Building gore region (club pool)
         const objs = this.game.grid.intersectCollider(this.collider);
         for (const obj of objs) {
-            if (obj.__type === ObjectType.Building &&
+            if (
+                obj.__type === ObjectType.Building &&
                 obj.goreRegion &&
-                coldet.testCircleAabb(this.pos, this.rad, obj.goreRegion.min, obj.goreRegion.max)) {
+                coldet.testCircleAabb(
+                    this.pos,
+                    this.rad,
+                    obj.goreRegion.min,
+                    obj.goreRegion.max
+                )
+            ) {
                 obj.onGoreRegionKill();
             }
         }
@@ -1389,19 +1539,26 @@ export class Player extends BaseGameObject {
     }
 
     isReloading() {
-        return this.actionType == GameConfig.Action.Reload || this.actionType == GameConfig.Action.ReloadAlt;
+        return (
+            this.actionType == GameConfig.Action.Reload ||
+            this.actionType == GameConfig.Action.ReloadAlt
+        );
     }
 
     revive() {
-        if (this.actionType != GameConfig.Action.None) { // action in progress
+        if (this.actionType != GameConfig.Action.None) {
+            // action in progress
             return;
         }
-        if (!this.game.isTeamMode) { // can only revive in teams modes
+        if (!this.game.isTeamMode) {
+            // can only revive in teams modes
             return;
         }
 
         // this.animType = GameConfig.Anim.Revive;
-        const downedTeammates = this.group!.getAliveTeammates(this).filter(t => t.downed);
+        const downedTeammates = this.group!.getAliveTeammates(this).filter(
+            (t) => t.downed
+        );
 
         let playerToRevive: Player | undefined;
         let closestDist = Number.MAX_VALUE;
@@ -1418,8 +1575,17 @@ export class Player extends BaseGameObject {
 
         if (playerToRevive) {
             this.playerBeingRevived = playerToRevive;
-            playerToRevive.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration);
-            this.doAction("", GameConfig.Action.Revive, GameConfig.player.reviveDuration, playerToRevive.__id);
+            playerToRevive.doAction(
+                "",
+                GameConfig.Action.Revive,
+                GameConfig.player.reviveDuration
+            );
+            this.doAction(
+                "",
+                GameConfig.Action.Revive,
+                GameConfig.player.reviveDuration,
+                playerToRevive.__id
+            );
             this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
         }
     }
@@ -1429,7 +1595,10 @@ export class Player extends BaseGameObject {
         if (itemDef.type !== "heal") {
             throw new Error(`Invalid heal item ${item}`);
         }
-        if (this.health == itemDef.maxHeal || this.actionType == GameConfig.Action.UseItem) {
+        if (
+            this.health == itemDef.maxHeal ||
+            this.actionType == GameConfig.Action.UseItem
+        ) {
             return;
         }
         if (!this.inventory[item]) {
@@ -1474,7 +1643,8 @@ export class Player extends BaseGameObject {
         this.shootStart = msg.shootStart;
         this.toMouseLen = msg.toMouseLen;
 
-        if (this.downed) { // return over here since player is still allowed to move and look around, just can't do anything else
+        if (this.downed) {
+            // return over here since player is still allowed to move and look around, just can't do anything else
             return;
         }
 
@@ -1484,176 +1654,223 @@ export class Player extends BaseGameObject {
 
         for (const input of msg.inputs) {
             switch (input) {
-            case GameConfig.Input.StowWeapons:
-            case GameConfig.Input.EquipMelee:
-                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-                break;
-            case GameConfig.Input.EquipPrimary:
-                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Primary);
-                break;
-            case GameConfig.Input.EquipSecondary:
-                this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Secondary);
-                break;
-            case GameConfig.Input.EquipThrowable:
-                if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
-                    this.weaponManager.showNextThrowable();
-                } else {
-                    this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Throwable);
-                }
-                break;
-            case GameConfig.Input.EquipPrevWeap: {
-                const curIdx = this.curWeapIdx;
-
-                for (let i = curIdx; i < curIdx + GameConfig.WeaponSlot.Count; i++) {
-                    const idx = math.mod(i, GameConfig.WeaponSlot.Count);
-                    if (this.weapons[idx].type) {
-                        this.weaponManager.setCurWeapIndex(idx);
-                    }
-                }
-            }
-                break;
-            case GameConfig.Input.EquipNextWeap: {
-                const curIdx = this.curWeapIdx;
-
-                for (let i = curIdx; i > curIdx - GameConfig.WeaponSlot.Count; i--) {
-                    const idx = math.mod(i, GameConfig.WeaponSlot.Count);
-                    if (this.weapons[idx].type) {
-                        this.weaponManager.setCurWeapIndex(idx);
-                    }
-                }
-            }
-                break;
-            case GameConfig.Input.EquipLastWeap:
-                this.weaponManager.setCurWeapIndex(this.weaponManager.lastWeaponIdx);
-                break;
-            case GameConfig.Input.EquipOtherGun:
-                if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
-                    const otherGunSlotIdx = this.curWeapIdx ^ 1;
-                    const isOtherGunSlotFull: number = +!!this.weapons[otherGunSlotIdx].type;//! ! converts string to boolean, + coerces boolean to number
-                    this.weaponManager.setCurWeapIndex(isOtherGunSlotFull ? otherGunSlotIdx : GameConfig.WeaponSlot.Melee);
-                } else if (this.curWeapIdx == GameConfig.WeaponSlot.Melee && (this.weapons[GameConfig.WeaponSlot.Primary].type || this.weapons[GameConfig.WeaponSlot.Secondary].type)) {
-                    this.weaponManager.setCurWeapIndex(+!(this.weapons[GameConfig.WeaponSlot.Primary].type));
-                } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
-                    const bothSlotsEmpty = !this.weapons[GameConfig.WeaponSlot.Primary].type && !this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                    if (bothSlotsEmpty) {
-                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                case GameConfig.Input.StowWeapons:
+                case GameConfig.Input.EquipMelee:
+                    this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                    break;
+                case GameConfig.Input.EquipPrimary:
+                    this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Primary);
+                    break;
+                case GameConfig.Input.EquipSecondary:
+                    this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Secondary);
+                    break;
+                case GameConfig.Input.EquipThrowable:
+                    if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
+                        this.weaponManager.showNextThrowable();
                     } else {
-                        const index = this.weapons[GameConfig.WeaponSlot.Primary].type ? GameConfig.WeaponSlot.Primary : GameConfig.WeaponSlot.Secondary;
-                        this.weaponManager.setCurWeapIndex(index);
+                        this.weaponManager.setCurWeapIndex(
+                            GameConfig.WeaponSlot.Throwable
+                        );
                     }
-                }
+                    break;
+                case GameConfig.Input.EquipPrevWeap:
+                    {
+                        const curIdx = this.curWeapIdx;
 
-                break;
-            case GameConfig.Input.Interact: {
-                const loot = this.getClosestLoot();
-                const obstacle = this.getClosestObstacle();
-                if (loot && obstacle) {
-                    this.interactWith(loot);
-                    this.interactWith(obstacle);
-                } else if (loot) {
-                    this.interactWith(loot);
-                } else if (obstacle) {
-                    this.interactWith(obstacle);
-                } else {
+                        for (
+                            let i = curIdx;
+                            i < curIdx + GameConfig.WeaponSlot.Count;
+                            i++
+                        ) {
+                            const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                            if (this.weapons[idx].type) {
+                                this.weaponManager.setCurWeapIndex(idx);
+                            }
+                        }
+                    }
+                    break;
+                case GameConfig.Input.EquipNextWeap:
+                    {
+                        const curIdx = this.curWeapIdx;
+
+                        for (
+                            let i = curIdx;
+                            i > curIdx - GameConfig.WeaponSlot.Count;
+                            i--
+                        ) {
+                            const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                            if (this.weapons[idx].type) {
+                                this.weaponManager.setCurWeapIndex(idx);
+                            }
+                        }
+                    }
+                    break;
+                case GameConfig.Input.EquipLastWeap:
+                    this.weaponManager.setCurWeapIndex(this.weaponManager.lastWeaponIdx);
+                    break;
+                case GameConfig.Input.EquipOtherGun:
+                    if (
+                        this.curWeapIdx == GameConfig.WeaponSlot.Primary ||
+                        this.curWeapIdx == GameConfig.WeaponSlot.Secondary
+                    ) {
+                        const otherGunSlotIdx = this.curWeapIdx ^ 1;
+                        const isOtherGunSlotFull: number =
+                            +!!this.weapons[otherGunSlotIdx].type; //! ! converts string to boolean, + coerces boolean to number
+                        this.weaponManager.setCurWeapIndex(
+                            isOtherGunSlotFull
+                                ? otherGunSlotIdx
+                                : GameConfig.WeaponSlot.Melee
+                        );
+                    } else if (
+                        this.curWeapIdx == GameConfig.WeaponSlot.Melee &&
+                        (this.weapons[GameConfig.WeaponSlot.Primary].type ||
+                            this.weapons[GameConfig.WeaponSlot.Secondary].type)
+                    ) {
+                        this.weaponManager.setCurWeapIndex(
+                            +!this.weapons[GameConfig.WeaponSlot.Primary].type
+                        );
+                    } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
+                        const bothSlotsEmpty =
+                            !this.weapons[GameConfig.WeaponSlot.Primary].type &&
+                            !this.weapons[GameConfig.WeaponSlot.Secondary].type;
+                        if (bothSlotsEmpty) {
+                            this.weaponManager.setCurWeapIndex(
+                                GameConfig.WeaponSlot.Melee
+                            );
+                        } else {
+                            const index = this.weapons[GameConfig.WeaponSlot.Primary].type
+                                ? GameConfig.WeaponSlot.Primary
+                                : GameConfig.WeaponSlot.Secondary;
+                            this.weaponManager.setCurWeapIndex(index);
+                        }
+                    }
+
+                    break;
+                case GameConfig.Input.Interact: {
+                    const loot = this.getClosestLoot();
+                    const obstacle = this.getClosestObstacle();
+                    if (loot && obstacle) {
+                        this.interactWith(loot);
+                        this.interactWith(obstacle);
+                    } else if (loot) {
+                        this.interactWith(loot);
+                    } else if (obstacle) {
+                        this.interactWith(obstacle);
+                    } else {
+                        this.revive();
+                    }
+                    break;
+                }
+                case GameConfig.Input.Loot: {
+                    const loot = this.getClosestLoot();
+                    if (loot) {
+                        this.interactWith(loot);
+                    }
+                    break;
+                }
+                case GameConfig.Input.Use: {
+                    const obstacle = this.getClosestObstacle();
+                    if (obstacle) obstacle.interact(this);
+                    break;
+                }
+                case GameConfig.Input.Reload:
+                    this.weaponManager.tryReload();
+                    break;
+                case GameConfig.Input.UseBandage:
+                    this.useHealingItem("bandage");
+                    break;
+                case GameConfig.Input.UseHealthKit:
+                    this.useHealingItem("healthkit");
+                    break;
+                case GameConfig.Input.UsePainkiller:
+                    this.useBoostItem("soda");
+                    break;
+                case GameConfig.Input.UseSoda:
+                    this.useBoostItem("painkiller");
+                    break;
+                case GameConfig.Input.Cancel:
+                    this.cancelAction();
+                    break;
+                case GameConfig.Input.EquipNextScope: {
+                    const scopeIdx = SCOPE_LEVELS.indexOf(this.scope);
+
+                    for (let i = scopeIdx + 1; i < SCOPE_LEVELS.length; i++) {
+                        const nextScope = SCOPE_LEVELS[i];
+
+                        if (!this.inventory[nextScope]) continue;
+                        this.scope = nextScope;
+                        break;
+                    }
+                    break;
+                }
+                case GameConfig.Input.EquipPrevScope: {
+                    const scopeIdx = SCOPE_LEVELS.indexOf(this.scope);
+
+                    for (let i = scopeIdx - 1; i >= 0; i--) {
+                        const prevScope = SCOPE_LEVELS[i];
+
+                        if (!this.inventory[prevScope]) continue;
+                        this.scope = prevScope;
+                        break;
+                    }
+                    break;
+                }
+                case GameConfig.Input.SwapWeapSlots: {
+                    const firstSlotWeaponType =
+                        this.weapons[GameConfig.WeaponSlot.Primary].type;
+                    const firstSlotWeaponAmmo =
+                        this.weapons[GameConfig.WeaponSlot.Primary].ammo;
+
+                    this.weapons[GameConfig.WeaponSlot.Primary].type =
+                        this.weapons[GameConfig.WeaponSlot.Secondary].type;
+                    this.weapons[GameConfig.WeaponSlot.Primary].ammo =
+                        this.weapons[GameConfig.WeaponSlot.Secondary].ammo;
+
+                    this.weapons[GameConfig.WeaponSlot.Secondary].type =
+                        firstSlotWeaponType;
+                    this.weapons[GameConfig.WeaponSlot.Secondary].ammo =
+                        firstSlotWeaponAmmo;
+
+                    // curWeapIdx's setter method already sets dirty.weapons
+                    if (
+                        this.curWeapIdx == GameConfig.WeaponSlot.Primary ||
+                        this.curWeapIdx == GameConfig.WeaponSlot.Secondary
+                    ) {
+                        this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
+                    } else {
+                        this.weapsDirty = true;
+                    }
+                    break;
+                }
+                case GameConfig.Input.Revive: {
                     this.revive();
                 }
-                break;
-            }
-            case GameConfig.Input.Loot: {
-                const loot = this.getClosestLoot();
-                if (loot) {
-                    this.interactWith(loot);
-                }
-                break;
-            }
-            case GameConfig.Input.Use: {
-                const obstacle = this.getClosestObstacle();
-                if (obstacle) obstacle.interact(this);
-                break;
-            }
-            case GameConfig.Input.Reload:
-                this.weaponManager.tryReload();
-                break;
-            case GameConfig.Input.UseBandage:
-                this.useHealingItem("bandage");
-                break;
-            case GameConfig.Input.UseHealthKit:
-                this.useHealingItem("healthkit");
-                break;
-            case GameConfig.Input.UsePainkiller:
-                this.useBoostItem("soda");
-                break;
-            case GameConfig.Input.UseSoda:
-                this.useBoostItem("painkiller");
-                break;
-            case GameConfig.Input.Cancel:
-                this.cancelAction();
-                break;
-            case GameConfig.Input.EquipNextScope: {
-                const scopeIdx = SCOPE_LEVELS.indexOf(this.scope);
-
-                for (let i = scopeIdx + 1; i < SCOPE_LEVELS.length; i++) {
-                    const nextScope = SCOPE_LEVELS[i];
-
-                    if (!this.inventory[nextScope]) continue;
-                    this.scope = nextScope;
-                    break;
-                }
-                break;
-            }
-            case GameConfig.Input.EquipPrevScope: {
-                const scopeIdx = SCOPE_LEVELS.indexOf(this.scope);
-
-                for (let i = scopeIdx - 1; i >= 0; i--) {
-                    const prevScope = SCOPE_LEVELS[i];
-
-                    if (!this.inventory[prevScope]) continue;
-                    this.scope = prevScope;
-                    break;
-                }
-                break;
-            }
-            case GameConfig.Input.SwapWeapSlots: {
-                const firstSlotWeaponType = this.weapons[GameConfig.WeaponSlot.Primary].type;
-                const firstSlotWeaponAmmo = this.weapons[GameConfig.WeaponSlot.Primary].ammo;
-
-                this.weapons[GameConfig.WeaponSlot.Primary].type = this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                this.weapons[GameConfig.WeaponSlot.Primary].ammo = this.weapons[GameConfig.WeaponSlot.Secondary].ammo;
-
-                this.weapons[GameConfig.WeaponSlot.Secondary].type = firstSlotWeaponType;
-                this.weapons[GameConfig.WeaponSlot.Secondary].ammo = firstSlotWeaponAmmo;
-
-                // curWeapIdx's setter method already sets dirty.weapons
-                if (this.curWeapIdx == GameConfig.WeaponSlot.Primary || this.curWeapIdx == GameConfig.WeaponSlot.Secondary) {
-                    this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
-                } else {
-                    this.weapsDirty = true;
-                }
-                break;
-            }
-            case GameConfig.Input.Revive: {
-                this.revive();
-            }
             }
         }
 
         switch (msg.useItem) {
-        case "bandage":
-        case "healthkit":
-            this.useHealingItem(msg.useItem);
-            break;
-        case "soda":
-        case "painkiller":
-            this.useBoostItem(msg.useItem);
-            break;
-        case "1xscope": case "2xscope": case "4xscope": case "8xscope": case "15xscope":
-            this.scope = msg.useItem;
-            break;
+            case "bandage":
+            case "healthkit":
+                this.useHealingItem(msg.useItem);
+                break;
+            case "soda":
+            case "painkiller":
+                this.useBoostItem(msg.useItem);
+                break;
+            case "1xscope":
+            case "2xscope":
+            case "4xscope":
+            case "8xscope":
+            case "15xscope":
+                this.scope = msg.useItem;
+                break;
         }
     }
 
     getClosestLoot(): Loot | undefined {
-        const objs = this.game.grid.intersectCollider(collider.createCircle(this.pos, this.rad + 5));
+        const objs = this.game.grid.intersectCollider(
+            collider.createCircle(this.pos, this.rad + 5)
+        );
 
         let closestLoot: Loot | undefined;
         let closestDist = Number.MAX_VALUE;
@@ -1682,7 +1899,9 @@ export class Player extends BaseGameObject {
     }
 
     getClosestObstacle(): Obstacle | undefined {
-        const objs = this.game.grid.intersectCollider(collider.createCircle(this.pos, this.rad + 5));
+        const objs = this.game.grid.intersectCollider(
+            collider.createCircle(this.pos, this.rad + 5)
+        );
 
         let closestObj: Obstacle | undefined;
         let closestPen = 0;
@@ -1690,10 +1909,7 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < objs.length; i++) {
             const obstacle = objs[i];
             if (obstacle.__type !== ObjectType.Obstacle) continue;
-            if (
-                !obstacle.dead &&
-                util.sameLayer(obstacle.layer, this.layer)
-            ) {
+            if (!obstacle.dead && util.sameLayer(obstacle.layer, this.layer)) {
                 if (obstacle.interactionRad > 0) {
                     const res = collider.intersectCircle(
                         obstacle.collider,
@@ -1712,12 +1928,12 @@ export class Player extends BaseGameObject {
 
     interactWith(obj: GameObject): void {
         switch (obj.__type) {
-        case ObjectType.Loot:
-            this.pickupLoot(obj);
-            break;
-        case ObjectType.Obstacle:
-            obj.interact(this);
-            break;
+            case ObjectType.Loot:
+                this.pickupLoot(obj);
+                break;
+            case ObjectType.Obstacle:
+                obj.interact(this);
+                break;
         }
     }
 
@@ -1729,7 +1945,8 @@ export class Player extends BaseGameObject {
         const gunSlots = [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary];
         for (const slot of gunSlots) {
             const slotDef = GameObjectDefs[this.weapons[slot].type] as GunDef | undefined;
-            const dualWield = (slotDef?.dualWieldType) && (obj.type === this.weapons[slot].type);
+            const dualWield =
+                slotDef?.dualWieldType && obj.type === this.weapons[slot].type;
             if (this.weapons[slot].type === obj.type) {
                 indexOf = slot;
             }
@@ -1738,7 +1955,11 @@ export class Player extends BaseGameObject {
                 isDualWield = dualWield || false;
                 break;
             }
-            if (this.weapons[slot].type === obj.type && !dualWield && slot as number == gunSlots.length - 1) {
+            if (
+                this.weapons[slot].type === obj.type &&
+                !dualWield &&
+                (slot as number) == gunSlots.length - 1
+            ) {
                 cause = PickupMsgType.AlreadyOwned;
                 break;
             }
@@ -1763,159 +1984,197 @@ export class Player extends BaseGameObject {
         pickupMsg.type = PickupMsgType.Success;
 
         switch (def.type) {
-        case "ammo":
-        case "scope":
-        case "heal":
-        case "boost":
-        case "throwable": {
-            const backpackLevel = this.getGearLevel(this.backpack);
-            const bagSpace = GameConfig.bagSizes[obj.type] ? GameConfig.bagSizes[obj.type][backpackLevel] : 0;
+            case "ammo":
+            case "scope":
+            case "heal":
+            case "boost":
+            case "throwable":
+                {
+                    const backpackLevel = this.getGearLevel(this.backpack);
+                    const bagSpace = GameConfig.bagSizes[obj.type]
+                        ? GameConfig.bagSizes[obj.type][backpackLevel]
+                        : 0;
 
-            if (this.inventory[obj.type] + obj.count <= bagSpace) {
-                switch (def.type) {
-                case "scope": {
-                    const currentScope = GameObjectDefs[this.scope] as ScopeDef;
-                    if (def.level > currentScope.level) { // only switch scopes if new scope is highest level player has
-                        this.scope = obj.type;
-                    }
-                    break;
-                }
-                case "throwable": {
-                    if (throwableList.includes(obj.type)) {
-                        // fill empty slot with throwable, otherwise just add to inv
-                        if (this.inventory[obj.type] == 0) {
-                            this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
-                            this.weapsDirty = true;
-                            this.setDirty();
+                    if (this.inventory[obj.type] + obj.count <= bagSpace) {
+                        switch (def.type) {
+                            case "scope": {
+                                const currentScope = GameObjectDefs[
+                                    this.scope
+                                ] as ScopeDef;
+                                if (def.level > currentScope.level) {
+                                    // only switch scopes if new scope is highest level player has
+                                    this.scope = obj.type;
+                                }
+                                break;
+                            }
+                            case "throwable": {
+                                if (throwableList.includes(obj.type)) {
+                                    // fill empty slot with throwable, otherwise just add to inv
+                                    if (this.inventory[obj.type] == 0) {
+                                        this.weapons[
+                                            GameConfig.WeaponSlot.Throwable
+                                        ].type = obj.type;
+                                        this.weapsDirty = true;
+                                        this.setDirty();
+                                    }
+                                }
+                                break;
+                            }
                         }
-                    }
-                    break;
-                }
-                }
-                this.inventory[obj.type] += obj.count;
-                this.inventoryDirty = true;
-            } else {
-                // spawn new loot object to animate the pickup rejection
-                const spaceLeft = bagSpace - this.inventory[obj.type];
-                const amountToAdd = spaceLeft;
+                        this.inventory[obj.type] += obj.count;
+                        this.inventoryDirty = true;
+                    } else {
+                        // spawn new loot object to animate the pickup rejection
+                        const spaceLeft = bagSpace - this.inventory[obj.type];
+                        const amountToAdd = spaceLeft;
 
-                if (amountToAdd <= 0) {
-                    pickupMsg.type = PickupMsgType.Full;
-                    if (def.type === "scope") {
-                        pickupMsg.type = PickupMsgType.AlreadyOwned;
+                        if (amountToAdd <= 0) {
+                            pickupMsg.type = PickupMsgType.Full;
+                            if (def.type === "scope") {
+                                pickupMsg.type = PickupMsgType.AlreadyOwned;
+                            }
+                        } else {
+                            this.inventory[obj.type] += amountToAdd;
+                            this.inventoryDirty = true;
+                            if (
+                                def.type === "throwable" &&
+                                amountToAdd != 0 &&
+                                throwableList.includes(obj.type) &&
+                                !this.weapons[GameConfig.WeaponSlot.Throwable].type
+                            ) {
+                                this.weapons[GameConfig.WeaponSlot.Throwable].type =
+                                    obj.type;
+                                this.weapsDirty = true;
+                                this.setDirty();
+                            }
+                        }
+                        amountLeft = obj.count - amountToAdd;
                     }
-                } else {
-                    this.inventory[obj.type] += amountToAdd;
-                    this.inventoryDirty = true;
-                    if (def.type === "throwable" &&
-                            amountToAdd != 0 &&
-                            throwableList.includes(obj.type) &&
-                            !this.weapons[GameConfig.WeaponSlot.Throwable].type
+                    // this is here because it needs to execute regardless of what happens above
+                    // automatically reloads gun if inventory has 0 ammo and ammo is picked up
+                    const weaponInfo = GameObjectDefs[this.activeWeapon];
+                    if (
+                        def.type == "ammo" &&
+                        weaponInfo.type === "gun" &&
+                        this.weapons[this.curWeapIdx].ammo == 0 &&
+                        weaponInfo.ammo == obj.type
                     ) {
-                        this.weapons[GameConfig.WeaponSlot.Throwable].type = obj.type;
-                        this.weapsDirty = true;
-                        this.setDirty();
+                        this.weaponManager.tryReload();
                     }
                 }
-                amountLeft = obj.count - amountToAdd;
-            }
-            // this is here because it needs to execute regardless of what happens above
-            // automatically reloads gun if inventory has 0 ammo and ammo is picked up
-            const weaponInfo = GameObjectDefs[this.activeWeapon];
-            if (def.type == "ammo" &&
-                    weaponInfo.type === "gun" &&
-                    this.weapons[this.curWeapIdx].ammo == 0 &&
-                    weaponInfo.ammo == obj.type) {
-                this.weaponManager.tryReload();
-            }
-        }
-            break;
-        case "melee":
-            this.weaponManager.dropMelee();
-            this.weapons[GameConfig.WeaponSlot.Melee].type = obj.type;
-            this.weapsDirty = true;
-            if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
-            break;
-        case "gun": {
-            amountLeft = 0;
-            removeLoot = true;
+                break;
+            case "melee":
+                this.weaponManager.dropMelee();
+                this.weapons[GameConfig.WeaponSlot.Melee].type = obj.type;
+                this.weapsDirty = true;
+                if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
+                break;
+            case "gun":
+                {
+                    amountLeft = 0;
+                    removeLoot = true;
 
-            const freeGunSlot = this.getFreeGunSlot(obj);
-            pickupMsg.type = freeGunSlot.cause;
-            let newGunIdx = freeGunSlot.availSlot;
+                    const freeGunSlot = this.getFreeGunSlot(obj);
+                    pickupMsg.type = freeGunSlot.cause;
+                    let newGunIdx = freeGunSlot.availSlot;
 
-            if (freeGunSlot.availSlot == -1) {
-                newGunIdx = this.curWeapIdx;
-                if (this.curWeapIdx in [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary] && obj.type != this.weapons[this.curWeapIdx].type) {
-                    this.weaponManager.dropGun(this.curWeapIdx, false);
-                    this.weapons[this.curWeapIdx].type = obj.type;
-                } else {
-                    removeLoot = false;
-                    pickupMsg.type = PickupMsgType.Full;
+                    if (freeGunSlot.availSlot == -1) {
+                        newGunIdx = this.curWeapIdx;
+                        if (
+                            this.curWeapIdx in
+                                [
+                                    GameConfig.WeaponSlot.Primary,
+                                    GameConfig.WeaponSlot.Secondary
+                                ] &&
+                            obj.type != this.weapons[this.curWeapIdx].type
+                        ) {
+                            this.weaponManager.dropGun(this.curWeapIdx, false);
+                            this.weapons[this.curWeapIdx].type = obj.type;
+                        } else {
+                            removeLoot = false;
+                            pickupMsg.type = PickupMsgType.Full;
+                        }
+                        this.cancelAction();
+                        this.weaponManager.tryReload();
+                    } else if (freeGunSlot.isDualWield) {
+                        this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
+                    } else {
+                        this.weapons[freeGunSlot.availSlot].type = obj.type;
+                    }
+
+                    this.weapons[newGunIdx].cooldown = 0;
+                    // always select primary slot if melee or secondary is selected
+                    if (
+                        this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
+                        this.curWeapIdx === GameConfig.WeaponSlot.Secondary
+                    ) {
+                        this.weaponManager.setCurWeapIndex(newGunIdx); // primary
+                    }
+
+                    this.weapsDirty = true;
+                    this.setDirty();
                 }
-                this.cancelAction();
-                this.weaponManager.tryReload();
-            } else if (freeGunSlot.isDualWield) {
-                this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
-            } else {
-                this.weapons[freeGunSlot.availSlot].type = obj.type;
-            }
+                break;
+            case "helmet":
+            case "chest":
+            case "backpack":
+                {
+                    const objLevel = this.getGearLevel(obj.type);
+                    const thisType = this[def.type];
+                    const thisLevel = this.getGearLevel(thisType);
+                    amountLeft = 1;
 
-            this.weapons[newGunIdx].cooldown = 0;
-            // always select primary slot if melee or secondary is selected
-            if (this.curWeapIdx === GameConfig.WeaponSlot.Melee || this.curWeapIdx === GameConfig.WeaponSlot.Secondary) {
-                this.weaponManager.setCurWeapIndex(newGunIdx);// primary
-            }
-
-            this.weapsDirty = true;
-            this.setDirty();
-        } break;
-        case "helmet":
-        case "chest":
-        case "backpack": {
-            const objLevel = this.getGearLevel(obj.type);
-            const thisType = this[def.type];
-            const thisLevel = this.getGearLevel(thisType);
-            amountLeft = 1;
-
-            if (thisType === obj.type) {
-                lootToAdd = obj.type;
-                pickupMsg.type = PickupMsgType.AlreadyEquipped;
-            } else if (thisLevel <= objLevel) {
-                lootToAdd = thisType;
-                this[def.type] = obj.type;
-                pickupMsg.type = PickupMsgType.Success;
-                this.setDirty();
-            } else {
-                lootToAdd = obj.type;
-                pickupMsg.type = PickupMsgType.BetterItemEquipped;
-            }
-            if (this.getGearLevel(lootToAdd) === 0) lootToAdd = "";
-        }
-            break;
-        case "outfit":
-            amountLeft = 1;
-            lootToAdd = this.outfit;
-            pickupMsg.type = PickupMsgType.Success;
-            this.outfit = obj.type;
-            this.setDirty();
-            break;
-        case "perk":
-            if (this.perks.length >= Constants.MaxPerks) {
+                    if (thisType === obj.type) {
+                        lootToAdd = obj.type;
+                        pickupMsg.type = PickupMsgType.AlreadyEquipped;
+                    } else if (thisLevel <= objLevel) {
+                        lootToAdd = thisType;
+                        this[def.type] = obj.type;
+                        pickupMsg.type = PickupMsgType.Success;
+                        this.setDirty();
+                    } else {
+                        lootToAdd = obj.type;
+                        pickupMsg.type = PickupMsgType.BetterItemEquipped;
+                    }
+                    if (this.getGearLevel(lootToAdd) === 0) lootToAdd = "";
+                }
+                break;
+            case "outfit":
                 amountLeft = 1;
-            } else {
-                this.addPerk(obj.type);
-            }
-            this.setDirty();
-            break;
+                lootToAdd = this.outfit;
+                pickupMsg.type = PickupMsgType.Success;
+                this.outfit = obj.type;
+                this.setDirty();
+                break;
+            case "perk":
+                if (this.perks.length >= Constants.MaxPerks) {
+                    amountLeft = 1;
+                } else {
+                    this.addPerk(obj.type);
+                }
+                this.setDirty();
+                break;
         }
 
         const lootToAddDef = GameObjectDefs[lootToAdd] as LootDef;
-        if (removeLoot && amountLeft > 0 && lootToAdd !== "" && !(lootToAddDef as ChestDef).noDrop) {
+        if (
+            removeLoot &&
+            amountLeft > 0 &&
+            lootToAdd !== "" &&
+            !(lootToAddDef as ChestDef).noDrop
+        ) {
             const angle = Math.atan2(this.dir.y, this.dir.x);
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
-            const newPos = v2.add(obj.pos, v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)));
-            this.game.lootBarn.addLootWithoutAmmo(lootToAdd, newPos, obj.layer, amountLeft);
+            const newPos = v2.add(
+                obj.pos,
+                v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle))
+            );
+            this.game.lootBarn.addLootWithoutAmmo(
+                lootToAdd,
+                newPos,
+                obj.layer,
+                amountLeft
+            );
         }
 
         if (removeLoot) {
@@ -1930,108 +2189,118 @@ export class Player extends BaseGameObject {
     dropItem(dropMsg: DropItemMsg): void {
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         switch (itemDef.type) {
-        case "ammo": {
-            const inventoryCount = this.inventory[dropMsg.item];
+            case "ammo": {
+                const inventoryCount = this.inventory[dropMsg.item];
 
-            if (inventoryCount === 0) return;
+                if (inventoryCount === 0) return;
 
-            let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+                let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
 
-            if (itemDef.minStackSize && inventoryCount <= itemDef.minStackSize) {
-                amountToDrop = Math.min(itemDef.minStackSize, inventoryCount);
-            } else if (inventoryCount <= 5) {
-                amountToDrop = Math.min(5, inventoryCount);
-            }
-
-            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop, this.dir);
-            this.inventory[dropMsg.item] -= amountToDrop;
-            this.inventoryDirty = true;
-            break;
-        }
-        case "scope": {
-            if (itemDef.level === 1) break;
-            const scopeLevel = `${itemDef.level}xscope`;
-            const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
-
-            this.game.lootBarn.addLoot(
-                dropMsg.item,
-                this.pos,
-                this.layer,
-                1,
-                undefined,
-                -4,
-                this.dir
-            );
-            this.inventory[scopeLevel] = 0;
-
-            if (this.scope === scopeLevel) {
-                for (let i = scopeIdx; i >= 0; i--) {
-                    if (!this.inventory[SCOPE_LEVELS[i]]) continue;
-                    this.scope = SCOPE_LEVELS[i];
-                    break;
+                if (itemDef.minStackSize && inventoryCount <= itemDef.minStackSize) {
+                    amountToDrop = Math.min(itemDef.minStackSize, inventoryCount);
+                } else if (inventoryCount <= 5) {
+                    amountToDrop = Math.min(5, inventoryCount);
                 }
+
+                this.game.lootBarn.splitUpLoot(
+                    this,
+                    dropMsg.item,
+                    amountToDrop,
+                    this.dir
+                );
+                this.inventory[dropMsg.item] -= amountToDrop;
+                this.inventoryDirty = true;
+                break;
             }
+            case "scope": {
+                if (itemDef.level === 1) break;
+                const scopeLevel = `${itemDef.level}xscope`;
+                const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
 
-            this.inventoryDirty = true;
-            break;
-        }
-        case "chest":
-        case "helmet": {
-            if (itemDef.noDrop) break;
-            this.game.lootBarn.addLoot(
-                dropMsg.item,
-                this.pos,
-                this.layer,
-                1,
-                undefined,
-                -4,
-                this.dir
-            );
-            this[itemDef.type] = "";
-            this.setDirty();
-            break;
-        }
-        case "heal":
-        case "boost": {
-            if (this.inventory[dropMsg.item] === 0) break;
-            this.inventory[dropMsg.item]--;
-            // @TODO: drop more than one?
-            this.game.lootBarn.addLoot(
-                dropMsg.item,
-                this.pos,
-                this.layer,
-                1,
-                undefined,
-                -4,
-                this.dir
-            );
-            this.inventoryDirty = true;
-            break;
-        }
-        case "gun":
-            this.weaponManager.dropGun(dropMsg.weapIdx);
-            break;
-        case "melee":
-            this.weaponManager.dropMelee();
-            break;
-        case "throwable": {
-            const inventoryCount = this.inventory[dropMsg.item];
+                this.game.lootBarn.addLoot(
+                    dropMsg.item,
+                    this.pos,
+                    this.layer,
+                    1,
+                    undefined,
+                    -4,
+                    this.dir
+                );
+                this.inventory[scopeLevel] = 0;
 
-            if (inventoryCount === 0) return;
+                if (this.scope === scopeLevel) {
+                    for (let i = scopeIdx; i >= 0; i--) {
+                        if (!this.inventory[SCOPE_LEVELS[i]]) continue;
+                        this.scope = SCOPE_LEVELS[i];
+                        break;
+                    }
+                }
 
-            const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
-
-            this.game.lootBarn.splitUpLoot(this, dropMsg.item, amountToDrop, this.dir);
-            this.inventory[dropMsg.item] -= amountToDrop;
-            this.weapons[3].ammo -= amountToDrop;
-
-            if (this.inventory[dropMsg.item] == 0) {
-                this.weaponManager.showNextThrowable();
+                this.inventoryDirty = true;
+                break;
             }
-            this.inventoryDirty = true;
-            this.weapsDirty = true;
-            break;
-        }
+            case "chest":
+            case "helmet": {
+                if (itemDef.noDrop) break;
+                this.game.lootBarn.addLoot(
+                    dropMsg.item,
+                    this.pos,
+                    this.layer,
+                    1,
+                    undefined,
+                    -4,
+                    this.dir
+                );
+                this[itemDef.type] = "";
+                this.setDirty();
+                break;
+            }
+            case "heal":
+            case "boost": {
+                if (this.inventory[dropMsg.item] === 0) break;
+                this.inventory[dropMsg.item]--;
+                // @TODO: drop more than one?
+                this.game.lootBarn.addLoot(
+                    dropMsg.item,
+                    this.pos,
+                    this.layer,
+                    1,
+                    undefined,
+                    -4,
+                    this.dir
+                );
+                this.inventoryDirty = true;
+                break;
+            }
+            case "gun":
+                this.weaponManager.dropGun(dropMsg.weapIdx);
+                break;
+            case "melee":
+                this.weaponManager.dropMelee();
+                break;
+            case "throwable": {
+                const inventoryCount = this.inventory[dropMsg.item];
+
+                if (inventoryCount === 0) return;
+
+                const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+
+                this.game.lootBarn.splitUpLoot(
+                    this,
+                    dropMsg.item,
+                    amountToDrop,
+                    this.dir
+                );
+                this.inventory[dropMsg.item] -= amountToDrop;
+                this.weapons[3].ammo -= amountToDrop;
+
+                if (this.inventory[dropMsg.item] == 0) {
+                    this.weaponManager.showNextThrowable();
+                }
+                this.inventoryDirty = true;
+                this.weapsDirty = true;
+                break;
+            }
         }
 
         const reloading = this.isReloading();
@@ -2044,16 +2313,26 @@ export class Player extends BaseGameObject {
 
     isOnOtherSide(door: Obstacle): boolean {
         switch (door.ori) {
-        case 0: return this.pos.x < door.pos.x;
-        case 1: return this.pos.y < door.pos.y;
-        case 2: return this.pos.x > door.pos.x;
-        case 3: return this.pos.y > door.pos.y;
+            case 0:
+                return this.pos.x < door.pos.x;
+            case 1:
+                return this.pos.y < door.pos.y;
+            case 2:
+                return this.pos.x > door.pos.x;
+            case 3:
+                return this.pos.y > door.pos.y;
         }
         return false;
     }
 
-    doAction(actionItem: string, actionType: number, duration: number, targetId: number = 0) {
-        if (this.actionDirty) { // action already in progress
+    doAction(
+        actionItem: string,
+        actionType: number,
+        duration: number,
+        targetId: number = 0
+    ) {
+        if (this.actionDirty) {
+            // action already in progress
             return;
         }
 
@@ -2109,9 +2388,11 @@ export class Player extends BaseGameObject {
         // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
 
         if (this.actionType == GameConfig.Action.Revive) {
-            if (this.action.targetId) { // player reviving
+            if (this.action.targetId) {
+                // player reviving
                 this.speed = GameConfig.player.downedMoveSpeed + 2; // not specified in game config so i just estimated
-            } else { // player being revived
+            } else {
+                // player being revived
                 this.speed = GameConfig.player.downedRezMoveSpeed;
             }
         } else if (this.downed) {
@@ -2121,8 +2402,14 @@ export class Player extends BaseGameObject {
         }
 
         // if melee is selected increase speed
-        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef | MeleeDef | ThrowableDef;
-        if (weaponDef.speed.equip && this.weapons[this.curWeapIdx].cooldown < this.game.now) {
+        const weaponDef = GameObjectDefs[this.activeWeapon] as
+            | GunDef
+            | MeleeDef
+            | ThrowableDef;
+        if (
+            weaponDef.speed.equip &&
+            this.weapons[this.curWeapIdx].cooldown < this.game.now
+        ) {
             this.speed += weaponDef.speed.equip;
         }
 
@@ -2131,7 +2418,8 @@ export class Player extends BaseGameObject {
         }
 
         // if player is on water decrease speed
-        const isOnWater = this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        const isOnWater =
+            this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
         if (isOnWater) this.speed -= GameConfig.player.waterSpeedPenalty;
 
         // increase speed when adrenaline is above 50%

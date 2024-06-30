@@ -1,5 +1,5 @@
 import type { MapDef } from "../defs/mapDefs";
-import { AbstractMsg, Constants, type BitStream } from "../net";
+import { AbstractMsg, type BitStream, Constants } from "../net";
 import type { MapRiverData } from "../utils/terrainGen";
 import type { Vec2 } from "../utils/v2";
 
@@ -39,13 +39,13 @@ function deserializeMapPlaces(s: BitStream, place: Place) {
 }
 
 export interface GroundPatch {
-    color: number
-    roughness: number
-    offsetDist: number
-    order?: number
-    useAsMapShape?: boolean
-    min: Vec2
-    max: Vec2
+    color: number;
+    roughness: number;
+    offsetDist: number;
+    order?: number;
+    useAsMapShape?: boolean;
+    min: Vec2;
+    max: Vec2;
 }
 
 function serializeMapGroundPatch(s: BitStream, patch: GroundPatch) {
@@ -69,10 +69,10 @@ function deserializeMapGroundPatch(s: BitStream, patch: GroundPatch) {
 }
 
 interface MapObj {
-    pos: Vec2
-    scale: number
-    type: string
-    ori: number
+    pos: Vec2;
+    scale: number;
+    type: string;
+    ori: number;
 }
 
 function serializeMapObj(s: BitStream, obj: MapObj) {

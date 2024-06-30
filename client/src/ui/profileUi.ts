@@ -1,12 +1,12 @@
 import $ from "jquery";
+import { type Account } from "../account";
 import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import { MenuModal } from "./menuModal";
-import loadout from "./loadouts";
 import { type LoadoutMenu } from "./loadoutMenu";
+import loadout from "./loadouts";
 import { type Localization } from "./localization";
-import { type Account } from "../account";
+import { MenuModal } from "./menuModal";
 
 function createLoginOptions(
     parentElem: JQuery<HTMLElement>,
@@ -31,7 +31,7 @@ function createLoginOptions(
         class: "account-buttons"
     });
     contentsElem.append(buttonParentElem);
-    const addLoginOption = function(
+    const addLoginOption = function (
         method: string,
         linked: boolean,
         onClick: () => void
@@ -58,7 +58,7 @@ function createLoginOptions(
             el.addClass("btn-login-linked");
             el.find("span.login-button-name").html('<div class="icon"></div>');
         } else {
-            el.click((e) => {
+            el.click((_e) => {
                 onClick();
             });
         }
@@ -107,7 +107,7 @@ export class ProfileUi {
 
     initUi() {
         // Set username
-        const clearNamePrompt = function() {
+        const clearNamePrompt = function () {
             $("#modal-body-warning").css("display", "none");
             $("#modal-account-name-input").val("");
         };
@@ -203,9 +203,7 @@ export class ProfileUi {
         });
 
         // Login and link options mobile
-        this.loginOptionsModalMobile = new MenuModal(
-            $("#account-login-options-mobile")
-        );
+        this.loginOptionsModalMobile = new MenuModal($("#account-login-options-mobile"));
         this.loginOptionsModalMobile.checkSelector = false;
         this.loginOptionsModalMobile.skipFade = true;
         this.loginOptionsModalMobile.onShow(() => {
@@ -216,9 +214,7 @@ export class ProfileUi {
         });
 
         // Create account
-        this.createAccountModal = new MenuModal(
-            $("#modal-create-account-INVALID_ID")
-        );
+        this.createAccountModal = new MenuModal($("#modal-create-account-INVALID_ID"));
         this.createAccountModal.onHide(() => {
             this.loadoutMenu.hide();
         });
@@ -240,7 +236,7 @@ export class ProfileUi {
         //
 
         // Leaderboard
-        $(".account-leaderboard-link").click((e) => {
+        $(".account-leaderboard-link").click((_e) => {
             window.open(api.resolveUrl("/stats"), "_blank");
             return false;
         });
@@ -367,7 +363,7 @@ export class ProfileUi {
         }
     }
 
-    onLoadoutUpdated(e: unknown) {
+    onLoadoutUpdated(_e: unknown) {
         this.updateUserIcon();
     }
 
@@ -407,7 +403,7 @@ export class ProfileUi {
         }
     }
 
-    showLoginMenu(opts: { modal?: boolean, link?: boolean }) {
+    showLoginMenu(opts: { modal?: boolean; link?: boolean }) {
         opts = Object.assign(
             {
                 modal: false,
@@ -418,14 +414,9 @@ export class ProfileUi {
         const modal = opts.modal
             ? this.createAccountModal
             : device.mobile
-                ? this.loginOptionsModalMobile
-                : this.loginOptionsModal;
-        createLoginOptions(
-            modal!.selector,
-            opts.link,
-            this.account,
-            this.localization
-        );
+              ? this.loginOptionsModalMobile
+              : this.loginOptionsModal;
+        createLoginOptions(modal!.selector, opts.link, this.account, this.localization);
         modal!.show();
     }
 
@@ -455,10 +446,7 @@ export class ProfileUi {
             "display",
             this.account.loggedIn ? "block" : "none"
         );
-        $("#account-login").css(
-            "display",
-            this.account.loggedIn ? "none" : "block"
-        );
+        $("#account-login").css("display", this.account.loggedIn ? "none" : "block");
         this.updateUserIcon();
         if (this.account.profile.usernameChangeTime <= 0) {
             $(".btn-account-change-name").removeClass("btn-account-disabled");
