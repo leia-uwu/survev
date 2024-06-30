@@ -2453,7 +2453,7 @@ export class PlayerBarn {
         }
     }
 
-    render(camera: Camera, debug: unknown) {
+    render(camera: Camera, debug: DebugOptions) {
         const players = this.playerPool.getPool();
         for (let i = 0; i < players.length; i++) {
             const p = players[i];

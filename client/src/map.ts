@@ -16,6 +16,7 @@ import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
 import type { Camera } from "./camera";
 import { device } from "./device";
+import type { DebugOptions } from "./game";
 import { Building } from "./objects/building";
 import type { DecalBarn } from "./objects/decal";
 import { Pool } from "./objects/objectPool";
@@ -196,7 +197,7 @@ export class Map {
         renderer: Renderer,
         camera: Camera,
         _smokeParticles: SmokeParticle[],
-        debug: unknown
+        debug: DebugOptions
     ) {
         const obstacles = this.obstaclePool.getPool();
         for (let i = 0; i < obstacles.length; i++) {
