@@ -58,7 +58,8 @@ export default defineConfig(() => {
                 name: 'Resurviv',
                 short_name: 'Resurviv',
                 description: 'Describe me daddy',
-                theme_color: '#ffffff',
+                background_color: '#80af49',
+                theme_color: '#80af49',
                 icons: [
                   {
                     src: 'img/pwa-192x192.png',
