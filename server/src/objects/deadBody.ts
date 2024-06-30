@@ -78,7 +78,7 @@ export class DeadBody extends BaseGameObject {
         );
         this.checkStairs(objs, 2);
 
-        this.pos = this.game.map.clampToMapBounds(this.pos);
+        this.game.map.clampToMapBounds(this.pos);
 
         if (this.layer !== originalLayer) {
             this.setDirty();

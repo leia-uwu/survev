@@ -107,7 +107,6 @@ export class BullletBarn {
     }
 
     fireBullet(params: BulletParams): Bullet {
-        params.pos = this.game.map.clampToMapBounds(params.pos);
         const bullet = new Bullet(this, params);
         this.bullets.push(bullet);
         this.newBullets.push(bullet);
@@ -317,7 +316,7 @@ export class Bullet {
         const map = this.bulletManager.game.map;
         if (!coldet.testPointAabb(this.pos, map.bounds.min, map.bounds.max)) {
             this.alive = false;
-            v2.set(this.pos, map.clampToMapBounds(this.pos));
+            map.clampToMapBounds(this.pos);
         }
 
         // const oldT = this.moveT;

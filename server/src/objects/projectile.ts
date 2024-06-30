@@ -160,7 +160,7 @@ export class Projectile extends BaseGameObject {
             }
         }
 
-        this.clampToMapBounds(this.rad);
+        this.game.map.clampToMapBounds(this.pos, this.rad);
 
         const originalLayer = this.layer;
         this.checkStairs(objs, this.rad);
