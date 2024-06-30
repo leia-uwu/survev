@@ -449,7 +449,8 @@ export class GameMap {
                     if (collided) break;
                 }
                 if (collided) break;
-                riverPoints[i] = this.clampToMapBounds(pos);
+                this.clampToMapBounds(pos);
+                riverPoints[i] = pos;
 
                 if (!coldet.testPointAabb(pos, riverRect.min, riverRect.max)) break;
             }
@@ -623,7 +624,7 @@ export class GameMap {
         if (spawnReplacements[type] && !ignoreMapSpawnReplacement)
             type = spawnReplacements[type];
 
-        pos = this.clampToMapBounds(pos);
+        this.clampToMapBounds(pos);
 
         switch (def.type) {
             case "obstacle":
@@ -1039,7 +1040,6 @@ export class GameMap {
         buildingId?: number,
         puzzlePiece?: string
     ): Obstacle {
-        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as ObstacleDef;
 
         scale = scale ?? util.random(def.scale.createMin, def.scale.createMax);
@@ -1069,7 +1069,6 @@ export class GameMap {
         ori?: number,
         parentId?: number
     ): Building {
-        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as BuildingDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -1128,7 +1127,6 @@ export class GameMap {
     }
 
     genStructure(type: string, pos: Vec2, layer = 0, ori?: number): Structure {
-        pos = this.clampToMapBounds(pos);
         const def = MapObjectDefs[type] as StructureDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -1201,8 +1199,15 @@ export class GameMap {
         return circle.pos;
     }
 
-    clampToMapBounds(pos: Vec2): Vec2 {
-        return coldet.clampPosToAabb(pos, this.bounds);
+    clampToMapBounds(pos: Vec2, rad = 0) {
+        v2.set(
+            pos,
+            math.v2Clamp(
+                pos,
+                v2.create(rad, rad),
+                v2.create(this.width - rad, this.height - rad)
+            )
+        );
     }
 
     getGroundSurface(pos: Vec2, layer: number) {

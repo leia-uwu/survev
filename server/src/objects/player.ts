@@ -134,6 +134,8 @@ export class PlayerBarn {
             }
         }
 
+        this.game.lootBarn.addLoot("usas", pos, 0, 1)
+
         this.game.logger.log(`Player ${player.name} joined`);
 
         socketData.player = player;
@@ -856,7 +858,7 @@ export class Player extends BaseGameObject {
         this.zoom = this.indoors ? zoom : scopeZoom;
         if (!collidesWithZoomOut) this.indoors = false;
 
-        this.clampToMapBounds(this.rad);
+        this.game.map.clampToMapBounds(this.pos, this.rad);
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
