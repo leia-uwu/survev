@@ -275,8 +275,8 @@ export abstract class BaseGameObject {
     }
 
     clampToMapBounds(rad = 0) {
-        this.pos = math.v2Clamp(
-            this.pos,
+        this._pos = math.v2Clamp(
+            this._pos,
             v2.create(rad, rad),
             v2.create(this.game.map.width - rad, this.game.map.height - rad)
         );
