@@ -147,8 +147,6 @@ export class Loot extends BaseGameObject {
     collider: Circle;
     rad: number;
 
-    dragConstant: number;
-
     get pos() {
         return this.collider.pos;
     }
@@ -185,8 +183,6 @@ export class Loot extends BaseGameObject {
 
         this.rad = this.collider.rad;
 
-        this.dragConstant = Math.exp(-3.69 / Config.tps);
-
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
 
@@ -217,7 +213,7 @@ export class Loot extends BaseGameObject {
         };
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
-        this.vel = v2.mul(this.vel, this.dragConstant);
+        this.vel = v2.mul(this.vel, 0.95);
 
         this.pos = v2.add(this.pos, calculateSafeDisplacement());
 

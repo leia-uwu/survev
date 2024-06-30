@@ -31,6 +31,9 @@ export interface ServerGameConfig {
 }
 
 export class Game {
+    static gameDt = 1000 / Config.gameTps / 1000;
+    static netSyncDt = 1000 / Config.netSyncTps / 1000;
+
     started = false;
     stopped = false;
     allowJoin = true;
@@ -70,6 +73,8 @@ export class Game {
 
     now!: number;
 
+    netSyncTicker = 0;
+
     tickTimes: number[] = [];
 
     logger: Logger;
@@ -104,12 +109,12 @@ export class Game {
     update(): void {
         const now = Date.now();
         if (!this.now) this.now = now;
-        const dt = (now - this.now) / 1000;
         this.now = now;
 
         //
         // Update modules
         //
+        const dt = Game.gameDt;
         this.gas.update(dt);
         this.playerBarn.update(dt);
         this.map.update();
@@ -120,20 +125,12 @@ export class Game {
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
 
-        // second update:
-        // serialize objects and send msgs
-        this.objectRegister.serializeObjs();
-        this.playerBarn.sendMsgs(dt);
+        this.netSyncTicker += dt;
 
-        //
-        // reset stuff
-        //
-        this.playerBarn.flush();
-        this.bulletBarn.flush();
-        this.objectRegister.flush();
-        this.explosionBarn.flush();
-        this.gas.flush();
-        this.msgsToSend.length = 0;
+        if (this.netSyncTicker > Game.netSyncDt) {
+            this.netSyncTicker = 0;
+            this.netSync();
+        }
 
         // Record performance and start the next tick
         // THIS TICK COUNTER IS WORKING CORRECTLY!
@@ -145,10 +142,26 @@ export class Game {
             const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
             this.logger.log(
-                `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.tps)) * 100).toFixed(1)}%`
+                `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
             );
             this.tickTimes = [];
         }
+    }
+
+    netSync() {
+        // serialize objects and send msgs
+        this.objectRegister.serializeObjs();
+        this.playerBarn.sendMsgs();
+
+        //
+        // reset stuff
+        //
+        this.playerBarn.flush();
+        this.bulletBarn.flush();
+        this.objectRegister.flush();
+        this.explosionBarn.flush();
+        this.gas.flush();
+        this.msgsToSend.length = 0;
     }
 
     canJoin(): boolean {

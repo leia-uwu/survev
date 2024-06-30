@@ -177,11 +177,11 @@ export class PlayerBarn {
         this.game.checkGameOver();
     }
 
-    sendMsgs(dt: number) {
+    sendMsgs() {
         for (let i = 0; i < this.players.length; i++) {
             const player = this.players[i];
             if (player.disconnected) continue;
-            player.sendMsgs(dt);
+            player.sendMsgs();
         }
     }
 
@@ -718,6 +718,10 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.game.isTeamMode) {
+            this.playerStatusTicker += dt;
+        }
+
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed * dt);
         this.pos = v2.add(this.pos, this.moveVel);
@@ -887,7 +891,7 @@ export class Player extends BaseGameObject {
     private _firstUpdate = true;
 
     msgStream = new MsgStream(new ArrayBuffer(65536));
-    sendMsgs(dt: number): void {
+    sendMsgs(): void {
         const msgStream = this.msgStream;
         const game = this.game;
         const playerBarn = game.playerBarn;
@@ -1005,8 +1009,6 @@ export class Player extends BaseGameObject {
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
         if (this.group) {
-            this.playerStatusTicker += dt;
-
             if (
                 this.playerStatusTicker >
                 getPlayerStatusUpdateRate(this.game.map.factionMode)
@@ -1081,8 +1083,8 @@ export class Player extends BaseGameObject {
 
         updateMsg.bullets = newBullets;
 
-        for (let i = 0; i < game.explosionBarn.explosions.length; i++) {
-            const explosion = game.explosionBarn.explosions[i];
+        for (let i = 0; i < game.explosionBarn.newExplosions.length; i++) {
+            const explosion = game.explosionBarn.newExplosions[i];
             const rad = explosion.rad + extendedRadius;
             if (
                 v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad &&

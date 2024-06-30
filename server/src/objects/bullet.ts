@@ -99,11 +99,11 @@ export class BullletBarn {
             const damageRecord = this.damages[i];
             damageRecord.obj.damage(damageRecord);
         }
+        this.damages.length = 0;
     }
 
     flush(): void {
         this.newBullets.length = 0;
-        this.damages.length = 0;
     }
 
     fireBullet(params: BulletParams): Bullet {

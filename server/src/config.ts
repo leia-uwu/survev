@@ -39,7 +39,8 @@ export const Config = {
 
     spawn: { mode: SpawnMode.Random },
 
-    tps: 40
+    gameTps: 100,
+    netSyncTps: 33
 } satisfies ConfigType as ConfigType;
 
 export interface ConfigType {
@@ -92,5 +93,6 @@ export interface ConfigType {
     /**
      * Server tick rate
      */
-    readonly tps: number;
+    readonly gameTps: number;
+    readonly netSyncTps: number;
 }

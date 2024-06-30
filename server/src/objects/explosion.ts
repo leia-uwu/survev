@@ -11,8 +11,9 @@ import type { GameObject } from "./gameObject";
 
 export class ExplosionBarn {
     explosions: Explosion[] = [];
+    newExplosions: Explosion[] = [];
 
-    constructor(readonly game: Game) {}
+    constructor(readonly game: Game) { }
 
     update() {
         const game = this.game;
@@ -148,10 +149,11 @@ export class ExplosionBarn {
                 );
             }
         }
+        this.explosions.length = 0;
     }
 
     flush() {
-        this.explosions.length = 0;
+        this.newExplosions.length = 0;
     }
 
     addExplosion(
@@ -168,7 +170,7 @@ export class ExplosionBarn {
         if (def.type !== "explosion") {
             throw new Error(`Invalid explosion with type ${type}`);
         }
-        this.explosions.push({
+        const explosion: Explosion = {
             rad: def.rad.max,
             type,
             pos,
@@ -177,7 +179,9 @@ export class ExplosionBarn {
             mapSourceType,
             damageType,
             source
-        });
+        }
+        this.explosions.push(explosion);
+        this.newExplosions.push(explosion);
     }
 }
 

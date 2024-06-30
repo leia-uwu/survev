@@ -467,6 +467,6 @@ app.listen(Config.host, Config.port, (): void => {
             server.update();
         },
         "",
-        `${1000 / Config.tps}m`
+        `${1000 / Config.gameTps}m`
     );
 });
