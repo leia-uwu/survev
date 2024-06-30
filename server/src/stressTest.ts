@@ -21,7 +21,6 @@ import {
     type Msg,
     MsgStream,
     MsgType,
-    StatsMsg,
     UpdatePassMsg
 } from "../../shared/net";
 import {
@@ -242,11 +241,6 @@ class Bot {
             }
             case MsgType.PlayerStats: {
                 const msg = new PlayerStatsMsg();
-                msg.deserialize(stream);
-                break;
-            }
-            case MsgType.Stats: {
-                const msg = new StatsMsg();
                 msg.deserialize(stream);
                 break;
             }

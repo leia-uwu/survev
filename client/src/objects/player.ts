@@ -304,9 +304,6 @@ export class Player implements AbstractObject {
     renderZOrd = 18;
     renderZIdx = 0;
 
-    // Anti-cheat
-    I = 0;
-    Br = 0;
 
     // * @NOTE: these were assigned in the init func
     // * I'm assigning them here to avoid type duplication, may cause erros;

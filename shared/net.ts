@@ -289,8 +289,10 @@ export enum MsgType {
     Emote,
     PlayerStats,
     AdStatus,
+    /* used for anti-cheat */
     Loadout,
     RoleAnnouncement,
+    /* used for anti-cheat */
     Stats,
     UpdatePass,
     AliveCounts,
@@ -304,40 +306,6 @@ export enum PickupMsgType {
     BetterItemEquipped,
     Success,
     GunCannotFire
-}
-
-// * seem to be only used when cheats are detected
-// export class LoadoutMsg extends AbstractMsg {
-//     emotes: string[] = [];
-//     custom = false;
-
-//     serialize(s: BitStream) {
-//         for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
-//             s.writeGameType(this.emotes[i]);
-//         }
-//         s.writeUint8(this.custom);
-//         s.readAlignToNextByte();
-//     }
-
-//     override deserialize(s: BitStream) {
-//         for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
-//             this.emotes.push(s.readGameType());
-//         }
-//         this.custom = s.readUint8();
-//         s.writeAlignToNextByte();
-//     }
-// }
-
-export class StatsMsg extends AbstractMsg {
-    data = "";
-
-    override serialize(s: BitStream) {
-        s.writeString(this.data);
-    }
-
-    override deserialize(s: BitStream) {
-        this.data = s.readString();
-    }
 }
 
 export class UpdatePassMsg {
