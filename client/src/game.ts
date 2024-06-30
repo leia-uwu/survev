@@ -182,7 +182,6 @@ export class Game {
 
                     for (const bot of bots) {
                         if (Math.random() < 0.02) {
-                            console.log(bot.connected);
                             bot.updateInputs();
                         }
                         bot.sendInputs();
