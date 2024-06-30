@@ -1312,7 +1312,7 @@ export class Player extends BaseGameObject {
     /**
      * adds gameover message to "this.msgsToSend" for the player and all their spectators
      */
-    addGameOverMsg(winningTeamId: number = -1): void {
+    addGameOverMsg(winningTeamId: number = 0): void {
         const targetPlayer = this.spectating ?? this;
         let stats: PlayerStatsMsg["playerStats"][] = [targetPlayer];
 
@@ -1328,7 +1328,6 @@ export class Player extends BaseGameObject {
             for (const stat of stats) {
                 const statsMsg = new PlayerStatsMsg();
                 statsMsg.playerStats = stat;
-                statsMsg.playerId = targetPlayer.__id;
 
                 this.msgsToSend.push({ type: MsgType.PlayerStats, msg: statsMsg });
 
@@ -1345,7 +1344,7 @@ export class Player extends BaseGameObject {
             gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
             gameOverMsg.teamId = targetPlayer.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
-            gameOverMsg.gameOver = winningTeamId != -1;
+            gameOverMsg.gameOver = !!winningTeamId;
             this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
 
             for (const spectator of this.spectators) {

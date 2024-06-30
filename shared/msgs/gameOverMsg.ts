@@ -18,7 +18,6 @@ export class GameOverMsg extends AbstractMsg {
         for (let i = 0; i < this.playerStats.length; i++) {
             const stats = this.playerStats[i];
             const statsMsg = new PlayerStatsMsg();
-            statsMsg.playerId = stats.playerId;
             statsMsg.playerStats = stats;
             statsMsg.serialize(s);
         }
