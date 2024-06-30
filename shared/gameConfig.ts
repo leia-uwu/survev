@@ -206,6 +206,11 @@ export const GameConfig = {
         reflectDistDecay: 1.5,
         height: 0.25
     },
+    gun: {
+        customSwitchDelay: undefined,
+        customBarrelLength: undefined,
+        headshotBlacklist: [] as string[]
+    },
     projectile: {
         maxHeight: 5
     },
@@ -333,4 +338,4 @@ export const GameConfig = {
         perk: 1.25,
         xp: 1
     } as Record<string, number>
-} as const;
+};

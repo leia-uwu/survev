@@ -43,6 +43,7 @@ import { IDAllocator } from "../IDAllocator";
 import { Config, SpawnMode } from "../config";
 import { type Game } from "../game";
 import { type Group } from "../group";
+import { Events } from "../pluginManager";
 import { type GameSocketData } from "../server";
 import { WeaponManager, throwableList } from "../utils/weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
@@ -626,10 +627,10 @@ export class Player extends BaseGameObject {
         if (this.boost > 0) {
             this.boost -= 0.375 * dt;
         }
-        if (this.boost > 0 && this.boost <= 25) this.health += 1 * dt;
-        else if (this.boost > 25 && this.boost <= 50) this.health += 3.75 * dt;
-        else if (this.boost > 50 && this.boost <= 87.5) this.health += 4.75 * dt;
-        else if (this.boost > 87.5 && this.boost <= 100) this.health += 5 * dt;
+        if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
+        else if (this.boost > 25 && this.boost <= 50) this.health += 1.25 * dt;
+        else if (this.boost > 50 && this.boost <= 87.5) this.health += 1.5 * dt;
+        else if (this.boost > 87.5 && this.boost <= 100) this.health += 1.75 * dt;
 
         if (this.game.isTeamMode && this.actionType == GameConfig.Action.Revive) {
             if (
@@ -1231,7 +1232,13 @@ export class Player extends BaseGameObject {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
+                const headshotBlacklist = GameConfig.gun.headshotBlacklist;
+                isHeadShot =
+                    !(headshotBlacklist.length == 1 && headshotBlacklist[0] == "all") &&
+                    !headshotBlacklist.includes(params.gameSourceType ?? "") &&
+                    gameSourceDef.headshotMult > 1 &&
+                    Math.random() < 0.15;
+
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
                 }
@@ -1437,6 +1444,8 @@ export class Player extends BaseGameObject {
         }
 
         this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+
+        this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
         //
         // Give spectators someone new to spectate
@@ -2257,14 +2266,19 @@ export class Player extends BaseGameObject {
             }
             case "heal":
             case "boost": {
-                if (this.inventory[dropMsg.item] === 0) break;
-                this.inventory[dropMsg.item]--;
-                // @TODO: drop more than one?
+                const inventoryCount = this.inventory[dropMsg.item];
+
+                if (inventoryCount === 0) return;
+
+                let amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
+
+                this.inventory[dropMsg.item] -= amountToDrop;
+
                 this.game.lootBarn.addLoot(
                     dropMsg.item,
                     this.pos,
                     this.layer,
-                    1,
+                    amountToDrop,
                     undefined,
                     -4,
                     this.dir

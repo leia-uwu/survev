@@ -1,5 +1,7 @@
 import { type MapDefs } from "../../shared/defs/mapDefs";
 import { type Vec2 } from "../../shared/utils/v2";
+import { Game } from "./game";
+import { GamePlugin } from "./pluginManager";
 
 export enum SpawnMode {
     Random,
@@ -23,6 +25,8 @@ export const Config = {
         { mapName: "main", teamMode: TeamMode.Duo },
         { mapName: "main", teamMode: TeamMode.Squad }
     ],
+
+    plugins: [],
 
     regions: {
         local: {
@@ -64,6 +68,8 @@ export interface ConfigType {
         mapName: keyof typeof MapDefs;
         teamMode: TeamMode;
     }>;
+
+    readonly plugins: Array<new (game: Game) => GamePlugin>;
 
     /**
      * There are 5 spawn modes: Random, Radius, Fixed, and Center.
