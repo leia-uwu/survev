@@ -25,8 +25,8 @@ import {
     UpdatePassMsg
 } from "../../shared/net";
 import {
+    type ObjectData,
     ObjectType,
-    type ObjectsFullData,
     type ObjectsPartialData
 } from "../../shared/utils/objectSerializeFns";
 import { util } from "../../shared/utils/util";
@@ -69,7 +69,7 @@ let allBotsJoined = false;
 interface GameObject {
     __id: number;
     __type: ObjectType;
-    data: ObjectsPartialData[ObjectType] & ObjectsFullData[ObjectType];
+    data: ObjectData<ObjectType>;
 }
 
 class ObjectCreator {
@@ -96,7 +96,7 @@ class ObjectCreator {
     updateObjFull<Type extends ObjectType>(
         type: Type,
         id: number,
-        data: ObjectsPartialData[Type] & ObjectsFullData[Type]
+        data: ObjectData<Type>
     ) {
         let obj = this.getObjById(id);
         if (obj === undefined) {
@@ -109,10 +109,9 @@ class ObjectCreator {
         return obj;
     }
 
-    updateObjPart(id: number, data: ObjectsPartialData[ObjectType]) {
+    updateObjPart<Type extends ObjectType>(id: number, data: ObjectsPartialData[Type]) {
         const obj = this.getObjById(id);
         if (obj) {
-            // @ts-expect-error even lazier;
             for (const dataKey in data) {
                 // @ts-expect-error too lazy;
                 obj.data[dataKey] = data;
