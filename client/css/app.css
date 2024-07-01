@@ -588,18 +588,15 @@ a:active {
   background-color: transparent;
 }
 
-#btns-quick-start,
 .btns-double-row {
   display: flex;
 }
 
-#btns-quick-start>button,
-.btns-double-row>button {
+.btns-double-row>a {
   display: inline-block;
 }
 
-#btns-quick-start>button:not(:last-child),
-.btns-double-row>button:not(:last-child) {
+.btns-double-row>a:not(:last-child) {
   margin-right: 4px;
 }
 
@@ -3301,6 +3298,18 @@ screen and (max-width: 736px) and (orientation: landscape) {
   .btn-mode-cobalt {
     border-bottom: 2px solid #1d252e;
   }
+}
+
+#btns-quick-start {
+  display: flex;
+}
+
+#btns-quick-start>a {
+  display: inline-block;
+}
+
+#btns-quick-start>a:not(:last-child) {
+  margin-right: 4px;
 }
 
 .team-menu-option {
