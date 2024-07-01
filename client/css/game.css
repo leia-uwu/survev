@@ -902,15 +902,24 @@ img {
 }
 
 #ui-stats-logo {
+  /*
   background-image: url("/img/surviv_logo_full.png");
+  */
+  background-image: url("/img/resurviv_logo_full.svg");
   background-repeat: no-repeat;
+  /*
   background-size: 250px;
+  */
+  background-size: 317px;
   background-position: center;
   height: 125px;
   position: absolute;
   left: 20px;
   top: 8px;
+  /*
   width: 250px;
+  */
+  width: 317px;
 }
 
 @media (max-width: 1280px),
