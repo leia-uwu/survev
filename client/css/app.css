@@ -3233,7 +3233,20 @@ screen and (max-width: 736px) and (orientation: landscape) {
     border-bottom: 2px solid #563619 !important;
   }
 }
-
+@keyframes potato-pulse {
+    from {
+        background-color: #8f5827;
+        -webkit-box-shadow: 0 0 9px #8f5827;
+    }
+    50% {
+        background-color: #bc712e;
+        -webkit-box-shadow: 0 0 18px #bc712e;
+    }
+    to {
+        background-color: #8f5827;
+        -webkit-box-shadow: 0 0 9px #8f5827;
+    }
+}
 @keyframes desert-pulse {
     from {
         background-color: #d45500;
