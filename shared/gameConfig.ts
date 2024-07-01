@@ -206,9 +206,9 @@ export const GameConfig = {
         height: 0.25
     },
     gun: {
-        customSwitchDelay: 0.35,
-        customBarrelLength: 1,
-        headshotBlacklist: ["all"] as string[]
+        customSwitchDelay: undefined,
+        customBarrelLength: undefined,
+        headshotBlacklist: [] as string[]
     },
     projectile: {
         maxHeight: 5
