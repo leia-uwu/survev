@@ -1355,7 +1355,6 @@ export class Player extends BaseGameObject {
         this.downed = true;
         this.boost = 0;
         this.health = 100;
-        this.actionType = 0;
         this.animType = 0;
         this.setDirty();
 
