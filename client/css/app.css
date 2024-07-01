@@ -172,15 +172,24 @@ a:active {
 }
 
 #start-row-header {
+  /*
   background-image: url(/img/surviv_logo_full.png);
+  */
+  background-image: url(/img/resurviv_logo_full.svg);
   background-repeat: no-repeat;
+  /*
   background-size: 375px;
+  */
+  background-size: 475px;
   background-position: center;
   height: 140px;
   margin: auto;
   margin-bottom: 32px;
   position: relative;
+  /*
   width: 375px;
+  */
+  width: 475px;
 }
 
 @media (max-width: 850px),
