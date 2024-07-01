@@ -37,7 +37,7 @@ export const Config = {
 
     defaultRegion: "local",
 
-    spawn: { mode: SpawnMode.Center },
+    spawn: { mode: SpawnMode.Random },
 
     gameTps: 100,
     netSyncTps: 33
