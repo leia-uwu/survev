@@ -41,7 +41,7 @@ jobs:
 
       - name: Build
         working-directory: ./client
-        run: pnpm build
+        run: pnpm exec vite build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
