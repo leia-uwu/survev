@@ -181,7 +181,7 @@ export class PlayerBarn {
             if (this.game.started) {
                 setTimeout(() => {
                     this.game.gracePeriod = 0;
-                }, this.game.gracePeriod);
+                }, this.game.gracePeriod * 1000);
                 this.game.gas.advanceGasStage();
             }
         }

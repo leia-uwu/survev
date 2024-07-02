@@ -200,7 +200,7 @@ export const GameConfig = {
     },
     groupColors: [16776960, 16711935, 65535, 16733184],
     teamColors: [13369344, 32511],
-    gracePeriod: 10000,
+    gracePeriod: 10,
     spawnDistance: 100,
     bullet: {
         maxReflect: 3,
