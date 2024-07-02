@@ -113,11 +113,19 @@ export class PlayerBarn {
                 if (!group) {
                     pos = this.game.map.getRandomSpawnPos();
                 } else {
-                    const leader = group.players[0];
-                    if (leader) {
-                        pos = this.game.map.getRandomSpawnPos(leader.pos, 5);
+                    const firstToJoin = group.players[0];
+                    if (firstToJoin) {
+                        pos = this.game.map.getRandomSpawnPos(
+                            firstToJoin.pos,
+                            5,
+                            group.groupId
+                        );
                     } else {
-                        pos = this.game.map.getRandomSpawnPos();
+                        pos = this.game.map.getRandomSpawnPos(
+                            undefined,
+                            undefined,
+                            group.groupId
+                        );
                     }
                 }
                 break;
@@ -605,25 +613,27 @@ export class Player extends BaseGameObject {
 
         this.timeAlive += dt;
 
-        const input = this.lastInputMsg;
-
-        this.posOld = v2.copy(this.pos);
-
         const movement = v2.create(0, 0);
 
-        if (this.lastInputMsg.touchMoveActive && this.lastInputMsg.touchMoveLen) {
-            movement.x = this.lastInputMsg.touchMoveDir.x;
-            movement.y = this.lastInputMsg.touchMoveDir.y;
-        } else {
-            if (input.moveUp) movement.y++;
-            if (input.moveDown) movement.y--;
-            if (input.moveLeft) movement.x--;
-            if (input.moveRight) movement.x++;
+        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
+            const input = this.lastInputMsg;
 
-            if (movement.x * movement.y !== 0) {
-                // If the product is non-zero, then both of the components must be non-zero
-                movement.x *= Math.SQRT1_2;
-                movement.y *= Math.SQRT1_2;
+            this.posOld = v2.copy(this.pos);
+
+            if (this.lastInputMsg.touchMoveActive && this.lastInputMsg.touchMoveLen) {
+                movement.x = this.lastInputMsg.touchMoveDir.x;
+                movement.y = this.lastInputMsg.touchMoveDir.y;
+            } else {
+                if (input.moveUp) movement.y++;
+                if (input.moveDown) movement.y--;
+                if (input.moveLeft) movement.x--;
+                if (input.moveRight) movement.x++;
+
+                if (movement.x * movement.y !== 0) {
+                    // If the product is non-zero, then both of the components must be non-zero
+                    movement.x *= Math.SQRT1_2;
+                    movement.y *= Math.SQRT1_2;
+                }
             }
         }
 
