@@ -38,7 +38,7 @@ import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { util } from "../../../shared/utils/util";
+import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { IDAllocator } from "../IDAllocator";
 import { Config, SpawnMode } from "../config";
@@ -324,6 +324,7 @@ export class Player extends BaseGameObject {
 
     set zoom(zoom: number) {
         if (zoom === this._zoom) return;
+        assert(zoom !== 0);
         this._zoom = zoom;
         this.zoomDirty = true;
     }
@@ -882,8 +883,9 @@ export class Player extends BaseGameObject {
 
         this.weaponManager.update(dt);
 
-        if (this.shotSlowdownTimer - Date.now() <= 0) {
-            this.shotSlowdownTimer = -1;
+        this.shotSlowdownTimer -= dt;
+        if (this.shotSlowdownTimer <= 0) {
+            this.shotSlowdownTimer = 0;
         }
     }
 
