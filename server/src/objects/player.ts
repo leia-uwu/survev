@@ -123,21 +123,27 @@ export class PlayerBarn {
 
                         while (attempts++ < 200 && collided == true) {
                             pos = this.game.map.getRandomSpawnPos();
-                            const circle = collider.createCircle(pos, GameConfig.spawnDistance);
+                            const circle = collider.createCircle(
+                                pos,
+                                GameConfig.spawnDistance
+                            );
                             collided = false;
                             v2.set(circle.pos, pos);
-                
+
                             const objs = this.game.grid.intersectCollider(circle);
-                
+
                             for (const obj of objs) {
                                 if (obj.layer !== 0) continue;
-                                if (obj instanceof Player && coldet.test(obj.collider, circle)) {
+                                if (
+                                    obj instanceof Player &&
+                                    coldet.test(obj.collider, circle)
+                                ) {
                                     collided = true;
                                     break;
                                 }
                             }
 
-                            if(collided == false) {
+                            if (collided == false) {
                                 return pos;
                             }
                         }
@@ -176,7 +182,7 @@ export class PlayerBarn {
                 setTimeout(() => {
                     this.game.gracePeriod = 0;
                 }, this.game.gracePeriod);
-                this.game.gas.advanceGasStage();      
+                this.game.gas.advanceGasStage();
             }
         }
 
@@ -634,7 +640,7 @@ export class Player extends BaseGameObject {
 
         const movement = v2.create(0, 0);
 
-        if(this.game.gracePeriod === 0) {
+        if (this.game.gracePeriod === 0) {
             if (this.lastInputMsg.touchMoveActive && this.lastInputMsg.touchMoveLen) {
                 movement.x = this.lastInputMsg.touchMoveDir.x;
                 movement.y = this.lastInputMsg.touchMoveDir.y;
@@ -643,7 +649,7 @@ export class Player extends BaseGameObject {
                 if (input.moveDown) movement.y--;
                 if (input.moveLeft) movement.x--;
                 if (input.moveRight) movement.x++;
-    
+
                 if (movement.x * movement.y !== 0) {
                     // If the product is non-zero, then both of the components must be non-zero
                     movement.x *= Math.SQRT1_2;

@@ -1,4 +1,5 @@
 import type { MapDefs } from "../../shared/defs/mapDefs";
+import { GameConfig } from "../../shared/gameConfig";
 import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
 import { EmoteMsg } from "../../shared/msgs/emoteMsg";
 import { InputMsg } from "../../shared/msgs/inputMsg";
@@ -24,7 +25,6 @@ import { Events, PluginManager } from "./pluginManager";
 import type { GameSocketData } from "./server";
 import { Grid } from "./utils/grid";
 import { Logger } from "./utils/logger";
-import { GameConfig } from "../../shared/gameConfig";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;
