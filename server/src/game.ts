@@ -69,6 +69,7 @@ export class Game {
     gas: Gas;
 
     now!: number;
+    gameStartTime = 0;
 
     tickTimes: number[] = [];
 
@@ -106,6 +107,8 @@ export class Game {
         if (!this.now) this.now = now;
         const dt = (now - this.now) / 1000;
         this.now = now;
+
+        if (this.started) this.startedTime += dt;
 
         //
         // Update modules
@@ -156,7 +159,7 @@ export class Game {
         return (
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
-            this.gas.stage < 1
+            this.gas.stage < 2
         );
     }
 
@@ -227,6 +230,13 @@ export class Game {
                 break;
             }
         }
+    }
+
+    isTeamGameOver(): boolean {
+        const groupAlives = [...this.groups.values()].filter(
+            (group) => !group.allDeadOrDisconnected
+        );
+        return groupAlives.length <= 1;
     }
 
     checkGameOver(): void {

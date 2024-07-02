@@ -38,7 +38,7 @@ import { type Circle, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { util } from "../../../shared/utils/util";
+import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { IDAllocator } from "../IDAllocator";
 import { Config, SpawnMode } from "../config";
@@ -113,11 +113,19 @@ export class PlayerBarn {
                 if (!group) {
                     pos = this.game.map.getRandomSpawnPos();
                 } else {
-                    const leader = group.players[0];
-                    if (leader) {
-                        pos = this.game.map.getRandomSpawnPos(leader.pos, 5);
+                    const firstToJoin = group.players[0];
+                    if (firstToJoin) {
+                        pos = this.game.map.getRandomSpawnPos(
+                            firstToJoin.pos,
+                            5,
+                            group.groupId
+                        );
                     } else {
-                        pos = this.game.map.getRandomSpawnPos();
+                        pos = this.game.map.getRandomSpawnPos(
+                            undefined,
+                            undefined,
+                            group.groupId
+                        );
                     }
                 }
                 break;
@@ -168,6 +176,7 @@ export class PlayerBarn {
         const livingIdx = this.livingPlayers.indexOf(player);
         if (livingIdx !== -1) {
             this.livingPlayers.splice(livingIdx, 1);
+            this.aliveCountDirty = true;
         }
         this.deletedPlayers.push(player.__id);
         player.destroy();
@@ -323,6 +332,7 @@ export class Player extends BaseGameObject {
 
     set zoom(zoom: number) {
         if (zoom === this._zoom) return;
+        assert(zoom !== 0);
         this._zoom = zoom;
         this.zoomDirty = true;
     }
@@ -518,7 +528,7 @@ export class Player extends BaseGameObject {
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: [] as string[]
+        emotes: GameConfig.defaultEmoteLoadout
     };
 
     damageTaken = 0;
@@ -577,11 +587,10 @@ export class Player extends BaseGameObject {
             if (i > GameConfig.EmoteSlot.Count) break;
 
             if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                loadout.emotes.push(GameConfig.defaultEmoteLoadout[i]);
                 continue;
             }
 
-            loadout.emotes.push(emote);
+            loadout.emotes[i] = emote;
         }
 
         this.collider = collider.createCircle(pos, this.rad);
@@ -591,6 +600,8 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+        this.zoom =
+            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
     }
 
     visibleObjects = new Set<GameObject>();
@@ -602,25 +613,27 @@ export class Player extends BaseGameObject {
 
         this.timeAlive += dt;
 
-        const input = this.lastInputMsg;
-
-        this.posOld = v2.copy(this.pos);
-
         const movement = v2.create(0, 0);
 
-        if (this.lastInputMsg.touchMoveActive && this.lastInputMsg.touchMoveLen) {
-            movement.x = this.lastInputMsg.touchMoveDir.x;
-            movement.y = this.lastInputMsg.touchMoveDir.y;
-        } else {
-            if (input.moveUp) movement.y++;
-            if (input.moveDown) movement.y--;
-            if (input.moveLeft) movement.x--;
-            if (input.moveRight) movement.x++;
+        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
+            const input = this.lastInputMsg;
 
-            if (movement.x * movement.y !== 0) {
-                // If the product is non-zero, then both of the components must be non-zero
-                movement.x *= Math.SQRT1_2;
-                movement.y *= Math.SQRT1_2;
+            this.posOld = v2.copy(this.pos);
+
+            if (this.lastInputMsg.touchMoveActive && this.lastInputMsg.touchMoveLen) {
+                movement.x = this.lastInputMsg.touchMoveDir.x;
+                movement.y = this.lastInputMsg.touchMoveDir.y;
+            } else {
+                if (input.moveUp) movement.y++;
+                if (input.moveDown) movement.y--;
+                if (input.moveLeft) movement.x--;
+                if (input.moveRight) movement.x++;
+
+                if (movement.x * movement.y !== 0) {
+                    // If the product is non-zero, then both of the components must be non-zero
+                    movement.x *= Math.SQRT1_2;
+                    movement.y *= Math.SQRT1_2;
+                }
             }
         }
 
@@ -880,8 +893,9 @@ export class Player extends BaseGameObject {
 
         this.weaponManager.update(dt);
 
-        if (this.shotSlowdownTimer - Date.now() <= 0) {
-            this.shotSlowdownTimer = -1;
+        this.shotSlowdownTimer -= dt;
+        if (this.shotSlowdownTimer <= 0) {
+            this.shotSlowdownTimer = 0;
         }
     }
 
@@ -908,7 +922,7 @@ export class Player extends BaseGameObject {
             msgStream.stream.writeBytes(mapStream, 0, mapStream.byteIndex);
         }
 
-        if (playerBarn.aliveCountDirty) {
+        if (playerBarn.aliveCountDirty || this._firstUpdate) {
             const aliveMsg = new AliveCountsMsg();
             aliveMsg.teamAliveCounts.push(game.aliveCount);
             msgStream.serializeMsg(MsgType.AliveCounts, aliveMsg);
@@ -1316,11 +1330,18 @@ export class Player extends BaseGameObject {
             stats = this.group.players;
         }
 
-        const teamRank = !this.game.isTeamMode
-            ? this.game.aliveCount + 1
-            : this.game.groups.size;
+        const groupAlives = [...this.game.groups.values()].filter(
+            (group) => !group.allDeadOrDisconnected
+        );
 
-        if (this.game.isTeamMode && !targetPlayer.group!.allDeadOrDisconnected) {
+        const teamRank =
+            (!this.game.isTeamMode ? this.game.aliveCount : groupAlives.length) + 1;
+
+        if (
+            this.game.isTeamMode &&
+            !targetPlayer.group!.allDeadOrDisconnected &&
+            groupAlives.length > 1
+        ) {
             for (const stat of stats) {
                 const statsMsg = new PlayerStatsMsg();
                 statsMsg.playerStats = stat;
@@ -1404,14 +1425,25 @@ export class Player extends BaseGameObject {
                 ) {
                     player = this.killedBy;
                 } else {
-                    player = this.group.randomPlayer(this.spectating);
+                    player = this.group.randomPlayer(this);
                 }
             }
         }
 
         // loop through all of this object's spectators and change who they're spectating to the new selected player
         for (const spectator of this.spectators) {
-            spectator.spectating = player!;
+            if (
+                this.game.isTeamMode &&
+                this.game.isTeamGameOver() &&
+                this.group!.players.includes(spectator)
+            ) {
+                //inverted logic
+                //if the game is over and the spectator is on the player who died's team...
+                //then you keep them spectating their dead teammate instead of the winner...
+                //so the proper stats show in the game over msg
+            } else {
+                spectator.spectating = player!;
+            }
         }
     }
 
@@ -1434,6 +1466,9 @@ export class Player extends BaseGameObject {
             this.game.playerBarn.livingPlayers.indexOf(this),
             1
         );
+        if (this.group) {
+            this.group.checkPlayers();
+        }
 
         //
         // Send kill msg
@@ -1550,10 +1585,6 @@ export class Player extends BaseGameObject {
             ) {
                 obj.onGoreRegionKill();
             }
-        }
-
-        if (this.group) {
-            this.group.checkPlayers();
         }
 
         // Check for game over

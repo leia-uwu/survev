@@ -1176,7 +1176,7 @@ export class GameMap {
         return structure;
     }
 
-    getRandomSpawnPos(pos?: Vec2, radius?: number): Vec2 {
+    getRandomSpawnPos(pos?: Vec2, radius?: number, groupId?: number): Vec2 {
         let getPos = () => {
             return {
                 x: util.random(this.shoreInset, this.width - this.shoreInset),
@@ -1218,8 +1218,25 @@ export class GameMap {
                     if (collided) break;
                 }
             }
-        }
 
+            if (collided) continue;
+
+            for (let i = 0; i < this.game.aliveCount; i++) {
+                const player = this.game.playerBarn.livingPlayers[i];
+                if (
+                    (!this.game.isTeamMode &&
+                        v2.distance(circle.pos, player.pos) <
+                            GameConfig.player.minSpawnDistance) || // solo check
+                    (this.game.isTeamMode &&
+                        player.group!.groupId != groupId &&
+                        v2.distance(circle.pos, player.pos) <
+                            GameConfig.player.minSpawnDistance) //teams check
+                ) {
+                    collided = true;
+                    break;
+                }
+            }
+        }
         return circle.pos;
     }
 

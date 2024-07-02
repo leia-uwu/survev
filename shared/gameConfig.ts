@@ -164,7 +164,9 @@ export const GameConfig = {
         touchLootRadMult: 1.4,
         medicHealRange: 8,
         medicReviveRange: 6,
-        spectateDeadTimeout: 2
+        spectateDeadTimeout: 2,
+        minSpawnDistance: 50, // minimum distance enemy players need to spawn from each other
+        gracePeriodTime: 0 // time from game start where players can't move
     },
     defaultEmoteLoadout: [
         "emote_happyface",
