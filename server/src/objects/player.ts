@@ -168,6 +168,7 @@ export class PlayerBarn {
         const livingIdx = this.livingPlayers.indexOf(player);
         if (livingIdx !== -1) {
             this.livingPlayers.splice(livingIdx, 1);
+            this.aliveCountDirty = true;
         }
         this.deletedPlayers.push(player.__id);
         player.destroy();
@@ -590,6 +591,8 @@ export class Player extends BaseGameObject {
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
+        this.zoom =
+            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
     }
 
     visibleObjects = new Set<GameObject>();
@@ -907,7 +910,7 @@ export class Player extends BaseGameObject {
             msgStream.stream.writeBytes(mapStream, 0, mapStream.byteIndex);
         }
 
-        if (playerBarn.aliveCountDirty) {
+        if (playerBarn.aliveCountDirty || this._firstUpdate) {
             const aliveMsg = new AliveCountsMsg();
             aliveMsg.teamAliveCounts.push(game.aliveCount);
             msgStream.serializeMsg(MsgType.AliveCounts, aliveMsg);
