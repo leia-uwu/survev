@@ -117,36 +117,7 @@ export class PlayerBarn {
                     if (leader) {
                         pos = this.game.map.getRandomSpawnPos(leader.pos, 5);
                     } else {
-                        let attempts = 0;
-                        let collided = true;
-                        pos = this.game.map.getRandomSpawnPos();
-
-                        while (attempts++ < 200 && collided == true) {
-                            pos = this.game.map.getRandomSpawnPos();
-                            const circle = collider.createCircle(
-                                pos,
-                                GameConfig.spawnDistance
-                            );
-                            collided = false;
-                            v2.set(circle.pos, pos);
-
-                            const objs = this.game.grid.intersectCollider(circle);
-
-                            for (const obj of objs) {
-                                if (obj.layer !== 0) continue;
-                                if (
-                                    obj instanceof Player &&
-                                    coldet.test(obj.collider, circle)
-                                ) {
-                                    collided = true;
-                                    break;
-                                }
-                            }
-
-                            if (collided == false) {
-                                return pos;
-                            }
-                        }
+                        pos = this.game.map.getRandomSpawnPos(undefined, undefined, GameConfig.spawnDistance);
                     }
                 }
                 break;
