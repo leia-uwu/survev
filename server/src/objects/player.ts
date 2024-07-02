@@ -518,7 +518,7 @@ export class Player extends BaseGameObject {
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: [] as string[]
+        emotes: GameConfig.defaultEmoteLoadout
     };
 
     damageTaken = 0;
@@ -577,11 +577,10 @@ export class Player extends BaseGameObject {
             if (i > GameConfig.EmoteSlot.Count) break;
 
             if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                loadout.emotes.push(GameConfig.defaultEmoteLoadout[i]);
                 continue;
             }
 
-            loadout.emotes.push(emote);
+            loadout.emotes[i] = emote;
         }
 
         this.collider = collider.createCircle(pos, this.rad);
