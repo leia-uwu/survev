@@ -272,9 +272,6 @@ export class UpdateMsg extends AbstractMsg {
     activePlayerIdDirty = false;
     activePlayerData!: LocalDataWithDirty;
 
-    aliveCounts = [];
-    aliveDirty = false;
-
     gasData!: GasData;
     gasDirty = false;
     gasT = 0;
