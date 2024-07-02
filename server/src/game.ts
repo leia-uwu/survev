@@ -69,6 +69,7 @@ export class Game {
     gas: Gas;
 
     now!: number;
+    gameStartTime = 0;
 
     tickTimes: number[] = [];
 
@@ -106,6 +107,8 @@ export class Game {
         if (!this.now) this.now = now;
         const dt = (now - this.now) / 1000;
         this.now = now;
+
+        if (this.started) this.startedTime += dt;
 
         //
         // Update modules
