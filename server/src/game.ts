@@ -24,6 +24,7 @@ import { Events, PluginManager } from "./pluginManager";
 import type { GameSocketData } from "./server";
 import { Grid } from "./utils/grid";
 import { Logger } from "./utils/logger";
+import { GameConfig } from "../../shared/gameConfig";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;
@@ -34,6 +35,7 @@ export class Game {
     started = false;
     stopped = false;
     allowJoin = true;
+    gracePeriod = GameConfig.gracePeriod;
     over = false;
     startedTime = 0;
     id: string;
@@ -81,6 +83,7 @@ export class Game {
         const start = Date.now();
 
         this.config = config;
+
         this.pluginManager.loadPlugins();
         this.pluginManager.emit(Events.Game_Created, this);
 
@@ -91,10 +94,9 @@ export class Game {
         this.map = new GameMap(this);
         this.grid = new Grid(this.map.width, this.map.height);
         this.objectRegister = new ObjectRegister(this.grid);
+        this.allowJoin = true;
 
         this.gas = new Gas(this.map);
-
-        this.allowJoin = true;
 
         this.map.init();
 
