@@ -109,6 +109,14 @@ export class WeaponManager {
             this.player.cancelAction();
         }
 
+        this.player.wearingPan = false;
+        if (
+            this.weapons[GameConfig.WeaponSlot.Melee].type === "pan" &&
+            this.activeWeapon !== "pan"
+        ) {
+            this.player.wearingPan = true;
+        }
+
         if (GameConfig.WeaponType[idx] === "gun" && this.weapons[idx].ammo == 0) {
             this.delayScheduledReload(effectiveSwitchDelay);
         }

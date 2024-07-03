@@ -54,6 +54,8 @@ export class Server {
 
             this.logger.log(perfString);
         }, 60000);
+
+        this.newGame(Config.modes[0]);
     }
 
     update(): void {

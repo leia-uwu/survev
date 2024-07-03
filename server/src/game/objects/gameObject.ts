@@ -150,14 +150,7 @@ export abstract class BaseGameObject {
 
     readonly game: Game;
 
-    _pos: Vec2;
-    get pos() {
-        return this._pos;
-    }
-
-    set pos(pos: Vec2) {
-        this._pos = pos;
-    }
+    pos: Vec2;
 
     abstract layer: number;
 
@@ -168,7 +161,7 @@ export abstract class BaseGameObject {
     constructor(game: Game, pos: Vec2) {
         this.game = game;
         game.map.clampToMapBounds(pos);
-        this._pos = v2.copy(pos);
+        this.pos = v2.copy(pos);
     }
 
     damage(_params: DamageParams): void {}
