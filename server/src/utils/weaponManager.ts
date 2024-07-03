@@ -57,8 +57,12 @@ export class WeaponManager {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
-        this.clearTimeouts();
         this.player.cancelAnim();
+
+        this.player.shotSlowdownTimer = 0;
+        this.bursts.length = 0;
+        this.meleeAttacks.length = 0;
+        this.scheduledReload = false;
 
         const curWeapon = this.weapons[this.curWeapIdx];
         const nextWeapon = this.weapons[idx];
@@ -79,10 +83,9 @@ export class WeaponManager {
 
             effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
 
-            if (this.player.freeSwitchTimer < this.player.game.now) {
+            if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
-                this.player.freeSwitchTimer =
-                    this.player.game.now + GameConfig.player.freeSwitchCooldown * 1000;
+                this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
             }
 
             if (
@@ -97,11 +100,8 @@ export class WeaponManager {
 
             if (GameConfig.gun.customSwitchDelay)
                 effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
-            nextWeapon.cooldown = this.player.game.now + effectiveSwitchDelay * 1000;
+            nextWeapon.cooldown = effectiveSwitchDelay;
         }
-
-        this.player.shotSlowdownTimer = -1;
-        this.burstCount = 0;
 
         this.lastWeaponIdx = this._curWeapIdx;
         this._curWeapIdx = idx;
@@ -127,15 +127,6 @@ export class WeaponManager {
         return this.weapons[this.curWeapIdx].type;
     }
 
-    timeouts: NodeJS.Timeout[] = [];
-
-    clearTimeouts(): void {
-        for (const timeout of this.timeouts) {
-            clearTimeout(timeout);
-        }
-        this.timeouts.length = 0;
-    }
-
     constructor(player: Player) {
         this.player = player;
 
@@ -148,33 +139,132 @@ export class WeaponManager {
         }
     }
 
-    shootStart(): void {
-        const def = GameObjectDefs[this.activeWeapon];
+    cookingThrowable = false;
+    cookTicker = 0;
 
-        if (def) {
-            switch (def.type) {
-                case "melee": {
-                    this.meleeAttack();
-                    break;
-                }
-                case "gun": {
-                    this.fireWeapon();
-                    break;
-                }
-                case "throwable": {
+    bursts: number[] = [];
+
+    meleeAttacks: number[] = [];
+
+    update(dt: number) {
+        const player = this.player;
+        player.freeSwitchTimer -= dt;
+
+        for (let i = 0; i < this.weapons.length; i++) {
+            this.weapons[i].cooldown -= dt;
+        }
+
+        this.reloadTicker -= dt;
+        if (this.reloadTicker <= 0 && this.scheduledReload) {
+            this.scheduledReload = false;
+            this.tryReload();
+        }
+
+        const itemDef = GameObjectDefs[this.activeWeapon];
+
+        switch (itemDef.type) {
+            case "gun": {
+                this.gunUpdate(dt);
+                break;
+            }
+            case "melee": {
+                this.meleeUpdate(dt);
+                break;
+            }
+            case "throwable": {
+                if (player.shootStart && !this.cookingThrowable) {
                     this.cookThrowable();
-                    break;
                 }
+                break;
+            }
+        }
+
+        if (this.cookingThrowable) {
+            this.cookTicker += dt;
+            if (this._curWeapIdx != GameConfig.WeaponSlot.Throwable) {
+                this.throwThrowable();
+                return;
+            }
+
+            if (
+                (itemDef.type === "throwable" &&
+                    itemDef.cookable &&
+                    this.cookTicker > itemDef.fuseTime) || // safety check
+                (!player.shootHold && this.cookTicker > GameConfig.player.cookTime)
+            ) {
+                this.throwThrowable();
+            }
+        }
+
+        player.shootStart = false;
+    }
+
+    gunUpdate(dt: number) {
+        const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
+        const player = this.player;
+        const weapon = this.weapons[this.curWeapIdx];
+
+        switch (itemDef.fireMode) {
+            case "auto":
+                if (player.shootHold && weapon.cooldown <= 0) {
+                    this.fireWeapon();
+                }
+                break;
+            case "single":
+                if (player.shootStart && weapon.cooldown < 0) {
+                    this.fireWeapon();
+                }
+                break;
+            case "burst":
+                if (player.shootHold && weapon.cooldown < 0) {
+                    weapon.cooldown = 0;
+                    for (let i = 0; i < itemDef.burstCount!; i++) {
+                        this.bursts.push(weapon.cooldown);
+                        weapon.cooldown += itemDef.burstDelay!;
+                    }
+                    weapon.cooldown += itemDef.fireDelay;
+                }
+                for (let i = 0; i < this.bursts.length; i++) {
+                    this.bursts[i] -= dt;
+                    if (this.bursts[i] <= 0) {
+                        this.fireWeapon();
+                        this.bursts.splice(i, 1);
+                    }
+                }
+
+                break;
+        }
+    }
+
+    meleeUpdate(dt: number) {
+        const itemDef = GameObjectDefs[this.activeWeapon] as MeleeDef;
+        const player = this.player;
+        const attack = itemDef.attack;
+
+        if (
+            player.animType !== GameConfig.Anim.Melee &&
+            (player.shootStart || (player.shootHold && itemDef.autoAttack))
+        ) {
+            this.player.cancelAction();
+
+            this.player.playAnim(GameConfig.Anim.Melee, attack.cooldownTime);
+            this.meleeAttacks = [...attack.damageTimes];
+        }
+
+        for (let i = 0; i < this.meleeAttacks.length; i++) {
+            this.meleeAttacks[i] -= dt;
+            if (this.meleeAttacks[i] <= 0) {
+                this.meleeDamage();
+                this.meleeAttacks.splice(i, 1);
             }
         }
     }
 
+    reloadTicker = 0;
+    scheduledReload = false;
     delayScheduledReload(delay: number): void {
-        this.timeouts.push(
-            setTimeout(() => {
-                this.tryReload();
-            }, delay * 1000)
-        );
+        this.reloadTicker = delay;
+        this.scheduledReload = true;
     }
 
     /**
@@ -264,7 +354,7 @@ export class WeaponManager {
 
         this.player.inventoryDirty = true;
         this.player.weapsDirty = true;
-        this.burstCount = 0;
+        this.bursts.length = 0;
     }
 
     dropGun(weapIdx: number, switchToMelee = true): void {
@@ -342,53 +432,15 @@ export class WeaponManager {
     }
 
     offHand = false;
-    burstCount = 0;
-
-    fireWeapon(skipDelayCheck = false) {
-        if (
-            this.weapons[this.curWeapIdx].cooldown > this.player.game.now &&
-            !skipDelayCheck
-        )
-            return;
+    fireWeapon() {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         if (this.weapons[this.curWeapIdx].ammo <= 1) {
-            this.timeouts.push(
-                setTimeout(() => {
-                    this.tryReload();
-                }, itemDef.fireDelay * 1000)
-            );
+            this.delayScheduledReload(itemDef.fireDelay);
         }
         if (this.weapons[this.curWeapIdx].ammo <= 0) return;
 
-        this.weapons[this.curWeapIdx].cooldown =
-            this.player.game.now + itemDef.fireDelay * 1000;
-
-        if (this.player.shootHold && itemDef.fireMode === "burst") {
-            this.burstCount++;
-            if (this.burstCount < itemDef.burstCount!) {
-                this.timeouts.push(
-                    setTimeout(() => {
-                        this.fireWeapon(true);
-                    }, itemDef.burstDelay! * 1000)
-                );
-            }
-        }
-
-        if (
-            this.player.shootHold &&
-            (itemDef.fireMode === "auto" ||
-                (itemDef.fireMode === "burst" && this.burstCount >= itemDef.burstCount!))
-        ) {
-            this.burstCount = 0;
-
-            this.clearTimeouts();
-            this.timeouts.push(
-                setTimeout(() => {
-                    if (this.player.shootHold) this.fireWeapon(this.player.shootHold);
-                }, itemDef.fireDelay * 1000)
-            );
-        }
+        this.weapons[this.curWeapIdx].cooldown = itemDef.fireDelay;
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
@@ -401,7 +453,7 @@ export class WeaponManager {
         const direction = this.player.dir;
         const toMouseLen = this.player.toMouseLen;
 
-        this.player.shotSlowdownTimer = this.player.game.now + itemDef.fireDelay * 1000;
+        this.player.shotSlowdownTimer = itemDef.fireDelay;
 
         this.player.cancelAction();
 
@@ -601,40 +653,8 @@ export class WeaponManager {
         return collider.createCircle(rotated, rad, 0);
     }
 
-    meleeAttack(skipCooldownCheck = false): void {
-        if (this.player.animType === GameConfig.Anim.Melee && !skipCooldownCheck) return;
-        this.player.cancelAction();
-
-        const meleeDef = GameObjectDefs[this.player.activeWeapon] as MeleeDef;
-
-        this.player.playAnim(GameConfig.Anim.Melee, meleeDef.attack.cooldownTime);
-
-        const damageTimes = meleeDef.attack.damageTimes;
-        for (let i = 0; i < damageTimes.length; i++) {
-            const damageTime = damageTimes[i];
-            this.timeouts.push(
-                setTimeout(() => {
-                    this.meleeDamage();
-                }, damageTime * 1000)
-            );
-        }
-        if (meleeDef.autoAttack && this.player.shootHold) {
-            this.timeouts.push(
-                setTimeout(() => {
-                    if (this.player.shootHold) {
-                        this.meleeAttack(true);
-                    }
-                }, meleeDef.attack.cooldownTime * 1000)
-            );
-        }
-    }
-
     meleeDamage(): void {
-        const meleeDef = GameObjectDefs[this.activeWeapon];
-
-        if (meleeDef === undefined || meleeDef.type !== "melee" || this.player.dead) {
-            return;
-        }
+        const meleeDef = GameObjectDefs[this.activeWeapon] as MeleeDef;
 
         const coll = this.getMeleeCollider();
         const lineEnd = coll.rad + v2.length(v2.sub(this.player.pos, coll.pos));
@@ -772,31 +792,6 @@ export class WeaponManager {
                     source: this.player,
                     dir: hit.dir
                 });
-            }
-        }
-    }
-
-    cookingThrowable = false;
-    cookTicker = 0;
-
-    update(dt: number) {
-        if (this.cookingThrowable) {
-            this.cookTicker += dt;
-
-            const itemDef = GameObjectDefs[this.activeWeapon];
-
-            if (this._curWeapIdx != GameConfig.WeaponSlot.Throwable) {
-                this.throwThrowable();
-                return;
-            }
-
-            if (
-                (itemDef.type === "throwable" &&
-                    itemDef.cookable &&
-                    this.cookTicker > itemDef.fuseTime) || // safety check
-                (!this.player.shootHold && this.cookTicker > GameConfig.player.cookTime)
-            ) {
-                this.throwThrowable();
             }
         }
     }
