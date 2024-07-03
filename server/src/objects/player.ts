@@ -153,9 +153,9 @@ export class PlayerBarn {
 
         if (!this.game.started) {
             if (!this.game.isTeamMode) {
-                this.game.started = this.game.aliveCount > 1;
+                this.game.started = this.game.trueAliveCount > 1;
             } else {
-                this.game.started = this.game.groups.size > 1;
+                this.game.started = this.game.trueGroupsAliveCount > 1;
             }
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
@@ -367,7 +367,18 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    disconnected = false;
+    _disconnected = false;
+
+    get disconnected(): boolean {
+        return this._disconnected;
+    }
+
+    set disconnected(disconnected: boolean) {
+        if (this.disconnected === disconnected) return;
+
+        this._disconnected = disconnected;
+        this.setGroupStatuses();
+    }
 
     _spectatorCount = 0;
     set spectatorCount(spectatorCount: number) {
@@ -1335,7 +1346,7 @@ export class Player extends BaseGameObject {
         );
 
         const teamRank =
-            (!this.game.isTeamMode ? this.game.aliveCount : groupAlives.length) + 1;
+            (!this.game.isTeamMode ? this.game.trueAliveCount : groupAlives.length) + 1;
 
         if (
             this.game.isTeamMode &&
