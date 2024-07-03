@@ -1,4 +1,4 @@
-import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../../shared/defs/gameObjectDefs";
 import {
     type BackpackDef,
     type BoostDef,
@@ -8,45 +8,45 @@ import {
     type HelmetDef,
     SCOPE_LEVELS,
     type ScopeDef
-} from "../../../shared/defs/gameObjects/gearDefs";
-import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
-import { type MeleeDef, MeleeDefs } from "../../../shared/defs/gameObjects/meleeDefs";
-import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
-import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
-import { GameConfig } from "../../../shared/gameConfig";
-import { AliveCountsMsg } from "../../../shared/msgs/aliveCountsMsg";
-import { DisconnectMsg } from "../../../shared/msgs/disconnectMsg";
-import type { DropItemMsg } from "../../../shared/msgs/dropItemMsg";
-import { GameOverMsg } from "../../../shared/msgs/gameOverMsg";
-import { InputMsg } from "../../../shared/msgs/inputMsg";
-import type { JoinMsg } from "../../../shared/msgs/joinMsg";
-import { JoinedMsg } from "../../../shared/msgs/joinedMsg";
-import { KillMsg } from "../../../shared/msgs/killMsg";
-import { PickupMsg } from "../../../shared/msgs/pickupMsg";
-import { PlayerStatsMsg } from "../../../shared/msgs/playerStatsMsg";
-import type { SpectateMsg } from "../../../shared/msgs/spectateMsg";
-import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../shared/msgs/updateMsg";
+} from "../../../../shared/defs/gameObjects/gearDefs";
+import type { GunDef } from "../../../../shared/defs/gameObjects/gunDefs";
+import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
+import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
+import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
+import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
+import { GameConfig } from "../../../../shared/gameConfig";
+import { AliveCountsMsg } from "../../../../shared/msgs/aliveCountsMsg";
+import { DisconnectMsg } from "../../../../shared/msgs/disconnectMsg";
+import type { DropItemMsg } from "../../../../shared/msgs/dropItemMsg";
+import { GameOverMsg } from "../../../../shared/msgs/gameOverMsg";
+import { InputMsg } from "../../../../shared/msgs/inputMsg";
+import type { JoinMsg } from "../../../../shared/msgs/joinMsg";
+import { JoinedMsg } from "../../../../shared/msgs/joinedMsg";
+import { KillMsg } from "../../../../shared/msgs/killMsg";
+import { PickupMsg } from "../../../../shared/msgs/pickupMsg";
+import { PlayerStatsMsg } from "../../../../shared/msgs/playerStatsMsg";
+import type { SpectateMsg } from "../../../../shared/msgs/spectateMsg";
+import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../../shared/msgs/updateMsg";
 import {
     Constants,
     type Msg,
     MsgStream,
     MsgType,
     PickupMsgType
-} from "../../../shared/net";
-import { type Circle, coldet } from "../../../shared/utils/coldet";
-import { collider } from "../../../shared/utils/collider";
-import { math } from "../../../shared/utils/math";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { assert, util } from "../../../shared/utils/util";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { IDAllocator } from "../IDAllocator";
-import { Config, SpawnMode } from "../config";
+} from "../../../../shared/net";
+import { type Circle, coldet } from "../../../../shared/utils/coldet";
+import { collider } from "../../../../shared/utils/collider";
+import { math } from "../../../../shared/utils/math";
+import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
+import { assert, util } from "../../../../shared/utils/util";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import { Config, SpawnMode } from "../../config";
+import type { GameSocketData } from "../../server";
+import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
 import type { Group } from "../group";
 import { Events } from "../pluginManager";
-import type { GameSocketData } from "../server";
-import { WeaponManager, throwableList } from "../utils/weaponManager";
+import { WeaponManager, throwableList } from "../weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
 import type { Obstacle } from "./obstacle";

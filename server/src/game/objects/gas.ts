@@ -1,7 +1,7 @@
-import { GameConfig } from "../../../shared/gameConfig";
-import { math } from "../../../shared/utils/math";
-import { util } from "../../../shared/utils/util";
-import { type Vec2, v2 } from "./../../../shared/utils/v2";
+import { GameConfig } from "../../../../shared/gameConfig";
+import { math } from "../../../../shared/utils/math";
+import { util } from "../../../../shared/utils/util";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
 
 const GasMode = GameConfig.GasMode;
 export class Gas {

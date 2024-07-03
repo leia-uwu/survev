@@ -1,5 +1,5 @@
-import { GameConfig } from "../../shared/gameConfig";
-import { util } from "../../shared/utils/util";
+import { GameConfig } from "../../../shared/gameConfig";
+import { util } from "../../../shared/utils/util";
 import type { Player } from "./objects/player";
 
 export class Group {

@@ -15,9 +15,9 @@ import { math } from "../../../shared/utils/math";
 import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import type { BulletParams } from "../objects/bullet";
-import type { GameObject } from "../objects/gameObject";
-import type { Player } from "../objects/player";
+import type { BulletParams } from "../game/objects/bullet";
+import type { GameObject } from "../game/objects/gameObject";
+import type { Player } from "../game/objects/player";
 
 /**
  * List of throwables to cycle based on the definition `inventoryOrder`
