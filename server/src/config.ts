@@ -1,7 +1,7 @@
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import type { Vec2 } from "../../shared/utils/v2";
-import type { Game } from "./game";
-import type { GamePlugin } from "./pluginManager";
+import type { Game } from "./game/game";
+import type { GamePlugin } from "./game/pluginManager";
 
 export enum SpawnMode {
     Random,

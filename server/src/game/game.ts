@@ -1,12 +1,15 @@
-import type { MapDefs } from "../../shared/defs/mapDefs";
-import { DropItemMsg } from "../../shared/msgs/dropItemMsg";
-import { EmoteMsg } from "../../shared/msgs/emoteMsg";
-import { InputMsg } from "../../shared/msgs/inputMsg";
-import { JoinMsg } from "../../shared/msgs/joinMsg";
-import { SpectateMsg } from "../../shared/msgs/spectateMsg";
-import * as net from "../../shared/net";
-import { util } from "../../shared/utils/util";
-import { Config, TeamMode } from "./config";
+import type { MapDefs } from "../../../shared/defs/mapDefs";
+import { DropItemMsg } from "../../../shared/msgs/dropItemMsg";
+import { EmoteMsg } from "../../../shared/msgs/emoteMsg";
+import { InputMsg } from "../../../shared/msgs/inputMsg";
+import { JoinMsg } from "../../../shared/msgs/joinMsg";
+import { SpectateMsg } from "../../../shared/msgs/spectateMsg";
+import * as net from "../../../shared/net";
+import { util } from "../../../shared/utils/util";
+import { Config, TeamMode } from "../config";
+import type { GameSocketData } from "../server";
+import { Logger } from "../utils/logger";
+import { Grid } from "./grid";
 import { Group } from "./group";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
@@ -21,9 +24,6 @@ import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { Events, PluginManager } from "./pluginManager";
-import type { GameSocketData } from "./server";
-import { Grid } from "./utils/grid";
-import { Logger } from "./utils/logger";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;

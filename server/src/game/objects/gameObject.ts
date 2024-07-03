@@ -1,10 +1,13 @@
-import { BitStream } from "../../../shared/net";
-import { type Collider, coldet } from "../../../shared/utils/coldet";
-import { ObjectSerializeFns, ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { assert } from "../../../shared/utils/util";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { BitStream } from "../../../../shared/net";
+import { type Collider, coldet } from "../../../../shared/utils/coldet";
+import {
+    ObjectSerializeFns,
+    ObjectType
+} from "../../../../shared/utils/objectSerializeFns";
+import { assert } from "../../../../shared/utils/util";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
-import type { Grid } from "../utils/grid";
+import type { Grid } from "../grid";
 import type { Airdrop } from "./airdrop";
 import type { Building } from "./building";
 import type { DeadBody } from "./deadBody";

@@ -1,15 +1,16 @@
 import { randomBytes } from "crypto";
 import { URLSearchParams } from "url";
 import NanoTimer from "nanotimer";
-import { App, type HttpResponse, SSLApp, type WebSocket } from "uWebSockets.js";
+import { App, SSLApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
 import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
-import { Game, type ServerGameConfig } from "./game";
-import type { Group } from "./group";
-import type { Player } from "./objects/player";
+import { Game, type ServerGameConfig } from "./game/game";
+import type { Group } from "./game/group";
+import type { Player } from "./game/objects/player";
 import { TeamMenu } from "./teamMenu";
 import { Logger } from "./utils/logger";
+import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
 export interface GameSocketData {
     readonly gameID: string;
@@ -226,80 +227,6 @@ export class Server {
             player.game.playerBarn.removePlayer(player);
         }
     }
-}
-
-/**
- * Apply CORS headers to a response.
- * @param res The response sent by the server.
- */
-function cors(res: HttpResponse): void {
-    res.writeHeader("Access-Control-Allow-Origin", "*")
-        .writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        .writeHeader(
-            "Access-Control-Allow-Headers",
-            "origin, content-type, accept, x-requested-with"
-        )
-        .writeHeader("Access-Control-Max-Age", "3600");
-}
-
-function forbidden(res: HttpResponse): void {
-    res.writeStatus("403 Forbidden").end("403 Forbidden");
-}
-
-function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
-    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
-}
-
-/**
- * Read the body of a POST request.
- * @link https://github.com/uNetworking/uWebSockets.js/blob/master/examples/JsonPost.js
- * @param res The response from the client.
- * @param cb A callback containing the request body.
- * @param err A callback invoked whenever the request cannot be retrieved.
- */
-function readPostedJSON<T>(
-    res: HttpResponse,
-    cb: (json: T) => void,
-    err: () => void
-): void {
-    let buffer: Buffer | Uint8Array;
-    /* Register data cb */
-    res.onData((ab, isLast) => {
-        const chunk = Buffer.from(ab);
-        if (isLast) {
-            let json: T;
-            if (buffer) {
-                try {
-                    // @ts-expect-error JSON.parse can accept a Buffer as an argument
-                    json = JSON.parse(Buffer.concat([buffer, chunk]));
-                } catch (_e) {
-                    /* res.close calls onAborted */
-                    res.close();
-                    return;
-                }
-                cb(json);
-            } else {
-                try {
-                    // @ts-expect-error JSON.parse can accept a Buffer as an argument
-                    json = JSON.parse(chunk);
-                } catch (_e) {
-                    /* res.close calls onAborted */
-                    res.close();
-                    return;
-                }
-                cb(json);
-            }
-        } else {
-            if (buffer) {
-                buffer = Buffer.concat([buffer, chunk]);
-            } else {
-                buffer = Buffer.concat([chunk]);
-            }
-        }
-    });
-
-    /* Register error cb */
-    res.onAborted(err);
 }
 
 const server = new Server();

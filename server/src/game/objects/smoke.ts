@@ -1,6 +1,6 @@
-import { collider } from "../../../shared/utils/collider";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { collider } from "../../../../shared/utils/collider";
+import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 

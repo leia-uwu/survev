@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { Config } from "../config";
 import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";

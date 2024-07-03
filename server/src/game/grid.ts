@@ -2,7 +2,7 @@ import { type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import type { GameObject } from "../objects/gameObject";
+import type { GameObject } from "./objects/gameObject";
 
 /**
  * A Grid to filter collision detection of game objects
