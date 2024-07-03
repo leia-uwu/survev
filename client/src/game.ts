@@ -71,6 +71,7 @@ export interface Ctx {
 export interface DebugOptions {
     players?: boolean;
     obstacles?: boolean;
+    loot?: boolean;
     buildings?: {
         ceiling?: boolean;
         bounds?: boolean;
