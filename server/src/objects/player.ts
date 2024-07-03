@@ -318,9 +318,9 @@ export class Player extends BaseGameObject {
     speed: number = 0;
     moveVel = v2.create(0, 0);
 
-    shotSlowdownTimer: number = -1;
+    shotSlowdownTimer: number = 0;
 
-    freeSwitchTimer: number = -1;
+    freeSwitchTimer: number = 0;
 
     indoors = false;
 
@@ -1380,7 +1380,6 @@ export class Player extends BaseGameObject {
         this.setDirty();
 
         this.shootHold = false;
-        this.weaponManager.clearTimeouts();
         this.cancelAction();
 
         //
@@ -1459,7 +1458,6 @@ export class Player extends BaseGameObject {
         this.setDirty();
 
         this.shootHold = false;
-        this.weaponManager.clearTimeouts();
 
         this.game.playerBarn.aliveCountDirty = true;
         this.game.playerBarn.livingPlayers.splice(
@@ -1693,16 +1691,15 @@ export class Player extends BaseGameObject {
             this.dir = msg.toMouseDir;
         }
         this.shootHold = msg.shootHold;
-        this.shootStart = msg.shootStart;
+
+        if (msg.shootStart) {
+            this.shootStart = true;
+        }
         this.toMouseLen = msg.toMouseLen;
 
         if (this.downed) {
             // return over here since player is still allowed to move and look around, just can't do anything else
             return;
-        }
-
-        if (this.shootStart) {
-            this.weaponManager.shootStart();
         }
 
         for (const input of msg.inputs) {
@@ -2464,14 +2461,11 @@ export class Player extends BaseGameObject {
             | GunDef
             | MeleeDef
             | ThrowableDef;
-        if (
-            weaponDef.speed.equip &&
-            this.weapons[this.curWeapIdx].cooldown < this.game.now
-        ) {
+        if (weaponDef.speed.equip && this.weapons[this.curWeapIdx].cooldown <= 0) {
             this.speed += weaponDef.speed.equip;
         }
 
-        if (this.shotSlowdownTimer != -1 && "attack" in weaponDef.speed) {
+        if (this.shotSlowdownTimer > 0 && "attack" in weaponDef.speed) {
             this.speed += weaponDef.speed.attack! + weaponDef.speed.equip + -3;
         }
 
