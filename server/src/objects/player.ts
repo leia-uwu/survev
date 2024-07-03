@@ -2159,6 +2159,15 @@ export class Player extends BaseGameObject {
                         this.weaponManager.tryReload();
                     } else if (freeGunSlot.isDualWield) {
                         this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
+                        if (
+                            freeGunSlot.availSlot === this.curWeapIdx &&
+                            this.isReloading()
+                        ) {
+                            this.cancelAction();
+                            if (!this.weapons[freeGunSlot.availSlot].ammo) {
+                                this.weaponManager.tryReload();
+                            }
+                        }
                     } else {
                         this.weapons[freeGunSlot.availSlot].type = obj.type;
                     }
