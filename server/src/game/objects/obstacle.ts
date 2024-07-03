@@ -1,10 +1,8 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
-import * as net from "../../../../shared/net";
-import { type Collider, coldet } from "../../../../shared/utils/coldet";
+import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
-import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
 import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
 import { util } from "../../../../shared/utils/util";
@@ -16,8 +14,6 @@ import type { Player } from "./player";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
-
-    bounds: Collider;
 
     collider: Collider;
 
@@ -128,16 +124,12 @@ export class Obstacle extends BaseGameObject {
 
         this.rot = math.oriToRad(ori);
 
-        this.bounds = collider.transform(
-            mapHelpers.getBoundingCollider(type),
-            v2.create(0, 0),
-            this.rot,
-            net.Constants.MapObjectMaxScale
-        );
-
-        if (def === undefined || def.type !== "obstacle") {
+        if (def.type !== "obstacle") {
             throw new Error(`Invalid obstacle with type ${type}`);
         }
+        this.bounds = collider.toAabb(
+            collider.transform(def.collision, this.pos, this.rot, this.scale)
+        );
 
         this.height = def.height;
 
@@ -457,7 +449,7 @@ export class Obstacle extends BaseGameObject {
         this.rot = math.oriToRad(this.ori);
         this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
 
-        this.bounds = collider.transform(def.collision, v2.create(0, 0), this.rot, 1);
+        this.bounds = collider.transform(def.collision, this.pos, this.rot, 1) as AABB;
         this.game.grid.updateObject(this);
         this.checkLayer();
         this.setDirty();

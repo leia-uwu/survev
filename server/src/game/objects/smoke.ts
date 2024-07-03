@@ -11,8 +11,6 @@ export class SmokeBarn {
 }
 
 export class Smoke extends BaseGameObject {
-    bounds = collider.createCircle(v2.create(0, 0), 0);
-
     override readonly __type = ObjectType.Smoke;
 
     layer: number;
@@ -23,5 +21,6 @@ export class Smoke extends BaseGameObject {
     constructor(game: Game, pos: Vec2, layer: number) {
         super(game, pos);
         this.layer = layer;
+        this.bounds = collider.createAabbExtents(this.pos, v2.create(this.rad, this.rad));
     }
 }

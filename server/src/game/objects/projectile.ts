@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { DamageType, GameConfig } from "../../../../shared/gameConfig";
-import { type Collider, coldet } from "../../../../shared/utils/coldet";
+import { coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
@@ -52,8 +52,6 @@ export class ProjectileBarn {
 }
 
 export class Projectile extends BaseGameObject {
-    bounds: Collider;
-
     override readonly __type = ObjectType.Projectile;
 
     layer: number;
@@ -81,8 +79,8 @@ export class Projectile extends BaseGameObject {
 
         const def = GameObjectDefs[type] as ThrowableDef;
         this.velZ = def.throwPhysics.velZ;
-        this.bounds = collider.createCircle(v2.create(0, 0), def.rad);
         this.rad = def.rad * 0.5;
+        this.bounds = collider.createAabbExtents(this.pos, v2.create(this.rad, this.rad));
     }
 
     update(dt: number) {
@@ -172,6 +170,10 @@ export class Projectile extends BaseGameObject {
                 this.setPartDirty();
             }
 
+            this.bounds = collider.createAabbExtents(
+                this.pos,
+                v2.create(this.rad, this.rad)
+            );
             this.game.grid.updateObject(this);
 
             if (this.posZ === 0 && def.explodeOnImpact) {

@@ -1,5 +1,5 @@
 import { BitStream } from "../../../../shared/net";
-import { type Collider, coldet } from "../../../../shared/utils/coldet";
+import { type AABB, coldet } from "../../../../shared/utils/coldet";
 import {
     ObjectSerializeFns,
     ObjectType
@@ -146,7 +146,7 @@ export abstract class BaseGameObject {
     abstract readonly __type: ObjectType;
     declare __id: number;
     declare __arrayIdx: number;
-    abstract bounds: Collider;
+    declare bounds: AABB;
 
     readonly game: Game;
 
