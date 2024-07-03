@@ -144,15 +144,6 @@ export class Loot extends BaseGameObject {
 
     collider: Circle;
     rad: number;
-
-    get pos() {
-        return this.collider.pos;
-    }
-
-    set pos(pos: Vec2) {
-        this.collider.pos = pos;
-    }
-
     ticks = 0;
 
     bellowBridge = false;
@@ -178,6 +169,7 @@ export class Loot extends BaseGameObject {
         this.count = count;
 
         this.collider = collider.createCircle(pos, GameConfig.lootRadius[def.type]);
+        this.collider.pos = this.pos;
 
         this.rad = this.collider.rad;
 
@@ -211,9 +203,9 @@ export class Loot extends BaseGameObject {
             return displacement;
         };
 
-        this.pos = v2.add(this.pos, calculateSafeDisplacement());
+        v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
         this.vel = v2.mul(this.vel, 0.93);
-        this.pos = v2.add(this.pos, calculateSafeDisplacement());
+        v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
 
         let objs = this.game.grid.intersectCollider(this.collider);
 
@@ -231,9 +223,9 @@ export class Loot extends BaseGameObject {
                     this.rad
                 );
                 if (collision) {
-                    this.pos = v2.add(
+                    v2.set(
                         this.pos,
-                        v2.mul(collision.dir, collision.pen + 0.001)
+                        v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001))
                     );
                 }
             } else if (obj.__type === ObjectType.Loot && obj.__id !== this.__id) {

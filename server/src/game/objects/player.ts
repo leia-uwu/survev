@@ -245,14 +245,6 @@ export class Player extends BaseGameObject {
 
     collider: Circle;
 
-    get pos() {
-        return this.collider.pos;
-    }
-
-    set pos(pos: Vec2) {
-        this.collider.pos = pos;
-    }
-
     healthDirty = true;
     boostDirty = true;
     zoomDirty = true;
@@ -333,21 +325,9 @@ export class Player extends BaseGameObject {
         this.zoomDirty = true;
     }
 
-    private _scope = "1xscope";
+    scopeZoomRadius: Record<string, number>;
 
-    get scope() {
-        return this._scope;
-    }
-
-    set scope(scope: string) {
-        if (this.scope === scope) return;
-        this._scope = scope;
-
-        if (this.isMobile) this.zoom = GameConfig.scopeZoomRadius.desktop[this._scope];
-        else this.zoom = GameConfig.scopeZoomRadius.mobile[this._scope];
-
-        this.inventoryDirty = true;
-    }
+    scope = "1xscope";
 
     inventory: Record<string, number> = {};
 
@@ -355,9 +335,7 @@ export class Player extends BaseGameObject {
         return this.weaponManager.curWeapIdx;
     }
 
-    get weapons() {
-        return this.weaponManager.weapons;
-    }
+    weapons: WeaponManager["weapons"];
 
     get activeWeapon() {
         return this.weaponManager.activeWeapon;
@@ -460,29 +438,15 @@ export class Player extends BaseGameObject {
      */
     reloadAgain = false;
 
-    get wearingPan(): boolean {
-        return (
-            this.weapons.find((weapon) => weapon.type === "pan") !== undefined &&
-            this.activeWeapon !== "pan"
-        );
-    }
-
+    wearingPan = false;
     healEffect = false;
     frozen = false;
     frozenOri = 0;
-
-    get hasHaste(): boolean {
-        return this.hasteType !== GameConfig.HasteType.None;
-    }
 
     hasteType: number = GameConfig.HasteType.None;
     hasteSeq = 0;
 
     actionItem = "";
-
-    get hasRole(): boolean {
-        return this.role !== "";
-    }
 
     role = "";
 
@@ -515,7 +479,7 @@ export class Player extends BaseGameObject {
     hasActivePan() {
         return (
             this.wearingPan ||
-            (this.activeWeapon === "pan" && this.animType !== GameConfig.Anim.Melee)
+            (this.activeWeapon == "pan" && this.animType !== GameConfig.Anim.Melee)
         );
     }
 
@@ -559,6 +523,8 @@ export class Player extends BaseGameObject {
         }
         this.isMobile = joinMsg.isMobile;
 
+        this.weapons = this.weaponManager.weapons;
+
         /**
          * Checks if an item is present in the player's loadout
          */
@@ -600,15 +566,21 @@ export class Player extends BaseGameObject {
             loadout.emotes[i] = emote;
         }
 
-        this.collider = collider.createCircle(pos, this.rad);
+        // createCircle clones the position
+        // so set it manually to link both
+        this.collider = collider.createCircle(this.pos, this.rad);
+        this.collider.pos = this.pos;
 
         for (const item in GameConfig.bagSizes) {
             this.inventory[item] = 0;
         }
         this.inventory["1xscope"] = 1;
         this.inventory[this.scope] = 1;
-        this.zoom =
-            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
+
+        this.scopeZoomRadius =
+            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"];
+
+        this.zoom = this.scopeZoomRadius[this.scope];
 
         const rad = GameConfig.player.maxVisualRadius;
         this.bounds = collider.createAabb(this.pos, v2.create(rad, rad));
@@ -747,19 +719,20 @@ export class Player extends BaseGameObject {
         }
 
         this.recalculateSpeed();
-        this.moveVel = v2.mul(movement, this.speed * dt);
-        this.pos = v2.add(this.pos, this.moveVel);
+        this.moveVel = v2.mul(movement, this.speed);
+        const steps = Math.ceil(this.speed * dt) + 2;
 
-        let collided = true;
-        let step = 0;
+        let objs!: GameObject[];
 
-        let objs: GameObject[];
-        while (step < 20 && collided) {
-            step++;
-            collided = false;
+        for (let i = 0; i < steps; i++) {
+            v2.set(
+                this.pos,
+                v2.add(this.pos, v2.mul(movement, this.speed * (dt / steps)))
+            );
             objs = this.game.grid.intersectCollider(this.collider);
 
-            for (const obj of objs) {
+            for (let i = 0; i < objs.length; i++) {
+                const obj = objs[i];
                 if (
                     obj.__type === ObjectType.Obstacle &&
                     obj.collidable &&
@@ -772,27 +745,26 @@ export class Player extends BaseGameObject {
                         this.rad
                     );
                     if (collision) {
-                        collided = true;
-                        this.pos = v2.add(
+                        v2.set(
                             this.pos,
-                            v2.mul(collision.dir, collision.pen + 0.001)
+                            v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001))
                         );
                     }
                 }
             }
         }
 
-        const scopeZoom =
-            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
-        let zoom =
-            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"]["1xscope"];
+        const scopeZoom = this.scopeZoomRadius[this.scope];
+        let finalZoom = this.scopeZoomRadius["1xscope"];
 
         let collidesWithZoomOut = false;
-        for (const obj of objs!) {
+
+        let layer = this.layer > 2 ? 0 : this.layer;
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
             if (obj.__type === ObjectType.Building) {
-                let layer = this.layer;
-                if (this.layer > 2) layer = 0;
-                if (!util.sameLayer(util.toGroundLayer(layer), obj.layer)) continue;
+                if (!util.sameLayer(layer, obj.layer)) continue;
 
                 if (obj.healRegions) {
                     const healRegion = obj.healRegions.find((hr) => {
@@ -824,6 +796,7 @@ export class Player extends BaseGameObject {
                             )
                         ) {
                             this.indoors = true;
+                            finalZoom = zoomRegion.zoom ? zoomRegion.zoom : finalZoom;
                         }
                     }
 
@@ -839,8 +812,6 @@ export class Player extends BaseGameObject {
                             collidesWithZoomOut = true;
                         }
                     }
-
-                    if (this.indoors) zoom = zoomRegion.zoom ?? zoom;
                 }
             } else if (obj.__type === ObjectType.Obstacle) {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
@@ -856,6 +827,9 @@ export class Player extends BaseGameObject {
                 }
             }
         }
+
+        this.zoom = this.indoors ? finalZoom : scopeZoom;
+        if (!collidesWithZoomOut) this.indoors = false;
 
         const originalLayer = this.layer;
         const rot = Math.atan2(this.dir.y, this.dir.x);
@@ -875,9 +849,6 @@ export class Player extends BaseGameObject {
         if (this.layer !== originalLayer) {
             this.setDirty();
         }
-
-        this.zoom = this.indoors ? zoom : scopeZoom;
-        if (!collidesWithZoomOut) this.indoors = false;
 
         this.game.map.clampToMapBounds(this.pos, this.rad);
 
@@ -1861,6 +1832,7 @@ export class Player extends BaseGameObject {
 
                         if (!this.inventory[nextScope]) continue;
                         this.scope = nextScope;
+                        this.inventoryDirty = true;
                         break;
                     }
                     break;
@@ -1873,6 +1845,7 @@ export class Player extends BaseGameObject {
 
                         if (!this.inventory[prevScope]) continue;
                         this.scope = prevScope;
+                        this.inventoryDirty = true;
                         break;
                     }
                     break;
@@ -1924,7 +1897,10 @@ export class Player extends BaseGameObject {
             case "4xscope":
             case "8xscope":
             case "15xscope":
-                this.scope = msg.useItem;
+                if (this.inventory[msg.useItem]) {
+                    this.scope = msg.useItem;
+                    this.inventoryDirty = true;
+                }
                 break;
         }
     }

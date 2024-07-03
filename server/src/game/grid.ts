@@ -18,7 +18,7 @@ export class Grid {
 
     // store the cells each game object is occupying
     // so removing the object from the grid is faster
-    private readonly _objectsCells = new Map<number, Vec2[]>();
+    private readonly _objectsCells = new Array<Vec2[]>();
 
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
@@ -56,20 +56,20 @@ export class Grid {
             }
         }
         // Store the cells this object is occupying
-        this._objectsCells.set(obj.__id, cells);
+        this._objectsCells[obj.__id] = cells;
     }
 
     /**
      * Remove an object from the grid system
      */
     remove(obj: GameObject): void {
-        const cells = this._objectsCells.get(obj.__id);
+        const cells = this._objectsCells[obj.__id];
         if (!cells) return;
 
         for (const cell of cells) {
             this._grid[cell.x][cell.y].delete(obj.__id);
         }
-        this._objectsCells.delete(obj.__id);
+        delete this._objectsCells[obj.__id];
     }
 
     /**
