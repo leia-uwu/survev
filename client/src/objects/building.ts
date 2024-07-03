@@ -652,8 +652,8 @@ export class Building implements AbstractObject {
         sprite.alpha = sprite.imgAlpha * alpha;
     }
 
-    render(_camera: Camera, debug: DebugOptions, _layer: number) {
-        if (device.debug) {
+    render(_camera: Camera, debug: DebugOptions, layer: number) {
+        if (device.debug && layer === this.layer) {
             if (debug.buildings?.bounds) {
                 renderMapBuildingBounds(this);
             }

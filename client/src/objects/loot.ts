@@ -13,6 +13,7 @@ import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
+import type { DebugOptions } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import { Pool } from "./objectPool";
@@ -161,7 +162,7 @@ export class LootBarn {
         map: Map,
         audioManager: AudioManager,
         camera: Camera,
-        _debug: unknown
+        debug: DebugOptions
     ) {
         this.closestLoot = null;
         let closestDist = Number.MAX_VALUE;
@@ -212,7 +213,7 @@ export class LootBarn {
                 const screenPos = camera.pointToScreen(loot.pos);
                 const screenScale = camera.pixels(loot.imgScale * scale);
 
-                if (device.debug) {
+                if (device.debug && debug.loot && activePlayer.layer === loot.layer) {
                     debugLines.addCircle(loot.pos, loot.rad, 0xff0000, 0);
                 }
 
