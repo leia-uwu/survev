@@ -1,6 +1,7 @@
+import type { AABB } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
-import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import type { Vec2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 
@@ -10,8 +11,6 @@ export class AirdropBarn {
 }
 
 export class Airdrop extends BaseGameObject {
-    bounds = collider.createAabbExtents(v2.create(0, 0), v2.create(5, 5));
-
     override readonly __type = ObjectType.Airdrop;
 
     layer = 0;
@@ -21,5 +20,6 @@ export class Airdrop extends BaseGameObject {
 
     constructor(game: Game, pos: Vec2) {
         super(game, pos);
+        this.bounds = collider.transform(this.bounds, this.pos, 0, 1) as AABB;
     }
 }

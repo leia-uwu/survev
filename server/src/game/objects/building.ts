@@ -10,7 +10,7 @@ import { collider } from "../../../../shared/utils/collider";
 import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
 import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
-import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import type { Vec2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { getColliders } from "../map";
 import type { Decal } from "./decal";
@@ -19,8 +19,6 @@ import { Obstacle } from "./obstacle";
 import type { Structure } from "./structure";
 
 export class Building extends BaseGameObject {
-    bounds: Collider;
-
     mapObstacleBounds: Collider[] = [];
 
     override readonly __type = ObjectType.Building;
@@ -97,10 +95,10 @@ export class Building extends BaseGameObject {
 
         this.bounds = collider.transform(
             mapHelpers.getBoundingCollider(type),
-            v2.create(0, 0),
+            this.pos,
             this.rot,
             1
-        );
+        ) as AABB;
 
         // transforms heal region local coordinates to world coordinates
         this.healRegions = def.healRegions?.map((hr) => {

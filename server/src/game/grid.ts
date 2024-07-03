@@ -41,11 +41,11 @@ export class Grid {
 
         const cells: Vec2[] = [];
 
-        const aabb = collider.toAabb(obj.bounds);
+        const aabb = obj.bounds;
         // Get the bounds of the hitbox
         // Round it to the grid cells
-        const min = this._roundToCells(v2.add(aabb.min, obj.pos));
-        const max = this._roundToCells(v2.add(aabb.max, obj.pos));
+        const min = this._roundToCells(aabb.min);
+        const max = this._roundToCells(aabb.max);
 
         // Add it to all grid cells that it intersects
         for (let x = min.x; x <= max.x; x++) {

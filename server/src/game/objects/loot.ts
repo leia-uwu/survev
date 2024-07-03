@@ -128,8 +128,6 @@ export class LootBarn {
 }
 
 export class Loot extends BaseGameObject {
-    bounds = collider.createCircle(v2.create(0.0, 0.0), 3.0);
-
     override readonly __type = ObjectType.Loot;
 
     isPreloadedGun = false;
@@ -182,6 +180,8 @@ export class Loot extends BaseGameObject {
         this.collider = collider.createCircle(pos, GameConfig.lootRadius[def.type]);
 
         this.rad = this.collider.rad;
+
+        this.bounds = collider.createAabbExtents(this.pos, v2.create(this.rad, this.rad));
 
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
@@ -305,6 +305,10 @@ export class Loot extends BaseGameObject {
 
         if (!v2.eq(this.oldPos, this.pos)) {
             this.setPartDirty();
+            this.bounds = collider.createAabbExtents(
+                this.pos,
+                v2.create(this.rad, this.rad)
+            );
             this.game.grid.updateObject(this);
         }
 

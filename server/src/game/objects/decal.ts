@@ -1,12 +1,12 @@
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { DecalDef } from "../../../../shared/defs/mapObjectsTyping";
-import type { Circle, Collider } from "../../../../shared/utils/coldet";
+import type { Circle } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
 import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
 import { util } from "../../../../shared/utils/util";
-import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import type { Vec2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 
@@ -35,8 +35,6 @@ export class DecalBarn {
 }
 
 export class Decal extends BaseGameObject {
-    bounds: Collider;
-
     override readonly __type = ObjectType.Decal;
 
     layer: number;
@@ -75,11 +73,13 @@ export class Decal extends BaseGameObject {
         ) as Circle;
         this.surface = def.surface?.type;
 
-        this.bounds = collider.transform(
-            mapHelpers.getBoundingCollider(type),
-            v2.create(0, 0),
-            this.rot,
-            1
+        this.bounds = collider.toAabb(
+            collider.transform(
+                mapHelpers.getBoundingCollider(type),
+                this.pos,
+                this.rot,
+                1
+            )
         );
 
         const fadeChance = def.fadeChance ?? 1;

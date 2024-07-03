@@ -219,10 +219,6 @@ export class PlayerBarn {
 export class Player extends BaseGameObject {
     override readonly __type = ObjectType.Player;
 
-    bounds = collider.toAabb(
-        collider.createCircle(v2.create(0, 0), GameConfig.player.maxVisualRadius)
-    );
-
     scale = 1;
 
     get hasScale(): boolean {
@@ -613,6 +609,9 @@ export class Player extends BaseGameObject {
         this.inventory[this.scope] = 1;
         this.zoom =
             GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"][this.scope];
+
+        const rad = GameConfig.player.maxVisualRadius;
+        this.bounds = collider.createAabb(this.pos, v2.create(rad, rad));
     }
 
     visibleObjects = new Set<GameObject>();
@@ -884,6 +883,8 @@ export class Player extends BaseGameObject {
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
+            const rad = GameConfig.player.maxVisualRadius;
+            this.bounds = collider.createAabb(this.pos, v2.create(rad, rad));
             this.game.grid.updateObject(this);
         }
 
