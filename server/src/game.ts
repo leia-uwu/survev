@@ -52,6 +52,15 @@ export class Game {
         return this.playerBarn.livingPlayers.length;
     }
 
+    get trueAliveCount(): number {
+        return this.playerBarn.livingPlayers.filter((p) => !p.disconnected).length;
+    }
+
+    get trueGroupsAliveCount(): number {
+        return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected)
+            .length;
+    }
+
     msgsToSend: Array<{ type: number; msg: net.AbstractMsg }> = [];
 
     playerBarn = new PlayerBarn(this);
@@ -232,25 +241,27 @@ export class Game {
         }
     }
 
-    isTeamGameOver(): boolean {
+    /** if game over, return group that won */
+    isTeamGameOver(): Group | undefined {
         const groupAlives = [...this.groups.values()].filter(
             (group) => !group.allDeadOrDisconnected
         );
-        return groupAlives.length <= 1;
+
+        if (groupAlives.length <= 1) {
+            return groupAlives[0];
+        }
     }
 
     checkGameOver(): void {
         if (this.over) return;
         if (!this.isTeamMode) {
-            if (this.started && this.aliveCount <= 1) {
+            if (this.started && this.trueAliveCount <= 1) {
                 this.initGameOver();
             }
         } else {
-            const groupAlives = [...this.groups.values()].filter(
-                (group) => !group.allDeadOrDisconnected
-            );
-            if (groupAlives.length <= 1) {
-                this.initGameOver(groupAlives[0]);
+            const winningGroup = this.isTeamGameOver();
+            if (this.started && winningGroup) {
+                this.initGameOver(winningGroup);
             }
         }
     }
