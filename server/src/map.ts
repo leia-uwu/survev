@@ -982,6 +982,9 @@ export class GameMap {
     }
 
     genBridge(type: string, river?: River): boolean {
+        if (this.terrain.rivers.length == 0) {
+            return false;
+        }
         let { ori, scale } = this.getOriAndScale(type);
 
         const def = MapObjectDefs[type];
