@@ -2472,12 +2472,12 @@ export class Player extends BaseGameObject {
             | GunDef
             | MeleeDef
             | ThrowableDef;
-        if (weaponDef.speed.equip && this.weapons[this.curWeapIdx].cooldown <= 0) {
+        if (weaponDef.speed.equip && !this.weaponManager.meleeAttacks.length) {
             this.speed += weaponDef.speed.equip;
         }
 
-        if (this.shotSlowdownTimer > 0 && "attack" in weaponDef.speed) {
-            this.speed += weaponDef.speed.attack! + weaponDef.speed.equip + -3;
+        if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
+            this.speed += weaponDef.speed.attack + -6;
         }
 
         // if player is on water decrease speed

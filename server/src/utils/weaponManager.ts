@@ -358,32 +358,37 @@ export class WeaponManager {
     }
 
     dropGun(weapIdx: number, switchToMelee = true): void {
-        const weaponDef = GameObjectDefs[this.weapons[weapIdx].type] as GunDef;
+        const weap = this.weapons[weapIdx];
+        const weaponDef = GameObjectDefs[weap.type] as GunDef;
         const weaponAmmoType = weaponDef.ammo;
-        const weaponAmmoCount = this.weapons[weapIdx].ammo;
+        const weaponAmmoCount = weap.ammo;
 
-        let item = this.weapons[weapIdx].type;
-        this.weapons[weapIdx].type = "";
-        this.weapons[weapIdx].ammo = 0;
-        this.weapons[weapIdx].cooldown = 0;
-        if (this.curWeapIdx == weapIdx && switchToMelee) {
+        let item = weap.type;
+        weap.type = "";
+        weap.ammo = 0;
+        weap.cooldown = 0;
+        if (this.activeWeapon === "" && switchToMelee) {
             this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
         }
 
         const backpackLevel = this.player.getGearLevel(this.player.backpack);
-        const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
-        let amountToDrop = 0;
-        if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
-            this.player.inventory[weaponAmmoType] += weaponAmmoCount;
-            this.player.weapsDirty = true;
-            this.player.inventoryDirty = true;
-        } else {
-            const spaceLeft = bagSpace - this.player.inventory[weaponAmmoType];
-            const amountToAdd = spaceLeft;
 
-            this.player.inventory[weaponAmmoType] += amountToAdd;
-            this.player.inventoryDirty = true;
-            amountToDrop = weaponAmmoCount - amountToAdd;
+        let amountToDrop = 0;
+        // some guns ammo type have no item in bagSizes, like potato guns
+        if (GameConfig.bagSizes[weaponAmmoType]) {
+            const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
+            if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
+                this.player.inventory[weaponAmmoType] += weaponAmmoCount;
+                this.player.weapsDirty = true;
+                this.player.inventoryDirty = true;
+            } else {
+                const spaceLeft = bagSpace - this.player.inventory[weaponAmmoType];
+                const amountToAdd = spaceLeft;
+
+                this.player.inventory[weaponAmmoType] += amountToAdd;
+                this.player.inventoryDirty = true;
+                amountToDrop = weaponAmmoCount - amountToAdd;
+            }
         }
 
         if (weaponDef.isDual) {
@@ -435,6 +440,7 @@ export class WeaponManager {
     fireWeapon() {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
+        this.scheduledReload = false;
         if (this.weapons[this.curWeapIdx].ammo <= 1) {
             this.delayScheduledReload(itemDef.fireDelay);
         }
