@@ -7,6 +7,7 @@ import type {
     TeamStateMsg
 } from "../../shared/net";
 import { math } from "../../shared/utils/math";
+import { Config } from "./config";
 import type { Server, TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
@@ -56,16 +57,24 @@ export class TeamMenu {
     constructor(public server: Server) {}
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
+        const enabledGameModeIdxs = Config.modes
+            .slice(1)
+            .filter((m) => m.enabled)
+            .map((m) => m.teamMode / 2);
+        const gameModeIdx = enabledGameModeIdxs.includes(initialRoomData.gameModeIdx)
+            ? initialRoomData.gameModeIdx
+            : 3 - initialRoomData.gameModeIdx;
+
         const value = {
             roomData: {
                 roomUrl,
                 region: initialRoomData.region,
-                gameModeIdx: initialRoomData.gameModeIdx,
-                enabledGameModeIdxs: [1, 2],
+                gameModeIdx: gameModeIdx,
+                enabledGameModeIdxs: enabledGameModeIdxs,
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
-                maxPlayers: math.clamp(initialRoomData.gameModeIdx * 2, 2, 4)
+                maxPlayers: math.clamp(gameModeIdx * 2, 2, 4)
             },
             players: [roomLeader]
         };
