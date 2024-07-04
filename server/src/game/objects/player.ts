@@ -860,7 +860,7 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
             const rad = GameConfig.player.maxVisualRadius;
-            this.bounds = collider.createAabb(this.pos, v2.create(rad, rad));
+            this.bounds = collider.createAabbExtents(this.pos, v2.create(rad, rad));
             this.game.grid.updateObject(this);
         }
 
