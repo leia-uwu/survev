@@ -21,8 +21,8 @@ export const Config = {
     port: 8000,
 
     modes: [
-        { mapName: "main", teamMode: TeamMode.Solo, enabled: false },
-        { mapName: "main", teamMode: TeamMode.Duo, enabled: false },
+        { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
+        { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
     ],
 
