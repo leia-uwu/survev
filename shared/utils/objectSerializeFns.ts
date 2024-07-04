@@ -1,4 +1,4 @@
-import { GameConfig } from "../gameConfig";
+import { GameConfig, HasteType } from "../gameConfig";
 import { type BitStream, Constants } from "../net";
 import { math } from "./math";
 import type { Vec2 } from "./v2";
@@ -217,8 +217,8 @@ export const ObjectSerializeFns: {
             s.writeBoolean(data.frozen);
             s.writeBits(data.frozenOri, 2);
 
-            s.writeBoolean(data.hasHaste);
-            if (data.hasHaste) {
+            s.writeBoolean(data.hasteType !== HasteType.None);
+            if (data.hasteType !== HasteType.None) {
                 s.writeBits(data.hasteType, 3);
                 s.writeBits(data.hasteSeq, 3);
             }
@@ -238,8 +238,10 @@ export const ObjectSerializeFns: {
                 );
             }
 
-            s.writeBoolean(data.hasRole);
-            if (data.hasRole) s.writeGameType(data.role);
+            s.writeBoolean(data.role !== "");
+            if (data.role !== "") {
+                s.writeGameType(data.role);
+            }
 
             s.writeBoolean(data.hasPerks);
             if (data.hasPerks) {
