@@ -1,6 +1,6 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { GameConfig } from "../../../../shared/gameConfig";
+import { DamageType, GameConfig } from "../../../../shared/gameConfig";
 import { type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
@@ -193,6 +193,25 @@ export class Projectile extends BaseGameObject {
         if (this.dead) return;
         this.dead = true;
         const def = GameObjectDefs[this.type] as ThrowableDef;
+
+        //courtesy of kaklik
+        if (def.splitType && def.numSplit) {
+            for (let i = 0; i < def.numSplit; i++) {
+                const splitDef = GameObjectDefs[def.splitType] as ThrowableDef;
+                const velocity = v2.add(this.vel, v2.mul(v2.randomUnit(), 5));
+                this.game.projectileBarn.addProjectile(
+                    this.playerId,
+                    def.splitType,
+                    this.pos,
+                    1,
+                    this.layer,
+                    velocity,
+                    splitDef.fuseTime,
+                    DamageType.Player
+                );
+            }
+        }
+
         const explosionType = def.explosionType;
         if (explosionType) {
             const source = this.game.objectRegister.getById(this.playerId);
