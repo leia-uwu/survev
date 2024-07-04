@@ -756,7 +756,7 @@ export class Player extends BaseGameObject {
 
         const scopeZoom = this.scopeZoomRadius[this.scope];
         let finalZoom = this.scopeZoomRadius["1xscope"];
-
+        let onSmoke = false;
         let collidesWithZoomOut = false;
 
         let layer = this.layer > 2 ? 0 : this.layer;
@@ -825,10 +825,15 @@ export class Player extends BaseGameObject {
                 if (res) {
                     obj.interact(this, true);
                 }
+            } else if (obj.__type === ObjectType.Smoke) {
+                if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
+                    onSmoke = true;
+                }
             }
         }
 
         this.zoom = this.indoors ? finalZoom : scopeZoom;
+        if (onSmoke || this.downed) this.zoom = this.scopeZoomRadius["1xscope"];
         if (!collidesWithZoomOut) this.indoors = false;
 
         const originalLayer = this.layer;

@@ -329,6 +329,10 @@ export class Obstacle extends BaseGameObject {
             }
         }
 
+        if (def.createSmoke) {
+            this.game.smokeBarn.addEmitter(this.pos, this.layer);
+        }
+
         if (def.explosion) {
             this.game.explosionBarn.addExplosion(
                 def.explosion,

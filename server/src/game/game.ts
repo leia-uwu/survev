@@ -129,6 +129,7 @@ export class Game {
         this.bulletBarn.update(dt);
         this.projectileBarn.update(dt);
         this.explosionBarn.update();
+        this.smokeBarn.update(dt);
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
 
