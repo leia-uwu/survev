@@ -1,12 +1,12 @@
-import { AbstractMsg, type BitStream } from "../net";
+import type { AbstractMsg, BitStream } from "./net";
 
-export class SpectateMsg extends AbstractMsg {
+export class SpectateMsg implements AbstractMsg {
     specBegin = false;
     specNext = false;
     specPrev = false;
     specForce = false;
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeBoolean(this.specBegin);
         s.writeBoolean(this.specNext);
         s.writeBoolean(this.specPrev);
@@ -14,7 +14,7 @@ export class SpectateMsg extends AbstractMsg {
         s.writeBits(0, 4);
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.specBegin = s.readBoolean();
         this.specNext = s.readBoolean();
         this.specPrev = s.readBoolean();

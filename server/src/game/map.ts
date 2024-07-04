@@ -6,13 +6,13 @@ import type {
     StructureDef
 } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
-import { MapMsg } from "../../../shared/msgs/mapMsg";
-import { MsgStream, MsgType } from "../../../shared/net";
+import * as net from "../../../shared/net/net";
+import { MsgStream, MsgType } from "../../../shared/net/net";
+import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { type AABB, type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import type { River } from "../../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../../shared/utils/terrainGen";
 import { util } from "../../../shared/utils/util";
@@ -189,7 +189,7 @@ export class GameMap {
 
     center: Vec2;
 
-    msg = new MapMsg();
+    msg = new net.MapMsg();
     mapStream = new MsgStream(new ArrayBuffer(1 << 15));
     seed = util.randomInt(0, 2 ** 31);
 

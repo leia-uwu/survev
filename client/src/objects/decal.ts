@@ -1,10 +1,10 @@
 import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { DecalDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import type { ColliderWithHeight } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Camera } from "../camera";

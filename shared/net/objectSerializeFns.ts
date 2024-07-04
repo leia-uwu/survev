@@ -1,7 +1,7 @@
 import { GameConfig, HasteType } from "../gameConfig";
-import { type BitStream, Constants } from "../net";
-import { math } from "./math";
-import type { Vec2 } from "./v2";
+import { math } from "../utils/math";
+import type { Vec2 } from "../utils/v2";
+import { type BitStream, Constants } from "./net";
 
 export enum ObjectType {
     Invalid,

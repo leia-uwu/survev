@@ -1,6 +1,6 @@
-import { AbstractMsg, type BitStream } from "../net";
+import type { AbstractMsg, BitStream } from "./net";
 
-export class PlayerStatsMsg extends AbstractMsg {
+export class PlayerStatsMsg implements AbstractMsg {
     playerStats = {
         playerId: 0,
         timeAlive: 0,
@@ -10,7 +10,7 @@ export class PlayerStatsMsg extends AbstractMsg {
         damageTaken: 0
     };
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeUint16(this.playerStats.playerId);
         s.writeUint16(this.playerStats.timeAlive);
         s.writeUint8(this.playerStats.kills);
@@ -19,7 +19,7 @@ export class PlayerStatsMsg extends AbstractMsg {
         s.writeUint16(this.playerStats.damageTaken);
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         const playerStats = {} as this["playerStats"];
         playerStats.playerId = s.readUint16();
         playerStats.timeAlive = s.readUint16();

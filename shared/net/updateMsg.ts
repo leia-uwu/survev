@@ -1,12 +1,12 @@
 import { GameConfig } from "../gameConfig";
-import { AbstractMsg, type BitStream, Constants } from "../net";
+import { type Vec2, v2 } from "./../utils/v2";
+import { type AbstractMsg, type BitStream, Constants } from "./net";
 import {
     ObjectSerializeFns,
     type ObjectType,
     type ObjectsFullData,
     type ObjectsPartialData
-} from "../utils/objectSerializeFns";
-import { type Vec2, v2 } from "./../utils/v2";
+} from "./objectSerializeFns";
 
 function serializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
     s.writeBoolean(data.healthDirty);
@@ -248,7 +248,7 @@ export const UpdateExtFlags = {
     KillLeader: 1 << 15
 };
 
-export class UpdateMsg extends AbstractMsg {
+export class UpdateMsg implements AbstractMsg {
     delObjIds: number[] = [];
     fullObjects: Array<
         ObjectsFullData[ObjectType] &
@@ -298,7 +298,7 @@ export class UpdateMsg extends AbstractMsg {
     killLeaderDirty = false;
     ack = 0;
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         let flags = 0;
         const flagsIdx = s.byteIndex;
         s.writeUint16(flags);
@@ -501,7 +501,7 @@ export class UpdateMsg extends AbstractMsg {
     }
 
     // @ts-expect-error deserialize only accept one argument for now
-    override deserialize(
+    deserialize(
         s: BitStream,
         objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType }
     ) {

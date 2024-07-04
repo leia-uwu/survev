@@ -1,6 +1,7 @@
 import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
-import { Constants, type RoomData } from "../../../shared/net";
+import * as net from "../../../shared/net/net";
+import type { RoomData } from "../../../shared/net/team";
 import { api } from "../api";
 import type { AudioManager } from "../audioManager";
 import type { ConfigManager } from "../config";
@@ -550,7 +551,7 @@ export class TeamMenu {
                         type: "text",
                         tabindex: 0,
                         class: "name menu-option name-text name-self-input",
-                        maxLength: Constants.PlayerNameMaxLen
+                        maxLength: net.Constants.PlayerNameMaxLen
                     });
                     n.val(playerStatus.name);
                     const m = () => {

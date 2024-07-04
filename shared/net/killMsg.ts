@@ -1,7 +1,7 @@
 import { DamageType } from "../gameConfig";
-import { AbstractMsg, type BitStream } from "../net";
+import type { AbstractMsg, BitStream } from "./net";
 
-export class KillMsg extends AbstractMsg {
+export class KillMsg implements AbstractMsg {
     itemSourceType = "";
     mapSourceType = "";
     damageType = DamageType.Player;
@@ -12,7 +12,7 @@ export class KillMsg extends AbstractMsg {
     downed = false;
     killed = false;
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeUint8(this.damageType);
         s.writeGameType(this.itemSourceType);
         s.writeMapType(this.mapSourceType);
@@ -25,7 +25,7 @@ export class KillMsg extends AbstractMsg {
         s.writeAlignToNextByte();
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.damageType = s.readUint8();
         this.itemSourceType = s.readGameType();
         this.mapSourceType = s.readMapType();

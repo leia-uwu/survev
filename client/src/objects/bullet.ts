@@ -5,7 +5,7 @@ import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { Bullet } from "../../../shared/msgs/updateMsg";
+import type { Bullet } from "../../../shared/net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";

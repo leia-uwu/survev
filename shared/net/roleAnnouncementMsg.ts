@@ -1,13 +1,13 @@
-import { AbstractMsg, type BitStream } from "../net";
+import type { AbstractMsg, BitStream } from "./net";
 
-export class RoleAnnouncementMsg extends AbstractMsg {
+export class RoleAnnouncementMsg implements AbstractMsg {
     playerId = 0;
     killerId = 0;
     role = "";
     assigned = false;
     killed = false;
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeUint16(this.playerId);
         s.writeUint16(this.killerId);
         s.writeGameType(this.role);
@@ -16,7 +16,7 @@ export class RoleAnnouncementMsg extends AbstractMsg {
         s.writeAlignToNextByte();
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.playerId = s.readUint16();
         this.killerId = s.readUint16();
         this.role = s.readGameType();

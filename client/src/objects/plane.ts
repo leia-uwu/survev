@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { Plane as PlaneData, UpdateMsg } from "../../../shared/msgs/updateMsg";
+import type { Plane as PlaneData, UpdateMsg } from "../../../shared/net/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";

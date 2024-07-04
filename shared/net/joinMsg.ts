@@ -1,6 +1,6 @@
-import { AbstractMsg, type BitStream, Constants } from "../net";
+import { type AbstractMsg, type BitStream, Constants } from "./net";
 
-export class JoinMsg extends AbstractMsg {
+export class JoinMsg implements AbstractMsg {
     protocol = 0;
     matchPriv = "";
     loadoutPriv = "";
@@ -17,7 +17,7 @@ export class JoinMsg extends AbstractMsg {
         emotes: [] as string[]
     };
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.protocol = s.readUint32();
         this.matchPriv = s.readString();
         this.loadoutPriv = s.readString();
@@ -41,7 +41,7 @@ export class JoinMsg extends AbstractMsg {
         s.readAlignToNextByte();
     }
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeUint32(this.protocol);
         s.writeString(this.matchPriv);
         s.writeString(this.loadoutPriv);

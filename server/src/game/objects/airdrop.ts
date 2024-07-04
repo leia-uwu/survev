@@ -1,6 +1,6 @@
+import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import type { AABB } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
-import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
 import type { Vec2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";

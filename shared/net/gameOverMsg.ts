@@ -1,14 +1,14 @@
-import { AbstractMsg, type BitStream } from "../net";
+import type { AbstractMsg, BitStream } from "./net";
 import { PlayerStatsMsg } from "./playerStatsMsg";
 
-export class GameOverMsg extends AbstractMsg {
+export class GameOverMsg implements AbstractMsg {
     teamId = 0;
     teamRank = 0;
     gameOver = false;
     winningTeamId = 0;
     playerStats: Array<PlayerStatsMsg["playerStats"]> = [];
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeUint8(this.teamId);
         s.writeUint8(this.teamRank);
         s.writeUint8(+this.gameOver);
@@ -23,7 +23,7 @@ export class GameOverMsg extends AbstractMsg {
         }
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.teamId = s.readUint8();
         this.teamRank = s.readUint8();
         this.gameOver = s.readUint8() as unknown as boolean;
