@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
+import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import { collider } from "../../../shared/utils/collider";
-import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
 import type { Camera } from "../camera";

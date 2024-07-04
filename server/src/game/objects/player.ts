@@ -15,29 +15,11 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
-import { AliveCountsMsg } from "../../../../shared/msgs/aliveCountsMsg";
-import { DisconnectMsg } from "../../../../shared/msgs/disconnectMsg";
-import type { DropItemMsg } from "../../../../shared/msgs/dropItemMsg";
-import { GameOverMsg } from "../../../../shared/msgs/gameOverMsg";
-import { InputMsg } from "../../../../shared/msgs/inputMsg";
-import type { JoinMsg } from "../../../../shared/msgs/joinMsg";
-import { JoinedMsg } from "../../../../shared/msgs/joinedMsg";
-import { KillMsg } from "../../../../shared/msgs/killMsg";
-import { PickupMsg } from "../../../../shared/msgs/pickupMsg";
-import { PlayerStatsMsg } from "../../../../shared/msgs/playerStatsMsg";
-import type { SpectateMsg } from "../../../../shared/msgs/spectateMsg";
-import { UpdateMsg, getPlayerStatusUpdateRate } from "../../../../shared/msgs/updateMsg";
-import {
-    Constants,
-    type Msg,
-    MsgStream,
-    MsgType,
-    PickupMsgType
-} from "../../../../shared/net";
+import * as net from "../../../../shared/net/net";
+import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type Circle, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
-import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { Config, SpawnMode } from "../../config";
@@ -82,14 +64,14 @@ export class PlayerBarn {
         return this.livingPlayers[util.randomInt(0, this.livingPlayers.length - 1)];
     }
 
-    addPlayer(socketData: GameSocketData, joinMsg: JoinMsg) {
+    addPlayer(socketData: GameSocketData, joinMsg: net.JoinMsg) {
         let pos: Vec2;
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
-            const disconnectMsg = new DisconnectMsg();
+            const disconnectMsg = new net.DisconnectMsg();
             disconnectMsg.reason = "index-invalid-protocol";
-            const stream = new MsgStream(new ArrayBuffer(128));
-            stream.serializeMsg(MsgType.Disconnect, disconnectMsg);
+            const stream = new net.MsgStream(new ArrayBuffer(128));
+            stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
             socketData.sendMsg(stream.getBuffer());
             setTimeout(() => {
                 socketData.closeSocket();
@@ -507,12 +489,12 @@ export class Player extends BaseGameObject {
     kills = 0;
     timeAlive = 0;
 
-    msgsToSend: Array<{ type: number; msg: Msg }> = [];
+    msgsToSend: Array<{ type: number; msg: net.Msg }> = [];
 
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
 
-    constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: JoinMsg) {
+    constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: net.JoinMsg) {
         super(game, pos);
 
         this.socketData = socketData;
@@ -588,8 +570,6 @@ export class Player extends BaseGameObject {
 
     visibleObjects = new Set<GameObject>();
 
-    lastInputMsg = new InputMsg();
-
     update(dt: number): void {
         if (this.dead) return;
 
@@ -598,18 +578,16 @@ export class Player extends BaseGameObject {
         const movement = v2.create(0, 0);
 
         if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
-            const input = this.lastInputMsg;
-
             this.posOld = v2.copy(this.pos);
 
-            if (this.lastInputMsg.touchMoveActive && this.lastInputMsg.touchMoveLen) {
-                movement.x = this.lastInputMsg.touchMoveDir.x;
-                movement.y = this.lastInputMsg.touchMoveDir.y;
+            if (this.touchMoveActive && this.touchMoveLen) {
+                movement.x = this.touchMoveDir.x;
+                movement.y = this.touchMoveDir.y;
             } else {
-                if (input.moveUp) movement.y++;
-                if (input.moveDown) movement.y--;
-                if (input.moveLeft) movement.x--;
-                if (input.moveRight) movement.x++;
+                if (this.moveUp) movement.y++;
+                if (this.moveDown) movement.y--;
+                if (this.moveLeft) movement.x--;
+                if (this.moveRight) movement.x++;
 
                 if (movement.x * movement.y !== 0) {
                     // If the product is non-zero, then both of the components must be non-zero
@@ -667,7 +645,7 @@ export class Player extends BaseGameObject {
             this.action.time = math.clamp(
                 this.action.time,
                 0,
-                Constants.ActionMaxDuration
+                net.Constants.ActionMaxDuration
             );
 
             if (this.action.time >= this.action.duration) {
@@ -889,7 +867,7 @@ export class Player extends BaseGameObject {
 
     private _firstUpdate = true;
 
-    msgStream = new MsgStream(new ArrayBuffer(65536));
+    msgStream = new net.MsgStream(new ArrayBuffer(65536));
     sendMsgs(): void {
         const msgStream = this.msgStream;
         const game = this.game;
@@ -897,13 +875,13 @@ export class Player extends BaseGameObject {
         msgStream.stream.index = 0;
 
         if (this._firstUpdate) {
-            const joinedMsg = new JoinedMsg();
+            const joinedMsg = new net.JoinedMsg();
             joinedMsg.teamMode = this.game.teamMode;
             joinedMsg.playerId = this.__id;
             joinedMsg.started = game.started;
             joinedMsg.teamMode = game.teamMode;
             joinedMsg.emotes = this.loadout.emotes;
-            this.sendMsg(MsgType.Joined, joinedMsg);
+            this.sendMsg(net.MsgType.Joined, joinedMsg);
 
             const mapStream = game.map.mapStream.stream;
 
@@ -911,12 +889,12 @@ export class Player extends BaseGameObject {
         }
 
         if (playerBarn.aliveCountDirty || this._firstUpdate) {
-            const aliveMsg = new AliveCountsMsg();
+            const aliveMsg = new net.AliveCountsMsg();
             aliveMsg.teamAliveCounts.push(game.aliveCount);
-            msgStream.serializeMsg(MsgType.AliveCounts, aliveMsg);
+            msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
         }
 
-        const updateMsg = new UpdateMsg();
+        const updateMsg = new net.UpdateMsg();
 
         if (game.gas.dirty || this._firstUpdate) {
             updateMsg.gasDirty = true;
@@ -1011,7 +989,7 @@ export class Player extends BaseGameObject {
         if (this.group) {
             if (
                 this.playerStatusTicker >
-                getPlayerStatusUpdateRate(this.game.map.factionMode)
+                net.getPlayerStatusUpdateRate(this.game.map.factionMode)
             ) {
                 const teamPlayers = this.group.getPlayers();
                 for (let i = 0; i < teamPlayers.length; i++) {
@@ -1101,7 +1079,7 @@ export class Player extends BaseGameObject {
             updateMsg.explosions = updateMsg.explosions.slice(0, 255);
         }
 
-        msgStream.serializeMsg(MsgType.Update, updateMsg);
+        msgStream.serializeMsg(net.MsgType.Update, updateMsg);
 
         for (const msg of this.msgsToSend) {
             msgStream.serializeMsg(msg.type, msg.msg);
@@ -1124,7 +1102,7 @@ export class Player extends BaseGameObject {
      * the main purpose of this function is to asynchronously set "spectating"
      * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
      */
-    spectate(spectateMsg: SpectateMsg): void {
+    spectate(spectateMsg: net.SpectateMsg): void {
         let playerToSpec: Player | undefined;
         const spectatablePlayers = this.game.playerBarn.livingPlayers;
         if (!this.game.isTeamMode) {
@@ -1312,7 +1290,7 @@ export class Player extends BaseGameObject {
      */
     addGameOverMsg(winningTeamId: number = 0): void {
         const targetPlayer = this.spectating ?? this;
-        let stats: PlayerStatsMsg["playerStats"][] = [targetPlayer];
+        let stats: net.PlayerStatsMsg["playerStats"][] = [targetPlayer];
 
         if (this.group) {
             stats = this.group.players;
@@ -1331,29 +1309,32 @@ export class Player extends BaseGameObject {
             groupAlives.length > 1
         ) {
             for (const stat of stats) {
-                const statsMsg = new PlayerStatsMsg();
+                const statsMsg = new net.PlayerStatsMsg();
                 statsMsg.playerStats = stat;
 
-                this.msgsToSend.push({ type: MsgType.PlayerStats, msg: statsMsg });
+                this.msgsToSend.push({ type: net.MsgType.PlayerStats, msg: statsMsg });
 
                 for (const spectator of this.spectators) {
                     spectator.msgsToSend.push({
-                        type: MsgType.PlayerStats,
+                        type: net.MsgType.PlayerStats,
                         msg: statsMsg
                     });
                 }
             }
         } else {
-            const gameOverMsg = new GameOverMsg();
+            const gameOverMsg = new net.GameOverMsg();
             gameOverMsg.playerStats = stats;
             gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
             gameOverMsg.teamId = targetPlayer.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
             gameOverMsg.gameOver = !!winningTeamId;
-            this.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+            this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });
 
             for (const spectator of this.spectators) {
-                spectator.msgsToSend.push({ type: MsgType.GameOver, msg: gameOverMsg });
+                spectator.msgsToSend.push({
+                    type: net.MsgType.GameOver,
+                    msg: gameOverMsg
+                });
             }
         }
     }
@@ -1373,7 +1354,7 @@ export class Player extends BaseGameObject {
         //
         // Send downed msg
         //
-        const downedMsg = new KillMsg();
+        const downedMsg = new net.KillMsg();
         downedMsg.damageType = params.damageType;
         downedMsg.itemSourceType = params.gameSourceType ?? "";
         downedMsg.mapSourceType = params.mapSourceType ?? "";
@@ -1386,7 +1367,7 @@ export class Player extends BaseGameObject {
             downedMsg.killCreditId = params.source.__id;
         }
 
-        this.game.msgsToSend.push({ type: MsgType.Kill, msg: downedMsg });
+        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: downedMsg });
     }
 
     private _assignNewSpectate() {
@@ -1459,7 +1440,7 @@ export class Player extends BaseGameObject {
         //
         // Send kill msg
         //
-        const killMsg = new KillMsg();
+        const killMsg = new net.KillMsg();
         killMsg.damageType = params.damageType;
         killMsg.itemSourceType = params.gameSourceType ?? "";
         killMsg.mapSourceType = params.mapSourceType ?? "";
@@ -1477,7 +1458,7 @@ export class Player extends BaseGameObject {
             killMsg.killerKills = params.source.kills;
         }
 
-        this.game.msgsToSend.push({ type: MsgType.Kill, msg: killMsg });
+        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: killMsg });
 
         this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
@@ -1665,13 +1646,21 @@ export class Player extends BaseGameObject {
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
-    toMouseLen = 0;
-    shootHold = false;
+    moveLeft = false;
+    moveRight = false;
+    moveUp = false;
+    moveDown = false;
     shootStart = false;
+    shootHold = false;
+    portrait = false;
+    touchMoveActive = false;
+    touchMoveDir = v2.create(1, 0);
+    touchMoveLen = 255;
+    toMouseDir = v2.create(1, 0);
+    toMouseLen = 0;
 
-    handleInput(msg: InputMsg): void {
+    handleInput(msg: net.InputMsg): void {
         if (this.dead) return;
-        this.lastInputMsg = msg;
 
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
@@ -1679,6 +1668,15 @@ export class Player extends BaseGameObject {
             this.dir = msg.toMouseDir;
         }
         this.shootHold = msg.shootHold;
+
+        this.moveLeft = msg.moveLeft;
+        this.moveRight = msg.moveRight;
+        this.moveUp = msg.moveUp;
+        this.moveDown = msg.moveDown;
+        this.portrait = msg.portrait;
+        this.touchMoveActive = msg.touchMoveActive;
+        this.touchMoveDir = msg.touchMoveDir;
+        this.touchMoveLen = msg.touchMoveLen;
 
         if (msg.shootStart) {
             this.shootStart = true;
@@ -1690,7 +1688,8 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        for (const input of msg.inputs) {
+        for (let i = 0; i < msg.inputs.length; i++) {
+            const input = msg.inputs[i];
             switch (input) {
                 case GameConfig.Input.StowWeapons:
                 case GameConfig.Input.EquipMelee:
@@ -1982,7 +1981,7 @@ export class Player extends BaseGameObject {
 
     getFreeGunSlot(obj: Loot) {
         let availSlot = -1;
-        let cause = PickupMsgType.Success;
+        let cause = net.PickupMsgType.Success;
         let indexOf = -1;
         let isDualWield = false;
         const gunSlots = [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary];
@@ -2003,7 +2002,7 @@ export class Player extends BaseGameObject {
                 !dualWield &&
                 (slot as number) == gunSlots.length - 1
             ) {
-                cause = PickupMsgType.AlreadyOwned;
+                cause = net.PickupMsgType.AlreadyOwned;
                 break;
             }
         }
@@ -2022,9 +2021,9 @@ export class Player extends BaseGameObject {
         let amountLeft = 0;
         let lootToAdd = obj.type;
         let removeLoot = true;
-        const pickupMsg = new PickupMsg();
+        const pickupMsg = new net.PickupMsg();
         pickupMsg.item = obj.type;
-        pickupMsg.type = PickupMsgType.Success;
+        pickupMsg.type = net.PickupMsgType.Success;
 
         switch (def.type) {
             case "ammo":
@@ -2072,9 +2071,9 @@ export class Player extends BaseGameObject {
                         const amountToAdd = spaceLeft;
 
                         if (amountToAdd <= 0) {
-                            pickupMsg.type = PickupMsgType.Full;
+                            pickupMsg.type = net.PickupMsgType.Full;
                             if (def.type === "scope") {
-                                pickupMsg.type = PickupMsgType.AlreadyOwned;
+                                pickupMsg.type = net.PickupMsgType.AlreadyOwned;
                             }
                         } else {
                             this.inventory[obj.type] += amountToAdd;
@@ -2135,7 +2134,7 @@ export class Player extends BaseGameObject {
                             this.weapons[this.curWeapIdx].type = obj.type;
                         } else {
                             removeLoot = false;
-                            pickupMsg.type = PickupMsgType.Full;
+                            pickupMsg.type = net.PickupMsgType.Full;
                         }
                         this.cancelAction();
                         this.weaponManager.tryReload();
@@ -2178,15 +2177,15 @@ export class Player extends BaseGameObject {
 
                     if (thisType === obj.type) {
                         lootToAdd = obj.type;
-                        pickupMsg.type = PickupMsgType.AlreadyEquipped;
+                        pickupMsg.type = net.PickupMsgType.AlreadyEquipped;
                     } else if (thisLevel <= objLevel) {
                         lootToAdd = thisType;
                         this[def.type] = obj.type;
-                        pickupMsg.type = PickupMsgType.Success;
+                        pickupMsg.type = net.PickupMsgType.Success;
                         this.setDirty();
                     } else {
                         lootToAdd = obj.type;
-                        pickupMsg.type = PickupMsgType.BetterItemEquipped;
+                        pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     }
                     if (this.getGearLevel(lootToAdd) === 0) lootToAdd = "";
                 }
@@ -2194,12 +2193,12 @@ export class Player extends BaseGameObject {
             case "outfit":
                 amountLeft = 1;
                 lootToAdd = this.outfit;
-                pickupMsg.type = PickupMsgType.Success;
+                pickupMsg.type = net.PickupMsgType.Success;
                 this.outfit = obj.type;
                 this.setDirty();
                 break;
             case "perk":
-                if (this.perks.length >= Constants.MaxPerks) {
+                if (this.perks.length >= net.Constants.MaxPerks) {
                     amountLeft = 1;
                 } else {
                     this.addPerk(obj.type);
@@ -2233,12 +2232,12 @@ export class Player extends BaseGameObject {
             obj.destroy();
         }
         this.msgsToSend.push({
-            type: MsgType.Pickup,
+            type: net.MsgType.Pickup,
             msg: pickupMsg
         });
     }
 
-    dropItem(dropMsg: DropItemMsg): void {
+    dropItem(dropMsg: net.DropItemMsg): void {
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         switch (itemDef.type) {
             case "ammo": {
@@ -2494,7 +2493,7 @@ export class Player extends BaseGameObject {
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
-        const stream = new MsgStream(new ArrayBuffer(bytes));
+        const stream = new net.MsgStream(new ArrayBuffer(bytes));
         stream.serializeMsg(type, msg);
         this.sendData(stream.getBuffer());
     }

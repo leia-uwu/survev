@@ -1,10 +1,5 @@
 import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { DropItemMsg } from "../../../shared/msgs/dropItemMsg";
-import { EmoteMsg } from "../../../shared/msgs/emoteMsg";
-import { InputMsg } from "../../../shared/msgs/inputMsg";
-import { JoinMsg } from "../../../shared/msgs/joinMsg";
-import { SpectateMsg } from "../../../shared/msgs/spectateMsg";
-import * as net from "../../../shared/net";
+import * as net from "../../../shared/net/net";
 import { util } from "../../../shared/utils/util";
 import { Config, TeamMode } from "../config";
 import type { GameSocketData } from "../server";
@@ -200,7 +195,7 @@ export class Game {
         const player = socketData.player;
 
         if (type === net.MsgType.Join && !player) {
-            const joinMsg = new JoinMsg();
+            const joinMsg = new net.JoinMsg();
             joinMsg.deserialize(stream);
             this.playerBarn.addPlayer(socketData, joinMsg);
             return;
@@ -213,13 +208,13 @@ export class Game {
 
         switch (type) {
             case net.MsgType.Input: {
-                const inputMsg = new InputMsg();
+                const inputMsg = new net.InputMsg();
                 inputMsg.deserialize(stream);
                 player.handleInput(inputMsg);
                 break;
             }
             case net.MsgType.Emote: {
-                const emoteMsg = new EmoteMsg();
+                const emoteMsg = new net.EmoteMsg();
                 emoteMsg.deserialize(stream);
 
                 this.playerBarn.emotes.push(
@@ -228,13 +223,13 @@ export class Game {
                 break;
             }
             case net.MsgType.DropItem: {
-                const dropMsg = new DropItemMsg();
+                const dropMsg = new net.DropItemMsg();
                 dropMsg.deserialize(stream);
                 player.dropItem(dropMsg);
                 break;
             }
             case net.MsgType.Spectate: {
-                const spectateMsg = new SpectateMsg();
+                const spectateMsg = new net.SpectateMsg();
                 spectateMsg.deserialize(stream);
                 player.spectate(spectateMsg);
                 break;

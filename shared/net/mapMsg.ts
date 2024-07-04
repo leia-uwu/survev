@@ -1,7 +1,7 @@
 import type { MapDef } from "../defs/mapDefs";
-import { AbstractMsg, type BitStream, Constants } from "../net";
 import type { MapRiverData } from "../utils/terrainGen";
 import type { Vec2 } from "../utils/v2";
+import { type AbstractMsg, type BitStream, Constants } from "./net";
 
 function serializeMapRiver(s: BitStream, data: MapRiverData) {
     s.writeFloat32(data.width);
@@ -91,7 +91,7 @@ function deserializeMapObj(s: BitStream, data: MapObj) {
     s.readBits(2);
 }
 
-export class MapMsg extends AbstractMsg {
+export class MapMsg implements AbstractMsg {
     mapName = "";
     seed = 0;
     width = 0;
@@ -103,7 +103,7 @@ export class MapMsg extends AbstractMsg {
     objects: MapObj[] = [];
     groundPatches: GroundPatch[] = [];
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeString(this.mapName, Constants.MapNameMaxLen);
         s.writeUint32(this.seed);
         s.writeUint16(this.width);
@@ -136,7 +136,7 @@ export class MapMsg extends AbstractMsg {
         }
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.mapName = s.readString(Constants.MapNameMaxLen);
         this.seed = s.readUint32();
         this.width = s.readUint16();

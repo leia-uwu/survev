@@ -1,10 +1,10 @@
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { StructureDef } from "../../../../shared/defs/mapObjectsTyping";
+import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
-import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { getColliders } from "../map";

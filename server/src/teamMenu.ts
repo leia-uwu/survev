@@ -5,7 +5,7 @@ import type {
     TeamErrorMsg,
     TeamMenuPlayer,
     TeamStateMsg
-} from "../../shared/net";
+} from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
 import { Config } from "./config";
 import type { Server, TeamSocketData } from "./server";

@@ -2,10 +2,10 @@ import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { MapMsg } from "../../../shared/msgs/mapMsg";
+import type { MapMsg } from "../../../shared/net/mapMsg";
+import { type ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import { type ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { v2 } from "../../../shared/utils/v2";
 import type { Account } from "../account";
 import type { AudioManager } from "../audioManager";
@@ -22,7 +22,7 @@ import { ParticleBarn } from "../objects/particles";
 import { type Player, PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Renderer } from "../renderer";
-import type { LocalDataWithDirty } from "./../../../shared/msgs/updateMsg";
+import type { LocalDataWithDirty } from "./../../../shared/net/updateMsg";
 import loadouts, { type Loadout } from "./loadouts";
 
 export class LoadoutDisplay {

@@ -3,7 +3,7 @@ import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
 import type { BuildingDef, ObstacleDef } from "../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../shared/gameConfig";
-import type { GroundPatch, MapMsg } from "../../shared/msgs/mapMsg";
+import type { GroundPatch, MapMsg } from "../../shared/net/mapMsg";
 import { type CircleWithHeight, type Collider, coldet } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
 import { mapHelpers } from "../../shared/utils/mapHelpers";

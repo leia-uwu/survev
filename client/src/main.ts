@@ -1,7 +1,7 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
-import * as net from "../../shared/net";
+import * as net from "../../shared/net/net";
 import { math } from "../../shared/utils/math";
 import { Account } from "./account";
 import { Ambiance } from "./ambiance";

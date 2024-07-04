@@ -1,7 +1,7 @@
-import { AbstractMsg, type BitStream, Constants } from "../net";
 import { v2 } from "../utils/v2";
+import { type AbstractMsg, type BitStream, Constants } from "./net";
 
-export class InputMsg extends AbstractMsg {
+export class InputMsg implements AbstractMsg {
     seq = 0;
     moveLeft = false;
     moveRight = false;
@@ -24,7 +24,7 @@ export class InputMsg extends AbstractMsg {
         }
     }
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         s.writeUint8(this.seq);
         s.writeBoolean(this.moveLeft);
         s.writeBoolean(this.moveRight);
@@ -53,7 +53,7 @@ export class InputMsg extends AbstractMsg {
         s.writeBits(0, 6);
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         this.seq = s.readUint8();
         this.moveLeft = s.readBoolean();
         this.moveRight = s.readBoolean();

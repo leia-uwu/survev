@@ -1,10 +1,10 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { DamageType, GameConfig } from "../../../../shared/gameConfig";
+import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
-import { ObjectType } from "../../../../shared/utils/objectSerializeFns";
 import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";

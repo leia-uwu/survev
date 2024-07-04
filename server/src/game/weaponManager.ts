@@ -6,13 +6,12 @@ import {
     ThrowableDefs
 } from "../../../shared/defs/gameObjects/throwableDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import { PickupMsg } from "../../../shared/msgs/pickupMsg";
-import * as net from "../../../shared/net";
+import * as net from "../../../shared/net/net";
+import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
-import { ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { BulletParams } from "../game/objects/bullet";
@@ -458,7 +457,7 @@ export class WeaponManager {
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
-            const msg = new PickupMsg();
+            const msg = new net.PickupMsg();
             msg.type = net.PickupMsgType.GunCannotFire;
             this.player.msgsToSend.push({ type: net.MsgType.Pickup, msg });
             return;

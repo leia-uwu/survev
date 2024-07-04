@@ -1,9 +1,9 @@
-import { AbstractMsg, type BitStream } from "../net";
+import type { AbstractMsg, BitStream } from "./net";
 
-export class AliveCountsMsg extends AbstractMsg {
+export class AliveCountsMsg implements AbstractMsg {
     teamAliveCounts: number[] = [];
 
-    override serialize(s: BitStream) {
+    serialize(s: BitStream) {
         const count = this.teamAliveCounts.length;
         s.writeUint8(count);
         for (let i = 0; i < count; i++) {
@@ -11,7 +11,7 @@ export class AliveCountsMsg extends AbstractMsg {
         }
     }
 
-    override deserialize(s: BitStream) {
+    deserialize(s: BitStream) {
         const count = s.readUint8();
         for (let i = 0; i < count; i++) {
             const alive = s.readUint8();
