@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import { type Circle, coldet } from "../../../../shared/utils/coldet";
+import { type AABB, type Circle, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import type { River } from "../../../../shared/utils/river";
@@ -129,6 +129,7 @@ export class LootBarn {
 
 export class Loot extends BaseGameObject {
     override readonly __type = ObjectType.Loot;
+    bounds: AABB;
 
     isPreloadedGun = false;
     hasOwner = false;
@@ -173,7 +174,10 @@ export class Loot extends BaseGameObject {
 
         this.rad = this.collider.rad;
 
-        this.bounds = collider.createAabbExtents(this.pos, v2.create(this.rad, this.rad));
+        this.bounds = collider.createAabbExtents(
+            v2.create(0, 0),
+            v2.create(this.rad, this.rad)
+        );
 
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
@@ -297,10 +301,6 @@ export class Loot extends BaseGameObject {
 
         if (!v2.eq(this.oldPos, this.pos)) {
             this.setPartDirty();
-            this.bounds = collider.createAabbExtents(
-                this.pos,
-                v2.create(this.rad, this.rad)
-            );
             this.game.grid.updateObject(this);
         }
 

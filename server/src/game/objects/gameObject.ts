@@ -146,7 +146,7 @@ export abstract class BaseGameObject {
     abstract readonly __type: ObjectType;
     declare __id: number;
     declare __arrayIdx: number;
-    declare bounds: AABB;
+    abstract bounds: AABB;
 
     readonly game: Game;
 

@@ -24,7 +24,7 @@ interface Stair {
 
 export class Structure extends BaseGameObject {
     override readonly __type = ObjectType.Structure;
-
+    bounds: AABB;
     layer: number;
 
     ori: number;
@@ -50,7 +50,7 @@ export class Structure extends BaseGameObject {
 
         this.bounds = collider.transform(
             mapHelpers.getBoundingCollider(type),
-            this.pos,
+            v2.create(0, 0),
             this.rot,
             1
         ) as AABB;
