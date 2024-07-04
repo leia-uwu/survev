@@ -21,6 +21,21 @@ export class ExplosionBarn {
             const explosion = this.explosions[i];
             const def = GameObjectDefs[explosion.type] as ExplosionDef;
 
+            if (def.decalType) {
+                this.game.decalBarn.addDecal(
+                    def.decalType,
+                    explosion.pos,
+                    explosion.layer,
+                    0,
+                    1
+                );
+            }
+
+            if (explosion.type === "explosion_smoke") {
+                this.game.smokeBarn.addEmitter(explosion.pos, explosion.layer);
+                continue;
+            }
+
             const coll = collider.createCircle(explosion.pos, explosion.rad);
 
             // List of all near objects
@@ -137,16 +152,6 @@ export class ExplosionBarn {
                         dir: v2.randomUnit()
                     });
                 }
-            }
-
-            if (def.decalType) {
-                this.game.decalBarn.addDecal(
-                    def.decalType,
-                    explosion.pos,
-                    explosion.layer,
-                    0,
-                    1
-                );
             }
         }
         this.explosions.length = 0;

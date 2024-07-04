@@ -196,7 +196,7 @@ export class Projectile extends BaseGameObject {
         this.dead = true;
         const def = GameObjectDefs[this.type] as ThrowableDef;
 
-        //courtesy of kaklik
+        // courtesy of kaklik
         if (def.splitType && def.numSplit) {
             for (let i = 0; i < def.numSplit; i++) {
                 const splitDef = GameObjectDefs[def.splitType] as ThrowableDef;
