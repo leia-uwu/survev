@@ -21,9 +21,9 @@ export const Config = {
     port: 8000,
 
     modes: [
-        { mapName: "main", teamMode: TeamMode.Solo },
-        { mapName: "main", teamMode: TeamMode.Duo },
-        { mapName: "main", teamMode: TeamMode.Squad }
+        { mapName: "main", teamMode: TeamMode.Solo, enabled: false },
+        { mapName: "main", teamMode: TeamMode.Duo, enabled: false },
+        { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
     ],
 
     plugins: [],
@@ -68,6 +68,7 @@ export interface ConfigType {
     readonly modes: Array<{
         mapName: keyof typeof MapDefs;
         teamMode: TeamMode;
+        enabled: boolean;
     }>;
 
     readonly plugins: Array<new (game: Game) => GamePlugin>;
