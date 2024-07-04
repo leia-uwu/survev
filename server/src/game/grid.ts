@@ -4,7 +4,7 @@ import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 
 interface GameObject {
-    __id: number;
+    __gridCells: Vec2[];
     bounds: AABB;
     pos: Vec2;
 }
@@ -17,20 +17,16 @@ export class Grid<T extends GameObject = GameObject> {
     readonly height: number;
     readonly cellSize = 16;
 
-    //                        X     Y     Object ID
-    //                      __^__ __^__     ___^__
-    private readonly _grid: Array<Array<Map<number, T>>>;
-
-    // store the cells each game object is occupying
-    // so removing the object from the grid is faster
-    private readonly _objectsCells = new Array<Vec2[]>();
+    //                        X     Y     Object
+    //                      __^__ __^__   __^__
+    private readonly _grid: Array<Array<Set<T>>>;
 
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
         this.height = Math.floor(height / this.cellSize);
 
         this._grid = Array.from({ length: this.width + 1 }, () =>
-            Array.from({ length: this.height + 1 }, () => new Map())
+            Array.from({ length: this.height + 1 }, () => new Set())
         );
     }
 
@@ -44,7 +40,7 @@ export class Grid<T extends GameObject = GameObject> {
     updateObject(obj: T): void {
         this.remove(obj);
 
-        const cells: Vec2[] = [];
+        const cells = obj.__gridCells;
 
         const aabb = obj.bounds;
         // Get the bounds of the hitbox
@@ -56,25 +52,23 @@ export class Grid<T extends GameObject = GameObject> {
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
-                xRow[y].set(obj.__id, obj);
+                xRow[y].add(obj);
                 cells.push(v2.create(x, y));
             }
         }
-        // Store the cells this object is occupying
-        this._objectsCells[obj.__id] = cells;
     }
 
     /**
      * Remove an object from the grid system
      */
     remove(obj: T): void {
-        const cells = this._objectsCells[obj.__id];
-        if (!cells) return;
+        const cells = obj.__gridCells;
 
-        for (const cell of cells) {
-            this._grid[cell.x][cell.y].delete(obj.__id);
+        for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i];
+            this._grid[cell.x][cell.y].delete(obj);
         }
-        delete this._objectsCells[obj.__id];
+        cells.length = 0;
     }
 
     /**
@@ -106,8 +100,8 @@ export class Grid<T extends GameObject = GameObject> {
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
-                const objectsMap = xRow[y];
-                for (const object of objectsMap.values()) {
+                const cell = xRow[y];
+                for (const object of cell) {
                     objects.add(object);
                 }
             }
@@ -118,7 +112,7 @@ export class Grid<T extends GameObject = GameObject> {
 
     intersectPos(pos: Vec2) {
         pos = this._roundToCells(pos);
-        return [...this._grid[pos.x][pos.y].values()];
+        return [...this._grid[pos.x][pos.y]];
     }
 
     // TODO: optimize this
