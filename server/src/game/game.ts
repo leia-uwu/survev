@@ -56,7 +56,11 @@ export class Game {
             .length;
     }
 
-    msgsToSend: Array<{ type: number; msg: net.AbstractMsg }> = [];
+    /**
+     * All msgs created this tick that will be sent to all players
+     * cached in a single stream
+     */
+    msgsToSend = new net.MsgStream(new ArrayBuffer(4096));
 
     playerBarn = new PlayerBarn(this);
     lootBarn = new LootBarn(this);
@@ -157,7 +161,7 @@ export class Game {
         this.objectRegister.flush();
         this.explosionBarn.flush();
         this.gas.flush();
-        this.msgsToSend.length = 0;
+        this.msgsToSend.stream.index = 0;
     }
 
     canJoin(): boolean {
@@ -235,6 +239,10 @@ export class Game {
                 break;
             }
         }
+    }
+
+    sendMsg(type: net.MsgType, msg: net.Msg) {
+        this.msgsToSend.serializeMsg(type, msg);
     }
 
     /** if game over, return group that won */

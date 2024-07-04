@@ -1087,9 +1087,8 @@ export class Player extends BaseGameObject {
 
         this.msgsToSend.length = 0;
 
-        for (const msg of game.msgsToSend) {
-            msgStream.serializeMsg(msg.type, msg.msg);
-        }
+        const globalMsgStream = this.game.msgsToSend.stream;
+        msgStream.stream.writeBytes(globalMsgStream, 0, globalMsgStream.byteIndex);
 
         this.sendData(msgStream.getBuffer());
         this._firstUpdate = false;
@@ -1367,7 +1366,7 @@ export class Player extends BaseGameObject {
             downedMsg.killCreditId = params.source.__id;
         }
 
-        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: downedMsg });
+        this.game.sendMsg(net.MsgType.Kill, downedMsg);
     }
 
     private _assignNewSpectate() {
@@ -1458,7 +1457,7 @@ export class Player extends BaseGameObject {
             killMsg.killerKills = params.source.kills;
         }
 
-        this.game.msgsToSend.push({ type: net.MsgType.Kill, msg: killMsg });
+        this.game.sendMsg(net.MsgType.Kill, killMsg);
 
         this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
