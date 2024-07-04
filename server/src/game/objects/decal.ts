@@ -1,12 +1,12 @@
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { DecalDef } from "../../../../shared/defs/mapObjectsTyping";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import type { Circle } from "../../../../shared/utils/coldet";
+import type { AABB, Circle } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
-import type { Vec2 } from "../../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 
@@ -36,6 +36,7 @@ export class DecalBarn {
 
 export class Decal extends BaseGameObject {
     override readonly __type = ObjectType.Decal;
+    bounds: AABB;
 
     layer: number;
     type: string;
@@ -76,7 +77,7 @@ export class Decal extends BaseGameObject {
         this.bounds = collider.toAabb(
             collider.transform(
                 mapHelpers.getBoundingCollider(type),
-                this.pos,
+                v2.create(0, 0),
                 this.rot,
                 1
             )

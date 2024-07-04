@@ -1,5 +1,5 @@
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import { coldet } from "../../../../shared/utils/coldet";
+import { type AABB, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
@@ -108,6 +108,7 @@ export class SmokeBarn {
 
 export class Smoke extends BaseGameObject {
     override readonly __type = ObjectType.Smoke;
+    bounds: AABB;
 
     layer: number;
 
@@ -123,7 +124,10 @@ export class Smoke extends BaseGameObject {
         super(game, pos);
         this.layer = layer;
         this.interior = interior;
-        this.bounds = collider.createAabbExtents(this.pos, v2.create(this.rad, this.rad));
+        this.bounds = collider.createAabbExtents(
+            v2.create(0, 0),
+            v2.create(this.rad, this.rad)
+        );
     }
 
     update(dt: number) {
@@ -140,10 +144,6 @@ export class Smoke extends BaseGameObject {
 
         if (!v2.eq(posOld, this.pos) || !math.eqAbs(radOld, this.rad)) {
             this.setPartDirty();
-            this.bounds = collider.createAabbExtents(
-                this.pos,
-                v2.create(this.rad, this.rad)
-            );
             this.game.grid.updateObject(this);
             this.game.map.clampToMapBounds(this.pos, this.rad);
         }

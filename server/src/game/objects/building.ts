@@ -10,7 +10,7 @@ import { type AABB, type Collider, coldet } from "../../../../shared/utils/colde
 import { collider } from "../../../../shared/utils/collider";
 import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
-import type { Vec2 } from "../../../../shared/utils/v2";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { getColliders } from "../map";
 import type { Decal } from "./decal";
@@ -22,6 +22,7 @@ export class Building extends BaseGameObject {
     mapObstacleBounds: Collider[] = [];
 
     override readonly __type = ObjectType.Building;
+    bounds: AABB;
 
     type: string;
 
@@ -95,7 +96,7 @@ export class Building extends BaseGameObject {
 
         this.bounds = collider.transform(
             mapHelpers.getBoundingCollider(type),
-            this.pos,
+            v2.create(0, 0),
             this.rot,
             1
         ) as AABB;

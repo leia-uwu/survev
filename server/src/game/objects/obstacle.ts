@@ -14,7 +14,7 @@ import type { Player } from "./player";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
-
+    bounds: AABB;
     collider: Collider;
 
     mapObstacleBounds: Collider[];
@@ -128,7 +128,7 @@ export class Obstacle extends BaseGameObject {
             throw new Error(`Invalid obstacle with type ${type}`);
         }
         this.bounds = collider.toAabb(
-            collider.transform(def.collision, this.pos, this.rot, this.scale)
+            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale)
         );
 
         this.height = def.height;
@@ -209,6 +209,13 @@ export class Obstacle extends BaseGameObject {
                 useDir: def.button.useDir
             };
             this.interactionRad = def.button.interactionRad;
+        }
+
+        if (this.interactionRad) {
+            // add interaction radius margin to the bounds
+            const margin = v2.create(this.interactionRad, this.interactionRad);
+            v2.set(this.bounds.min, v2.sub(this.bounds.min, margin));
+            v2.set(this.bounds.max, v2.add(this.bounds.max, margin));
         }
     }
 
@@ -453,7 +460,6 @@ export class Obstacle extends BaseGameObject {
         this.rot = math.oriToRad(this.ori);
         this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
 
-        this.bounds = collider.transform(def.collision, this.pos, this.rot, 1) as AABB;
         this.game.grid.updateObject(this);
         this.checkLayer();
         this.setDirty();

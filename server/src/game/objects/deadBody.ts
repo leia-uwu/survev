@@ -1,5 +1,4 @@
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import type { AABB } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
@@ -28,7 +27,7 @@ export class DeadBodyBarn {
 }
 
 export class DeadBody extends BaseGameObject {
-    bounds: AABB;
+    bounds = collider.createAabbExtents(v2.create(0, 0), v2.create(2, 2));
 
     override readonly __type = ObjectType.DeadBody;
 
@@ -44,7 +43,6 @@ export class DeadBody extends BaseGameObject {
         this.playerId = playerId;
         this.vel = v2.mul(dir, 8);
         this.oldPos = v2.copy(this.pos);
-        this.bounds = collider.createAabbExtents(this.pos, v2.create(2, 2));
     }
 
     update(dt: number): void {
@@ -89,7 +87,6 @@ export class DeadBody extends BaseGameObject {
         if (!v2.eq(this.oldPos, this.pos)) {
             this.setPartDirty();
             this.game.grid.updateObject(this);
-            this.bounds = collider.createAabbExtents(this.pos, v2.create(2, 2));
         }
     }
 }
