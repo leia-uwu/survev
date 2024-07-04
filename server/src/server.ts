@@ -142,7 +142,7 @@ export class Server {
             if (!game) {
                 const mode = Config.modes[body.gameModeIdx];
 
-                if (!mode) {
+                if (!mode || !mode.enabled) {
                     response = {
                         err: "Invalid game mode idx"
                     };
