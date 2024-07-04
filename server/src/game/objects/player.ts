@@ -949,7 +949,7 @@ export class Player extends BaseGameObject {
         const radius = player.zoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
 
-        const newVisibleObjects = new Set(game.grid.intersectCollider(rect));
+        const newVisibleObjects = game.grid.intersectColliderSet(rect);
         // client crashes if active player is not visible
         // so make sure its always added to visible objects
         newVisibleObjects.add(this);

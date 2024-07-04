@@ -1,20 +1,24 @@
-import { type Collider, coldet } from "../../../shared/utils/coldet";
+import { type AABB, type Collider, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import type { GameObject } from "./objects/gameObject";
+
+interface GameObject {
+    __id: number;
+    bounds: AABB;
+}
 
 /**
  * A Grid to filter collision detection of game objects
  */
-export class Grid {
+export class Grid<T extends GameObject = GameObject> {
     readonly width: number;
     readonly height: number;
     readonly cellSize = 16;
 
     //                        X     Y     Object ID
     //                      __^__ __^__     ___^__
-    private readonly _grid: Array<Array<Map<number, GameObject>>>;
+    private readonly _grid: Array<Array<Map<number, T>>>;
 
     // store the cells each game object is occupying
     // so removing the object from the grid is faster
@@ -29,14 +33,14 @@ export class Grid {
         );
     }
 
-    addObject(obj: GameObject): void {
+    addObject(obj: T): void {
         this.updateObject(obj);
     }
 
     /**
      * Add an object to the grid system
      */
-    updateObject(obj: GameObject): void {
+    updateObject(obj: T): void {
         this.remove(obj);
 
         const cells: Vec2[] = [];
@@ -62,7 +66,7 @@ export class Grid {
     /**
      * Remove an object from the grid system
      */
-    remove(obj: GameObject): void {
+    remove(obj: T): void {
         const cells = this._objectsCells[obj.__id];
         if (!cells) return;
 
@@ -77,15 +81,26 @@ export class Grid {
      * This transforms the collider into a rectangle
      * and gets all objects intersecting it after rounding it to grid cells
      * @param coll The collider
+     * @return An array with the objects near this collider
+     */
+    intersectCollider(coll: Collider): T[] {
+        return [...this.intersectColliderSet(coll)];
+    }
+
+    /**
+     * Get all objects near this collider
+     * This transforms the collider into a rectangle
+     * and gets all objects intersecting it after rounding it to grid cells
+     * @param coll The collider
      * @return A set with the objects near this collider
      */
-    intersectCollider(coll: Collider): GameObject[] {
+    intersectColliderSet(coll: Collider): Set<T> {
         const aabb = collider.toAabb(coll);
 
         const min = this._roundToCells(aabb.min);
         const max = this._roundToCells(aabb.max);
 
-        const objects = new Set<GameObject>();
+        const objects = new Set<T>();
 
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
@@ -97,7 +112,7 @@ export class Grid {
             }
         }
 
-        return [...objects];
+        return objects;
     }
 
     intersectPos(pos: Vec2) {
@@ -106,7 +121,7 @@ export class Grid {
     }
 
     // TODO: optimize this
-    intersectLineSegment(a: Vec2, b: Vec2): GameObject[] {
+    intersectLineSegment(a: Vec2, b: Vec2): T[] {
         return this.intersectCollider(coldet.lineSegmentToAabb(a, b));
     }
 

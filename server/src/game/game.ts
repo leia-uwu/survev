@@ -17,7 +17,7 @@ import { BullletBarn } from "./objects/bullet";
 import { DeadBodyBarn } from "./objects/deadBody";
 import { DecalBarn } from "./objects/decal";
 import { ExplosionBarn } from "./objects/explosion";
-import { ObjectRegister } from "./objects/gameObject";
+import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
 import { Emote, PlayerBarn } from "./objects/player";
@@ -43,7 +43,7 @@ export class Game {
     config: ServerGameConfig;
     pluginManager = new PluginManager(this);
 
-    grid: Grid;
+    grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
 
     groups = new Map<string, Group>();
