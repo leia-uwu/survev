@@ -217,7 +217,7 @@ export class TeamMenu {
                     name,
                     isLeader: false,
                     inGame: false,
-                    playerId: room.players.length - 1,
+                    playerId: room.players.length,
                     socketData: localPlayerData
                 } as RoomPlayer;
                 room.players.push(player);
@@ -271,12 +271,12 @@ export class TeamMenu {
                 if (!pToKick || pToKick === player) {
                     return;
                 }
-                this.removePlayer(localPlayerData);
 
                 response = {
                     type: "kicked"
                 };
                 this.sendResponse(response, pToKick);
+                //player is removed and new room state is sent when the socket is inevitably closed after the kick
                 break;
             }
             case "keepAlive": {
