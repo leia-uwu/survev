@@ -389,6 +389,7 @@ app.ws("/team_v2", {
         const room = server.teamMenu.rooms.get(userData.roomUrl);
         if (room) {
             server.teamMenu.removePlayer(userData);
+            server.teamMenu.sendRoomState(room);
         }
     }
 });
