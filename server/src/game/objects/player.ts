@@ -60,8 +60,11 @@ export class PlayerBarn {
 
     constructor(readonly game: Game) {}
 
-    randomPlayer() {
-        return this.livingPlayers[util.randomInt(0, this.livingPlayers.length - 1)];
+    randomPlayer(player?: Player) {
+        const livingPlayers = player
+            ? this.livingPlayers.filter((p) => p != player)
+            : this.livingPlayers;
+        return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
     addPlayer(socketData: GameSocketData, joinMsg: net.JoinMsg) {
@@ -285,6 +288,7 @@ export class Player extends BaseGameObject {
 
     set boost(boost: number) {
         if (this._boost === boost) return;
+        if (this.downed) return;
         this._boost = boost;
         this._boost = math.clamp(this._boost, 0, 100);
         this.boostDirty = true;
@@ -1110,7 +1114,7 @@ export class Player extends BaseGameObject {
                 playerToSpec =
                     this.killedBy && this.killedBy != this
                         ? this.killedBy
-                        : this.game.playerBarn.randomPlayer();
+                        : this.game.playerBarn.randomPlayer(this);
             } else if (spectateMsg.specNext && this.spectating) {
                 const playerBeingSpecIndex = spectatablePlayers.indexOf(this.spectating);
                 const newIndex = (playerBeingSpecIndex + 1) % spectatablePlayers.length;
@@ -1140,7 +1144,7 @@ export class Player extends BaseGameObject {
                     playerToSpec =
                         this.killedBy && this.killedBy != this
                             ? this.killedBy
-                            : this.game.playerBarn.randomPlayer();
+                            : this.game.playerBarn.randomPlayer(this);
                 } else if (spectateMsg.specNext && this.spectating) {
                     specType = this.spectating.group!.nextPlayer.bind(
                         this.spectating.group
@@ -1160,7 +1164,7 @@ export class Player extends BaseGameObject {
                     ) {
                         playerToSpec = this.game
                             .nextTeam(this.spectating.group!)
-                            .randomPlayer();
+                            .randomPlayer(this);
                         this.enemyTeamCycleCount = 0;
                     } else if (
                         Math.abs(this.enemyTeamCycleCount) >=
@@ -1168,7 +1172,7 @@ export class Player extends BaseGameObject {
                     ) {
                         playerToSpec = this.game
                             .prevTeam(this.spectating.group!)
-                            .randomPlayer();
+                            .randomPlayer(this);
                         this.enemyTeamCycleCount = 0;
                     } else if (specType) {
                         playerToSpec = specType(this.spectating);
@@ -1347,6 +1351,7 @@ export class Player extends BaseGameObject {
         this.animType = 0;
         this.setDirty();
 
+        this.shootStart = false;
         this.shootHold = false;
         this.cancelAction();
 
@@ -1564,7 +1569,8 @@ export class Player extends BaseGameObject {
         );
     }
 
-    revive() {
+    /** returns player to revive if can revive */
+    canRevive(): Player | undefined {
         if (this.actionType != GameConfig.Action.None) {
             // action in progress
             return;
@@ -1574,7 +1580,6 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        // this.animType = GameConfig.Anim.Revive;
         const downedTeammates = this.group!.getAliveTeammates(this).filter(
             (t) => t.downed
         );
@@ -1592,21 +1597,25 @@ export class Player extends BaseGameObject {
             }
         }
 
-        if (playerToRevive) {
-            this.playerBeingRevived = playerToRevive;
-            playerToRevive.doAction(
-                "",
-                GameConfig.Action.Revive,
-                GameConfig.player.reviveDuration
-            );
-            this.doAction(
-                "",
-                GameConfig.Action.Revive,
-                GameConfig.player.reviveDuration,
-                playerToRevive.__id
-            );
-            this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
-        }
+        return playerToRevive;
+    }
+
+    revive(playerToRevive: Player | undefined) {
+        if (!playerToRevive) return;
+
+        this.playerBeingRevived = playerToRevive;
+        playerToRevive.doAction(
+            "",
+            GameConfig.Action.Revive,
+            GameConfig.player.reviveDuration
+        );
+        this.doAction(
+            "",
+            GameConfig.Action.Revive,
+            GameConfig.player.reviveDuration,
+            playerToRevive.__id
+        );
+        this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
     }
 
     useHealingItem(item: string): void {
@@ -1785,15 +1794,18 @@ export class Player extends BaseGameObject {
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
                     const obstacle = this.getClosestObstacle();
-                    if (loot && obstacle) {
-                        this.interactWith(loot);
-                        this.interactWith(obstacle);
-                    } else if (loot) {
-                        this.interactWith(loot);
-                    } else if (obstacle) {
-                        this.interactWith(obstacle);
-                    } else {
-                        this.revive();
+                    const playerToRevive = this.canRevive();
+
+                    const interactables = [loot, obstacle, playerToRevive];
+
+                    for (let i = 0; i < interactables.length; i++) {
+                        const interactable = interactables[i];
+                        if (!interactable) continue;
+                        if (interactable.__type === ObjectType.Player) {
+                            this.revive(playerToRevive);
+                        } else {
+                            this.interactWith(interactable);
+                        }
                     }
                     break;
                 }
@@ -1881,7 +1893,8 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.Revive: {
-                    this.revive();
+                    const playerToRevive = this.canRevive();
+                    this.revive(playerToRevive);
                 }
             }
         }
@@ -2466,7 +2479,9 @@ export class Player extends BaseGameObject {
         }
 
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            this.speed += weaponDef.speed.attack + -6;
+            const customShootingSpeed =
+                GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
+            this.speed += customShootingSpeed ?? weaponDef.speed.attack + -6;
         }
 
         // if player is on water decrease speed
