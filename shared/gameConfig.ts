@@ -210,6 +210,11 @@ export const GameConfig = {
     gun: {
         customSwitchDelay: undefined,
         customBarrelLength: undefined,
+        customShootingSpeed: {
+            single: undefined,
+            auto: undefined,
+            burst: undefined
+        } as Record<"auto" | "single" | "burst", number | undefined>,
         headshotBlacklist: [] as string[]
     },
     projectile: {

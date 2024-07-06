@@ -155,6 +155,11 @@ export class WeaponManager {
 
     update(dt: number) {
         const player = this.player;
+
+        if (player.downed) {
+            return;
+        }
+
         player.freeSwitchTimer -= dt;
 
         for (let i = 0; i < this.weapons.length; i++) {
