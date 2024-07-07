@@ -4,6 +4,7 @@ import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
 
 export enum Events {
+    Player_Join,
     Player_Damage,
     Player_Kill,
     Game_Created
@@ -14,6 +15,7 @@ interface PlayerDamageEvent extends DamageParams {
 }
 
 interface EventMap {
+    [Events.Player_Join]: Player;
     [Events.Player_Damage]: PlayerDamageEvent;
     [Events.Player_Kill]: Omit<PlayerDamageEvent, "amount">;
     [Events.Game_Created]: Game;

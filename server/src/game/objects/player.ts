@@ -135,6 +135,7 @@ export class PlayerBarn {
         this.players.push(player);
         this.livingPlayers.push(player);
         this.aliveCountDirty = true;
+        this.game.pluginManager.emit(Events.Player_Join, player);
 
         if (!this.game.started) {
             if (!this.game.isTeamMode) {
