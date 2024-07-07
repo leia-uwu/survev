@@ -705,7 +705,7 @@ export class Player extends BaseGameObject {
 
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
-        const steps = Math.ceil(this.speed * dt) + 2;
+        const steps = math.min(this.speed * dt + 5, 5);
 
         let objs!: GameObject[];
 
