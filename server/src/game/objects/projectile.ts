@@ -145,6 +145,13 @@ export class Projectile extends BaseGameObject {
 
                             if (def.explodeOnImpact) {
                                 this.explode();
+                            } else {
+                                const len = v2.length(this.vel);
+                                const dir = v2.div(this.vel, len);
+                                const normal = intersection.dir;
+                                const dot = v2.dot(dir, normal);
+                                const newDir = v2.add(v2.mul(normal, dot * -2), this.dir);
+                                this.vel = v2.mul(newDir, len * 0.2);
                             }
                         } else {
                             this.obstacleBellowId = obj.__id;
