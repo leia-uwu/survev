@@ -1219,6 +1219,11 @@ export class GameMap {
             collided = false;
             v2.set(circle.pos, getPos());
 
+            if (this.getGroundSurface(circle.pos, 0).type === "water") {
+                collided = true;
+                break;
+            }
+
             const objs = this.game.grid.intersectCollider(circle);
 
             for (const obj of objs) {
