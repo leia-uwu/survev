@@ -214,6 +214,8 @@ export class GameMap {
     potatoMode: boolean;
     sniperMode: boolean;
 
+    factionModeSplitOri: 0 | 1;
+
     lakes: Array<{
         river: MapRiverData;
         center: Vec2;
@@ -262,6 +264,10 @@ export class GameMap {
         this.desertMode = !!this.mapDef.gameMode.desertMode;
         this.potatoMode = !!this.mapDef.gameMode.potatoMode;
         this.sniperMode = !!this.mapDef.gameMode.sniperMode;
+
+        if (this.factionMode) {
+            this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
+        }
     }
 
     init() {
@@ -323,13 +329,7 @@ export class GameMap {
 
     generateTerrain(): void {
         const mapConfig = this.mapDef.mapGen.map;
-        const riverWeights: number[] = [];
-        const weightedWidths: number[][] = [];
 
-        for (const weightedRiver of mapConfig.rivers.weights) {
-            riverWeights.push(weightedRiver.weight);
-            weightedWidths.push(weightedRiver.widths);
-        }
         const randomGenerator = util.seededRand(this.seed);
 
         //
@@ -373,6 +373,13 @@ export class GameMap {
         //
         // Generate rivers
         //
+        const riverWeights: number[] = [];
+        const weightedWidths: number[][] = [];
+
+        for (const weightedRiver of mapConfig.rivers.weights) {
+            riverWeights.push(weightedRiver.weight);
+            weightedWidths.push(weightedRiver.widths);
+        }
         const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
@@ -391,14 +398,24 @@ export class GameMap {
             const horizontal = randomGenerator() < 0.5;
             const reverse = randomGenerator() < 0.5;
 
-            if (horizontal) {
-                const topHalf = randomGenerator(1, halfHeight);
-                const bottomHalf = randomGenerator(halfHeight, mapHeight);
-                start = v2.create(1, reverse ? bottomHalf : topHalf);
+            if (!this.factionMode) {
+                if (horizontal) {
+                    const topHalf = randomGenerator(1, halfHeight);
+                    const bottomHalf = randomGenerator(halfHeight, mapHeight);
+                    start = v2.create(1, reverse ? bottomHalf : topHalf);
+                } else {
+                    const leftHalf = randomGenerator(1, halfWidth);
+                    const rightHalf = randomGenerator(halfWidth, mapWidth);
+                    start = v2.create(reverse ? rightHalf : leftHalf, 1);
+                }
             } else {
-                const leftHalf = randomGenerator(1, halfWidth);
-                const rightHalf = randomGenerator(halfWidth, mapWidth);
-                start = v2.create(reverse ? rightHalf : leftHalf, 1);
+                switch (this.factionModeSplitOri) {
+                    case 0:
+                        start = v2.create(this.width, this.height / 2);
+                        break;
+                    case 1:
+                        start = v2.create(this.width / 2, this.height);
+                }
             }
 
             const smoothness = this.mapDef.mapGen.map.rivers.smoothness;
