@@ -1268,6 +1268,7 @@ export class Player extends BaseGameObject {
                     sourceIsPlayer &&
                     this.downedBy.groupId === (params.source as Player).groupId
                 ) {
+                    //if enemy knocks you and enemy teammate finishes you, still give the kill to the original enemy who knocked you
                     params.source = this.downedBy;
                 }
                 this.kill(params);
@@ -1278,6 +1279,7 @@ export class Player extends BaseGameObject {
             const allDowned = group.checkAllDowned(this);
 
             if (allDeadOrDisconnected || allDowned) {
+                group.allDeadOrDisconnected = true; // must set before any kill() calls so the gameovermsgs are accurate
                 this.kill(params);
                 if (allDowned) {
                     group.killAllTeammates();
