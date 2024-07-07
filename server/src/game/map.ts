@@ -214,7 +214,7 @@ export class GameMap {
     potatoMode: boolean;
     sniperMode: boolean;
 
-    factionModeSplitOri: 0 | 1;
+    factionModeSplitOri: 0 | 1 = 0;
 
     lakes: Array<{
         river: MapRiverData;
