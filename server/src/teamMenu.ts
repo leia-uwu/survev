@@ -177,6 +177,12 @@ export class TeamMenu {
                     socketData: localPlayerData
                 };
 
+                if (!Config.modes[1].enabled && !Config.modes[2].enabled) {
+                    response = teamErrorMsg("create_failed");
+                    this.sendResponse(response, player);
+                    break;
+                }
+
                 const activeCodes = new Set(this.rooms.keys());
                 let roomUrl = `#${randomString(4)}`;
                 while (activeCodes.has(roomUrl)) {
