@@ -107,11 +107,13 @@ export class Group {
     /**
      *
      * @param player optional player to exclude
-     * @returns random player
+     * @returns random alive player
      */
     randomPlayer(player?: Player) {
-        const players = player ? this.getPlayers((p) => p != player) : this.players;
-        return players[util.randomInt(0, this.players.length - 1)];
+        const alivePlayers = player
+            ? this.getAliveTeammates(player)
+            : this.getAlivePlayers();
+        return alivePlayers[util.randomInt(0, alivePlayers.length - 1)];
     }
 
     /** gets next alive player in the array, loops around if end is reached */
