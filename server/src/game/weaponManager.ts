@@ -860,7 +860,7 @@ export class WeaponManager {
             // if throwable count drops below 0
             // show the next throwable
             // if theres none switch to last weapon
-            if (this.weapons[weapSlotId].ammo == 0) {
+            if (this.player.inventory[throwableType] == 0) {
                 this.showNextThrowable();
                 if (this.weapons[weapSlotId].type === "") {
                     this.setCurWeapIndex(this.lastWeaponIdx);
