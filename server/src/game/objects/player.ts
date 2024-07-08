@@ -1637,6 +1637,7 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
+        this.shotSlowdownTimer = 0;
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
@@ -1654,6 +1655,7 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
+        this.shotSlowdownTimer = 0;
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
