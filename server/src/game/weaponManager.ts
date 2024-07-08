@@ -85,6 +85,8 @@ export class WeaponManager {
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
+                if (GameConfig.gun.customSwitchDelay)
+                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -97,8 +99,6 @@ export class WeaponManager {
                 effectiveSwitchDelay = nextWeaponDef.switchDelay;
             }
 
-            if (GameConfig.gun.customSwitchDelay)
-                effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             nextWeapon.cooldown = effectiveSwitchDelay;
         }
 
