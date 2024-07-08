@@ -11,7 +11,7 @@ import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import type { DamageParams, GameObject } from "./gameObject";
-import { Obstacle } from "./obstacle";
+import type { Obstacle } from "./obstacle";
 import { Player } from "./player";
 
 // NOTE: most of this code was copied from surviv client and bit heroes arena client
@@ -26,13 +26,15 @@ function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
 }
 
 interface BulletCollision {
-    object: Player | Obstacle;
+    type: "obstacle" | "player" | "pan";
+    obj?: Player | Obstacle;
+    obstacleType?: string;
     collidable: boolean;
     point: Vec2;
     normal: Vec2;
-    reflect?: boolean;
     dist?: number;
-    bullet?: Bullet;
+    player?: Player;
+    layer?: number;
 }
 
 export interface BulletParams {
@@ -342,56 +344,57 @@ export class Bullet {
             this.pos
         );
 
-        const obstacles = objects.filter((o) => o.__type === ObjectType.Obstacle);
-        const players = objects.filter((o) => o.__type === ObjectType.Player);
+        for (let i = 0; i < objects.length; i++) {
+            const obj = objects[i];
 
-        for (const obstacle of obstacles) {
-            if (
-                !(
-                    obstacle.dead ||
-                    !util.sameLayer(obstacle.layer, this.layer) ||
-                    obstacle.height < GameConfig.bullet.height ||
-                    (this.reflectCount > 0 && obstacle.__id === this.reflectObjId)
-                )
-            ) {
-                const collision = collider.intersectSegment(
-                    obstacle.collider,
-                    posOld,
-                    this.pos
-                );
-                if (collision) {
+            if (obj.__type === ObjectType.Obstacle) {
+                if (
+                    obj.dead ||
+                    !util.sameLayer(obj.layer, this.layer) ||
+                    obj.height < GameConfig.bullet.height ||
+                    (this.reflectCount > 0 && obj.__id === this.reflectObjId)
+                ) {
+                    continue;
+                }
+
+                const res = collider.intersectSegment(obj.collider, posOld, this.pos);
+                if (res) {
                     collisions.push({
-                        object: obstacle,
-                        collidable: obstacle.collidable,
-                        point: collision.point,
-                        normal: collision.normal
+                        type: "obstacle",
+                        obj: obj,
+                        obstacleType: obj.type,
+                        collidable: obj.collidable,
+                        point: res.point,
+                        normal: res.normal
                     });
                 }
-            }
-        }
-        for (const player of players) {
-            if (
-                !player.dead &&
-                (util.sameLayer(player.layer, this.layer) || 2 & player.layer) &&
-                (player.__id !== this.playerId || this.damageSelf)
-            ) {
+            } else if (obj.__type === ObjectType.Player) {
+                if (
+                    !(
+                        !obj.dead &&
+                        (util.sameLayer(obj.layer, this.layer) || 2 & obj.layer) &&
+                        (obj.__id !== this.playerId || this.damageSelf) &&
+                        obj.__id !== this.reflectObjId
+                    )
+                ) {
+                    continue;
+                }
                 let panCollision = null;
-
-                if (player.hasActivePan()) {
-                    const panSeg = player.getPanSegment();
+                if (obj.hasActivePan()) {
+                    const p = obj;
+                    const panSeg = p.getPanSegment()!;
                     const oldSegment = transformSegment(
                         panSeg.p0,
                         panSeg.p1,
-                        player.posOld,
-                        player.dirOld
+                        p.posOld,
+                        p.dirOld
                     );
                     const newSegment = transformSegment(
                         panSeg.p0,
                         panSeg.p1,
-                        player.pos,
-                        player.dir
+                        p.pos,
+                        p.dir
                     );
-
                     const newIntersection = coldet.intersectSegmentSegment(
                         posOld,
                         this.pos,
@@ -404,58 +407,58 @@ export class Bullet {
                         newSegment.p0,
                         newSegment.p1
                     );
-
-                    const finalIntersection = oldIntersection ?? newIntersection;
-
+                    const finalIntersection = oldIntersection || newIntersection;
                     if (finalIntersection) {
                         const normal = v2.normalize(
                             v2.perp(v2.sub(newSegment.p1, newSegment.p0))
                         );
                         panCollision = {
                             point: finalIntersection.point,
-                            normal
+                            normal: normal
                         };
                     }
                 }
                 const collision = coldet.intersectSegmentCircle(
                     posOld,
                     this.pos,
-                    player.pos,
-                    player.rad
+                    obj.pos,
+                    obj.rad
                 );
-
                 if (
-                    (collision &&
+                    collision &&
                     (!panCollision ||
                         v2.length(v2.sub(collision.point, this.startPos)) <
                             v2.length(v2.sub(panCollision.point, this.startPos)))
-                        ? (collisions.push({
-                              object: player,
-                              point: collision.point,
-                              normal: collision.normal,
-                              collidable: true
-                          }),
-                          player.hasPerk("steelskin") &&
-                              collisions.push({
-                                  object: player,
-                                  reflect: true,
-                                  point: v2.add(
-                                      collision.point,
-                                      v2.mul(collision.normal, 0.1)
-                                  ),
-                                  normal: collision.normal,
-                                  collidable: false
-                              }))
-                        : panCollision &&
-                          collisions.push({
-                              object: player,
-                              reflect: true,
-                              point: panCollision.point,
-                              normal: panCollision.normal,
-                              collidable: true
-                          }),
-                    collision ?? panCollision)
                 ) {
+                    collisions.push({
+                        type: "player",
+                        player: obj,
+                        point: collision.point,
+                        normal: collision.normal,
+                        layer: obj.layer,
+                        collidable: true
+                    });
+                    if (obj.hasPerk("steelskin")) {
+                        collisions.push({
+                            type: "pan",
+                            point: v2.add(collision.point, v2.mul(collision.normal, 0.1)),
+                            normal: collision.normal,
+                            layer: obj.layer,
+                            collidable: false,
+                            obj: obj
+                        });
+                    }
+                } else if (panCollision) {
+                    collisions.push({
+                        type: "pan",
+                        point: panCollision.point,
+                        normal: panCollision.normal,
+                        layer: obj.layer,
+                        collidable: true,
+                        obj: obj
+                    });
+                }
+                if (collision || panCollision) {
                     break;
                 }
             }
@@ -464,29 +467,32 @@ export class Bullet {
         for (let i = 0; i < collisions.length; i++) {
             const collision = collisions[i];
             collision.dist = v2.length(v2.sub(collision.point, posOld));
-            collision.bullet = this;
         }
 
         collisions.sort((e, t) => {
             return e.dist! - t.dist!;
         });
 
-        let stopBullet = false;
+        let shooterDead = false;
+        const player = this.player;
+        if (player && (player.dead || player.downed)) {
+            shooterDead = true;
+        }
+        let hit = false;
+
+        let finalDamage = this.damage;
+        finalDamage *= 1 / (this.reflectCount + 1);
 
         for (let i = 0; i < collisions.length; i++) {
-            const collision = collisions[i];
-            const obj = collision.object;
+            const col = collisions[i];
 
-            let finalDamage = this.damage;
-            finalDamage *= 1 / (this.reflectCount + 1);
-
-            if (obj instanceof Obstacle) {
-                stopBullet = obj.collidable;
+            if (col.type == "obstacle") {
+                const mapDef = MapObjectDefs[col.obstacleType!] as ObstacleDef;
 
                 const def = GameObjectDefs[this.bulletType] as BulletDef;
 
                 this.bulletManager.damages.push({
-                    obj,
+                    obj: col.obj!,
                     gameSourceType: this.shotSourceType,
                     mapSourceType: this.mapSourceType,
                     damageType: this.damageType,
@@ -495,25 +501,31 @@ export class Bullet {
                     dir: this.dir
                 });
 
-                const obstacleDef = MapObjectDefs[obj.type] as ObstacleDef;
-                if (obstacleDef.reflectBullets && this.onHitFx !== "explosion_rounds") {
-                    this.reflect(collision.point, collision.normal, obj.__id);
+                if (mapDef.reflectBullets && this.onHitFx !== "explosion_rounds") {
+                    this.reflect(col.point, col.normal, col.obj!.__id);
                 }
-            } else if (obj instanceof Player) {
-                stopBullet = collision.collidable;
 
-                this.bulletManager.damages.push({
-                    obj,
-                    gameSourceType: this.shotSourceType,
-                    mapSourceType: this.mapSourceType,
-                    source: this.player,
-                    damageType: this.damageType,
-                    amount: finalDamage,
-                    dir: this.dir
-                });
+                // Continue travelling if non-collidable
+                hit = col.collidable;
+            } else if (col.type == "player") {
+                if (!shooterDead) {
+                    this.bulletManager.damages.push({
+                        obj: col.player!,
+                        gameSourceType: this.shotSourceType,
+                        mapSourceType: this.mapSourceType,
+                        source: this.player,
+                        damageType: this.damageType,
+                        amount: finalDamage,
+                        dir: this.dir
+                    });
+                }
+                hit = col.collidable;
+            } else if (col.type == "pan") {
+                hit = col.collidable;
+                this.reflect(col.point, col.normal, col.obj!.__id);
             }
-            if (stopBullet) {
-                this.pos = collision.point;
+            if (hit) {
+                this.pos = col.point;
                 this.alive = false;
                 break;
             }
