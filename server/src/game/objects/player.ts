@@ -289,7 +289,7 @@ export class Player extends BaseGameObject {
 
     set boost(boost: number) {
         if (this._boost === boost) return;
-        if (this.downed) return;
+        if (this.downed && boost > 0) return; // can't gain adren while knocked, can only set it to zero
         this._boost = boost;
         this._boost = math.clamp(this._boost, 0, 100);
         this.boostDirty = true;
