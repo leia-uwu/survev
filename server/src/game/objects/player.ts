@@ -2486,7 +2486,7 @@ export class Player extends BaseGameObject {
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
             const customShootingSpeed =
                 GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
-            this.speed += customShootingSpeed ?? weaponDef.speed.attack + -6;
+            this.speed += customShootingSpeed ?? weaponDef.speed.attack;
         }
 
         // if player is on water decrease speed
@@ -2500,7 +2500,7 @@ export class Player extends BaseGameObject {
         }
 
         // decrease speed if popping adren or heals
-        if (this.actionType == GameConfig.Action.UseItem) {
+        if (this.actionType == GameConfig.Action.UseItem || this.shotSlowdownTimer > 0) {
             this.speed -= 6;
         }
 
