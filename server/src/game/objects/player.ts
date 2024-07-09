@@ -2483,9 +2483,9 @@ export class Player extends BaseGameObject {
             this.speed += weaponDef.speed.equip;
         }
 
+        const customShootingSpeed =
+            GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            const customShootingSpeed =
-                GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
             this.speed += customShootingSpeed ?? weaponDef.speed.attack;
         }
 
@@ -2500,7 +2500,10 @@ export class Player extends BaseGameObject {
         }
 
         // decrease speed if popping adren or heals
-        if (this.actionType == GameConfig.Action.UseItem || this.shotSlowdownTimer > 0) {
+        if (
+            this.actionType == GameConfig.Action.UseItem ||
+            (this.shotSlowdownTimer > 0 && !customShootingSpeed)
+        ) {
             this.speed -= 6;
         }
 
