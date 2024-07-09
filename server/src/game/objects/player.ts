@@ -701,6 +701,9 @@ export class Player extends BaseGameObject {
 
         if (this.game.isTeamMode) {
             this.playerStatusTicker += dt;
+            for (const spectator of this.spectators) {
+                spectator.playerStatusTicker += dt;
+            }
         }
 
         this.recalculateSpeed();
@@ -991,12 +994,12 @@ export class Player extends BaseGameObject {
             : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
-        if (this.group) {
+        if (player.group) {
             if (
                 this.playerStatusTicker >
                 net.getPlayerStatusUpdateRate(this.game.map.factionMode)
             ) {
-                const teamPlayers = this.group.getPlayers();
+                const teamPlayers = player.group.getPlayers();
                 for (let i = 0; i < teamPlayers.length; i++) {
                     const p = teamPlayers[i];
                     updateMsg.playerStatus.players.push({
@@ -1014,7 +1017,7 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teamPlayers = this.group!.getPlayers();
+            const teamPlayers = player.group!.getPlayers();
             for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
                     health: p.health,
