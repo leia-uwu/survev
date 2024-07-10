@@ -125,11 +125,6 @@ class Application {
         );
 
         this.enableBots = Boolean(helpers.getParameterByName("bots"));
-        console.log(
-            this.enableBots,
-            typeof helpers.getParameterByName("bots"),
-            helpers.getParameterByName("bots")
-        );
         const onLoadComplete = () => {
             this.config.load(() => {
                 this.configLoaded = true;
