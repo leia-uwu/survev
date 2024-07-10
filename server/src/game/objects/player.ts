@@ -1267,14 +1267,18 @@ export class Player extends BaseGameObject {
 
             // TODO: fix for faction mode
             if (this.downed) {
-                if (
+                const finishedByTeammate =
                     this.downedBy &&
                     sourceIsPlayer &&
-                    this.downedBy.groupId === (params.source as Player).groupId
-                ) {
-                    //if enemy knocks you and enemy teammate finishes you, still give the kill to the original enemy who knocked you
+                    this.downedBy.groupId === (params.source as Player).groupId;
+
+                const bledOut =
+                    this.downedBy && params.damageType == GameConfig.DamageType.Bleeding;
+
+                if (finishedByTeammate || bledOut) {
                     params.source = this.downedBy;
                 }
+
                 this.kill(params);
                 return;
             }
