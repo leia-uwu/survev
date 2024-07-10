@@ -1,14 +1,13 @@
-import { type Game } from "../../server/src/game/game";
-import { type GameSocketData } from "../../server/src/server";
-import { allowedEmotes as emotes, allowedMeleeSkins as melees, allowedOutfits as outfits } from "../../shared/defs/gameObjects/unlockDefs";
+import type { Game } from "../../server/src/game/game";
+import type { GameSocketData } from "../../server/src/server";
+import {
+    allowedEmotes as emotes,
+    allowedMeleeSkins as melees,
+    allowedOutfits as outfits
+} from "../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
-import {
-    type BitStream,
-    type Msg,
-    MsgStream,
-    MsgType
-} from "../../shared/net/net";
+import { type BitStream, type Msg, MsgStream, MsgType } from "../../shared/net/net";
 import {
     type ObjectData,
     ObjectType,
@@ -19,9 +18,9 @@ import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
 
 interface GameObject {
-    __id: number
-    __type: ObjectType
-    data: ObjectsPartialData[ObjectType] & ObjectsFullData[ObjectType]
+    __id: number;
+    __type: ObjectType;
+    data: ObjectsPartialData[ObjectType] & ObjectsFullData[ObjectType];
 }
 
 class ObjectCreator {
@@ -147,86 +146,86 @@ export class Bot {
 
     onMsg(type: number, stream: BitStream): void {
         switch (type) {
-        case MsgType.Joined: {
-            const msg = new net.JoinedMsg();
-            msg.deserialize(stream);
-            this.emotes = msg.emotes;
-            break;
-        }
-        case MsgType.Map: {
-            const msg = new net.MapMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.Update: {
-            const msg = new net.UpdateMsg();
-            msg.deserialize(stream, this.objectCreator);
-
-            // Delete objects
-            for (let i = 0; i < msg.delObjIds.length; i++) {
-                this.objectCreator.deleteObj(msg.delObjIds[i]);
+            case MsgType.Joined: {
+                const msg = new net.JoinedMsg();
+                msg.deserialize(stream);
+                this.emotes = msg.emotes;
+                break;
             }
-
-            // Update full objects
-            for (let i = 0; i < msg.fullObjects.length; i++) {
-                const obj = msg.fullObjects[i];
-                this.objectCreator.updateObjFull(obj.__type, obj.__id, obj);
+            case MsgType.Map: {
+                const msg = new net.MapMsg();
+                msg.deserialize(stream);
+                break;
             }
+            case MsgType.Update: {
+                const msg = new net.UpdateMsg();
+                msg.deserialize(stream, this.objectCreator);
 
-            // Update partial objects
-            for (let i = 0; i < msg.partObjects.length; i++) {
-                const obj = msg.partObjects[i];
-                this.objectCreator.updateObjPart(obj.__id, obj);
+                // Delete objects
+                for (let i = 0; i < msg.delObjIds.length; i++) {
+                    this.objectCreator.deleteObj(msg.delObjIds[i]);
+                }
+
+                // Update full objects
+                for (let i = 0; i < msg.fullObjects.length; i++) {
+                    const obj = msg.fullObjects[i];
+                    this.objectCreator.updateObjFull(obj.__type, obj.__id, obj);
+                }
+
+                // Update partial objects
+                for (let i = 0; i < msg.partObjects.length; i++) {
+                    const obj = msg.partObjects[i];
+                    this.objectCreator.updateObjPart(obj.__id, obj);
+                }
+
+                break;
             }
-
-            break;
-        }
-        case MsgType.Kill: {
-            const msg = new net.KillMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.RoleAnnouncement: {
-            const msg = new net.RoleAnnouncementMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.PlayerStats: {
-            const msg = new net.PlayerStatsMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.GameOver: {
-            const msg = new net.GameOverMsg();
-            msg.deserialize(stream);
-            console.log(
-                `Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${
-                    msg.playerStats[0].kills
-                } | rank: ${msg.teamRank}`
-            );
-            this.disconnect = true;
-            this.connected = false;
-            this.ws.close();
-            break;
-        }
-        case MsgType.Pickup: {
-            const msg = new net.PickupMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.UpdatePass: {
-            new net.UpdatePassMsg().deserialize(stream);
-            break;
-        }
-        case MsgType.AliveCounts: {
-            const msg = new net.AliveCountsMsg();
-            msg.deserialize(stream);
-            break;
-        }
-        case MsgType.Disconnect: {
-            const msg = new net.DisconnectMsg();
-            msg.deserialize(stream);
-        }
+            case MsgType.Kill: {
+                const msg = new net.KillMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.RoleAnnouncement: {
+                const msg = new net.RoleAnnouncementMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.PlayerStats: {
+                const msg = new net.PlayerStatsMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.GameOver: {
+                const msg = new net.GameOverMsg();
+                msg.deserialize(stream);
+                console.log(
+                    `Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${
+                        msg.playerStats[0].kills
+                    } | rank: ${msg.teamRank}`
+                );
+                this.disconnect = true;
+                this.connected = false;
+                this.ws.close();
+                break;
+            }
+            case MsgType.Pickup: {
+                const msg = new net.PickupMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.UpdatePass: {
+                new net.UpdatePassMsg().deserialize(stream);
+                break;
+            }
+            case MsgType.AliveCounts: {
+                const msg = new net.AliveCountsMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case MsgType.Disconnect: {
+                const msg = new net.DisconnectMsg();
+                msg.deserialize(stream);
+            }
         }
     }
 
@@ -271,10 +270,7 @@ export class Bot {
 
         inputPacket.shootStart = this.shootStart;
 
-        inputPacket.toMouseDir = v2.create(
-            Math.cos(this.angle),
-            Math.sin(this.angle)
-        );
+        inputPacket.toMouseDir = v2.create(Math.cos(this.angle), Math.sin(this.angle));
         inputPacket.toMouseLen = this.toMouseLen;
 
         this.angle += this.angularSpeed;
@@ -305,34 +301,34 @@ export class Bot {
         this.emote = Math.random() < 0.5;
 
         switch (util.randomInt(1, 8)) {
-        case 1:
-            this.moving.up = true;
-            break;
-        case 2:
-            this.moving.down = true;
-            break;
-        case 3:
-            this.moving.left = true;
-            break;
-        case 4:
-            this.moving.right = true;
-            break;
-        case 5:
-            this.moving.up = true;
-            this.moving.left = true;
-            break;
-        case 6:
-            this.moving.up = true;
-            this.moving.right = true;
-            break;
-        case 7:
-            this.moving.down = true;
-            this.moving.left = true;
-            break;
-        case 8:
-            this.moving.down = true;
-            this.moving.right = true;
-            break;
+            case 1:
+                this.moving.up = true;
+                break;
+            case 2:
+                this.moving.down = true;
+                break;
+            case 3:
+                this.moving.left = true;
+                break;
+            case 4:
+                this.moving.right = true;
+                break;
+            case 5:
+                this.moving.up = true;
+                this.moving.left = true;
+                break;
+            case 6:
+                this.moving.up = true;
+                this.moving.right = true;
+                break;
+            case 7:
+                this.moving.down = true;
+                this.moving.left = true;
+                break;
+            case 8:
+                this.moving.down = true;
+                this.moving.right = true;
+                break;
         }
     }
 }

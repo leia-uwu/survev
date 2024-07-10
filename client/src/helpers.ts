@@ -8,9 +8,7 @@ const truncateCanvas = document.createElement("canvas");
 
 export const helpers = {
     getParameterByName: function (name: string, url?: string) {
-        const searchParams = new URLSearchParams(
-            url || window.location.search
-        );
+        const searchParams = new URLSearchParams(url || window.location.search);
         return searchParams.get(name) || "";
     },
     getCookie: function (cname: string) {

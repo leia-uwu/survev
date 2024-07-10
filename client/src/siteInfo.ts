@@ -37,7 +37,7 @@ export class SiteInfo {
                 return {
                     mapName,
                     teamMode: 1,
-                    enabled: true,
+                    enabled: true
                 };
             }),
         pops: {
