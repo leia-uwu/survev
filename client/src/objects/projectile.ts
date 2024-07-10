@@ -13,7 +13,7 @@ import type { Camera } from "../camera";
 import type { Ctx } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
-import type { ObjectData, ObjectType } from "./../../../shared/utils/objectSerializeFns";
+import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import { playHitFx } from "./bullet";
 import { Pool } from "./objectPool";
 import type { Obstacle } from "./obstacle";

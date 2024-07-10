@@ -14,6 +14,7 @@ interface Info {
     modes: Array<{
         mapName: string;
         teamMode: TeamMode;
+        enabled: boolean;
     }>;
     pops: Record<string, string>;
     youtube: {
@@ -81,7 +82,8 @@ export class SiteInfo {
             availableModes.push({
                 icon: mapDef.icon,
                 buttonCss: mapDef.buttonCss,
-                buttonText
+                buttonText,
+                enabled: mode.enabled
             });
         }
         return availableModes;
@@ -130,6 +132,10 @@ export class SiteInfo {
                             "background-image": `url(${style.icon})`
                         });
                     }
+                }
+
+                if (!style.enabled) {
+                    btn.addClass("btn-disabled-main");
                 }
             }
 

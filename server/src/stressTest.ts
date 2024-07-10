@@ -3,31 +3,12 @@ import { MeleeDefs } from "../../shared/defs/gameObjects/meleeDefs";
 import { OutfitDefs } from "../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../shared/gameConfig";
-import { AliveCountsMsg } from "../../shared/msgs/aliveCountsMsg";
-import { DisconnectMsg } from "../../shared/msgs/disconnectMsg";
-import { EmoteMsg } from "../../shared/msgs/emoteMsg";
-import { GameOverMsg } from "../../shared/msgs/gameOverMsg";
-import { InputMsg } from "../../shared/msgs/inputMsg";
-import { JoinMsg } from "../../shared/msgs/joinMsg";
-import { JoinedMsg } from "../../shared/msgs/joinedMsg";
-import { KillMsg } from "../../shared/msgs/killMsg";
-import { MapMsg } from "../../shared/msgs/mapMsg";
-import { PickupMsg } from "../../shared/msgs/pickupMsg";
-import { PlayerStatsMsg } from "../../shared/msgs/playerStatsMsg";
-import { RoleAnnouncementMsg } from "../../shared/msgs/roleAnnouncementMsg";
-import { UpdateMsg } from "../../shared/msgs/updateMsg";
-import {
-    type BitStream,
-    type Msg,
-    MsgStream,
-    MsgType,
-    UpdatePassMsg
-} from "../../shared/net";
+import * as net from "../../shared/net/net";
 import {
     type ObjectData,
     ObjectType,
     type ObjectsPartialData
-} from "../../shared/utils/objectSerializeFns";
+} from "../../shared/net/objectSerializeFns";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
 
@@ -78,7 +59,7 @@ class ObjectCreator {
         return this.idToObj[id];
     }
 
-    getTypeById(id: number, s: BitStream) {
+    getTypeById(id: number, s: net.BitStream) {
         const obj = this.getObjById(id);
         if (!obj) {
             const err = {
@@ -182,10 +163,10 @@ class Bot {
         this.emotes = [emote(), emote(), emote(), emote(), emote(), emote()];
 
         this.ws.onmessage = (message: MessageEvent): void => {
-            const stream = new MsgStream(message.data as ArrayBuffer);
+            const stream = new net.MsgStream(message.data as ArrayBuffer);
             while (true) {
                 const type = stream.deserializeMsgType();
-                if (type == MsgType.None) {
+                if (type == net.MsgType.None) {
                     break;
                 }
                 this.onMsg(type, stream.getStream());
@@ -193,21 +174,21 @@ class Bot {
         };
     }
 
-    onMsg(type: number, stream: BitStream): void {
+    onMsg(type: number, stream: net.BitStream): void {
         switch (type) {
-            case MsgType.Joined: {
-                const msg = new JoinedMsg();
+            case net.MsgType.Joined: {
+                const msg = new net.JoinedMsg();
                 msg.deserialize(stream);
                 this.emotes = msg.emotes;
                 break;
             }
-            case MsgType.Map: {
-                const msg = new MapMsg();
+            case net.MsgType.Map: {
+                const msg = new net.MapMsg();
                 msg.deserialize(stream);
                 break;
             }
-            case MsgType.Update: {
-                const msg = new UpdateMsg();
+            case net.MsgType.Update: {
+                const msg = new net.UpdateMsg();
                 msg.deserialize(stream, this.objectCreator);
 
                 // Delete objects
@@ -229,23 +210,23 @@ class Bot {
 
                 break;
             }
-            case MsgType.Kill: {
-                const msg = new KillMsg();
+            case net.MsgType.Kill: {
+                const msg = new net.KillMsg();
                 msg.deserialize(stream);
                 break;
             }
-            case MsgType.RoleAnnouncement: {
-                const msg = new RoleAnnouncementMsg();
+            case net.MsgType.RoleAnnouncement: {
+                const msg = new net.RoleAnnouncementMsg();
                 msg.deserialize(stream);
                 break;
             }
-            case MsgType.PlayerStats: {
-                const msg = new PlayerStatsMsg();
+            case net.MsgType.PlayerStats: {
+                const msg = new net.PlayerStatsMsg();
                 msg.deserialize(stream);
                 break;
             }
-            case MsgType.GameOver: {
-                const msg = new GameOverMsg();
+            case net.MsgType.GameOver: {
+                const msg = new net.GameOverMsg();
                 msg.deserialize(stream);
                 console.log(
                     `Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${msg.playerStats[0].kills} | rank: ${msg.teamRank}`
@@ -255,33 +236,33 @@ class Bot {
                 this.ws.close();
                 break;
             }
-            case MsgType.Pickup: {
-                const msg = new PickupMsg();
+            case net.MsgType.Pickup: {
+                const msg = new net.PickupMsg();
                 msg.deserialize(stream);
                 break;
             }
-            case MsgType.UpdatePass: {
-                new UpdatePassMsg().deserialize(stream);
+            case net.MsgType.UpdatePass: {
+                new net.UpdatePassMsg().deserialize(stream);
                 break;
             }
-            case MsgType.AliveCounts: {
-                const msg = new AliveCountsMsg();
+            case net.MsgType.AliveCounts: {
+                const msg = new net.AliveCountsMsg();
                 msg.deserialize(stream);
                 break;
             }
-            case MsgType.Disconnect: {
-                const msg = new DisconnectMsg();
+            case net.MsgType.Disconnect: {
+                const msg = new net.DisconnectMsg();
                 msg.deserialize(stream);
             }
         }
     }
 
-    stream = new MsgStream(new ArrayBuffer(1024));
+    stream = new net.MsgStream(new ArrayBuffer(1024));
 
     join(): void {
         this.connected = true;
 
-        const joinMsg = new JoinMsg();
+        const joinMsg = new net.JoinMsg();
 
         joinMsg.name = `BOT_${this.id}`;
         joinMsg.isMobile = false;
@@ -294,10 +275,10 @@ class Bot {
             boost: "boost_basic",
             emotes: this.emotes
         };
-        this.sendMsg(joinMsg, MsgType.Join);
+        this.sendMsg(net.MsgType.Join, joinMsg);
     }
 
-    sendMsg(msg: Msg, type: MsgType): void {
+    sendMsg(type: net.MsgType, msg: net.Msg): void {
         this.stream.stream.index = 0;
         this.stream.serializeMsg(type, msg);
 
@@ -307,7 +288,7 @@ class Bot {
     sendInputs(): void {
         if (!this.connected) return;
 
-        const inputPacket = new InputMsg();
+        const inputPacket = new net.InputMsg();
 
         inputPacket.moveDown = this.moving.down;
         inputPacket.moveUp = this.moving.up;
@@ -326,10 +307,10 @@ class Bot {
             inputPacket.addInput(GameConfig.Input.Interact);
         }
 
-        this.sendMsg(inputPacket, MsgType.Input);
+        this.sendMsg(net.MsgType.Input, inputPacket);
 
         if (this.emote) {
-            const emoteMsg = new EmoteMsg();
+            const emoteMsg = new net.EmoteMsg();
             emoteMsg.type = this.emotes[util.randomInt(0, this.emotes.length - 1)];
         }
     }

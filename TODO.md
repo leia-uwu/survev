@@ -118,7 +118,7 @@ won't list all that need to be competently done because lazy
 
 ### Other features
  - [x] Explosions
- - [ ] Throwables
+ - [x] Throwables
  - [ ] Airdrops
  - [ ] Planes
  - [x] Gas

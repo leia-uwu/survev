@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
-import type { MapIndicator } from "../../../shared/msgs/updateMsg";
+import type { MapIndicator } from "../../../shared/net/updateMsg";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { device } from "../device";

@@ -5,7 +5,7 @@ import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { Bullet } from "../../../shared/msgs/updateMsg";
+import type { Bullet } from "../../../shared/net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -291,72 +291,87 @@ export class BulletBarn {
                             player.netData.layer & 2) &&
                         (player.__id != b.playerId || b.damageSelf)
                     ) {
-                        let O = null;
+                        let panCollision = null;
                         if (player.hasActivePan()) {
-                            const D = player;
-                            const E = D.getPanSegment()!;
-                            const B = transformSegment(E.p0, E.p1, D.posOld, D.dirOld);
-                            const R = transformSegment(E.p0, E.p1, D.pos, D.dir);
-                            const L = coldet.intersectSegmentSegment(
+                            const p = player;
+                            const panSeg = p.getPanSegment()!;
+                            const oldSegment = transformSegment(
+                                panSeg.p0,
+                                panSeg.p1,
+                                p.posOld,
+                                p.dirOld
+                            );
+                            const newSegment = transformSegment(
+                                panSeg.p0,
+                                panSeg.p1,
+                                p.pos,
+                                p.dir
+                            );
+                            const newIntersection = coldet.intersectSegmentSegment(
                                 posOld,
                                 b.pos,
-                                B.p0,
-                                B.p1
+                                oldSegment.p0,
+                                oldSegment.p1
                             );
-                            const q = coldet.intersectSegmentSegment(
+                            const oldIntersection = coldet.intersectSegmentSegment(
                                 posOld,
                                 b.pos,
-                                R.p0,
-                                R.p1
+                                newSegment.p0,
+                                newSegment.p1
                             );
-                            const F = q || L;
-                            if (F) {
-                                const j = v2.normalize(v2.perp(v2.sub(R.p1, R.p0)));
-                                O = {
-                                    point: F.point,
-                                    normal: j
+                            const finalIntersection = oldIntersection || newIntersection;
+                            if (finalIntersection) {
+                                const normal = v2.normalize(
+                                    v2.perp(v2.sub(newSegment.p1, newSegment.p0))
+                                );
+                                panCollision = {
+                                    point: finalIntersection.point,
+                                    normal: normal
                                 };
                             }
                         }
-                        const N = coldet.intersectSegmentCircle(
+                        const collision = coldet.intersectSegmentCircle(
                             posOld,
                             b.pos,
                             player.pos,
                             player.rad
                         );
                         if (
-                            N &&
-                            (!O ||
-                                v2.length(v2.sub(N.point, b.startPos)) <
-                                    v2.length(v2.sub(O.point, b.startPos)))
+                            collision &&
+                            (!panCollision ||
+                                v2.length(v2.sub(collision.point, b.startPos)) <
+                                    v2.length(v2.sub(panCollision.point, b.startPos)))
                         ) {
                             colObjs.push({
                                 type: "player",
                                 player,
-                                point: N.point,
-                                normal: N.normal,
+                                point: collision.point,
+                                normal: collision.normal,
                                 layer: player.layer,
                                 collidable: true
                             });
                             if (player.hasPerk("steelskin")) {
                                 colObjs.push({
                                     type: "pan",
-                                    point: v2.add(N.point, v2.mul(N.normal, 0.1)),
-                                    normal: N.normal,
+                                    point: v2.add(
+                                        collision.point,
+                                        v2.mul(collision.normal, 0.1)
+                                    ),
+                                    normal: collision.normal,
                                     layer: player.layer,
                                     collidable: false
                                 });
                             }
-                        } else if (O) {
+                        } else if (panCollision) {
                             colObjs.push({
                                 type: "pan",
-                                point: O.point,
-                                normal: O.normal,
+                                point: panCollision.point,
+                                normal: panCollision.normal,
                                 layer: player.layer,
                                 collidable: true
                             });
                         }
-                        if (N || O) {
+                        if (collision || panCollision) {
                             break;
                         }
                     }
@@ -377,8 +392,8 @@ export class BulletBarn {
                     shooterDead = true;
                 }
                 let hit = false;
-                for (let X = 0; X < colObjs.length; X++) {
-                    const col = colObjs[X];
+                for (let i = 0; i < colObjs.length; i++) {
+                    const col = colObjs[i];
                     if (col.type == "obstacle") {
                         const mapDef = MapObjectDefs[col?.obstacleType!] as ObstacleDef;
                         playHitFx(

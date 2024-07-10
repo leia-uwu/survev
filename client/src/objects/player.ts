@@ -15,18 +15,18 @@ import {
     Input,
     type WeaponSlot
 } from "../../../shared/gameConfig";
+import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import {
     type GroupStatus,
     type LocalDataWithDirty,
     type PlayerInfo,
     type PlayerStatus,
     getPlayerStatusUpdateRate
-} from "../../../shared/msgs/updateMsg";
+} from "../../../shared/net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
-import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import type { River } from "../../../shared/utils/river";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";

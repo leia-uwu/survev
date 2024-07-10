@@ -18,7 +18,7 @@ import { debugLines } from "../debugLines";
 import { device } from "../device";
 import type { Ctx, DebugOptions } from "../game";
 import type { Map } from "../map";
-import type { ObjectData, ObjectType } from "./../../../shared/utils/objectSerializeFns";
+import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import type { AbstractObject, Player } from "./player";
 
 interface Stair {

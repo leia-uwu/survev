@@ -1,7 +1,7 @@
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import type { Vec2 } from "../../shared/utils/v2";
-import type { Game } from "./game";
-import type { GamePlugin } from "./pluginManager";
+import type { Game } from "./game/game";
+import type { GamePlugin } from "./game/pluginManager";
 
 export enum SpawnMode {
     Random,
@@ -21,9 +21,9 @@ export const Config = {
     port: 8000,
 
     modes: [
-        { mapName: "main", teamMode: TeamMode.Solo },
-        { mapName: "main", teamMode: TeamMode.Duo },
-        { mapName: "main", teamMode: TeamMode.Squad }
+        { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
+        { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
+        { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
     ],
 
     plugins: [],
@@ -68,6 +68,7 @@ export interface ConfigType {
     readonly modes: Array<{
         mapName: keyof typeof MapDefs;
         teamMode: TeamMode;
+        enabled: boolean;
     }>;
 
     readonly plugins: Array<new (game: Game) => GamePlugin>;

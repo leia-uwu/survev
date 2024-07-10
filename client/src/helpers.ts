@@ -2,7 +2,7 @@ import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
-import * as net from "../../shared/net";
+import * as net from "../../shared/net/net";
 import { device } from "./device";
 const truncateCanvas = document.createElement("canvas");
 

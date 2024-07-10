@@ -2,12 +2,12 @@ import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { BuildingDef } from "../../../shared/defs/mapObjectsTyping";
 import type { FloorImage } from "../../../shared/defs/types/building";
+import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import type { Collider, ColliderWithHeight } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
-import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
@@ -652,8 +652,8 @@ export class Building implements AbstractObject {
         sprite.alpha = sprite.imgAlpha * alpha;
     }
 
-    render(_camera: Camera, debug: DebugOptions, _layer: number) {
-        if (device.debug) {
+    render(_camera: Camera, debug: DebugOptions, layer: number) {
+        if (device.debug && layer === this.layer) {
             if (debug.buildings?.bounds) {
                 renderMapBuildingBounds(this);
             }

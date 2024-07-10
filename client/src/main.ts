@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js-legacy";
 import { Game as ServerGame } from "../../server/src/game";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
-import * as net from "../../shared/net";
+import * as net from "../../shared/net/net";
 import { math } from "../../shared/utils/math";
 import { Account } from "./account";
 import { Ambiance } from "./ambiance";

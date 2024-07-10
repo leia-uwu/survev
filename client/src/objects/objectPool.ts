@@ -1,9 +1,9 @@
-import type { BitStream } from "../../../shared/net";
+import type { BitStream } from "../../../shared/net/net";
 import {
     type ObjectData,
     ObjectType,
     type ObjectsPartialData
-} from "../../../shared/utils/objectSerializeFns";
+} from "../../../shared/net/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
 import type { Ctx } from "../game";
 

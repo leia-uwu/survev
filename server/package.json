@@ -9,11 +9,11 @@
     "bit-buffer": "^0.2.5",
     "nanotimer": "^0.3.15",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.43.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.9",
-    "@types/nanotimer": "^0.3.2"
+    "@types/nanotimer": "^0.3.2",
+    "@types/node": "^20.14.9"
   }
 }

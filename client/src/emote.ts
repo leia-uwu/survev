@@ -6,7 +6,7 @@ import type { AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
 import type { GunDef } from "../../shared/defs/gameObjects/gunDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
 import { EmoteSlot, GameConfig, Input } from "../../shared/gameConfig";
-import type { Emote } from "../../shared/msgs/updateMsg";
+import type { Emote } from "../../shared/net/updateMsg";
 import { coldet } from "../../shared/utils/coldet";
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
