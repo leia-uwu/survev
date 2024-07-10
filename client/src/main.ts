@@ -1,6 +1,6 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
-import { Game as ServerGame } from "../../server/src/game";
+import { Game as ServerGame } from "../../server/src/game/game";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";

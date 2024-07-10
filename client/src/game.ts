@@ -175,7 +175,7 @@ export class Game {
                 close() {}
             } as unknown as WebSocket;
 
-            const joinMessage = new JoinMsg();
+            const joinMessage = new net.JoinMsg();
             const name = this.config.get("playerName")!;
             joinMessage.protocol = GameConfig.protocolVersion;
             joinMessage.name = name;
@@ -184,7 +184,7 @@ export class Game {
             joinMessage.bot = false;
             joinMessage.loadout = this.config.get("loadout")!;
 
-            this.sendMessage(MsgType.Join, joinMessage, 8192);
+            this.sendMessage(net.MsgType.Join, joinMessage, 8192);
         }
     }
 

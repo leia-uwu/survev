@@ -36,7 +36,8 @@ export class SiteInfo {
             .map((mapName) => {
                 return {
                     mapName,
-                    teamMode: 1
+                    teamMode: 1,
+                    enabled: true,
                 };
             }),
         pops: {
