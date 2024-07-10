@@ -1064,7 +1064,7 @@ export class Player extends BaseGameObject {
             }
         }
         if (newBullets.length > 255) {
-            console.error("Too many new bullets created!", newBullets.length);
+            this.game.logger.warn("Too many new bullets created!", newBullets.length);
             newBullets = newBullets.slice(0, 255);
         }
 
@@ -1073,15 +1073,12 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < game.explosionBarn.newExplosions.length; i++) {
             const explosion = game.explosionBarn.newExplosions[i];
             const rad = explosion.rad + extendedRadius;
-            if (
-                v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad &&
-                updateMsg.explosions.length < 255
-            ) {
+            if (v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad) {
                 updateMsg.explosions.push(explosion);
             }
         }
         if (updateMsg.explosions.length > 255) {
-            console.error(
+            this.game.logger.warn(
                 "Too many new explosions created!",
                 updateMsg.explosions.length
             );
@@ -2528,7 +2525,7 @@ export class Player extends BaseGameObject {
         try {
             this.socketData.sendMsg(buffer);
         } catch (e) {
-            console.warn("Error sending packet. Details:", e);
+            this.game.logger.warn("Error sending packet. Details:", e);
         }
     }
 }

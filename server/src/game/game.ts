@@ -80,6 +80,7 @@ export class Game {
     now!: number;
     gameStartTime = 0;
 
+    perfTicker = 0;
     tickTimes: number[] = [];
 
     logger: Logger;
@@ -133,19 +134,24 @@ export class Game {
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
 
-        // Record performance and start the next tick
-        // THIS TICK COUNTER IS WORKING CORRECTLY!
-        // It measures the time it takes to calculate a tick, not the time between ticks.
-        const tickTime = Date.now() - this.now;
-        this.tickTimes.push(tickTime);
+        if (Config.perfLogging.enabled) {
+            // Record performance and start the next tick
+            // THIS TICK COUNTER IS WORKING CORRECTLY!
+            // It measures the time it takes to calculate a tick, not the time between ticks.
+            const tickTime = Date.now() - this.now;
+            this.tickTimes.push(tickTime);
 
-        if (this.tickTimes.length >= 200) {
-            const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
+            this.perfTicker += dt;
+            if (this.perfTicker >= Config.perfLogging.time) {
+                this.perfTicker = 0;
+                const mspt =
+                    this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            this.logger.log(
-                `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
-            );
-            this.tickTimes = [];
+                this.logger.log(
+                    `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
+                );
+                this.tickTimes = [];
+            }
         }
     }
 

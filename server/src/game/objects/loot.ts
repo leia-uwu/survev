@@ -100,7 +100,7 @@ export class LootBarn {
         const items: Array<{ name: string; count: number }> = [];
 
         if (!lootTable) {
-            console.warn(`Unknown loot tier with type ${tier}`);
+            this.game.logger.warn(`Unknown loot tier with type ${tier}`);
             return [];
         }
 

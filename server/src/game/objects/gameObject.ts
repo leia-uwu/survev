@@ -176,7 +176,7 @@ export abstract class BaseGameObject {
 
     serializePartial(): void {
         if (!this.initialized) {
-            console.warn(
+            this.game.logger.warn(
                 "Tried to partially serialized object that has not been initialized"
             );
             return;
@@ -194,7 +194,7 @@ export abstract class BaseGameObject {
 
     serializeFull(): void {
         if (!this.initialized) {
-            console.warn(
+            this.game.logger.warn(
                 "Tried to fully serialized object that has not been initialized"
             );
             return;
@@ -273,7 +273,7 @@ export abstract class BaseGameObject {
     destroyed = false;
     destroy() {
         if (this.destroyed) {
-            console.warn("Tried to destroy object twice");
+            this.game.logger.warn("Tried to destroy object twice");
             return;
         }
         this.game.grid.remove(this as unknown as GameObject);
