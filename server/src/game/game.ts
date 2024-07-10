@@ -9,7 +9,7 @@ import { Grid } from "./grid";
 import { Group } from "./group";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
-import { BullletBarn } from "./objects/bullet";
+import { BulletBarn } from "./objects/bullet";
 import { DeadBodyBarn } from "./objects/deadBody";
 import { DecalBarn } from "./objects/decal";
 import { ExplosionBarn } from "./objects/explosion";
@@ -68,7 +68,7 @@ export class Game {
     deadBodyBarn = new DeadBodyBarn(this);
     decalBarn = new DecalBarn(this);
     projectileBarn = new ProjectileBarn(this);
-    bulletBarn = new BullletBarn(this);
+    bulletBarn = new BulletBarn(this);
     smokeBarn = new SmokeBarn(this);
     airdropBarn = new AirdropBarn(this);
 

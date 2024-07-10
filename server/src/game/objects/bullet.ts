@@ -63,7 +63,7 @@ export interface BulletParams {
     distance?: number;
 }
 
-export class BullletBarn {
+export class BulletBarn {
     bullets: Bullet[] = [];
     newBullets: Bullet[] = [];
 
@@ -109,6 +109,7 @@ export class BullletBarn {
     }
 
     fireBullet(params: BulletParams): Bullet {
+        this.game.map.clampToMapBounds(params.pos);
         const bullet = new Bullet(this, params);
         this.bullets.push(bullet);
         this.newBullets.push(bullet);
@@ -120,7 +121,6 @@ export class Bullet {
     collided = false;
     alive = true;
     distanceTraveled = 0;
-    moveT = 0;
 
     playerId: number;
     player?: Player;
@@ -160,7 +160,7 @@ export class Bullet {
     skipCollision: boolean;
 
     constructor(
-        public bulletManager: BullletBarn,
+        public bulletManager: BulletBarn,
         params: BulletParams
     ) {
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
@@ -314,20 +314,22 @@ export class Bullet {
         this.distanceTraveled += moveDist;
 
         v2.set(this.pos, v2.add(this.pos, v2.mul(this.dir, moveDist)));
-
+        this.bulletManager.game.explosionBarn.newExplosions.push({
+            rad: 1,
+            type: "explosion_rounds",
+            pos: this.pos,
+            layer: this.layer
+        });
         const map = this.bulletManager.game.map;
         if (!coldet.testPointAabb(this.pos, map.bounds.min, map.bounds.max)) {
             this.alive = false;
             map.clampToMapBounds(this.pos);
         }
 
-        // const oldT = this.moveT;
-        this.moveT = v2.length(v2.sub(this.pos, this.startPos)) / this.distance;
-
         this.checkForCollisions(posOld);
 
         // Check if bullet has reached the maximun distance
-        if (math.eqAbs(moveDist, 0.0) || this.moveT >= 1.0) {
+        if (math.eqAbs(this.distanceTraveled, this.distance, 0.001)) {
             this.alive = false;
             // Explosive rounds peter out
             if (this.onHitFx === "explosion_rounds") {
