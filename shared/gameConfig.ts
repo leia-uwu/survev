@@ -151,6 +151,7 @@ export const GameConfig = {
         bleedTickRate: 1,
         downedMoveSpeed: 4,
         downedRezMoveSpeed: 2,
+        keepZoomWhileDowned: false,
         reviveDuration: 8,
         reviveRange: 5,
         crawlTime: 0.75,

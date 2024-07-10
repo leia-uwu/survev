@@ -821,7 +821,8 @@ export class Player extends BaseGameObject {
         }
 
         this.zoom = this.indoors ? finalZoom : scopeZoom;
-        if (onSmoke || this.downed) this.zoom = this.scopeZoomRadius["1xscope"];
+        if (onSmoke || (this.downed && !GameConfig.player.keepZoomWhileDowned))
+            this.zoom = this.scopeZoomRadius["1xscope"];
         if (!collidesWithZoomOut) this.indoors = false;
 
         const originalLayer = this.layer;
