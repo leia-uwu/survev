@@ -41,6 +41,7 @@ import type { Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
 import { UiManager2 } from "./ui/ui2";
+import { Bot } from "./bot";
 
 export interface Ctx {
     audioManager: AudioManager;
@@ -150,16 +151,16 @@ export class Game {
         this.resourceManager = resourceManager;
     }
 
-    tryJoinGame(game: ServerGame) {
+    tryJoinGame(game: ServerGame, bots = new Set<Bot>()) {
         if (!this.connecting && !this.connected && !this.initialized) {
             const This = this;
             const socketData: GameSocketData = {
                 gameID: game.id,
                 sendMsg(msg: ArrayBuffer) {
-                    const msgStream = new MsgStream(msg);
+                    const msgStream = new net.MsgStream(msg);
                     while (true) {
                         const type = msgStream.deserializeMsgType();
-                        if (type == MsgType.None) {
+                        if (type == net.MsgType.None) {
                             break;
                         }
                         This.onMsg(type, msgStream.getStream());
@@ -168,9 +169,20 @@ export class Game {
                 closeSocket() {}
             };
 
-            this.ws = {
+            this.ws = { 
                 send(data: ArrayBuffer) {
                     game.handleMsg(data, socketData);
+
+                    for (const bot of bots) {
+                        if (Math.random() < 0.02) {
+                            bot.updateInputs();
+                        }
+                        bot.sendInputs();
+
+                        if (bot.disconnect) {
+                            bots.delete(bot);   
+                        }
+                    }
                 },
                 close() {}
             } as unknown as WebSocket;
