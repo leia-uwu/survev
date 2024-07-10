@@ -106,8 +106,10 @@ export class SiteInfo {
 
                 const def = MapDefs[info.mapName as keyof typeof MapDefs] as MapDef;
                 const name = def.desc.name;
+                const mapName = info.mapName;
+
                 const btn = $(
-                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} (${info.mapName})</a>`
+                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${ name.toLowerCase() == mapName ? "" : "(" + mapName + ")" }</a>`
                 );
                 btn.insertAfter(mainBtn);
 
