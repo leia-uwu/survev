@@ -10,6 +10,7 @@ import { math } from "../../shared/utils/math";
 import { v2 } from "../../shared/utils/v2";
 import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
+import type { Bot } from "./bot";
 import { Camera } from "./camera";
 import type { ConfigManager } from "./config";
 import type { SoundHandle } from "./createJS";
@@ -41,7 +42,6 @@ import type { Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
 import { UiManager2 } from "./ui/ui2";
-import { Bot } from "./bot";
 
 export interface Ctx {
     audioManager: AudioManager;
@@ -151,7 +151,7 @@ export class Game {
         this.resourceManager = resourceManager;
     }
 
-    tryJoinGame(game: ServerGame, bots = new Set<Bot>) {
+    tryJoinGame(game: ServerGame, bots = new Set<Bot>()) {
         if (!this.connecting && !this.connected && !this.initialized) {
             const This = this;
             const socketData: GameSocketData = {
@@ -172,7 +172,7 @@ export class Game {
             this.ws = {
                 send(data: ArrayBuffer) {
                     game.handleMsg(data, socketData);
-                    
+
                     for (const bot of bots) {
                         if (Math.random() < 0.02) {
                             bot.updateInputs();
@@ -180,7 +180,7 @@ export class Game {
                         bot.sendInputs();
 
                         if (bot.disconnect) {
-                            bots.delete(bot);   
+                            bots.delete(bot);
                         }
                     }
                 },

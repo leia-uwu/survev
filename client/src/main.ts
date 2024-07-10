@@ -9,6 +9,7 @@ import { Account } from "./account";
 import { Ambiance } from "./ambiance";
 import { api } from "./api";
 import { AudioManager } from "./audioManager";
+import { Bot } from "./bot";
 import { ConfigManager, type ConfigType } from "./config";
 import { device } from "./device";
 import { Game } from "./game";
@@ -27,7 +28,6 @@ import { Pass } from "./ui/pass";
 import { ProfileUi } from "./ui/profileUi";
 import { TeamMenu } from "./ui/teamMenu";
 import { loadStaticDomImages } from "./ui/ui2";
-import { Bot } from "./bot";
 
 export interface MatchData {
     zone: string;
@@ -182,14 +182,12 @@ class Application {
 
                 const bots = new Set<Bot>();
 
-                if ( this.enableBots ) {
-
+                if (this.enableBots) {
                     const botCount = 79;
 
                     for (let i = 0; i < botCount; i++) {
                         bots.add(new Bot(game, i));
                     }
-
                 }
 
                 this.game!.tryJoinGame(game, bots);

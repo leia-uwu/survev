@@ -109,7 +109,7 @@ export class SiteInfo {
                 const mapName = info.mapName;
 
                 const btn = $(
-                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${ name.toLowerCase() == mapName ? "" : "(" + mapName + ")" }</a>`
+                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${name.toLowerCase() == mapName ? "" : "(" + mapName + ")"}</a>`
                 );
                 btn.insertAfter(mainBtn);
 
