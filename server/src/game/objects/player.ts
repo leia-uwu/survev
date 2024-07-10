@@ -1645,7 +1645,6 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
-        this.shotSlowdownTimer = 0;
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
@@ -1663,7 +1662,6 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
-        this.shotSlowdownTimer = 0;
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
@@ -2507,19 +2505,17 @@ export class Player extends BaseGameObject {
             this.speed += GameConfig.player.boostMoveSpeed;
         }
 
+        if (this.animType === GameConfig.Anim.Cook) {
+            this.speed -= GameConfig.player.cookSpeedPenalty;
+        }
+
         // decrease speed if popping adren or heals
         if (
             this.actionType == GameConfig.Action.UseItem ||
             (this.shotSlowdownTimer > 0 && !customShootingSpeed)
         ) {
-            this.speed -= 6;
+            this.speed *= 0.5;
         }
-
-        if (this.animType === GameConfig.Anim.Cook) {
-            this.speed -= GameConfig.player.cookSpeedPenalty;
-        }
-
-        this.speed = math.max(this.speed, 1);
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
