@@ -289,7 +289,7 @@ export class Player extends BaseGameObject {
 
     set boost(boost: number) {
         if (this._boost === boost) return;
-        if (this.downed) return;
+        if (this.downed && boost > 0) return; // can't gain adren while knocked, can only set it to zero
         this._boost = boost;
         this._boost = math.clamp(this._boost, 0, 100);
         this.boostDirty = true;
@@ -701,6 +701,9 @@ export class Player extends BaseGameObject {
 
         if (this.game.isTeamMode) {
             this.playerStatusTicker += dt;
+            for (const spectator of this.spectators) {
+                spectator.playerStatusTicker += dt;
+            }
         }
 
         this.recalculateSpeed();
@@ -818,7 +821,8 @@ export class Player extends BaseGameObject {
         }
 
         this.zoom = this.indoors ? finalZoom : scopeZoom;
-        if (onSmoke || this.downed) this.zoom = this.scopeZoomRadius["1xscope"];
+        if (onSmoke || (this.downed && !GameConfig.player.keepZoomWhileDowned))
+            this.zoom = this.scopeZoomRadius["1xscope"];
         if (!collidesWithZoomOut) this.indoors = false;
 
         const originalLayer = this.layer;
@@ -991,12 +995,12 @@ export class Player extends BaseGameObject {
             : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
-        if (this.group) {
+        if (player.group) {
             if (
                 this.playerStatusTicker >
                 net.getPlayerStatusUpdateRate(this.game.map.factionMode)
             ) {
-                const teamPlayers = this.group.getPlayers();
+                const teamPlayers = player.group.getPlayers();
                 for (let i = 0; i < teamPlayers.length; i++) {
                     const p = teamPlayers[i];
                     updateMsg.playerStatus.players.push({
@@ -1014,7 +1018,7 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teamPlayers = this.group!.getPlayers();
+            const teamPlayers = player.group!.getPlayers();
             for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
                     health: p.health,
@@ -1264,14 +1268,18 @@ export class Player extends BaseGameObject {
 
             // TODO: fix for faction mode
             if (this.downed) {
-                if (
+                const finishedByTeammate =
                     this.downedBy &&
                     sourceIsPlayer &&
-                    this.downedBy.groupId === (params.source as Player).groupId
-                ) {
-                    //if enemy knocks you and enemy teammate finishes you, still give the kill to the original enemy who knocked you
+                    this.downedBy.groupId === (params.source as Player).groupId;
+
+                const bledOut =
+                    this.downedBy && params.damageType == GameConfig.DamageType.Bleeding;
+
+                if (finishedByTeammate || bledOut) {
                     params.source = this.downedBy;
                 }
+
                 this.kill(params);
                 return;
             }
@@ -1637,6 +1645,7 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
+        this.shotSlowdownTimer = 0;
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
@@ -1654,6 +1663,7 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
+        this.shotSlowdownTimer = 0;
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
     }
 
@@ -2481,10 +2491,10 @@ export class Player extends BaseGameObject {
             this.speed += weaponDef.speed.equip;
         }
 
+        const customShootingSpeed =
+            GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            const customShootingSpeed =
-                GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
-            this.speed += customShootingSpeed ?? weaponDef.speed.attack + -6;
+            this.speed += customShootingSpeed ?? weaponDef.speed.attack;
         }
 
         // if player is on water decrease speed
@@ -2498,7 +2508,10 @@ export class Player extends BaseGameObject {
         }
 
         // decrease speed if popping adren or heals
-        if (this.actionType == GameConfig.Action.UseItem) {
+        if (
+            this.actionType == GameConfig.Action.UseItem ||
+            (this.shotSlowdownTimer > 0 && !customShootingSpeed)
+        ) {
             this.speed -= 6;
         }
 
