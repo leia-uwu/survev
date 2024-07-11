@@ -84,7 +84,11 @@ export class Airdrop extends BaseGameObject {
                         damageType: GameConfig.DamageType.Airdrop,
                         dir: "dir" in obj ? obj.dir : v2.create(0, 0)
                     });
-                } else if (obj.__type === ObjectType.Building && !obj.ceilingDead) {
+                } else if (
+                    obj.__type === ObjectType.Building &&
+                    !obj.ceilingDead &&
+                    obj.wallsToDestroy < Infinity
+                ) {
                     for (const zoomRegion of obj.zoomRegions) {
                         if (!zoomRegion.zoomIn) continue;
                         if (coldet.test(zoomRegion.zoomIn, this.crateCollision)) continue;

@@ -2187,7 +2187,6 @@ export class Player extends BaseGameObject {
                         this.weapons[freeGunSlot.availSlot].type = obj.type;
                     }
 
-                    this.weapons[newGunIdx].cooldown = 0;
                     // always select primary slot if melee or secondary is selected
                     if (
                         this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
