@@ -314,12 +314,7 @@ export class Bullet {
         this.distanceTraveled += moveDist;
 
         v2.set(this.pos, v2.add(this.pos, v2.mul(this.dir, moveDist)));
-        this.bulletManager.game.explosionBarn.newExplosions.push({
-            rad: 1,
-            type: "explosion_rounds",
-            pos: this.pos,
-            layer: this.layer
-        });
+
         const map = this.bulletManager.game.map;
         if (!coldet.testPointAabb(this.pos, map.bounds.min, map.bounds.max)) {
             this.alive = false;
