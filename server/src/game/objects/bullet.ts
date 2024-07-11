@@ -116,7 +116,7 @@ export class BulletBarn {
 
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
         if (bulletDef.addFlare) {
-            this.game.airdropBarn.addAirdrop(params.pos);
+            this.game.planeBarn.addAirdrop(params.pos);
         }
 
         return bullet;

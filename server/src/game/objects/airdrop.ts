@@ -1,7 +1,7 @@
-import type { BuildingDef, ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
+import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import { coldet } from "../../../../shared/utils/coldet";
+import { type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
@@ -15,10 +15,8 @@ export class AirdropBarn {
 
     constructor(readonly game: Game) {}
 
-    addAirdrop(pos: Vec2) {
-        const obstacle = "airdrop_crate_01";
-
-        const airdrop = new Airdrop(this.game, pos, obstacle);
+    addAirdrop(pos: Vec2, type: string) {
+        const airdrop = new Airdrop(this.game, pos, type);
         this.airdrops.push(airdrop);
         this.game.objectRegister.register(airdrop);
     }
@@ -51,10 +49,13 @@ export class Airdrop extends BaseGameObject {
     landed = false;
 
     obstacleType: string;
+    crateCollision: Collider;
 
     constructor(game: Game, pos: Vec2, obstacleType: string) {
         super(game, pos);
         this.obstacleType = obstacleType;
+        const def = MapObjectDefs[this.obstacleType] as ObstacleDef;
+        this.crateCollision = collider.transform(def.collision, this.pos, 0, 1);
     }
 
     update(dt: number) {
@@ -68,28 +69,25 @@ export class Airdrop extends BaseGameObject {
             this.landed = true;
             this.setDirty();
 
-            const def = MapObjectDefs[this.obstacleType] as ObstacleDef;
-            const collision = collider.transform(def.collision, this.pos, 0, 1);
-
-            const objs = this.game.grid.intersectCollider(collision);
+            const objs = this.game.grid.intersectCollider(this.crateCollision);
             for (const obj of objs) {
                 if (
                     (obj.__type === ObjectType.Player ||
                         obj.__type === ObjectType.Obstacle) &&
-                    coldet.test(obj.collider, collision) &&
+                    coldet.test(obj.collider, this.crateCollision) &&
                     util.sameLayer(obj.layer, 0)
                 ) {
                     obj.damage({
-                        amount: 100,
+                        amount: obj.__type === ObjectType.Player ? 100 : Infinity,
                         damageType: GameConfig.DamageType.Airdrop,
                         dir: "dir" in obj ? obj.dir : v2.create(0, 0)
                     });
-                } else if (obj.__type === ObjectType.Building) {
-                    const def = MapObjectDefs[obj.type] as BuildingDef;
-                    if (def.ceiling.destroy) {
+                } else if (obj.__type === ObjectType.Building && !obj.ceilingDead) {
+                    for (const zoomRegion of obj.zoomRegions) {
+                        if (!zoomRegion.zoomIn) continue;
+                        if (coldet.test(zoomRegion.zoomIn, this.crateCollision)) continue;
                         obj.ceilingDead = true;
                         obj.setPartDirty();
-                    } else {
                     }
                 }
             }

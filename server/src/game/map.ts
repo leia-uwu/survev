@@ -373,14 +373,8 @@ export class GameMap {
         //
         // Generate rivers
         //
-        const riverWeights: number[] = [];
-        const weightedWidths: number[][] = [];
 
-        for (const weightedRiver of mapConfig.rivers.weights) {
-            riverWeights.push(weightedRiver.weight);
-            weightedWidths.push(weightedRiver.widths);
-        }
-        const widths = util.weightedRandom(weightedWidths, riverWeights, randomGenerator);
+        const widths = util.weightedRandom(mapConfig.rivers.weights).widths;
         const halfWidth = this.width / 2;
         const halfHeight = this.height / 2;
 

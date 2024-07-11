@@ -32,7 +32,6 @@ import { WeaponManager, throwableList } from "../weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
 import type { Obstacle } from "./obstacle";
-import type { Plane } from "./plane";
 
 export class Emote {
     playerId: number;
@@ -577,8 +576,6 @@ export class Player extends BaseGameObject {
     }
 
     visibleObjects = new Set<GameObject>();
-    // planes already sent to client
-    planesSent = new Set<Plane>();
 
     update(dt: number): void {
         if (this.dead) return;
@@ -1031,7 +1028,8 @@ export class Player extends BaseGameObject {
             updateMsg.groupStatusDirty = true;
         }
 
-        for (const emote of playerBarn.emotes) {
+        for (let i = 0; i < playerBarn.emotes.length; i++) {
+            const emote = playerBarn.emotes[i];
             const emotePlayer = game.objectRegister.getById(emote.playerId) as
                 | Player
                 | undefined;
@@ -1091,18 +1089,15 @@ export class Player extends BaseGameObject {
         const planes = this.game.planeBarn.planes;
         for (let i = 0; i < planes.length; i++) {
             const plane = planes[i];
-            if (
-                !this.planesSent.has(plane) &&
-                coldet.testCircleAabb(plane.pos, plane.rad, rect.min, rect.max)
-            ) {
+            if (coldet.testCircleAabb(plane.pos, plane.rad, rect.min, rect.max)) {
                 updateMsg.planes.push(plane);
-                this.planesSent.add(plane);
             }
         }
 
         msgStream.serializeMsg(net.MsgType.Update, updateMsg);
 
-        for (const msg of this.msgsToSend) {
+        for (let i = 0; i < this.msgsToSend.length; i++) {
+            const msg = this.msgsToSend[i];
             msgStream.serializeMsg(msg.type, msg.msg);
         }
 
