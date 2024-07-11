@@ -5,9 +5,13 @@ import { v2 } from "./v2";
 /**
  * Custom function to not bundle nodejs assert polyfill with the client
  */
-export function assert(condition: boolean | undefined, msg?: string) {
-    if (!condition) {
-        throw new Error(msg ?? "Assertion failed");
+export function assert(value: unknown, message?: string | Error): asserts value {
+    if (!value) {
+        const error =
+            message instanceof Error
+                ? message
+                : new Error(message ?? "Assertation failed");
+        throw error;
     }
 }
 
