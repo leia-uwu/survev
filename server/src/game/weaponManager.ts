@@ -52,13 +52,15 @@ export class WeaponManager {
      * @param shouldReload will attempt automatic reload at 0 ammo if true
      * @returns
      */
-    setCurWeapIndex(idx: number, cancelAction = true): void {
+    setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
         this.player.cancelAnim();
 
-        this.player.shotSlowdownTimer = 0;
+        if (cancelSlowdown) {
+            this.player.shotSlowdownTimer = 0;
+        }
         this.bursts.length = 0;
         this.meleeAttacks.length = 0;
         this.scheduledReload = false;

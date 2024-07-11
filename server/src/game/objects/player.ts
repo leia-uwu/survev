@@ -1888,27 +1888,26 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.SwapWeapSlots: {
-                    const firstSlotWeaponType =
-                        this.weapons[GameConfig.WeaponSlot.Primary].type;
-                    const firstSlotWeaponAmmo =
-                        this.weapons[GameConfig.WeaponSlot.Primary].ammo;
+                    const primary = {
+                        ...this.weapons[GameConfig.WeaponSlot.Primary]
+                    };
+                    const secondary = {
+                        ...this.weapons[GameConfig.WeaponSlot.Secondary]
+                    };
 
-                    this.weapons[GameConfig.WeaponSlot.Primary].type =
-                        this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                    this.weapons[GameConfig.WeaponSlot.Primary].ammo =
-                        this.weapons[GameConfig.WeaponSlot.Secondary].ammo;
-
-                    this.weapons[GameConfig.WeaponSlot.Secondary].type =
-                        firstSlotWeaponType;
-                    this.weapons[GameConfig.WeaponSlot.Secondary].ammo =
-                        firstSlotWeaponAmmo;
+                    this.weapons[GameConfig.WeaponSlot.Primary] = secondary;
+                    this.weapons[GameConfig.WeaponSlot.Secondary] = primary;
 
                     // curWeapIdx's setter method already sets dirty.weapons
                     if (
                         this.curWeapIdx == GameConfig.WeaponSlot.Primary ||
                         this.curWeapIdx == GameConfig.WeaponSlot.Secondary
                     ) {
-                        this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
+                        this.weaponManager.setCurWeapIndex(
+                            this.curWeapIdx ^ 1,
+                            false,
+                            false
+                        );
                     } else {
                         this.weapsDirty = true;
                     }
