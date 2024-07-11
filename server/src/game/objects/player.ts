@@ -2166,14 +2166,16 @@ export class Player extends BaseGameObject {
                         ) {
                             this.weaponManager.dropGun(this.curWeapIdx, false);
                             this.weapons[this.curWeapIdx].type = obj.type;
+                            this.cancelAction();
+                            this.weaponManager.tryReload();
+                            this.weapsDirty = true;
                         } else {
                             removeLoot = false;
                             pickupMsg.type = net.PickupMsgType.Full;
                         }
-                        this.cancelAction();
-                        this.weaponManager.tryReload();
                     } else if (freeGunSlot.isDualWield) {
                         this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
+                        this.weapsDirty = true;
                         if (
                             freeGunSlot.availSlot === this.curWeapIdx &&
                             this.isReloading()
@@ -2185,6 +2187,7 @@ export class Player extends BaseGameObject {
                         }
                     } else {
                         this.weapons[freeGunSlot.availSlot].type = obj.type;
+                        this.weapsDirty = true;
                     }
 
                     // always select primary slot if melee or secondary is selected
@@ -2195,7 +2198,6 @@ export class Player extends BaseGameObject {
                         this.weaponManager.setCurWeapIndex(newGunIdx); // primary
                     }
 
-                    this.weapsDirty = true;
                     this.setDirty();
                 }
                 break;
