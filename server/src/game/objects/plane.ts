@@ -1,7 +1,7 @@
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDefs";
-import { GameConfig } from "../../../shared/gameConfig";
-import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
+import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
+import { GameConfig } from "../../../../shared/gameConfig";
+import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 
 export class PlaneBarn {
