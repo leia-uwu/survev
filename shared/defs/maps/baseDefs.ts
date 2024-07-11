@@ -324,7 +324,66 @@ export const Main: MapDef = {
         tier_tarkhany_outfit: [{ name: "outfitTarkhany", count: 1, weight: 1 }],
         tier_spetsnaz_outfit: [{ name: "outfitSpetsnaz", count: 1, weight: 1 }],
         tier_lumber_outfit: [{ name: "outfitLumber", count: 1, weight: 1 }],
-        tier_verde_outfit: [{ name: "outfitVerde", count: 1, weight: 1 }]
+        tier_verde_outfit: [{ name: "outfitVerde", count: 1, weight: 1 }],
+        tier_airdrop_uncommon: [
+            { name: "mk12", count: 1, weight: 2.5 },
+            { name: "scar", count: 1, weight: 0.75 },
+            { name: "vector", count: 1, weight: 0.75 },
+            { name: "mosin", count: 1, weight: 2.5 },
+            { name: "m39", count: 1, weight: 2.5 },
+            { name: "saiga", count: 1, weight: 1 },
+            { name: "deagle", count: 1, weight: 1 },
+            { name: "sv98", count: 1, weight: 0.5 },
+            { name: "qbb97", count: 1, weight: 1.5 },
+            { name: "m9", count: 1, weight: 0.01 },
+            { name: "flare_gun", count: 1, weight: 0.1 },
+            { name: "scout", count: 1, weight: 1.5 }
+        ],
+        tier_airdrop_rare: [
+            { name: "garand", count: 1, weight: 6 },
+            { name: "awc", count: 1, weight: 3 },
+            { name: "pkp", count: 1, weight: 3 },
+            { name: "m249", count: 1, weight: 0.1 },
+            { name: "m4a1", count: 1, weight: 4 },
+            { name: "scorpion", count: 1, weight: 5 },
+            { name: "ots38_dual", count: 1, weight: 4.5 }
+        ],
+        tier_airdrop_ammo: [
+            { name: "45acp", count: 30, weight: 3 },
+            { name: "762mm", count: 30, weight: 3 },
+            { name: "556mm", count: 30, weight: 3 },
+            { name: "12gauge", count: 5, weight: 3 }
+        ],
+        tier_airdrop_outfits: [
+            { name: "", count: 1, weight: 20 },
+            { name: "outfitMeteor", count: 1, weight: 5 },
+            { name: "outfitHeaven", count: 1, weight: 1 },
+            {
+                name: "outfitGhillie",
+                count: 1,
+                weight: 0.5
+            }
+        ],
+        tier_airdrop_throwables: [
+            { name: "frag", count: 2, weight: 1 },
+            { name: "mirv", count: 2, weight: 0.5 }
+        ],
+        tier_airdrop_melee: [
+            { name: "", count: 1, weight: 19 },
+            { name: "pan", count: 1, weight: 1 }
+        ],
+        tier_airdrop_armor: [
+            { name: "helmet03", count: 1, weight: 1 },
+            { name: "chest03", count: 1, weight: 1 },
+            { name: "backpack03", count: 1, weight: 1 }
+        ],
+        tier_airdrop_scopes: [
+            { name: "", count: 1, weight: 18 },
+            { name: "4xscope", count: 1, weight: 3 },
+            { name: "4xscope", count: 1, weight: 1 },
+            { name: "8xscope", count: 1, weight: 0.5 },
+            { name: "15xscope", count: 1, weight: 0.1 }
+        ]
     },
     mapGen: {
         map: {

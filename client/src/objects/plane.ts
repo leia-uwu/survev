@@ -285,7 +285,11 @@ export class PlaneBarn {
                         p.config.planeRad,
                         p.config.planeRad * planeElevateMult
                     );
-                    p.alpha = math.lerp(p.spriteUpdateTime, planeAlpha, planeAlpha * planeAlphaMult);
+                    p.alpha = math.lerp(
+                        p.spriteUpdateTime,
+                        planeAlpha,
+                        planeAlpha * planeAlphaMult
+                    );
                     p.soundRangeMult = math.max(
                         0,
                         math.lerp(
