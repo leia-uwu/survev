@@ -14,7 +14,10 @@ import type { UiManager } from "../ui/ui";
 import type { Vec2 } from "./../../../shared/utils/v2";
 import type { Player } from "./player";
 
-const planeElevateTime = 2;
+const planeElevateMult = 1.25;
+const planeAlpha = 0.75;
+const planeAlphaMult = 0.75;
+const planeElevateTime = 2.0;
 
 class Plane {
     active = false;
@@ -58,7 +61,7 @@ class Plane {
         this.soundInstance = null;
         this.soundUpdateThrottle = 0;
 
-        this.alpha = 0.75;
+        this.alpha = planeAlpha;
         this.renderAlpha = 1;
         this.spriteUpdateTime = 0;
 
@@ -280,9 +283,9 @@ export class PlaneBarn {
                     p.rad = math.lerp(
                         p.spriteUpdateTime,
                         p.config.planeRad,
-                        p.config.planeRad * 1.25
+                        p.config.planeRad * planeElevateMult
                     );
-                    p.alpha = math.lerp(p.spriteUpdateTime, 0.75, 0.5625);
+                    p.alpha = math.lerp(p.spriteUpdateTime, planeAlpha, planeAlpha * planeAlphaMult);
                     p.soundRangeMult = math.max(
                         0,
                         math.lerp(
