@@ -5,8 +5,9 @@ import type {
     TeamErrorMsg,
     TeamMenuPlayer,
     TeamStateMsg
-} from "../../shared/net";
+} from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
+import { Config } from "./config";
 import type { Server, TeamSocketData } from "./server";
 
 interface RoomPlayer extends TeamMenuPlayer {
@@ -56,16 +57,24 @@ export class TeamMenu {
     constructor(public server: Server) {}
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
+        const enabledGameModeIdxs = Config.modes
+            .slice(1)
+            .filter((m) => m.enabled)
+            .map((m) => m.teamMode / 2);
+        const gameModeIdx = enabledGameModeIdxs.includes(initialRoomData.gameModeIdx)
+            ? initialRoomData.gameModeIdx
+            : 3 - initialRoomData.gameModeIdx;
+
         const value = {
             roomData: {
                 roomUrl,
                 region: initialRoomData.region,
-                gameModeIdx: initialRoomData.gameModeIdx,
-                enabledGameModeIdxs: [1, 2],
+                gameModeIdx: gameModeIdx,
+                enabledGameModeIdxs: enabledGameModeIdxs,
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
-                maxPlayers: math.clamp(initialRoomData.gameModeIdx * 2, 2, 4)
+                maxPlayers: math.clamp(gameModeIdx * 2, 2, 4)
             },
             players: [roomLeader]
         };
@@ -168,6 +177,12 @@ export class TeamMenu {
                     socketData: localPlayerData
                 };
 
+                if (!Config.modes[1].enabled && !Config.modes[2].enabled) {
+                    response = teamErrorMsg("create_failed");
+                    this.sendResponse(response, player);
+                    break;
+                }
+
                 const activeCodes = new Set(this.rooms.keys());
                 let roomUrl = `#${randomString(4)}`;
                 while (activeCodes.has(roomUrl)) {
@@ -208,7 +223,7 @@ export class TeamMenu {
                     name,
                     isLeader: false,
                     inGame: false,
-                    playerId: room.players.length - 1,
+                    playerId: room.players.length,
                     socketData: localPlayerData
                 } as RoomPlayer;
                 room.players.push(player);
@@ -262,12 +277,12 @@ export class TeamMenu {
                 if (!pToKick || pToKick === player) {
                     return;
                 }
-                this.removePlayer(localPlayerData);
 
                 response = {
                     type: "kicked"
                 };
                 this.sendResponse(response, pToKick);
+                //player is removed and new room state is sent when the socket is inevitably closed after the kick
                 break;
             }
             case "keepAlive": {

@@ -14,6 +14,7 @@ interface Info {
     modes: Array<{
         mapName: string;
         teamMode: TeamMode;
+        enabled: boolean;
     }>;
     pops: Record<string, string>;
     youtube: {
@@ -35,7 +36,8 @@ export class SiteInfo {
             .map((mapName) => {
                 return {
                     mapName,
-                    teamMode: 1
+                    teamMode: 1,
+                    enabled: true
                 };
             }),
         pops: {
@@ -81,7 +83,8 @@ export class SiteInfo {
             availableModes.push({
                 icon: mapDef.icon,
                 buttonCss: mapDef.buttonCss,
-                buttonText
+                buttonText,
+                enabled: mode.enabled
             });
         }
         return availableModes;
@@ -103,8 +106,10 @@ export class SiteInfo {
 
                 const def = MapDefs[info.mapName as keyof typeof MapDefs] as MapDef;
                 const name = def.desc.name;
+                const mapName = info.mapName;
+
                 const btn = $(
-                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} (${info.mapName})</a>`
+                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${name.toLowerCase() == mapName ? "" : "(" + mapName + ")"}</a>`
                 );
                 btn.insertAfter(mainBtn);
 
@@ -130,6 +135,10 @@ export class SiteInfo {
                             "background-image": `url(${style.icon})`
                         });
                     }
+                }
+
+                if (!style.enabled) {
+                    btn.addClass("btn-disabled-main");
                 }
             }
 

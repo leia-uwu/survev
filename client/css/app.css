@@ -3526,6 +3526,12 @@ screen and (max-width: 736px) and (orientation: landscape) {
   border-color: #fff !important;
 }
 
+.btn-disabled-main {
+  filter: brightness(0.5);
+  pointer-events: none;
+  user-select: none;
+}
+
 .btn-disabled:hover {
   color: #fff !important;
 }

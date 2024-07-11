@@ -13,7 +13,7 @@ import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { Action, DamageType, GameConfig, Input } from "../../../shared/gameConfig";
-import { PickupMsgType } from "../../../shared/net";
+import { PickupMsgType } from "../../../shared/net/net";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";

@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../../shared/gameConfig";
+import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
-import type { ObjectData, ObjectType } from "../../../shared/utils/objectSerializeFns";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";

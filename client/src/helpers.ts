@@ -2,15 +2,13 @@ import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
-import * as net from "../../shared/net";
+import * as net from "../../shared/net/net";
 import { device } from "./device";
 const truncateCanvas = document.createElement("canvas");
 
 export const helpers = {
     getParameterByName: function (name: string, url?: string) {
-        const searchParams = new URLSearchParams(
-            url || window.location.href || window.location.search
-        );
+        const searchParams = new URLSearchParams(url || window.location.search);
         return searchParams.get(name) || "";
     },
     getCookie: function (cname: string) {

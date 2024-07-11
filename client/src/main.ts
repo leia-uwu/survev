@@ -1,14 +1,15 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
-import { Game as ServerGame } from "../../server/src/game";
+import { Game as ServerGame } from "../../server/src/game/game";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
-import * as net from "../../shared/net";
+import * as net from "../../shared/net/net";
 import { math } from "../../shared/utils/math";
 import { Account } from "./account";
 import { Ambiance } from "./ambiance";
 import { api } from "./api";
 import { AudioManager } from "./audioManager";
+import { Bot } from "./bot";
 import { ConfigManager, type ConfigType } from "./config";
 import { device } from "./device";
 import { Game } from "./game";
@@ -98,6 +99,7 @@ class Application {
     newsDisplayed = false;
 
     serverGame!: ServerGame;
+    enableBots = false;
 
     constructor() {
         this.account = new Account(this.config);
@@ -120,6 +122,8 @@ class Application {
             this.onTeamMenuJoinGame.bind(this),
             this.onTeamMenuLeave.bind(this)
         );
+
+        this.enableBots = Boolean(helpers.getParameterByName("bots"));
 
         const onLoadComplete = () => {
             this.config.load(() => {
@@ -176,7 +180,17 @@ class Application {
                     teamMode: 1
                 });
 
-                this.game!.tryJoinGame(game);
+                const bots = new Set<Bot>();
+
+                if (this.enableBots) {
+                    const botCount = 79;
+
+                    for (let i = 0; i < botCount; i++) {
+                        bots.add(new Bot(game, i));
+                    }
+                }
+
+                this.game!.tryJoinGame(game, bots);
 
                 this.serverGame = game;
             });
