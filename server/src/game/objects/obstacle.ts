@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
-import { GameConfig } from "../../../../shared/gameConfig";
+import { DamageType, GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
@@ -248,22 +248,24 @@ export class Obstacle extends BaseGameObject {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
-        let armorPiercing = false;
-        let stonePiercing = false;
+        if (params.damageType === DamageType.Player) {
+            let armorPiercing = false;
+            let stonePiercing = false;
 
-        if (params.gameSourceType) {
-            const sourceDef = GameObjectDefs[params.gameSourceType] as
-                | {
-                      armorPiercing?: boolean;
-                      stonePiercing?: boolean;
-                  }
-                | undefined;
-            armorPiercing = sourceDef?.armorPiercing ?? false;
-            stonePiercing = sourceDef?.stonePiercing ?? false;
+            if (params.gameSourceType) {
+                const sourceDef = GameObjectDefs[params.gameSourceType] as
+                    | {
+                          armorPiercing?: boolean;
+                          stonePiercing?: boolean;
+                      }
+                    | undefined;
+                armorPiercing = sourceDef?.armorPiercing ?? false;
+                stonePiercing = sourceDef?.stonePiercing ?? false;
+            }
+
+            if (def.armorPlated && !armorPiercing) return;
+            if (def.stonePlated && !stonePiercing) return;
         }
-
-        if (def.armorPlated && !armorPiercing) return;
-        if (def.stonePlated && !stonePiercing) return;
 
         this.health -= params.amount!;
 

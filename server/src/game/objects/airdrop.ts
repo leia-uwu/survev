@@ -9,6 +9,7 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { MapObjectDefs } from "../../..//../shared/defs/mapObjectDefs";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
+import { Emote } from "./player";
 
 export class AirdropBarn {
     airdrops: Airdrop[] = [];
@@ -18,6 +19,7 @@ export class AirdropBarn {
     addAirdrop(pos: Vec2, type: string) {
         const airdrop = new Airdrop(this.game, pos, type);
         this.airdrops.push(airdrop);
+        this.game.playerBarn.emotes.push(new Emote(0, pos, "ping_airdrop", true));
         this.game.objectRegister.register(airdrop);
     }
 
@@ -78,7 +80,7 @@ export class Airdrop extends BaseGameObject {
                     util.sameLayer(obj.layer, 0)
                 ) {
                     obj.damage({
-                        amount: obj.__type === ObjectType.Player ? 100 : Infinity,
+                        amount: obj.__type === ObjectType.Player ? 100 : 1e10,
                         damageType: GameConfig.DamageType.Airdrop,
                         dir: "dir" in obj ? obj.dir : v2.create(0, 0)
                     });

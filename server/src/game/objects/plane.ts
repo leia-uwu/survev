@@ -1,5 +1,6 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
+import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../../shared/gameConfig";
@@ -20,12 +21,19 @@ interface ScheduledAirDrop {
 // amount of seconds to travel to target
 const AIRDROP_PLANE_SPAWN_DIST = GameConfig.airdrop.planeVel * 15;
 
+type PlaneOptions = MapDef["gameConfig"]["planes"]["timings"][number]["options"];
+
 export class PlaneBarn {
     planes: Plane[] = [];
 
     freeIds: number[] = Array.from({ length: 256 }, (_, i) => i);
 
     planeBounds = collider.createAabb(v2.create(-512, -512), v2.create(1536, 1536));
+
+    scheduledPlanes: Array<{
+        time: number;
+        options: PlaneOptions;
+    }> = [];
 
     constructor(readonly game: Game) {}
     update(dt: number) {
@@ -45,12 +53,39 @@ export class PlaneBarn {
                 this.freeIds.push(plane.id);
             }
         }
+
+        for (let i = 0; i < this.scheduledPlanes.length; i++) {
+            const scheduledPlane = this.scheduledPlanes[i];
+            scheduledPlane.time -= dt;
+            if (scheduledPlane.time <= 0) {
+                this.scheduledPlanes.splice(i, 1);
+
+                switch (scheduledPlane.options.type) {
+                    case GameConfig.Plane.Airdrop: {
+                        this.addAirdrop(
+                            v2.add(
+                                this.game.gas.posNew,
+                                util.randomPointInCircle(this.game.gas.radNew)
+                            )
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    schedulePlane(time: number, options: PlaneOptions) {
+        this.scheduledPlanes.push({
+            time,
+            options
+        });
     }
 
     addAirdrop(pos: Vec2) {
         const id = this.freeIds.pop();
         if (!id) {
-            this.game.logger.warn("Player Barn: ran out of IDs");
+            this.game.logger.warn("Plane Barn: ran out of IDs");
             return;
         }
 
@@ -183,7 +218,7 @@ export class PlaneBarn {
     addAirStrike(targetPos: Vec2, dir: Vec2) {
         const id = this.freeIds.pop();
         if (!id) {
-            this.game.logger.warn("Player Barn: ran out of IDs");
+            this.game.logger.warn("Planem Barn: ran out of IDs");
             return;
         }
 
