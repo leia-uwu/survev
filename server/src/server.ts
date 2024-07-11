@@ -215,7 +215,7 @@ export class Server {
         try {
             game.handleMsg(message, data);
         } catch (e) {
-            this.game.logger.warn("Error parsing message:", e);
+            game.logger.warn("Error parsing message:", e);
         }
     }
 
