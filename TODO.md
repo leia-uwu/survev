@@ -11,7 +11,7 @@
  - [x] Consumable items
  - [x] Spectating
  - [x] Slowdown on water
- - [ ] Kill Leader
+ - [x] Kill Leader
  - [x] Loadouts
  - [x] Emotes
  - [ ] Roles and cobalt classes
