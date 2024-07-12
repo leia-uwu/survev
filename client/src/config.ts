@@ -19,7 +19,7 @@ const defaultConfig = {
     region: "na",
     gameModeIdx: 2,
     teamAutoFill: true,
-    language: "en" as Locale,
+    language: "pt" as Locale,
     prerollGamesPlayed: 0,
     totalGamesPlayed: 0,
     promptAppRate: true,
