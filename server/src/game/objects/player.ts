@@ -58,6 +58,9 @@ export class PlayerBarn {
 
     emotes: Emote[] = [];
 
+    killLeaderDirty = false;
+    killLeader?: Player;
+
     constructor(readonly game: Game) {}
 
     randomPlayer(player?: Player) {
@@ -186,6 +189,7 @@ export class PlayerBarn {
         this.deletedPlayers.length = 0;
         this.emotes.length = 0;
         this.aliveCountDirty = false;
+        this.killLeaderDirty = false;
 
         for (let i = 0; i < this.players.length; i++) {
             const player = this.players[i];
@@ -441,6 +445,33 @@ export class Player extends BaseGameObject {
     actionItem = "";
 
     role = "";
+    isKillLeader = false;
+
+    promoteToRole(role: string) {
+        if (role === "kill_leader") {
+            if (this.isKillLeader) return;
+            if (this.game.map.mapDef.gameMode.sniperMode) {
+                this.role = role;
+                this.setDirty();
+            }
+            this.isKillLeader = true;
+            if (this.game.playerBarn.killLeader) {
+                this.game.playerBarn.killLeader.isKillLeader = false;
+            }
+            this.game.playerBarn.killLeader = this;
+            this.game.playerBarn.killLeaderDirty = true;
+        } else {
+            if (this.role === role) return;
+            this.role = role;
+            this.setDirty();
+        }
+
+        const msg = new net.RoleAnnouncementMsg();
+        msg.role = role;
+        msg.assigned = true;
+        msg.playerId = this.__id;
+        this.game.sendMsg(net.MsgType.RoleAnnouncement, msg);
+    }
 
     perks: Array<{ type: string; droppable: boolean }> = [];
 
@@ -1097,6 +1128,12 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (playerBarn.killLeaderDirty || this._firstUpdate) {
+            updateMsg.killLeaderDirty = true;
+            updateMsg.killLeaderId = playerBarn.killLeader?.__id ?? 0;
+            updateMsg.killLeaderKills = playerBarn.killLeader?.kills ?? 0;
+        }
+
         msgStream.serializeMsg(net.MsgType.Update, updateMsg);
 
         for (let i = 0; i < this.msgsToSend.length; i++) {
@@ -1474,17 +1511,64 @@ export class Player extends BaseGameObject {
         killMsg.killed = true;
 
         if (params.source instanceof Player) {
-            this.killedBy = params.source;
-            if (params.source !== this) {
-                params.source.kills++;
+            const source = params.source;
+            this.killedBy = source;
+            if (source !== this) {
+                source.kills++;
+
+                if (this.game.map.mapDef.gameMode.killLeaderEnabled) {
+                    const killLeader = this.game.playerBarn.killLeader;
+                    if (
+                        source.kills >= GameConfig.player.killLeaderMinKills &&
+                        source.kills > (killLeader?.kills ?? 0)
+                    ) {
+                        if (killLeader) {
+                            killLeader.role = "";
+                        }
+                        source.promoteToRole("kill_leader");
+                    }
+                    if (source.isKillLeader) {
+                        this.game.playerBarn.killLeaderDirty = true;
+                    }
+                }
             }
 
-            killMsg.killerId = params.source.__id;
-            killMsg.killCreditId = params.source.__id;
-            killMsg.killerKills = params.source.kills;
+            killMsg.killerId = source.__id;
+            killMsg.killCreditId = source.__id;
+            killMsg.killerKills = source.kills;
         }
 
         this.game.sendMsg(net.MsgType.Kill, killMsg);
+
+        if (this.role && this.role !== "kill_leader") {
+            const roleMsg = new net.RoleAnnouncementMsg();
+            roleMsg.role = this.role;
+            roleMsg.assigned = false;
+            roleMsg.killed = true;
+            roleMsg.playerId = this.__id;
+            roleMsg.killerId = params.source?.__id ?? 0;
+            this.game.sendMsg(net.MsgType.RoleAnnouncement, roleMsg);
+        }
+        if (this.isKillLeader) {
+            this.game.playerBarn.killLeader = undefined;
+            this.game.playerBarn.killLeaderDirty = true;
+            this.isKillLeader = false;
+
+            const roleMsg = new net.RoleAnnouncementMsg();
+            roleMsg.role = "kill_leader";
+            roleMsg.assigned = false;
+            roleMsg.killed = true;
+            roleMsg.playerId = this.__id;
+            roleMsg.killerId = params.source?.__id ?? 0;
+            this.game.sendMsg(net.MsgType.RoleAnnouncement, roleMsg);
+
+            const newKillLeader = this.game.playerBarn.livingPlayers
+                .filter((p) => p.kills >= GameConfig.player.killLeaderMinKills)
+                .sort((a, b) => a.kills - b.kills)[0];
+            if (newKillLeader) {
+                newKillLeader.promoteToRole("kill_leader");
+            }
+        }
 
         this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
