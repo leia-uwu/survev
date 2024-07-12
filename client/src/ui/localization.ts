@@ -21,15 +21,15 @@ function downloadFile(
 }
 
 const Locales = {
+    pt: "Português",
+    en: "English",
     da: "Dansk",
     de: "Deutsch",
-    en: "English",
     es: "Español",
     fr: "Français",
     it: "Italiano",
     nl: "Nederlands",
     pl: "Polski",
-    pt: "Português",
     ru: "Русский",
     sv: "Svenska",
     vn: "Tiếng Việt",
@@ -46,13 +46,13 @@ export type Locale = keyof typeof Locales;
 export class Localization {
     readonly acceptedLocales: Locale[] = Object.keys(Locales) as Locale[];
     translations: Record<string, Record<string, string>> = {
-        en: english
+        en: Português
     };
 
-    locale: Locale = "en";
+    locale: Locale = "pt";
 
     constructor() {
-        this.locale = "en";
+        this.locale = "pt";
     }
 
     detectLocale() {
