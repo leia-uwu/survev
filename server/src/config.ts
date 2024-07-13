@@ -21,9 +21,9 @@ export const Config = {
     port: 8000,
 
     modes: [
-        { mapName: "woods_snow", teamMode: TeamMode.Solo, enabled: true },
+        { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "turkey", teamMode: TeamMode.Duo, enabled: true },
-        { mapName: "main", teamMode: TeamMode.Squad, enabled: false }
+        { mapName: "woods_snow", teamMode: TeamMode.Squad, enabled: true }
     ],
 
     plugins: [],
