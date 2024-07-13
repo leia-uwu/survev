@@ -166,6 +166,7 @@ export const GameConfig = {
         medicHealRange: 8,
         medicReviveRange: 6,
         spectateDeadTimeout: 2,
+        killLeaderMinKills: 3,
         minSpawnDistance: 50, // minimum distance enemy players need to spawn from each other
         gracePeriodTime: 0 // time from game start where players can't move
     },
