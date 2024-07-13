@@ -281,6 +281,13 @@ export class WeaponManager {
         this.scheduledReload = true;
     }
 
+    isInfinite(weaponDef: GunDef): boolean {
+        return (
+            !weaponDef.ignoreEndlessAmmo &&
+            (weaponDef.ammoInfinite || this.player.hasPerk("endless_ammo"))
+        );
+    }
+
     /**
      * Try to schedule a reload action if all conditions are met
      */
@@ -294,11 +301,10 @@ export class WeaponManager {
         }
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
-        const isInfinite = weaponDef.ammoInfinite || this.player.hasPerk("endless_ammo");
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
-            this.player.inventory[weaponDef.ammo] == 0 && !isInfinite,
+            this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
                 this.curWeapIdx == GameConfig.WeaponSlot.Throwable
         ];
@@ -335,9 +341,7 @@ export class WeaponManager {
             amountToReload = weaponDef.maxReloadAlt;
         }
 
-        const isInfinite = weaponDef.ammoInfinite || this.player.hasPerk("endless_ammo");
-
-        if (isInfinite) {
+        if (this.isInfinite(weaponDef)) {
             this.weapons[this.curWeapIdx].ammo += math.clamp(
                 amountToReload,
                 0,
@@ -366,7 +370,7 @@ export class WeaponManager {
 
         // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
         const realMaxClip =
-            inv[weaponDef.ammo] == 0 && !isInfinite
+            inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
                 ? this.weapons[this.curWeapIdx].ammo
                 : weaponDef.maxClip;
         if (
@@ -397,11 +401,9 @@ export class WeaponManager {
 
         const backpackLevel = this.player.getGearLevel(this.player.backpack);
 
-        const isInfinite = weaponDef.ammoInfinite || this.player.hasPerk("endless_ammo");
-
         let amountToDrop = 0;
         // some guns ammo type have no item in bagSizes, like potato guns
-        if (GameConfig.bagSizes[weaponAmmoType] && !isInfinite) {
+        if (GameConfig.bagSizes[weaponAmmoType] && !this.isInfinite(weaponDef)) {
             const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
             if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
                 this.player.inventory[weaponAmmoType] += weaponAmmoCount;
