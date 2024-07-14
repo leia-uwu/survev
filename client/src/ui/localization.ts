@@ -49,10 +49,10 @@ export class Localization {
         en: Português
     };
 
-    locale: Locale = "pt";
+    locale: Locale = "en";
 
     constructor() {
-        this.locale = "pt";
+        this.locale = "en";
     }
 
     detectLocale() {
