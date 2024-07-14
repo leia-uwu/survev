@@ -223,6 +223,7 @@ export const GameConfig = {
     projectile: {
         maxHeight: 5
     },
+    enableKillSounds: false,
     structureLayerCount: 2,
     tracerColors: {
         "9mm": {
