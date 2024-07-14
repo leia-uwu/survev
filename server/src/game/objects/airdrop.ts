@@ -91,9 +91,11 @@ export class Airdrop extends BaseGameObject {
                 ) {
                     for (const zoomRegion of obj.zoomRegions) {
                         if (!zoomRegion.zoomIn) continue;
-                        if (coldet.test(zoomRegion.zoomIn, this.crateCollision)) continue;
-                        obj.ceilingDead = true;
-                        obj.setPartDirty();
+                        if (coldet.test(zoomRegion.zoomIn, this.crateCollision)) {
+                            obj.ceilingDead = true;
+                            obj.setPartDirty();
+                            break;
+                        }
                     }
                 }
             }
