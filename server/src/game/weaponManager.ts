@@ -862,7 +862,11 @@ export class WeaponManager {
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
             this.curWeapIdx == GameConfig.WeaponSlot.Throwable
-                ? this.player.toMouseLen / 15
+                ? math.clamp(
+                      this.player.toMouseLen,
+                      0,
+                      GameConfig.player.throwableMaxMouseDist * 1.8
+                  ) / 15
                 : 0;
 
         if (throwableDef.type !== "throwable") {
