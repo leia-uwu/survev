@@ -46,7 +46,7 @@ export type Locale = keyof typeof Locales;
 export class Localization {
     readonly acceptedLocales: Locale[] = Object.keys(Locales) as Locale[];
     translations: Record<string, Record<string, string>> = {
-        en: Português
+        en: english
     };
 
     locale: Locale = "en";
