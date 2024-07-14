@@ -21,15 +21,15 @@ function downloadFile(
 }
 
 const Locales = {
-    pt: "Português",
-    en: "English",
     da: "Dansk",
     de: "Deutsch",
+    en: "English",
     es: "Español",
     fr: "Français",
     it: "Italiano",
     nl: "Nederlands",
     pl: "Polski",
+    pt: "Português",
     ru: "Русский",
     sv: "Svenska",
     vn: "Tiếng Việt",
