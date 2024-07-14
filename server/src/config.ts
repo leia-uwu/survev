@@ -23,7 +23,7 @@ export const Config = {
     modes: [
         { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "desert", teamMode: TeamMode.Duo, enabled: true },
-        { mapName: "woods_snow", teamMode: TeamMode.Squad, enabled: false }
+        { mapName: "woods_snow", teamMode: TeamMode.Squad, enabled: true }
     ],
 
     plugins: [],
