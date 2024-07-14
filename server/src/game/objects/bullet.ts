@@ -382,6 +382,11 @@ export class Bullet {
                 ) {
                     continue;
                 }
+
+                if (obj.hasPerk("windwalk") && v2.distance(this.pos, obj.pos) <= 5) {
+                    obj.giveHaste(GameConfig.HasteType.Windwalk, 3);
+                }
+
                 let panCollision = null;
                 if (obj.hasActivePan()) {
                     const p = obj;

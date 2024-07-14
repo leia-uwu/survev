@@ -439,6 +439,7 @@ export class Player extends BaseGameObject {
     frozen = false;
     frozenOri = 0;
 
+    private _hasteTicker = 0;
     hasteType: number = GameConfig.HasteType.None;
     hasteSeq = 0;
 
@@ -727,6 +728,17 @@ export class Player extends BaseGameObject {
                 this.animSeq++;
                 this.setDirty();
                 this._animCb?.();
+            }
+        }
+
+        if (this.hasteType != GameConfig.HasteType.None) {
+            this._hasteTicker -= dt;
+
+            if (this._hasteTicker <= 0) {
+                this.hasteType = GameConfig.HasteType.None;
+                this._hasteTicker = 0;
+                this.hasteSeq++;
+                this.setDirty();
             }
         }
 
@@ -2543,6 +2555,13 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
+    giveHaste(type: number, duration: number): void {
+        this.hasteType = type;
+        this.hasteSeq++;
+        this._hasteTicker = duration;
+        this.setDirty();
+    }
+
     playAnim(type: number, duration: number, cb?: () => void): void {
         this.animType = type;
         this.animSeq++;
@@ -2602,6 +2621,10 @@ export class Player extends BaseGameObject {
 
         if (this.animType === GameConfig.Anim.Cook) {
             this.speed -= GameConfig.player.cookSpeedPenalty;
+        }
+
+        if (this.hasteType != GameConfig.HasteType.None) {
+            this.speed += GameConfig.player.hasteSpeedBonus;
         }
 
         // decrease speed if popping adren or heals
