@@ -1303,6 +1303,8 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.hasPerk("bonus_assault")) finalDamage *= 1.08;
+
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
         this.damageTaken += finalDamage;
@@ -1548,6 +1550,12 @@ export class Player extends BaseGameObject {
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;
+
+            if (source.hasPerk("takedown")) {
+                source.health += 25;
+                source.boost += 25;
+                source.giveHaste(GameConfig.HasteType.Takedown, 3);
+            }
         }
 
         this.game.sendMsg(net.MsgType.Kill, killMsg);
@@ -2627,10 +2635,11 @@ export class Player extends BaseGameObject {
             this.speed += GameConfig.player.hasteSpeedBonus;
         }
 
-        // decrease speed if popping adren or heals
+        // decrease speed if shooting or popping adren or heals
+        // field_medic perk doesn't slow you down while you heal
         if (
-            this.actionType == GameConfig.Action.UseItem ||
-            (this.shotSlowdownTimer > 0 && !customShootingSpeed)
+            (this.shotSlowdownTimer > 0 && !customShootingSpeed) ||
+            (!this.hasPerk("field_medic") && this.actionType == GameConfig.Action.UseItem)
         ) {
             this.speed *= 0.5;
         }
