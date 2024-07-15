@@ -622,6 +622,7 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: this.offHand,
+                trailSaturated: this.player.hasPerk("bonus_assault"),
                 trailSmall: false,
                 reflectCount: 0,
                 splinter: hasSplinter,
