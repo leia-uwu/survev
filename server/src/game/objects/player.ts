@@ -2633,10 +2633,11 @@ export class Player extends BaseGameObject {
             this.speed += GameConfig.player.hasteSpeedBonus;
         }
 
-        // decrease speed if popping adren or heals
+        // decrease speed if shooting or popping adren or heals
+        // field_medic perk doesn't slow you down while you heal
         if (
-            this.actionType == GameConfig.Action.UseItem ||
-            (this.shotSlowdownTimer > 0 && !customShootingSpeed)
+            (this.shotSlowdownTimer > 0 && !customShootingSpeed) ||
+            (!this.hasPerk("field_medic") && this.actionType == GameConfig.Action.UseItem)
         ) {
             this.speed *= 0.5;
         }
