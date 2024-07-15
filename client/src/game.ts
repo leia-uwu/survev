@@ -1297,17 +1297,6 @@ export class Game {
                     );
                 }
 
-                // Play kill sound
-                if (
-                    GameConfig.enableKillSounds &&
-                    msg.killCreditId == this.activeId &&
-                    msg.killed
-                ) {
-                    const sound = `kill_0${math.clamp(msg.killerKills + 1, 2, 5)}`;
-                    this.audioManager.playSound(sound, {
-                        channel: "kills"
-                    });
-                }
                 break;
             }
             case net.MsgType.RoleAnnouncement: {
