@@ -58,6 +58,9 @@ export class PlayerBarn {
 
     emotes: Emote[] = [];
 
+    killLeaderDirty = false;
+    killLeader?: Player;
+
     constructor(readonly game: Game) {}
 
     randomPlayer(player?: Player) {
@@ -186,6 +189,7 @@ export class PlayerBarn {
         this.deletedPlayers.length = 0;
         this.emotes.length = 0;
         this.aliveCountDirty = false;
+        this.killLeaderDirty = false;
 
         for (let i = 0; i < this.players.length; i++) {
             const player = this.players[i];
@@ -289,7 +293,7 @@ export class Player extends BaseGameObject {
 
     set boost(boost: number) {
         if (this._boost === boost) return;
-        if (this.downed) return;
+        if (this.downed && boost > 0) return; // can't gain adren while knocked, can only set it to zero
         this._boost = boost;
         this._boost = math.clamp(this._boost, 0, 100);
         this.boostDirty = true;
@@ -435,12 +439,40 @@ export class Player extends BaseGameObject {
     frozen = false;
     frozenOri = 0;
 
+    private _hasteTicker = 0;
     hasteType: number = GameConfig.HasteType.None;
     hasteSeq = 0;
 
     actionItem = "";
 
     role = "";
+    isKillLeader = false;
+
+    promoteToRole(role: string) {
+        if (role === "kill_leader") {
+            if (this.isKillLeader) return;
+            if (this.game.map.mapDef.gameMode.sniperMode) {
+                this.role = role;
+                this.setDirty();
+            }
+            this.isKillLeader = true;
+            if (this.game.playerBarn.killLeader) {
+                this.game.playerBarn.killLeader.isKillLeader = false;
+            }
+            this.game.playerBarn.killLeader = this;
+            this.game.playerBarn.killLeaderDirty = true;
+        } else {
+            if (this.role === role) return;
+            this.role = role;
+            this.setDirty();
+        }
+
+        const msg = new net.RoleAnnouncementMsg();
+        msg.role = role;
+        msg.assigned = true;
+        msg.playerId = this.__id;
+        this.game.sendMsg(net.MsgType.RoleAnnouncement, msg);
+    }
 
     perks: Array<{ type: string; droppable: boolean }> = [];
 
@@ -699,8 +731,22 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.hasteType != GameConfig.HasteType.None) {
+            this._hasteTicker -= dt;
+
+            if (this._hasteTicker <= 0) {
+                this.hasteType = GameConfig.HasteType.None;
+                this._hasteTicker = 0;
+                this.hasteSeq++;
+                this.setDirty();
+            }
+        }
+
         if (this.game.isTeamMode) {
             this.playerStatusTicker += dt;
+            for (const spectator of this.spectators) {
+                spectator.playerStatusTicker += dt;
+            }
         }
 
         this.recalculateSpeed();
@@ -818,7 +864,8 @@ export class Player extends BaseGameObject {
         }
 
         this.zoom = this.indoors ? finalZoom : scopeZoom;
-        if (onSmoke || this.downed) this.zoom = this.scopeZoomRadius["1xscope"];
+        if (onSmoke || (this.downed && !GameConfig.player.keepZoomWhileDowned))
+            this.zoom = this.scopeZoomRadius["1xscope"];
         if (!collidesWithZoomOut) this.indoors = false;
 
         const originalLayer = this.layer;
@@ -991,12 +1038,12 @@ export class Player extends BaseGameObject {
             : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
-        if (this.group) {
+        if (player.group) {
             if (
                 this.playerStatusTicker >
                 net.getPlayerStatusUpdateRate(this.game.map.factionMode)
             ) {
-                const teamPlayers = this.group.getPlayers();
+                const teamPlayers = player.group.getPlayers();
                 for (let i = 0; i < teamPlayers.length; i++) {
                     const p = teamPlayers[i];
                     updateMsg.playerStatus.players.push({
@@ -1014,7 +1061,7 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teamPlayers = this.group!.getPlayers();
+            const teamPlayers = player.group!.getPlayers();
             for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
                     health: p.health,
@@ -1024,7 +1071,8 @@ export class Player extends BaseGameObject {
             updateMsg.groupStatusDirty = true;
         }
 
-        for (const emote of playerBarn.emotes) {
+        for (let i = 0; i < playerBarn.emotes.length; i++) {
+            const emote = playerBarn.emotes[i];
             const emotePlayer = game.objectRegister.getById(emote.playerId) as
                 | Player
                 | undefined;
@@ -1036,6 +1084,9 @@ export class Player extends BaseGameObject {
                 ) {
                     updateMsg.emotes.push(emote);
                 }
+            } else if (emote.playerId === 0 && emote.isPing) {
+                // map pings generated by the game like airdrops
+                updateMsg.emotes.push(emote);
             }
         }
 
@@ -1060,7 +1111,7 @@ export class Player extends BaseGameObject {
             }
         }
         if (newBullets.length > 255) {
-            console.error("Too many new bullets created!", newBullets.length);
+            this.game.logger.warn("Too many new bullets created!", newBullets.length);
             newBullets = newBullets.slice(0, 255);
         }
 
@@ -1069,24 +1120,36 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < game.explosionBarn.newExplosions.length; i++) {
             const explosion = game.explosionBarn.newExplosions[i];
             const rad = explosion.rad + extendedRadius;
-            if (
-                v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad &&
-                updateMsg.explosions.length < 255
-            ) {
+            if (v2.lengthSqr(v2.sub(explosion.pos, player.pos)) < rad * rad) {
                 updateMsg.explosions.push(explosion);
             }
         }
         if (updateMsg.explosions.length > 255) {
-            console.error(
+            this.game.logger.warn(
                 "Too many new explosions created!",
                 updateMsg.explosions.length
             );
             updateMsg.explosions = updateMsg.explosions.slice(0, 255);
         }
 
+        const planes = this.game.planeBarn.planes;
+        for (let i = 0; i < planes.length; i++) {
+            const plane = planes[i];
+            if (coldet.testCircleAabb(plane.pos, plane.rad, rect.min, rect.max)) {
+                updateMsg.planes.push(plane);
+            }
+        }
+
+        if (playerBarn.killLeaderDirty || this._firstUpdate) {
+            updateMsg.killLeaderDirty = true;
+            updateMsg.killLeaderId = playerBarn.killLeader?.__id ?? 0;
+            updateMsg.killLeaderKills = playerBarn.killLeader?.kills ?? 0;
+        }
+
         msgStream.serializeMsg(net.MsgType.Update, updateMsg);
 
-        for (const msg of this.msgsToSend) {
+        for (let i = 0; i < this.msgsToSend.length; i++) {
+            const msg = this.msgsToSend[i];
             msgStream.serializeMsg(msg.type, msg.msg);
         }
 
@@ -1208,7 +1271,8 @@ export class Player extends BaseGameObject {
         // ignore armor for gas and bleeding damage
         if (
             params.damageType !== GameConfig.DamageType.Gas &&
-            params.damageType !== GameConfig.DamageType.Bleeding
+            params.damageType !== GameConfig.DamageType.Bleeding &&
+            params.damageType !== GameConfig.DamageType.Airdrop
         ) {
             let isHeadShot = false;
 
@@ -1264,14 +1328,18 @@ export class Player extends BaseGameObject {
 
             // TODO: fix for faction mode
             if (this.downed) {
-                if (
+                const finishedByTeammate =
                     this.downedBy &&
                     sourceIsPlayer &&
-                    this.downedBy.groupId === (params.source as Player).groupId
-                ) {
-                    //if enemy knocks you and enemy teammate finishes you, still give the kill to the original enemy who knocked you
+                    this.downedBy.groupId === (params.source as Player).groupId;
+
+                const bledOut =
+                    this.downedBy && params.damageType == GameConfig.DamageType.Bleeding;
+
+                if (finishedByTeammate || bledOut) {
                     params.source = this.downedBy;
                 }
+
                 this.kill(params);
                 return;
             }
@@ -1455,17 +1523,64 @@ export class Player extends BaseGameObject {
         killMsg.killed = true;
 
         if (params.source instanceof Player) {
-            this.killedBy = params.source;
-            if (params.source !== this) {
-                params.source.kills++;
+            const source = params.source;
+            this.killedBy = source;
+            if (source !== this) {
+                source.kills++;
+
+                if (this.game.map.mapDef.gameMode.killLeaderEnabled) {
+                    const killLeader = this.game.playerBarn.killLeader;
+                    if (
+                        source.kills >= GameConfig.player.killLeaderMinKills &&
+                        source.kills > (killLeader?.kills ?? 0)
+                    ) {
+                        if (killLeader) {
+                            killLeader.role = "";
+                        }
+                        source.promoteToRole("kill_leader");
+                    }
+                    if (source.isKillLeader) {
+                        this.game.playerBarn.killLeaderDirty = true;
+                    }
+                }
             }
 
-            killMsg.killerId = params.source.__id;
-            killMsg.killCreditId = params.source.__id;
-            killMsg.killerKills = params.source.kills;
+            killMsg.killerId = source.__id;
+            killMsg.killCreditId = source.__id;
+            killMsg.killerKills = source.kills;
         }
 
         this.game.sendMsg(net.MsgType.Kill, killMsg);
+
+        if (this.role && this.role !== "kill_leader") {
+            const roleMsg = new net.RoleAnnouncementMsg();
+            roleMsg.role = this.role;
+            roleMsg.assigned = false;
+            roleMsg.killed = true;
+            roleMsg.playerId = this.__id;
+            roleMsg.killerId = params.source?.__id ?? 0;
+            this.game.sendMsg(net.MsgType.RoleAnnouncement, roleMsg);
+        }
+        if (this.isKillLeader) {
+            this.game.playerBarn.killLeader = undefined;
+            this.game.playerBarn.killLeaderDirty = true;
+            this.isKillLeader = false;
+
+            const roleMsg = new net.RoleAnnouncementMsg();
+            roleMsg.role = "kill_leader";
+            roleMsg.assigned = false;
+            roleMsg.killed = true;
+            roleMsg.playerId = this.__id;
+            roleMsg.killerId = params.source?.__id ?? 0;
+            this.game.sendMsg(net.MsgType.RoleAnnouncement, roleMsg);
+
+            const newKillLeader = this.game.playerBarn.livingPlayers
+                .filter((p) => p.kills >= GameConfig.player.killLeaderMinKills)
+                .sort((a, b) => a.kills - b.kills)[0];
+            if (newKillLeader) {
+                newKillLeader.promoteToRole("kill_leader");
+            }
+        }
 
         this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
 
@@ -1869,27 +1984,26 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.SwapWeapSlots: {
-                    const firstSlotWeaponType =
-                        this.weapons[GameConfig.WeaponSlot.Primary].type;
-                    const firstSlotWeaponAmmo =
-                        this.weapons[GameConfig.WeaponSlot.Primary].ammo;
+                    const primary = {
+                        ...this.weapons[GameConfig.WeaponSlot.Primary]
+                    };
+                    const secondary = {
+                        ...this.weapons[GameConfig.WeaponSlot.Secondary]
+                    };
 
-                    this.weapons[GameConfig.WeaponSlot.Primary].type =
-                        this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                    this.weapons[GameConfig.WeaponSlot.Primary].ammo =
-                        this.weapons[GameConfig.WeaponSlot.Secondary].ammo;
-
-                    this.weapons[GameConfig.WeaponSlot.Secondary].type =
-                        firstSlotWeaponType;
-                    this.weapons[GameConfig.WeaponSlot.Secondary].ammo =
-                        firstSlotWeaponAmmo;
+                    this.weapons[GameConfig.WeaponSlot.Primary] = secondary;
+                    this.weapons[GameConfig.WeaponSlot.Secondary] = primary;
 
                     // curWeapIdx's setter method already sets dirty.weapons
                     if (
                         this.curWeapIdx == GameConfig.WeaponSlot.Primary ||
                         this.curWeapIdx == GameConfig.WeaponSlot.Secondary
                     ) {
-                        this.weaponManager.setCurWeapIndex(this.curWeapIdx ^ 1, false);
+                        this.weaponManager.setCurWeapIndex(
+                            this.curWeapIdx ^ 1,
+                            false,
+                            false
+                        );
                     } else {
                         this.weapsDirty = true;
                     }
@@ -2147,14 +2261,16 @@ export class Player extends BaseGameObject {
                         ) {
                             this.weaponManager.dropGun(this.curWeapIdx, false);
                             this.weapons[this.curWeapIdx].type = obj.type;
+                            this.cancelAction();
+                            this.weaponManager.tryReload();
+                            this.weapsDirty = true;
                         } else {
                             removeLoot = false;
                             pickupMsg.type = net.PickupMsgType.Full;
                         }
-                        this.cancelAction();
-                        this.weaponManager.tryReload();
                     } else if (freeGunSlot.isDualWield) {
                         this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
+                        this.weapsDirty = true;
                         if (
                             freeGunSlot.availSlot === this.curWeapIdx &&
                             this.isReloading()
@@ -2166,9 +2282,9 @@ export class Player extends BaseGameObject {
                         }
                     } else {
                         this.weapons[freeGunSlot.availSlot].type = obj.type;
+                        this.weapsDirty = true;
                     }
 
-                    this.weapons[newGunIdx].cooldown = 0;
                     // always select primary slot if melee or secondary is selected
                     if (
                         this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
@@ -2177,7 +2293,6 @@ export class Player extends BaseGameObject {
                         this.weaponManager.setCurWeapIndex(newGunIdx); // primary
                     }
 
-                    this.weapsDirty = true;
                     this.setDirty();
                 }
                 break;
@@ -2440,6 +2555,13 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
+    giveHaste(type: number, duration: number): void {
+        this.hasteType = type;
+        this.hasteSeq++;
+        this._hasteTicker = duration;
+        this.setDirty();
+    }
+
     playAnim(type: number, duration: number, cb?: () => void): void {
         this.animType = type;
         this.animSeq++;
@@ -2481,10 +2603,10 @@ export class Player extends BaseGameObject {
             this.speed += weaponDef.speed.equip;
         }
 
+        const customShootingSpeed =
+            GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            const customShootingSpeed =
-                GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
-            this.speed += customShootingSpeed ?? weaponDef.speed.attack + -6;
+            this.speed += customShootingSpeed ?? weaponDef.speed.attack;
         }
 
         // if player is on water decrease speed
@@ -2497,16 +2619,21 @@ export class Player extends BaseGameObject {
             this.speed += GameConfig.player.boostMoveSpeed;
         }
 
-        // decrease speed if popping adren or heals
-        if (this.actionType == GameConfig.Action.UseItem) {
-            this.speed -= 6;
-        }
-
         if (this.animType === GameConfig.Anim.Cook) {
             this.speed -= GameConfig.player.cookSpeedPenalty;
         }
 
-        this.speed = math.max(this.speed, 1);
+        if (this.hasteType != GameConfig.HasteType.None) {
+            this.speed += GameConfig.player.hasteSpeedBonus;
+        }
+
+        // decrease speed if popping adren or heals
+        if (
+            this.actionType == GameConfig.Action.UseItem ||
+            (this.shotSlowdownTimer > 0 && !customShootingSpeed)
+        ) {
+            this.speed *= 0.5;
+        }
     }
 
     sendMsg(type: number, msg: any, bytes = 128): void {
@@ -2519,7 +2646,7 @@ export class Player extends BaseGameObject {
         try {
             this.socketData.sendMsg(buffer);
         } catch (e) {
-            console.warn("Error sending packet. Details:", e);
+            this.game.logger.warn("Error sending packet. Details:", e);
         }
     }
 }

@@ -100,22 +100,11 @@ export class LootBarn {
         const items: Array<{ name: string; count: number }> = [];
 
         if (!lootTable) {
-            console.warn(`Unknown loot tier with type ${tier}`);
+            this.game.logger.warn(`Unknown loot tier with type ${tier}`);
             return [];
         }
 
-        const weights: number[] = [];
-
-        const weightedItems: Array<{ name: string; count: number }> = [];
-        for (const item of lootTable) {
-            weightedItems.push({
-                name: item.name,
-                count: item.count
-            });
-            weights.push(item.weight);
-        }
-
-        const item = util.weightedRandom(weightedItems, weights);
+        const item = util.weightedRandom(lootTable);
 
         if (item.name.startsWith("tier_")) {
             items.push(...this.getLootTable(item.name));

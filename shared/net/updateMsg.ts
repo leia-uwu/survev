@@ -452,7 +452,7 @@ export class UpdateMsg implements AbstractMsg {
                 const plane = this.planes[i];
 
                 s.writeUint8(plane.id);
-                s.writeVec(plane.pos, 0, 0, 2048, 2048, 10);
+                s.writeVec(v2.add(plane.pos, v2.create(512, 512)), 0, 0, 2048, 2048, 10);
                 s.writeUnitVec(plane.planeDir, 8);
                 s.writeBoolean(plane.actionComplete);
                 s.writeBits(plane.action, 3);
@@ -672,8 +672,8 @@ export class UpdateMsg implements AbstractMsg {
             for (let count = s.readUint8(), i = 0; i < count; i++) {
                 const plane = {} as Plane;
                 plane.id = s.readUint8();
-                const V = s.readVec(0, 0, 2048, 2048, 10);
-                plane.pos = v2.create(V.x - 512, V.y - 512);
+                const pos = s.readVec(0, 0, 2048, 2048, 10);
+                plane.pos = v2.create(pos.x - 512, pos.y - 512);
                 plane.planeDir = s.readUnitVec(8);
                 plane.actionComplete = s.readBoolean();
                 plane.action = s.readBits(3);

@@ -11,7 +11,7 @@
  - [x] Consumable items
  - [x] Spectating
  - [x] Slowdown on water
- - [ ] Kill Leader
+ - [x] Kill Leader
  - [x] Loadouts
  - [x] Emotes
  - [ ] Roles and cobalt classes
@@ -119,8 +119,8 @@ won't list all that need to be competently done because lazy
 ### Other features
  - [x] Explosions
  - [x] Throwables
- - [ ] Airdrops
- - [ ] Planes
+ - [x] Airdrops
+ - [x] Planes
  - [x] Gas
 
 ### Server and core stuff

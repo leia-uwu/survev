@@ -40,7 +40,12 @@ export const Config = {
     spawn: { mode: SpawnMode.Random },
 
     gameTps: 100,
-    netSyncTps: 33
+    netSyncTps: 33,
+
+    perfLogging: {
+        enabled: true,
+        time: 10
+    }
 } satisfies ConfigType as ConfigType;
 
 export interface ConfigType {
@@ -96,4 +101,15 @@ export interface ConfigType {
      */
     readonly gameTps: number;
     readonly netSyncTps: number;
+
+    /**
+     * Server logging
+     */
+    readonly perfLogging: {
+        enabled: boolean;
+        /**
+         * Seconds between each game performance log
+         */
+        time: number;
+    };
 }

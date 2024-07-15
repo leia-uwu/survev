@@ -135,7 +135,7 @@ const mapDef = {
             { name: "outfitMeteor", count: 1, weight: 5 },
             { name: "outfitHeaven", count: 1, weight: 1 },
             {
-                name: "outfitDesertGhillie",
+                name: "outfitGhillie",
                 count: 1,
                 weight: 0.5
             }

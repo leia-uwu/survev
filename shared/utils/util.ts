@@ -5,9 +5,13 @@ import { v2 } from "./v2";
 /**
  * Custom function to not bundle nodejs assert polyfill with the client
  */
-export function assert(condition: boolean | undefined, msg?: string) {
-    if (!condition) {
-        throw new Error(msg ?? "Assertion failed");
+export function assert(value: unknown, message?: string | Error): asserts value {
+    if (!value) {
+        const error =
+            message instanceof Error
+                ? message
+                : new Error(message ?? "Assertation failed");
+        throw error;
     }
 }
 
@@ -319,22 +323,17 @@ export const util = {
         }
     },
 
-    // functions not copied from surviv
-    // https://stackoverflow.com/a/55671924/5905216
-    /**
-     * Pick a random element from a weighted series of elements.
-     * @param items The elements to choose from.
-     * @param weights A legend of the elements' relative weight.
-     * @param random The random number generator
-     */
-    weightedRandom<T>(items: T[], weights: number[], random = Math.random): T {
-        let i: number;
-        for (i = 1; i < weights.length; i++) weights[i] += weights[i - 1];
-
-        const rand = random() * weights[weights.length - 1];
-        for (i = 0; i < weights.length; i++) {
-            if (weights[i] > rand) break;
+    weightedRandom<T extends Object>(items: Array<T & { weight: number }>) {
+        let total = 0.0;
+        for (let i = 0; i < items.length; i++) {
+            total += items[i].weight;
         }
-        return items[i];
+        let rng = util.random(0, total);
+        let idx = 0;
+        while (rng > items[idx].weight) {
+            rng -= items[idx].weight;
+            idx++;
+        }
+        return items[idx];
     }
 };

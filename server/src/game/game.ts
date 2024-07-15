@@ -9,13 +9,14 @@ import { Grid } from "./grid";
 import { Group } from "./group";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
-import { BullletBarn } from "./objects/bullet";
+import { BulletBarn } from "./objects/bullet";
 import { DeadBodyBarn } from "./objects/deadBody";
 import { DecalBarn } from "./objects/decal";
 import { ExplosionBarn } from "./objects/explosion";
 import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
+import { PlaneBarn } from "./objects/plane";
 import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
@@ -68,11 +69,12 @@ export class Game {
     deadBodyBarn = new DeadBodyBarn(this);
     decalBarn = new DecalBarn(this);
     projectileBarn = new ProjectileBarn(this);
-    bulletBarn = new BullletBarn(this);
+    bulletBarn = new BulletBarn(this);
     smokeBarn = new SmokeBarn(this);
     airdropBarn = new AirdropBarn(this);
 
     explosionBarn = new ExplosionBarn(this);
+    planeBarn = new PlaneBarn(this);
 
     map: GameMap;
     gas: Gas;
@@ -80,6 +82,7 @@ export class Game {
     now!: number;
     gameStartTime = 0;
 
+    perfTicker = 0;
     tickTimes: number[] = [];
 
     logger: Logger;
@@ -130,22 +133,29 @@ export class Game {
         this.projectileBarn.update(dt);
         this.explosionBarn.update();
         this.smokeBarn.update(dt);
+        this.airdropBarn.update(dt);
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
+        this.planeBarn.update(dt);
 
-        // Record performance and start the next tick
-        // THIS TICK COUNTER IS WORKING CORRECTLY!
-        // It measures the time it takes to calculate a tick, not the time between ticks.
-        const tickTime = Date.now() - this.now;
-        this.tickTimes.push(tickTime);
+        if (Config.perfLogging.enabled) {
+            // Record performance and start the next tick
+            // THIS TICK COUNTER IS WORKING CORRECTLY!
+            // It measures the time it takes to calculate a tick, not the time between ticks.
+            const tickTime = Date.now() - this.now;
+            this.tickTimes.push(tickTime);
 
-        if (this.tickTimes.length >= 200) {
-            const mspt = this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
+            this.perfTicker += dt;
+            if (this.perfTicker >= Config.perfLogging.time) {
+                this.perfTicker = 0;
+                const mspt =
+                    this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-            this.logger.log(
-                `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
-            );
-            this.tickTimes = [];
+                this.logger.log(
+                    `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
+                );
+                this.tickTimes = [];
+            }
         }
     }
 
@@ -159,6 +169,7 @@ export class Game {
         //
         this.playerBarn.flush();
         this.bulletBarn.flush();
+        this.airdropBarn.flush();
         this.objectRegister.flush();
         this.explosionBarn.flush();
         this.gas.flush();

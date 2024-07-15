@@ -1,6 +1,7 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
+import { DamageType, GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
@@ -247,22 +248,24 @@ export class Obstacle extends BaseGameObject {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
-        let armorPiercing = false;
-        let stonePiercing = false;
+        if (params.damageType === DamageType.Player) {
+            let armorPiercing = false;
+            let stonePiercing = false;
 
-        if (params.gameSourceType) {
-            const sourceDef = GameObjectDefs[params.gameSourceType] as
-                | {
-                      armorPiercing?: boolean;
-                      stonePiercing?: boolean;
-                  }
-                | undefined;
-            armorPiercing = sourceDef?.armorPiercing ?? false;
-            stonePiercing = sourceDef?.stonePiercing ?? false;
+            if (params.gameSourceType) {
+                const sourceDef = GameObjectDefs[params.gameSourceType] as
+                    | {
+                          armorPiercing?: boolean;
+                          stonePiercing?: boolean;
+                      }
+                    | undefined;
+                armorPiercing = sourceDef?.armorPiercing ?? false;
+                stonePiercing = sourceDef?.stonePiercing ?? false;
+            }
+
+            if (def.armorPlated && !armorPiercing) return;
+            if (def.stonePlated && !stonePiercing) return;
         }
-
-        if (def.armorPlated && !armorPiercing) return;
-        if (def.stonePlated && !stonePiercing) return;
 
         this.health -= params.amount!;
 
@@ -402,6 +405,8 @@ export class Obstacle extends BaseGameObject {
     }
 
     useButton(): void {
+        if (!this.button.canUse) return;
+
         this.button.onOff = !this.button.onOff;
         this.button.seq++;
 
@@ -420,6 +425,15 @@ export class Obstacle extends BaseGameObject {
         }
         if (this.button.onOff && this.isPuzzlePiece) {
             this.parentBuilding?.puzzlePieceToggled(this);
+        }
+        const def = MapObjectDefs[this.type] as ObstacleDef;
+        if (def.button?.destroyOnUse && def.destroyType) {
+            setTimeout(() => {
+                this.kill({
+                    damageType: GameConfig.DamageType.Airdrop,
+                    dir: v2.create(0, 0)
+                });
+            }, this.button.useDelay * 1000);
         }
         this.setDirty();
     }

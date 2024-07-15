@@ -52,13 +52,15 @@ export class WeaponManager {
      * @param shouldReload will attempt automatic reload at 0 ammo if true
      * @returns
      */
-    setCurWeapIndex(idx: number, cancelAction = true): void {
+    setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
 
         this.player.cancelAnim();
 
-        this.player.shotSlowdownTimer = 0;
+        if (cancelSlowdown) {
+            this.player.shotSlowdownTimer = 0;
+        }
         this.bursts.length = 0;
         this.meleeAttacks.length = 0;
         this.scheduledReload = false;
@@ -85,6 +87,8 @@ export class WeaponManager {
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
+                if (GameConfig.gun.customSwitchDelay)
+                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -97,8 +101,6 @@ export class WeaponManager {
                 effectiveSwitchDelay = nextWeaponDef.switchDelay;
             }
 
-            if (GameConfig.gun.customSwitchDelay)
-                effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             nextWeapon.cooldown = effectiveSwitchDelay;
         }
 
@@ -279,6 +281,13 @@ export class WeaponManager {
         this.scheduledReload = true;
     }
 
+    isInfinite(weaponDef: GunDef): boolean {
+        return (
+            !weaponDef.ignoreEndlessAmmo &&
+            (weaponDef.ammoInfinite || this.player.hasPerk("endless_ammo"))
+        );
+    }
+
     /**
      * Try to schedule a reload action if all conditions are met
      */
@@ -291,10 +300,11 @@ export class WeaponManager {
             return;
         }
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
+
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
-            this.player.inventory[weaponDef.ammo] == 0,
+            this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
                 this.curWeapIdx == GameConfig.WeaponSlot.Throwable
         ];
@@ -331,7 +341,13 @@ export class WeaponManager {
             amountToReload = weaponDef.maxReloadAlt;
         }
 
-        if (inv[weaponDef.ammo] < spaceLeft) {
+        if (this.isInfinite(weaponDef)) {
+            this.weapons[this.curWeapIdx].ammo += math.clamp(
+                amountToReload,
+                0,
+                spaceLeft
+            );
+        } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
             if (weaponDef.maxClip != amountToReload) {
                 // m870, mosin, spas: only refill by one bullet at a time
@@ -354,7 +370,7 @@ export class WeaponManager {
 
         // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
         const realMaxClip =
-            inv[weaponDef.ammo] == 0
+            inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
                 ? this.weapons[this.curWeapIdx].ammo
                 : weaponDef.maxClip;
         if (
@@ -387,7 +403,7 @@ export class WeaponManager {
 
         let amountToDrop = 0;
         // some guns ammo type have no item in bagSizes, like potato guns
-        if (GameConfig.bagSizes[weaponAmmoType]) {
+        if (GameConfig.bagSizes[weaponAmmoType] && !this.isInfinite(weaponDef)) {
             const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
             if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
                 this.player.inventory[weaponAmmoType] += weaponAmmoCount;
@@ -860,7 +876,7 @@ export class WeaponManager {
             // if throwable count drops below 0
             // show the next throwable
             // if theres none switch to last weapon
-            if (this.weapons[weapSlotId].ammo == 0) {
+            if (this.player.inventory[throwableType] == 0) {
                 this.showNextThrowable();
                 if (this.weapons[weapSlotId].type === "") {
                     this.setCurWeapIndex(this.lastWeaponIdx);

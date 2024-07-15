@@ -148,9 +148,11 @@ export const GameConfig = {
         moveSpeed: 12,
         waterSpeedPenalty: 3,
         cookSpeedPenalty: 3,
+        hasteSpeedBonus: 4.8,
         bleedTickRate: 1,
         downedMoveSpeed: 4,
         downedRezMoveSpeed: 2,
+        keepZoomWhileDowned: false,
         reviveDuration: 8,
         reviveRange: 5,
         crawlTime: 0.75,
@@ -165,6 +167,7 @@ export const GameConfig = {
         medicHealRange: 8,
         medicReviveRange: 6,
         spectateDeadTimeout: 2,
+        killLeaderMinKills: 3,
         minSpawnDistance: 50, // minimum distance enemy players need to spawn from each other
         gracePeriodTime: 0 // time from game start where players can't move
     },
