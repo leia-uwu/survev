@@ -1655,6 +1655,15 @@ export class Player extends BaseGameObject {
             }
         }
 
+        for (let i = this.perks.length - 1; i >= 0; i--) {
+            const perk = this.perks[i];
+            if (perk.droppable) {
+                this.game.lootBarn.addLoot(perk.type, this.pos, this.layer, 1);
+            }
+        }
+        this.perks.length = 0;
+        this.perkTypes.length = 0;
+
         // death emote
         if (this.loadout.emotes[GameConfig.EmoteSlot.Death] != "") {
             this.game.playerBarn.emotes.push(
@@ -2336,10 +2345,20 @@ export class Player extends BaseGameObject {
                 this.setDirty();
                 break;
             case "perk":
-                if (this.perks.length >= net.Constants.MaxPerks) {
+                if (this.hasPerk(obj.type)) {
                     amountLeft = 1;
+                    pickupMsg.type = net.PickupMsgType.AlreadyEquipped;
+                    break;
+                }
+
+                const perkSlotType = this.perks.find((p) => p.droppable)?.type;
+                if (perkSlotType) {
+                    amountLeft = 1;
+                    lootToAdd = perkSlotType;
+                    this.removePerk(perkSlotType);
+                    this.addPerk(obj.type, true);
                 } else {
-                    this.addPerk(obj.type);
+                    this.addPerk(obj.type, true);
                 }
                 this.setDirty();
                 break;
@@ -2494,6 +2513,14 @@ export class Player extends BaseGameObject {
                 this.inventoryDirty = true;
                 this.weapsDirty = true;
                 break;
+            }
+            case "perk": {
+                const perkSlotType = this.perks.find((p) => p.droppable)?.type;
+                if (perkSlotType && perkSlotType == dropMsg.item) {
+                    this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+                    this.removePerk(dropMsg.item);
+                    this.setDirty();
+                }
             }
         }
 
