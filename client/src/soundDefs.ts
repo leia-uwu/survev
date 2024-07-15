@@ -1002,6 +1002,33 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             maxInstances: 3
         }
     },
+    kills: {
+        kill_01: {
+            path: "audio/kills/kill_01.mp3",
+            volume: 1.8,
+            canCoalesce: true
+        },
+        kill_02: {
+            path: "audio/kills/kill_02.mp3",
+            volume: 1.8,
+            canCoalesce: true
+        },
+        kill_03: {
+            path: "audio/kills/kill_03.mp3",
+            volume: 1.8,
+            canCoalesce: true
+        },
+        kill_04: {
+            path: "audio/kills/kill_04.mp3",
+            volume: 1.8,
+            canCoalesce: true
+        },
+        kill_05: {
+            path: "audio/kills/kill_05.mp3",
+            volume: 1.8,
+            canCoalesce: true
+        }
+    },
     sfx: {
         crate_break_01: {
             path: "audio/sfx/crate_break_01.mp3",
@@ -1992,6 +2019,12 @@ const Channels: Record<string, ChannelDef> = {
         volume: 0.4,
         maxRange: 48,
         list: "hits",
+        type: "sound"
+    },
+    kills: {
+        volume: 1,
+        maxRange: 48,
+        list: "kills",
         type: "sound"
     },
     sfx: {
