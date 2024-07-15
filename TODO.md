@@ -31,7 +31,7 @@
  - [x] Collision
  - [x] Reflection
  - [x] Culling
- - [ ] Damage falloff
+ - [x] Damage falloff
 
 ### Melee weapons
  - [x] Collision
