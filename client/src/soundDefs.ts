@@ -1005,27 +1005,27 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
     kills: {
         kill_01: {
             path: "audio/kills/kill_01.mp3",
-            volume: 1,
+            volume: 1.8,
             canCoalesce: true
         },
         kill_02: {
             path: "audio/kills/kill_02.mp3",
-            volume: 1,
+            volume: 1.8,
             canCoalesce: true
         },
         kill_03: {
             path: "audio/kills/kill_03.mp3",
-            volume: 1,
+            volume: 1.8,
             canCoalesce: true
         },
         kill_04: {
             path: "audio/kills/kill_04.mp3",
-            volume: 1,
+            volume: 1.8,
             canCoalesce: true
         },
         kill_05: {
             path: "audio/kills/kill_05.mp3",
-            volume: 1,
+            volume: 1.8,
             canCoalesce: true
         }
     },

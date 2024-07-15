@@ -1303,7 +1303,7 @@ export class Game {
                     msg.killCreditId == this.activeId &&
                     msg.killed
                 ) {
-                    const sound = `kill_0${math.clamp(msg.killerKills, 1, 4)}`;
+                    const sound = `kill_0${math.clamp(msg.killerKills + 1, 2, 5)}`;
                     this.audioManager.playSound(sound, {
                         channel: "kills"
                     });
