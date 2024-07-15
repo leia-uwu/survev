@@ -517,44 +517,50 @@ export class GameMap {
         //
         // generate river objects
         //
-        const riverObjs = {
-            stone_03: 3,
-            bush_04: 1.2
-        };
-        for (const type in riverObjs) {
-            for (const river of this.terrain.rivers) {
-                const amount = math.min(
-                    river.waterWidth * riverObjs[type as keyof typeof riverObjs],
-                    30
-                );
 
-                for (let i = 0; i < amount; i++) {
-                    this.genOnRiver(type, river);
+        if (this.riverDescs.length) {
+            for (let i = 0; i < 3; i++) {
+                this.genRiverCabin();
+            }
+
+            const riverObjs = {
+                stone_03: 3,
+                bush_04: 1.2
+            };
+            for (const type in riverObjs) {
+                for (const river of this.terrain.rivers) {
+                    const amount = math.min(
+                        river.waterWidth * riverObjs[type as keyof typeof riverObjs],
+                        30
+                    );
+
+                    for (let i = 0; i < amount; i++) {
+                        this.genOnRiver(type, river);
+                    }
                 }
             }
-        }
-        //
-        // Generate river
-        //
+            for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
+                let pos: Vec2 | undefined;
+                let ori: number | undefined;
 
-        for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
-            let pos: Vec2 | undefined;
-            let ori: number | undefined;
+                let attempts = 0;
+                while (attempts++ < GameMap.MaxSpawnAttempts) {
+                    ori = util.randomInt(0, 3);
+                    pos = v2.add(
+                        util.randomPointInCircle(customSpawnRule.rad),
+                        v2.mulElems(
+                            customSpawnRule.pos,
+                            v2.create(this.width, this.height)
+                        )
+                    );
 
-            let attempts = 0;
-            while (attempts++ < GameMap.MaxSpawnAttempts) {
-                ori = util.randomInt(0, 3);
-                pos = v2.add(
-                    util.randomPointInCircle(customSpawnRule.rad),
-                    v2.mulElems(customSpawnRule.pos, v2.create(this.width, this.height))
-                );
-
-                if (this.canSpawn(customSpawnRule.type, pos, ori)) {
-                    break;
+                    if (this.canSpawn(customSpawnRule.type, pos, ori)) {
+                        break;
+                    }
                 }
-            }
-            if (pos && ori && attempts < GameMap.MaxSpawnAttempts) {
-                this.genAuto(customSpawnRule.type, pos);
+                if (pos && ori && attempts < GameMap.MaxSpawnAttempts) {
+                    this.genAuto(customSpawnRule.type, pos);
+                }
             }
         }
 
@@ -707,32 +713,25 @@ export class GameMap {
         }
 
         // checks for bridges and other river structures like crossing bunker
-        if (def.type === "structure" || def.type === "building") {
-            if (def.terrain.bridge) {
-                for (let i = 0; i < this.bridges.length; i++) {
-                    const otherBridge = this.bridges[i];
-                    const thisBounds = mapHelpers.getBridgeOverlapCollider(
-                        type,
-                        pos,
-                        rot,
-                        1
-                    );
-                    const thatBounds = mapHelpers.getBridgeOverlapCollider(
-                        otherBridge.type,
-                        otherBridge.pos,
-                        otherBridge.rot,
-                        1
-                    );
-                    if (
-                        coldet.testAabbAabb(
-                            thisBounds.min,
-                            thisBounds.max,
-                            thatBounds.min,
-                            thatBounds.max
-                        )
-                    ) {
-                        return false;
-                    }
+        if ((def.type === "structure" || def.type === "building") && def.terrain.bridge) {
+            for (let i = 0; i < this.bridges.length; i++) {
+                const otherBridge = this.bridges[i];
+                const thisBounds = mapHelpers.getBridgeOverlapCollider(type, pos, rot, 1);
+                const thatBounds = mapHelpers.getBridgeOverlapCollider(
+                    otherBridge.type,
+                    otherBridge.pos,
+                    otherBridge.rot,
+                    1
+                );
+                if (
+                    coldet.testAabbAabb(
+                        thisBounds.min,
+                        thisBounds.max,
+                        thatBounds.min,
+                        thatBounds.max
+                    )
+                ) {
+                    return false;
                 }
             }
 
@@ -1000,7 +999,7 @@ export class GameMap {
 
         const def = MapObjectDefs[type];
 
-        const getPos = () => {
+        const getPosAndOri = () => {
             const oriAndScale = this.getOriAndScale(type);
             ori = oriAndScale.ori;
             scale = oriAndScale.scale;
@@ -1012,35 +1011,32 @@ export class GameMap {
             let pos = river.spline.getPos(t);
 
             if (def.terrain?.nearbyRiver) {
-                const norm = river.spline.getNormal(t);
-                const riverOri = math.radToOri(Math.atan2(norm.y, norm.x));
-                ori = (def.terrain.nearbyRiver.facingOri + riverOri) % 4;
+                const otherSide = Math.random() < 0.5;
 
-                pos = v2.add(
-                    pos,
-                    v2.rotate(
-                        v2.create(river.waterWidth * 2, river.waterWidth * 2),
-                        math.oriToRad(riverOri)
-                    )
-                );
+                const offset = river.waterWidth * 2 * (otherSide ? -1 : 1);
+                let norm = river.spline.getNormal(t);
+                v2.set(pos, v2.add(pos, v2.mul(norm, offset)));
+
+                const finalT = river.spline.getClosestTtoPoint(pos);
+                const finalNorm = river.spline.getNormal(finalT);
+
+                const riverOri =
+                    (math.radToOri(Math.atan2(finalNorm.y, finalNorm.x)) +
+                        (otherSide ? 2 : 0)) %
+                    4;
+                ori = (def.terrain.nearbyRiver.facingOri + riverOri) % 4;
             }
-            return pos;
+            return { pos, ori };
         };
 
-        let pos: Vec2 | undefined;
         let attempts = 0;
-        let collided = true;
-
-        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
-            collided = false;
-            pos = getPos();
+        while (attempts++ < GameMap.MaxSpawnAttempts) {
+            const { pos, ori } = getPosAndOri();
 
             if (!this.canSpawn(type, pos, ori, scale)) {
-                collided = true;
+                continue;
             }
-        }
 
-        if (pos && attempts < GameMap.MaxSpawnAttempts) {
             const obj = this.genAuto(type, pos, 0, ori, scale);
             if (obj?.__type === ObjectType.Structure) {
                 this.bridges.push(obj);
@@ -1059,6 +1055,106 @@ export class GameMap {
         const pos = v2.add(river.spline.getPos(t), v2.mul(v2.randomUnit(), offset));
         if (this.canSpawn(type, pos, 0)) {
             this.genAuto(type, pos, 0);
+        }
+    }
+
+    genRiverCabin() {
+        const inset = this.grassInset + this.shoreInset;
+        const mapBound = collider.createAabb(
+            v2.create(inset, inset),
+            v2.create(this.width - inset, this.height - inset)
+        );
+
+        const type = "cabin_01";
+        const def = MapObjectDefs[type] as BuildingDef;
+
+        const bound = mapHelpers.getBoundingCollider(type) as AABB;
+        const height = bound.max.y - bound.min.y / 2;
+
+        let river =
+            this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+        const getPosAndOri = () => {
+            const t = util.random(0, 1);
+            river =
+                this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+            let pos = river.spline.getPos(t);
+
+            const otherSide = Math.random() < 0.5;
+
+            const offset = (river.waterWidth + height) * (otherSide ? -1 : 1);
+            let norm = river.spline.getNormal(t);
+            v2.set(pos, v2.add(pos, v2.mul(norm, offset)));
+
+            const finalT = river.spline.getClosestTtoPoint(pos);
+            const finalNorm = river.spline.getNormal(finalT);
+
+            const riverOri =
+                (math.radToOri(Math.atan2(finalNorm.y, finalNorm.x)) +
+                    (otherSide ? 2 : 0)) %
+                4;
+            const ori = (def.terrain.nearbyRiver!.facingOri + riverOri) % 4;
+
+            return { pos, ori, otherSide };
+        };
+
+        let attempts = 0;
+
+        while (attempts++ < GameMap.MaxSpawnAttempts) {
+            const { pos, ori, otherSide } = getPosAndOri();
+
+            const bounds = collider.transform(bound, pos, math.oriToRad(ori), 1) as AABB;
+
+            if (
+                !coldet.aabbInsideAabb(bounds.min, bounds.max, mapBound.min, mapBound.max)
+            ) {
+                continue;
+            }
+
+            let collided = false;
+            for (let i = 0; i < this.bridges.length; i++) {
+                const bridge = this.bridges[i];
+                const bridgeBound = mapHelpers.getBridgeOverlapCollider(
+                    bridge.type,
+                    bridge.pos,
+                    bridge.rot,
+                    1
+                );
+                if (coldet.test(bounds, bridgeBound)) {
+                    collided = true;
+                    continue;
+                }
+            }
+            if (collided) {
+                continue;
+            }
+
+            if (!this.canSpawn(type, pos, ori, 1)) {
+                continue;
+            }
+
+            this.genAuto(type, pos, 0, ori);
+            this.genCabinDock(river, pos, ori, otherSide);
+            break;
+        }
+    }
+
+    genCabinDock(river: River, pos: Vec2, ori: number, otherSide: boolean) {
+        const type = "dock_01";
+        let attempts = 0;
+
+        while (attempts < GameMap.MaxSpawnAttempts) {
+            attempts++;
+            const t = river.spline.getClosestTtoPoint(pos) + util.random(-0.02, 0.02);
+            const riverPos = river.spline.getPos(t);
+            const riverNorm = river.spline.getNormal(t);
+
+            const offset = river.waterWidth * (otherSide ? -1 : 1);
+            const dockPos = v2.add(riverPos, v2.mul(riverNorm, offset));
+
+            if (this.canSpawn(type, dockPos, ori)) {
+                this.genAuto(type, dockPos, 0, ori);
+                break;
+            }
         }
     }
 
