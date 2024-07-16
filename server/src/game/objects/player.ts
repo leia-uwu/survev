@@ -148,6 +148,7 @@ export class PlayerBarn {
             }
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
+                this.game.planeBarn.schedulePlanes();
             }
         }
 
@@ -751,7 +752,7 @@ export class Player extends BaseGameObject {
 
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
-        const steps = math.min(this.speed * dt + 5, 5);
+        const steps = math.max(this.speed * dt + 5, 5);
 
         let objs!: GameObject[];
 
