@@ -464,6 +464,11 @@ export class WeaponManager {
         }
     }
 
+    isBulletSaturated(): boolean {
+        const perks = ["bonus_assault"]; //add rest later, im lazy rn
+        return perks.some((p) => this.player.hasPerk(p));
+    }
+
     offHand = false;
     fireWeapon() {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
@@ -622,6 +627,7 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: this.offHand,
+                trailSaturated: this.isBulletSaturated(),
                 trailSmall: false,
                 reflectCount: 0,
                 splinter: hasSplinter,
@@ -862,7 +868,11 @@ export class WeaponManager {
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
             this.curWeapIdx == GameConfig.WeaponSlot.Throwable
-                ? this.player.toMouseLen / 15
+                ? math.clamp(
+                      this.player.toMouseLen,
+                      0,
+                      GameConfig.player.throwableMaxMouseDist * 1.8
+                  ) / 15
                 : 0;
 
         if (throwableDef.type !== "throwable") {
