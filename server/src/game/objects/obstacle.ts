@@ -307,8 +307,10 @@ export class Obstacle extends BaseGameObject {
             v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
         }
 
+        const loot = [...def.loot];
+
         if (params.source instanceof Player && params.source.hasPerk("scavenger")) {
-            def.loot.push({
+            loot.push({
                 tier: "tier_world",
                 min: 1,
                 max: 1,
@@ -316,7 +318,7 @@ export class Obstacle extends BaseGameObject {
             });
         }
 
-        for (const lootTierOrItem of def.loot) {
+        for (const lootTierOrItem of loot) {
             if ("tier" in lootTierOrItem) {
                 const count = util.randomInt(lootTierOrItem.min!, lootTierOrItem.max!);
 
