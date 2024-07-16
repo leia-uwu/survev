@@ -307,11 +307,7 @@ export class Obstacle extends BaseGameObject {
             v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
         }
 
-        if (
-            params.source instanceof Player &&
-            params.source.hasPerk("scavenger") &&
-            def.loot.length != 0
-        ) {
+        if (params.source instanceof Player && params.source.hasPerk("scavenger")) {
             def.loot.push({
                 tier: "tier_world",
                 min: 1,

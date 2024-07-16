@@ -503,6 +503,8 @@ export class Bullet {
             finalDamage *= falloff;
         }
 
+        if (player && player.hasPerk("bonus_assault")) finalDamage *= 1.08;
+
         for (let i = 0; i < collisions.length; i++) {
             const col = collisions[i];
 
