@@ -148,6 +148,7 @@ export class PlayerBarn {
             }
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
+                this.game.planeBarn.schedulePlanes();
             }
         }
 
