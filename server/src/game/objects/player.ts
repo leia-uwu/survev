@@ -1303,8 +1303,6 @@ export class Player extends BaseGameObject {
             }
         }
 
-        if (this.hasPerk("bonus_assault")) finalDamage *= 1.08;
-
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
         this.damageTaken += finalDamage;

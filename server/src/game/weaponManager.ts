@@ -464,6 +464,11 @@ export class WeaponManager {
         }
     }
 
+    isBulletSaturated(): boolean {
+        const perks = ["bonus_assault"]; //add rest later, im lazy rn
+        return perks.some((p) => this.player.hasPerk(p));
+    }
+
     offHand = false;
     fireWeapon() {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
@@ -622,7 +627,7 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: this.offHand,
-                trailSaturated: this.player.hasPerk("bonus_assault"),
+                trailSaturated: this.isBulletSaturated(),
                 trailSmall: false,
                 reflectCount: 0,
                 splinter: hasSplinter,
