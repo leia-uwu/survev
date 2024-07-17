@@ -56,6 +56,9 @@ export class Obstacle extends BaseGameObject {
         slideOffset: number;
         closedPos: Vec2;
         openPos: Vec2;
+        openCollider: Collider;
+        openAltCollider: Collider;
+        closedCollider: Collider;
     };
 
     closeTimeout?: NodeJS.Timeout;
@@ -152,13 +155,42 @@ export class Obstacle extends BaseGameObject {
 
         if (def.door) {
             this.isDoor = true;
+
+            let openOri = this.ori;
+            let openAltOri = this.ori;
+            if (!def.door.slideToOpen) {
+                switch (ori) {
+                    case 0:
+                        openOri = 1;
+                        openAltOri = 3;
+                        break;
+                    case 1:
+                        openOri = 2;
+                        openAltOri = 0;
+                        break;
+                    case 2:
+                        openOri = 3;
+                        openAltOri = 1;
+                        break;
+                    case 3:
+                        openOri = 0;
+                        openAltOri = 2;
+                        break;
+                }
+            }
+
+            let slideOffset = def.door.slideOffset ?? 0;
+            let openPos = def.door.slideToOpen
+                ? v2.add(this.pos, v2.rotate(v2.create(0, -slideOffset), this.rot))
+                : this.pos;
+
             this.door = {
                 open: false,
                 canUse: def.door.canUse,
                 hinge: def.hinge!,
                 closedOri: this.ori,
-                openOri: 0,
-                openAltOri: 0,
+                openOri,
+                openAltOri,
                 openDelay: def.door.openDelay ?? 0,
                 seq: 1,
                 locked: def.door.locked ?? false,
@@ -168,33 +200,25 @@ export class Obstacle extends BaseGameObject {
                 autoClose: def.door.autoClose ?? false,
                 autoCloseDelay: def.door.autoCloseDelay ?? 0,
                 slideToOpen: def.door.slideToOpen ?? false,
-                slideOffset: def.door.slideOffset ?? 0,
+                slideOffset: slideOffset,
                 closedPos: v2.copy(this.pos),
-                openPos: v2.create(0, 0)
+                openPos,
+                openCollider: collider.transform(
+                    def.collision,
+                    openPos,
+                    math.oriToRad(openOri),
+                    this.scale
+                ),
+                openAltCollider: collider.transform(
+                    def.collision,
+                    openPos,
+                    math.oriToRad(openAltOri),
+                    this.scale
+                ),
+                closedCollider: collider.copy(this.collider)
             };
 
             this.interactionRad = def.door.interactionRad;
-
-            if (!this.door.slideToOpen) {
-                switch (ori) {
-                    case 0:
-                        this.door.openOri = 1;
-                        this.door.openAltOri = 3;
-                        break;
-                    case 1:
-                        this.door.openOri = 2;
-                        this.door.openAltOri = 0;
-                        break;
-                    case 2:
-                        this.door.openOri = 3;
-                        this.door.openAltOri = 1;
-                        break;
-                    case 3:
-                        this.door.openOri = 0;
-                        this.door.openAltOri = 2;
-                        break;
-                }
-            }
             this.checkLayer();
         }
 
@@ -366,7 +390,7 @@ export class Obstacle extends BaseGameObject {
             );
         }
 
-        this.parentBuilding?.obstacleDestroyed(this);
+        this.parentBuilding?.obstacleDestroyed(this, params);
     }
 
     interact(player?: Player, auto = false): void {
@@ -451,7 +475,6 @@ export class Obstacle extends BaseGameObject {
 
     toggleDoor(player?: Player, useDir?: Vec2): void {
         this.door.open = !this.door.open;
-        const def = MapObjectDefs[this.type] as ObstacleDef;
 
         if (!this.door.slideToOpen) {
             if (this.door.open) {
@@ -460,31 +483,34 @@ export class Obstacle extends BaseGameObject {
                     useDir?.x === 1
                 ) {
                     this.ori = this.door.openAltOri;
+                    this.collider = this.door.openAltCollider;
                 } else {
                     this.ori = this.door.openOri;
+                    this.collider = this.door.openCollider;
                 }
             } else {
                 this.ori = this.door.closedOri;
-                this.collider = collider.transform(
-                    def.collision,
-                    this.pos,
-                    math.oriToRad(this.ori),
-                    this.scale
-                );
+                this.collider = this.door.closedCollider;
             }
         } else {
             if (this.door.open) {
-                this.pos = v2.add(
-                    this.pos,
-                    v2.rotate(v2.create(0, -this.door.slideOffset), this.rot)
-                );
+                this.pos = this.door.openPos;
+                this.collider = this.door.openCollider;
             } else {
+                this.collider = this.door.closedCollider;
                 this.pos = this.door.closedPos;
             }
         }
         this.rot = math.oriToRad(this.ori);
-        this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
 
+        const def = MapObjectDefs[this.type] as ObstacleDef;
+        this.bounds = collider.toAabb(
+            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale)
+        );
+
+        const margin = v2.create(this.interactionRad, this.interactionRad);
+        v2.set(this.bounds.min, v2.sub(this.bounds.min, margin));
+        v2.set(this.bounds.max, v2.add(this.bounds.max, margin));
         this.game.grid.updateObject(this);
         this.checkLayer();
         this.setDirty();
