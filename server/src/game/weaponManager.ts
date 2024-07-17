@@ -612,7 +612,7 @@ export class WeaponManager {
             if (itemDef.toMouseHit) {
                 distance = math.max(toMouseLen - gunLen, 0.0);
             }
-            const damageMult = 1.0;
+            const damageMult = hasSplinter ? 0.6 : 1.0;
 
             const params: BulletParams = {
                 playerId: this.player.__id,
@@ -670,7 +670,7 @@ export class WeaponManager {
                     sParams.lastShot = false;
                     sParams.shotFx = false;
                     sParams.trailSmall = true;
-                    sParams.damageMult *= 0.45;
+                    sParams.damageMult = 0.27;
 
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }
