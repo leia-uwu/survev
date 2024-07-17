@@ -752,19 +752,16 @@ export class Player extends BaseGameObject {
 
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
-        const steps = math.max(this.speed * dt + 5, 5);
 
+        v2.set(this.pos, v2.add(this.pos, v2.mul(movement, this.speed * dt)));
         let objs!: GameObject[];
 
-        for (let i = 0; i < steps; i++) {
-            v2.set(
-                this.pos,
-                v2.add(this.pos, v2.mul(movement, this.speed * (dt / steps)))
-            );
+        for (let i = 0, collided = true; i < 5 && collided; i++) {
             objs = this.game.grid.intersectCollider(this.collider);
+            collided = false;
 
-            for (let i = 0; i < objs.length; i++) {
-                const obj = objs[i];
+            for (let j = 0; j < objs.length; j++) {
+                const obj = objs[j];
                 if (
                     obj.__type === ObjectType.Obstacle &&
                     obj.collidable &&
@@ -781,6 +778,8 @@ export class Player extends BaseGameObject {
                             this.pos,
                             v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001))
                         );
+                        collided = true;
+                        break;
                     }
                 }
             }
