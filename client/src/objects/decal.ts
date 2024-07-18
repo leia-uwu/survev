@@ -46,7 +46,7 @@ class Decal implements AbstractObject {
 
     free() {
         if (this.decalRender) {
-            this.decalRender.n();
+            this.decalRender.free();
             this.decalRender = null;
         }
     }
@@ -82,7 +82,7 @@ class Decal implements AbstractObject {
             this.isNew = isNew;
             if (this.isNew) {
                 this.decalRender = ctx.decalBarn.allocDecalRender();
-                this.decalRender.o(this, ctx.map, ctx.renderer);
+                this.decalRender.init(this, ctx.map, ctx.renderer);
             }
         }
     }
@@ -163,7 +163,7 @@ class DecalRender {
         this.sprite.visible = false;
     }
 
-    o(decal: Decal, map: Map, _renderer: unknown) {
+    init(decal: Decal, map: Map, _renderer: unknown) {
         const def = MapObjectDefs[decal.type] as DecalDef;
 
         this.pos = v2.copy(decal.pos);
@@ -204,7 +204,7 @@ class DecalRender {
         this.fadeAlpha = 1;
     }
 
-    n() {
+    free() {
         this.deactivated = true;
     }
 

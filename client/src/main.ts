@@ -297,7 +297,7 @@ class Application {
             this.inputBinds = new InputBinds(this.input, this.config);
             this.inputBindUi = new InputBindUi(this.input, this.inputBinds);
             const onJoin = () => {
-                this.loadoutDisplay!.n();
+                this.loadoutDisplay!.free();
                 this.game!.init();
                 this.onResize();
                 this.findGameAttempts = 0;
@@ -746,7 +746,7 @@ class Application {
         if (this.active && this.loadoutDisplay && this.game && !this.game.initialized) {
             if (this.loadoutMenu.active) {
                 if (!this.loadoutDisplay.initialized) {
-                    this.loadoutDisplay.o();
+                    this.loadoutDisplay.init();
                 }
                 this.loadoutDisplay.show();
                 this.loadoutDisplay.update(dt, this.hasFocus);

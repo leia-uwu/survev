@@ -549,10 +549,10 @@ export class EmoteBarn {
             this.emoteElems.off("touchstart");
             this.bigmapCollision.off("touchend");
         }
-        this.o();
+        this.init();
     }
 
-    o() {
+    init() {
         this.emoteWheelsGreyed = false;
         this.emoteWheels.css("opacity", 1);
         this.teamEmotesGreyed = false;

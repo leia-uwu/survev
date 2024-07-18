@@ -61,7 +61,7 @@ export class MapSpriteBarn {
     container = new PIXI.Container<SortableSprite>();
     mapSprites: MapSprite[] = [];
 
-    n() {
+    free() {
         for (let i = 0; i < this.mapSprites.length; i++) {
             const sprite = this.mapSprites[i].sprite;
             sprite.parent?.removeChild(sprite);

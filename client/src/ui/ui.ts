@@ -575,7 +575,7 @@ export class UiManager {
                 }
             });
         }
-        this.o();
+        this.init();
     }
 
     free() {
@@ -633,10 +633,10 @@ export class UiManager {
         this.pieTimer.destroy();
         this.clearStatsElems();
         this.setRoleMenuActive(false);
-        this.o();
+        this.init();
     }
 
-    o() {
+    init() {
         $(".js-ui-map-hidden").css("display", "block");
         $("#ui-map-counter-default").css("display", "inline-block");
         $("#ui-map-counter-faction").css("display", "none");

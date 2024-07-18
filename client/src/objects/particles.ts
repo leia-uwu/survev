@@ -66,7 +66,7 @@ export class Particle {
         this.sprite.visible = false;
     }
 
-    o(
+    init(
         renderer: Renderer,
         type: string,
         layer: number,
@@ -118,7 +118,7 @@ export class Particle {
         this.setColor(getColorValue(def.color!));
     }
 
-    n() {
+    free() {
         this.active = false;
         this.sprite.visible = false;
     }
@@ -164,7 +164,7 @@ export class Emitter {
     rateMult!: number;
     zOrd!: number;
 
-    o(type: string, options = {} as EmitterOptions) {
+    init(type: string, options = {} as EmitterOptions) {
         const def = EmitterDefs[type];
         this.active = true;
         this.enabled = true;
@@ -191,7 +191,7 @@ export class Emitter {
                   : 20;
     }
 
-    n() {
+    free() {
         this.active = false;
     }
 
@@ -250,7 +250,7 @@ export class ParticleBarn {
         rot = rot !== undefined ? rot : Math.random() * Math.PI * 2;
         zOrd = zOrd !== undefined ? zOrd : ParticleDefs[type].zOrd || 20;
 
-        particle.o(
+        particle.init(
             this.renderer,
             type,
             layer,
@@ -294,7 +294,7 @@ export class ParticleBarn {
             this.emitters.push(emitter);
         }
 
-        emitter.o(type, options);
+        emitter.init(type, options);
         return emitter;
     }
 
@@ -335,7 +335,7 @@ export class ParticleBarn {
                     e.spawnCount++;
                 }
                 if (e.ticker >= e.duration) {
-                    e.n();
+                    e.free();
                 }
             }
         }
@@ -399,7 +399,7 @@ export class ParticleBarn {
 
                 // Die if it's time
                 if (t >= 1) {
-                    p.n();
+                    p.free();
                 }
             }
         }
