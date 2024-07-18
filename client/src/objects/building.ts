@@ -443,7 +443,7 @@ export class Building implements AbstractObject {
                 r.position.set(0, 0);
                 r.scale.set(1, 1);
                 r.rotation = 0;
-                r.tint = 16777215;
+                r.tint = 0xffffff;
                 r.visible = true;
                 this.imgs[0].sprite.addChild(r);
                 this.residue = r;
