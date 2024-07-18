@@ -104,7 +104,7 @@ export class Touch {
                 centerPos: v2.create(0, 0),
                 touchPos: v2.create(0, 0),
                 centerSprite: createPadSprite(this.container, 0),
-                touchSprite: createPadSprite(this.container, 16777215)
+                touchSprite: createPadSprite(this.container, 0xffffff)
             };
         };
         this.touchPads = [createPad(), createPad()];

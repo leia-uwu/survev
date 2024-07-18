@@ -1075,7 +1075,7 @@ export class UiManager {
                     visible,
                     zOrder - 1,
                     "player-map-outer.img",
-                    16777215
+                    0xffffff
                 );
             }
         }
@@ -2202,7 +2202,7 @@ export class UiManager {
             this.mapSprite.x = screenWidth / 2;
             this.mapSprite.y = screenHeight / 2;
             this.mapSprite.alpha = 1;
-            this.container.mask.beginFill(16777215, 1);
+            this.container.mask.beginFill(0xffffff, 1);
             this.container.mask.drawRect(
                 this.mapSprite.x - this.mapSprite.width / 2,
                 this.mapSprite.y - this.mapSprite.height / 2,
@@ -2269,7 +2269,7 @@ export class UiManager {
             const minimapMaskAnchorY = layoutSm
                 ? thisMinimapMargin
                 : screenHeight - minimapSize - thisMinimapMargin;
-            this.container.mask.beginFill(16777215, 1);
+            this.container.mask.beginFill(0xffffff, 1);
             this.container.mask.drawRect(
                 thisMinimapMargin + thisMinimapMarginXAdjust,
                 minimapMaskAnchorY - 0.5 + thisMinimapMarginYAdjust,

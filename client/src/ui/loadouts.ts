@@ -45,7 +45,7 @@ const loadout = {
             ...{
                 crosshair: {
                     type: "",
-                    color: 16777215,
+                    color: 0xffffff,
                     size: 1,
                     stroke: 0
                 },
@@ -67,7 +67,7 @@ const loadout = {
                 ),
                 color:
                     parseInt(mergedLoadout.crosshair.color as unknown as string) ||
-                    16777215,
+                    0xffffff,
                 size: getFloat(
                     mergedLoadout.crosshair.size as unknown as string,
                     1

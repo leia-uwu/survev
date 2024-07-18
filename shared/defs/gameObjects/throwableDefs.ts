@@ -100,7 +100,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-frag-nopin-nolever-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {
             equip: {
@@ -168,7 +168,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-mirv-nopin-nolever.img",
             scale: 0.13,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {
             equip: {
@@ -236,7 +236,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-mirv-mini-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         useThrowParticles: true,
         sound: {
@@ -278,7 +278,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-martyrdom-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         useThrowParticles: true,
         sound: {
@@ -318,7 +318,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-smoke-nopin-nolever.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {
             equip: {
@@ -385,7 +385,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-strobe-armed.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {
             equip: {
@@ -454,7 +454,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-snowball-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {
             equip: {
@@ -519,7 +519,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-snowball-02.img",
             scale: 0.2,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {},
         useThrowParticles: false,
@@ -564,7 +564,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-potato-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {
             equip: {
@@ -630,7 +630,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-potato-02.img",
             scale: 0.2,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {},
         useThrowParticles: false,
@@ -675,7 +675,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-potato-02.img",
             scale: 0.2,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {},
         useThrowParticles: false,
@@ -726,7 +726,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-wedge-01.img",
             scale: 0.075,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {},
         useThrowParticles: false,
@@ -775,7 +775,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         worldImg: {
             sprite: "proj-bomb-iron-01.img",
             scale: 0.12,
-            tint: 16777215
+            tint: 0xffffff
         },
         handImg: {},
         useThrowParticles: true,

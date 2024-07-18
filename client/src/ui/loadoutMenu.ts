@@ -1027,7 +1027,7 @@ export class LoadoutMenu {
                 // Change the pointer in this slot
                 const crosshairDef = {
                     type: itemInfo.type,
-                    color: 16777215,
+                    color: 0xffffff,
                     size: 1,
                     stroke: 0
                 };
