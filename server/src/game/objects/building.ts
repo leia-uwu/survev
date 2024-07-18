@@ -14,7 +14,7 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { getColliders } from "../map";
 import type { Decal } from "./decal";
-import { BaseGameObject, type DamageParams } from "./gameObject";
+import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
 import type { Structure } from "./structure";
 
@@ -185,7 +185,7 @@ export class Building extends BaseGameObject {
         }
     }
 
-    obstacleDestroyed(obstacle: Obstacle, params: DamageParams): void {
+    obstacleDestroyed(obstacle: Obstacle): void {
         const def = MapObjectDefs[obstacle.type] as ObstacleDef;
 
         if (def.damageCeiling) {
@@ -203,39 +203,6 @@ export class Building extends BaseGameObject {
             if (this.wallsToDestroy <= 0 && !this.ceilingDead) {
                 this.ceilingDead = true;
                 this.setPartDirty();
-            }
-
-            // check doors and windows with no obstacle attached
-            for (let i = 0; i < this.childObjects.length; i++) {
-                const obj = this.childObjects[i];
-                if (obj.__type !== ObjectType.Obstacle) continue;
-                if (obj.dead) continue;
-
-                let collision: Collider | undefined = undefined;
-                if (obj.isDoor) {
-                    collision = obj.door.openCollider;
-                } else if (obj.type.includes("window_open")) {
-                    collision = obj.collider;
-                }
-                if (!collision) continue;
-                let noWall = true;
-
-                for (let j = 0; j < this.childObjects.length; j++) {
-                    let wall = this.childObjects[j];
-                    if (wall.__type !== ObjectType.Obstacle) continue;
-                    if (wall === obj) continue;
-                    if (wall.dead) continue;
-                    if (!wall.isWall) continue;
-
-                    if (coldet.test(wall.collider, collision)) {
-                        noWall = false;
-                        break;
-                    }
-                }
-
-                if (noWall) {
-                    obj.kill(params);
-                }
             }
         }
     }

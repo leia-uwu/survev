@@ -390,7 +390,30 @@ export class Obstacle extends BaseGameObject {
             );
         }
 
-        this.parentBuilding?.obstacleDestroyed(this, params);
+        this.parentBuilding?.obstacleDestroyed(this);
+
+        if (this.isWall) {
+            const objs = this.game.grid.intersectCollider(this.collider);
+            for (let i = 0; i < objs.length; i++) {
+                const obj = objs[i];
+                if (obj.__type !== ObjectType.Obstacle) continue;
+                if (obj.dead) continue;
+                if (!util.sameLayer(this.layer, obj.layer)) continue;
+
+                let collision: Collider | undefined = undefined;
+                if (obj.isDoor) {
+                    collision = collider.createCircle(obj.pos, 0.5);
+                } else if (obj.type.includes("window_open")) {
+                    collision = obj.collider;
+                }
+                if (!collision) continue;
+
+                if (coldet.test(this.collider, collision)) {
+                    obj.kill(params);
+                    break;
+                }
+            }
+        }
     }
 
     interact(player?: Player, auto = false): void {
