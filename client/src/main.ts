@@ -235,7 +235,7 @@ class Application {
                 if (window.history) {
                     window.history.replaceState("", "", "/");
                 }
-                $("#news-block").css("display", "block")
+                $("#news-block").css("display", "block");
                 this.game?.free();
                 this.teamMenu.leave();
             });
