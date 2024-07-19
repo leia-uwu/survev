@@ -3587,11 +3587,11 @@ screen and (max-width: 736px) and (orientation: landscape) {
 }
 
 #pass-wrapper {
-  display: block;
+  display: none;
 }
 
 #news-wrapper {
-  display: none;
+  display: block;
 }
 
 #news-block {
