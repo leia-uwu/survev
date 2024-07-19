@@ -6712,7 +6712,7 @@ input [type="image"]:focus {
   #team-menu-members {
     float: none;
     margin-right: auto;
-    height: 180px;
+    height: auto;
     width: 240px;
   }
 
