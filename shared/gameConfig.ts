@@ -188,7 +188,8 @@ export const GameConfig = {
         soundRangeMult: 2.5,
         soundRangeDelta: 0.25,
         soundRangeMax: 92,
-        fallOff: 0
+        fallOff: 0,
+        minSpawnDist: 200 //only applies to random drops on the same tick
     },
     airstrike: {
         actionOffset: 0,
