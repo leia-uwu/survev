@@ -2419,7 +2419,7 @@ export class Player extends BaseGameObject {
             case "chest":
             case "helmet": {
                 if (itemDef.noDrop) return;
-                if (!this.item[itemDef.type]) return;
+                if (!this[itemDef.type]) return;
                 this.game.lootBarn.addLoot(
                     dropMsg.item,
                     this.pos,
