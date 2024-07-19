@@ -87,7 +87,7 @@ function createBarrel<T extends ObstacleDef>(params: Partial<T>): T {
             sprite: "map-barrel-01.img",
             scale: 0.4,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -120,7 +120,7 @@ function createWoodBarrel<T extends ObstacleDef>(params: Partial<T>): T {
             residue: "map-barrel-res-02.img",
             scale: 0.4,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -153,7 +153,7 @@ function createBed<T extends ObstacleDef>(params: Partial<T>): T {
             residue: "map-bed-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -186,7 +186,7 @@ function createBookShelf<T extends ObstacleDef>(params: Partial<T>): T {
             residue: "map-drawers-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -230,7 +230,7 @@ function createBunkerStairs<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -249,7 +249,7 @@ function createBunkerStairs<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -298,7 +298,7 @@ function createStatue<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -354,7 +354,7 @@ function createStatueUnderground<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(3.5, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -370,7 +370,7 @@ function createStatueUnderground<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: { dist: 5, width: 3 }
@@ -432,7 +432,7 @@ function createBush<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-bush-res-01.img",
             scale: 0.5,
             alpha: 0.97,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         },
         sound: {
@@ -457,7 +457,7 @@ function createCache<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -501,7 +501,7 @@ function createCase<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-crate-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -534,7 +534,7 @@ function createChest<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-crate-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -706,7 +706,7 @@ function createCouch<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-couch-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -739,7 +739,7 @@ function createCrate<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-crate-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -805,7 +805,7 @@ function createClassCrate<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-class-crate-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -839,7 +839,7 @@ function createDepositBox<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "none",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -959,7 +959,7 @@ function createDrawer<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-drawers-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -993,7 +993,7 @@ function createGunMount<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-drawers-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1027,7 +1027,7 @@ function createLocker<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1060,7 +1060,7 @@ function createControlPanel<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1093,7 +1093,7 @@ function createOven<T extends ObstacleDef>(e: Partial<T>): T {
             sprite: "map-oven-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1126,7 +1126,7 @@ function createPlanter<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-planter-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1159,7 +1159,7 @@ function createBottle<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-pot-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1191,7 +1191,7 @@ function createBottle2<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "none",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1239,7 +1239,7 @@ function createPotato<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-potato-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1272,7 +1272,7 @@ function createPumpkin<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-pumpkin-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1305,7 +1305,7 @@ function createRecorder<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 9
         },
         sound: {
@@ -1347,7 +1347,7 @@ function createRefrigerator<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-crate-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1377,7 +1377,7 @@ function createSandBags<T extends ObstacleDef>(e: Partial<T>): T {
             sprite: "map-sandbags-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1408,7 +1408,7 @@ function createSilo<T extends ObstacleDef>(e: Partial<T>): T {
             sprite: "map-silo-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1440,7 +1440,7 @@ function createStone<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-stone-res-01.img",
             scale: 0.4,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1477,7 +1477,7 @@ function createRiverStone<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-stone-res-02.img",
             scale: 0.4,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1510,7 +1510,7 @@ function createTable<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-table-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         },
         sound: {
@@ -1542,7 +1542,7 @@ function createToilet<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-toilet-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1577,7 +1577,7 @@ function createTree<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-tree-res-01.img",
             scale: 0.7,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 800
         },
         sound: {
@@ -1624,7 +1624,7 @@ function createTreeSwitch<T extends ObstacleDef>(e: Partial<T>): T {
             scale: 0.5,
             alpha: 1,
             zIdx: 10,
-            tint: 16777215
+            tint: 0xffffff
         },
         sound: {
             bullet: "tree_bullet",
@@ -1683,7 +1683,7 @@ function createWheel<T extends ObstacleDef>(e: Partial<T>): T {
             sprite: "map-wheel-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1715,7 +1715,7 @@ function createWoodPile<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-woodpile-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -1785,14 +1785,14 @@ function createBank<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 6.96),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-bank-floor-02.img",
                     pos: v2.create(9.5, -12.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -1833,21 +1833,21 @@ function createBank<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-16, 7),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-bank-ceiling-02.img",
                     pos: v2.create(6, 0),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-bank-ceiling-03.img",
                     pos: v2.create(22, 8),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -2188,7 +2188,7 @@ function createBankVault<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -2376,7 +2376,7 @@ function createBarn<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-barn-floor-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -2411,14 +2411,14 @@ function createBarn<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -2),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-barn-ceiling-02.img",
                     pos: v2.create(0, 13.2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -2835,7 +2835,7 @@ function createBarnBasement<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(5.5, -0.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -3004,14 +3004,14 @@ function createBridgeLarge<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-15.75, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-bridge-lg-floor.img",
                     pos: v2.create(15.75, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2,
                     mirrorY: true
                 }
@@ -3032,7 +3032,7 @@ function createBridgeLarge<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-bridge-lg-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -3257,7 +3257,7 @@ function createCabin<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -1),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -3290,21 +3290,21 @@ function createCabin<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-cabin-ceiling-01b.img",
                     pos: v2.create(4, -13),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-chimney-01.img",
                     pos: v2.create(13, 2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     removeOnDamaged: true
                 }
             ]
@@ -3587,14 +3587,14 @@ function createHut<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-hut-floor-02.img",
                     pos: v2.create(0, -18.9),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -3610,7 +3610,7 @@ function createHut<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: e.ceilingImg || "map-building-hut-ceiling-01.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             destroy: {
@@ -3755,14 +3755,14 @@ function createShack3<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-shack-floor-03.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-hut-floor-02.img",
                     pos: v2.create(-10.65, 7),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -3907,7 +3907,7 @@ function createGreenhouse<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 10),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -3915,14 +3915,14 @@ function createGreenhouse<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -10),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-porch-01.img",
                     pos: v2.create(0, 21),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -3930,7 +3930,7 @@ function createGreenhouse<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -21),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -3960,14 +3960,14 @@ function createGreenhouse<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -9.85),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-greenhouse-ceiling-01.img",
                     pos: v2.create(0, 9.85),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     mirrorY: true
                 }
             ],
@@ -4775,28 +4775,28 @@ function createMansion<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-1.5, 22),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-mansion-floor-01b.img",
                     pos: v2.create(-3.5, -2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-mansion-floor-01c.img",
                     pos: v2.create(28.5, 1.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-mansion-floor-01d.img",
                     pos: v2.create(-15, -24),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -4844,7 +4844,7 @@ function createMansion<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-mansion-ceiling.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -5473,28 +5473,28 @@ function createMansionCellar<T extends BuildingDef>(
                     pos: v2.create(-3.75, 0.25),
                     scale: 4,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-mansion-cellar-01a.img",
                     pos: v2.create(11.5, 5.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-mansion-cellar-01b.img",
                     pos: v2.create(28.5, 1.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-mansion-cellar-01c.img",
                     pos: v2.create(11.5, -9),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -5748,7 +5748,7 @@ function createOutHouse<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-outhouse-floor.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -5770,7 +5770,7 @@ function createOutHouse<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-outhouse-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             destroy: {
@@ -5875,14 +5875,14 @@ function createTeaPavilion<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-teahouse-floor-02.img",
                     pos: v2.create(0, -10.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -5899,7 +5899,7 @@ function createTeaPavilion<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-pavilion-ceiling-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             destroy: {
@@ -6196,14 +6196,14 @@ function createPoliceStation<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-9.5, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-police-floor-02.img",
                     pos: v2.create(33, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -6250,21 +6250,21 @@ function createPoliceStation<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-21.5, 8.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-police-ceiling-02.img",
                     pos: v2.create(10.5, 0),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-police-ceiling-03.img",
                     pos: v2.create(31.96, 12.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -6813,14 +6813,14 @@ function createHouseRed<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-porch-01.img",
                     pos: v2.create(-1, 14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -6828,7 +6828,7 @@ function createHouseRed<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -6857,7 +6857,7 @@ function createHouseRed<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-house-ceiling.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -7155,14 +7155,14 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-porch-01.img",
                     pos: v2.create(10, 14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -7170,7 +7170,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7178,7 +7178,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(2.6, -14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7186,7 +7186,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(5.2, -14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7194,7 +7194,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(7.8, -14.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7202,7 +7202,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0, -16.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7210,7 +7210,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(2.6, -16.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7218,7 +7218,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(5.2, -16.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -7226,7 +7226,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     pos: v2.create(7.8, -16.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -7552,7 +7552,7 @@ function createShack2<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-shack-floor-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -7575,7 +7575,7 @@ function createShack2<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-shack-ceiling-01.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             destroy: {
@@ -7665,7 +7665,7 @@ function createShack<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-shack-floor-02.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -7684,7 +7684,7 @@ function createShack<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-shack-ceiling-02.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             destroy: {
@@ -7790,14 +7790,14 @@ function createWarehouse<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-15.615, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-warehouse-floor-01.img",
                     pos: v2.create(15.615, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -7821,7 +7821,7 @@ function createWarehouse<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-warehouse-ceiling-01.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -8016,7 +8016,7 @@ function createWarehouse2<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(-13.72, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -8024,7 +8024,7 @@ function createWarehouse2<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(13.72, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -8048,7 +8048,7 @@ function createWarehouse2<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-warehouse-ceiling-02.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -8214,7 +8214,7 @@ function createWindow<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "none",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -8413,7 +8413,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bollard-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -9767,7 +9767,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     candle_01: {
         type: "obstacle",
-        map: { display: false, color: 16777215, scale: 1 },
+        map: { display: false, color: 0xffffff, scale: 1 },
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
         collision: collider.createCircle(v2.create(0, 0), 0.5),
         height: 0.5,
@@ -9782,7 +9782,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-candle-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -9829,7 +9829,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-fire-ext-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -9899,7 +9899,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-drawers-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -10094,7 +10094,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-screen-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -10139,7 +10139,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-table-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         },
         sound: {
@@ -10173,7 +10173,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-drawers-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -10303,7 +10303,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-stone-res-07.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         }
     }),
@@ -10354,7 +10354,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-table-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     }),
@@ -10366,7 +10366,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-table-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     }),
@@ -10378,7 +10378,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-table-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     }),
@@ -10390,7 +10390,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-table-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     }),
@@ -10417,7 +10417,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 sprite: "map-tire-01.img",
                 scale: 0.4,
                 alpha: 1,
-                tint: 16777215,
+                tint: 0xffffff,
                 zIdx: 10
             },
             sound: {
@@ -10548,7 +10548,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: {
             sprite: "map-tree-05.img",
             residue: "map-tree-res-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             scale: 0.7,
             zIdx: 801
         }
@@ -10567,7 +10567,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: {
             sprite: "map-tree-05.img",
             residue: "map-tree-res-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             scale: 0.7,
             zIdx: 801
         }
@@ -10581,7 +10581,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: {
             sprite: "map-tree-05c.img",
             residue: "map-tree-res-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             scale: 0.35,
             zIdx: 801
         }
@@ -10777,14 +10777,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: {
             sprite: "map-tree-12.img",
             residue: "map-tree-res-12.img",
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 801
         }
     } as unknown as Partial<ObstacleDef>),
     tree_13: createTree({
         img: {
             sprite: "map-tree-13.img",
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 801
         }
     }),
@@ -10816,7 +10816,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-vat-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -10849,7 +10849,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-vat-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -10891,7 +10891,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 residue: "map-vending-res.img",
                 scale: 0.5,
                 alpha: 1,
-                tint: 16777215,
+                tint: 0xffffff,
                 zIdx: 10
             },
             sound: {
@@ -10945,7 +10945,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-building-bank-window-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         sound: {
@@ -11085,7 +11085,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -11124,7 +11124,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(0, 10),
                 scale: 0.5,
                 alpha: 1,
-                tint: 16777215,
+                tint: 0xffffff,
                 rot: 2
             },
             {
@@ -11132,14 +11132,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(0, -10),
                 scale: 0.5,
                 alpha: 1,
-                tint: 16777215
+                tint: 0xffffff
             },
             {
                 sprite: "map-building-porch-01.img",
                 pos: v2.create(0, 21),
                 scale: 0.5,
                 alpha: 1,
-                tint: 16777215,
+                tint: 0xffffff,
                 rot: 0
             },
             {
@@ -11147,7 +11147,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(0, -21),
                 scale: 0.5,
                 alpha: 1,
-                tint: 16777215,
+                tint: 0xffffff,
                 rot: 2
             }
         ],
@@ -11156,7 +11156,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 sprite: "map-building-greenhouse-ceiling-02.img",
                 scale: 1,
                 alpha: 1,
-                tint: 16777215
+                tint: 0xffffff
             }
         ],
         mapObjects: [
@@ -11355,7 +11355,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -11374,7 +11374,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -11449,14 +11449,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 1.85),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-chrys-chamber-floor-01b.img",
                     pos: v2.create(11, -10.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -11650,14 +11650,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 1.85),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-chrys-chamber-floor-01b.img",
                     pos: v2.create(11, -10.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -11854,14 +11854,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-12.5, -4.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-floor-01b.img",
                     pos: v2.create(3.5, 2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12001,14 +12001,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-12.5, -4.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-floor-01c.img",
                     pos: v2.create(3.5, 2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12190,14 +12190,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -2.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-floor-02b.img",
                     pos: v2.create(0, 9.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12301,14 +12301,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -2.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-floor-02c.img",
                     pos: v2.create(0, 9.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12426,7 +12426,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12570,7 +12570,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12709,7 +12709,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-hedgehog-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -12998,14 +12998,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-hut-ceiling-01.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-04.img",
                     pos: v2.create(4.5, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -13013,7 +13013,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.5, 5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 }
             ]
@@ -13031,14 +13031,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-hut-ceiling-02.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-04.img",
                     pos: v2.create(4.5, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -13046,7 +13046,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0.5, -4.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -13113,14 +13113,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-warehouse-ceiling-01.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-04.img",
                     pos: v2.create(7.5, 5),
                     scale: 0.9,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -13128,7 +13128,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-8.5, 4),
                     scale: 0.9,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -13136,7 +13136,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(22.25, 11.25),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -13144,7 +13144,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-22.25, -11.25),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -13158,14 +13158,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-warehouse-ceiling-02.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-04.img",
                     pos: v2.create(0, 4),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -13173,7 +13173,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(20.25, -9.75),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -13181,7 +13181,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-20.25, 9.75),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -13410,21 +13410,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-39.2, 55),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-complex-warehouse-floor-02.img",
                     pos: v2.create(-39.2, 11.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-complex-warehouse-floor-03.img",
                     pos: v2.create(-39.2, -32),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -14327,7 +14327,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-archway-ceiling-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             destroy: {
@@ -14776,7 +14776,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -14807,7 +14807,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -15027,7 +15027,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(81, 10),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -15344,7 +15344,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(81, 10),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -15496,14 +15496,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-shack-ceiling-01.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-05.img",
                     pos: v2.create(-4, 2.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -15511,7 +15511,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(3.5, -0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -15525,14 +15525,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-shack-ceiling-02.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-05.img",
                     pos: v2.create(-2, 1),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -15560,14 +15560,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-shilo-floor-01.img",
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-porch-01.img",
                         pos: v2.create(0, -13),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215,
+                        tint: 0xffffff,
                         rot: 2
                     }
                 ]
@@ -15591,7 +15591,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-shilo-ceiling-01.img",
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -15755,14 +15755,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-shack-floor-03.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-hut-floor-02.img",
                     pos: v2.create(-10.65, 9),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -15773,7 +15773,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0.5, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         }
@@ -15801,7 +15801,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(3.75, 1.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 }
             ]
@@ -15842,14 +15842,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-outhouse-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-04.img",
                     pos: v2.create(2.25, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -15921,7 +15921,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(0, 0),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -15932,7 +15932,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-perch-ceiling.img",
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ],
                 destroy: {
@@ -16668,7 +16668,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -16718,7 +16718,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-2, -0.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -16767,7 +16767,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-2, -0.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -16933,21 +16933,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -2),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-barn-ceiling-02.img",
                     pos: v2.create(0, 13.2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-01.img",
                     pos: v2.create(-14.5, 5.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -16955,7 +16955,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.5, -9),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -16963,7 +16963,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(14.5, 5.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -17010,28 +17010,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-16, 7),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-bank-ceiling-02.img",
                     pos: v2.create(6, 0),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-bank-ceiling-03.img",
                     pos: v2.create(22, 8),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-02.img",
                     pos: v2.create(-13, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -17039,7 +17039,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(1.25, 9.25),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -17047,7 +17047,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(13.75, 15.25),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -17055,7 +17055,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(15.25, -15.75),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 }
             ]
@@ -17129,28 +17129,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-21.5, 8.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-police-ceiling-02.img",
                     pos: v2.create(10.5, 0),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-police-ceiling-03.img",
                     pos: v2.create(31.96, 12.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-01.img",
                     pos: v2.create(13, 17.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 },
                 {
@@ -17158,7 +17158,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-21, 14),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -17166,7 +17166,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(30.25, 6.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -17174,7 +17174,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(4.5, -3.25),
                     scale: 0.6,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -17182,7 +17182,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-40.25, 14.75),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 },
                 {
@@ -17190,7 +17190,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-38.75, 0.75),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 }
             ]
@@ -17250,21 +17250,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-house-ceiling.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-01.img",
                     pos: v2.create(-5.5, 8.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-02.img",
                     pos: v2.create(4.5, -7),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         }
@@ -17289,7 +17289,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(3.5, 6),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -17297,7 +17297,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-4.5, -8),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -17330,21 +17330,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-cabin-ceiling-01b.img",
                     pos: v2.create(4, -13),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-01.img",
                     pos: v2.create(-13, 6),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -17352,7 +17352,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-3.5, -6.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -17360,7 +17360,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(10.75, 8.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -17368,7 +17368,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(13, 2),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     removeOnDamaged: true
                 }
             ]
@@ -17433,14 +17433,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-2.5, 7.85),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-dock-floor-01b.img",
                     pos: v2.create(2.5, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -17609,14 +17609,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-mansion-ceiling.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-01.img",
                     pos: v2.create(6, 19.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -17624,7 +17624,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-16, 8),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -17632,7 +17632,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(20.25, -1.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -17640,7 +17640,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(10.25, -13.25),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -17648,7 +17648,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(10.25, 6.25),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -17656,7 +17656,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-21.25, -20.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -17664,7 +17664,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-29.75, 13.25),
                     scale: 0.75,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -17792,7 +17792,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-saloon-bar-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         }
     }),
@@ -17802,7 +17802,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-saloon-bar-02.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         }
     }),
@@ -17827,7 +17827,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-door-04.img",
             residue: "map-drawers-res.img",
             scale: 0.5,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 9
         }
     } as unknown as Partial<ObstacleDef>),
@@ -17959,14 +17959,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-saloon-floor-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-saloon-ceiling-02.img",
                     pos: v2.create(-23.5, 1),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -17996,21 +17996,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-building-saloon-ceiling-02.img",
                     pos: v2.create(-23.5, 1),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-chimney-01.img",
                     pos: v2.create(-3, 3),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     removeOnDamaged: true
                 }
             ]
@@ -18466,7 +18466,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -18768,21 +18768,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(0, 0),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-teahouse-floor-02.img",
                         pos: v2.create(9, -10.25),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-teahouse-floor-02.img",
                         pos: v2.create(-9, 10.25),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215,
+                        tint: 0xffffff,
                         rot: 2
                     }
                 ]
@@ -18806,7 +18806,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-teahouse-ceiling-01.img",
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ],
                 destroy: {
@@ -19296,7 +19296,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-wall-03-grassy-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         map: { display: true, color: 7282176, scale: 1 },
@@ -19312,7 +19312,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-wall-08-grassy-res.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         },
         map: { display: true, color: 7282176, scale: 1 },
@@ -20083,7 +20083,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-club-bar-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10
         }
     }),
@@ -20359,56 +20359,56 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(-30, -8.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01b.img",
                         pos: v2.create(-21.5, 8),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01c.img",
                         pos: v2.create(-4, -8.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01d.img",
                         pos: v2.create(1.5, -25),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01e.img",
                         pos: v2.create(24, -7.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01f.img",
                         pos: v2.create(6.5, 7),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01g.img",
                         pos: v2.create(6, 18),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-floor-01h.img",
                         pos: v2.create(-1.5, 31.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -20505,21 +20505,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(-4.5, -8.5),
                         scale: 1,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-ceiling-01b.img",
                         pos: v2.create(24, -7.5),
                         scale: 1,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-club-ceiling-01c.img",
                         pos: v2.create(6, 22.5),
                         scale: 1,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -21262,42 +21262,42 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(-3.5, -13.5),
                         scale: 4,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-bathhouse-basement-01a.img",
                         pos: v2.create(-33.5, -26),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-bathhouse-basement-01b.img",
                         pos: v2.create(-10, -26.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-bathhouse-basement-01c.img",
                         pos: v2.create(18.5, -35.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-bathhouse-basement-01d.img",
                         pos: v2.create(23.02, -27.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     },
                     {
                         sprite: "map-building-bathhouse-basement-01e.img",
                         pos: v2.create(2, 9),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -21783,7 +21783,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(-1, 0),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -21807,7 +21807,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-bathhouse-sideroom-ceiling-01.img",
                         scale: 1,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -21899,7 +21899,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         pos: v2.create(0, 0.5),
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -22215,7 +22215,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 7.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -22313,14 +22313,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.15, -4.6),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-egg-chamber-floor-01b.img",
                     pos: v2.create(0, 9.24),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -22338,7 +22338,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-bunker-egg-chamber-ceiling-01.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: { dist: 5, width: 3 }
@@ -22433,14 +22433,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.15, -4.6),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-egg-chamber-floor-01b.img",
                     pos: v2.create(0, 9.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -22458,7 +22458,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-bunker-egg-chamber-ceiling-01.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: { dist: 5, width: 3 }
@@ -22553,14 +22553,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.15, -4.6),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-egg-chamber-floor-01b.img",
                     pos: v2.create(0, 9.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -22578,7 +22578,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-bunker-egg-chamber-ceiling-01.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: { dist: 5, width: 3 }
@@ -22802,14 +22802,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(25.75, 3.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-generic-floor-01.img",
                     pos: v2.create(-16.5, -90),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -22817,7 +22817,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(40, -51),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -22842,7 +22842,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(25.75, 3.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: {
@@ -23099,28 +23099,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(17.5, 3.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hydra-chamber-floor-01b.img",
                     pos: v2.create(3.5, 2.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hydra-chamber-floor-02.img",
                     pos: v2.create(-15.5, -83),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hydra-chamber-floor-03.img",
                     pos: v2.create(40.5, -58.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -23461,7 +23461,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-bunker-hydra-compartment-floor-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -23607,7 +23607,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -23889,7 +23889,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -0.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -24066,7 +24066,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(1.25, 10),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -24095,7 +24095,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-1, 10),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 }
             ],
@@ -24215,14 +24215,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(8.5, -4.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-storm-chamber-floor-01b.img",
                     pos: v2.create(0, 9.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -24241,7 +24241,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(8.5, -1),
                     scale: 1,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: { dist: 5, width: 3 }
@@ -24482,14 +24482,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(20.75, 3.45),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-conch-floor-01.img",
                     pos: v2.create(48.75, -32.45),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -24522,14 +24522,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(19.25, 3.35),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-conch-ceiling-01.img",
                     pos: v2.create(47.25, -32.55),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ],
             vision: {}
@@ -24629,14 +24629,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(4, 5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-conch-chamber-floor-02.img",
                     pos: v2.create(34.86, -29.9),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -24840,14 +24840,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-3, -0.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-conch-compartment-floor-01b.img",
                     pos: v2.create(9.75, -17.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -25102,7 +25102,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -25132,7 +25132,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -25184,7 +25184,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-11.44, 27),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -25192,7 +25192,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-9.38, 18.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -25200,7 +25200,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-36.44, 18.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -25208,7 +25208,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(28.5, 23.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 2
                 },
                 {
@@ -25216,7 +25216,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-28.5, -17.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -25224,7 +25224,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(11.45, -21),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -25232,7 +25232,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(9.39, -12.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -25240,7 +25240,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(36.45, -12.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -25568,14 +25568,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-22.5, -10),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-crossing-compartment-floor-01.img",
                     pos: v2.create(4, 3),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -25981,7 +25981,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(1.25, 10),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -26010,7 +26010,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-1, 10),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 }
             ],
@@ -26117,21 +26117,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -4.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-chamber-floor-01b.img",
                     pos: v2.create(0, 9.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-chamber-floor-01c.img",
                     pos: v2.create(-15, -9.475),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -26281,7 +26281,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -26442,28 +26442,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(4, -8.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-compartment-floor-02b.img",
                     pos: v2.create(0.75, 6),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-compartment-floor-02c.img",
                     pos: v2.create(-14, 0.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-compartment-floor-02d.img",
                     pos: v2.create(-6.27, 14.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -26674,28 +26674,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-14.5, -8.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-compartment-floor-03b.img",
                     pos: v2.create(-9, 3),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-compartment-floor-03c.img",
                     pos: v2.create(5.5, -0.25),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-hatchet-compartment-floor-03d.img",
                     pos: v2.create(14.5, -3.75),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -26852,7 +26852,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 7.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -26871,7 +26871,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 7.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -26939,7 +26939,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     stone_wall_int_4: createWall({
         material: "stone",
         extents: v2.create(0.6, 2),
-        img: wallImg("map-wall-04-stone.img", 16777215)
+        img: wallImg("map-wall-04-stone.img", 0xffffff)
     }),
     bunker_eye_sublevel_01: {
         type: "building",
@@ -26961,14 +26961,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -8.5),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-bunker-eye-chamber-floor-01b.img",
                     pos: v2.create(13, -23),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -27223,7 +27223,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -27338,7 +27338,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 }
             ]
@@ -27357,7 +27357,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -27401,7 +27401,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     cobalt_wall_int_4: createWall({
         material: "cobalt",
         extents: v2.create(0.6, 2),
-        img: wallImg("map-wall-04-cobalt.img", 16777215)
+        img: wallImg("map-wall-04-cobalt.img", 0xffffff)
     }),
     bunker_twins_sublevel_01: {
         type: "building",
@@ -27424,7 +27424,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -27806,14 +27806,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-bridge-lg-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 },
                 {
                     sprite: "map-snow-03.img",
                     pos: v2.create(-10, -4),
                     scale: 0.4,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -27821,7 +27821,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(8, 4),
                     scale: 0.4,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 0
                 },
                 {
@@ -27829,7 +27829,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(15, -5.25),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 1
                 },
                 {
@@ -27837,7 +27837,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-15, 5.25),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 16777215,
+                    tint: 0xffffff,
                     rot: 3
                 }
             ]
@@ -27994,7 +27994,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-bridge-xlg-floor.img",
                         scale: 0.5,
                         alpha: 1,
-                        tint: 16777215
+                        tint: 0xffffff
                     }
                 ]
             },
@@ -28334,7 +28334,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-bridge-md-floor.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 16777215
+                    tint: 0xffffff
                 }
             ]
         },
@@ -28505,7 +28505,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(0, 3),
                 scale: 0.6,
                 alpha: 1,
-                tint: 16777215,
+                tint: 0xffffff,
                 rot: 0
             }
         ]
@@ -28767,7 +28767,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-smoke-res.img",
             scale: 0.2,
             alpha: 0.5,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 11
         }
     },
@@ -28781,7 +28781,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-snowball-res.img",
             scale: 0.2,
             alpha: 0.25,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 11
         }
     },
@@ -28795,7 +28795,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-potato-res.img",
             scale: 0.2,
             alpha: 0.25,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 11
         }
     },
@@ -28807,7 +28807,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bunker-vent-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -28819,7 +28819,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bunker-vent-02.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -28831,7 +28831,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bunker-vent-03.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -28843,7 +28843,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bunker-hydra-floor-04.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -28855,7 +28855,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-pipes-01.img",
             scale: 0.5,
             alpha: 0.96,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     },
@@ -28867,7 +28867,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-pipes-02.img",
             scale: 0.5,
             alpha: 0.96,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     },
@@ -28879,7 +28879,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-pipes-03.img",
             scale: 0.5,
             alpha: 0.96,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     },
@@ -28891,7 +28891,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-pipes-04.img",
             scale: 0.5,
             alpha: 0.96,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     },
@@ -28903,7 +28903,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-pipes-05.img",
             scale: 0.5,
             alpha: 0.96,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     },
@@ -28915,7 +28915,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-initiative.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -28927,7 +28927,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-web-01.img",
             scale: 0.5,
             alpha: 0.75,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 60
         }
     },
@@ -29047,7 +29047,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bunker-vent-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 3
         }
     },
@@ -29059,7 +29059,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-oil-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -29071,7 +29071,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-oil-02.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -29083,7 +29083,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-oil-03.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -29095,7 +29095,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-oil-04.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -29107,7 +29107,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-oil-05.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -29119,7 +29119,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-oil-06.img",
             scale: 0.5,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 0
         }
     },
@@ -29157,7 +29157,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-club-01.img",
             scale: 1,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 4
         }
     },
@@ -29169,7 +29169,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-club-02.img",
             scale: 1,
             alpha: 0,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 4
         },
         gore: {
@@ -29202,7 +29202,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-decal-flyer-01.img",
             scale: 0.6,
             alpha: 0.667,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 4
         }
     }

@@ -47,7 +47,7 @@ class Smoke implements AbstractObject {
 
         if (isNew) {
             this.particle = ctx.smokeBarn.allocParticle();
-            this.particle?.o(this.pos, this.rad, this.layer, this.interior);
+            this.particle?.init(this.pos, this.rad, this.layer, this.interior);
         }
         this.particle!.posTarget = v2.copy(this.pos);
         this.particle!.radTarget = this.rad;
@@ -79,7 +79,7 @@ export class SmokeParticle {
         this.sprite.visible = false;
     }
 
-    o(pos: Vec2, rad: number, layer: number, interior: number) {
+    init(pos: Vec2, rad: number, layer: number, interior: number) {
         this.pos = v2.copy(pos);
         this.posTarget = v2.copy(this.pos);
         this.rad = rad;

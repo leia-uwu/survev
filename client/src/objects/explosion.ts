@@ -134,7 +134,7 @@ class Explosion {
         this.soundUpdateThrottle = 0;
     }
 
-    n() {
+    free() {
         this.active = false;
     }
 
@@ -309,7 +309,7 @@ export class ExplosionBarn {
             if (e.active) {
                 e.update(dt, this, particleBarn, audioManager, map, camera);
                 if (!e.active) {
-                    e.n();
+                    e.free();
                 }
             }
         }

@@ -20,9 +20,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-leadership.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -34,9 +34,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-firepower.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -48,9 +48,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-gotw.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -62,9 +62,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-windwalk.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -76,9 +76,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-rare-potato.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -90,9 +90,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-aoe-heal.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -104,9 +104,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-endless-ammo.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -118,9 +118,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-steelskin.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -132,9 +132,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-splinter.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -146,9 +146,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-small-arms.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -160,9 +160,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-takedown.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -174,9 +174,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-field-medic.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -188,9 +188,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-tree-climbing.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -202,9 +202,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-scavenger.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -216,9 +216,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-scavenger_adv.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -230,9 +230,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-hunted.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -244,9 +244,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-chambered.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -258,9 +258,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-martyrdom.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -272,9 +272,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-targeting.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -286,9 +286,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-bonus-45.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -300,9 +300,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-broken-arrow.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -314,9 +314,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-fabricate.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -328,9 +328,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-self-revive.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -342,9 +342,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-bonus-9mm.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -356,9 +356,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-flak-jacket.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -370,9 +370,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-explosive.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -384,9 +384,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-bonus-assault.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -398,9 +398,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-inspiration.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: { pickup: "perk_pickup_01" }
@@ -410,9 +410,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-final-bugle.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: { pickup: "perk_pickup_01" }
@@ -422,9 +422,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-halloween-mystery.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -437,9 +437,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_trick_nothing",
         lootImg: {
             sprite: "loot-perk-trick-nothing.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-04.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -452,9 +452,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_trick_size",
         lootImg: {
             sprite: "loot-perk-trick-size.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-04.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -467,9 +467,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_trick_m9",
         lootImg: {
             sprite: "loot-perk-trick-m9.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-04.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -482,9 +482,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_trick_chatty",
         lootImg: {
             sprite: "loot-perk-trick-chatty.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-04.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -497,9 +497,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_trick_drain",
         lootImg: {
             sprite: "loot-perk-trick-drain.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-04.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -512,9 +512,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_treat_9mm",
         lootImg: {
             sprite: "loot-perk-treat-9mm.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -527,9 +527,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_treat_12g",
         lootImg: {
             sprite: "loot-perk-treat-12g.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -542,9 +542,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_treat_556",
         lootImg: {
             sprite: "loot-perk-treat-556.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -557,9 +557,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_treat_762",
         lootImg: {
             sprite: "loot-perk-treat-762.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -572,9 +572,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_treat_super",
         lootImg: {
             sprite: "loot-perk-treat-super.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {
@@ -587,9 +587,9 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_turkeyanimal",
         lootImg: {
             sprite: "loot-perk-turkey_shoot.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-03.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.275
         },
         sound: {

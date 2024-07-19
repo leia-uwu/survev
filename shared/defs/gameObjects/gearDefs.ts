@@ -32,7 +32,7 @@ const ChestDefs: Record<string, ChestDef> = {
         },
         lootImg: {
             sprite: "loot-chest-01.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -52,7 +52,7 @@ const ChestDefs: Record<string, ChestDef> = {
         },
         lootImg: {
             sprite: "loot-chest-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -72,7 +72,7 @@ const ChestDefs: Record<string, ChestDef> = {
         },
         lootImg: {
             sprite: "loot-chest-03.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -93,7 +93,7 @@ const ChestDefs: Record<string, ChestDef> = {
         },
         lootImg: {
             sprite: "loot-chest-03.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -138,7 +138,7 @@ const HelmetDefs: Record<string, HelmetDef> = {
         },
         lootImg: {
             sprite: "loot-helmet-01.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -160,7 +160,7 @@ const HelmetDefs: Record<string, HelmetDef> = {
         },
         lootImg: {
             sprite: "loot-helmet-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -182,7 +182,7 @@ const HelmetDefs: Record<string, HelmetDef> = {
         },
         lootImg: {
             sprite: "loot-helmet-03.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -204,7 +204,7 @@ const HelmetDefs: Record<string, HelmetDef> = {
         },
         lootImg: {
             sprite: "loot-helmet-03.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -233,10 +233,10 @@ const BackpackDefs: Record<string, BackpackDef> = {
         type: "backpack",
         level: 0,
         playerRad: 0.55,
-        tint: 16777215,
+        tint: 0xffffff,
         lootImg: {
             sprite: "loot-pack-00.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -253,7 +253,7 @@ const BackpackDefs: Record<string, BackpackDef> = {
         tint: 6697728,
         lootImg: {
             sprite: "loot-pack-01.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -270,7 +270,7 @@ const BackpackDefs: Record<string, BackpackDef> = {
         playerRad: 0.85,
         lootImg: {
             sprite: "loot-pack-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -287,7 +287,7 @@ const BackpackDefs: Record<string, BackpackDef> = {
         playerRad: 1,
         lootImg: {
             sprite: "loot-pack-03.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -320,7 +320,7 @@ const BoostDefs: Record<string, BoostDef> = {
         boost: 25,
         lootImg: {
             sprite: "loot-medical-soda.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -342,7 +342,7 @@ const BoostDefs: Record<string, BoostDef> = {
         boost: 50,
         lootImg: {
             sprite: "loot-medical-pill.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -399,7 +399,7 @@ const HealDefs: Record<string, HealDef> = {
         maxHeal: 100,
         lootImg: {
             sprite: "loot-medical-bandage.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -422,7 +422,7 @@ const HealDefs: Record<string, HealDef> = {
         maxHeal: 100,
         lootImg: {
             sprite: "loot-medical-healthkit.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -612,7 +612,7 @@ const ScopeDefs: Record<string, ScopeDef> = {
         level: 1,
         lootImg: {
             sprite: "loot-scope-00.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -627,7 +627,7 @@ const ScopeDefs: Record<string, ScopeDef> = {
         level: 2,
         lootImg: {
             sprite: "loot-scope-01.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -642,7 +642,7 @@ const ScopeDefs: Record<string, ScopeDef> = {
         level: 4,
         lootImg: {
             sprite: "loot-scope-02.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -657,7 +657,7 @@ const ScopeDefs: Record<string, ScopeDef> = {
         level: 8,
         lootImg: {
             sprite: "loot-scope-03.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -672,7 +672,7 @@ const ScopeDefs: Record<string, ScopeDef> = {
         level: 15,
         lootImg: {
             sprite: "loot-scope-04.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2
@@ -687,9 +687,9 @@ const SkinDefs = {
     helmet03_leader: defineSkin("helmet03", {
         name: "Leader Helmet",
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-leader.img"
         }
     }),
@@ -703,9 +703,9 @@ const SkinDefs = {
             pulseTint: 65280
         },
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-forest.img",
             spriteScale: 0.3
         },
@@ -719,9 +719,9 @@ const SkinDefs = {
     helmet03_moon: defineSkin("helmet03", {
         name: "Tsukuyomi no Kabuto",
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-moon.img",
             spriteScale: 0.3
         }
@@ -730,9 +730,9 @@ const SkinDefs = {
         name: "Lieutenant Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-lieutenant.img",
             spriteScale: 0.3
         }
@@ -741,9 +741,9 @@ const SkinDefs = {
         name: "Lieutenant Helmet",
         perk: "firepower",
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-lieutenant.img",
             spriteScale: 0.3
         },
@@ -756,9 +756,9 @@ const SkinDefs = {
         name: "K-pot-ato",
         perk: "rare_potato",
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-potato.img",
             spriteScale: 0.3
         },
@@ -771,9 +771,9 @@ const SkinDefs = {
         name: "Marksman Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-marksman.img",
             spriteScale: 0.3
         },
@@ -787,9 +787,9 @@ const SkinDefs = {
         name: "Recon Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-recon.img",
             spriteScale: 0.3
         },
@@ -803,9 +803,9 @@ const SkinDefs = {
         name: "Grenadier Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-grenadier.img",
             spriteScale: 0.3
         },
@@ -819,9 +819,9 @@ const SkinDefs = {
         name: "Bugler Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-bugler.img",
             spriteScale: 0.3
         },
@@ -835,9 +835,9 @@ const SkinDefs = {
         name: "Medic Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-medic.img",
             spriteScale: 0.3
         },
@@ -851,9 +851,9 @@ const SkinDefs = {
         name: "Lone Survivr Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-last-man-01.img",
             spriteScale: 0.3
         },
@@ -867,9 +867,9 @@ const SkinDefs = {
         name: "Lone Survivr Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-last-man-02.img",
             spriteScale: 0.3
         },
@@ -883,9 +883,9 @@ const SkinDefs = {
         name: "Leader Helmet",
         noDrop: true,
         skinImg: {
-            baseTint: 16777215,
-            baseTintRed: 16777215,
-            baseTintBlue: 16777215,
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
             baseSprite: "player-helmet-leader.img",
             spriteScale: 0.3
         },

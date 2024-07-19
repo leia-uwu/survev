@@ -17,7 +17,7 @@ function createDeadBodyText() {
         fontWeight: "bold",
         fontSize: device.pixelRatio > 1 ? 30 : 24,
         align: "center",
-        fill: 16777215,
+        fill: 0xffffff,
         stroke: 0,
         strokeThickness: 0,
         dropShadow: true,

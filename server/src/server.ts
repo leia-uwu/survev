@@ -1,4 +1,5 @@
 import { randomBytes } from "crypto";
+import { platform } from "os";
 import { URLSearchParams } from "url";
 import NanoTimer from "nanotimer";
 import { App, SSLApp, type WebSocket } from "uWebSockets.js";
@@ -397,21 +398,31 @@ app.ws("/team_v2", {
 app.listen(Config.host, Config.port, (): void => {
     server.init();
 
-    const gameTimer = new NanoTimer();
-    gameTimer.setInterval(
-        () => {
-            server.update();
-        },
-        "",
-        `${1000 / Config.gameTps}m`
-    );
+    // setInterval on windows sucks
+    // and doesn't give accurate timings
+    if (platform() === "win32") {
+        new NanoTimer().setInterval(
+            () => {
+                server.update();
+            },
+            "",
+            `${1000 / Config.gameTps}m`
+        );
 
-    const netTimer = new NanoTimer();
-    netTimer.setInterval(
-        () => {
+        new NanoTimer().setInterval(
+            () => {
+                server.netSync();
+            },
+            "",
+            `${1000 / Config.netSyncTps}m`
+        );
+    } else {
+        setInterval(() => {
+            server.update();
+        }, 1000 / Config.gameTps);
+
+        setInterval(() => {
             server.netSync();
-        },
-        "",
-        `${1000 / Config.netSyncTps}m`
-    );
+        }, 1000 / Config.netSyncTps);
+    }
 });

@@ -575,7 +575,7 @@ export class UiManager {
                 }
             });
         }
-        this.o();
+        this.init();
     }
 
     free() {
@@ -633,10 +633,10 @@ export class UiManager {
         this.pieTimer.destroy();
         this.clearStatsElems();
         this.setRoleMenuActive(false);
-        this.o();
+        this.init();
     }
 
-    o() {
+    init() {
         $(".js-ui-map-hidden").css("display", "block");
         $("#ui-map-counter-default").css("display", "inline-block");
         $("#ui-map-counter-faction").css("display", "none");
@@ -1075,7 +1075,7 @@ export class UiManager {
                     visible,
                     zOrder - 1,
                     "player-map-outer.img",
-                    16777215
+                    0xffffff
                 );
             }
         }
@@ -2202,7 +2202,7 @@ export class UiManager {
             this.mapSprite.x = screenWidth / 2;
             this.mapSprite.y = screenHeight / 2;
             this.mapSprite.alpha = 1;
-            this.container.mask.beginFill(16777215, 1);
+            this.container.mask.beginFill(0xffffff, 1);
             this.container.mask.drawRect(
                 this.mapSprite.x - this.mapSprite.width / 2,
                 this.mapSprite.y - this.mapSprite.height / 2,
@@ -2269,7 +2269,7 @@ export class UiManager {
             const minimapMaskAnchorY = layoutSm
                 ? thisMinimapMargin
                 : screenHeight - minimapSize - thisMinimapMargin;
-            this.container.mask.beginFill(16777215, 1);
+            this.container.mask.beginFill(0xffffff, 1);
             this.container.mask.drawRect(
                 thisMinimapMargin + thisMinimapMarginXAdjust,
                 minimapMaskAnchorY - 0.5 + thisMinimapMarginYAdjust,

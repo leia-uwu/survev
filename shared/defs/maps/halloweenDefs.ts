@@ -4,6 +4,7 @@ import type { MapDef } from "../mapDefs";
 import { Main } from "./baseDefs";
 
 const mapDef = {
+    mapId: 6,
     desc: {
         name: "Halloween",
         icon: "img/gui/pumpkin-play.svg",

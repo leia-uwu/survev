@@ -153,9 +153,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-knuckles-rusted.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rad: 25,
             rot: 0.785
@@ -171,7 +171,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.2,
                 y: 0.2
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     karambit: {
@@ -209,9 +209,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-karambit-rugged.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
             rot: 2.35619
@@ -227,7 +227,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     bayonet: {
@@ -265,9 +265,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-bayonet-rugged.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -282,7 +282,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     huntsman: {
@@ -320,9 +320,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-huntsman-rugged.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -337,7 +337,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     bowie: {
@@ -375,9 +375,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-bowie-vintage.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -392,7 +392,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     machete: {
@@ -430,9 +430,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-machete-taiga.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -447,7 +447,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     saw: {
@@ -487,9 +487,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         lootImg: {
             sprite: "loot-melee-bonesaw-rusted.img",
             mirror: true,
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -504,7 +504,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     woodaxe: {
@@ -541,9 +541,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-woodaxe.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
             rot: 2.35619
@@ -559,7 +559,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOntop: true
         }
     },
@@ -597,9 +597,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-fireaxe.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
             rot: 2.35619
@@ -615,7 +615,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOntop: true
         }
     },
@@ -654,9 +654,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-katana.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
             rot: 2.35619
@@ -672,7 +672,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOntop: true
         }
     },
@@ -711,9 +711,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-naginata.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
             rot: 2.35619
@@ -729,7 +729,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOntop: true
         }
     },
@@ -768,9 +768,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-stonehammer.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
             rot: 2.35619
@@ -786,7 +786,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOntop: true
         }
     },
@@ -823,9 +823,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-hook-silver.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -840,7 +840,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215,
+            tint: 0xffffff,
             renderOnHand: true
         }
     },
@@ -878,9 +878,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-pan-black.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: -0.785
         },
@@ -895,7 +895,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         },
         hipImg: {
             sprite: "loot-melee-pan-black-side.img",
@@ -908,7 +908,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.3,
                 y: 0.3
             },
-            tint: 16777215
+            tint: 0xffffff
         },
         reflectSurface: {
             equipped: {
@@ -968,9 +968,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-spade-assault.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -985,7 +985,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     },
     crowbar: {
@@ -1023,9 +1023,9 @@ const BaseDefs: Record<string, MeleeDef> = {
         },
         lootImg: {
             sprite: "loot-melee-crowbar-recon.img",
-            tint: 16777215,
+            tint: 0xffffff,
             border: "loot-circle-outer-02.img",
-            borderTint: 16777215,
+            borderTint: 0xffffff,
             scale: 0.3,
             rot: 0.785
         },
@@ -1040,7 +1040,7 @@ const BaseDefs: Record<string, MeleeDef> = {
                 x: 0.35,
                 y: 0.35
             },
-            tint: 16777215
+            tint: 0xffffff
         }
     }
 };
