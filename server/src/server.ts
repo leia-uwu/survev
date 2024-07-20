@@ -169,7 +169,10 @@ export class Server {
                     }
 
                     if (!group) {
-                        group = game.addGroup(randomBytes(20).toString("hex"), true);
+                        group = game.addGroup(
+                            randomBytes(20).toString("hex"),
+                            body.autoFill
+                        );
                     }
 
                     if (group) {
