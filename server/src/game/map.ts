@@ -1337,7 +1337,7 @@ export class GameMap {
                         );
                 } else {
                     const enemyGroups = [...this.game.groups.values()].filter(
-                        (g) => g != group
+                        (g) => g != group && !g.allDeadOrDisconnected
                     );
                     const points = enemyGroups
                         .map((g) => g.getAlivePlayers()[0])

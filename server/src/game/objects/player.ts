@@ -142,6 +142,10 @@ export class PlayerBarn {
         player.destroy();
         if (player.group) {
             player.group.removePlayer(player);
+            //potential issue if dead teammates are still in game spectating
+            if (player.group.allDeadOrDisconnected) {
+                this.game.groups.delete(player.group.hash);
+            }
         }
 
         this.game.checkGameOver();
