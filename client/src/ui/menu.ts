@@ -36,15 +36,15 @@ function createToast(
     );
 }
 function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
-    const r = $("#start-menu");
+    const startMenuWrapper = $("#start-menu");
     $("#btn-help").click(() => {
         const e = $("#start-help");
-        r.addClass("display-help");
-        const t = r.css("height");
+        startMenuWrapper.addClass("display-help");
+        const height = startMenuWrapper.css("height");
         e.css("display", "block");
-        r.animate(
+        startMenuWrapper.animate(
             {
-                scrollTop: t
+                scrollTop: height
             },
             1000
         );
@@ -54,8 +54,8 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
     const teamMobileLinkDesc = $("#team-mobile-link-desc");
     const teamMobileLinkWarning = $("#team-mobile-link-warning");
     const teamMobileLinkInput = $("#team-link-input");
-    const u = $("#social-share-block");
-    const g = $("#news-block");
+    const socialShareBlock = $("#social-share-block");
+    const newsBlock = $("#news-block");
 
     // Team mobile link
     $("#btn-join-team").click(() => {
@@ -64,18 +64,18 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
         teamMobileLink.css("display", "block");
         teamMobileLinkDesc.css("display", "block");
         teamMobileLinkWarning.css("display", "none");
-        r.css("display", "none");
-        g.css("display", "none");
-        u.css("display", "none");
+        startMenuWrapper.css("display", "none");
+        newsBlock.css("display", "none");
+        socialShareBlock.css("display", "none");
         $("#right-column").css("display", "none");
         return false;
     });
     $("#btn-team-mobile-link-leave").click(() => {
         teamMobileLink.css("display", "none");
         teamMobileLinkInput.val("");
-        r.css("display", "block");
-        g.css("display", "block");
-        u.css("display", "block");
+        startMenuWrapper.css("display", "block");
+        newsBlock.css("display", "block");
+        socialShareBlock.css("display", "block");
         $("#right-column").css("display", "block");
         return false;
     });

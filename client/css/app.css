@@ -317,6 +317,17 @@ a:active {
   height: 323px;
   margin-right: 30px;
   width: 300px;
+  overflow-y: scroll;
+}
+
+@media (max-width: 850px),
+  (max-width: 900px) and (-webkit-min-device-pixel-ratio: 3),
+  (max-width: 900px) and (min-resolution: 3dppx) {
+  #ad-block-left {
+      margin-right: 18px;
+      height: 230px;
+      width: 200px;
+  }
 }
 
 .ad-block-med-rect {
@@ -3587,11 +3598,11 @@ screen and (max-width: 736px) and (orientation: landscape) {
 }
 
 #pass-wrapper {
-  display: block;
+  display: none;
 }
 
 #news-wrapper {
-  display: none;
+  display: block;
 }
 
 #news-block {
@@ -6712,7 +6723,7 @@ input [type="image"]:focus {
   #team-menu-members {
     float: none;
     margin-right: auto;
-    height: 180px;
+    height: auto;
     width: 240px;
   }
 

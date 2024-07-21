@@ -93,7 +93,7 @@ class Application {
     wasPlayingVideo = false;
     checkedPingTest = false;
     hasFocus = true;
-    newsDisplayed = false;
+    newsDisplayed = true;
 
     constructor() {
         this.account = new Account(this.config);
@@ -235,6 +235,7 @@ class Application {
                 if (window.history) {
                     window.history.replaceState("", "", "/");
                 }
+                $("#news-block").css("display", "block");
                 this.game?.free();
                 this.teamMenu.leave();
             });
