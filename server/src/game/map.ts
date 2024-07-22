@@ -951,7 +951,14 @@ export class GameMap {
             getPos = () => {
                 place =
                     this.placesToSpawn[util.randomInt(0, this.placesToSpawn.length - 1)];
-                return v2.add(place, v2.mul(v2.randomUnit(), util.random(0, 64)));
+                return math.v2Clamp(
+                    v2.add(place, v2.mul(v2.randomUnit(), util.random(0, 64))),
+                    v2.create(this.shoreInset + width, this.shoreInset + height),
+                    v2.create(
+                        this.width - this.shoreInset - width,
+                        this.height - this.shoreInset - height
+                    )
+                );
             };
         }
 
