@@ -44,7 +44,13 @@ export const Main: MapDef = {
             airdropImg: "map-chute-01.img"
         }
     },
-    gameMode: { maxPlayers: 80, killLeaderEnabled: true },
+    gameMode: {
+        maxPlayers: 80,
+        killLeaderEnabled: true,
+        spawn: {
+            mode: "random"
+        }
+    },
     gameConfig: {
         planes: {
             timings: [

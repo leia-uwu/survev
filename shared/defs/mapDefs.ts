@@ -82,6 +82,26 @@ export interface MapDef {
     gameMode: {
         maxPlayers: number;
         killLeaderEnabled: boolean;
+        spawn:
+            | {
+                  mode: "random";
+              }
+            | {
+                  mode: "center";
+              }
+            | {
+                  mode: "radius";
+                  radius: number;
+              }
+            | {
+                  mode: "fixed";
+                  pos: Vec2;
+              }
+            | {
+                  mode: "donut";
+                  innerRadius: number;
+                  outerRadius: number;
+              };
         desertMode?: boolean;
         factionMode?: boolean;
         factions?: number;

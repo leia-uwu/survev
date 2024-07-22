@@ -614,7 +614,12 @@ export class WeaponManager {
             if (itemDef.toMouseHit) {
                 distance = math.max(toMouseLen - gunLen, 0.0);
             }
-            const damageMult = hasSplinter ? 0.6 : 1.0;
+            let damageMult = 1;
+            if (this.player.hasPerk("splinter")) {
+                damageMult *= 0.6;
+            } else if (this.player.hasPerk("bonus_assault")) {
+                damageMult *= 1.08;
+            }
 
             const params: BulletParams = {
                 playerId: this.player.__id,
@@ -672,7 +677,7 @@ export class WeaponManager {
                     sParams.lastShot = false;
                     sParams.shotFx = false;
                     sParams.trailSmall = true;
-                    sParams.damageMult = 0.27;
+                    sParams.damageMult *= 0.45;
 
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }

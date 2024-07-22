@@ -503,8 +503,6 @@ export class Bullet {
             finalDamage *= falloff;
         }
 
-        if (this.trailSaturated) finalDamage *= 1.08;
-
         for (let i = 0; i < collisions.length; i++) {
             const col = collisions[i];
 

@@ -22,7 +22,6 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import { Config, SpawnMode } from "../../config";
 import type { GameSocketData } from "../../server";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
@@ -71,8 +70,6 @@ export class PlayerBarn {
     }
 
     addPlayer(socketData: GameSocketData, joinMsg: net.JoinMsg) {
-        let pos: Vec2;
-
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
             disconnectMsg.reason = "index-invalid-protocol";
@@ -90,34 +87,7 @@ export class PlayerBarn {
             if (!group) return;
         }
 
-        switch (Config.spawn.mode) {
-            case SpawnMode.Center:
-                pos = v2.copy(this.game.map.center);
-                break;
-            case SpawnMode.Fixed:
-                pos = v2.copy(Config.spawn.pos);
-                break;
-            case SpawnMode.Random:
-                if (!group) {
-                    pos = this.game.map.getRandomSpawnPos();
-                } else {
-                    const firstToJoin = group.players[0];
-                    if (firstToJoin) {
-                        pos = this.game.map.getRandomSpawnPos(
-                            firstToJoin.pos,
-                            5,
-                            group.groupId
-                        );
-                    } else {
-                        pos = this.game.map.getRandomSpawnPos(
-                            undefined,
-                            undefined,
-                            group.groupId
-                        );
-                    }
-                }
-                break;
-        }
+        const pos: Vec2 = this.game.map.getSpawnPos(group);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 
@@ -172,6 +142,10 @@ export class PlayerBarn {
         player.destroy();
         if (player.group) {
             player.group.removePlayer(player);
+            //potential issue if dead teammates are still in game spectating
+            if (player.group.allDeadOrDisconnected) {
+                this.game.groups.delete(player.group.hash);
+            }
         }
 
         this.game.checkGameOver();
