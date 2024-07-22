@@ -23,7 +23,7 @@ import { Building } from "./objects/building";
 import { Obstacle } from "./objects/obstacle";
 import { Player } from "./objects/player";
 import { Structure } from "./objects/structure";
-import { SpawnRule, getSpawnRuleFunc } from "./spawnRule";
+import { SpawnRules } from "./spawnRule";
 
 //
 // Helpers
@@ -1294,31 +1294,22 @@ export class GameMap {
 
         switch (this.mapDef.gameMode.spawn.mode) {
             case "center":
-                return getSpawnRuleFunc(SpawnRule.Fixed)(this.center);
+                return SpawnRules.fixed(this.center);
             case "fixed":
-                return getSpawnRuleFunc(SpawnRule.Fixed)(this.mapDef.gameMode.spawn.pos);
+                return SpawnRules.fixed(this.mapDef.gameMode.spawn.pos);
             case "radius":
                 const radius = this.mapDef.gameMode.spawn.radius;
-                loadedSpawnRuleFunc = () =>
-                    getSpawnRuleFunc(SpawnRule.Radius)(this.center, radius);
+                loadedSpawnRuleFunc = () => SpawnRules.radius(this.center, radius);
                 break;
             case "random":
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
-                        getSpawnRuleFunc(SpawnRule.Random)(
-                            this.width,
-                            this.height,
-                            this.shoreInset
-                        );
+                        SpawnRules.random(this.width, this.height, this.shoreInset);
                 } else {
                     loadedSpawnRuleFunc =
-                        this.getGroupLoadedSpawnRuleFunc(group) ??
+                        this._getGroupLoadedSpawnRuleFunc(group) ??
                         (() =>
-                            getSpawnRuleFunc(SpawnRule.Random)(
-                                this.width,
-                                this.height,
-                                this.shoreInset
-                            ));
+                            SpawnRules.random(this.width, this.height, this.shoreInset));
                 }
                 break;
             case "donut":
@@ -1329,12 +1320,7 @@ export class GameMap {
                         v2.sub(p.pos, this.center)
                     );
                     loadedSpawnRuleFunc = () =>
-                        getSpawnRuleFunc(SpawnRule.Donut)(
-                            this.center,
-                            innerRadius,
-                            outerRadius,
-                            points
-                        );
+                        SpawnRules.donut(this.center, innerRadius, outerRadius, points);
                 } else {
                     const enemyGroups = [...this.game.groups.values()].filter(
                         (g) => g != group && !g.allDeadOrDisconnected
@@ -1343,9 +1329,9 @@ export class GameMap {
                         .map((g) => g.getAlivePlayers()[0])
                         .map((p) => v2.sub(p.pos, this.center));
                     loadedSpawnRuleFunc =
-                        this.getGroupLoadedSpawnRuleFunc(group) ??
+                        this._getGroupLoadedSpawnRuleFunc(group) ??
                         (() =>
-                            getSpawnRuleFunc(SpawnRule.Donut)(
+                            SpawnRules.donut(
                                 this.center,
                                 innerRadius,
                                 outerRadius,
@@ -1360,11 +1346,11 @@ export class GameMap {
     /** if playing duos or squads and you aren't the first player on your team to join, should default to spawning around the first player to join
      *  ignores custom spawn mode
      */
-    private getGroupLoadedSpawnRuleFunc(group: Group) {
+    private _getGroupLoadedSpawnRuleFunc(group: Group) {
         const firstToJoin = group.players[0];
         if (firstToJoin) {
             const radius = GameConfig.player.teammateSpawnRadius;
-            return () => getSpawnRuleFunc(SpawnRule.Radius)(firstToJoin.pos, radius);
+            return () => SpawnRules.radius(firstToJoin.pos, radius);
         }
     }
 
