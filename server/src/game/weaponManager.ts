@@ -387,7 +387,9 @@ export class WeaponManager {
 
     dropGun(weapIdx: number, switchToMelee = true): void {
         const weap = this.weapons[weapIdx];
+        if (!weap || !weap.type) return;
         const weaponDef = GameObjectDefs[weap.type] as GunDef;
+        if (!weaponDef) return;
         const weaponAmmoType = weaponDef.ammo;
         const weaponAmmoCount = weap.ammo;
 
