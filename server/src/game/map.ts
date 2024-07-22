@@ -209,6 +209,9 @@ export class GameMap {
 
     riverDescs: MapRiverData[] = [];
 
+    placeSpawns: string[];
+    placesToSpawn: Vec2[];
+
     factionMode: boolean;
     perkMode: boolean;
     turkeyMode: boolean;
@@ -271,6 +274,17 @@ export class GameMap {
         if (this.factionMode) {
             this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
         }
+
+        this.placeSpawns = [...this.mapDef.mapGen.customSpawnRules.placeSpawns];
+        this.msg.places = [...this.mapDef.mapGen.places];
+
+        this.placesToSpawn = this.mapDef.mapGen.places.map((place) => {
+            return v2.create(
+                place.pos.x * this.width,
+                // places Y axis is inverted lol
+                Math.abs(place.pos.y - 1) * this.height
+            );
+        });
     }
 
     init() {
@@ -286,6 +300,7 @@ export class GameMap {
         );
 
         this.generateObjects();
+
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
 
@@ -599,10 +614,6 @@ export class GameMap {
             // TODO: figure out density spawn amount algorithm
             const count = Math.round(densitySpawns[type] * 1.35);
             this.genFromMapDef(type, count);
-        }
-
-        for (const place of mapDef.mapGen.places) {
-            this.msg.places.push(place);
         }
     }
 
@@ -922,7 +933,7 @@ export class GameMap {
             height += this.grassInset;
         }
 
-        const getPos = () => {
+        let getPos = () => {
             return {
                 x: util.random(
                     this.shoreInset + width,
@@ -934,6 +945,15 @@ export class GameMap {
                 )
             };
         };
+
+        let place: Vec2 | undefined = undefined;
+        if (this.placesToSpawn.length && this.placeSpawns.includes(type)) {
+            getPos = () => {
+                place =
+                    this.placesToSpawn[util.randomInt(0, this.placesToSpawn.length - 1)];
+                return v2.add(place, v2.mul(v2.randomUnit(), util.random(0, 64)));
+            };
+        }
 
         let pos: Vec2 | undefined;
         let attempts = 0;
@@ -950,6 +970,11 @@ export class GameMap {
 
         if (pos && attempts < GameMap.MaxSpawnAttempts) {
             this.genAuto(type, pos, 0, ori, scale);
+
+            if (place) {
+                this.placesToSpawn.splice(this.placesToSpawn.indexOf(place), 1);
+                this.placeSpawns.splice(this.placeSpawns.indexOf(type), 1);
+            }
         }
     }
 
@@ -1434,9 +1459,9 @@ export class GameMap {
         const objs = this.game.grid.intersectPos(pos);
 
         // Check decals
-        const decals = objs.filter((obj) => obj.__type === ObjectType.Decal);
-        for (let i = 0; i < decals.length; i++) {
-            const decal = decals[i];
+        for (let i = 0; i < objs.length; i++) {
+            const decal = objs[i];
+            if (decal.__type !== ObjectType.Decal) continue;
             if (!decal.surface) {
                 continue;
             }
@@ -1454,10 +1479,9 @@ export class GameMap {
         let zIdx = 0;
         const onStairs = layer & 0x2;
 
-        const buildings = objs.filter((obj) => obj.__type === ObjectType.Building);
-
-        for (let i = 0; i < buildings.length; i++) {
-            const building = buildings[i];
+        for (let i = 0; i < objs.length; i++) {
+            const building = objs[i];
+            if (building.__type !== ObjectType.Building) continue;
             if (building.zIdx < zIdx) {
                 continue;
             }
