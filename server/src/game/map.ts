@@ -199,6 +199,13 @@ export class GameMap {
     bounds: AABB;
 
     objectCount: Record<string, number> = {};
+    incrementCount(type: string) {
+        if (!this.objectCount[type]) {
+            this.objectCount[type] = 1;
+        } else {
+            this.objectCount[type]++;
+        }
+    }
 
     grassInset: number;
     shoreInset: number;
@@ -208,6 +215,8 @@ export class GameMap {
     mapDef: MapDef;
 
     riverDescs: MapRiverData[] = [];
+
+    riverMasks: Array<{ pos: Vec2; rad: number }>;
 
     placeSpawns: string[];
     placesToSpawn: Vec2[];
@@ -284,6 +293,13 @@ export class GameMap {
                 // places Y axis is inverted lol
                 Math.abs(place.pos.y - 1) * this.height
             );
+        });
+
+        this.riverMasks = this.mapDef.mapGen.map.rivers.masks.map((mask) => {
+            return {
+                pos: v2.create(mask.pos.x * this.width, mask.pos.y * this.height),
+                rad: mask.rad
+            };
         });
     }
 
@@ -404,7 +420,7 @@ export class GameMap {
         const mapWidth = this.width - 1;
         const mapHeight = this.height - 1;
 
-        for (let i = 0; i < widths.length; ) {
+        riversLoop: for (let i = 0; i < widths.length; ) {
             let start: Vec2;
 
             const horizontal = randomGenerator() < 0.5;
@@ -454,6 +470,13 @@ export class GameMap {
                 const pos = v2.add(lastPoint, v2.mul(newdir, len));
 
                 let collided = false;
+
+                for (let j = 0; j < this.riverMasks.length; j++) {
+                    const mask = this.riverMasks[j];
+                    if (coldet.testCircleCircle(pos, 0.01, mask.pos, mask.rad)) {
+                        continue riversLoop;
+                    }
+                }
 
                 // end the river if it collides with another river
                 for (const river of this.riverDescs) {
@@ -557,34 +580,52 @@ export class GameMap {
                     }
                 }
             }
+
             for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
                 let pos: Vec2 | undefined;
                 let ori: number | undefined;
 
+                const center = v2.create(
+                    customSpawnRule.pos.x * this.width,
+                    customSpawnRule.pos.y * this.height
+                );
+
                 let attempts = 0;
                 while (attempts++ < GameMap.MaxSpawnAttempts) {
-                    ori = util.randomInt(0, 3);
-                    pos = v2.add(
-                        util.randomPointInCircle(customSpawnRule.rad),
-                        v2.mulElems(
-                            customSpawnRule.pos,
-                            v2.create(this.width, this.height)
-                        )
-                    );
+                    ori = this.getOriAndScale(customSpawnRule.type).ori;
+                    pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
 
                     if (this.canSpawn(customSpawnRule.type, pos, ori)) {
                         break;
                     }
                 }
-                if (pos && ori && attempts < GameMap.MaxSpawnAttempts) {
+                if (pos && ori !== undefined && attempts < GameMap.MaxSpawnAttempts) {
                     this.genAuto(customSpawnRule.type, pos);
+                } else {
+                    this.game.logger.warn(
+                        "Failed to generate custom spawn rule",
+                        customSpawnRule.type
+                    );
                 }
             }
         }
 
         // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
         const fixedSpawns = mapDef.mapGen.fixedSpawns[0];
-        for (const type in fixedSpawns) {
+        const importantSpawns = mapDef.mapGen.importantSpawns;
+        const types = Object.keys(fixedSpawns).sort((a, b) => {
+            const includesA = importantSpawns.includes(a);
+            const includesB = importantSpawns.includes(b);
+
+            if (includesA && includesB) return 0;
+            if (includesA) return -1;
+            if (includesB) return 1;
+
+            return 1;
+        });
+
+        for (let i = 0; i < types.length; i++) {
+            const type = types[i];
             let count = fixedSpawns[type];
             if (typeof count !== "number") {
                 if ("small" in count) {
@@ -846,9 +887,10 @@ export class GameMap {
 
         const def = MapObjectDefs[type];
         if (def.type === "building" || def.type === "structure") {
-            ori = def.ori ?? util.randomInt(0, 3);
             if ("oris" in def) {
                 ori = def.oris![util.randomInt(0, def.oris!.length - 1)];
+            } else {
+                ori = def.ori ?? util.randomInt(0, 3);
             }
         } else if (def.type === "obstacle") {
             scale = util.random(def.scale.createMin, def.scale.createMax);
@@ -922,7 +964,7 @@ export class GameMap {
     genOnGrass(type: string) {
         const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
 
-        const { ori, scale } = this.getOriAndScale(type);
+        let { ori, scale } = this.getOriAndScale(type);
 
         let width = bounds.max.x - bounds.min.x;
         let height = bounds.max.y - bounds.min.y;
@@ -950,9 +992,17 @@ export class GameMap {
         if (this.placesToSpawn.length && this.placeSpawns.includes(type)) {
             getPos = () => {
                 place =
-                    this.placesToSpawn[util.randomInt(0, this.placesToSpawn.length - 1)];
+                    this.placesToSpawn[
+                        Math.floor(Math.random() * this.placeSpawns.length)
+                    ];
                 return math.v2Clamp(
-                    v2.add(place, v2.mul(v2.randomUnit(), util.random(0, 64))),
+                    v2.add(
+                        place,
+                        v2.mulElems(
+                            v2.mul(v2.randomUnit(), 0.5),
+                            v2.create(width, height)
+                        )
+                    ),
                     v2.create(this.shoreInset + width, this.shoreInset + height),
                     v2.create(
                         this.width - this.shoreInset - width,
@@ -968,7 +1018,11 @@ export class GameMap {
 
         while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
             collided = false;
+
+            ori = this.getOriAndScale(type).ori;
             pos = getPos();
+
+            if (collided) continue;
 
             if (!this.canSpawn(type, pos, ori, scale)) {
                 collided = true;
@@ -982,6 +1036,8 @@ export class GameMap {
                 this.placesToSpawn.splice(this.placesToSpawn.indexOf(place), 1);
                 this.placeSpawns.splice(this.placeSpawns.indexOf(type), 1);
             }
+        } else {
+            this.game.logger.warn("Failed to generate building", type, "on grass");
         }
     }
 
@@ -1227,7 +1283,8 @@ export class GameMap {
         this.obstacles.push(obstacle);
 
         if (def.map?.display && layer === 0) this.msg.objects.push(obstacle);
-        this.objectCount[type]++;
+        this.incrementCount(type);
+
         return obstacle;
     }
 
@@ -1291,7 +1348,7 @@ export class GameMap {
             });
         }
 
-        this.objectCount[type]++;
+        this.incrementCount(type);
         return building;
     }
 
@@ -1317,7 +1374,7 @@ export class GameMap {
             structure.layerObjIds.push(building.__id);
         }
 
-        this.objectCount[type]++;
+        this.incrementCount(type);
         return structure;
     }
 
