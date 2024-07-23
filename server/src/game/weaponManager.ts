@@ -82,17 +82,13 @@ export class WeaponManager {
 
             const swappingToGun = nextWeaponDef.type == "gun";
 
-            // effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
-            if (!swappingToGun) {
-                effectiveSwitchDelay = 0;
-            } else {
-                effectiveSwitchDelay =
-                    GameConfig.gun.customSwitchDelay ?? nextWeaponDef.switchDelay;
-            }
+            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
 
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
+                if (GameConfig.gun.customSwitchDelay)
+                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -150,6 +146,18 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
+
+        this.weapons[0] = {
+            type: "mosin",
+            ammo: 100,
+            cooldown: 0
+        };
+
+        this.weapons[1] = {
+            type: "m870",
+            ammo: 100,
+            cooldown: 0
+        };
     }
 
     cookingThrowable = false;
