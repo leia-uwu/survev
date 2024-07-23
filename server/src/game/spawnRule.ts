@@ -2,56 +2,25 @@ import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 
-export enum SpawnRule {
-    Random,
-    Ring,
-    Radius,
-    Fixed,
-    Donut
-}
-
-interface SpawnRuleMap {
-    [SpawnRule.Fixed]: (pos: Vec2) => Vec2;
-    [SpawnRule.Random]: (width: number, height: number, inset: number) => Vec2;
-    [SpawnRule.Radius]: (center: Vec2, radius: number) => Vec2;
-    [SpawnRule.Ring]: (center: Vec2, radius: number) => Vec2;
-    [SpawnRule.Donut]: (
-        center: Vec2,
-        innerRadius: number,
-        outerRadius: number,
-        points: Vec2[]
-    ) => Vec2;
-}
-
-const spawnRuleToPosMap: Map<SpawnRule, SpawnRuleMap[SpawnRule]> = new Map();
-
-spawnRuleToPosMap.set(SpawnRule.Fixed, (pos: Vec2) => {
-    return v2.copy(pos);
-});
-
-spawnRuleToPosMap.set(
-    SpawnRule.Random,
-    (width: number, height: number, inset: number) => {
+export const SpawnRules = {
+    fixed(pos: Vec2) {
+        return v2.copy(pos);
+    },
+    random(width: number, height: number, inset: number) {
         return {
             x: util.random(inset, width - inset),
             y: util.random(inset, height - inset)
         };
-    }
-);
-
-spawnRuleToPosMap.set(SpawnRule.Radius, (center: Vec2, radius: number) => {
-    return v2.add(center, util.randomPointInCircle(radius));
-});
-
-spawnRuleToPosMap.set(SpawnRule.Ring, (center: Vec2, radius: number) => {
-    return v2.add(center, util.randomPointOnCircle(radius));
-});
-
-spawnRuleToPosMap.set(
-    SpawnRule.Donut,
-    (center: Vec2, _innerRadius: number, outerRadius: number, points: Vec2[]) => {
+    },
+    radius(center: Vec2, radius: number) {
+        return v2.add(center, util.randomPointInCircle(radius));
+    },
+    ring(center: Vec2, radius: number) {
+        return v2.add(center, util.randomPointOnCircle(radius));
+    },
+    donut(center: Vec2, _innerRadius: number, outerRadius: number, points: Vec2[]) {
         if (points.length == 0) {
-            return getSpawnRuleFunc(SpawnRule.Ring)(center, outerRadius);
+            return SpawnRules.ring(center, outerRadius);
         }
 
         const pointsSum: Vec2 = points.reduce(
@@ -78,8 +47,4 @@ spawnRuleToPosMap.set(
         pos = v2.add(pos, center);
         return pos;
     }
-);
-
-export function getSpawnRuleFunc<R extends SpawnRule>(rule: R) {
-    return spawnRuleToPosMap.get(rule) as SpawnRuleMap[R];
-}
+};
