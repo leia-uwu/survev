@@ -146,18 +146,6 @@ export class WeaponManager {
                 cooldown: 0
             });
         }
-
-        this.weapons[0] = {
-            type: "mosin",
-            ammo: 100,
-            cooldown: 0
-        };
-
-        this.weapons[1] = {
-            type: "m870",
-            ammo: 100,
-            cooldown: 0
-        };
     }
 
     cookingThrowable = false;
