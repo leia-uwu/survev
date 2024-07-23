@@ -281,6 +281,26 @@ export class WeaponManager {
         this.scheduledReload = true;
     }
 
+    getTrueAmmoStats(weaponDef: GunDef): {
+        trueMaxClip: number;
+        trueMaxReload: number;
+        trueMaxReloadAlt: number | undefined;
+    } {
+        if (this.player.hasPerk("firepower")) {
+            return {
+                trueMaxClip: weaponDef.extendedClip,
+                trueMaxReload: weaponDef.extendedReload,
+                trueMaxReloadAlt: weaponDef.extendedReloadAlt
+            };
+        }
+
+        return {
+            trueMaxClip: weaponDef.maxClip,
+            trueMaxReload: weaponDef.maxReload,
+            trueMaxReloadAlt: weaponDef.maxReloadAlt
+        };
+    }
+
     isInfinite(weaponDef: GunDef): boolean {
         return (
             !weaponDef.ignoreEndlessAmmo &&
@@ -303,7 +323,8 @@ export class WeaponManager {
 
         const conditions = [
             this.player.actionType == (GameConfig.Action.UseItem as number),
-            this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
+            this.weapons[this.curWeapIdx].ammo >=
+                this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
                 this.curWeapIdx == GameConfig.WeaponSlot.Throwable
@@ -331,14 +352,15 @@ export class WeaponManager {
      */
     reload(): void {
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
+        const trueAmmoStats = this.getTrueAmmoStats(weaponDef);
         const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
-        const spaceLeft = weaponDef.maxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
+        const spaceLeft = trueAmmoStats.trueMaxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
 
         const inv = this.player.inventory;
 
-        let amountToReload = weaponDef.maxReload;
-        if (weaponDef.maxReloadAlt && activeWeaponAmmo === 0) {
-            amountToReload = weaponDef.maxReloadAlt;
+        let amountToReload = trueAmmoStats.trueMaxReload;
+        if (trueAmmoStats.trueMaxReloadAlt && activeWeaponAmmo === 0) {
+            amountToReload = trueAmmoStats.trueMaxReloadAlt;
         }
 
         if (this.isInfinite(weaponDef)) {
@@ -349,7 +371,7 @@ export class WeaponManager {
             );
         } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
-            if (weaponDef.maxClip != amountToReload) {
+            if (trueAmmoStats.trueMaxClip != amountToReload) {
                 // m870, mosin, spas: only refill by one bullet at a time
                 this.weapons[this.curWeapIdx].ammo++;
                 inv[weaponDef.ammo]--;
@@ -372,9 +394,9 @@ export class WeaponManager {
         const realMaxClip =
             inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
                 ? this.weapons[this.curWeapIdx].ammo
-                : weaponDef.maxClip;
+                : trueAmmoStats.trueMaxClip;
         if (
-            weaponDef.maxClip != amountToReload &&
+            trueAmmoStats.trueMaxClip != amountToReload &&
             this.weapons[this.curWeapIdx].ammo != realMaxClip
         ) {
             this.player.reloadAgain = true;
