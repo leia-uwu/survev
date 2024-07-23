@@ -82,13 +82,17 @@ export class WeaponManager {
 
             const swappingToGun = nextWeaponDef.type == "gun";
 
-            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
+            // effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
+            if (!swappingToGun) {
+                effectiveSwitchDelay = 0;
+            } else {
+                effectiveSwitchDelay =
+                    GameConfig.gun.customSwitchDelay ?? nextWeaponDef.switchDelay;
+            }
 
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
-                if (GameConfig.gun.customSwitchDelay)
-                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
