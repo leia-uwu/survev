@@ -190,7 +190,7 @@ export const GameConfig = {
         soundRangeDelta: 0.25,
         soundRangeMax: 92,
         fallOff: 0,
-        minSpawnDist: 200 //only applies to random drops on the same tick
+        minSpawnDist: 300 //only applies to random drops on the same tick
     },
     airstrike: {
         actionOffset: 0,
