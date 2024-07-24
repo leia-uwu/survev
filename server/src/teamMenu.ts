@@ -344,7 +344,6 @@ export class TeamMenu {
                 room.players.forEach((p) => {
                     p.inGame = true;
                 });
-                room.roomData.findingGame = false;
                 this.sendRoomState(room);
                 break;
             }
@@ -355,6 +354,7 @@ export class TeamMenu {
                     (p) => p.socketData === localPlayerData
                 )!;
                 player.inGame = false;
+                room.roomData.findingGame = false;
 
                 this.sendRoomState(room);
                 break;

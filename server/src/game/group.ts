@@ -13,7 +13,7 @@ export class Group {
      * 2 is blue
      */
     teamId: number;
-    allDeadOrDisconnected = false;
+    allDeadOrDisconnected = true; //only set to false when first player is added to the group
     players: Player[] = [];
     autoFill: boolean;
 
@@ -48,6 +48,7 @@ export class Group {
         player.setGroupStatuses();
         player.playerStatusDirty = true;
         this.players.push(player);
+        this.allDeadOrDisconnected = false;
     }
 
     removePlayer(player: Player) {

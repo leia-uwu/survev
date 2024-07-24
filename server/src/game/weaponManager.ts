@@ -82,13 +82,17 @@ export class WeaponManager {
 
             const swappingToGun = nextWeaponDef.type == "gun";
 
-            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
+            // effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
+            if (!swappingToGun) {
+                effectiveSwitchDelay = 0;
+            } else {
+                effectiveSwitchDelay =
+                    GameConfig.gun.customSwitchDelay ?? nextWeaponDef.switchDelay;
+            }
 
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
-                if (GameConfig.gun.customSwitchDelay)
-                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -387,7 +391,9 @@ export class WeaponManager {
 
     dropGun(weapIdx: number, switchToMelee = true): void {
         const weap = this.weapons[weapIdx];
+        if (!weap || !weap.type) return;
         const weaponDef = GameObjectDefs[weap.type] as GunDef;
+        if (!weaponDef) return;
         const weaponAmmoType = weaponDef.ammo;
         const weaponAmmoCount = weap.ammo;
 
@@ -612,7 +618,12 @@ export class WeaponManager {
             if (itemDef.toMouseHit) {
                 distance = math.max(toMouseLen - gunLen, 0.0);
             }
-            const damageMult = hasSplinter ? 0.6 : 1.0;
+            let damageMult = 1;
+            if (this.player.hasPerk("splinter")) {
+                damageMult *= 0.6;
+            } else if (this.player.hasPerk("bonus_assault")) {
+                damageMult *= 1.08;
+            }
 
             const params: BulletParams = {
                 playerId: this.player.__id,
@@ -670,7 +681,7 @@ export class WeaponManager {
                     sParams.lastShot = false;
                     sParams.shotFx = false;
                     sParams.trailSmall = true;
-                    sParams.damageMult = 0.27;
+                    sParams.damageMult *= 0.45;
 
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }

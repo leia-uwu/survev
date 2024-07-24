@@ -156,6 +156,7 @@ export const GameConfig = {
         reviveDuration: 8,
         reviveRange: 5,
         crawlTime: 0.75,
+        teammateSpawnRadius: 5, // radius of circle that teammates spawn inside of, relative to the first player on the team to join
         emoteSoftCooldown: 2,
         emoteHardCooldown: 6,
         emoteThreshold: 6,

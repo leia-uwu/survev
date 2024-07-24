@@ -44,7 +44,13 @@ export const Main: MapDef = {
             airdropImg: "map-chute-01.img"
         }
     },
-    gameMode: { maxPlayers: 80, killLeaderEnabled: true },
+    gameMode: {
+        maxPlayers: 80,
+        killLeaderEnabled: true,
+        spawn: {
+            mode: "random"
+        }
+    },
     gameConfig: {
         planes: {
             timings: [
@@ -391,6 +397,11 @@ export const Main: MapDef = {
             { name: "katana", count: 1, weight: 4 }, // ?
             { name: "katana_rusted", count: 1, weight: 4 }, // ?
             { name: "katana_orchid", count: 1, weight: 1 } // ?
+        ],
+        tier_stonehammer: [{ name: "stonehammer", count: 1, weight: 1 }],
+        tier_saloon: [
+            { name: "vector45", count: 1, weight: 1 },
+            { name: "mkg45", count: 1, weight: 1 }
         ]
     },
     mapGen: {

@@ -1,14 +1,6 @@
 import type { MapDefs } from "../../shared/defs/mapDefs";
-import type { Vec2 } from "../../shared/utils/v2";
 import type { Game } from "./game/game";
 import type { GamePlugin } from "./game/pluginManager";
-
-export enum SpawnMode {
-    Random,
-    Radius,
-    Fixed,
-    Center
-}
 
 export enum TeamMode {
     Solo = 1,
@@ -36,8 +28,6 @@ export const Config = {
     },
 
     defaultRegion: "local",
-
-    spawn: { mode: SpawnMode.Random },
 
     gameTps: 100,
     netSyncTps: 33,
@@ -77,24 +67,6 @@ export interface ConfigType {
     }>;
 
     readonly plugins: Array<new (game: Game) => GamePlugin>;
-
-    /**
-     * There are 5 spawn modes: Random, Radius, Fixed, and Center.
-     * SpawnMode.Random spawns the player at a random location.
-     * SpawnMode.Fixed always spawns the player at the exact position given.
-     * SpawnMode.Center always spawns the player in the center of the map.
-     */
-    readonly spawn:
-        | {
-              readonly mode: SpawnMode.Random;
-          }
-        | {
-              readonly mode: SpawnMode.Fixed;
-              readonly pos: Vec2;
-          }
-        | {
-              readonly mode: SpawnMode.Center;
-          };
 
     /**
      * Server tick rate

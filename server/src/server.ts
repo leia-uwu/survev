@@ -229,6 +229,7 @@ export class Server {
         if (game === undefined || player === undefined) return;
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
+        if (player.group) player.group.checkPlayers();
         if (player.timeAlive < GameConfig.player.minActiveTime) {
             player.game.playerBarn.removePlayer(player);
         }
