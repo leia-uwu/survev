@@ -1,6 +1,8 @@
+import fs from "fs";
+import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
-import type { Game } from "./game/game";
-import type { GamePlugin } from "./game/pluginManager";
+import { GameConfig } from "../../shared/gameConfig";
+import { util } from "../../shared/utils/util";
 
 export enum TeamMode {
     Solo = 1,
@@ -8,6 +10,9 @@ export enum TeamMode {
     Squad = 4
 }
 
+/**
+ * Default server config
+ */
 export const Config = {
     host: "0.0.0.0",
     port: 8000,
@@ -17,8 +22,6 @@ export const Config = {
         { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
     ],
-
-    plugins: [],
 
     regions: {
         local: {
@@ -35,9 +38,32 @@ export const Config = {
     perfLogging: {
         enabled: true,
         time: 10
-    }
+    },
+
+    gameConfig: {}
 } satisfies ConfigType as ConfigType;
 
+const configPath = path.join(
+    __dirname,
+    process.env["NODE_ENV"] === "production" ? "../../" : "",
+    "../../resurviv-config.json"
+);
+
+if (fs.existsSync(configPath)) {
+    const localConfig = JSON.parse(fs.readFileSync(configPath).toString());
+    util.mergeDeep(Config, localConfig);
+} else {
+    console.log("Config file doesn't exist... creating");
+    fs.writeFileSync(configPath, JSON.stringify(Config, null, 2));
+}
+
+util.mergeDeep(GameConfig, Config.gameConfig);
+
+type DeepPartial<T> = T extends object
+    ? {
+          [P in keyof T]?: DeepPartial<T[P]>;
+      }
+    : T;
 export interface ConfigType {
     readonly host: string;
     readonly port: number;
@@ -66,8 +92,6 @@ export interface ConfigType {
         enabled: boolean;
     }>;
 
-    readonly plugins: Array<new (game: Game) => GamePlugin>;
-
     /**
      * Server tick rate
      */
@@ -84,4 +108,10 @@ export interface ConfigType {
          */
         time: number;
     };
+
+    /**
+     * Game config overrides
+     * @NOTE don't modify values used by client since this only applies to server
+     */
+    gameConfig: DeepPartial<typeof GameConfig>;
 }

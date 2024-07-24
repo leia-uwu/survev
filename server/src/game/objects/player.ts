@@ -588,7 +588,7 @@ export class Player extends BaseGameObject {
             assertType(weap.type, GameConfig.WeaponType[i], true);
 
             this.weapons[i] = {
-                type: weap.type ?? "",
+                type: weap.type ?? this.weapons[i].type,
                 ammo: weap.ammo ?? 0,
                 cooldown: 0
             };

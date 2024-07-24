@@ -87,15 +87,13 @@ export class Game {
 
     logger: Logger;
 
+    start = Date.now();
     constructor(id: string, config: ServerGameConfig) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
         this.logger.log("Creating");
-        const start = Date.now();
 
         this.config = config;
-        this.pluginManager.loadPlugins();
-        this.pluginManager.emit(Events.Game_Created, this);
 
         this.teamMode = config.teamMode;
         this.gameModeIdx = Math.floor(this.teamMode / 2);
@@ -106,12 +104,15 @@ export class Game {
         this.objectRegister = new ObjectRegister(this.grid);
 
         this.gas = new Gas(this.map);
+    }
 
-        this.allowJoin = true;
-
+    async init() {
+        await this.pluginManager.loadPlugins();
+        this.pluginManager.emit(Events.Game_Created, this);
         this.map.init();
 
-        this.logger.log(`Created in ${Date.now() - start} ms`);
+        this.allowJoin = true;
+        this.logger.log(`Created in ${Date.now() - this.start} ms`);
     }
 
     update(): void {

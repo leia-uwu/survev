@@ -1,4 +1,5 @@
-import { Config } from "../config";
+import fs from "fs";
+import path from "path";
 import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
@@ -26,6 +27,31 @@ type EventHandler<E extends keyof EventMap> = (data: EventMap[E]) => void;
 type EventHandlers = {
     [E in keyof EventMap]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
 };
+
+function readDirectory(dir: string): string[] {
+    let results: string[] = [];
+    const files = fs.readdirSync(dir);
+
+    for (const file of files) {
+        const filePath = path.resolve(dir, file);
+        const stat = fs.statSync(filePath);
+
+        if (stat?.isDirectory()) {
+            const res = readDirectory(filePath);
+            results = results.concat(res);
+        } else results.push(filePath);
+    }
+
+    return results;
+}
+
+const pluginDir = path.join(__dirname, "../plugins/");
+
+const pluginPaths = readDirectory(pluginDir).filter(
+    (path) => path.endsWith(".ts") || path.endsWith(".js")
+);
+
+console.log(pluginPaths);
 
 export abstract class GamePlugin {
     handlers: EventHandlers = {};
@@ -63,8 +89,11 @@ export class PluginManager {
         this._plugins.add(plugin);
     }
 
-    loadPlugins() {
-        for (const plugin of Config.plugins) {
+    async loadPlugins() {
+        for (const path of pluginPaths) {
+            const plugin = ((await import(path)) as { default: new () => GamePlugin })
+                .default;
+
             this.loadPlugin(plugin);
         }
     }

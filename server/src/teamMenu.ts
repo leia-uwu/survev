@@ -155,7 +155,7 @@ export class TeamMenu {
         }
     }
 
-    handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData): void {
+    async handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData) {
         const parsedMessage: ClientToServerTeamMsg = JSON.parse(
             new TextDecoder().decode(message)
         );
@@ -310,14 +310,16 @@ export class TeamMenu {
                 this.sendRoomState(room);
 
                 const data = parsedMessage.data;
-                const playData = this.server.findGame({
-                    version: data.version,
-                    region: data.region,
-                    zones: data.zones,
-                    gameModeIdx: room.roomData.gameModeIdx,
-                    autoFill: room.roomData.autoFill,
-                    playerCount: room.players.length
-                }).res[0];
+                const playData = (
+                    await this.server.findGame({
+                        version: data.version,
+                        region: data.region,
+                        zones: data.zones,
+                        gameModeIdx: room.roomData.gameModeIdx,
+                        autoFill: room.roomData.autoFill,
+                        playerCount: room.players.length
+                    })
+                ).res[0];
 
                 if ("err" in playData) {
                     response = teamErrorMsg("find_game_error");

@@ -77,9 +77,10 @@ export class Server {
         }
     }
 
-    newGame(config: ServerGameConfig): Game {
+    async newGame(config: ServerGameConfig): Promise<Game> {
         const id = randomBytes(20).toString("hex");
         const game = new Game(id, config);
+        await game.init();
         this.games.push(game);
         this.gamesById.set(id, game);
         return game;
@@ -106,7 +107,7 @@ export class Server {
         return { err: "" };
     }
 
-    findGame(body: FindGameBody) {
+    async findGame(body: FindGameBody) {
         let response:
             | {
                   zone: string;
@@ -148,7 +149,7 @@ export class Server {
                         err: "Invalid game mode idx"
                     };
                 } else {
-                    game = this.newGame({
+                    game = await this.newGame({
                         teamMode: mode.teamMode,
                         mapName: mode.mapName
                     });
@@ -265,9 +266,9 @@ app.post("/api/user/profile", (res, _req) => {
 app.post("/api/find_game", async (res) => {
     readPostedJSON(
         res,
-        (body: FindGameBody) => {
+        async (body: FindGameBody) => {
             try {
-                returnJson(res, server.findGame(body));
+                returnJson(res, await server.findGame(body));
             } catch (err) {
                 console.error("Find game error:", err);
                 returnJson(res, {
