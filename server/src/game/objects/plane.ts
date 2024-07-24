@@ -79,14 +79,20 @@ export class PlaneBarn {
                         util.randomPointInCircle(this.game.gas.radNew)
                     );
                     this.game.map.clampToMapBounds(posToTest, this.game.map.shoreInset);
-                    if (airdropPositions.every((otherdrop) => v2.distance(posToTest, otherdrop) >= GameConfig.airdrop.minSpawnDist)) {
+                    if (
+                        airdropPositions.every(
+                            (otherdrop) =>
+                                v2.distance(posToTest, otherdrop) >=
+                                GameConfig.airdrop.minSpawnDist
+                        )
+                    ) {
                         airdropPositions.push(posToTest);
                         this.addAirdrop(posToTest);
                         sent = true;
                         break;
                     }
                 }
-                if (!sent){
+                if (!sent) {
                     const randomPos = v2.add(
                         this.game.gas.posNew,
                         util.randomPointInCircle(this.game.gas.radNew)
