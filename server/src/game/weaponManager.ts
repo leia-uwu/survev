@@ -322,6 +322,7 @@ export class WeaponManager {
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         const conditions = [
+            this.player.inventory[weaponDef.ammo] == undefined,
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >=
                 this.getTrueAmmoStats(weaponDef).trueMaxClip,
@@ -412,6 +413,7 @@ export class WeaponManager {
         if (!weap || !weap.type) return;
         const weaponDef = GameObjectDefs[weap.type] as GunDef;
         if (!weaponDef) return;
+        if (weaponDef.noDrop) return;
         const weaponAmmoType = weaponDef.ammo;
         const weaponAmmoCount = weap.ammo;
 
@@ -489,6 +491,10 @@ export class WeaponManager {
     }
 
     isBulletSaturated(): boolean {
+        if (this.player.lastBreathActive) {
+            return true;
+        }
+
         const perks = ["bonus_assault"]; //add rest later, im lazy rn
         return perks.some((p) => this.player.hasPerk(p));
     }
@@ -641,6 +647,8 @@ export class WeaponManager {
                 damageMult *= 0.6;
             } else if (this.player.hasPerk("bonus_assault")) {
                 damageMult *= 1.08;
+            } else if (this.player.lastBreathActive) {
+                damageMult *= 1.08;
             }
 
             const params: BulletParams = {
@@ -704,6 +712,10 @@ export class WeaponManager {
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }
             }
+        }
+
+        if (this.activeWeapon == "bugle" && this.player.hasPerk("inspiration")) {
+            this.player.playBugle();
         }
 
         this.offHand = !this.offHand;
