@@ -473,6 +473,7 @@ export class Player extends BaseGameObject {
                     ammo: 1,
                     cooldown: 0
                 };
+                this.weapsDirty = true;
 
                 if (this.helmet)
                     this.game.lootBarn.addLoot(this.helmet, this.pos, this.layer, 1);
