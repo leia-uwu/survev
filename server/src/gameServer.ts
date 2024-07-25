@@ -42,7 +42,7 @@ export interface GameSocketData {
 }
 
 export class GameServer {
-    readonly logger = new Logger("Game Server");
+    readonly logger = new Logger("GameServer");
     readonly gamesById = new Map<string, Game>();
     readonly games: Game[] = [];
 
