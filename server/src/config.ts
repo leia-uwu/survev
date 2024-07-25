@@ -69,7 +69,7 @@ if (fs.existsSync(configPath)) {
     util.mergeDeep(Config, localConfig);
 } else {
     console.log("Config file doesn't exist... creating");
-    fs.writeFileSync(configPath, JSON.stringify(Config, null, 2));
+    fs.writeFileSync(configPath, JSON.stringify({}, null, 2));
 }
 
 util.mergeDeep(GameConfig, Config.gameConfig);
