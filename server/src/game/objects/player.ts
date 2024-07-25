@@ -470,7 +470,9 @@ export class Player extends BaseGameObject {
                 this.weaponManager.dropGun(1);
                 this.weapons[1] = {
                     type: "bugle",
-                    ammo: 1,
+                    ammo: this.weaponManager.getTrueAmmoStats(
+                        GameObjectDefs["bugle"] as GunDef
+                    ).trueMaxClip,
                     cooldown: 0
                 };
                 this.weapsDirty = true;
@@ -503,7 +505,7 @@ export class Player extends BaseGameObject {
     removePerk(type: string): void {
         const idx = this.perks.findIndex((perk) => perk.type === type);
         this.perks.splice(idx, 1);
-        this.perkTypes.splice(this.perkTypes.indexOf(type));
+        this.perkTypes.splice(this.perkTypes.indexOf(type), 1);
     }
 
     get hasPerks(): boolean {
@@ -775,7 +777,18 @@ export class Player extends BaseGameObject {
                 this._bugleTicker = 0;
 
                 const bugle = this.weapons.find((w) => w.type == "bugle");
-                if (bugle) bugle.ammo = 1;
+                if (bugle) {
+                    bugle.ammo++;
+                    if (
+                        bugle.ammo <
+                        this.weaponManager.getTrueAmmoStats(
+                            GameObjectDefs["bugle"] as GunDef
+                        ).trueMaxClip
+                    ) {
+                        this.bugleTickerActive = true;
+                        this._bugleTicker = 8;
+                    }
+                }
                 this.weapsDirty = true;
             }
         }
