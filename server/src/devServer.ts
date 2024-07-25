@@ -50,6 +50,12 @@ app.post("/api/find_game", async (res) => {
     );
 });
 
+setInterval(() => {
+    apiServer.updateRegion(gameServer.regionId, {
+        playerCount: gameServer.getPlayerCount()
+    });
+}, 10 * 1000);
+
 apiServer.init(app);
 
 app.listen(Config.devServer.host, Config.devServer.port, (): void => {
