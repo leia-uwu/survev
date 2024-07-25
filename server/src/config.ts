@@ -38,12 +38,7 @@ export const Config = {
         { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
     ],
 
-    regions: {
-        local: {
-            https: false,
-            address: "127.0.0.1:8001"
-        }
-    },
+    regions: {},
 
     thisRegion: "local",
 
@@ -109,6 +104,7 @@ export interface ConfigType {
         {
             readonly https: boolean;
             readonly address: string;
+            readonly l10n: string;
         }
     >;
 

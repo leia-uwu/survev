@@ -99,7 +99,51 @@ nano resurviv-config.json
 And populate it with the following content:
 ```json
 {
-    "apiKey": "API_KEY_GOES_HERE"
+    "apiKey": "API_KEY_GOES_HERE",
+    "gameServer": {
+        "apiServerUrl": "API_SERVER_URL"
+    },
+    "regions": {
+        "REGION_ID": {
+            "https": true,
+            "address": "GAME_SERVER_IP_OR_DOMAIN",
+            "l10n": "SERVER_NAME_TRANSLATION"
+        }
+    },
+    "thisRegion": "THIS_REGION_ID"
+}
+```
+API_SERVER_URL should be replaced with the full address (including port and https) of the API Server.
+
+REGION_ID should be replaced with the id of the region (example `na` for north america).
+
+GAME_SERVER_IP_OR_DOMAIN should be the domain or ip of the region game server .
+
+SERVER_NAME_TRANSLATION should be the translation for the server name to display in the client (example: `index-north-america` for `North America`).
+Avaliable translations by default are: index-local, index-north-america, index-europe, index-asia, index-south-america, index-korea
+
+THIS_REGION_ID should be replaced with the region ID this game server is hosting
+
+Example config file:
+```json
+{
+    "apiKey": "j0wo7RY0pYgD6W2mEy2wLa7VE4olUPD1r2hZma8FU6o=",
+    "gameServer": {
+        "apiServerUrl": "https://resurviv.io"
+    },
+    "regions": {
+        "na": {
+            "https": true,
+            "address": "na.resurviv.io:8001",
+            "l10n": "index-north-america"
+        },
+        "eu": {
+            "https": true,
+            "address": "eu.resurviv.io:8001",
+            "l10n": "index-europe"
+        }
+    },
+    "thisRegion": "na"
 }
 ```
 

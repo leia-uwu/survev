@@ -1,10 +1,21 @@
 import { App, SSLApp } from "uWebSockets.js";
 import { version } from "../../package.json";
+import { util } from "../../shared/utils/util";
 import { ApiServer } from "./apiServer";
 import { Config } from "./config";
 import { type FindGameBody, GameServer } from "./gameServer";
 import { Logger } from "./utils/logger";
 import { readPostedJSON, returnJson } from "./utils/serverHelpers";
+
+util.mergeDeep(Config, {
+    regions: {
+        local: {
+            https: false,
+            address: "127.0.0.1:8001",
+            l10n: "index-local"
+        }
+    }
+});
 
 const logger = new Logger("Dev server");
 const gameServer = new GameServer();

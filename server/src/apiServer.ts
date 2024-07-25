@@ -77,14 +77,23 @@ export class ApiServer {
     getSiteInfo() {
         const data = {
             modes: Config.modes,
-            pops: {} as Record<string, string>,
+            pops: {} as Record<
+                string,
+                {
+                    playerCount: number;
+                    l10n: string;
+                }
+            >,
             youtube: { name: "", link: "" },
             twitch: [],
             country: "US"
         };
 
         for (const region in this.regions) {
-            data.pops[region] = `${this.regions[region].playerCount} Players`;
+            data.pops[region] = {
+                playerCount: this.regions[region].playerCount,
+                l10n: Config.regions[region].l10n
+            };
         }
         return data;
     }
