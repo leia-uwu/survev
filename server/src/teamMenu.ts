@@ -1,3 +1,4 @@
+import type { TemplatedApp, WebSocket } from "uWebSockets.js";
 import type {
     ClientToServerTeamMsg,
     RoomData,
@@ -7,8 +8,14 @@ import type {
     TeamStateMsg
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
+import type { Server } from "./apiServer";
 import { Config } from "./config";
-import type { Server, TeamSocketData } from "./server";
+
+export interface TeamSocketData {
+    sendMsg: (response: string) => void;
+    closeSocket: () => void;
+    roomUrl: string;
+}
 
 interface RoomPlayer extends TeamMenuPlayer {
     socketData: TeamSocketData;
@@ -55,6 +62,60 @@ export class TeamMenu {
     rooms = new Map<string, Room>();
 
     constructor(public server: Server) {}
+
+    init(app: TemplatedApp) {
+        const teamMenu = this;
+
+        app.ws("/team_v2", {
+            idleTimeout: 30,
+            /**
+             * Upgrade the connection to WebSocket.
+             */
+            upgrade(res, req, context) {
+                res.onAborted((): void => {});
+
+                res.upgrade(
+                    {},
+                    req.getHeader("sec-websocket-key"),
+                    req.getHeader("sec-websocket-protocol"),
+                    req.getHeader("sec-websocket-extensions"),
+                    context
+                );
+            },
+
+            /**
+             * Handle opening of the socket.
+             * @param socket The socket being opened.
+             */
+            open(socket: WebSocket<TeamSocketData>) {
+                socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
+                socket.getUserData().closeSocket = () => socket.close();
+            },
+
+            /**
+             * Handle messages coming from the socket.
+             * @param socket The socket in question.
+             * @param message The message to handle.
+             */
+            message(socket: WebSocket<TeamSocketData>, message) {
+                teamMenu.handleMsg(message, socket.getUserData());
+            },
+
+            /**
+             * Handle closing of the socket.
+             * Called if player hits the leave button or if there's an error joining/creating a team
+             * @param socket The socket being closed.
+             */
+            close(socket: WebSocket<TeamSocketData>) {
+                const userData = socket.getUserData();
+                const room = teamMenu.rooms.get(userData.roomUrl);
+                if (room) {
+                    teamMenu.removePlayer(userData);
+                    teamMenu.sendRoomState(room);
+                }
+            }
+        });
+    }
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
         const enabledGameModeIdxs = Config.modes
@@ -322,13 +383,6 @@ export class TeamMenu {
                 ).res[0];
 
                 if ("err" in playData) {
-                    response = teamErrorMsg("find_game_error");
-                    this.sendResponse(response, player);
-                    return;
-                }
-                const game = this.server.gamesById.get(playData.gameId)!;
-
-                if (game.teamMode !== room.roomData.gameModeIdx * 2) {
                     response = teamErrorMsg("find_game_error");
                     this.sendResponse(response, player);
                     return;

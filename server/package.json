@@ -2,8 +2,12 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start": "NODE_ENV=production node --enable-source-maps dist/server/src/server.js",
-    "dev": "ts-node-dev --respawn --rs --transpile-only src/server.ts"
+    "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
+    "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
+    "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
+    "dev": "ts-node-dev --respawn --rs --transpile-only src/devServer.ts",
+    "dev:api": "ts-node-dev --respawn --rs --transpile-only src/apiServer.ts --api-server",
+    "dev:game": "ts-node-dev --respawn --rs --transpile-only src/gameServer.ts --game-server"
   },
   "dependencies": {
     "bit-buffer": "^0.2.5",

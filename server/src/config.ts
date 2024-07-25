@@ -14,8 +14,23 @@ export enum TeamMode {
  * Default server config
  */
 export const Config = {
-    host: "0.0.0.0",
-    port: 8000,
+    devServer: {
+        host: "127.0.0.1",
+        port: 8001
+    },
+
+    apiServer: {
+        host: "0.0.0.0",
+        port: 8000
+    },
+
+    gameServer: {
+        host: "0.0.0.0",
+        port: 8001,
+        apiServerUrl: "http://127.0.0.1:8000"
+    },
+
+    apiKey: "Kongregate Sucks",
 
     modes: [
         { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
@@ -26,11 +41,11 @@ export const Config = {
     regions: {
         local: {
             https: false,
-            address: "127.0.0.1:3000"
+            address: "127.0.0.1:8001"
         }
     },
 
-    defaultRegion: "local",
+    thisRegion: "local",
 
     gameTps: 100,
     netSyncTps: 33,
@@ -64,7 +79,8 @@ type DeepPartial<T> = T extends object
           [P in keyof T]?: DeepPartial<T[P]>;
       }
     : T;
-export interface ConfigType {
+
+interface ServerConfig {
     readonly host: string;
     readonly port: number;
 
@@ -75,6 +91,18 @@ export interface ConfigType {
         readonly keyFile: string;
         readonly certFile: string;
     };
+}
+export interface ConfigType {
+    readonly devServer: ServerConfig;
+
+    readonly apiServer: ServerConfig;
+    readonly gameServer: ServerConfig & {
+        readonly apiServerUrl: string;
+    };
+    /**
+     * API key used for game server and API server to communicate
+     */
+    readonly apiKey: string;
 
     readonly regions: Record<
         string,
@@ -84,12 +112,12 @@ export interface ConfigType {
         }
     >;
 
-    readonly defaultRegion: string;
+    readonly thisRegion: string;
 
     readonly modes: Array<{
-        mapName: keyof typeof MapDefs;
-        teamMode: TeamMode;
-        enabled: boolean;
+        readonly mapName: keyof typeof MapDefs;
+        readonly teamMode: TeamMode;
+        readonly enabled: boolean;
     }>;
 
     /**
@@ -102,16 +130,16 @@ export interface ConfigType {
      * Server logging
      */
     readonly perfLogging: {
-        enabled: boolean;
+        readonly enabled: boolean;
         /**
          * Seconds between each game performance log
          */
-        time: number;
+        readonly time: number;
     };
 
     /**
      * Game config overrides
      * @NOTE don't modify values used by client since this only applies to server
      */
-    gameConfig: DeepPartial<typeof GameConfig>;
+    readonly gameConfig: DeepPartial<typeof GameConfig>;
 }

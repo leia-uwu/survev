@@ -3,7 +3,7 @@ import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { util } from "../../../shared/utils/util";
 import { Config, TeamMode } from "../config";
-import type { GameSocketData } from "../server";
+import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
 import { Grid } from "./grid";
 import { Group } from "./group";

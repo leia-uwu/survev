@@ -47,11 +47,12 @@ function readDirectory(dir: string): string[] {
 
 const pluginDir = path.join(__dirname, "../plugins/");
 
-const pluginPaths = readDirectory(pluginDir).filter(
-    (path) => path.endsWith(".ts") || path.endsWith(".js")
-);
-
-console.log(pluginPaths);
+let pluginPaths: string[] = [];
+if (fs.existsSync(pluginDir)) {
+    pluginPaths = readDirectory(pluginDir).filter(
+        (path) => path.endsWith(".ts") || path.endsWith(".js")
+    );
+}
 
 export abstract class GamePlugin {
     handlers: EventHandlers = {};
