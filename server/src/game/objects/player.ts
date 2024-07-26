@@ -421,6 +421,7 @@ export class Player extends BaseGameObject {
 
     actionItem = "";
 
+    hasRoleHelmet = false;
     role = "";
     isKillLeader = false;
 
@@ -431,6 +432,7 @@ export class Player extends BaseGameObject {
             this.handleKillLeaderRole();
         } else {
             this.handleFactionModeRoles(role);
+            this.hasRoleHelmet = true;
         }
 
         const msg = new net.RoleAnnouncementMsg();
@@ -2410,6 +2412,12 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case "helmet":
+                if (this.hasRoleHelmet) {
+                    amountLeft = 1;
+                    lootToAdd = obj.type;
+                    pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
+                    break;
+                }
             case "chest":
             case "backpack":
                 {
