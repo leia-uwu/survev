@@ -1,3 +1,4 @@
+import assert from "assert";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import { MeleeDefs } from "../../shared/defs/gameObjects/meleeDefs";
 import { OutfitDefs } from "../../shared/defs/gameObjects/outfitDefs";
@@ -11,6 +12,7 @@ import {
 } from "../../shared/net/objectSerializeFns";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
+import type { FindGameResponse } from "./gameServer";
 
 const config = {
     address: "http://127.0.0.1:8000",
@@ -142,10 +144,13 @@ class Bot {
 
     objectCreator = new ObjectCreator();
 
-    constructor(id: number, gameID: number) {
+    constructor(id: number, res: FindGameResponse["res"][0]) {
         this.id = id;
 
-        this.ws = new WebSocket(`${config.address}/play?gameId=${gameID}`);
+        assert("gameId" in res);
+        this.ws = new WebSocket(
+            `${res.useHttps ? "wss" : "ws"}://${res.addrs[0]}/play?gameId=${res.gameId}`
+        );
 
         this.ws.addEventListener("error", console.error);
 
@@ -373,7 +378,7 @@ void (async () => {
                 })
             ).json();
 
-            bots.add(new Bot(i, response.res[0].gameId));
+            bots.add(new Bot(i, response.res[0]));
             if (i === config.botCount) allBotsJoined = true;
         }, i * config.joinDelay);
     }

@@ -317,7 +317,7 @@ a:active {
   height: 323px;
   margin-right: 30px;
   width: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 @media (max-width: 850px),

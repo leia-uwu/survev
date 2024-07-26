@@ -82,31 +82,88 @@ Install the necessary dependencies:
 pnpm install
 ```
 
-Update the server config file's:
+Its recommended that you generate an API key for the game server to connect to the API server
+
+If you are only hosting a game server for a different region, you need to get the central API server key
+
+Generate a secure API key from terminal:
 ```sh
-nano server/src/config.ts
-```
-```ts
-export const Config = {
-    host: "0.0.0.0",
-    port: 8000,
-    // ...
+openssl rand -base64 32
 ```
 
-changing `host` to `0.0.0.0`.
+Configure server:
+
+```sh
+nano resurviv-config.json
+```
+And populate it with the following content:
+```json
+{
+    "apiKey": "API_KEY_GOES_HERE",
+    "gameServer": {
+        "apiServerUrl": "API_SERVER_URL"
+    },
+    "regions": {
+        "REGION_ID": {
+            "https": true,
+            "address": "GAME_SERVER_IP_OR_DOMAIN",
+            "l10n": "SERVER_NAME_TRANSLATION"
+        }
+    },
+    "thisRegion": "THIS_REGION_ID"
+}
+```
+API_SERVER_URL should be replaced with the full address (including port and https) of the API Server.
+
+REGION_ID should be replaced with the id of the region (example `na` for north america).
+
+GAME_SERVER_IP_OR_DOMAIN should be the domain or ip of the region game server .
+
+SERVER_NAME_TRANSLATION should be the translation for the server name to display in the client (example: `index-north-america` for `North America`).
+Avaliable translations by default are: index-local, index-north-america, index-europe, index-asia, index-south-america, index-korea
+
+THIS_REGION_ID should be replaced with the region ID this game server is hosting
+
+Example config file:
+```json
+{
+    "apiKey": "j0wo7RY0pYgD6W2mEy2wLa7VE4olUPD1r2hZma8FU6o=",
+    "gameServer": {
+        "apiServerUrl": "https://resurviv.io"
+    },
+    "regions": {
+        "na": {
+            "https": true,
+            "address": "na.resurviv.io:8001",
+            "l10n": "index-north-america"
+        },
+        "eu": {
+            "https": true,
+            "address": "eu.resurviv.io:8001",
+            "l10n": "index-europe"
+        }
+    },
+    "thisRegion": "na"
+}
+```
+
+Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
+
+to see more configuration options, see the file `server/src/config.ts`
 
 Build the client & server:
 ```sh
 pnpm -r build
 ```
 
+### Setting up NGINX
+We will now setup NGINX to serve the client and API server.
+If you are only hosting a game server you can skip this.
+
 Make sure the build directory has the proper permissions:
 ```sh
 sudo chown -R www-data:www-data /opt/resurviv/client/dist
 ```
-
-### Setting up NGINX
-We will now setup NGINX to serve the client, server API, and WebSocket server.
 
 First, remove the default file:
 ```sh
@@ -145,23 +202,6 @@ server {
         proxy_pass "http://127.0.0.1:8000";
     }
 
-    # WebSocket server
-    location /play {
-        proxy_http_version 1.1;
-
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Host $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Host $http_host;
-
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
-
-        proxy_pass "http://127.0.0.1:8000";
-        proxy_redirect off;
-    }
-
     # Team WebSocket server
     location /team_v2 {
         proxy_http_version 1.1;
@@ -189,21 +229,25 @@ sudo ln -s /etc/nginx/sites-available/resurviv.conf /etc/nginx/sites-enabled/res
 sudo systemctl restart nginx
 ```
 
-### Running the game server
-Next, we will create a systemd unit file, which will ensure our application starts at boot and won't terminate if we end our SSH session:
+### Running the game and API server
+
+Next, we will create systemd unit files for the Game and API server.
+which will ensure our application starts at boot and won't terminate if we end our SSH session:
+If you are only hosting a game server, skip the API server part.
+
 ```sh
-sudo nano /etc/systemd/system/resurviv.service
+sudo nano /etc/systemd/system/resurviv-game.service
 ```
 
 And populate it with the following content:
 ```ini
 [Unit]
-Description=Resurviv dedicated server.
+Description=Resurviv dedicated game server.
 
 [Service]
 Type=simple
 WorkingDirectory=/opt/resurviv/server
-ExecStart=/usr/bin/pnpm start
+ExecStart=/usr/bin/pnpm start:game
 
 [Install]
 WantedBy=multi-user.target
@@ -213,30 +257,33 @@ Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
 
 Enable the unit:
 ```sh
-sudo systemctl daemon-reload
-sudo systemctl enable --now resurviv
+sudo systemctl enable --now resurviv-game
+```
+
+Now do the same for the API server if applicable:
+
+```sh
+sudo nano /etc/systemd/system/resurviv-api.service
+```
+
+And populate it with the following content:
+```ini
+[Unit]
+Description=Resurviv dedicated API server.
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/resurviv/server
+ExecStart=/usr/bin/pnpm start:api
+
+[Install]
+WantedBy=multi-user.target
+```
+Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
+
+Enable the unit:
+```sh
+sudo systemctl enable --now resurviv-api
 ```
 
 If you've done everything correctly, you should be able to access the server at `http://youriphere` (ex: `http://1.1.1.1`).
-Congratulations! You can stop here.
-
-### Security
-Optionally, let's install a firewall to keep your server safe:
-```sh
-sudo apt -y install ufw fail2ban
-```
-
-Allow the correct ports.
-```sh
-sudo ufw limit 22/tcp
-sudo ufw allow 80/tcp
-```
-
-**NOTE:** If you are using an SSH port other than 22, adjust accordingly.
-
-Enable the firewall.
-```sh
-sudo ufw enable
-```
-
-And that's it! You're all good to go.
