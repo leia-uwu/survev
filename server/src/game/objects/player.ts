@@ -477,8 +477,6 @@ export class Player extends BaseGameObject {
                 };
                 this.weapsDirty = true;
 
-                if (this.helmet)
-                    this.game.lootBarn.addLoot(this.helmet, this.pos, this.layer, 1);
                 this.helmet = "helmet03_bugler";
                 break;
         }
