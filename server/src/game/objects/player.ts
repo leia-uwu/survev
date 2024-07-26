@@ -2667,14 +2667,15 @@ export class Player extends BaseGameObject {
     }
 
     playBugle(): void {
+        if (!this.group) return;
         this.bugleTickerActive = true;
         this._bugleTicker = 8;
 
-        for (const obj of this.visibleObjects) {
+        for (const groupPlayer of this.group.getAlivePlayers()) {
             //includes self
-            if (obj.__type != ObjectType.Player || obj.groupId != this.groupId) continue;
-
-            obj.giveHaste(GameConfig.HasteType.Inspire, 3);
+            if (v2.distance(this.pos, groupPlayer.pos) <= 60) {
+                groupPlayer.giveHaste(GameConfig.HasteType.Inspire, 3);
+            }
         }
     }
 
