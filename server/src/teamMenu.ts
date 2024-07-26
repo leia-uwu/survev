@@ -8,7 +8,7 @@ import type {
     TeamStateMsg
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
-import type { Server } from "./apiServer";
+import type { ApiServer } from "./apiServer";
 import { Config } from "./config";
 
 export interface TeamSocketData {
@@ -61,7 +61,7 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: Server) {}
+    constructor(public server: ApiServer) {}
 
     init(app: TemplatedApp) {
         const teamMenu = this;
