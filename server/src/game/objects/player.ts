@@ -620,6 +620,8 @@ export class Player extends BaseGameObject {
             GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"];
 
         this.zoom = this.scopeZoomRadius[this.scope];
+
+        this.weaponManager.showNextThrowable();
     }
 
     visibleObjects = new Set<GameObject>();
