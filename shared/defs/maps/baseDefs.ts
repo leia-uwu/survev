@@ -469,6 +469,9 @@ export const Main: MapDef = {
             large: "bridge_lg_structure_01",
             xlarge: ""
         },
+        riverCabins: {
+            cabin_01: 3
+        },
         customSpawnRules: {
             locationSpawns: [
                 {

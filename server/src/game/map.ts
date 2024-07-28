@@ -560,8 +560,11 @@ export class GameMap {
         //
 
         if (this.riverDescs.length) {
-            for (let i = 0; i < 3; i++) {
-                this.genRiverCabin();
+            for (const type in mapDef.mapGen.riverCabins) {
+                const count = mapDef.mapGen.riverCabins[type];
+                for (let i = 0; i < count; i++) {
+                    this.genRiverCabin(type);
+                }
             }
 
             const riverObjs = {
@@ -1152,14 +1155,13 @@ export class GameMap {
         }
     }
 
-    genRiverCabin() {
+    genRiverCabin(type: string) {
         const inset = this.grassInset + this.shoreInset;
         const mapBound = collider.createAabb(
             v2.create(inset, inset),
             v2.create(this.width - inset, this.height - inset)
         );
 
-        const type = "cabin_01";
         const def = MapObjectDefs[type] as BuildingDef;
 
         const bound = mapHelpers.getBoundingCollider(type) as AABB;
