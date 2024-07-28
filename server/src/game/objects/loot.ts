@@ -1,4 +1,5 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
+import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type AABB, type Circle, coldet } from "../../../../shared/utils/coldet";
@@ -11,8 +12,13 @@ import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 import type { Player } from "./player";
 
+type LootTierItem = MapDef["lootTable"][string][number];
+
 export class LootBarn {
     loots: Loot[] = [];
+
+    private _cachedTiers: Record<string, () => LootTierItem> = {};
+
     constructor(public game: Game) {}
 
     update(dt: number) {
@@ -95,17 +101,38 @@ export class LootBarn {
         this.loots.push(loot);
     }
 
-    getLootTable(tier: string): Array<{ name: string; count: number }> {
+    private _getLootTable(tier: string): LootTierItem {
+        if (this._cachedTiers[tier]) {
+            return this._cachedTiers[tier]();
+        }
         const lootTable = this.game.map.mapDef.lootTable[tier];
-        const items: Array<{ name: string; count: number }> = [];
 
-        if (!lootTable) {
+        let total = 0.0;
+        for (let i = 0; i < lootTable.length; i++) {
+            total += lootTable[i].weight;
+        }
+
+        function fn() {
+            let rng = util.random(0, total);
+            let idx = 0;
+            while (rng > lootTable[idx].weight) {
+                rng -= lootTable[idx].weight;
+                idx++;
+            }
+            return lootTable[idx];
+        }
+        this._cachedTiers[tier] = fn;
+        return fn();
+    }
+
+    getLootTable(tier: string): Array<LootTierItem> {
+        if (!this.game.map.mapDef.lootTable[tier]) {
             this.game.logger.warn(`Unknown loot tier with type ${tier}`);
             return [];
         }
+        const items: Array<LootTierItem> = [];
 
-        const item = util.weightedRandom(lootTable);
-
+        const item = this._getLootTable(tier);
         if (item.name.startsWith("tier_")) {
             items.push(...this.getLootTable(item.name));
         } else if (item.name) {
