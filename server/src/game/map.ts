@@ -580,33 +580,33 @@ export class GameMap {
                     }
                 }
             }
+        }
 
-            for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
-                let pos: Vec2 | undefined;
-                let ori: number | undefined;
+        for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
+            let pos: Vec2 | undefined;
+            let ori: number | undefined;
 
-                const center = v2.create(
-                    customSpawnRule.pos.x * this.width,
-                    customSpawnRule.pos.y * this.height
+            const center = v2.create(
+                customSpawnRule.pos.x * this.width,
+                customSpawnRule.pos.y * this.height
+            );
+
+            let attempts = 0;
+            while (attempts++ < GameMap.MaxSpawnAttempts) {
+                ori = this.getOriAndScale(customSpawnRule.type).ori;
+                pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
+
+                if (this.canSpawn(customSpawnRule.type, pos, ori)) {
+                    break;
+                }
+            }
+            if (pos && ori !== undefined && attempts < GameMap.MaxSpawnAttempts) {
+                this.genAuto(customSpawnRule.type, pos);
+            } else {
+                this.game.logger.warn(
+                    "Failed to generate custom spawn rule",
+                    customSpawnRule.type
                 );
-
-                let attempts = 0;
-                while (attempts++ < GameMap.MaxSpawnAttempts) {
-                    ori = this.getOriAndScale(customSpawnRule.type).ori;
-                    pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
-
-                    if (this.canSpawn(customSpawnRule.type, pos, ori)) {
-                        break;
-                    }
-                }
-                if (pos && ori !== undefined && attempts < GameMap.MaxSpawnAttempts) {
-                    this.genAuto(customSpawnRule.type, pos);
-                } else {
-                    this.game.logger.warn(
-                        "Failed to generate custom spawn rule",
-                        customSpawnRule.type
-                    );
-                }
             }
         }
 
@@ -640,7 +640,6 @@ export class GameMap {
         }
 
         const randomSpawns = mapDef.mapGen.randomSpawns[0];
-
         if (randomSpawns) {
             const spawns = [...randomSpawns.spawns];
             for (let i = 0; i < randomSpawns.choose; i++) {
@@ -988,6 +987,8 @@ export class GameMap {
             };
         };
 
+        let attempts = 0;
+
         let place: Vec2 | undefined = undefined;
         if (this.placesToSpawn.length && this.placeSpawns.includes(type)) {
             getPos = () => {
@@ -1000,7 +1001,7 @@ export class GameMap {
                         place,
                         v2.mulElems(
                             v2.mul(v2.randomUnit(), 0.5),
-                            v2.create(width, height)
+                            v2.create(width + attempts * 2, height + attempts * 2)
                         )
                     ),
                     v2.create(this.shoreInset + width, this.shoreInset + height),
@@ -1013,7 +1014,6 @@ export class GameMap {
         }
 
         let pos: Vec2 | undefined;
-        let attempts = 0;
         let collided = true;
 
         while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
@@ -1116,6 +1116,9 @@ export class GameMap {
                         (otherSide ? 2 : 0)) %
                     4;
                 ori = (def.terrain.nearbyRiver.facingOri + riverOri) % 4;
+            } else {
+                const norm = river.spline.getNormal(t);
+                ori = math.radToOri(Math.atan2(norm.y, norm.x));
             }
             return { pos, ori };
         };
