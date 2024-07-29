@@ -4,28 +4,23 @@ import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
 
-export enum Events {
-    Player_Join,
-    Player_Damage,
-    Player_Kill,
-    Game_Created
-}
-
 interface PlayerDamageEvent extends DamageParams {
     player: Player;
 }
 
-interface EventMap {
-    [Events.Player_Join]: Player;
-    [Events.Player_Damage]: PlayerDamageEvent;
-    [Events.Player_Kill]: Omit<PlayerDamageEvent, "amount">;
-    [Events.Game_Created]: Game;
+export interface Events {
+    playerJoin: Player;
+    playerDamage: PlayerDamageEvent;
+    playerKill: Omit<PlayerDamageEvent, "amount">;
+    gameCreated: Game;
 }
 
-type EventHandler<E extends keyof EventMap> = (data: EventMap[E]) => void;
+export type EventType = keyof Events;
+
+type EventHandler<E extends EventType> = (data: Events[E]) => void;
 
 type EventHandlers = {
-    [E in keyof EventMap]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
+    [E in keyof Events]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
 };
 
 function readDirectory(dir: string): string[] {
@@ -63,7 +58,7 @@ export abstract class GamePlugin {
 
     protected abstract initListeners(): void;
 
-    on<E extends keyof EventMap>(eventName: E, handler: EventHandler<E>): void {
+    on<E extends keyof Events>(eventName: E, handler: EventHandler<E>): void {
         // eslint-disable-next-line
         ((this.handlers[eventName] as Set<typeof handler>) ??= new Set()).add(handler);
     }
@@ -74,7 +69,7 @@ export class PluginManager {
 
     constructor(readonly game: Game) {}
 
-    emit<E extends keyof EventMap>(eventName: E, data: EventMap[E]): void {
+    emit<E extends keyof Events>(eventName: E, data: Events[E]): void {
         for (const plugin of this._plugins) {
             const handlers: EventHandlers[E] = plugin.handlers[eventName];
             if (handlers) {

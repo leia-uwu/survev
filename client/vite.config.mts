@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import stripBlockPlugin from "vite-plugin-strip-block";
 import { Config } from "../server/src/config";
-import stripBlockPlugin from 'vite-plugin-strip-block'
 
 export default defineConfig(({ mode }) => {
     return {

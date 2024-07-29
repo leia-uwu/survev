@@ -20,7 +20,7 @@ import { PlaneBarn } from "./objects/plane";
 import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
-import { Events, PluginManager } from "./pluginManager";
+import { PluginManager } from "./pluginManager";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;
@@ -108,7 +108,7 @@ export class Game {
 
     async init() {
         await this.pluginManager.loadPlugins();
-        this.pluginManager.emit(Events.Game_Created, this);
+        this.pluginManager.emit("gameCreated", this);
         this.map.init();
 
         this.allowJoin = true;

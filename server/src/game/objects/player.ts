@@ -26,7 +26,6 @@ import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
 import type { Group } from "../group";
-import { Events } from "../pluginManager";
 import { WeaponManager, throwableList } from "../weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
@@ -108,7 +107,7 @@ export class PlayerBarn {
         this.players.push(player);
         this.livingPlayers.push(player);
         this.aliveCountDirty = true;
-        this.game.pluginManager.emit(Events.Player_Join, player);
+        this.game.pluginManager.emit("playerJoin", player);
 
         if (!this.game.started) {
             if (!this.game.isTeamMode) {
@@ -1321,6 +1320,8 @@ export class Player extends BaseGameObject {
 
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
+        this.game.pluginManager.emit("playerDamage", { ...params, player: this });
+
         this.damageTaken += finalDamage;
         if (sourceIsPlayer && params.source !== this) {
             (params.source as Player).damageDealt += finalDamage;
@@ -1604,7 +1605,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        this.game.pluginManager.emit(Events.Player_Kill, { ...params, player: this });
+        this.game.pluginManager.emit("playerKill", { ...params, player: this });
 
         //
         // Give spectators someone new to spectate
