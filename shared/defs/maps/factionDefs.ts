@@ -91,6 +91,7 @@ const mapDef = {
         factionMode: true,
         factions: 2
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
         planes: {
             timings: [
@@ -412,6 +413,7 @@ const mapDef = {
             "warehouse_complex_01"
         ]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const Faction = util.mergeDeep({}, Main, mapDef) as MapDef;

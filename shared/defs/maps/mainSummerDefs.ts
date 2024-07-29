@@ -29,6 +29,7 @@ const mapDef = {
             playerGhillie: 6658085
         }
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
         densitySpawns: [
             {
@@ -88,6 +89,7 @@ const mapDef = {
         ],
         spawnReplacements: [{ bush_01: "bush_01f", tree_01: "tree_08su" }]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const MainSummer = util.mergeDeep({}, Main, mapDef) as MapDef;

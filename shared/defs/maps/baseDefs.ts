@@ -74,6 +74,7 @@ export const Main: MapDef = {
         bleedDamage: 2,
         bleedDamageMult: 1
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     // NOTE: this loot table is not the original one so its not accurate
     // ? are guesses based on statistics
     // ! are uncertain data based on leak
@@ -549,4 +550,5 @@ export const Main: MapDef = {
         spawnReplacements: [{}],
         importantSpawns: ["club_complex_01"]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
