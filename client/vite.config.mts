@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { Config } from "../server/src/config";
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
     return {
         base: "",
         build: {
@@ -30,6 +30,20 @@ export default defineConfig(() => {
         },
         resolve: {
             extensions: [".js", ".ts"]
+        },
+        define: {
+            GAME_REGIONS: {
+                ...Config.regions,
+                ...(mode === "development"
+                    ? {
+                          local: {
+                              https: false,
+                              address: `${Config.devServer.host}:${Config.devServer.port}`,
+                              l10n: "index-local"
+                          }
+                      }
+                    : {})
+            }
         },
         plugins: [
             VitePWA({
