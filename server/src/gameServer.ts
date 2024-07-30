@@ -299,7 +299,7 @@ export class GameServer {
         }, 0);
     }
 
-    fetchApiServer(route: string, body: object) {
+    async fetchApiServer(route: string, body: object) {
         const url = `${Config.gameServer.apiServerUrl}/${route}`;
         const data = fetch(url, {
             body: JSON.stringify({
@@ -310,7 +310,7 @@ export class GameServer {
             headers: {
                 "Content-type": "application/json"
             }
-        });
+        }).catch(console.error);
         return data;
     }
 

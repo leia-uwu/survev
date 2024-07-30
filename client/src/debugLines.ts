@@ -96,6 +96,7 @@ class DebugLines {
     }
 
     render(camera: Camera, gfx: Graphics) {
+        /* STRIP_FROM_PROD_CLIENT:START */
         gfx.clear();
         for (let i = 0; i < this.shapes.length; i++) {
             const shape = this.shapes[i];
@@ -143,6 +144,7 @@ class DebugLines {
             }
             gfx.closePath();
         }
+        /* STRIP_FROM_PROD_CLIENT:END */
     }
 
     flush() {

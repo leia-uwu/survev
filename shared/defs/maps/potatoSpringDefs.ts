@@ -28,6 +28,7 @@ const mapDef = {
             playerSubmerge: 2854052
         }
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
         densitySpawns: [
             {
@@ -87,6 +88,7 @@ const mapDef = {
         ],
         spawnReplacements: [{ bush_01: "bush_01f", tree_01: "tree_08su" }]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const PotatoSpring = util.mergeDeep({}, Potato, mapDef) as MapDef;

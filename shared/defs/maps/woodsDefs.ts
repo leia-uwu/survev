@@ -36,6 +36,7 @@ const mapDef = {
     },
     gameMode: { maxPlayers: 80, woodsMode: true },
     gameConfig: {
+        /* STRIP_FROM_PROD_CLIENT:START */
         planes: {
             timings: [
                 {
@@ -54,11 +55,13 @@ const mapDef = {
                 { name: "airdrop_crate_02", weight: 1 }
             ]
         },
+        /* STRIP_FROM_PROD_CLIENT:END */
         bagSizes: {
             frag: [6, 12, 15, 18],
             smoke: [6, 12, 15, 18]
         }
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     lootTable: {
         tier_guns: [
             { name: "dp28", count: 1, weight: 3.5 },
@@ -239,5 +242,6 @@ const mapDef = {
             }
         ]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 export const Woods = util.mergeDeep({}, Main, mapDef) as MapDef;

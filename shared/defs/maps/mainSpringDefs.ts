@@ -22,6 +22,7 @@ const mapDef = {
         sound: { riverShore: "stone" },
         particles: { camera: "falling_leaf_spring" }
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
         densitySpawns: [
             {
@@ -82,6 +83,7 @@ const mapDef = {
         randomSpawns: [],
         spawnReplacements: [{ tree_01: "tree_07sp" }]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const MainSpring = util.mergeDeep({}, Main, mapDef) as MapDef;

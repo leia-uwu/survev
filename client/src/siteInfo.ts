@@ -35,6 +35,7 @@ interface Info {
         img: string;
     }>;
 }
+
 export class SiteInfo {
     info: Info = {} as Info;
     loaded = false;
@@ -50,6 +51,17 @@ export class SiteInfo {
     load() {
         const locale = this.localization.getLocale();
         const siteInfoUrl = api.resolveUrl(`/api/site_info?language=${locale}`);
+
+        const mainSelector = $("#server-opts");
+        const teamSelector = $("#team-server-opts");
+
+        for (const region in GAME_REGIONS) {
+            const data = GAME_REGIONS[region];
+            const name = this.localization.translate(data.l10n);
+            const elm = `<option value='${region}' data-l10n='${data.l10n}' data-label='${name}'>${name}</option>`;
+            mainSelector.append(elm);
+            teamSelector.append(elm);
+        }
 
         $.ajax(siteInfoUrl).done((data, _status) => {
             this.info = data || {};
@@ -126,19 +138,13 @@ export class SiteInfo {
             const pops = this.info.pops;
             if (pops) {
                 const regions = Object.keys(pops);
-                const mainSelector = $("#server-opts");
-                const teamSelector = $("#team-server-opts");
 
                 for (let i = 0; i < regions.length; i++) {
                     const region = regions[i];
                     const data = pops[region];
-
-                    const name = this.localization.translate(data.l10n);
+                    const sel = $("#server-opts").children(`option[value="${region}"]`);
                     const players = this.localization.translate("index-players");
-                    const count = data.playerCount;
-                    const elm = `<option value='${region}' data-l10n='${data.l10n}' data-label='${name}'>${name} [${count} ${players}]</option>`;
-                    mainSelector.append(elm);
-                    teamSelector.append(elm);
+                    sel.text(`${sel.data("label")} [${data.playerCount} ${players}]`);
                 }
             }
             let hasTwitchStreamers = false;

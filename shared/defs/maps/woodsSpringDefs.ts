@@ -32,6 +32,7 @@ const mapDef = {
         sound: { riverShore: "stone" },
         particles: { camera: "falling_leaf_spring" }
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     lootTable: {
         tier_ghillie: [
             {
@@ -113,6 +114,7 @@ const mapDef = {
             "teapavilion_01w"
         ]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const WoodsSpring = util.mergeDeep({}, Woods, mapDef) as MapDef;
