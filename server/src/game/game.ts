@@ -27,6 +27,63 @@ export interface ServerGameConfig {
     readonly teamMode: TeamMode;
 }
 
+enum ContextMode {
+    Solo,
+    Team,
+    Faction
+}
+
+class ContextManager {
+    private _game: Game;
+    private _contextMode: ContextMode;
+
+    constructor(game: Game) {
+        this._game = game;
+
+        this._contextMode = [
+            game.teamMode == TeamMode.Solo,
+            (game.teamMode == TeamMode.Duo || game.teamMode == TeamMode.Squad) &&
+                !game.map.factionMode,
+            game.teamMode == TeamMode.Squad && game.map.factionMode
+        ].findIndex((isMode) => isMode);
+    }
+
+    private _applyContext<T>(contextObj: Record<ContextMode, () => T>) {
+        return contextObj[this._contextMode]();
+    }
+
+    aliveCount(): number {
+        return this._applyContext<number>({
+            [ContextMode.Solo]: () => this._game.playerBarn.livingPlayers.length,
+            [ContextMode.Team]: () => this._game.getAliveGroups().length,
+            [ContextMode.Faction]: () => this._game.getAliveGroups().length //tbd
+        });
+    }
+
+    /** true if game needs to end */
+    handleGameEnd(): boolean {
+        return this._applyContext<boolean>({
+            [ContextMode.Solo]: () => {
+                if (!this._game.started || this.aliveCount() > 1) return false;
+                const winner = this._game.playerBarn.livingPlayers[0];
+                winner.addGameOverMsg(winner.teamId);
+                return true;
+            },
+            [ContextMode.Team]: () => {
+                if (!this._game.started || this.aliveCount() > 1) return false;
+                const winner = this._game.getAliveGroups()[0];
+                for (const player of winner.getAlivePlayers()) {
+                    player.addGameOverMsg(winner.groupId);
+                }
+                return true;
+            },
+            [ContextMode.Faction]: () => {
+                return false;
+            }
+        });
+    }
+}
+
 export class Game {
     started = false;
     stopped = false;
@@ -39,6 +96,7 @@ export class Game {
     isTeamMode: boolean;
     config: ServerGameConfig;
     pluginManager = new PluginManager(this);
+    contextManager: ContextManager;
 
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
@@ -56,6 +114,10 @@ export class Game {
     get trueGroupsAliveCount(): number {
         return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected)
             .length;
+    }
+
+    getAliveGroups(): Group[] {
+        return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected);
     }
 
     /**
@@ -104,6 +166,8 @@ export class Game {
         this.objectRegister = new ObjectRegister(this.grid);
 
         this.gas = new Gas(this.map);
+
+        this.contextManager = new ContextManager(this);
     }
 
     async init() {
@@ -273,34 +337,13 @@ export class Game {
 
     checkGameOver(): void {
         if (this.over) return;
-        if (!this.isTeamMode) {
-            if (this.started && this.trueAliveCount <= 1) {
-                this.initGameOver();
-            }
-        } else {
-            const winningGroup = this.isTeamGameOver();
-            if (this.started && winningGroup) {
-                this.initGameOver(winningGroup);
-            }
+        const didGameEnd: boolean = this.contextManager.handleGameEnd();
+        if (didGameEnd) {
+            this.over = true;
+            setTimeout(() => {
+                this.stop();
+            }, 750);
         }
-    }
-
-    initGameOver(winningGroup?: Group): void {
-        if (this.over) return;
-        this.over = true;
-        if (!this.isTeamMode) {
-            const winningPlayer = this.playerBarn.livingPlayers[0];
-            if (winningPlayer) {
-                winningPlayer.addGameOverMsg(winningPlayer.teamId);
-            }
-        } else if (winningGroup) {
-            for (const player of winningGroup.players) {
-                player.addGameOverMsg(winningGroup.groupId);
-            }
-        }
-        setTimeout(() => {
-            this.stop();
-        }, 750);
     }
 
     addGroup(hash: string, autoFill: boolean) {
