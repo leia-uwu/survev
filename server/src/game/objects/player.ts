@@ -898,7 +898,7 @@ export class Player extends BaseGameObject {
                         );
                     });
 
-                    if (healRegion) {
+                    if (healRegion && !this.game.gas.isInGas(this.pos)) {
                         this.health += healRegion.healRate * dt;
                     }
                 }
