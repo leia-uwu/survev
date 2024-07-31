@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import stripBlockPlugin from "vite-plugin-strip-block";
 import { Config } from "../server/src/config";
+import { spritesheet } from "./vite/vite-spritesheet-plugin/plugin";
 
 export default defineConfig(({ mode }) => {
     return {
@@ -47,6 +48,7 @@ export default defineConfig(({ mode }) => {
             }
         },
         plugins: [
+            spritesheet(),
             VitePWA({
                 registerType: "autoUpdate",
                 includeAssets: ["favicon.ico", "img/apple-touch-icon-180x180.png"],

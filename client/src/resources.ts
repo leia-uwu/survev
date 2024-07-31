@@ -1,10 +1,11 @@
+// import lowResAtlasDefs from "./lowResAtlasDefs.json";
+import { atlases as fullResAtlasDefs } from "virtual:spritesheets-jsons-high-res";
+import { atlases as lowResAtlasDefs } from "virtual:spritesheets-jsons-low-res";
 import * as PIXI from "pixi.js-legacy";
 import { type Atlas, MapDefs } from "../../shared/defs/mapDefs";
 import type { AudioManager } from "./audioManager";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
-import fullResAtlasDefs from "./fullResAtlasDefs.json";
-import lowResAtlasDefs from "./lowResAtlasDefs.json";
 import SoundDefs from "./soundDefs";
 
 type AtlasDef = Record<Atlas, PIXI.ISpritesheetData[]>;
@@ -44,7 +45,7 @@ function loadTexture(renderer: PIXI.IRenderer, url: string) {
 }
 
 function loadSpritesheet(renderer: PIXI.IRenderer, data: PIXI.ISpritesheetData) {
-    const baseTex = loadTexture(renderer, `assets/${data.meta.image}`);
+    const baseTex = loadTexture(renderer, `${data.meta.image}`);
 
     const sheet = new PIXI.Spritesheet(baseTex, data);
     sheet.resolution = baseTex.resolution;
@@ -144,6 +145,7 @@ export class ResourceManager {
 
         const atlasDefs = spritesheetDefs[this.textureRes] || spritesheetDefs.low;
         const atlasDef = atlasDefs[name];
+        console.log(name, atlasDef);
         for (let i = 0; i < atlasDef.length; i++) {
             const atlas = loadSpritesheet(this.renderer, atlasDef[i]);
             this.atlases[name].spritesheets.push(atlas);
@@ -177,7 +179,14 @@ export class ResourceManager {
         //
         // Textures
         //
-        const atlasList = mapDef.assets.atlases;
+        const atlasList = (["generated-main"] || [
+            "main",
+            "shared",
+            "loadout",
+            "loadout2",
+            "gradient"
+        ] ||
+            mapDef.assets.atlases) as unknown as Atlas[];
 
         // Unload all atlases that aren't in the new list
         const keys = Object.keys(this.atlases) as Atlas[];
@@ -195,7 +204,6 @@ export class ResourceManager {
                 this.loadAtlas(atlas);
             }
         }
-
         //
         // Audio
         //
