@@ -32,6 +32,7 @@ const mapDef = {
         },
         particles: {}
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
         customSpawnRules: {
             locationSpawns: [
@@ -44,6 +45,7 @@ const mapDef = {
             ]
         }
     },
+    /* STRIP_FROM_PROD_CLIENT:END */
     gameMode: {
         maxPlayers: 80,
         perkMode: true,

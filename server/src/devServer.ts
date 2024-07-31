@@ -11,7 +11,7 @@ util.mergeDeep(Config, {
     regions: {
         local: {
             https: false,
-            address: "127.0.0.1:8001",
+            address: `${Config.devServer.host}:${Config.devServer.port}`,
             l10n: "index-local"
         }
     }

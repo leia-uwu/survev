@@ -44,6 +44,14 @@ declare global {
         mozRequestFullScreen: (options?: FullscreenOptions) => Promise<void>;
         webkitRequestFullscreen: (options?: FullscreenOptions) => Promise<void>;
     }
+    const GAME_REGIONS: Record<
+        string,
+        {
+            readonly https: boolean;
+            readonly address: string;
+            readonly l10n: string;
+        }
+    >;
 }
 
 declare module "pixi.js-legacy" {

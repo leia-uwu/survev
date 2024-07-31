@@ -187,6 +187,7 @@ export interface MapDef {
             large: string;
             xlarge: string;
         };
+        riverCabins: Record<string, number>;
         customSpawnRules: {
             locationSpawns: Array<{
                 type: string;

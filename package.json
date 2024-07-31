@@ -16,8 +16,8 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.13",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }

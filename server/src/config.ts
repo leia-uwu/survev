@@ -53,9 +53,12 @@ export const Config = {
     gameConfig: {}
 } satisfies ConfigType as ConfigType;
 
+const runningOnVite = !process.argv.some((a) => a.includes("vite"));
+const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
+
 const configPath = path.join(
     __dirname,
-    process.env["NODE_ENV"] === "production" ? "../../" : "",
+    isProduction ? "../../" : "",
     "../../resurviv-config.json"
 );
 
