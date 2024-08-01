@@ -179,13 +179,7 @@ export class ResourceManager {
         //
         // Textures
         //
-        const atlasList = (["generated-main"] || [
-            "main",
-            "shared",
-            "loadout",
-            "loadout2",
-            "gradient"
-        ] ||
+        const atlasList = (["generated-main"] ||
             mapDef.assets.atlases) as unknown as Atlas[];
 
         // Unload all atlases that aren't in the new list

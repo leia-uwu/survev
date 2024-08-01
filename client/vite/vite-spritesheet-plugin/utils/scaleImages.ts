@@ -1,24 +1,7 @@
 import path from "path";
 import { type Image, loadImage } from "canvas";
 import sharp from "sharp";
-
-const filesToScale: Record<string, number> = {
-    "map-building-vault-ceiling.svg": 0.5,
-    "map-building-shack-ceiling-01.svg": 0.7,
-    "map-building-mansion-ceiling.svg": 0.5,
-    "z.svg": 0.75,
-    "map-bunker-hydra-compartment-ceiling-03.svg": 0.5,
-    "map-building-police-ceiling-01.svg": 0.75,
-    "map-building-police-ceiling-02.svg": 0.75,
-    "map-building-warehouse-ceiling-01.svg": 0.5,
-    "map-building-warehouse-ceiling-02.svg": 0.5,
-    "map-building-warehouse-floor-01.svg": 1.5,
-    "map-building-warehouse-floor-02.svg": 1.5,
-    "gun-med-01.svg": 2,
-    "gun-long-01.svg": 2,
-    "gun-short-01.svg": 2
-};
-
+import { ASSET_SCALE } from "../reference";
 interface PackerRectData {
     readonly image: Image;
     readonly path: string;
@@ -32,11 +15,11 @@ type TrimData = Record<
             x: number;
             width: number;
             height: number;
-        },
-        original: {
+        };
+        scaled: {
             width: number;
             height: number;
-        }
+        };
     }
 >;
 
@@ -44,74 +27,70 @@ async function scaleImage(
     filePath: string,
     trimmedImages: TrimData
 ): Promise<PackerRectData> {
-    const basename = path.basename(filePath);
-    if (!(basename in filesToScale)) {
-        const image = await loadImage(filePath);
-        return {
-            path: filePath,
-            image
-        };
-    }
-    const scaleFactor = filesToScale[basename];
-    const { data: originalImage, info: originInfo } = await sharp(filePath).toBuffer({
-        resolveWithObject: true
+    return new Promise(async (res) => {
+        const basename = path.basename(filePath).replace("svg", "img");
+        const scaleFactor = ASSET_SCALE[basename] ?? 1;
+        if (scaleFactor !== 1) {
+            console.log(`scaling ${basename} by ${scaleFactor}`);
+        }
+        const { data: originalImage, info: originalInfo } = await sharp(
+            filePath
+        ).toBuffer({ resolveWithObject: true });
+
+        const { data: scaledImage, info: scaledInfo } = await sharp(originalImage)
+            .resize({
+                width: Math.floor(originalInfo.width * scaleFactor),
+                height: Math.floor(originalInfo.height * scaleFactor)
+            })
+            .toBuffer({ resolveWithObject: true });
+
+        const { data: trimmedImage, info: trimmedInfo } = await sharp(scaledImage)
+            .trim({
+                lineArt: true,
+                background: "transparent"
+            })
+            .toBuffer({ resolveWithObject: true });
+
+        const loadedImage = await loadImage(scaledImage);
+
+        const trimmed =
+            scaledInfo.width !== trimmedInfo.width ||
+            scaledInfo.height !== trimmedInfo.height;
+        if (basename === "map-building-vault-ceiling.img") {
+            console.log({
+                originalInfo,
+                scaledInfo,
+                trimmedInfo,
+                image: { height: loadedImage.height, width: loadedImage.width }
+            });
+        }
+        if (trimmed) {
+            trimmedImages[basename] = {
+                trim: {
+                    height: trimmedInfo.height || 0,
+                    width: trimmedInfo.width || 0,
+                    x: Math.abs(trimmedInfo.trimOffsetLeft!),
+                    y: Math.abs(trimmedInfo.trimOffsetTop!)
+                },
+                scaled: {
+                    width: scaledInfo.width,
+                    height: scaledInfo.height
+                }
+            };
+        }
+
+        res({
+            image: loadedImage,
+            path: filePath
+        });
     });
-    // Trim the image
-    const { data: trimmedImage, info: trimmedInfo } = await sharp(originalImage)
-        .trim({
-            background: "transparent"
-        })
-        .toBuffer({ resolveWithObject: true });
-
-    const { data: scaledImage, info: scaledInfo } = await sharp(trimmedImage)
-        .resize({
-            width: trimmedInfo.width
-                ? Math.round(trimmedInfo.width * scaleFactor)
-                : undefined,
-            height: trimmedInfo.height
-                ? Math.round(trimmedInfo.height * scaleFactor)
-                : undefined,
-            fit: "inside"
-        })
-        .toBuffer({ resolveWithObject: true });
-
-    const loadedImage = await loadImage(scaledImage);
-
-    const trimmed =
-        originInfo.width !== trimmedInfo.width ||
-        originInfo.height !== trimmedInfo.height;
-
-    if (trimmed) {
-        trimmedImages[basename.replace("svg", "img")] = {
-            trim: {
-                height: trimmedInfo.height || 0,
-                width: trimmedInfo.width || 0,
-                x: trimmedInfo.trimOffsetLeft!,
-                y: trimmedInfo.trimOffsetTop!
-            },
-            original: {
-                width: originInfo.width,
-                height: originInfo.height
-            }
-        };
-
-        console.log(basename,
-            trimmedImages[basename.replace("svg", "img")]
-
-        )
-    }
-
-    return {
-        image: loadedImage,
-        path: filePath,
-    };
 }
 
 export async function scaleImages(paths: readonly string[]) {
     const trimmedImages: TrimData = {};
+    // chunk me later daddy
     const images: readonly PackerRectData[] = await Promise.all(
-        paths.map(async (path) => scaleImage(path, trimmedImages))
+        paths.map(async (path) => await scaleImage(path, trimmedImages))
     );
-
     return { images, trimmedImages };
 }

@@ -1,17 +1,17 @@
-import { resolve } from "path";
+import path, { resolve } from "path";
 import { watch } from "chokidar";
 import { Minimatch } from "minimatch";
 import type { ISpritesheetData } from "pixi.js-legacy";
 import type { FSWatcher, Plugin, ResolvedConfig } from "vite";
 import fullResAtlasDefs from "../../src/fullResAtlasDefs.json";
-import readDirectory from "./utils/readDirectory.js";
+import readDirectory from "./utils/misc.js";
 import {
     type CompilerOptions,
     type MultiResAtlasList,
     createSpritesheets
 } from "./utils/spritesheet.js";
 
-const defaultGlob = "**/*.{png,gif,jpg,bmp,tiff,svg}";
+const defaultGlob = "**/*.svg";
 const imagesMatcher = new Minimatch(defaultGlob);
 
 const PLUGIN_NAME = "vite-spritesheet-plugin";
@@ -40,7 +40,6 @@ const filesToIgnore = new Set<string>();
 for (const data of Object.values(fullResAtlasDefs as unknown as AtlasDef)) {
     for (const { frames } of data) {
         for (const key of Object.keys(frames)) {
-            if (key === "map-building-vault-ceiling.img") continue;
             filesToIgnore.add(key.replace("img", "svg"));
         }
     }
@@ -53,7 +52,7 @@ async function buildSpritesheets(): Promise<MultiResAtlasList> {
 
     for (const atlasId in atlasesToBuild) {
         const files: string[] = readDirectory(atlasesToBuild[atlasId]).filter((x) => {
-            return imagesMatcher.match(x); // && !filesToIgnore.has(path.basename(x))
+            return imagesMatcher.match(x) && filesToIgnore.has(path.basename(x));
         });
         atlases[`generated-${atlasId}`] = await createSpritesheets(files, {
             ...compilerOpts,

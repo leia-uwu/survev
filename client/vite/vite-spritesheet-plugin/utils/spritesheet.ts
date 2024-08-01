@@ -153,15 +153,11 @@ export async function createSpritesheets(
                     }
                 };
                 if (key in trimmedImages) {
-                    const { trim, original } = trimmedImages[key];
+                    const { trim, scaled } = trimmedImages[key];
                     json.frames[key].trimmed = true;
                     json.frames[key].spriteSourceSize = {
                         x: trim.x,
                         y: trim.y,
-                        w: rect.width,
-                        h: rect.height
-                    };
-                    json.frames[key].sourceSize = {
                         w: trim.width,
                         h: trim.height
                     };
