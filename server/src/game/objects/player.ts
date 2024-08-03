@@ -27,6 +27,7 @@ import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
 import type { Group } from "../group";
+import type { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
@@ -81,23 +82,38 @@ export class PlayerBarn {
             }, 1);
         }
 
+        const team = this.game.getSmallestTeam();
+
         let group: Group | undefined;
+
         if (this.game.isTeamMode) {
-            group = this.game.groups.get(joinMsg.matchPriv);
-            if (!group) return;
+            const groupData = this.game.groupDatas.find(
+                (gd) => gd.hash == joinMsg.matchPriv
+            )!;
+            if (this.game.groups.has(groupData.hash)) {
+                //group already exists
+                group = this.game.groups.get(groupData.hash);
+            } else {
+                group = this.game.addGroup(groupData.hash, groupData.autoFill);
+            }
         }
 
         const pos: Vec2 = this.game.map.getSpawnPos(group);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 
-        if (group) {
+        if (team && group) {
+            team.addPlayer(player);
             group.addPlayer(player);
+        } else if (!team && group) {
+            group.addPlayer(player);
+            player.teamId = group.groupId;
+        } else if (team && !group) {
+            team.addPlayer(player);
+            player.groupId = this.groupIdAllocator.getNextId();
         } else {
             player.groupId = this.groupIdAllocator.getNextId();
-            if (!this.game.map.factionMode) {
-                player.teamId = player.groupId;
-            }
+            player.teamId = player.groupId;
         }
 
         this.game.logger.log(`Player ${player.name} joined`);
@@ -111,11 +127,7 @@ export class PlayerBarn {
         this.game.pluginManager.emit("playerJoin", player);
 
         if (!this.game.started) {
-            if (!this.game.isTeamMode) {
-                this.game.started = this.game.trueAliveCount > 1;
-            } else {
-                this.game.started = this.game.trueGroupsAliveCount > 1;
-            }
+            this.game.started = this.game.contextManager.isGameStarted();
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
                 this.game.planeBarn.schedulePlanes();
@@ -224,6 +236,7 @@ export class Player extends BaseGameObject {
     spectatorCountDirty = false;
     activeIdDirty = true;
 
+    team: Team | undefined = undefined;
     group: Group | undefined = undefined;
 
     /**
@@ -1033,7 +1046,7 @@ export class Player extends BaseGameObject {
 
         if (playerBarn.aliveCountDirty || this._firstUpdate) {
             const aliveMsg = new net.AliveCountsMsg();
-            aliveMsg.teamAliveCounts.push(game.aliveCount);
+            this.game.contextManager.updateAliveCounts(aliveMsg.teamAliveCounts);
             msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
         }
 
@@ -1604,6 +1617,9 @@ export class Player extends BaseGameObject {
         );
         if (this.group) {
             this.group.checkPlayers();
+        }
+        if (this.team) {
+            this.team.livingPlayers.splice(this.team.livingPlayers.indexOf(this), 1);
         }
 
         //
