@@ -82,7 +82,7 @@ export class PlayerBarn {
             }, 1);
         }
 
-        const team = this.game.getSmallestTeam();
+        let team = this.game.getSmallestTeam();
 
         let group: Group | undefined;
 
@@ -92,7 +92,8 @@ export class PlayerBarn {
             )!;
             if (this.game.groups.has(groupData.hash)) {
                 //group already exists
-                group = this.game.groups.get(groupData.hash);
+                group = this.game.groups.get(groupData.hash)!;
+                team = group.players[0].team;
             } else {
                 group = this.game.addGroup(groupData.hash, groupData.autoFill);
             }
@@ -493,6 +494,16 @@ export class Player extends BaseGameObject {
 
                 this.helmet = "helmet03_bugler";
                 break;
+            // case "leader":
+            //     this.helmet = "helmet04_leader";
+            //     this.chest = "chest03";
+            //     this.backpack = "backpack03";
+
+            //     this.inventory["8xscope"] = 1;
+            //     this.scope = "8xscope";
+
+            //     this.setDirty();
+            //     break;
         }
 
         if (def.perks) {
@@ -1144,12 +1155,13 @@ export class Player extends BaseGameObject {
 
         if (player.group) {
             if (
+                player.playerStatusDirty ||
                 this.playerStatusTicker >
-                net.getPlayerStatusUpdateRate(this.game.map.factionMode)
+                    net.getPlayerStatusUpdateRate(this.game.map.factionMode)
             ) {
-                const teamPlayers = player.group.getPlayers();
-                for (let i = 0; i < teamPlayers.length; i++) {
-                    const p = teamPlayers[i];
+                const players = this.game.contextManager.getPlayerStatusPlayers(player)!;
+                for (let i = 0; i < players.length; i++) {
+                    const p = players[i];
                     updateMsg.playerStatus.players.push({
                         hasData: p.playerStatusDirty,
                         pos: p.pos,
@@ -1165,7 +1177,7 @@ export class Player extends BaseGameObject {
         }
 
         if (player.groupStatusDirty) {
-            const teamPlayers = player.group!.getPlayers();
+            const teamPlayers = player.group!.players;
             for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
                     health: p.health,
@@ -1476,18 +1488,9 @@ export class Player extends BaseGameObject {
             stats = this.group.players;
         }
 
-        const groupAlives = [...this.game.groups.values()].filter(
-            (group) => !group.allDeadOrDisconnected
-        );
+        const aliveCount = this.game.contextManager.aliveCount();
 
-        const teamRank =
-            (!this.game.isTeamMode ? this.game.trueAliveCount : groupAlives.length) + 1;
-
-        if (
-            this.game.isTeamMode &&
-            !targetPlayer.group!.allDeadOrDisconnected &&
-            groupAlives.length > 1
-        ) {
+        if (this.game.contextManager.showStatsMsg(targetPlayer)) {
             for (const stat of stats) {
                 const statsMsg = new net.PlayerStatsMsg();
                 statsMsg.playerStats = stat;
@@ -1504,7 +1507,8 @@ export class Player extends BaseGameObject {
         } else {
             const gameOverMsg = new net.GameOverMsg();
             gameOverMsg.playerStats = stats;
-            gameOverMsg.teamRank = winningTeamId == targetPlayer.teamId ? 1 : teamRank;
+            gameOverMsg.teamRank =
+                winningTeamId == targetPlayer.teamId ? 1 : aliveCount + 1; //gameover msg sent after alive count updated
             gameOverMsg.teamId = targetPlayer.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
             gameOverMsg.gameOver = !!winningTeamId;

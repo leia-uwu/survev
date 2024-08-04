@@ -16,7 +16,7 @@ import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
 import { PlaneBarn } from "./objects/plane";
-import { Emote, PlayerBarn } from "./objects/player";
+import { Emote, type Player, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
@@ -82,7 +82,12 @@ class ContextManager {
                 return true;
             },
             [ContextMode.Faction]: () => {
-                return false;
+                if (!this._game.started || this.aliveCount() > 1) return false;
+                const winner = this._game.getAliveTeams()[0];
+                for (const player of winner.livingPlayers) {
+                    player.addGameOverMsg(winner.teamId);
+                }
+                return true;
             }
         });
     }
@@ -105,6 +110,30 @@ class ContextManager {
                 for (let i = 0; i < numFactions; i++) {
                     aliveCounts.push(this._game.teams[i].livingPlayers.length);
                 }
+            }
+        });
+    }
+
+    getPlayerStatusPlayers(player: Player): Player[] | undefined {
+        return this._applyContext<Player[] | undefined>({
+            [ContextMode.Solo]: () => undefined,
+            [ContextMode.Team]: () => player.group!.players,
+            [ContextMode.Faction]: () => this._game.playerBarn.players
+        });
+    }
+
+    showStatsMsg(player: Player): boolean {
+        return this._applyContext<boolean>({
+            [ContextMode.Solo]: () => false,
+            [ContextMode.Team]: () =>
+                !player.group!.allDeadOrDisconnected && this.aliveCount() > 1,
+            [ContextMode.Faction]: () => {
+                if (!this._game.isTeamMode) {
+                    //stats msg can only show in solos if it's also faction mode
+                    return this.aliveCount() > 1;
+                }
+
+                return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
             }
         });
     }
@@ -385,7 +414,7 @@ export class Game {
     }
 
     getSmallestTeam() {
-        if (!this.map.factionMode) return;
+        if (!this.map.factionMode) return undefined;
 
         return this.teams.reduce((smallest, current) => {
             if (current.livingPlayers.length < smallest.livingPlayers.length) {
