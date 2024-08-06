@@ -494,16 +494,39 @@ export class Player extends BaseGameObject {
 
                 this.helmet = "helmet03_bugler";
                 break;
-            // case "leader":
-            //     this.helmet = "helmet04_leader";
-            //     this.chest = "chest03";
-            //     this.backpack = "backpack03";
+            case "leader":
+                break;
+        }
 
-            //     this.inventory["8xscope"] = 1;
-            //     this.scope = "8xscope";
+        if (def.defaultItems) {
+            for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
+                this.inventory[key] = value;
+            }
 
-            //     this.setDirty();
-            //     break;
+            for (let i = 0; i < def.defaultItems.weapons.length; i++) {
+                const weaponOrWeaponFunc = def.defaultItems.weapons[i];
+                const trueWeapon =
+                    weaponOrWeaponFunc instanceof Function
+                        ? weaponOrWeaponFunc(this.teamId)
+                        : weaponOrWeaponFunc;
+
+                const gunDef = GameObjectDefs[trueWeapon.type] as GunDef;
+                if (gunDef && gunDef.type == "gun") {
+                    if (this.weapons[i].type) this.weaponManager.dropGun(i);
+
+                    if (trueWeapon.fillInv) {
+                        const ammoType = gunDef.ammo;
+                        this.inventory[ammoType] = GameConfig.bagSizes[ammoType][3];
+                    }
+                }
+                this.weapons[i].type = trueWeapon.type;
+                this.weapons[i].ammo = trueWeapon.ammo;
+            }
+
+            this.scope = def.defaultItems.scope;
+            this.helmet = def.defaultItems.helmet;
+            this.chest = def.defaultItems.chest;
+            this.backpack = def.defaultItems.backpack;
         }
 
         if (def.perks) {
@@ -523,6 +546,11 @@ export class Player extends BaseGameObject {
             droppable
         });
         this.perkTypes.push(type);
+
+        if (type == "leadership") {
+            this.boost = 100;
+            this.scale *= 1.25;
+        }
     }
 
     removePerk(type: string): void {
@@ -717,7 +745,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        if (this.boost > 0) {
+        if (this.boost > 0 && !this.hasPerk("leadership")) {
             this.boost -= 0.375 * dt;
         }
         if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
