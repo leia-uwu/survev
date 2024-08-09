@@ -121,6 +121,8 @@ export const GameConfig = {
         gasTimeMin: 5,
         initWidth: 0.75,
         widthDecay: 0.5,
+        movingWidthDecay: 0.7,
+        firstMovingZone: 2,
         widthMin: 10,
         damageTickRate: 2,
         damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22]
@@ -145,7 +147,7 @@ export const GameConfig = {
         baseSwitchDelay: 0.25,
         freeSwitchCooldown: 1,
         headshotChance: 0.15,
-        moveSpeed: 12,
+        moveSpeed: 20,
         waterSpeedPenalty: 3,
         cookSpeedPenalty: 3,
         hasteSpeedBonus: 4.8,
