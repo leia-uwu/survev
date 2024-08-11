@@ -496,10 +496,20 @@ export class Player extends BaseGameObject {
                 break;
             case "leader":
                 break;
+            case "lieutenant":
+                break;
+            case "last_man":
+                this.health = 100;
+                this.boost = 100;
+                this.giveHaste(GameConfig.HasteType.Windwalk, 5);
+                break;
+            case "grenadier":
+                break;
         }
 
         if (def.defaultItems) {
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
+                if (value == 0) continue; //prevents overwriting existing inventory
                 this.inventory[key] = value;
             }
 
@@ -509,6 +519,8 @@ export class Player extends BaseGameObject {
                     weaponOrWeaponFunc instanceof Function
                         ? weaponOrWeaponFunc(this.teamId)
                         : weaponOrWeaponFunc;
+
+                if (!trueWeapon.type) continue; //prevents overwriting existing weapons
 
                 const gunDef = GameObjectDefs[trueWeapon.type] as GunDef;
                 if (gunDef && gunDef.type == "gun") {
@@ -524,15 +536,31 @@ export class Player extends BaseGameObject {
             }
 
             this.scope = def.defaultItems.scope;
-            this.helmet = def.defaultItems.helmet;
+            this.helmet =
+                def.defaultItems.helmet instanceof Function
+                    ? def.defaultItems.helmet(this.teamId)
+                    : def.defaultItems.helmet;
+            if (this.chest)
+                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
             this.chest = def.defaultItems.chest;
             this.backpack = def.defaultItems.backpack;
         }
 
         if (def.perks) {
-            for (let i = 0; i < def.perks.length; i++) this.addPerk(def.perks[i], false);
+            for (let i = this.perks.length - 1; i >= 0; i--)
+                this.removePerk(this.perks[i].type);
+            for (let i = 0; i < def.perks.length; i++) {
+                const perkOrPerkFunc = def.perks[i];
+                const perkType =
+                    perkOrPerkFunc instanceof Function
+                        ? perkOrPerkFunc()
+                        : perkOrPerkFunc;
+                this.addPerk(perkType, false);
+            }
         }
         this.role = role;
+        this.inventoryDirty = true;
+        this.weapsDirty = true;
         this.setDirty();
     }
 
@@ -549,7 +577,11 @@ export class Player extends BaseGameObject {
 
         if (type == "leadership") {
             this.boost = 100;
-            this.scale *= 1.25;
+            this.scale += 0.25;
+        } else if (type == "steelskin") {
+            this.scale += 0.4;
+        } else if (type == "flak_jacket") {
+            this.scale += 0.2;
         }
     }
 
@@ -557,6 +589,14 @@ export class Player extends BaseGameObject {
         const idx = this.perks.findIndex((perk) => perk.type === type);
         this.perks.splice(idx, 1);
         this.perkTypes.splice(this.perkTypes.indexOf(type), 1);
+
+        if (type == "leadership") {
+            this.scale -= 0.25;
+        } else if (type == "steelskin") {
+            this.scale -= 0.4;
+        } else if (type == "flak_jacket") {
+            this.scale -= 0.2;
+        }
     }
 
     get hasPerks(): boolean {
@@ -1418,6 +1458,8 @@ export class Player extends BaseGameObject {
             params.damageType !== GameConfig.DamageType.Bleeding &&
             params.damageType !== GameConfig.DamageType.Airdrop
         ) {
+            if (this.hasPerk("flak_jacket")) finalDamage *= 0.9;
+
             let isHeadShot = false;
 
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
@@ -1700,6 +1742,28 @@ export class Player extends BaseGameObject {
 
         if (this.hasPerk("final_bugle")) {
             this.initLastBreath();
+        }
+
+        if (
+            this.hasPerk("martyrdom") ||
+            this.role == "grenadier" ||
+            this.role == "demo"
+        ) {
+            const martyrNadeType = "martyr_nade";
+            const throwableDef = GameObjectDefs[martyrNadeType] as ThrowableDef;
+            for (let i = 0; i < 12; i++) {
+                const velocity = v2.mul(v2.randomUnit(), util.random(2, 5));
+                this.game.projectileBarn.addProjectile(
+                    this.playerId,
+                    martyrNadeType,
+                    this.pos,
+                    1,
+                    this.layer,
+                    velocity,
+                    throwableDef.fuseTime,
+                    GameConfig.DamageType.Player
+                );
+            }
         }
 
         this.game.sendMsg(net.MsgType.Kill, killMsg);
@@ -2549,6 +2613,24 @@ export class Player extends BaseGameObject {
         });
     }
 
+    dropArmor(item: string, armorDef: LootDef): boolean {
+        if (armorDef.type != "chest" && armorDef.type != "helmet") return false;
+        if (armorDef.noDrop) return false;
+        if (!this[armorDef.type]) return false;
+        this.game.lootBarn.addLoot(
+            item,
+            this.pos,
+            this.layer,
+            1,
+            undefined,
+            -4,
+            this.dir
+        );
+        this[armorDef.type] = "";
+        this.setDirty();
+        return true;
+    }
+
     dropItem(dropMsg: net.DropItemMsg): void {
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         switch (itemDef.type) {
@@ -2605,19 +2687,20 @@ export class Player extends BaseGameObject {
             }
             case "chest":
             case "helmet": {
-                if (itemDef.noDrop) return;
-                if (!this[itemDef.type]) return;
-                this.game.lootBarn.addLoot(
-                    dropMsg.item,
-                    this.pos,
-                    this.layer,
-                    1,
-                    undefined,
-                    -4,
-                    this.dir
-                );
-                this[itemDef.type] = "";
-                this.setDirty();
+                // if (itemDef.noDrop) return;
+                // if (!this[itemDef.type]) return;
+                // this.game.lootBarn.addLoot(
+                //     dropMsg.item,
+                //     this.pos,
+                //     this.layer,
+                //     1,
+                //     undefined,
+                //     -4,
+                //     this.dir
+                // );
+                // this[itemDef.type] = "";
+                // this.setDirty();
+                if (!this.dropArmor(dropMsg.item, itemDef)) return;
                 break;
             }
             case "heal":
