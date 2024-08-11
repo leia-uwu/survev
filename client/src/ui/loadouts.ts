@@ -7,6 +7,8 @@ import type { Crosshair } from "../crosshair";
 export interface Loadout {
     player_icon: string;
     outfit: string;
+    primary: string;
+    secondary: string;
     heal: string;
     boost: string;
     melee: string;
@@ -56,6 +58,8 @@ const loadout = {
         const validatedLoadout: Loadout = {
             outfit: getGameType("outfit", mergedLoadout.outfit, "outfitBase"),
             melee: getGameType("melee", mergedLoadout.melee, "fists"),
+            primary: getGameType("gun", mergedLoadout.primary, "spas12"),
+            secondary: getGameType("gun", mergedLoadout.secondary, "mosin"),
             heal: getGameType("heal_effect", mergedLoadout.heal, "heal_basic"),
             boost: getGameType("boost_effect", mergedLoadout.boost, "boost_basic"),
             player_icon: getGameType("emote", mergedLoadout.player_icon, ""),

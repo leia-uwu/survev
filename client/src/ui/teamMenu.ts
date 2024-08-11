@@ -89,7 +89,7 @@ export class TeamMenu {
             this.setRoomProperty("gameModeIdx", 2);
         });
         this.fillAuto.click(() => {
-            this.setRoomProperty("autoFill", true);
+            this.setRoomProperty("autoFill", false);
         });
         this.fillNone.click(() => {
             this.setRoomProperty("autoFill", false);
@@ -162,9 +162,8 @@ export class TeamMenu {
     connect(create: boolean, roomUrl: string) {
         if (!this.active || roomUrl !== this.roomData.roomUrl) {
             const roomHost = api.resolveRoomHost();
-            const url = `w${
-                window.location.protocol === "https:" ? "ss" : "s"
-            }://${roomHost}/team_v2`;
+            const url = `w${window.location.protocol === "https:" ? "ss" : "s"
+                }://${roomHost}/team_v2`;
             this.active = true;
             this.joined = false;
             this.create = create;
@@ -188,7 +187,7 @@ export class TeamMenu {
             this.refreshUi();
 
             if (this.ws) {
-                this.ws.onclose = function () {};
+                this.ws.onclose = function () { };
                 this.ws.close();
                 this.ws = null;
             }
@@ -204,8 +203,8 @@ export class TeamMenu {
                         errMsg = this.joined
                             ? "lost_conn"
                             : this.create
-                              ? "create_failed"
-                              : "join_failed";
+                                ? "create_failed"
+                                : "join_failed";
                     }
                     this.leave(errMsg);
                 };
@@ -324,7 +323,7 @@ export class TeamMenu {
     }
 
     tryStartGame() {
-        if (this.isLeader && !this.roomData.findingGame) {
+        if (!this.roomData.findingGame) {
             const version = GameConfig.protocolVersion;
             let region = this.roomData.region;
             const paramRegion = helpers.getParameterByName("region");
@@ -424,7 +423,7 @@ export class TeamMenu {
             );
 
             // Fill mode
-            setButtonState(this.fillAuto, this.roomData.autoFill, this.isLeader);
+            setButtonState(this.fillAuto, this.roomData.autoFill, false && this.isLeader);
             setButtonState(this.fillNone, !this.roomData.autoFill, this.isLeader);
             this.serverSelect.prop("disabled", !this.isLeader);
 
@@ -480,7 +479,7 @@ export class TeamMenu {
 
                 const showWaitMessage = playersInGame && !this.joiningGame;
                 waitReason.css("display", showWaitMessage ? "block" : "none");
-                this.playBtn.css("display", showWaitMessage ? "none" : "block");
+                // this.playBtn.css("display", showWaitMessage ? "none" : "block");
             } else {
                 if (this.roomData.findingGame || this.joiningGame) {
                     waitReason.html(
@@ -502,7 +501,7 @@ export class TeamMenu {
                     );
                 }
                 waitReason.css("display", "block");
-                this.playBtn.css("display", "none");
+                this.playBtn.css("display", "block");
             }
 
             // Player properties

@@ -1,3 +1,4 @@
+import { allowedGuns } from "../../deathmatch/loadoutItems";
 import { CrosshairDefs } from "./crosshairDefs";
 import { HealEffectDefs } from "./healEffectDefs";
 import { PassDefs } from "./passDefs";
@@ -213,7 +214,8 @@ export const UnlockDefs: Record<string, UnlockDef> = {
                 ...allowedEmotes,
                 ...allowedHealEffects,
                 ...Object.keys(CrosshairDefs),
-                ...PassDefs.pass_survivr1.items.map((item) => item.item)
+                ...PassDefs.pass_survivr1.items.map((item) => item.item),
+                ...allowedGuns
             ])
         ]
     },

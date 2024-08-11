@@ -1,0 +1,25 @@
+/* 
+    increase loadout width
+*/
+
+#modal-content-left {
+    width: 730px !important;
+}
+
+#modal-content-right-crosshair,
+#modal-content-right-emote {
+    margin-right: -150px;
+}
+
+@media (max-width: 850px),
+(max-width: 900px) and (min-resolution: 3dppx) {
+    #modal-content-left {
+        width: 665px !important;
+    }
+
+
+    #modal-content-right-crosshair,
+    #modal-content-right-emote {
+        margin-right: -83px !important;
+    }
+}

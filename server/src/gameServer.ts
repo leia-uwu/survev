@@ -3,7 +3,6 @@ import { platform } from "os";
 import NanoTimer from "nanotimer";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
-import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
@@ -18,6 +17,7 @@ export interface FindGameBody {
     playerCount: number;
     autoFill: boolean;
     gameModeIdx: number;
+    groupHash?: string;
 }
 
 export type FindGameResponse = {
@@ -219,22 +219,33 @@ export class GameServer {
                 const mode = Config.modes[body.gameModeIdx];
                 if (mode.teamMode > 1) {
                     let group: Group | undefined;
+                    const groupsArray = [...game.groups.values()];
+                    let groupAlreadyExist = groupsArray.find(
+                        (group) => group.hash === body.groupHash
+                    );
 
-                    if (body.autoFill) {
-                        group = [...game.groups.values()].filter((group) => {
-                            return group.autoFill && group.players.length < mode.teamMode;
-                        })[0];
-                    }
+                    if (groupAlreadyExist) {
+                        response.data = body.groupHash!;
+                    } else {
+                        if (body.autoFill) {
+                            group = groupsArray.filter((group) => {
+                                if (game.groups.size < 2) group.autoFill = false;
+                                return (
+                                    group.autoFill && group.players.length < mode.teamMode
+                                );
+                            })[0];
+                        }
 
-                    if (!group) {
-                        group = game.addGroup(
-                            randomBytes(20).toString("hex"),
-                            body.autoFill
-                        );
-                    }
+                        if (!group) {
+                            group = game.addGroup(
+                                randomBytes(20).toString("hex"),
+                                body.autoFill
+                            );
+                        }
 
-                    if (group) {
-                        response.data = group.hash;
+                        if (group) {
+                            response.data = group.hash;
+                        }
                     }
                 }
             }
@@ -288,9 +299,10 @@ export class GameServer {
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
         if (player.group) player.group.checkPlayers();
-        if (player.timeAlive < GameConfig.player.minActiveTime) {
-            player.game.playerBarn.removePlayer(player);
-        }
+        // @NOTE: always remove the player once disconnected
+        // if (player.timeAlive < GameConfig.player.minActiveTime) {
+        player.game.playerBarn.removePlayer(player);
+        // }
     }
 
     getPlayerCount() {
