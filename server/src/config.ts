@@ -62,20 +62,96 @@ const configPath = path.join(
     "../../resurviv-config.json"
 );
 
-if (fs.existsSync(configPath)) {
-    const localConfig = JSON.parse(fs.readFileSync(configPath).toString());
-    util.mergeDeep(Config, localConfig);
-} else {
-    console.log("Config file doesn't exist... creating");
-    fs.writeFileSync(configPath, JSON.stringify({}, null, 2));
-}
+util.mergeDeep(Config, {
+    gameServer: {
+        apiServerUrl: "http://resurviv.biz",
+    },
+    regions: {
+        na: {
+            https: false,
+            address: "resurviv.biz:8001",
+            l10n: "index-north-america"
+        }
+    },
+    thisRegion: "na",
+    "modes": [
+        {
+            "mapName": "main",
+            "teamMode": 1,
+            "enabled": false
+        },
+        {
+            "mapName": "main",
+            "teamMode": 2,
+            "enabled": true
+        },
+        {
+            "mapName": "main",
+            "teamMode": 4,
+            "enabled": false
+        }
+    ],
+    "gameConfig": {
+        "gas": {
+            "initWaitTime": 300,
+            "damageTickRate": 1,
+            "damage": [
+                25,
+                70
+            ],
+            "widthDecay": 0.3,
+            "initGasTime": 20
+        },
+        "gun": {
+            "customSwitchDelay": 0.2 as any
+        },
+        "player": {
+            "defaultItems": {
+                "backpack": "backpack03",
+                "helmet": "helmet03",
+                "chest": "chest03",
+                "scope": "4xscope",
+                "perks": [
+                    {
+                        "type": "endless_ammo",
+                        "droppable": false
+                    },
+                    {
+                        "type": "takedown",
+                        "droppable": false
+                    }
+                ],
+                "inventory": {
+                    "frag": 3,
+                    "smoke": 1,
+                    "mirv": 1,
+                    "bandage": 15,
+                    "healthkit": 2,
+                    "soda": 4,
+                    "painkiller": 1,
+                    "1xscope": 1,
+                    "2xscope": 1,
+                    "4xscope": 1
+                }
+            }
+        }
+    }
+} satisfies DeepPartial<ConfigType>)
+
+// if (fs.existsSync(configPath)) {
+//     const localConfig = JSON.parse(fs.readFileSync(configPath).toString());
+//     util.mergeDeep(Config, localConfig);
+// } else {
+//     console.log("Config file doesn't exist... creating");
+//     fs.writeFileSync(configPath, JSON.stringify({}, null, 2));
+// }
 
 util.mergeDeep(GameConfig, Config.gameConfig);
 
 type DeepPartial<T> = T extends object
     ? {
-          [P in keyof T]?: DeepPartial<T[P]>;
-      }
+        [P in keyof T]?: DeepPartial<T[P]>;
+    }
     : T;
 
 interface ServerConfig {
