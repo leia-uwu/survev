@@ -99,7 +99,7 @@ class Application {
     hasFocus = true;
     newsDisplayed = true;
 
-    serverGame!: ServerGame;
+    serverGame?: ServerGame;
     enableBots = false;
 
     constructor() {
@@ -135,11 +135,11 @@ class Application {
         this.loadBrowserDeps(onLoadComplete);
 
         setInterval(() => {
-            if (this.serverGame) {
+            if (this.serverGame && this.serverGame.allowJoin) {
                 this.serverGame.update();
                 this.serverGame.netSync();
             }
-        }, Config.gameTps / 1000);
+        }, 1000 / Config.gameTps);
     }
 
     loadBrowserDeps(onLoadCompleteCb: () => void) {
@@ -182,25 +182,27 @@ class Application {
                 if (this.serverGame) {
                     this.serverGame.stop();
                 }
+                this.serverGame = undefined;
 
                 const game = new ServerGame(mapName, {
                     mapName,
                     teamMode: 1
                 });
+                game.init().then(() => {
+                    const bots = new Set<Bot>();
 
-                const bots = new Set<Bot>();
+                    if (this.enableBots) {
+                        const botCount = 79;
 
-                if (this.enableBots) {
-                    const botCount = 79;
-
-                    for (let i = 0; i < botCount; i++) {
-                        bots.add(new Bot(game, i));
+                        for (let i = 0; i < botCount; i++) {
+                            bots.add(new Bot(game, i));
+                        }
                     }
-                }
 
-                this.game!.tryJoinGame(game, bots);
+                    this.game!.tryJoinGame(game, bots);
 
-                this.serverGame = game;
+                    this.serverGame = game;
+                });
             });
 
             this.serverSelect.change(() => {
@@ -730,7 +732,7 @@ class Application {
             const _onFailure = function () {
                 joinGameImpl(urls, matchData);
             };
-            this.game!.tryJoinGame(this.serverGame);
+            this.game!.tryJoinGame(this.serverGame!);
         };
         joinGameImpl(urls, matchData);
     }
