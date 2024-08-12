@@ -447,25 +447,9 @@ export class WeaponManager {
 
         if (weaponDef.isDual) {
             item = item.replace("_dual", "");
-            this.player.game.lootBarn.addLoot(
-                item,
-                this.player.pos,
-                this.player.layer,
-                0,
-                true,
-                -4,
-                this.player.dir
-            );
+            this.player.dropLoot(item, 0);
         }
-        this.player.game.lootBarn.addLoot(
-            item,
-            this.player.pos,
-            this.player.layer,
-            amountToDrop,
-            true,
-            -4,
-            this.player.dir
-        );
+        this.player.dropLoot(item, amountToDrop, true);
         this.player.weapsDirty = true;
         if (weapIdx === this.curWeapIdx) this.player.setDirty();
     }
@@ -473,15 +457,7 @@ export class WeaponManager {
     dropMelee(): void {
         const slot = GameConfig.WeaponSlot.Melee;
         if (this.weapons[slot].type != "fists") {
-            this.player.game.lootBarn.addLoot(
-                this.weapons[slot].type,
-                this.player.pos,
-                this.player.layer,
-                1,
-                undefined,
-                -4,
-                this.player.dir
-            );
+            this.player.dropLoot(this.weapons[slot].type);
             this.weapons[slot].type = "fists";
             this.weapons[slot].ammo = 0;
             this.weapons[slot].cooldown = 0;
