@@ -265,7 +265,23 @@ export const RoleDefs: Record<string, RoleDef> = {
         announce: true,
         killFeed: { assign: true },
         sound: { assign: "recon_assigned_01" },
-        perks: ["small_arms"]
+        perks: ["small_arms"],
+        defaultItems: createDefaultItems({
+            weapons: [
+                { type: "", ammo: 0 },
+                { type: "glock_dual", ammo: 34, fillInv: true },
+                { type: "crowbar_recon", ammo: 0 },
+                { type: "", ammo: 0 }
+            ],
+            backpack: "backpack03",
+            helmet: "helmet03_recon",
+            chest: "chest03",
+            scope: "4xscope",
+            inventory: {
+                "4xscope": 1,
+                soda: 6
+            }
+        })
     },
     grenadier: {
         type: "role",
