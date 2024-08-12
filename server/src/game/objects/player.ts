@@ -520,7 +520,21 @@ export class Player extends BaseGameObject {
                         ? weaponOrWeaponFunc(this.teamId)
                         : weaponOrWeaponFunc;
 
-                if (!trueWeapon.type) continue; //prevents overwriting existing weapons
+                if (!trueWeapon.type) {
+                    //prevents overwriting existing weapons
+                    if (!this.weapons[i].type) {
+                        continue;
+                    }
+
+                    const curWeapDef = GameObjectDefs[this.weapons[i].type];
+                    if (curWeapDef.type == "gun") {
+                        // refills the ammo of the existing weapon
+                        this.weapons[i].ammo = this.weaponManager.getTrueAmmoStats(
+                            curWeapDef as GunDef
+                        ).trueMaxClip;
+                    }
+                    continue;
+                }
 
                 const gunDef = GameObjectDefs[trueWeapon.type] as GunDef;
                 if (gunDef && gunDef.type == "gun") {
