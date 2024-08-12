@@ -156,6 +156,7 @@ export const GameConfig = {
         reviveDuration: 8,
         reviveRange: 5,
         crawlTime: 0.75,
+        teammateSpawnRadius: 5, // radius of circle that teammates spawn inside of, relative to the first player on the team to join
         emoteSoftCooldown: 2,
         emoteHardCooldown: 6,
         emoteThreshold: 6,
@@ -169,7 +170,49 @@ export const GameConfig = {
         spectateDeadTimeout: 2,
         killLeaderMinKills: 3,
         minSpawnDistance: 50, // minimum distance enemy players need to spawn from each other
-        gracePeriodTime: 0 // time from game start where players can't move
+        gracePeriodTime: 0, // time from game start where players can't move
+
+        /* STRIP_FROM_PROD_CLIENT:START */
+        defaultItems: {
+            weapons: [
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+                { type: "fists", ammo: 0 },
+                { type: "", ammo: 0 }
+            ],
+            outfit: "outfitBase",
+            backpack: "backpack00",
+            helmet: "",
+            chest: "",
+            scope: "1xscope",
+            perks: [] as Array<{ type: string; droppable?: boolean }>,
+            inventory: {
+                "9mm": 0,
+                "762mm": 0,
+                "556mm": 0,
+                "12gauge": 0,
+                "50AE": 0,
+                "308sub": 0,
+                flare: 0,
+                "45acp": 0,
+                frag: 0,
+                smoke: 0,
+                strobe: 0,
+                mirv: 0,
+                snowball: 0,
+                potato: 0,
+                bandage: 0,
+                healthkit: 0,
+                soda: 0,
+                painkiller: 0,
+                "1xscope": 1,
+                "2xscope": 0,
+                "4xscope": 0,
+                "8xscope": 0,
+                "15xscope": 0
+            } as Record<string, number>
+        }
+        /* STRIP_FROM_PROD_CLIENT:END */
     },
     defaultEmoteLoadout: [
         "emote_happyface",
@@ -208,7 +251,8 @@ export const GameConfig = {
     bullet: {
         maxReflect: 3,
         reflectDistDecay: 1.5,
-        height: 0.25
+        height: 0.25,
+        falloff: true
     },
     gun: {
         customSwitchDelay: undefined,

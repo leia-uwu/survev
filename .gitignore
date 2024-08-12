@@ -1,5 +1,8 @@
 reference/
 
+# config file
+resurviv-config.json
+
 # Compiled source
 dist/
 

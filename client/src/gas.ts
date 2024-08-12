@@ -140,7 +140,7 @@ export class GasSafeZoneRenderer {
             }
             if (safeRadChanged) {
                 this.circleGfx.clear();
-                this.circleGfx.lineStyle(1.5, 16777215);
+                this.circleGfx.lineStyle(1.5, 0xffffff);
                 this.circleGfx.drawCircle(0, 0, safeRad);
             }
             // Update line?

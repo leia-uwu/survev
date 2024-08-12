@@ -65,7 +65,7 @@ export class LoadoutDisplay {
         public account: Account
     ) {}
 
-    o() {
+    init() {
         this.canvasMode = this.pixi.renderer.type == PIXI.RENDERER_TYPE.CANVAS;
         this.camera = new Camera();
         this.renderer = new Renderer(this as unknown as Game, this.canvasMode);
@@ -197,7 +197,7 @@ export class LoadoutDisplay {
         this.resize();
     }
 
-    n() {
+    free() {
         if (this.initialized) {
             this.map.free();
             this.particleBarn.free();

@@ -448,7 +448,7 @@ export class EmoteBarn {
 
         this.container.scale.set(this.baseScale, this.baseScale);
         this.container.addChild(this.pingContainer);
-        const createIndicator = function (idx: number, indTint = 16777215) {
+        const createIndicator = function (idx: number, indTint = 0xffffff) {
             const pingContainer = new PIXI.Container();
             const indContainer = new PIXI.Container();
             const tint = GameConfig.groupColors[idx] || indTint;
@@ -549,10 +549,10 @@ export class EmoteBarn {
             this.emoteElems.off("touchstart");
             this.bigmapCollision.off("touchend");
         }
-        this.o();
+        this.init();
     }
 
-    o() {
+    init() {
         this.emoteWheelsGreyed = false;
         this.emoteWheels.css("opacity", 1);
         this.teamEmotesGreyed = false;

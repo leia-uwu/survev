@@ -91,6 +91,7 @@ const mapDef = {
         factionMode: true,
         factions: 2
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
         planes: {
             timings: [
@@ -198,6 +199,7 @@ const mapDef = {
             { name: "dp28", count: 1, weight: 0.5 },
             { name: "mosin", count: 1, weight: 0.1 },
             { name: "m39", count: 1, weight: 0.1 },
+            { name: "vss", count: 1, weight: 0.1 },
             { name: "mp5", count: 1, weight: 10 },
             { name: "mac10", count: 1, weight: 6 },
             { name: "ump9", count: 1, weight: 3 },
@@ -214,7 +216,7 @@ const mapDef = {
             { name: "sv98", count: 1, weight: 0.01 },
             { name: "spas12", count: 1, weight: 1 },
             { name: "qbb97", count: 1, weight: 0.01 },
-            { name: "flare_gun", count: 1, weight: 0.01 },
+            { name: "flare_gun", count: 1, weight: 0.1 },
             { name: "groza", count: 1, weight: 0.8 },
             { name: "scout", count: 1, weight: 0.05 }
         ],
@@ -411,6 +413,7 @@ const mapDef = {
             "warehouse_complex_01"
         ]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const Faction = util.mergeDeep({}, Main, mapDef) as MapDef;

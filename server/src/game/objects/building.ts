@@ -187,11 +187,6 @@ export class Building extends BaseGameObject {
 
     obstacleDestroyed(obstacle: Obstacle): void {
         const def = MapObjectDefs[obstacle.type] as ObstacleDef;
-        if (def.isWall) this.wallsToDestroy--;
-        if (this.wallsToDestroy <= 0 && !this.ceilingDead) {
-            this.ceilingDead = true;
-            this.setPartDirty();
-        }
 
         if (def.damageCeiling) {
             this.ceilingDamaged = true;
@@ -200,6 +195,15 @@ export class Building extends BaseGameObject {
 
         if (def.disableBuildingOccupied) {
             this.occupiedDisabled = true;
+        }
+
+        if (obstacle.isWall) {
+            // ceiling destroy logic
+            this.wallsToDestroy--;
+            if (this.wallsToDestroy <= 0 && !this.ceilingDead) {
+                this.ceilingDead = true;
+                this.setPartDirty();
+            }
         }
     }
 

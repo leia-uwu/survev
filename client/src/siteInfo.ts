@@ -16,7 +16,13 @@ interface Info {
         teamMode: TeamMode;
         enabled: boolean;
     }>;
-    pops: Record<string, string>;
+    pops: Record<
+        string,
+        {
+            playerCount: string;
+            l10n: string;
+        }
+    >;
     youtube: {
         name: string;
         link: string;
@@ -28,6 +34,7 @@ interface Info {
         img: string;
     }>;
 }
+
 export class SiteInfo {
     info: Info = {
         country: "us",
@@ -41,7 +48,10 @@ export class SiteInfo {
                 };
             }),
         pops: {
-            local: "0 Players"
+            local: {
+                playerCount: "0",
+                l10n: "index-local"
+            }
         },
         youtube: {
             name: "",
@@ -146,11 +156,13 @@ export class SiteInfo {
             const pops = this.info.pops;
             if (pops) {
                 const regions = Object.keys(pops);
+
                 for (let i = 0; i < regions.length; i++) {
                     const region = regions[i];
-                    const count = pops[region];
+                    const data = pops[region];
                     const sel = $("#server-opts").children(`option[value="${region}"]`);
-                    sel.text(`${sel.data("label")} [${count}]`);
+                    const players = this.localization.translate("index-players");
+                    sel.text(`${sel.data("label")} [${data.playerCount} ${players}]`);
                 }
             }
             let hasTwitchStreamers = false;

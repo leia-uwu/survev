@@ -1,28 +1,9 @@
-import { type ProxyOptions, defineConfig } from "vite";
+import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import stripBlockPlugin from "vite-plugin-strip-block";
 import { Config } from "../server/src/config";
 
-const proxyConfig: Record<string, ProxyOptions> = {
-    "/api": {
-        target: `http://${Config.host}:${Config.port}`,
-        changeOrigin: true,
-        secure: false
-    },
-    "/play": {
-        target: `http://${Config.host}:${Config.port}`,
-        changeOrigin: true,
-        secure: false,
-        ws: true
-    },
-    "/team_v2": {
-        target: `http://${Config.host}:${Config.port}`,
-        changeOrigin: true,
-        secure: false,
-        ws: true
-    }
-};
-
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
     return {
         base: "",
         build: {
@@ -51,6 +32,20 @@ export default defineConfig(() => {
         resolve: {
             extensions: [".js", ".ts"]
         },
+        define: {
+            GAME_REGIONS: {
+                ...Config.regions,
+                ...(mode === "development"
+                    ? {
+                          local: {
+                              https: false,
+                              address: `${Config.devServer.host}:${Config.devServer.port}`,
+                              l10n: "index-local"
+                          }
+                      }
+                    : {})
+            }
+        },
         plugins: [
             VitePWA({
                 registerType: "autoUpdate",
@@ -77,6 +72,10 @@ export default defineConfig(() => {
                 devOptions: {
                     enabled: true
                 }
+            }),
+            stripBlockPlugin({
+                start: "STRIP_FROM_PROD_CLIENT:START",
+                end: "STRIP_FROM_PROD_CLIENT:END"
             })
         ],
         json: {
@@ -86,13 +85,37 @@ export default defineConfig(() => {
             port: 3000,
             strictPort: true,
             host: "0.0.0.0",
-            proxy: proxyConfig
+            proxy: {
+                "/api": {
+                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    changeOrigin: true,
+                    secure: false
+                },
+                "/team_v2": {
+                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    changeOrigin: true,
+                    secure: false,
+                    ws: true
+                }
+            }
         },
         preview: {
             port: 3000,
             strictPort: true,
             host: "0.0.0.0",
-            proxy: proxyConfig
+            proxy: {
+                "/api": {
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
+                    changeOrigin: true,
+                    secure: false
+                },
+                "/team_v2": {
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
+                    changeOrigin: true,
+                    secure: false,
+                    ws: true
+                }
+            }
         }
     };
 });

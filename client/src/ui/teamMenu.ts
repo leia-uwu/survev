@@ -401,9 +401,10 @@ export class TeamMenu {
             const regions = Object.keys(regionPops);
             for (let i = 0; i < regions.length; i++) {
                 const region = regions[i];
-                const count = regionPops[region];
+                const count = regionPops[region].playerCount;
+                const players = this.localization.translate("index-players");
                 const sel = $("#team-server-opts").children(`option[value="${region}"]`);
-                sel.html(`${sel.attr("data-label")} [${count}]`);
+                sel.html(`${sel.attr("data-label")} [${count} ${players}]`);
             }
 
             this.serverSelect.find("option").each((_idx, ele) => {

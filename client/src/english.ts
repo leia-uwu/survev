@@ -31,6 +31,7 @@ export default {
     "index-leaderboards": "Leaderboards",
     "index-slogan": "2d Battle Royale",
     "index-region": "Region",
+    "index-local": "Local",
     "index-north-america": "North America",
     "index-europe": "Europe",
     "index-asia": "Asia",

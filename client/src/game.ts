@@ -1275,6 +1275,7 @@ export class Game {
                         this.audioManager
                     );
                 }
+
                 break;
             }
             case net.MsgType.RoleAnnouncement: {

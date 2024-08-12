@@ -281,6 +281,26 @@ export class WeaponManager {
         this.scheduledReload = true;
     }
 
+    getTrueAmmoStats(weaponDef: GunDef): {
+        trueMaxClip: number;
+        trueMaxReload: number;
+        trueMaxReloadAlt: number | undefined;
+    } {
+        if (this.player.hasPerk("firepower")) {
+            return {
+                trueMaxClip: weaponDef.extendedClip,
+                trueMaxReload: weaponDef.extendedReload,
+                trueMaxReloadAlt: weaponDef.extendedReloadAlt
+            };
+        }
+
+        return {
+            trueMaxClip: weaponDef.maxClip,
+            trueMaxReload: weaponDef.maxReload,
+            trueMaxReloadAlt: weaponDef.maxReloadAlt
+        };
+    }
+
     isInfinite(weaponDef: GunDef): boolean {
         return (
             !weaponDef.ignoreEndlessAmmo &&
@@ -302,8 +322,10 @@ export class WeaponManager {
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         const conditions = [
+            this.player.inventory[weaponDef.ammo] == undefined,
             this.player.actionType == (GameConfig.Action.UseItem as number),
-            this.weapons[this.curWeapIdx].ammo >= weaponDef.maxClip,
+            this.weapons[this.curWeapIdx].ammo >=
+                this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
                 this.curWeapIdx == GameConfig.WeaponSlot.Throwable
@@ -331,14 +353,15 @@ export class WeaponManager {
      */
     reload(): void {
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
+        const trueAmmoStats = this.getTrueAmmoStats(weaponDef);
         const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
-        const spaceLeft = weaponDef.maxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
+        const spaceLeft = trueAmmoStats.trueMaxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
 
         const inv = this.player.inventory;
 
-        let amountToReload = weaponDef.maxReload;
-        if (weaponDef.maxReloadAlt && activeWeaponAmmo === 0) {
-            amountToReload = weaponDef.maxReloadAlt;
+        let amountToReload = trueAmmoStats.trueMaxReload;
+        if (trueAmmoStats.trueMaxReloadAlt && activeWeaponAmmo === 0) {
+            amountToReload = trueAmmoStats.trueMaxReloadAlt;
         }
 
         if (this.isInfinite(weaponDef)) {
@@ -349,7 +372,7 @@ export class WeaponManager {
             );
         } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
-            if (weaponDef.maxClip != amountToReload) {
+            if (trueAmmoStats.trueMaxClip != amountToReload) {
                 // m870, mosin, spas: only refill by one bullet at a time
                 this.weapons[this.curWeapIdx].ammo++;
                 inv[weaponDef.ammo]--;
@@ -372,9 +395,9 @@ export class WeaponManager {
         const realMaxClip =
             inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
                 ? this.weapons[this.curWeapIdx].ammo
-                : weaponDef.maxClip;
+                : trueAmmoStats.trueMaxClip;
         if (
-            weaponDef.maxClip != amountToReload &&
+            trueAmmoStats.trueMaxClip != amountToReload &&
             this.weapons[this.curWeapIdx].ammo != realMaxClip
         ) {
             this.player.reloadAgain = true;
@@ -387,7 +410,10 @@ export class WeaponManager {
 
     dropGun(weapIdx: number, switchToMelee = true): void {
         const weap = this.weapons[weapIdx];
+        if (!weap || !weap.type) return;
         const weaponDef = GameObjectDefs[weap.type] as GunDef;
+        if (!weaponDef) return;
+        if (weaponDef.noDrop) return;
         const weaponAmmoType = weaponDef.ammo;
         const weaponAmmoCount = weap.ammo;
 
@@ -421,25 +447,9 @@ export class WeaponManager {
 
         if (weaponDef.isDual) {
             item = item.replace("_dual", "");
-            this.player.game.lootBarn.addLoot(
-                item,
-                this.player.pos,
-                this.player.layer,
-                0,
-                true,
-                -4,
-                this.player.dir
-            );
+            this.player.dropLoot(item, 0);
         }
-        this.player.game.lootBarn.addLoot(
-            item,
-            this.player.pos,
-            this.player.layer,
-            amountToDrop,
-            true,
-            -4,
-            this.player.dir
-        );
+        this.player.dropLoot(item, amountToDrop, true);
         this.player.weapsDirty = true;
         if (weapIdx === this.curWeapIdx) this.player.setDirty();
     }
@@ -447,21 +457,22 @@ export class WeaponManager {
     dropMelee(): void {
         const slot = GameConfig.WeaponSlot.Melee;
         if (this.weapons[slot].type != "fists") {
-            this.player.game.lootBarn.addLoot(
-                this.weapons[slot].type,
-                this.player.pos,
-                this.player.layer,
-                1,
-                undefined,
-                -4,
-                this.player.dir
-            );
+            this.player.dropLoot(this.weapons[slot].type);
             this.weapons[slot].type = "fists";
             this.weapons[slot].ammo = 0;
             this.weapons[slot].cooldown = 0;
             this.player.weapsDirty = true;
             if (slot === this.curWeapIdx) this.player.setDirty();
         }
+    }
+
+    isBulletSaturated(): boolean {
+        if (this.player.lastBreathActive) {
+            return true;
+        }
+
+        const perks = ["bonus_assault"]; //add rest later, im lazy rn
+        return perks.some((p) => this.player.hasPerk(p));
     }
 
     offHand = false;
@@ -607,7 +618,14 @@ export class WeaponManager {
             if (itemDef.toMouseHit) {
                 distance = math.max(toMouseLen - gunLen, 0.0);
             }
-            const damageMult = 1.0;
+            let damageMult = 1;
+            if (this.player.hasPerk("splinter")) {
+                damageMult *= 0.6;
+            } else if (this.player.hasPerk("bonus_assault")) {
+                damageMult *= 1.08;
+            } else if (this.player.lastBreathActive) {
+                damageMult *= 1.08;
+            }
 
             const params: BulletParams = {
                 playerId: this.player.__id,
@@ -622,6 +640,7 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: this.offHand,
+                trailSaturated: this.isBulletSaturated(),
                 trailSmall: false,
                 reflectCount: 0,
                 splinter: hasSplinter,
@@ -669,6 +688,10 @@ export class WeaponManager {
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }
             }
+        }
+
+        if (this.activeWeapon == "bugle" && this.player.hasPerk("inspiration")) {
+            this.player.playBugle();
         }
 
         this.offHand = !this.offHand;
@@ -862,7 +885,11 @@ export class WeaponManager {
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
             this.curWeapIdx == GameConfig.WeaponSlot.Throwable
-                ? this.player.toMouseLen / 15
+                ? math.clamp(
+                      this.player.toMouseLen,
+                      0,
+                      GameConfig.player.throwableMaxMouseDist * 1.8
+                  ) / 15
                 : 0;
 
         if (throwableDef.type !== "throwable") {

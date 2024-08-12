@@ -63,6 +63,11 @@ export const util = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
+    randomPointOnCircle(rad: number) {
+        const angle = util.random(0, 2 * Math.PI);
+        return v2.create(Math.cos(angle) * rad, Math.sin(angle) * rad);
+    },
+
     // Uniformly distributed random point within circle
     // Taken from https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
     randomPointInCircle(rad: number) {

@@ -1,5 +1,8 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
-import type { BulletDef } from "../../../../shared/defs/gameObjects/bulletDefs";
+import {
+    type BulletDef,
+    BulletDefs
+} from "../../../../shared/defs/gameObjects/bulletDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../../shared/gameConfig";
@@ -472,6 +475,8 @@ export class Bullet {
             }
         }
 
+        if (!collisions.length) return;
+
         for (let i = 0; i < collisions.length; i++) {
             const collision = collisions[i];
             collision.dist = v2.length(v2.sub(collision.point, posOld));
@@ -490,6 +495,13 @@ export class Bullet {
 
         let finalDamage = this.damage;
         finalDamage *= 1 / (this.reflectCount + 1);
+
+        if (GameConfig.bullet.falloff) {
+            const def = BulletDefs[this.bulletType];
+            const distT = math.clamp(this.distanceTraveled / this.distance, 0, 1);
+            const falloff = math.remap(distT, 0, 1, 1, def.falloff);
+            finalDamage *= falloff;
+        }
 
         for (let i = 0; i < collisions.length; i++) {
             const col = collisions[i];

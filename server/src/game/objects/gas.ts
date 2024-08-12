@@ -211,13 +211,6 @@ export class Gas {
             }
         }
 
-        const plane = this.map.mapDef.gameConfig.planes.timings.find(
-            (p) => p.circleIdx === this.circleIdx
-        );
-        if (plane) {
-            this.map.game.planeBarn.schedulePlane(plane.wait, plane.options);
-        }
-
         this.damage =
             GameConfig.gas.damage[
                 math.clamp(this.stage - 1, 0, GameConfig.gas.damage.length - 1)

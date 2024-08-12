@@ -33,6 +33,7 @@ const mapDef = {
         },
         frozenSprites: ["player-snow-01.img", "player-snow-02.img", "player-snow-03.img"]
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
         planes: {
             timings: [
@@ -140,6 +141,7 @@ const mapDef = {
             }
         ]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const Snow = util.mergeDeep({}, Main, mapDef) as MapDef;

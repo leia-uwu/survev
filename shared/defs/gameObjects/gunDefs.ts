@@ -375,7 +375,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-scorpion-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
             recoil: 1
         },
@@ -423,7 +423,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-vss-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 9, y: 0 },
             recoil: 1
         },
@@ -473,7 +473,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-famas-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             gunOffset: { x: -8, y: 0 },
             recoil: 1.33
@@ -568,7 +568,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-m4a1-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 7.9, y: 0 },
             recoil: 1.3
         },
@@ -710,7 +710,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-m249-top-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 13.2, y: 0 },
             recoil: 1.33,
             magImg: {
@@ -956,7 +956,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-scarssr-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 6, y: 0 },
             recoil: 1.33
         },
@@ -1054,7 +1054,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-groza-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             gunOffset: { x: -8, y: 0 },
             recoil: 1.4
@@ -1103,7 +1103,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-grozas-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             gunOffset: { x: -8, y: 0 },
             recoil: 1.4
@@ -1250,7 +1250,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-pkp-top-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 12.5, y: 0 },
             recoil: 1.33,
             magImg: {
@@ -1560,7 +1560,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-awc-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 11, y: 0 },
             recoil: 2.66
         },
@@ -1704,7 +1704,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-garand-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
             recoil: 1.66
         },
@@ -1853,7 +1853,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-mp220-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1.33
         },
@@ -1901,7 +1901,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-saiga-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
             recoil: 1.33
         },
@@ -2051,7 +2051,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-usas-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 16, y: 0 },
             recoil: 1.5
         },
@@ -2459,7 +2459,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-p30l-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1
         },
@@ -2510,7 +2510,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-p30l-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1
         },
@@ -2658,7 +2658,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-ots38-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1
         },
@@ -2708,7 +2708,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-ots38-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1
         },
@@ -3002,7 +3002,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-deagle-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1
         },
@@ -3052,7 +3052,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-deagle-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1
         },
@@ -3210,7 +3210,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-potato-cannon-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 7, y: 2 },
             gunOffset: { x: -10, y: -4 },
             recoil: 8,
@@ -3267,7 +3267,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-potato-smg-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             recoil: 2,
             magImg: {
                 sprite: "gun-potato-smg-top-01.img",
@@ -3328,7 +3328,7 @@ export const GunDefs: Record<string, GunDef> = {
         worldImg: {
             sprite: "gun-bugle-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 16777215,
+            tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             recoil: 4
         },

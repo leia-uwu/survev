@@ -34,7 +34,7 @@ export class PieTimer {
             fontWeight: "bold",
             fontSize: fontWidth,
             align: "center",
-            fill: 16777215,
+            fill: 0xffffff,
             stroke: 0,
             strokeThickness: 3
         };
@@ -45,7 +45,7 @@ export class PieTimer {
             fontWeight: "100",
             fontSize: fontWidth,
             align: "center",
-            fill: 16777215
+            fill: 0xffffff
         };
         this.container.addChild(this.labelText);
     }
@@ -106,7 +106,7 @@ export class PieTimer {
         this.gfx.beginFill(0, 0.5);
         this.gfx.drawRoundedRect(rectX, rectY, labelWidth, labelHeight, 5);
         this.gfx.endFill();
-        this.gfx.lineStyle(6, 16777215);
+        this.gfx.lineStyle(6, 0xffffff);
         this.gfx.arc(0, 0, 35, -Math.PI * 0.5, l, false);
         this.counterText.text = math.max(0, this.duration - this.elapsed).toFixed(1);
         this.labelText.position.y = 87.5;

@@ -95,7 +95,7 @@ function createSprite() {
     sprite.texture = PIXI.Texture.EMPTY;
     sprite.anchor.set(0.5, 0.5);
     sprite.scale.set(1, 1);
-    sprite.tint = 16777215;
+    sprite.tint = 0xffffff;
     sprite.visible = false;
     return sprite;
 }
@@ -137,7 +137,7 @@ class Gun {
             this.gunMag.anchor.set(0.5, 0.5);
             this.gunMag.position.set(magDef.pos.x / t, magDef.pos.y / t);
             this.gunMag.scale.set(0.25 / t, 0.25 / t);
-            this.gunMag.tint = 16777215;
+            this.gunMag.tint = 0xffffff;
             this.gunMag.visible = true;
             if (magDef.top) {
                 this.container.addChild(this.gunMag);
@@ -1321,7 +1321,7 @@ export class Player implements AbstractObject {
                     (Math.random() - 0.5) * Math.PI * 0.25;
                 this.bodyEffectSprite.texture = PIXI.Texture.from(sprite);
                 this.bodyEffectSprite.rotation = n;
-                this.bodyEffectSprite.tint = 16777215;
+                this.bodyEffectSprite.tint = 0xffffff;
                 this.bodyEffectSprite.scale.set(0.25, 0.25);
             }
             this.updateFrozenImage = false;
@@ -2207,7 +2207,7 @@ export class Player implements AbstractObject {
         const initSprite = function (sprite: PIXI.Sprite, img: string) {
             sprite.texture = PIXI.Texture.from(img);
             sprite.anchor.set(0.5, 0.5);
-            sprite.tint = 16777215;
+            sprite.tint = 0xffffff;
             sprite.alpha = 0;
             sprite.visible = false;
         };

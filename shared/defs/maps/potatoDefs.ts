@@ -42,6 +42,7 @@ const mapDef = {
         frozenSprites: ["player-mash-01.img", "player-mash-02.img", "player-mash-03.img"]
     },
     gameMode: { maxPlayers: 80, potatoMode: true },
+    /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
         planes: {
             timings: [
@@ -206,5 +207,6 @@ const mapDef = {
         ],
         importantSpawns: ["club_complex_01"]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 export const Potato = util.mergeDeep({}, Main, mapDef) as MapDef;

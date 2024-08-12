@@ -66,7 +66,7 @@ export class Particle {
         this.sprite.visible = false;
     }
 
-    o(
+    init(
         renderer: Renderer,
         type: string,
         layer: number,
@@ -118,7 +118,7 @@ export class Particle {
         this.setColor(getColorValue(def.color!));
     }
 
-    n() {
+    free() {
         this.active = false;
         this.sprite.visible = false;
     }
@@ -164,7 +164,7 @@ export class Emitter {
     rateMult!: number;
     zOrd!: number;
 
-    o(type: string, options = {} as EmitterOptions) {
+    init(type: string, options = {} as EmitterOptions) {
         const def = EmitterDefs[type];
         this.active = true;
         this.enabled = true;
@@ -191,7 +191,7 @@ export class Emitter {
                   : 20;
     }
 
-    n() {
+    free() {
         this.active = false;
     }
 
@@ -250,7 +250,7 @@ export class ParticleBarn {
         rot = rot !== undefined ? rot : Math.random() * Math.PI * 2;
         zOrd = zOrd !== undefined ? zOrd : ParticleDefs[type].zOrd || 20;
 
-        particle.o(
+        particle.init(
             this.renderer,
             type,
             layer,
@@ -294,7 +294,7 @@ export class ParticleBarn {
             this.emitters.push(emitter);
         }
 
-        emitter.o(type, options);
+        emitter.init(type, options);
         return emitter;
     }
 
@@ -335,7 +335,7 @@ export class ParticleBarn {
                     e.spawnCount++;
                 }
                 if (e.ticker >= e.duration) {
-                    e.n();
+                    e.free();
                 }
             }
         }
@@ -399,7 +399,7 @@ export class ParticleBarn {
 
                 // Die if it's time
                 if (t >= 1) {
-                    p.n();
+                    p.free();
                 }
             }
         }
@@ -625,7 +625,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     bottleWhiteChip: {
         image: ["part-spark-02.img"],
@@ -642,7 +642,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.95, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     bottleBlueBreak: {
         image: ["part-spark-02.img"],
@@ -1461,7 +1461,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             lerp: new Range(0.95, 1)
         },
         color: function () {
-            return 16777215;
+            return 0xffffff;
         }
     },
     turkeyFeathersDeath: {
@@ -1480,7 +1480,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             lerp: new Range(0.95, 1)
         },
         color: function () {
-            return 16777215;
+            return 0xffffff;
         }
     },
     whiteChip: {
@@ -1800,7 +1800,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.95, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     bugle_ammo: {
         image: ["part-note-02.img"],
@@ -1834,7 +1834,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.5, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     fragLever: {
         image: ["part-frag-lever-01.img"],
@@ -1851,7 +1851,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.5, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     explosionBurst: {
         image: ["part-frag-burst-01.img"],
@@ -1963,7 +1963,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     explosionPotato: {
         image: ["part-frag-burst-01.img"],
@@ -2034,7 +2034,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate01h: {
         image: ["part-airdrop-01h.img"],
@@ -2051,7 +2051,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate01x: {
         image: ["part-airdrop-01x.img"],
@@ -2068,7 +2068,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate02: {
         image: ["part-airdrop-02.img"],
@@ -2085,7 +2085,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate02h: {
         image: ["part-airdrop-02h.img"],
@@ -2102,7 +2102,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate02x: {
         image: ["part-airdrop-02x.img"],
@@ -2119,7 +2119,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate03: {
         image: ["part-airdrop-03.img"],
@@ -2136,7 +2136,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     airdropCrate04: {
         image: ["part-airdrop-04.img"],
@@ -2153,7 +2153,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     classShell01a: {
         image: ["part-class-shell-01a.img"],
@@ -2170,7 +2170,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     classShell01b: {
         image: ["part-class-shell-01b.img"],
@@ -2187,7 +2187,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     classShell02a: {
         image: ["part-class-shell-02a.img"],
@@ -2204,7 +2204,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     classShell02b: {
         image: ["part-class-shell-02b.img"],
@@ -2221,7 +2221,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     classShell03a: {
         image: ["part-class-shell-03a.img"],
@@ -2238,7 +2238,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     classShell03b: {
         image: ["part-class-shell-03b.img"],
@@ -2255,7 +2255,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1)
         },
-        color: 16777215
+        color: 0xffffff
     },
     cabinSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],

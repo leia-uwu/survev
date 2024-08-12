@@ -4,6 +4,7 @@ import type { MapDef } from "../mapDefs";
 import { Main } from "./baseDefs";
 
 const mapDef = {
+    mapId: 6,
     desc: {
         name: "Halloween",
         icon: "img/gui/pumpkin-play.svg",
@@ -99,6 +100,7 @@ const mapDef = {
         killLeaderEnabled: true,
         spookyKillSounds: true
     },
+    /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
         planes: {
             timings: [
@@ -238,6 +240,7 @@ const mapDef = {
             }
         ]
     }
+    /* STRIP_FROM_PROD_CLIENT:END */
 };
 
 export const Halloween = util.mergeDeep({}, Main, mapDef) as MapDef;
