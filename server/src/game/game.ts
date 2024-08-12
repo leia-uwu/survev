@@ -171,7 +171,7 @@ export class Game {
     }
 
     async init() {
-        await this.pluginManager.loadPlugins();
+        // await this.pluginManager.loadPlugins();
         this.pluginManager.emit("gameCreated", this);
         this.map.init();
 

@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
@@ -23,6 +23,7 @@ type EventHandlers = {
     [E in keyof Events]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
 };
 
+/*
 function readDirectory(dir: string): string[] {
     let results: string[] = [];
     const files = fs.readdirSync(dir);
@@ -48,6 +49,7 @@ if (fs.existsSync(pluginDir)) {
         (path) => path.endsWith(".ts") || path.endsWith(".js")
     );
 }
+*/
 
 export abstract class GamePlugin {
     handlers: EventHandlers = {};

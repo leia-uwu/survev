@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import stripBlockPlugin from "vite-plugin-strip-block";
+// import stripBlockPlugin from "vite-plugin-strip-block";
 import { Config } from "../server/src/config";
 
 export default defineConfig(({ mode }) => {
@@ -72,11 +72,11 @@ export default defineConfig(({ mode }) => {
                 devOptions: {
                     enabled: true
                 }
-            }),
-            stripBlockPlugin({
-                start: "STRIP_FROM_PROD_CLIENT:START",
-                end: "STRIP_FROM_PROD_CLIENT:END"
             })
+            // stripBlockPlugin({
+            // start: "STRIP_FROM_PROD_CLIENT:START",
+            // end: "STRIP_FROM_PROD_CLIENT:END"
+            // })
         ],
         json: {
             stringify: true

@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
@@ -52,7 +52,7 @@ export const Config = {
 
     gameConfig: {}
 } satisfies ConfigType as ConfigType;
-
+/*
 const runningOnVite = !process.argv.some((a) => a.includes("vite"));
 const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
 
@@ -68,7 +68,7 @@ if (fs.existsSync(configPath)) {
 } else {
     console.log("Config file doesn't exist... creating");
     fs.writeFileSync(configPath, JSON.stringify({}, null, 2));
-}
+}*/
 
 util.mergeDeep(GameConfig, Config.gameConfig);
 

@@ -110,6 +110,11 @@ export class SiteInfo {
             $("#start-menu").css("overflow-y", "auto");
             $(".btns-double-row").hide();
 
+            mainBtn.hide();
+
+            $("#start-menu").css("overflow-y", "auto");
+            $(".btns-double-row").hide();
+
             for (let i = 0; i < getGameModeStyles.length; i++) {
                 const style = getGameModeStyles[i];
                 const info = this.info.modes[i];
@@ -119,7 +124,7 @@ export class SiteInfo {
                 const mapName = info.mapName;
 
                 const btn = $(
-                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${name.toLowerCase() == mapName ? "" : "(" + mapName + ")"}</a>`
+                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${name.toLowerCase() == mapName ? "" : `(${mapName})`}</a>`
                 );
                 btn.insertAfter(mainBtn);
 

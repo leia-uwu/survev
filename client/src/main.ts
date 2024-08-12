@@ -1,5 +1,6 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
+import { Config } from "../../server/src/config";
 import { Game as ServerGame } from "../../server/src/game/game";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
@@ -132,6 +133,13 @@ class Application {
             });
         };
         this.loadBrowserDeps(onLoadComplete);
+
+        setInterval(() => {
+            if (this.serverGame) {
+                this.serverGame.update();
+                this.serverGame.netSync();
+            }
+        }, Config.gameTps / 1000);
     }
 
     loadBrowserDeps(onLoadCompleteCb: () => void) {
@@ -747,11 +755,6 @@ class Application {
     }
 
     update() {
-        if (this.serverGame) {
-            this.serverGame.update();
-            this.serverGame.netSync();
-        }
-
         const dt = math.clamp(this.pixi!.ticker.elapsedMS / 1000, 0.001, 1 / 8);
         this.pingTest.update(dt);
         if (!this.checkedPingTest && this.pingTest.isComplete()) {
