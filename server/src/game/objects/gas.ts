@@ -114,7 +114,10 @@ export class Gas {
 
     doDamage = false;
 
-    constructor(readonly map: GameMap) {
+    gameGroupSize = 1;
+
+    constructor(readonly map: GameMap, ggs: number = 1) {
+        this.gameGroupSize = ggs;
         const mapSize = (map.width + map.height) / 2;
 
         this.radNew = this.radOld = this.currentRad = GameConfig.gas.initWidth * mapSize;
@@ -129,6 +132,8 @@ export class Gas {
         if (this.gasT >= 1) {
             this.advanceGasStage();
         }
+        if (this.gameGroupSize === 1) dt *= 2;
+        if (this.gameGroupSize === 2) dt *= 1.5;
 
         this._gasTicker += dt;
 

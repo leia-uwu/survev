@@ -74,20 +74,20 @@ export class PlaneBarn {
             for (let drop = 0; drop < numAirDropsToSendNow; drop++) {
                 let sent = false;
                 for (let attempt = 0; attempt < 100; attempt++) {
-                    const posToTest = v2.add(
+                    const p = v2.add(
                         this.game.gas.posNew,
                         util.randomPointInCircle(this.game.gas.radNew)
                     );
-                    this.game.map.clampToMapBounds(posToTest, this.game.map.shoreInset);
+                    this.game.map.clampToMapBounds(p, this.game.map.shoreInset);
                     if (
                         airdropPositions.every(
                             (otherdrop) =>
-                                v2.distance(posToTest, otherdrop) >=
+                                v2.distance(p, otherdrop) >=
                                 GameConfig.airdrop.minSpawnDist
                         )
                     ) {
-                        airdropPositions.push(posToTest);
-                        this.addAirdrop(posToTest);
+                        airdropPositions.push(p);
+                        this.addAirdrop(p);
                         sent = true;
                         break;
                     }
