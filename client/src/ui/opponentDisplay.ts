@@ -258,7 +258,7 @@ export class LoadoutDisplay {
         }
 
         const obj = {
-            outfit: this.loadout.outfit,
+            outfit: device.editorEnabled ? "outfitBase" : this.loadout.outfit,
             backpack: "backpack03",
             helmet: "helmet03",
             chest: "chest03",

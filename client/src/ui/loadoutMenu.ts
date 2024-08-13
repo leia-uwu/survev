@@ -183,10 +183,10 @@ export class LoadoutMenu {
         displayLore?: string;
         subcat?: number;
     } = {
-            prevSlot: null,
-            img: "",
-            type: ""
-        };
+        prevSlot: null,
+        img: "",
+        type: ""
+    };
 
     emotesLoaded = false;
     selectedCatIdx = 0;
@@ -528,10 +528,6 @@ export class LoadoutMenu {
                         <h4 style="padding: 0; text-align: center;">player-base-02</h4>
                         <img id="base02" class="customize-list-item" src="/img/player/player-base-02.svg" alt="player-base-02">
                         </div>
-                        <div class="outfit">
-                        <h4>player-base-outfitHeaven</h4>
-                        <img id="outfitHeaven" class="customize-list-item" src="/img/player/player-base-outfitHeaven.svg" alt="player-base-outfitHeaven.svg">
-                        </div>
                         </div>
                         <div style="display: flex; align-items: center">
                             <button class="btn-submit">Copy Value</button>
@@ -572,31 +568,39 @@ export class LoadoutMenu {
                         backpackColoPicker.value.substring(1)
                     );
                 }
-                const chooseSprite = document.querySelector<HTMLElement>(".choose-sprite")!;
-
-                chooseSprite.addEventListener("click", function (event) {
-                    const target = event.target as HTMLElement;
-                    const baseNumber = target.id.slice(-2);
-
-                    if (baseNumber === "01" || baseNumber === "02") {
-                        changeSprite(baseNumber);
+                const chooseSprite =
+                    document.querySelector<HTMLElement>(".choose-sprite")!;
+                chooseSprite.addEventListener("click", function ({ target }) {
+                    const { id } = target as HTMLElement;
+                    // TODO: clean up
+                    if (id == "base01") {
+                        changeSprite(
+                            "player-base-01.img",
+                            "player-hands-01.img",
+                            "player-circle-base-01.img",
+                            "player-feet-01.img"
+                        );
+                    } else if (id == "base02") {
+                        changeSprite(
+                            "player-base-02.img",
+                            "player-hands-02.img",
+                            "player-circle-base-02.img",
+                            "player-feet-02.img"
+                        );
                     }
                 });
-
-                function changeSprite(baseNumber: string) {
-                    const sprites = [
-                        "player-base",
-                        "player-hands",
-                        "player-circle-base",
-                        "player-feet"
-                    ];
-
-                    const newSkinOutfit = sprites.reduce((acc, sprite) => {
-                        acc[`${sprite}Sprite`] = `${sprite}-${baseNumber}.img`;
-                        return acc;
-                    }, {} as Record<string, string>);
-
-                    Object.assign(skinOutfit.skinImg, newSkinOutfit);
+                function changeSprite(
+                    baseSprite: string,
+                    handSprite: string,
+                    backpackSprite: string,
+                    footSprite: string
+                ) {
+                    Object.assign(skinOutfit.skinImg, {
+                        baseSprite,
+                        handSprite,
+                        backpackSprite,
+                        footSprite
+                    });
                 }
             },
             !1
@@ -901,8 +905,9 @@ export class LoadoutMenu {
         };
         const localizedLore =
             selectedItem.loadoutType == "emote"
-                ? `${this.localization.translate("loadout-category")}: ${emoteSubcatNames[selectedItem.subcat]
-                }`
+                ? `${this.localization.translate("loadout-category")}: ${
+                      emoteSubcatNames[selectedItem.subcat]
+                  }`
                 : this.selectedItem.displayLore;
         this.modalCustomizeItemLore.html(localizedLore!);
         const rarityNames = ["stock", "common", "uncommon", "rare", "epic", "mythic"];
@@ -1173,7 +1178,7 @@ export class LoadoutMenu {
                 } else if (
                     category.loadoutType != "emote" &&
                     itemInfo.type ==
-                    this.loadout[category.loadoutType as keyof typeof this.loadout]
+                        this.loadout[category.loadoutType as keyof typeof this.loadout]
                 ) {
                     loadoutItemDiv = itemInfo.outerDiv;
                 }
@@ -1270,9 +1275,9 @@ export class LoadoutMenu {
                 const imgDiv = document.createElement("img");
                 imgDiv.src = that.selectedItem.img
                     ? that.selectedItem.img
-                        .replace("url(", "")
-                        .replace(")", "")
-                        .replace(/\'/gi, "")
+                          .replace("url(", "")
+                          .replace(")", "")
+                          .replace(/\'/gi, "")
                     : "";
                 e.originalEvent?.dataTransfer?.setDragImage(imgDiv, 64, 64);
             }
