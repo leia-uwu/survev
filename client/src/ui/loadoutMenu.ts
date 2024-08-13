@@ -183,10 +183,10 @@ export class LoadoutMenu {
         displayLore?: string;
         subcat?: number;
     } = {
-            prevSlot: null,
-            img: "",
-            type: ""
-        };
+        prevSlot: null,
+        img: "",
+        type: ""
+    };
 
     emotesLoaded = false;
     selectedCatIdx = 0;
@@ -905,8 +905,9 @@ export class LoadoutMenu {
         };
         const localizedLore =
             selectedItem.loadoutType == "emote"
-                ? `${this.localization.translate("loadout-category")}: ${emoteSubcatNames[selectedItem.subcat]
-                }`
+                ? `${this.localization.translate("loadout-category")}: ${
+                      emoteSubcatNames[selectedItem.subcat]
+                  }`
                 : this.selectedItem.displayLore;
         this.modalCustomizeItemLore.html(localizedLore!);
         const rarityNames = ["stock", "common", "uncommon", "rare", "epic", "mythic"];
@@ -1177,7 +1178,7 @@ export class LoadoutMenu {
                 } else if (
                     category.loadoutType != "emote" &&
                     itemInfo.type ==
-                    this.loadout[category.loadoutType as keyof typeof this.loadout]
+                        this.loadout[category.loadoutType as keyof typeof this.loadout]
                 ) {
                     loadoutItemDiv = itemInfo.outerDiv;
                 }
@@ -1274,9 +1275,9 @@ export class LoadoutMenu {
                 const imgDiv = document.createElement("img");
                 imgDiv.src = that.selectedItem.img
                     ? that.selectedItem.img
-                        .replace("url(", "")
-                        .replace(")", "")
-                        .replace(/\'/gi, "")
+                          .replace("url(", "")
+                          .replace(")", "")
+                          .replace(/\'/gi, "")
                     : "";
                 e.originalEvent?.dataTransfer?.setDragImage(imgDiv, 64, 64);
             }
