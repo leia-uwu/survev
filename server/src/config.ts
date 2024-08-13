@@ -62,17 +62,17 @@ const configPath = path.join(
 );
 
 util.mergeDeep(Config, {
-    // gameServer: {
-    //     apiServerUrl: "http://resurviv.biz",
-    // },
-    // regions: {
-    //     na: {
-    //         https: false,
-    //         address: "resurviv.biz:8001",
-    //         l10n: "index-north-america"
-    //     }
-    // },
-    // thisRegion: "na",
+    gameServer: {
+        apiServerUrl: "http://resurviv.biz",
+    },
+    regions: {
+        na: {
+            https: false,
+            address: "resurviv.biz:8001",
+            l10n: "index-north-america"
+        }
+    },
+    thisRegion: "na",
     modes: [
         {
             mapName: "main",
@@ -150,8 +150,8 @@ util.mergeDeep(GameConfig, Config.gameConfig);
 
 type DeepPartial<T> = T extends object
     ? {
-          [P in keyof T]?: DeepPartial<T[P]>;
-      }
+        [P in keyof T]?: DeepPartial<T[P]>;
+    }
     : T;
 
 interface ServerConfig {
