@@ -32,7 +32,6 @@ export const allowedGuns = [
     "mac10",
     "ump9",
     "vector",
-    "vector45",
     "scorpion",
 
     //Shotguns:
@@ -44,7 +43,6 @@ export const allowedGuns = [
     "spas12",
 
     //Sniper Rifles:
-    "sv98",
     "mosin",
     "m39",
     "garand",
@@ -67,13 +65,12 @@ export const allowedGuns = [
 
     //Light Machine Guns (LMG):
     "dp28",
-    "m249",
     "qbb97",
     "l86",
     "bar",
-    "pkp",
 
     //Others:
     "blr",
-    "m1a1"
+    "m1a1",
+    "bugle"
 ];
