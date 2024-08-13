@@ -224,7 +224,7 @@ export class Loot extends BaseGameObject {
         };
 
         v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
-        this.vel = v2.mul(this.vel, 0.93);
+        this.vel = v2.mul(this.vel, 0.94);
         v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
 
         let objs = this.game.grid.intersectCollider(this.collider);

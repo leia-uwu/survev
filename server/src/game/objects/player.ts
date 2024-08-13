@@ -2659,22 +2659,36 @@ export class Player extends BaseGameObject {
         });
     }
 
+    dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
+        this.game.lootBarn.addLoot(
+            type,
+            this.pos,
+            this.layer,
+            count,
+            useCountForAmmo,
+            10,
+            v2.neg(this.dir)
+        );
+    }
+
     dropArmor(item: string, armorDef: LootDef): boolean {
         if (armorDef.type != "chest" && armorDef.type != "helmet") return false;
         if (armorDef.noDrop) return false;
         if (!this[armorDef.type]) return false;
-        this.game.lootBarn.addLoot(
-            item,
-            this.pos,
-            this.layer,
-            1,
-            undefined,
-            -4,
-            this.dir
-        );
+        this.dropLoot(item, 1);
         this[armorDef.type] = "";
         this.setDirty();
         return true;
+    }
+
+    splitUpLoot(item: string, amount: number) {
+        const dropCount = Math.floor(amount / 60);
+        for (let i = 0; i < dropCount; i++) {
+            this.dropLoot(item, 60);
+        }
+        if (amount % 60 !== 0) {
+            this.dropLoot(item, amount % 60);
+        }
     }
 
     dropItem(dropMsg: net.DropItemMsg): void {
@@ -2693,12 +2707,7 @@ export class Player extends BaseGameObject {
                     amountToDrop = Math.min(5, inventoryCount);
                 }
 
-                this.game.lootBarn.splitUpLoot(
-                    this,
-                    dropMsg.item,
-                    amountToDrop,
-                    this.dir
-                );
+                this.splitUpLoot(dropMsg.item, amountToDrop);
                 this.inventory[dropMsg.item] -= amountToDrop;
                 this.inventoryDirty = true;
                 break;
@@ -2709,15 +2718,7 @@ export class Player extends BaseGameObject {
                 const scopeLevel = `${itemDef.level}xscope`;
                 const scopeIdx = SCOPE_LEVELS.indexOf(scopeLevel);
 
-                this.game.lootBarn.addLoot(
-                    dropMsg.item,
-                    this.pos,
-                    this.layer,
-                    1,
-                    undefined,
-                    -4,
-                    this.dir
-                );
+                this.dropLoot(dropMsg.item, 1);
                 this.inventory[scopeLevel] = 0;
 
                 if (this.scope === scopeLevel) {
@@ -2733,20 +2734,7 @@ export class Player extends BaseGameObject {
             }
             case "chest":
             case "helmet": {
-                // if (itemDef.noDrop) return;
-                // if (!this[itemDef.type]) return;
-                // this.game.lootBarn.addLoot(
-                //     dropMsg.item,
-                //     this.pos,
-                //     this.layer,
-                //     1,
-                //     undefined,
-                //     -4,
-                //     this.dir
-                // );
-                // this[itemDef.type] = "";
-                // this.setDirty();
-                if (!this.dropArmor(dropMsg.item, itemDef)) return;
+                this.dropArmor(dropMsg.item, itemDef);
                 break;
             }
             case "heal":
@@ -2759,15 +2747,7 @@ export class Player extends BaseGameObject {
 
                 this.inventory[dropMsg.item] -= amountToDrop;
 
-                this.game.lootBarn.addLoot(
-                    dropMsg.item,
-                    this.pos,
-                    this.layer,
-                    amountToDrop,
-                    undefined,
-                    -4,
-                    this.dir
-                );
+                this.dropLoot(dropMsg.item, amountToDrop);
                 this.inventoryDirty = true;
                 break;
             }
@@ -2784,12 +2764,7 @@ export class Player extends BaseGameObject {
 
                 const amountToDrop = Math.max(1, Math.floor(inventoryCount / 2));
 
-                this.game.lootBarn.splitUpLoot(
-                    this,
-                    dropMsg.item,
-                    amountToDrop,
-                    this.dir
-                );
+                this.splitUpLoot(dropMsg.item, amountToDrop);
 
                 this.inventory[dropMsg.item] -= amountToDrop;
 
@@ -2803,7 +2778,7 @@ export class Player extends BaseGameObject {
             case "perk": {
                 const perkSlotType = this.perks.find((p) => p.droppable)?.type;
                 if (perkSlotType && perkSlotType == dropMsg.item) {
-                    this.game.lootBarn.addLoot(dropMsg.item, this.pos, this.layer, 1);
+                    this.dropLoot(dropMsg.item);
                     this.removePerk(dropMsg.item);
                     this.setDirty();
                 }
