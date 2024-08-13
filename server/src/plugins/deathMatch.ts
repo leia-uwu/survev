@@ -3,6 +3,7 @@ import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { math } from "../../../shared/utils/math";
+import { Emote } from "../game/objects/player";
 import { GamePlugin } from "../game/pluginManager";
 
 export default class DeathMatchPlugin extends GamePlugin {
@@ -16,6 +17,10 @@ export default class DeathMatchPlugin extends GamePlugin {
         });
 
         this.on("playerKill", (data) => {
+            this.game.playerBarn.emotes.push(
+                new Emote(0, data.player.pos, "ping_death", true)
+            );
+
             // clear inventory to prevent loot from dropping;
             data.player.inventory = {};
             data.player.backpack = "backpack00";
