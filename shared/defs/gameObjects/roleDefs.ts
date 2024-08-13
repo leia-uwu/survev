@@ -223,7 +223,26 @@ export const RoleDefs: Record<string, RoleDef> = {
             alive: "player-medic.img",
             dead: "skull-leader.img"
         },
-        perks: ["aoe_heal", "self_revive"]
+        perks: ["aoe_heal", "self_revive"],
+        defaultItems: createDefaultItems({
+            weapons: [
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+                { type: "bonesaw_rusted", ammo: 0 },
+                { type: "smoke", ammo: 0 }
+            ],
+            backpack: "backpack03",
+            helmet: "helmet04_medic",
+            chest: "chest03",
+            scope: "4xscope",
+            inventory: {
+                "4xscope": 1,
+                healthkit: 4,
+                painkiller: 4,
+                soda: 15,
+                smoke: 6
+            }
+        })
     },
     marksman: {
         type: "role",

@@ -857,8 +857,12 @@ export class Player extends BaseGameObject {
             if (this.action.time >= this.action.duration) {
                 if (this.actionType === GameConfig.Action.UseItem) {
                     const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
-                    if ("heal" in itemDef) this.health += itemDef.heal;
-                    if ("boost" in itemDef) this.boost += itemDef.boost;
+                    if ("heal" in itemDef) {
+                        this.applyBoostOrHealing("health", itemDef.heal);
+                    }
+                    if ("boost" in itemDef) {
+                        this.applyBoostOrHealing("boost", itemDef.boost);
+                    }
                     this.inventory[this.actionItem]--;
                     this.inventoryDirty = true;
                 } else if (this.isReloading()) {
@@ -1996,6 +2000,30 @@ export class Player extends BaseGameObject {
 
         this.cancelAction();
         this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
+    }
+
+    applyBoostOrHealing(property: "boost" | "health", amount: number) {
+        if (this.hasPerk("aoe_heal")) {
+            const aoePlayers = this.game.grid
+                .intersectCollider(
+                    //includes self
+                    collider.createCircle(this.pos, 8.5)
+                    // ).filter(obj => obj.__type == ObjectType.Player && this.teamId == obj.teamId && v2.distance(this.pos, obj.pos) <= 8.5);
+                )
+                .filter(
+                    (obj): obj is Player =>
+                        obj.__type == ObjectType.Player &&
+                        this.teamId == obj.teamId &&
+                        v2.lengthSqr(v2.sub(this.pos, obj.pos)) <= 72.25
+                );
+
+            for (let i = 0; i < aoePlayers.length; i++) {
+                const aoePlayer = aoePlayers[i];
+                aoePlayer[property] += amount;
+            }
+        } else {
+            this[property] += amount;
+        }
     }
 
     useBoostItem(item: string): void {
