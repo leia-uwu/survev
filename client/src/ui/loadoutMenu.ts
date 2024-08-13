@@ -3,6 +3,7 @@ import $ from "jquery";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { OutfitDefs } from "../../../shared/defs/gameObjects/outfitDefs";
 import type { UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
@@ -182,10 +183,10 @@ export class LoadoutMenu {
         displayLore?: string;
         subcat?: number;
     } = {
-        prevSlot: null,
-        img: "",
-        type: ""
-    };
+            prevSlot: null,
+            img: "",
+            type: ""
+        };
 
     emotesLoaded = false;
     selectedCatIdx = 0;
@@ -257,6 +258,9 @@ export class LoadoutMenu {
         account.addEventListener("loadout", this.onLoadout.bind(this));
         account.addEventListener("items", this.onItems.bind(this));
         account.addEventListener("pass", this.onPass.bind(this));
+        if (device.editorEnabled) {
+            this.mountEditor();
+        }
     }
 
     init() {
@@ -485,6 +489,118 @@ export class LoadoutMenu {
                 this.account.setPassUnlock(unlockType);
             });
         }
+    }
+
+    mountEditor() {
+        const laodoutBtn = document.querySelector("#player-options #btn-customize")!;
+        laodoutBtn.className =
+            "btn-darken menu-option player-options-btn btn-custom-mode-main btn-custom";
+        laodoutBtn.addEventListener(
+            "click",
+            function () {
+                const skinOutfit = OutfitDefs["outfitBase"];
+                var lodoutOutfit = document.querySelector<HTMLElement>(
+                    "#modal-customize-body"
+                )!;
+                var colorPicker = `
+                        <div class="container" style="color: white; padding: 10px 5px">
+                        <div style="padding: 10px 0">
+                        <label>body color</label>
+                        <input type="color" id="bodyColorPicker" value="#f8c574">
+                        </div>
+    
+                        <div style="padding: 10px 0">
+                        <label>hands color</label>
+                        <input type="color" id="handsColorPicker" value="#f8c574">
+                        </div>
+    
+                        <div style="padding: 10px 0">
+                        <label>backpack color</label>
+                        <input type="color" id="backpackColoPicker" value="#816537">
+                        </div>
+    
+                        <div class="choose-sprite" style="display: flex;">
+                        <div class="outfit">
+                        <h4 style="padding: 0; text-align: center;">player-base-01</h4>
+                        <img id="base01" class="customize-list-item" src="/img/player/player-base-01.svg" alt="player-base-01">
+                        </div>
+                        <div class="outfit">
+                        <h4 style="padding: 0; text-align: center;">player-base-02</h4>
+                        <img id="base02" class="customize-list-item" src="/img/player/player-base-02.svg" alt="player-base-02">
+                        </div>
+                        <div class="outfit">
+                        <h4>player-base-outfitHeaven</h4>
+                        <img id="outfitHeaven" class="customize-list-item" src="/img/player/player-base-outfitHeaven.svg" alt="player-base-outfitHeaven.svg">
+                        </div>
+                        </div>
+                        <div style="display: flex; align-items: center">
+                            <button class="btn-submit">Copy Value</button>
+                        </div>
+                        </div>
+                    `;
+                lodoutOutfit.innerHTML = colorPicker;
+                const bodyColorPicker =
+                    document.querySelector<HTMLInputElement>("#bodyColorPicker")!;
+                bodyColorPicker.addEventListener("change", changeBodyColor, !1);
+                const copyButton =
+                    lodoutOutfit.querySelector<HTMLButtonElement>(".btn-submit")!;
+                copyButton.addEventListener("click", (e) => {
+                    const code = JSON.stringify(skinOutfit.skinImg, null, 2);
+                    console.log(code);
+                    helpers.copyTextToClipboard(code);
+                });
+                function changeBodyColor() {
+                    skinOutfit.skinImg.baseTint = util.hexToInt(
+                        bodyColorPicker.value.substring(1)
+                    );
+                }
+                const handsColorPicker =
+                    document.querySelector<HTMLInputElement>("#handsColorPicker")!;
+                handsColorPicker.addEventListener("change", changeHandsColor, !1);
+
+                function changeHandsColor() {
+                    const tint = util.hexToInt(handsColorPicker.value.substring(1));
+                    skinOutfit.skinImg.handTint = tint;
+                    skinOutfit.skinImg.footTint = tint;
+                }
+                const backpackColoPicker =
+                    document.querySelector<HTMLInputElement>("#backpackColoPicker")!;
+                backpackColoPicker.addEventListener("change", changeBackpackColor, !1);
+
+                function changeBackpackColor() {
+                    skinOutfit.skinImg.backpackTint = util.hexToInt(
+                        backpackColoPicker.value.substring(1)
+                    );
+                }
+                const chooseSprite = document.querySelector<HTMLElement>(".choose-sprite")!;
+
+                chooseSprite.addEventListener("click", function (event) {
+                    const target = event.target as HTMLElement;
+                    const baseNumber = target.id.slice(-2);
+
+                    if (baseNumber === "01" || baseNumber === "02") {
+                        changeSprite(baseNumber);
+                    }
+                });
+
+                function changeSprite(baseNumber: string) {
+                    const sprites = [
+                        "player-base",
+                        "player-hands",
+                        "player-circle-base",
+                        "player-feet"
+                    ];
+
+                    const newSkinOutfit = sprites.reduce((acc, sprite) => {
+                        acc[`${sprite}Sprite`] = `${sprite}-${baseNumber}.img`;
+                        return acc;
+                    }, {} as Record<string, string>);
+
+                    Object.assign(skinOutfit.skinImg, newSkinOutfit);
+                }
+            },
+            !1
+        );
     }
 
     getCategory(gameType: string) {
@@ -785,9 +901,8 @@ export class LoadoutMenu {
         };
         const localizedLore =
             selectedItem.loadoutType == "emote"
-                ? `${this.localization.translate("loadout-category")}: ${
-                      emoteSubcatNames[selectedItem.subcat]
-                  }`
+                ? `${this.localization.translate("loadout-category")}: ${emoteSubcatNames[selectedItem.subcat]
+                }`
                 : this.selectedItem.displayLore;
         this.modalCustomizeItemLore.html(localizedLore!);
         const rarityNames = ["stock", "common", "uncommon", "rare", "epic", "mythic"];
@@ -1058,7 +1173,7 @@ export class LoadoutMenu {
                 } else if (
                     category.loadoutType != "emote" &&
                     itemInfo.type ==
-                        this.loadout[category.loadoutType as keyof typeof this.loadout]
+                    this.loadout[category.loadoutType as keyof typeof this.loadout]
                 ) {
                     loadoutItemDiv = itemInfo.outerDiv;
                 }
@@ -1155,9 +1270,9 @@ export class LoadoutMenu {
                 const imgDiv = document.createElement("img");
                 imgDiv.src = that.selectedItem.img
                     ? that.selectedItem.img
-                          .replace("url(", "")
-                          .replace(")", "")
-                          .replace(/\'/gi, "")
+                        .replace("url(", "")
+                        .replace(")", "")
+                        .replace(/\'/gi, "")
                     : "";
                 e.originalEvent?.dataTransfer?.setDragImage(imgDiv, 64, 64);
             }
