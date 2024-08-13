@@ -1461,7 +1461,8 @@ export class Player extends BaseGameObject {
                     group.killAllTeammates();
                 }
             } else {
-                this.down(params);
+                this.kill(params);
+                // this.down(params);
             }
         }
     }
