@@ -2431,7 +2431,9 @@ export class UiManager {
                 class: "ui-role-body-perk-name"
             });
 
-            const perkImg = helpers.getSvgFromGameType(perk);
+            const perkImg = helpers.getSvgFromGameType(
+                perk instanceof Function ? perk() : perk
+            );
             perkElemImg.find(".ui-role-body-perk-image-icon").css({
                 "background-image": `url('${perkImg}')`
             });
