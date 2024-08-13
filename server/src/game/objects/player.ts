@@ -2391,7 +2391,7 @@ export class Player extends BaseGameObject {
                             ] as GunDef;
                             if (gunToDropDef.noDrop) return;
 
-                            this.weaponManager.dropGun(this.curWeapIdx, false);
+                            // this.weaponManager.dropGun(this.curWeapIdx, false);
                             this.weapons[this.curWeapIdx].type = obj.type;
                             this.cancelAction();
                             this.weaponManager.tryReload();
