@@ -94,9 +94,9 @@ util.mergeDeep(Config, {
         gas: {
             initWaitTime: 300,
             damageTickRate: 1,
-            damage: [25, 70],
+            damage: [15, 70],
             widthDecay: 0.3,
-            initGasTime: 20
+            gasTimeDecay: 5,
         },
         gun: {
             customSwitchDelay: 0.2 as any

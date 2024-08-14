@@ -60,7 +60,7 @@ export class PlayerBarn {
     killLeaderDirty = false;
     killLeader?: Player;
 
-    constructor(readonly game: Game) {}
+    constructor(readonly game: Game) { }
 
     randomPlayer(player?: Player) {
         const livingPlayers = player
@@ -719,7 +719,7 @@ export class Player extends BaseGameObject {
             if (
                 this.playerBeingRevived &&
                 v2.distance(this.pos, this.playerBeingRevived.pos) >
-                    GameConfig.player.reviveRange
+                GameConfig.player.reviveRange
             ) {
                 this.cancelAction();
             }
@@ -1659,9 +1659,9 @@ export class Player extends BaseGameObject {
             killMsg.killerKills = source.kills;
 
             if (source.hasPerk("takedown")) {
-                source.health += 25;
-                source.boost += 25;
-                source.giveHaste(GameConfig.HasteType.Takedown, 3);
+                source.health += 15;
+                source.boost += 15;
+                source.giveHaste(GameConfig.HasteType.Takedown, 1.4);
             }
         }
 
@@ -2381,10 +2381,10 @@ export class Player extends BaseGameObject {
                         newGunIdx = this.curWeapIdx;
                         if (
                             this.curWeapIdx in
-                                [
-                                    GameConfig.WeaponSlot.Primary,
-                                    GameConfig.WeaponSlot.Secondary
-                                ] &&
+                            [
+                                GameConfig.WeaponSlot.Primary,
+                                GameConfig.WeaponSlot.Secondary
+                            ] &&
                             obj.type != this.weapons[this.curWeapIdx].type
                         ) {
                             const gunToDropDef = GameObjectDefs[
