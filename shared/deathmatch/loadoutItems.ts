@@ -37,9 +37,9 @@ export const allowedGuns = [
     //Shotguns:
     "m870",
     "m1100",
-    "m1014",
+    // "m1014",
     "mp220",
-    "saiga",
+    // "saiga",
     "spas12",
 
     //Sniper Rifles:
