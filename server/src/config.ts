@@ -94,7 +94,7 @@ util.mergeDeep(Config, {
         gas: {
             initWaitTime: 300,
             damageTickRate: 1,
-            damage: [15, 70],
+            damage: [35],
             widthDecay: 0.3,
             gasTimeDecay: 5,
         },
