@@ -1635,13 +1635,8 @@ export class Player extends BaseGameObject {
                     }
                     if (source.isKillLeader) {
                         this.game.playerBarn.killLeaderDirty = true;
-                    }
                 }
             }
-
-            killMsg.killerId = source.__id;
-            killMsg.killCreditId = source.__id;
-            killMsg.killerKills = source.kills;
 
             if (source.hasPerk("takedown")) {
                 source.health += 25;
