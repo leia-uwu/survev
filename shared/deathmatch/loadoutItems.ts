@@ -61,7 +61,7 @@ export const allowedGuns = [
     "hk416",
     "m4a1",
     "mk12",
-    "scarssr",
+    // "scarssr",
 
     //Light Machine Guns (LMG):
     "dp28",
