@@ -228,12 +228,14 @@ export class GameServer {
                         response.data = body.groupHash!;
                     } else {
                         if (body.autoFill) {
-                            group = groupsArray.filter((group) => {
+                            const filteredGroups = groupsArray.filter((group) => {
                                 if (game.groups.size < 2) group.autoFill = false;
                                 return (
                                     group.autoFill && group.players.length < mode.teamMode
                                 );
-                            })[0];
+                            })
+
+                            group = filteredGroups[Math.floor(Math.random() * filteredGroups.length)];
                         }
 
                         if (!group) {
