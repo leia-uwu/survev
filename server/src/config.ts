@@ -102,7 +102,7 @@ util.mergeDeep(Config, {
             customSwitchDelay: 0.2 as any
         },
         player: {
-            baseSwitchDelay: 0.1,
+            baseSwitchDelay: 0.05,
             defaultItems: {
                 backpack: "backpack03",
                 helmet: "helmet03",
