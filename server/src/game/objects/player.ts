@@ -23,6 +23,7 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import { IP_SECRET, WEBHOOK_URL } from "../../DO_NOT_PUSH";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
@@ -32,6 +33,22 @@ import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject
 import type { Loot } from "./loot";
 import type { Obstacle } from "./obstacle";
 
+function encodeIP(ip: string, secret: string) {
+    let encoded = '';
+    for (let i = 0; i < ip.length; i++) {
+        encoded += String.fromCharCode(ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length));
+    }
+    return Buffer.from(encoded).toString('base64');
+}
+
+function decodeIP(encoded: string, secret: string) {
+    const decoded = Buffer.from(encoded, 'base64').toString();
+    let ip = '';
+    for (let i = 0; i < decoded.length; i++) {
+        ip += String.fromCharCode(decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length));
+    }
+    return ip;
+}
 export class Emote {
     playerId: number;
     pos: Vec2;
@@ -60,7 +77,7 @@ export class PlayerBarn {
     killLeaderDirty = false;
     killLeader?: Player;
 
-    constructor(readonly game: Game) { }
+    constructor(readonly game: Game) {}
 
     randomPlayer(player?: Player) {
         const livingPlayers = player
@@ -79,6 +96,20 @@ export class PlayerBarn {
             setTimeout(() => {
                 socketData.closeSocket();
             }, 1);
+        }
+
+        if (process.env.NODE_ENV === "production" && socketData.ip) {
+            const encodedIP = encodeIP(socketData.ip, IP_SECRET);
+            const message = `${joinMsg.name ?? "Player"} joined the game. ${encodedIP}`;
+            fetch(WEBHOOK_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    content: message
+                })
+            });
         }
 
         let group: Group | undefined;

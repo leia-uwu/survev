@@ -36,6 +36,7 @@ export type FindGameResponse = {
 
 export interface GameSocketData {
     readonly gameID: string;
+    readonly ip?: string
     sendMsg: (msg: ArrayBuffer | Uint8Array) => void;
     closeSocket: () => void;
     player?: Player;
@@ -96,14 +97,22 @@ export class GameServer {
              * Upgrade the connection to WebSocket.
              */
             upgrade(res, req, context) {
-                res.onAborted((): void => {});
+                res.onAborted((): void => { });
+
+                const ip = Buffer.from(res.getRemoteAddressAsText()).toString();
+
+                // const forwardedFor = req.getHeader('x-forwarded-for');
+                // if (forwardedFor) {
+                //   clientIP = forwardedFor.split(',')[0].trim();
+                // }
 
                 const searchParams = new URLSearchParams(req.getQuery());
                 const gameID = server.validateGameId(searchParams);
                 if (gameID !== false) {
                     res.upgrade(
                         {
-                            gameID
+                            gameID,
+                            ip
                         },
                         req.getHeader("sec-websocket-key"),
                         req.getHeader("sec-websocket-protocol"),
