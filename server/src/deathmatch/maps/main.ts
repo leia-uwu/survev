@@ -24,8 +24,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
     },
     mapGen: {
         map: {
-            baseWidth: 250,
-            baseHeight: 250,
+            baseWidth: 300,
+            baseHeight: 300,
             shoreInset: 40,
             rivers: {
                 weights: []
