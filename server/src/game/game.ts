@@ -122,6 +122,57 @@ class ContextManager {
         });
     }
 
+    isReviving(player: Player): boolean {
+        return this._applyContext<boolean>({
+            [ContextMode.Solo]: () => false,
+            [ContextMode.Team]: () => {
+                return (
+                    player.actionType == GameConfig.Action.Revive &&
+                    !!player.action.targetId
+                );
+            },
+            [ContextMode.Faction]: () => {
+                return (
+                    player.actionType == GameConfig.Action.Revive &&
+                    !!player.action.targetId
+                );
+            }
+        });
+    }
+
+    isBeingRevived(player: Player): boolean {
+        if (!player.downed) return false;
+        return this._applyContext<boolean>({
+            [ContextMode.Solo]: () => false,
+            [ContextMode.Team]: () => {
+                return (
+                    player.actionType == GameConfig.Action.Revive &&
+                    player.action.targetId == 0
+                );
+            },
+            [ContextMode.Faction]: () => {
+                const normalRevive =
+                    player.actionType == GameConfig.Action.Revive &&
+                    player.action.targetId == 0;
+                if (normalRevive) return true;
+
+                const numMedics = this._game.playerBarn.medics.length;
+                if (numMedics) {
+                    return Boolean(
+                        this._game.playerBarn.medics.find((medic) => {
+                            return (
+                                medic != player &&
+                                this.isReviving(medic) &&
+                                player.isAffectedByAOE(medic)
+                            );
+                        })
+                    );
+                }
+                return false;
+            }
+        });
+    }
+
     showStatsMsg(player: Player): boolean {
         return this._applyContext<boolean>({
             [ContextMode.Solo]: () => false,

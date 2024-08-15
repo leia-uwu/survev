@@ -61,6 +61,8 @@ export class PlayerBarn {
     killLeaderDirty = false;
     killLeader?: Player;
 
+    medics: Player[] = [];
+
     constructor(readonly game: Game) {}
 
     randomPlayer(player?: Player) {
@@ -505,6 +507,9 @@ export class Player extends BaseGameObject {
                 break;
             case "grenadier":
                 break;
+            case "medic":
+                this.game.playerBarn.medics.push(this);
+                break;
         }
 
         if (def.defaultItems) {
@@ -811,7 +816,10 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 1.5 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 1.75 * dt;
 
-        if (this.game.isTeamMode && this.actionType == GameConfig.Action.Revive) {
+        if (
+            this.game.contextManager.isReviving(this) ||
+            this.game.contextManager.isBeingRevived(this)
+        ) {
             if (
                 this.playerBeingRevived &&
                 v2.distance(this.pos, this.playerBeingRevived.pos) >
@@ -858,10 +866,14 @@ export class Player extends BaseGameObject {
                 if (this.actionType === GameConfig.Action.UseItem) {
                     const itemDef = GameObjectDefs[this.actionItem] as HealDef | BoostDef;
                     if ("heal" in itemDef) {
-                        this.applyBoostOrHealing("health", itemDef.heal);
+                        this.applyActionFunc((target: Player) => {
+                            target.health += itemDef.heal;
+                        });
                     }
                     if ("boost" in itemDef) {
-                        this.applyBoostOrHealing("boost", itemDef.boost);
+                        this.applyActionFunc((target: Player) => {
+                            target.boost += itemDef.boost;
+                        });
                     }
                     this.inventory[this.actionItem]--;
                     this.inventoryDirty = true;
@@ -871,11 +883,13 @@ export class Player extends BaseGameObject {
                     this.actionType === GameConfig.Action.Revive &&
                     this.playerBeingRevived
                 ) {
-                    // player who got revived
-                    this.playerBeingRevived.downed = false;
-                    this.playerBeingRevived.health = GameConfig.player.reviveHealth;
-                    this.playerBeingRevived.setDirty();
-                    this.playerBeingRevived.setGroupStatuses();
+                    this.applyActionFunc((target: Player) => {
+                        if (!target.downed) return;
+                        target.downed = false;
+                        target.health = GameConfig.player.reviveHealth;
+                        target.setDirty();
+                        target.setGroupStatuses();
+                    });
                 }
 
                 this.cancelAction();
@@ -1968,19 +1982,49 @@ export class Player extends BaseGameObject {
     revive(playerToRevive: Player | undefined) {
         if (!playerToRevive) return;
 
+        const durationMultiplier = this.hasPerk("aoe_heal") ? 0.75 : 1;
+
         this.playerBeingRevived = playerToRevive;
         playerToRevive.doAction(
             "",
             GameConfig.Action.Revive,
-            GameConfig.player.reviveDuration
+            durationMultiplier * GameConfig.player.reviveDuration
         );
         this.doAction(
             "",
             GameConfig.Action.Revive,
-            GameConfig.player.reviveDuration,
+            durationMultiplier * GameConfig.player.reviveDuration,
             playerToRevive.__id
         );
-        this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
+        this.playAnim(
+            GameConfig.Anim.Revive,
+            durationMultiplier * GameConfig.player.reviveDuration
+        );
+    }
+
+    isAffectedByAOE(medic: Player): boolean {
+        const effectRange = medic.actionType == GameConfig.Action.Revive ? 6 : 8.5;
+
+        return (
+            medic.teamId == this.teamId &&
+            !!util.sameLayer(medic.layer, this.layer) &&
+            v2.lengthSqr(v2.sub(medic.pos, this.pos)) <= effectRange * effectRange
+        );
+    }
+
+    /** for the medic role in 50v50 */
+    getAOEPlayers(): Player[] {
+        const effectRange = this.actionType == GameConfig.Action.Revive ? 6 : 8.5;
+
+        return this.game.grid
+            .intersectCollider(
+                //includes self
+                collider.createCircle(this.pos, effectRange)
+            )
+            .filter(
+                (obj): obj is Player =>
+                    obj.__type == ObjectType.Player && obj.isAffectedByAOE(this)
+            );
     }
 
     useHealingItem(item: string): void {
@@ -1989,8 +2033,9 @@ export class Player extends BaseGameObject {
             throw new Error(`Invalid heal item ${item}`);
         }
         if (
-            this.health == itemDef.maxHeal ||
-            this.actionType == GameConfig.Action.UseItem
+            !this.hasPerk("aoe_heal") &&
+            (this.health == itemDef.maxHeal ||
+                this.actionType == GameConfig.Action.UseItem)
         ) {
             return;
         }
@@ -1999,30 +2044,27 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
-        this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
+        this.doAction(
+            item,
+            GameConfig.Action.UseItem,
+            (this.hasPerk("aoe_heal") ? 0.75 : 1) * itemDef.useTime
+        );
     }
 
-    applyBoostOrHealing(property: "boost" | "health", amount: number) {
+    applyActionFunc(actionFunc: (target: Player) => void): void {
         if (this.hasPerk("aoe_heal")) {
-            const aoePlayers = this.game.grid
-                .intersectCollider(
-                    //includes self
-                    collider.createCircle(this.pos, 8.5)
-                    // ).filter(obj => obj.__type == ObjectType.Player && this.teamId == obj.teamId && v2.distance(this.pos, obj.pos) <= 8.5);
-                )
-                .filter(
-                    (obj): obj is Player =>
-                        obj.__type == ObjectType.Player &&
-                        this.teamId == obj.teamId &&
-                        v2.lengthSqr(v2.sub(this.pos, obj.pos)) <= 72.25
-                );
+            const aoePlayers = this.getAOEPlayers();
 
             for (let i = 0; i < aoePlayers.length; i++) {
                 const aoePlayer = aoePlayers[i];
-                aoePlayer[property] += amount;
+                actionFunc(aoePlayer);
             }
         } else {
-            this[property] += amount;
+            const target =
+                this.actionType === GameConfig.Action.Revive && this.playerBeingRevived
+                    ? this.playerBeingRevived
+                    : this;
+            actionFunc(target);
         }
     }
 
@@ -2040,7 +2082,11 @@ export class Player extends BaseGameObject {
         }
 
         this.cancelAction();
-        this.doAction(item, GameConfig.Action.UseItem, itemDef.useTime);
+        this.doAction(
+            item,
+            GameConfig.Action.UseItem,
+            (this.hasPerk("aoe_heal") ? 0.75 : 1) * itemDef.useTime
+        );
     }
 
     moveLeft = false;
