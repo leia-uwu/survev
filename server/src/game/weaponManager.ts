@@ -82,7 +82,7 @@ export class WeaponManager {
 
             const swappingToGun = nextWeaponDef.type == "gun";
 
-            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
+            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay * 0.7 : 0;
 
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
@@ -96,11 +96,8 @@ export class WeaponManager {
                 //                  for two identical non-zero numerical deploy groups
                 curWeaponDef.deployGroup / nextWeaponDef.deployGroup === 1
             ) {
-                effectiveSwitchDelay = nextWeaponDef.switchDelay;
+                // effectiveSwitchDelay = nextWeaponDef.switchDelay;
             }
-
-            if (GameConfig.gun.customSwitchDelay)
-                effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
 
             nextWeapon.cooldown = effectiveSwitchDelay;
         }
@@ -326,10 +323,10 @@ export class WeaponManager {
             this.player.inventory[weaponDef.ammo] == undefined,
             this.player.actionType == (GameConfig.Action.UseItem as number),
             this.weapons[this.curWeapIdx].ammo >=
-                this.getTrueAmmoStats(weaponDef).trueMaxClip,
+            this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
-                this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+            this.curWeapIdx == GameConfig.WeaponSlot.Throwable
         ];
         if (conditions.some((c) => c)) {
             return;
@@ -911,10 +908,10 @@ export class WeaponManager {
         const throwStr =
             this.curWeapIdx == GameConfig.WeaponSlot.Throwable
                 ? math.clamp(
-                      this.player.toMouseLen,
-                      0,
-                      GameConfig.player.throwableMaxMouseDist * 1.8
-                  ) / 15
+                    this.player.toMouseLen,
+                    0,
+                    GameConfig.player.throwableMaxMouseDist * 1.8
+                ) / 15
                 : 0;
 
         if (throwableDef.type !== "throwable") {

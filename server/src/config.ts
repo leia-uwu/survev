@@ -62,17 +62,17 @@ const configPath = path.join(
 );
 
 util.mergeDeep(Config, {
-    gameServer: {
-        apiServerUrl: "http://resurviv.biz",
-    },
-    regions: {
-        na: {
-            https: false,
-            address: "resurviv.biz:8001",
-            l10n: "index-north-america"
-        }
-    },
-    thisRegion: "na",
+    // gameServer: {
+    //     apiServerUrl: "http://resurviv.biz",
+    // },
+    // regions: {
+    //     na: {
+    //         https: false,
+    //         address: "resurviv.biz:8001",
+    //         l10n: "index-north-america"
+    //     }
+    // },
+    // thisRegion: "na",
     modes: [
         {
             mapName: "main",
@@ -96,12 +96,13 @@ util.mergeDeep(Config, {
             damageTickRate: 1,
             damage: [35],
             widthDecay: 0.3,
-            gasTimeDecay: 5,
+            gasTimeDecay: 5
         },
         gun: {
             customSwitchDelay: 0.2 as any
         },
         player: {
+            baseSwitchDelay: 0.1,
             defaultItems: {
                 backpack: "backpack03",
                 helmet: "helmet03",
