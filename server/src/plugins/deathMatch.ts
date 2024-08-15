@@ -8,7 +8,7 @@ import { GamePlugin } from "../game/pluginManager";
 
 export default class DeathMatchPlugin extends GamePlugin {
     protected override initListeners(): void {
-        this.on("gameCreated", (_data) => {});
+        this.on("gameCreated", (_data) => { });
 
         this.on("playerJoin", (data) => {
             data.scope = "4xscope";
@@ -17,9 +17,9 @@ export default class DeathMatchPlugin extends GamePlugin {
         });
 
         this.on("playerKill", (data) => {
-            this.game.playerBarn.emotes.push(
-                new Emote(0, data.player.pos, "ping_death", true)
-            );
+            // this.game.playerBarn.emotes.push(
+            //     new Emote(0, data.player.pos, "ping_death", true)
+            // );
 
             // clear inventory to prevent loot from dropping;
             data.player.inventory = {};
