@@ -122,6 +122,10 @@ export class WeaponManager {
             this.delayScheduledReload(effectiveSwitchDelay);
         }
 
+        if (idx === this.curWeapIdx && GameConfig.WeaponSlot[idx] == "gun") {
+            this.offHand = false;
+        }
+
         this.player.setDirty();
         this.player.weapsDirty = true;
     }
@@ -240,12 +244,14 @@ export class WeaponManager {
         switch (itemDef.fireMode) {
             case "auto":
                 if (player.shootHold && weapon.cooldown <= 0) {
-                    this.fireWeapon();
+                    this.fireWeapon(this.offHand);
+                    this.offHand = !this.offHand;
                 }
                 break;
             case "single":
                 if (player.shootStart && weapon.cooldown < 0) {
-                    this.fireWeapon();
+                    this.fireWeapon(this.offHand);
+                    this.offHand = !this.offHand;
                 }
                 break;
             case "burst":
@@ -255,16 +261,16 @@ export class WeaponManager {
                         this.bursts.push(weapon.cooldown);
                         weapon.cooldown += itemDef.burstDelay!;
                     }
+                    this.offHand = !this.offHand;
                     weapon.cooldown += itemDef.fireDelay;
                 }
                 for (let i = 0; i < this.bursts.length; i++) {
                     this.bursts[i] -= dt;
                     if (this.bursts[i] <= 0) {
-                        this.fireWeapon();
+                        this.fireWeapon(this.offHand);
                         this.bursts.splice(i, 1);
                     }
                 }
-
                 break;
         }
     }
@@ -495,7 +501,7 @@ export class WeaponManager {
     }
 
     offHand = false;
-    fireWeapon() {
+    fireWeapon(offHand: boolean) {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         const weapon = this.weapons[this.curWeapIdx];
@@ -533,7 +539,7 @@ export class WeaponManager {
         const bulletLayer = this.player.aimLayer;
 
         const gunOff = itemDef.isDual
-            ? itemDef.dualOffset! * (this.offHand ? 1.0 : -1.0)
+            ? itemDef.dualOffset! * (offHand ? 1.0 : -1.0)
             : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));
         const gunLen = GameConfig.gun.customBarrelLength ?? itemDef.barrelLength;
@@ -664,7 +670,7 @@ export class WeaponManager {
                 clipDistance: itemDef.toMouseHit,
                 damageMult,
                 shotFx: i === 0,
-                shotOffhand: this.offHand,
+                shotOffhand: offHand,
                 trailSaturated: this.isBulletSaturated(),
                 trailSmall: false,
                 reflectCount: 0,
@@ -720,8 +726,6 @@ export class WeaponManager {
         if (this.activeWeapon == "bugle" && this.player.hasPerk("inspiration")) {
             this.player.playBugle();
         }
-
-        this.offHand = !this.offHand;
     }
 
     getMeleeCollider() {
