@@ -1,14 +1,20 @@
+import { coldet } from "../../../shared/utils/coldet";
+import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import type { Gas } from "./objects/gas";
 
 export const SpawnRules = {
     fixed(pos: Vec2) {
         return v2.copy(pos);
     },
-    random(width: number, height: number, inset: number, safeZone?: Vec2) {
-        if (safeZone) {
-            return safeZone;
+    random(width: number, height: number, inset: number, gas: Gas) {
+        if (gas.circleIdx >= 1) {
+            return coldet.clampPosToAabb(
+                v2.add(gas.currentPos, util.randomPointInCircle(gas.radNew)),
+                collider.createAabbExtents(v2.create(0, 0), v2.create(width, height)),
+            );
         }
         return {
             x: util.random(inset, width - inset),
