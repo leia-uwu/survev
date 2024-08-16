@@ -1397,12 +1397,22 @@ export class GameMap {
             case "random":
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
-                        SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas);
+                        SpawnRules.random(
+                            this.width,
+                            this.height,
+                            this.shoreInset,
+                            this.game.gas,
+                        );
                 } else {
                     loadedSpawnRuleFunc =
                         this._getGroupLoadedSpawnRuleFunc(group) ??
                         (() =>
-                            SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas));
+                            SpawnRules.random(
+                                this.width,
+                                this.height,
+                                this.shoreInset,
+                                this.game.gas,
+                            ));
                 }
                 break;
             case "donut":

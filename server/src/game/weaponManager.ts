@@ -126,10 +126,27 @@ export class WeaponManager {
         this.player.weapsDirty = true;
     }
 
+    setWeapon(idx: number, type: string, ammo: number) {
+        const weaponDef = GameObjectDefs[type];
+        assert(
+            weaponDef.type === "gun" ||
+                weaponDef.type === "melee" ||
+                weaponDef.type === "throwable",
+        );
+        this.weapons[idx].type = type;
+        this.weapons[idx].cooldown = 0;
+        this.weapons[idx].ammo = ammo;
+        if (weaponDef.type === "gun") {
+            this.weapons[idx].recoilTime = weaponDef.recoilTime;
+        }
+        this.player.weapsDirty = true;
+    }
+
     weapons: Array<{
         type: string;
         ammo: number;
         cooldown: number;
+        recoilTime: number;
     }> = [];
 
     get activeWeapon(): string {
@@ -144,6 +161,7 @@ export class WeaponManager {
                 type: GameConfig.WeaponType[i] === "melee" ? "fists" : "",
                 ammo: 0,
                 cooldown: 0,
+                recoilTime: Infinity,
             });
         }
     }
@@ -166,6 +184,7 @@ export class WeaponManager {
 
         for (let i = 0; i < this.weapons.length; i++) {
             this.weapons[i].cooldown -= dt;
+            this.weapons[i].recoilTime -= dt;
         }
 
         this.reloadTicker -= dt;
@@ -479,13 +498,18 @@ export class WeaponManager {
     fireWeapon() {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
+        const weapon = this.weapons[this.curWeapIdx];
+
         this.scheduledReload = false;
-        if (this.weapons[this.curWeapIdx].ammo <= 1) {
+        if (weapon.ammo <= 1) {
             this.delayScheduledReload(itemDef.fireDelay);
         }
-        if (this.weapons[this.curWeapIdx].ammo <= 0) return;
+        if (weapon.ammo <= 0) return;
 
-        this.weapons[this.curWeapIdx].cooldown = itemDef.fireDelay;
+        const firstShotAccuracy = weapon.recoilTime <= 0;
+
+        weapon.cooldown = itemDef.fireDelay;
+        weapon.recoilTime = itemDef.recoilTime;
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
@@ -502,7 +526,7 @@ export class WeaponManager {
 
         this.player.cancelAction();
 
-        this.weapons[this.curWeapIdx].ammo--;
+        weapon.ammo--;
         this.player.weapsDirty = true;
 
         const collisionLayer = util.toGroundLayer(this.player.layer);
@@ -525,12 +549,11 @@ export class WeaponManager {
             v2.create(this.player.rad + gunLen + 1.5),
         );
 
-        const nearbyObjs = this.player.game.grid
-            .intersectCollider(aabb)
-            .filter((obj) => obj.__type === ObjectType.Obstacle);
+        const nearbyObjs = this.player.game.grid.intersectCollider(aabb);
 
         for (let i = 0; i < nearbyObjs.length; i++) {
             const obj = nearbyObjs[i];
+            if (obj.__type !== ObjectType.Obstacle) continue;
 
             if (
                 obj.dead ||
@@ -585,7 +608,9 @@ export class WeaponManager {
         const jitter = itemDef.jitter ?? 0.25;
 
         for (let i = 0; i < bulletCount; i++) {
-            const deviation = util.random(-0.5, 0.5) * (spread || 0);
+            const deviation = firstShotAccuracy
+                ? 0
+                : util.random(-0.5, 0.5) * (spread || 0);
             const shotDir = v2.rotate(direction, math.deg2rad(deviation));
 
             // Compute shot start position

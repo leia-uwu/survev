@@ -486,13 +486,13 @@ export class Player extends BaseGameObject {
         switch (role) {
             case "bugler":
                 this.weaponManager.dropGun(1);
-                this.weapons[1] = {
-                    type: "bugle",
-                    ammo: this.weaponManager.getTrueAmmoStats(
-                        GameObjectDefs["bugle"] as GunDef,
-                    ).trueMaxClip,
-                    cooldown: 0,
-                };
+
+                this.weaponManager.setWeapon(
+                    1,
+                    "bugle",
+                    this.weaponManager.getTrueAmmoStats(GameObjectDefs["bugle"] as GunDef)
+                        .trueMaxClip,
+                );
                 this.weapsDirty = true;
 
                 this.helmet = "helmet03_bugler";
@@ -556,8 +556,7 @@ export class Player extends BaseGameObject {
                         this.inventory[ammoType] = GameConfig.bagSizes[ammoType][3];
                     }
                 }
-                this.weapons[i].type = trueWeapon.type;
-                this.weapons[i].ammo = trueWeapon.ammo;
+                this.weaponManager.setWeapon(i, trueWeapon.type, trueWeapon.ammo);
             }
 
             this.scope = def.defaultItems.scope;
@@ -746,13 +745,13 @@ export class Player extends BaseGameObject {
 
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             const weap = defaultItems.weapons[i];
+            if (!weap.type) continue;
             assertType(weap.type, GameConfig.WeaponType[i], true);
-
-            this.weapons[i] = {
-                type: weap.type ?? this.weapons[i].type,
-                ammo: weap.ammo ?? 0,
-                cooldown: 0,
-            };
+            this.weaponManager.setWeapon(
+                i,
+                weap.type ?? this.weapons[i].type,
+                weap.ammo ?? 0,
+            );
         }
 
         for (const key in GameConfig.bagSizes) {
@@ -2561,7 +2560,7 @@ export class Player extends BaseGameObject {
                 break;
             case "melee":
                 this.weaponManager.dropMelee();
-                this.weapons[GameConfig.WeaponSlot.Melee].type = obj.type;
+                this.weaponManager.setWeapon(GameConfig.WeaponSlot.Melee, obj.type, 0);
                 this.weapsDirty = true;
                 if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
                 break;
@@ -2574,6 +2573,7 @@ export class Player extends BaseGameObject {
                     pickupMsg.type = freeGunSlot.cause;
                     let newGunIdx = freeGunSlot.availSlot;
 
+                    let gunType: string | undefined = undefined;
                     if (freeGunSlot.availSlot == -1) {
                         newGunIdx = this.curWeapIdx;
                         if (
@@ -2590,7 +2590,7 @@ export class Player extends BaseGameObject {
                             if (gunToDropDef.noDrop) return;
 
                             this.weaponManager.dropGun(this.curWeapIdx, false);
-                            this.weapons[this.curWeapIdx].type = obj.type;
+                            gunType = obj.type;
                             this.cancelAction();
                             this.weaponManager.tryReload();
                             this.weapsDirty = true;
@@ -2599,7 +2599,7 @@ export class Player extends BaseGameObject {
                             pickupMsg.type = net.PickupMsgType.Full;
                         }
                     } else if (freeGunSlot.isDualWield) {
-                        this.weapons[freeGunSlot.availSlot].type = def.dualWieldType!;
+                        gunType = def.dualWieldType!;
                         this.weapsDirty = true;
                         if (
                             freeGunSlot.availSlot === this.curWeapIdx &&
@@ -2611,8 +2611,11 @@ export class Player extends BaseGameObject {
                             }
                         }
                     } else {
-                        this.weapons[freeGunSlot.availSlot].type = obj.type;
+                        gunType = obj.type;
                         this.weapsDirty = true;
+                    }
+                    if (gunType) {
+                        this.weaponManager.setWeapon(freeGunSlot.availSlot, gunType, 0);
                     }
 
                     // always select primary slot if melee or secondary is selected
