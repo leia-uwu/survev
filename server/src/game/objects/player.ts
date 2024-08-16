@@ -671,6 +671,9 @@ export class Player extends BaseGameObject {
     weaponManager = new WeaponManager(this);
     recoilTicker = 0;
 
+    // to disable auto pickup for some seconds after dropping something
+    mobileDropTicker = 0;
+
     constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: net.JoinMsg) {
         super(game, pos);
 
@@ -1018,6 +1021,68 @@ export class Player extends BaseGameObject {
         let collidesWithZoomOut = false;
 
         let layer = this.layer > 2 ? 0 : this.layer;
+
+        this.mobileDropTicker -= dt;
+        if (this.isMobile && this.mobileDropTicker <= 0) {
+            const closestLoot = this.getClosestLoot();
+
+            if (closestLoot) {
+                const itemDef = GameObjectDefs[closestLoot.type];
+                switch (itemDef.type) {
+                    case "gun":
+                        const freeSlot = this.getFreeGunSlot(closestLoot);
+                        if (
+                            freeSlot.availSlot > 0 &&
+                            !this.weapons[freeSlot.availSlot].type
+                        ) {
+                            this.pickupLoot(closestLoot);
+                        }
+                        break;
+                    case "melee": {
+                        if (this.weapons[GameConfig.WeaponSlot.Melee].type === "fists") {
+                            this.pickupLoot(closestLoot);
+                        }
+                        break;
+                    }
+                    case "perk": {
+                        if (!this.perks.find((perk) => perk.droppable)) {
+                            this.pickupLoot(closestLoot);
+                        }
+                        break;
+                    }
+                    case "outfit": {
+                        break;
+                    }
+                    case "helmet":
+                    case "chest":
+                    case "backpack": {
+                        const thisLevel = this.getGearLevel(this[itemDef.type]);
+                        const thatLevel = this.getGearLevel(closestLoot.type);
+                        if (thisLevel < thatLevel) {
+                            this.pickupLoot(closestLoot);
+                        }
+                        break;
+                    }
+                    default:
+                        if (
+                            GameConfig.bagSizes[closestLoot.type] &&
+                            this.inventory[closestLoot.type] >=
+                                GameConfig.bagSizes[closestLoot.type][
+                                    this.getGearLevel(this.backpack)
+                                ]
+                        ) {
+                            break;
+                        }
+                        this.pickupLoot(closestLoot);
+                        break;
+                }
+            }
+
+            const closestObstacle = this.getClosestObstacle();
+            if (closestObstacle && closestObstacle.isDoor && !closestObstacle.door.open) {
+                closestObstacle.interact(this);
+            }
+        }
 
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
@@ -2373,6 +2438,7 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < objs.length; i++) {
             const loot = objs[i];
             if (loot.__type !== ObjectType.Loot) continue;
+            if (loot.destroyed) continue;
             if (
                 util.sameLayer(loot.layer, this.layer) &&
                 (loot.ownerId == 0 || loot.ownerId == this.__id)
@@ -2574,6 +2640,8 @@ export class Player extends BaseGameObject {
                     let newGunIdx = freeGunSlot.availSlot;
 
                     let gunType: string | undefined = undefined;
+                    let reload = false;
+
                     if (freeGunSlot.availSlot == -1) {
                         newGunIdx = this.curWeapIdx;
                         if (
@@ -2591,31 +2659,29 @@ export class Player extends BaseGameObject {
 
                             this.weaponManager.dropGun(this.curWeapIdx, false);
                             gunType = obj.type;
-                            this.cancelAction();
-                            this.weaponManager.tryReload();
-                            this.weapsDirty = true;
+                            reload = true;
                         } else {
                             removeLoot = false;
                             pickupMsg.type = net.PickupMsgType.Full;
                         }
                     } else if (freeGunSlot.isDualWield) {
                         gunType = def.dualWieldType!;
-                        this.weapsDirty = true;
                         if (
                             freeGunSlot.availSlot === this.curWeapIdx &&
-                            this.isReloading()
+                            (this.isReloading() ||
+                                !this.weapons[freeGunSlot.availSlot].ammo)
                         ) {
-                            this.cancelAction();
-                            if (!this.weapons[freeGunSlot.availSlot].ammo) {
-                                this.weaponManager.tryReload();
-                            }
+                            reload = true;
                         }
                     } else {
                         gunType = obj.type;
-                        this.weapsDirty = true;
                     }
                     if (gunType) {
-                        this.weaponManager.setWeapon(freeGunSlot.availSlot, gunType, 0);
+                        this.weaponManager.setWeapon(newGunIdx, gunType, 0);
+                    }
+                    if (reload) {
+                        this.cancelAction();
+                        this.weaponManager.tryReload();
                     }
 
                     // always select primary slot if melee or secondary is selected
@@ -2717,6 +2783,7 @@ export class Player extends BaseGameObject {
     }
 
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
+        this.mobileDropTicker = 3;
         this.game.lootBarn.addLoot(
             type,
             this.pos,
