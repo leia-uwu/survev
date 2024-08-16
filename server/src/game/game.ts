@@ -358,7 +358,6 @@ export class Game {
     gas: Gas;
 
     now!: number;
-    gameStartTime = 0;
 
     perfTicker = 0;
     tickTimes: number[] = [];

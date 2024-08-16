@@ -1397,12 +1397,12 @@ export class GameMap {
             case "random":
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
-                        SpawnRules.random(this.width, this.height, this.shoreInset);
+                        SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas);
                 } else {
                     loadedSpawnRuleFunc =
                         this._getGroupLoadedSpawnRuleFunc(group) ??
                         (() =>
-                            SpawnRules.random(this.width, this.height, this.shoreInset));
+                            SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas));
                 }
                 break;
             case "donut":
@@ -1453,7 +1453,7 @@ export class GameMap {
 
         const circle = collider.createCircle(getPos(), GameConfig.player.radius);
 
-        while (attempts++ < 200 && collided) {
+        while (attempts++ < 500 && collided) {
             collided = false;
             v2.set(circle.pos, getPos());
 
