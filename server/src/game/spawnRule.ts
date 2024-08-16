@@ -12,7 +12,7 @@ export const SpawnRules = {
     random(width: number, height: number, inset: number, gas: Gas) {
         if (gas.circleIdx >= 1) {
             return coldet.clampPosToAabb(
-                v2.add(gas.currentPos, util.randomPointInCircle(gas.radNew)),
+                v2.add(gas.posNew, util.randomPointInCircle(gas.radNew)),
                 collider.createAabbExtents(v2.create(0, 0), v2.create(width, height)),
             );
         }
