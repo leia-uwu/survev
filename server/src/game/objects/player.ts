@@ -299,6 +299,7 @@ export class Player extends BaseGameObject {
     freeSwitchTimer: number = 0;
 
     indoors = false;
+    insideZoomRegion = false;
 
     private _zoom: number = 0;
 
@@ -1100,14 +1101,19 @@ export class Player extends BaseGameObject {
         }
 
         //
-        // Calculate scope zoom
+        // Scope zoom, heal regions and and auto open doors logic
         //
-        const scopeZoom = this.scopeZoomRadius[this.scope];
-        let finalZoom = this.scopeZoomRadius["1xscope"];
-        let onSmoke = false;
-        let collidesWithZoomOut = false;
+
+        let finalZoom = this.scopeZoomRadius[this.scope];
+        let lowestZoom = this.scopeZoomRadius["1xscope"];
 
         let layer = this.layer > 2 ? 0 : this.layer;
+        this.indoors = false;
+
+        let zoomRegionZoom = lowestZoom;
+        let insideNoZoomRegion = true;
+        let insideSmoke = false;
+
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type === ObjectType.Building) {
@@ -1115,9 +1121,8 @@ export class Player extends BaseGameObject {
 
                 if (obj.healRegions) {
                     const healRegion = obj.healRegions.find((hr) => {
-                        return coldet.testCircleAabb(
+                        return coldet.testPointAabb(
                             this.pos,
-                            this.rad,
                             hr.collision.min,
                             hr.collision.max,
                         );
@@ -1133,30 +1138,35 @@ export class Player extends BaseGameObject {
                 for (let i = 0; i < obj.zoomRegions.length; i++) {
                     const zoomRegion = obj.zoomRegions[i];
 
-                    if (zoomRegion.zoomIn) {
-                        if (
-                            coldet.testCircleAabb(
-                                this.pos,
-                                this.rad,
-                                zoomRegion.zoomIn.min,
-                                zoomRegion.zoomIn.max,
-                            )
-                        ) {
-                            this.indoors = true;
-                            finalZoom = zoomRegion.zoom ? zoomRegion.zoom : finalZoom;
+                    if (
+                        zoomRegion.zoomIn &&
+                        coldet.testPointAabb(
+                            this.pos,
+                            zoomRegion.zoomIn.min,
+                            zoomRegion.zoomIn.max,
+                        )
+                    ) {
+                        this.indoors = true;
+                        this.insideZoomRegion = true;
+                        insideNoZoomRegion = false;
+                        if (zoomRegion.zoom) {
+                            zoomRegionZoom = zoomRegion.zoom;
                         }
                     }
 
-                    if (zoomRegion.zoomOut && this.indoors) {
-                        if (
-                            coldet.testCircleAabb(
-                                this.pos,
-                                this.rad,
-                                zoomRegion.zoomOut.min,
-                                zoomRegion.zoomOut.max,
-                            )
-                        ) {
-                            collidesWithZoomOut = true;
+                    if (
+                        zoomRegion.zoomOut &&
+                        coldet.testPointAabb(
+                            this.pos,
+                            zoomRegion.zoomOut.min,
+                            zoomRegion.zoomOut.max,
+                        )
+                    ) {
+                        insideNoZoomRegion = false;
+                        if (this.insideZoomRegion) {
+                            if (zoomRegion.zoom) {
+                                zoomRegionZoom = zoomRegion.zoom;
+                            }
                         }
                     }
                 }
@@ -1173,16 +1183,24 @@ export class Player extends BaseGameObject {
                     obj.interact(this, true);
                 }
             } else if (obj.__type === ObjectType.Smoke) {
+                if (!util.sameLayer(this.layer, obj.layer)) continue;
                 if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
-                    onSmoke = true;
+                    insideSmoke = true;
                 }
             }
         }
 
-        this.zoom = this.indoors ? finalZoom : scopeZoom;
-        if (onSmoke || (this.downed && !GameConfig.player.keepZoomWhileDowned))
-            this.zoom = this.scopeZoomRadius["1xscope"];
-        if (!collidesWithZoomOut) this.indoors = false;
+        if (this.insideZoomRegion) {
+            finalZoom = zoomRegionZoom;
+        }
+        if (insideSmoke) {
+            finalZoom = lowestZoom;
+        }
+        this.zoom = finalZoom;
+
+        if (insideNoZoomRegion) {
+            this.insideZoomRegion = false;
+        }
 
         //
         // Calculate layer
