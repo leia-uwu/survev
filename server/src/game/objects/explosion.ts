@@ -98,6 +98,12 @@ export class ExplosionBarn {
                             obj.__type === ObjectType.Obstacle
                         ) {
                             let damage = def.damage;
+                            if (
+                                obj.__type == ObjectType.Player &&
+                                obj.hasPerk("flak_jacket")
+                            ) {
+                                damage *= 0.1;
+                            }
 
                             if (dist > def.rad.min) {
                                 damage = math.remap(
