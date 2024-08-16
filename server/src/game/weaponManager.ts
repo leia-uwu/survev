@@ -55,6 +55,7 @@ export class WeaponManager {
     setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
+        if (this.bursts.length) return;
 
         this.player.cancelAnim();
 
