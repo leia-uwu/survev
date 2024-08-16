@@ -1,6 +1,7 @@
 import type { MapDefs } from "../../../shared/defs/mapDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { Config, TeamMode } from "../config";
 import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
@@ -12,7 +13,7 @@ import { BulletBarn } from "./objects/bullet";
 import { DeadBodyBarn } from "./objects/deadBody";
 import { DecalBarn } from "./objects/decal";
 import { ExplosionBarn } from "./objects/explosion";
-import { type GameObject, ObjectRegister } from "./objects/gameObject";
+import { type DamageParams, type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
 import { PlaneBarn } from "./objects/plane";
@@ -122,6 +123,15 @@ class ContextManager {
         });
     }
 
+    /** if the current context mode supports reviving, unrelated to individual players */
+    canRevive(): boolean {
+        return this._applyContext<boolean>({
+            [ContextMode.Solo]: () => false,
+            [ContextMode.Team]: () => true,
+            [ContextMode.Faction]: () => true
+        });
+    }
+
     isReviving(player: Player): boolean {
         return this._applyContext<boolean>({
             [ContextMode.Solo]: () => false,
@@ -179,12 +189,106 @@ class ContextManager {
             [ContextMode.Team]: () =>
                 !player.group!.allDeadOrDisconnected && this.aliveCount() > 1,
             [ContextMode.Faction]: () => {
+                /**
+                 * temporary fix for when you kill the last non knocked player on a team
+                 * and all of the knocked players are supposed to bleed out
+                 * technically everyone is "dead" at this point and the stats message shouldnt show for anyone
+                 * but since the last knocked player gets killed first the downed teammates are technically still "alive"
+                 *
+                 * i believe the solution is to separate kills and gameovermsgs so that all kills in a tick get done first
+                 * then all gameovermsgs get done after
+                 * for (const kill of kills){};
+                 * for (const msg of gameovermsgs){};
+                 */
+                if (player.team!.checkAllDowned(player)) return false;
+
                 if (!this._game.isTeamMode) {
                     //stats msg can only show in solos if it's also faction mode
                     return this.aliveCount() > 1;
                 }
 
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
+            }
+        });
+    }
+
+    handlePlayerDeath(player: Player, params: DamageParams): void {
+        return this._applyContext<void>({
+            [ContextMode.Solo]: () => player.kill(params),
+            [ContextMode.Team]: () => {
+                const sourceIsPlayer = params.source?.__type === ObjectType.Player;
+                const group = player.group!;
+                if (player.downed) {
+                    const finishedByTeammate =
+                        player.downedBy &&
+                        sourceIsPlayer &&
+                        player.downedBy.groupId === (params.source as Player).groupId;
+
+                    const bledOut =
+                        player.downedBy &&
+                        params.damageType == GameConfig.DamageType.Bleeding;
+
+                    if (finishedByTeammate || bledOut) {
+                        params.source = player.downedBy;
+                    }
+
+                    player.kill(params);
+                    //special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
+                    if (group.checkAllDowned(player)) {
+                        group.killAllTeammates();
+                    }
+                    return;
+                }
+
+                const allDeadOrDisconnected = group.checkAllDeadOrDisconnected(player);
+                const allDowned = group.checkAllDowned(player);
+
+                if (allDeadOrDisconnected || allDowned) {
+                    group.allDeadOrDisconnected = true; // must set before any kill() calls so the gameovermsgs are accurate
+                    player.kill(params);
+                    if (allDowned) {
+                        group.killAllTeammates();
+                    }
+                } else {
+                    player.down(params);
+                }
+            },
+            [ContextMode.Faction]: () => {
+                const sourceIsPlayer = params.source?.__type === ObjectType.Player;
+                const team = player.team!;
+                if (player.downed) {
+                    const finishedByTeammate =
+                        player.downedBy &&
+                        sourceIsPlayer &&
+                        player.downedBy.teamId === (params.source as Player).teamId;
+
+                    const bledOut =
+                        player.downedBy &&
+                        params.damageType == GameConfig.DamageType.Bleeding;
+
+                    if (finishedByTeammate || bledOut) {
+                        params.source = player.downedBy;
+                    }
+
+                    player.kill(params);
+                    //special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
+                    if (team.checkAllDowned(player)) {
+                        team.killAllTeammates();
+                    }
+                    return;
+                }
+
+                const allDead = team.checkAllDead(player);
+                const allDowned = team.checkAllDowned(player);
+
+                if (allDead || allDowned) {
+                    player.kill(params);
+                    if (allDowned) {
+                        team.killAllTeammates();
+                    }
+                } else {
+                    player.down(params);
+                }
             }
         });
     }

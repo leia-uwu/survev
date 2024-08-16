@@ -1541,44 +1541,10 @@ export class Player extends BaseGameObject {
         }
 
         if (this._health === 0) {
-            if (!this.game.isTeamMode) {
-                // solos
-                this.kill(params);
-                return;
-            }
-
-            // Teams
-            const group = this.group!;
-
-            // TODO: fix for faction mode
-            if (this.downed) {
-                const finishedByTeammate =
-                    this.downedBy &&
-                    sourceIsPlayer &&
-                    this.downedBy.groupId === (params.source as Player).groupId;
-
-                const bledOut =
-                    this.downedBy && params.damageType == GameConfig.DamageType.Bleeding;
-
-                if (finishedByTeammate || bledOut) {
-                    params.source = this.downedBy;
-                }
-
-                this.kill(params);
-                return;
-            }
-
-            const allDeadOrDisconnected = group.checkAllDeadOrDisconnected(this);
-            const allDowned = group.checkAllDowned(this);
-
-            if (allDeadOrDisconnected || allDowned) {
-                group.allDeadOrDisconnected = true; // must set before any kill() calls so the gameovermsgs are accurate
-                this.kill(params);
-                if (allDowned) {
-                    group.killAllTeammates();
-                }
-            } else {
+            if (!this.downed && this.hasPerk("self_revive")) {
                 this.down(params);
+            } else {
+                this.game.contextManager.handlePlayerDeath(this, params);
             }
         }
     }
@@ -1949,23 +1915,32 @@ export class Player extends BaseGameObject {
     }
 
     /** returns player to revive if can revive */
-    canRevive(): Player | undefined {
+    getPlayerToRevive(): Player | undefined {
         if (this.actionType != GameConfig.Action.None) {
             // action in progress
             return;
         }
-        if (!this.game.isTeamMode) {
-            // can only revive in teams modes
+        if (!this.game.contextManager.canRevive()) {
             return;
         }
 
-        const downedTeammates = this.group!.getAliveTeammates(this).filter(
-            (t) => t.downed
-        );
+        // const downedTeammates = this.group!.getAliveTeammates(this).filter(
+        //     (t) => t.downed
+        // );
+        const nearbyDownedTeammates = this.game.grid
+            .intersectCollider(
+                collider.createCircle(this.pos, GameConfig.player.reviveRange)
+            )
+            .filter(
+                (obj): obj is Player =>
+                    obj.__type == ObjectType.Player &&
+                    obj.teamId == this.teamId &&
+                    obj.downed
+            );
 
         let playerToRevive: Player | undefined;
         let closestDist = Number.MAX_VALUE;
-        for (const teammate of downedTeammates) {
+        for (const teammate of nearbyDownedTeammates) {
             if (!util.sameLayer(this.layer, teammate.layer)) {
                 continue;
             }
@@ -1979,27 +1954,35 @@ export class Player extends BaseGameObject {
         return playerToRevive;
     }
 
-    revive(playerToRevive: Player | undefined) {
-        if (!playerToRevive) return;
-
-        const durationMultiplier = this.hasPerk("aoe_heal") ? 0.75 : 1;
-
-        this.playerBeingRevived = playerToRevive;
-        playerToRevive.doAction(
-            "",
-            GameConfig.Action.Revive,
-            durationMultiplier * GameConfig.player.reviveDuration
-        );
+    selfRevive() {
         this.doAction(
             "",
             GameConfig.Action.Revive,
-            durationMultiplier * GameConfig.player.reviveDuration,
-            playerToRevive.__id
+            0.75 * GameConfig.player.reviveDuration,
+            this.__id
         );
-        this.playAnim(
-            GameConfig.Anim.Revive,
-            durationMultiplier * GameConfig.player.reviveDuration
-        );
+    }
+
+    revive(playerToRevive: Player | undefined) {
+        if (!playerToRevive) return;
+
+        this.playerBeingRevived = playerToRevive;
+        if (this.downed && this.hasPerk("self_revive")) {
+            this.selfRevive();
+        } else {
+            playerToRevive.doAction(
+                "",
+                GameConfig.Action.Revive,
+                GameConfig.player.reviveDuration
+            );
+            this.doAction(
+                "",
+                GameConfig.Action.Revive,
+                GameConfig.player.reviveDuration,
+                playerToRevive.__id
+            );
+            this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
+        }
     }
 
     isAffectedByAOE(medic: Player): boolean {
@@ -2055,6 +2038,11 @@ export class Player extends BaseGameObject {
         if (this.hasPerk("aoe_heal")) {
             const aoePlayers = this.getAOEPlayers();
 
+            //aoe doesnt heal/give boost to downed players
+            if (this.actionType == GameConfig.Action.UseItem) {
+                aoePlayers.filter((p) => !p.downed);
+            }
+
             for (let i = 0; i < aoePlayers.length; i++) {
                 const aoePlayer = aoePlayers[i];
                 actionFunc(aoePlayer);
@@ -2102,6 +2090,21 @@ export class Player extends BaseGameObject {
     toMouseDir = v2.create(1, 0);
     toMouseLen = 0;
 
+    shouldAcceptInput(input: number): boolean {
+        if (this.downed) {
+            const isAcceptedInput =
+                [GameConfig.Input.Interact, GameConfig.Input.Revive].includes(input) ||
+                //cancel inputs can only be accepted if player is reviving (themselves)
+                //otherwise it doesnt make sense for a player to be able to cancel another player's revive
+                (input == GameConfig.Input.Cancel &&
+                    this.game.contextManager.isReviving(this));
+
+            return this.hasPerk("self_revive") && isAcceptedInput;
+        }
+
+        return true;
+    }
+
     handleInput(msg: net.InputMsg): void {
         if (this.dead) return;
 
@@ -2126,13 +2129,9 @@ export class Player extends BaseGameObject {
         }
         this.toMouseLen = msg.toMouseLen;
 
-        if (this.downed) {
-            // return over here since player is still allowed to move and look around, just can't do anything else
-            return;
-        }
-
         for (let i = 0; i < msg.inputs.length; i++) {
             const input = msg.inputs[i];
+            if (!this.shouldAcceptInput(input)) continue;
             switch (input) {
                 case GameConfig.Input.StowWeapons:
                 case GameConfig.Input.EquipMelee:
@@ -2229,7 +2228,7 @@ export class Player extends BaseGameObject {
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
                     const obstacle = this.getClosestObstacle();
-                    const playerToRevive = this.canRevive();
+                    const playerToRevive = this.getPlayerToRevive();
 
                     const interactables = [loot, obstacle, playerToRevive];
 
@@ -2327,11 +2326,14 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.Revive: {
-                    const playerToRevive = this.canRevive();
+                    const playerToRevive = this.getPlayerToRevive();
                     this.revive(playerToRevive);
                 }
             }
         }
+
+        //no exceptions for any perks or roles
+        if (this.downed) return;
 
         switch (msg.useItem) {
             case "bandage":
@@ -2881,9 +2883,13 @@ export class Player extends BaseGameObject {
         }
 
         if (this.playerBeingRevived) {
-            this.playerBeingRevived.cancelAction();
-            this.playerBeingRevived = undefined;
-            this.cancelAnim();
+            if (this.hasPerk("self_revive") && this.playerBeingRevived == this) {
+                this.playerBeingRevived = undefined;
+            } else {
+                this.playerBeingRevived.cancelAction();
+                this.playerBeingRevived = undefined;
+                this.cancelAnim();
+            }
         }
 
         this.action.duration = 0;
