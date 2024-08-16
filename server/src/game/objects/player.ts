@@ -1637,17 +1637,17 @@ export class Player extends BaseGameObject {
                         this.game.playerBarn.killLeaderDirty = true;
                     }
                 }
+
+                if (source.hasPerk("takedown")) {
+                    source.health += 25;
+                    source.boost += 25;
+                    source.giveHaste(GameConfig.HasteType.Takedown, 3);
+                }
             }
 
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;
-
-            if (source.hasPerk("takedown")) {
-                source.health += 25;
-                source.boost += 25;
-                source.giveHaste(GameConfig.HasteType.Takedown, 3);
-            }
         }
 
         if (this.hasPerk("final_bugle")) {
