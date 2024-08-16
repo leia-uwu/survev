@@ -37,13 +37,17 @@ export class ProjectileBarn {
         fuseTime: number,
         damageType: number
     ): Projectile {
-        const proj = new Projectile(this.game, type, pos, layer);
-        proj.posZ = posZ;
-        proj.playerId = playerId;
-        proj.vel = vel;
-        proj.fuseTime = fuseTime;
-        proj.damageType = damageType;
-        proj.dir = v2.normalize(vel);
+        const proj = new Projectile(
+            this.game,
+            type,
+            pos,
+            layer,
+            posZ,
+            playerId,
+            vel,
+            fuseTime,
+            damageType
+        );
 
         this.projectiles.push(proj);
         this.game.objectRegister.register(proj);
@@ -57,26 +61,42 @@ export class Projectile extends BaseGameObject {
 
     layer: number;
 
-    posZ: number = 5;
-    dir = v2.create(0, 0);
+    posZ: number;
+    dir: Vec2;
     type: string;
 
     rad: number;
 
-    playerId = 0;
-    fuseTime = Infinity;
-    damageType = 0;
+    playerId: number;
+    fuseTime: number;
+    damageType: DamageType;
 
-    vel = v2.create(0, 0);
+    vel: Vec2;
     velZ: number;
     dead = false;
 
     obstacleBellowId = 0;
 
-    constructor(game: Game, type: string, pos: Vec2, layer: number) {
+    constructor(
+        game: Game,
+        type: string,
+        pos: Vec2,
+        layer: number,
+        posZ: number,
+        playerId: number,
+        vel: Vec2,
+        fuseTime: number,
+        damageType: DamageType
+    ) {
         super(game, pos);
         this.layer = layer;
         this.type = type;
+        this.posZ = posZ;
+        this.playerId = playerId;
+        this.vel = vel;
+        this.fuseTime = fuseTime;
+        this.damageType = damageType;
+        this.dir = v2.normalize(vel);
 
         const def = GameObjectDefs[type] as ThrowableDef;
         this.velZ = def.throwPhysics.velZ;
