@@ -6,8 +6,8 @@ import { Main } from "./baseDefs";
 
 export enum TeamColor {
     // NONE = 0, //can be used ambiguously with code that runs the same regardless of team color
-    RED = 1,
-    BLUE = 2
+    Red = 1,
+    Blue = 2
 }
 
 const mapDef = {
