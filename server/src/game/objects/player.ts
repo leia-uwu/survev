@@ -2036,11 +2036,11 @@ export class Player extends BaseGameObject {
 
     applyActionFunc(actionFunc: (target: Player) => void): void {
         if (this.hasPerk("aoe_heal")) {
-            const aoePlayers = this.getAOEPlayers();
+            let aoePlayers = this.getAOEPlayers();
 
             //aoe doesnt heal/give boost to downed players
             if (this.actionType == GameConfig.Action.UseItem) {
-                aoePlayers.filter((p) => !p.downed);
+                aoePlayers = aoePlayers.filter((p) => !p.downed);
             }
 
             for (let i = 0; i < aoePlayers.length; i++) {
