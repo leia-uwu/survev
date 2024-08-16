@@ -33,25 +33,25 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
         },
         places: Main.mapGen
             ? Array(config.places)
-                .fill(false)
-                .map(() => {
-                    return Main.mapGen?.places[
-                        Math.floor(Math.random() * Main.mapGen.places.length)
-                    ];
-                })
+                  .fill(false)
+                  .map(() => {
+                      return Main.mapGen?.places[
+                          Math.floor(Math.random() * Main.mapGen.places.length)
+                      ];
+                  })
             : {},
         densitySpawns: Main.mapGen
             ? Main.mapGen.densitySpawns.reduce(
-                (array, item) => {
-                    let object: Record<string, number> = {};
-                    for (const [key, value] of Object.entries(item)) {
-                        object[key] = (value * 32) / 100;
-                    }
-                    array.push(object);
-                    return array;
-                },
-                [] as Record<string, number>[]
-            )
+                  (array, item) => {
+                      let object: Record<string, number> = {};
+                      for (const [key, value] of Object.entries(item)) {
+                          object[key] = (value * 32) / 100;
+                      }
+                      array.push(object);
+                      return array;
+                  },
+                  [] as Record<string, number>[]
+              )
             : {},
         fixedSpawns: [
             {
@@ -133,5 +133,5 @@ DeatchmatchMain["lootTable"] = {
         { name: "fireaxe", count: 1, weight: 5 },
         { name: "tier_katanas", count: 1, weight: 3 },
         { name: "stonehammer", count: 1, weight: 1 }
-    ],
-}
+    ]
+};

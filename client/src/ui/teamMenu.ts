@@ -162,8 +162,9 @@ export class TeamMenu {
     connect(create: boolean, roomUrl: string) {
         if (!this.active || roomUrl !== this.roomData.roomUrl) {
             const roomHost = api.resolveRoomHost();
-            const url = `w${window.location.protocol === "https:" ? "ss" : "s"
-                }://${roomHost}/team_v2`;
+            const url = `w${
+                window.location.protocol === "https:" ? "ss" : "s"
+            }://${roomHost}/team_v2`;
             this.active = true;
             this.joined = false;
             this.create = create;
@@ -187,7 +188,7 @@ export class TeamMenu {
             this.refreshUi();
 
             if (this.ws) {
-                this.ws.onclose = function () { };
+                this.ws.onclose = function () {};
                 this.ws.close();
                 this.ws = null;
             }
@@ -203,8 +204,8 @@ export class TeamMenu {
                         errMsg = this.joined
                             ? "lost_conn"
                             : this.create
-                                ? "create_failed"
-                                : "join_failed";
+                              ? "create_failed"
+                              : "join_failed";
                     }
                     this.leave(errMsg);
                 };

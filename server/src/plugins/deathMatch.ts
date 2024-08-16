@@ -1,3 +1,5 @@
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { GamePlugin } from "../game/pluginManager";
@@ -38,13 +40,32 @@ export default class DeathMatchPlugin extends GamePlugin {
                 secondary.cooldown = 0;
             }
 
-            // give the killer health and gun ammo and inventory ammo
+            // give the killer nades and gun ammo and inventory ammo
             if (data.source?.__type === ObjectType.Player) {
                 const killer = data.source;
                 killer.inventory["frag"] += 3;
                 killer.inventory["mirv"] += 1;
                 killer.inventoryDirty = true;
+                killer.weapsDirty = true;
+
+                function loadAmmo(slot: WeaponSlot) {
+                    const weapon = killer.weapons[slot];
+                    if (weapon.type) {
+                        const gunDef = GameObjectDefs[weapon.type] as GunDef;
+                        killer.weapons[slot] = {
+                            ...weapon,
+                            ammo: calculateAmmoToGive(weapon.ammo, gunDef.maxClip)
+                        };
+                    }
+                }
+
+                loadAmmo(WeaponSlot.Primary);
+                loadAmmo(WeaponSlot.Secondary);
             }
         });
     }
 }
+
+function calculateAmmoToGive(currAmmo: number, maxClip: number, amount = 50): number {
+    return Math.min(currAmmo + ((maxClip * amount) / 100), maxClip);;
+};

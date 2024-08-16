@@ -34,18 +34,22 @@ import type { Loot } from "./loot";
 import type { Obstacle } from "./obstacle";
 
 function encodeIP(ip: string, secret: string) {
-    let encoded = '';
+    let encoded = "";
     for (let i = 0; i < ip.length; i++) {
-        encoded += String.fromCharCode(ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length));
+        encoded += String.fromCharCode(
+            ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
+        );
     }
-    return Buffer.from(encoded).toString('base64');
+    return Buffer.from(encoded).toString("base64");
 }
 
 function decodeIP(encoded: string, secret: string) {
-    const decoded = Buffer.from(encoded, 'base64').toString();
-    let ip = '';
+    const decoded = Buffer.from(encoded, "base64").toString();
+    let ip = "";
     for (let i = 0; i < decoded.length; i++) {
-        ip += String.fromCharCode(decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length));
+        ip += String.fromCharCode(
+            decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
+        );
     }
     return ip;
 }
@@ -77,7 +81,7 @@ export class PlayerBarn {
     killLeaderDirty = false;
     killLeader?: Player;
 
-    constructor(readonly game: Game) {}
+    constructor(readonly game: Game) { }
 
     randomPlayer(player?: Player) {
         const livingPlayers = player
@@ -118,7 +122,7 @@ export class PlayerBarn {
             if (!group) return;
         }
 
-        const pos: Vec2 = this.game.map.getSpawnPos(group);
+        const pos: Vec2 = this.game.map.getSpawnPos(/* group */);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 

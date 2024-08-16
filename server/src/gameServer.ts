@@ -36,7 +36,7 @@ export type FindGameResponse = {
 
 export interface GameSocketData {
     readonly gameID: string;
-    readonly ip?: string
+    readonly ip?: string;
     sendMsg: (msg: ArrayBuffer | Uint8Array) => void;
     closeSocket: () => void;
     player?: Player;
@@ -97,7 +97,7 @@ export class GameServer {
              * Upgrade the connection to WebSocket.
              */
             upgrade(res, req, context) {
-                res.onAborted((): void => { });
+                res.onAborted((): void => {});
 
                 const ip = Buffer.from(res.getRemoteAddressAsText()).toString();
 
@@ -242,9 +242,12 @@ export class GameServer {
                                 return (
                                     group.autoFill && group.players.length < mode.teamMode
                                 );
-                            })
+                            });
 
-                            group = filteredGroups[Math.floor(Math.random() * filteredGroups.length)];
+                            group =
+                                filteredGroups[
+                                    Math.floor(Math.random() * filteredGroups.length)
+                                ];
                         }
 
                         if (!group) {

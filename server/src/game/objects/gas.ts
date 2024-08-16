@@ -199,10 +199,7 @@ export class Gas {
                 break;
             }
             case GasMode.Moving: {
-                this.waitTime = math.max(
-                    40,
-                    GameConfig.gas.waitTimeMin
-                );
+                this.waitTime = math.max(40, GameConfig.gas.waitTimeMin);
                 this.mode = GasMode.Waiting;
                 if (this.radNew > 0) {
                     this.circleIdx++;
@@ -214,7 +211,7 @@ export class Gas {
 
         this.damage =
             GameConfig.gas.damage[
-            math.clamp(this.stage - 1, 0, GameConfig.gas.damage.length - 1)
+                math.clamp(this.stage - 1, 0, GameConfig.gas.damage.length - 1)
             ];
         this._gasTicker = 0;
         this.dirty = true;
