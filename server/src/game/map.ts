@@ -5,7 +5,7 @@ import type {
     ObstacleDef,
     StructureDef
 } from "../../../shared/defs/mapObjectsTyping";
-import { GameConfig } from "../../../shared/gameConfig";
+import { GameConfig, GasMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { MsgStream, MsgType } from "../../../shared/net/net";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
@@ -1400,9 +1400,25 @@ export class GameMap {
                 loadedSpawnRuleFunc = () => SpawnRules.radius(this.center, radius);
                 break;
             case "random":
+                let safeZone = undefined;
+                if (this.game.gas.stage === 1) {
+                    let rad = this.game.gas.radNew;
+                    if (this.game.gas.mode === GasMode.Waiting) {
+                        rad = this.game.gas.radOld;
+                    }
+                    safeZone = v2.add(
+                        this.game.gas.posNew,
+                        util.randomPointInCircle(rad)
+                    );
+                }
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
-                        SpawnRules.random(this.width, this.height, this.shoreInset);
+                        SpawnRules.random(
+                            this.width,
+                            this.height,
+                            this.shoreInset,
+                            safeZone
+                        );
                 } else {
                     loadedSpawnRuleFunc =
                         this._getGroupLoadedSpawnRuleFunc(group) ??

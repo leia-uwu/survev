@@ -6,7 +6,10 @@ export const SpawnRules = {
     fixed(pos: Vec2) {
         return v2.copy(pos);
     },
-    random(width: number, height: number, inset: number) {
+    random(width: number, height: number, inset: number, safeZone?: Vec2) {
+        if (safeZone) {
+            return safeZone;
+        }
         return {
             x: util.random(inset, width - inset),
             y: util.random(inset, height - inset)
