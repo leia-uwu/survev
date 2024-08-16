@@ -791,31 +791,11 @@ export class Player extends BaseGameObject {
 
     update(dt: number): void {
         if (this.dead) return;
-
         this.timeAlive += dt;
 
-        const movement = v2.create(0, 0);
-
-        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
-            this.posOld = v2.copy(this.pos);
-
-            if (this.touchMoveActive && this.touchMoveLen) {
-                movement.x = this.touchMoveDir.x;
-                movement.y = this.touchMoveDir.y;
-            } else {
-                if (this.moveUp) movement.y++;
-                if (this.moveDown) movement.y--;
-                if (this.moveLeft) movement.x--;
-                if (this.moveRight) movement.x++;
-
-                if (movement.x * movement.y !== 0) {
-                    // If the product is non-zero, then both of the components must be non-zero
-                    movement.x *= Math.SQRT1_2;
-                    movement.y *= Math.SQRT1_2;
-                }
-            }
-        }
-
+        //
+        // Boost logic
+        //
         if (this.boost > 0 && !this.hasPerk("leadership")) {
             this.boost -= 0.375 * dt;
         }
@@ -824,6 +804,9 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 1.5 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 1.75 * dt;
 
+        //
+        // Action logic
+        //
         if (
             this.game.contextManager.isReviving(this) ||
             this.game.contextManager.isBeingRevived(this)
@@ -912,6 +895,9 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Animation logic
+        //
         if (this.animType !== GameConfig.Anim.None) {
             this._animTicker -= dt;
 
@@ -924,6 +910,9 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Haste logic
+        //
         if (this.hasteType != GameConfig.HasteType.None) {
             this._hasteTicker -= dt;
 
@@ -935,6 +924,9 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Last breath logic
+        //
         if (this.lastBreathActive) {
             this._lastBreathTicker -= dt;
 
@@ -946,6 +938,9 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Bugler logic
+        //
         if (this.bugleTickerActive) {
             this._bugleTicker -= dt;
 
@@ -977,6 +972,30 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Calculate new speed, position and check for collision with obstacles
+        //
+        const movement = v2.create(0, 0);
+
+        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
+            this.posOld = v2.copy(this.pos);
+
+            if (this.touchMoveActive && this.touchMoveLen) {
+                movement.x = this.touchMoveDir.x;
+                movement.y = this.touchMoveDir.y;
+            } else {
+                if (this.moveUp) movement.y++;
+                if (this.moveDown) movement.y--;
+                if (this.moveLeft) movement.x--;
+                if (this.moveRight) movement.x++;
+
+                if (movement.x * movement.y !== 0) {
+                    // If the product is non-zero, then both of the components must be non-zero
+                    movement.x *= Math.SQRT1_2;
+                    movement.y *= Math.SQRT1_2;
+                }
+            }
+        }
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
 
@@ -1015,13 +1034,9 @@ export class Player extends BaseGameObject {
             }
         }
 
-        const scopeZoom = this.scopeZoomRadius[this.scope];
-        let finalZoom = this.scopeZoomRadius["1xscope"];
-        let onSmoke = false;
-        let collidesWithZoomOut = false;
-
-        let layer = this.layer > 2 ? 0 : this.layer;
-
+        //
+        // Mobile auto interaction
+        //
         this.mobileDropTicker -= dt;
         if (this.isMobile && this.mobileDropTicker <= 0) {
             const closestLoot = this.getClosestLoot();
@@ -1084,6 +1099,15 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Calculate scope zoom
+        //
+        const scopeZoom = this.scopeZoomRadius[this.scope];
+        let finalZoom = this.scopeZoomRadius["1xscope"];
+        let onSmoke = false;
+        let collidesWithZoomOut = false;
+
+        let layer = this.layer > 2 ? 0 : this.layer;
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type === ObjectType.Building) {
@@ -1160,6 +1184,9 @@ export class Player extends BaseGameObject {
             this.zoom = this.scopeZoomRadius["1xscope"];
         if (!collidesWithZoomOut) this.indoors = false;
 
+        //
+        // Calculate layer
+        //
         const originalLayer = this.layer;
         const rot = Math.atan2(this.dir.y, this.dir.x);
         const ori = math.radToOri(rot);
@@ -1179,6 +1206,9 @@ export class Player extends BaseGameObject {
             this.setDirty();
         }
 
+        //
+        // Final position calculation: clamp to map bounds and set dirty if changed
+        //
         this.game.map.clampToMapBounds(this.pos, this.rad);
 
         if (!v2.eq(this.pos, this.posOld)) {
@@ -1186,6 +1216,9 @@ export class Player extends BaseGameObject {
             this.game.grid.updateObject(this);
         }
 
+        //
+        // Downed logic
+        //
         if (this.downed) {
             this.distSinceLastCrawl += v2.distance(this.posOld, this.pos);
 
@@ -1201,6 +1234,9 @@ export class Player extends BaseGameObject {
             }
         }
 
+        //
+        // Weapon stuff
+        //
         this.weaponManager.update(dt);
 
         this.shotSlowdownTimer -= dt;
