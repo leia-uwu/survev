@@ -24,8 +24,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
     },
     mapGen: {
         map: {
-            baseWidth: 300,
-            baseHeight: 300,
+            baseWidth: 290,
+            baseHeight: 290,
             shoreInset: 40,
             rivers: {
                 weights: []
@@ -45,7 +45,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                   (array, item) => {
                       let object: Record<string, number> = {};
                       for (const [key, value] of Object.entries(item)) {
-                          object[key] = (value * 32) / 100;
+                          object[key] = (value * 37) / 100;
                       }
                       array.push(object);
                       return array;
@@ -57,8 +57,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
             {
                 // small is spawn count for solos and duos, large is spawn count for squads
                 warehouse_01: 1,
-                house_red_01: 1,
-                // house_red_02: { small: 1, large: 1 },
+                house_red_01: 2,
+                // house_red_02: 1,
                 // barn_01: { small: 1, large: 3 },
                 // barn_02: 1,
                 hut_01: 2,
@@ -87,11 +87,11 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
             {
                 spawns: [
                     "mansion_structure_01",
-                    "warehouse_complex_01",
+                    // "warehouse_complex_01",
                     "police_01",
                     "bank_01"
                 ],
-                choose: 1
+                choose: 2
             }
         ]
     }
