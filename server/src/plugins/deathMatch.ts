@@ -1,12 +1,12 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { GamePlugin } from "../game/pluginManager";
 
 export default class DeathMatchPlugin extends GamePlugin {
     protected override initListeners(): void {
-        this.on("gameCreated", (_data) => { });
+        this.on("gameCreated", (_data) => {});
 
         this.on("playerJoin", (data) => {
             data.scope = "4xscope";
@@ -67,5 +67,5 @@ export default class DeathMatchPlugin extends GamePlugin {
 }
 
 function calculateAmmoToGive(currAmmo: number, maxClip: number, amount = 50): number {
-    return Math.min(currAmmo + ((maxClip * amount) / 100), maxClip);;
-};
+    return Math.min(currAmmo + (maxClip * amount) / 100, maxClip);
+}
