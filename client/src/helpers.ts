@@ -6,13 +6,13 @@ import * as net from "../../shared/net/net";
 import { device } from "./device";
 const truncateCanvas = document.createElement("canvas");
 
+export function getParameterByName(name: string, url?: string) {
+    const searchParams = new URLSearchParams(url || window.location.search);
+    return searchParams.get(name) || "";
+}
+
 export const helpers = {
-    getParameterByName: function (name: string, url?: string) {
-        const searchParams = new URLSearchParams(
-            url || window.location.href || window.location.search
-        );
-        return searchParams.get(name) || "";
-    },
+    getParameterByName,
     getCookie: function (cname: string) {
         const name = `${cname}=`;
         const decodedCookie = decodeURIComponent(document.cookie);
