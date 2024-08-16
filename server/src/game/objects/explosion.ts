@@ -4,7 +4,7 @@ import { GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
-import { util } from "../../../../shared/utils/util";
+import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import type { GameObject } from "./gameObject";
@@ -171,10 +171,8 @@ export class ExplosionBarn {
         source?: GameObject
     ) {
         const def = GameObjectDefs[type];
+        assert(def.type === "explosion", `Invalid explosion with type ${type}`);
 
-        if (def.type !== "explosion") {
-            throw new Error(`Invalid explosion with type ${type}`);
-        }
         const explosion: Explosion = {
             rad: def.rad.max,
             type,
