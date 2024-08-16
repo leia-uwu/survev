@@ -122,7 +122,7 @@ export class PlayerBarn {
             if (!group) return;
         }
 
-        const pos: Vec2 = this.game.map.getSpawnPos(/* group */);
+        const pos: Vec2 = this.game.map.getSpawnPos(group);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 
