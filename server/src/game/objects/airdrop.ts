@@ -82,7 +82,7 @@ export class Airdrop extends BaseGameObject {
                     obj.damage({
                         amount: obj.__type === ObjectType.Player ? 100 : 1e10,
                         damageType: GameConfig.DamageType.Airdrop,
-                        dir: "dir" in obj ? obj.dir : v2.create(0, 0)
+                        dir: "dir" in obj ? obj.dir : v2.create(0, 0),
                     });
                 } else if (
                     obj.__type === ObjectType.Building &&

@@ -56,17 +56,17 @@ export class Touch {
         right: false,
         up: false,
         down: false,
-        moveLen: 0
+        moveLen: 0,
     };
 
     analogMovement = {
         toMoveDir: v2.create(1, 0),
-        toMoveLen: 0
+        toMoveLen: 0,
     };
 
     aimMovement = {
         toAimDir: v2.create(1, 0),
-        toAimLen: 0
+        toAimLen: 0,
     };
 
     leftLockedPadCenter = v2.create(0, 0);
@@ -86,7 +86,7 @@ export class Touch {
 
     constructor(
         public input: InputHandler,
-        public config: ConfigManager
+        public config: ConfigManager,
     ) {
         const createPadSprite = function (parent: PIXI.Container, tint: number) {
             const pad = PIXI.Sprite.from("pad.img");
@@ -104,7 +104,7 @@ export class Touch {
                 centerPos: v2.create(0, 0),
                 touchPos: v2.create(0, 0),
                 centerSprite: createPadSprite(this.container, 0),
-                touchSprite: createPadSprite(this.container, 0xffffff)
+                touchSprite: createPadSprite(this.container, 0xffffff),
             };
         };
         this.touchPads = [createPad(), createPad()];
@@ -160,7 +160,7 @@ export class Touch {
                             : this.analogMovement.toMoveDir;
                     this.analogMovement = {
                         toMoveDir: v2.create(toMoveDir.x, toMoveDir.y * -1),
-                        toMoveLen
+                        toMoveLen,
                     };
                     this.moveDetected = true;
                 }
@@ -207,7 +207,7 @@ export class Touch {
                             : this.aimMovement.toAimDir;
                     this.aimMovement = {
                         toAimDir: v2.create(toAimDir.x, toAimDir.y * -1),
-                        toAimLen
+                        toAimLen,
                     };
                 } else {
                     this.aimMovement.toAimLen = 0;
@@ -247,7 +247,7 @@ export class Touch {
 
         return {
             aimMovement: this.aimMovement,
-            touched: pad.touched
+            touched: pad.touched,
         };
     }
 
@@ -256,7 +256,7 @@ export class Touch {
         activePlayer: Player,
         map: Map,
         camera: Camera,
-        renderer: Renderer
+        renderer: Renderer,
     ) {
         for (let i = 0; i < this.touchPads.length; i++) {
             const pad = this.touchPads[i];
@@ -288,7 +288,7 @@ export class Touch {
         const radians = Math.atan2(y, x);
         return v2.create(
             Math.cos(radians) * this.padPosRange + posDown.x,
-            Math.sin(radians) * this.padPosRange + posDown.y
+            Math.sin(radians) * this.padPosRange + posDown.y,
         );
     }
 
@@ -368,19 +368,19 @@ export class Touch {
         }
         const leftLockedPadOffsetLandscape = v2.create(
             lockedPadOffsetLandscape.x,
-            lockedPadOffsetLandscape.y
+            lockedPadOffsetLandscape.y,
         );
         const leftLockedPadOffsetPortrait = v2.create(
             lockedPadOffsetPortrait.x,
-            lockedPadOffsetPortrait.y
+            lockedPadOffsetPortrait.y,
         );
         const rightLockedPadOffsetLandscape = v2.create(
             device.screenWidth - lockedPadOffsetLandscape.x,
-            lockedPadOffsetLandscape.y
+            lockedPadOffsetLandscape.y,
         );
         const rightLockedPadOffsetPortrait = v2.create(
             device.screenWidth - lockedPadOffsetPortrait.x,
-            lockedPadOffsetPortrait.y
+            lockedPadOffsetPortrait.y,
         );
 
         if (device.os == "ios") {
@@ -413,14 +413,14 @@ export class Touch {
             : leftLockedPadOffsetPortrait;
         this.leftLockedPadCenter = v2.create(
             leftOffset.x,
-            device.screenHeight - leftOffset.y
+            device.screenHeight - leftOffset.y,
         );
         const rightOffset = isLandscape
             ? rightLockedPadOffsetLandscape
             : rightLockedPadOffsetPortrait;
         this.rightLockedPadCenter = v2.create(
             rightOffset.x,
-            device.screenHeight - rightOffset.y
+            device.screenHeight - rightOffset.y,
         );
 
         this.setMobileStyling(isLandscape);
@@ -477,7 +477,7 @@ export class Touch {
                 $("#ui-bottom-center-right").addClass("ui-bottom-center-right-tablet");
                 $("#ui-top-left").addClass("ui-top-left-tablet");
                 $("#ui-spectate-options-wrapper").addClass(
-                    "ui-spectate-options-wrapper-tablet"
+                    "ui-spectate-options-wrapper-tablet",
                 );
                 $("#ui-killfeed-wrapper").addClass("ui-killfeed-wrapper-tablet");
                 $("#ui-kill-leader-wrapper").css("right", 144);
@@ -488,10 +488,10 @@ export class Touch {
                 $("#ui-bottom-center-right").removeClass("ui-bottom-center-right-tablet");
                 $("#ui-top-left").removeClass("ui-top-left-tablet");
                 $("#ui-spectate-options-wrapper").removeClass(
-                    "ui-spectate-options-wrapper-tablet"
+                    "ui-spectate-options-wrapper-tablet",
                 );
                 $("#ui-killfeed-wrapper-wrapper").removeClass(
-                    "ui-killfeed-wrapper-tablet"
+                    "ui-killfeed-wrapper-tablet",
                 );
             }
         }
@@ -501,28 +501,28 @@ export class Touch {
                 const topOffset = device.isLandscape ? 0 : 32;
                 $("#ui-game").css({
                     height: gameHeight,
-                    top: topOffset
+                    top: topOffset,
                 });
                 $("#ui-stats-contents").css({
                     transform: "translate(-50%) scale(0.95)",
-                    "transform-origin": "top"
+                    "transform-origin": "top",
                 });
                 if (isLandscape) {
                     $("#ui-game").css({
                         left: "50%",
                         transform: "translateX(-50%)",
-                        width: "93%"
+                        width: "93%",
                     });
                 } else {
                     $("#ui-game").css({
                         left: "",
                         transform: "",
-                        width: ""
+                        width: "",
                     });
                 }
             } else if (window.navigator.standalone && !device.tablet) {
                 $("#ui-game").css({
-                    height: "95%"
+                    height: "95%",
                 });
             } else {
                 let marginBottom = device.isLandscape ? "86%" : "82%";
@@ -530,14 +530,14 @@ export class Touch {
                     marginBottom = "100%";
                 }
                 $("#ui-game").css({
-                    height: marginBottom
+                    height: marginBottom,
                 });
                 const gameMarginTop = 6;
                 const gameMarginElems = $(
-                    "#ui-right-center, #ui-top-center-scopes-wrapper, #ui-top-center, #ui-menu-display"
+                    "#ui-right-center, #ui-top-center-scopes-wrapper, #ui-top-center, #ui-menu-display",
                 );
                 gameMarginElems.css({
-                    "margin-top": gameMarginTop
+                    "margin-top": gameMarginTop,
                 });
             }
         }
@@ -592,7 +592,7 @@ class LineSprites {
         activePlayer: Player,
         map: Map,
         camera: Camera,
-        renderer: Renderer
+        renderer: Renderer,
     ) {
         const visible = device.touch && touch.touchingAim && touch.touchAimLine;
 

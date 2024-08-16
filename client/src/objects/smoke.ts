@@ -33,7 +33,7 @@ class Smoke implements AbstractObject {
         data: ObjectData<ObjectType.Smoke>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         // @ts-expect-error data.type doesn't exist; this.type not used anywhere;
         this.type = data.type;
@@ -125,7 +125,7 @@ export class SmokeBarn {
         camera: Camera,
         activePlayer: Player,
         map: Map,
-        renderer: Renderer
+        renderer: Renderer,
     ) {
         // why is this commented out?
         // for (let o = this.e.getPool(), s = 0; s < o.length; s++) {

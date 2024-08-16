@@ -3,7 +3,7 @@ import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import {
     type ThrowableDef,
-    ThrowableDefs
+    ThrowableDefs,
 } from "../../../shared/defs/gameObjects/throwableDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
@@ -143,7 +143,7 @@ export class WeaponManager {
             this.weapons.push({
                 type: GameConfig.WeaponType[i] === "melee" ? "fists" : "",
                 ammo: 0,
-                cooldown: 0
+                cooldown: 0,
             });
         }
     }
@@ -290,14 +290,14 @@ export class WeaponManager {
             return {
                 trueMaxClip: weaponDef.extendedClip,
                 trueMaxReload: weaponDef.extendedReload,
-                trueMaxReloadAlt: weaponDef.extendedReloadAlt
+                trueMaxReloadAlt: weaponDef.extendedReloadAlt,
             };
         }
 
         return {
             trueMaxClip: weaponDef.maxClip,
             trueMaxReload: weaponDef.maxReload,
-            trueMaxReloadAlt: weaponDef.maxReloadAlt
+            trueMaxReloadAlt: weaponDef.maxReloadAlt,
         };
     }
 
@@ -328,7 +328,7 @@ export class WeaponManager {
                 this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
-                this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+                this.curWeapIdx == GameConfig.WeaponSlot.Throwable,
         ];
         if (conditions.some((c) => c)) {
             return;
@@ -368,7 +368,7 @@ export class WeaponManager {
             this.weapons[this.curWeapIdx].ammo += math.clamp(
                 amountToReload,
                 0,
-                spaceLeft
+                spaceLeft,
             );
         } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
@@ -386,7 +386,7 @@ export class WeaponManager {
             this.weapons[this.curWeapIdx].ammo += math.clamp(
                 amountToReload,
                 0,
-                spaceLeft
+                spaceLeft,
             );
             inv[weaponDef.ammo] -= math.clamp(amountToReload, 0, spaceLeft);
         }
@@ -522,7 +522,7 @@ export class WeaponManager {
         let clipNrm = v2.mul(direction, -1.0);
         const aabb = collider.createAabbExtents(
             this.player.pos,
-            v2.create(this.player.rad + gunLen + 1.5)
+            v2.create(this.player.rad + gunLen + 1.5),
         );
 
         const nearbyObjs = this.player.game.grid
@@ -594,7 +594,7 @@ export class WeaponManager {
                 // Add shotgun jitter
                 const offset = v2.mul(
                     v2.create(util.random(-jitter, jitter), util.random(-jitter, jitter)),
-                    1.11
+                    1.11,
                 );
                 bltStart = v2.add(bltStart, offset);
             }
@@ -645,7 +645,7 @@ export class WeaponManager {
                 reflectCount: 0,
                 splinter: hasSplinter,
                 // reflectObjId: this.player.linkedObstacleId,
-                onHitFx: hasExplosive ? "explosion_rounds" : undefined
+                onHitFx: hasExplosive ? "explosion_rounds" : undefined,
             };
             this.player.game.bulletBarn.fireBullet(params);
 
@@ -654,7 +654,7 @@ export class WeaponManager {
                 const projDef = GameObjectDefs[itemDef.projType];
                 assert(
                     projDef.type === "throwable",
-                    `Invalid projectile type: ${itemDef.projType}`
+                    `Invalid projectile type: ${itemDef.projType}`,
                 );
 
                 const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
@@ -666,7 +666,7 @@ export class WeaponManager {
                     bulletLayer,
                     vel,
                     projDef.fuseTime,
-                    GameConfig.DamageType.Player
+                    GameConfig.DamageType.Player,
                 );
             }
 
@@ -705,7 +705,7 @@ export class WeaponManager {
 
         const pos = v2.add(
             meleeDef.attack.offset,
-            v2.mul(v2.create(1, 0), this.player.scale - 1)
+            v2.mul(v2.create(1, 0), this.player.scale - 1),
         );
         const rotated = v2.add(this.player.pos, v2.rotate(pos, rot));
         const rad = meleeDef.attack.rad;
@@ -744,13 +744,13 @@ export class WeaponManager {
                     let collision = collider.intersectCircle(
                         obstacle.collider,
                         coll.pos,
-                        coll.rad
+                        coll.rad,
                     );
 
                     if (meleeDef.cleave) {
                         const normalized = v2.normalizeSafe(
                             v2.sub(obstacle.pos, this.player.pos),
-                            v2.create(1, 0)
+                            v2.create(1, 0),
                         );
                         const intersectedObstacle = collisionHelpers.intersectSegment(
                             obstacles,
@@ -759,7 +759,7 @@ export class WeaponManager {
                             lineEnd,
                             1,
                             this.player.layer,
-                            false
+                            false,
                         );
                         intersectedObstacle &&
                             intersectedObstacle.id !== obstacle.__id &&
@@ -768,14 +768,14 @@ export class WeaponManager {
                     if (collision) {
                         const pos = v2.add(
                             coll.pos,
-                            v2.mul(v2.neg(collision.dir), coll.rad - collision.pen)
+                            v2.mul(v2.neg(collision.dir), coll.rad - collision.pen),
                         );
                         hits.push({
                             obj: obstacle,
                             pen: collision.pen,
                             prio: 1,
                             pos,
-                            dir: collision.dir
+                            dir: collision.dir,
                         });
                     }
                 }
@@ -788,13 +788,13 @@ export class WeaponManager {
                 ) {
                     const normalized = v2.normalizeSafe(
                         v2.sub(player.pos, this.player.pos),
-                        v2.create(1, 0)
+                        v2.create(1, 0),
                     );
                     const collision = coldet.intersectCircleCircle(
                         coll.pos,
                         coll.rad,
                         player.pos,
-                        player.rad
+                        player.rad,
                     );
                     if (
                         collision &&
@@ -807,8 +807,8 @@ export class WeaponManager {
                                 lineEnd,
                                 GameConfig.player.meleeHeight,
                                 this.player.layer,
-                                false
-                            )
+                                false,
+                            ),
                         )
                     ) {
                         hits.push({
@@ -816,7 +816,7 @@ export class WeaponManager {
                             pen: collision.pen,
                             prio: player.teamId === this.player.teamId ? 2 : 0,
                             pos: v2.copy(player.pos),
-                            dir: collision.dir
+                            dir: collision.dir,
                         });
                     }
                 }
@@ -840,7 +840,7 @@ export class WeaponManager {
                     gameSourceType: this.activeWeapon,
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
-                    dir: hit.dir
+                    dir: hit.dir,
                 });
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {
@@ -849,7 +849,7 @@ export class WeaponManager {
                     gameSourceType: this.activeWeapon,
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
-                    dir: hit.dir
+                    dir: hit.dir,
                 });
             }
         }
@@ -866,7 +866,7 @@ export class WeaponManager {
         const itemDef = GameObjectDefs[this.activeWeapon];
         assert(
             itemDef.type === "throwable",
-            `Invalid projectile type: ${this.activeWeapon}`
+            `Invalid projectile type: ${this.activeWeapon}`,
         );
 
         this.cookingThrowable = true;
@@ -877,7 +877,7 @@ export class WeaponManager {
             itemDef.cookable ? itemDef.fuseTime : Infinity,
             () => {
                 this.throwThrowable();
-            }
+            },
         );
     }
 
@@ -893,7 +893,7 @@ export class WeaponManager {
                 ? math.clamp(
                       this.player.toMouseLen,
                       0,
-                      GameConfig.player.throwableMaxMouseDist * 1.8
+                      GameConfig.player.throwableMaxMouseDist * 1.8,
                   ) / 15
                 : 0;
 
@@ -921,8 +921,8 @@ export class WeaponManager {
             this.player.pos,
             v2.rotate(
                 v2.create(0.5, -1.0),
-                Math.atan2(this.player.dir.y, this.player.dir.x)
-            )
+                Math.atan2(this.player.dir.y, this.player.dir.x),
+            ),
         );
 
         let { dir } = this.player;
@@ -930,7 +930,7 @@ export class WeaponManager {
         if (throwableDef.aimDistance > 0.0) {
             const aimTarget = v2.add(
                 this.player.pos,
-                v2.mul(this.player.dir, throwableDef.aimDistance)
+                v2.mul(this.player.dir, throwableDef.aimDistance),
             );
             dir = v2.normalizeSafe(v2.sub(aimTarget, pos), v2.create(1.0, 0.0));
         }
@@ -940,12 +940,12 @@ export class WeaponManager {
         // Incorporate some of the player motion into projectile velocity
         const vel = v2.add(
             v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult),
-            v2.mul(dir, throwPhysicsSpeed * throwStr)
+            v2.mul(dir, throwPhysicsSpeed * throwStr),
         );
 
         const fuseTime = math.max(
             0.0,
-            throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0)
+            throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0),
         );
         this.player.game.projectileBarn.addProjectile(
             this.player.__id,
@@ -955,7 +955,7 @@ export class WeaponManager {
             this.player.layer,
             vel,
             fuseTime,
-            GameConfig.DamageType.Player
+            GameConfig.DamageType.Player,
         );
 
         const animationDuration = GameConfig.player.throwTime;

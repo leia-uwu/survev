@@ -103,7 +103,7 @@ class Application {
             this.account,
             this.localization,
             this.loadoutMenu,
-            this.errorModal
+            this.errorModal,
         );
         this.siteInfo = new SiteInfo(this.config, this.localization);
 
@@ -114,7 +114,7 @@ class Application {
             this.localization,
             this.audioManager,
             this.onTeamMenuJoinGame.bind(this),
-            this.onTeamMenuLeave.bind(this)
+            this.onTeamMenuLeave.bind(this),
         );
 
         const onLoadComplete = () => {
@@ -275,7 +275,7 @@ class Application {
                     antialias: false,
                     resolution: rendererRes,
                     hello: true,
-                    forceCanvas
+                    forceCanvas,
                 });
             };
             let pixi = null;
@@ -291,7 +291,7 @@ class Application {
             this.resourceManager = new ResourceManager(
                 this.pixi.renderer,
                 this.audioManager,
-                this.config
+                this.config,
             );
             this.resourceManager.loadMapAssets("main");
             this.input = new InputHandler(document.getElementById("game-touch-area")!);
@@ -329,14 +329,14 @@ class Application {
                 this.ambience,
                 this.resourceManager,
                 onJoin,
-                onQuit
+                onQuit,
             );
             this.loadoutDisplay = new LoadoutDisplay(
                 this.pixi,
                 this.audioManager,
                 this.config,
                 this.inputBinds,
-                this.account
+                this.account,
             );
             this.loadoutMenu.loadoutDisplay = this.loadoutDisplay;
             this.onResize();
@@ -394,25 +394,25 @@ class Application {
             .delay(delay)
             .animate(
                 {
-                    opacity: lock ? 0.5 : 1
+                    opacity: lock ? 0.5 : 1,
                 },
-                250
+                250,
             );
         this.playLoading
             .stop()
             .delay(delay)
             .animate(
                 {
-                    opacity: lock ? 1 : 0
+                    opacity: lock ? 1 : 0,
                 },
                 {
                     duration: 250,
                     start: () => {
                         this.playLoading.css({
-                            "pointer-events": lock ? "initial" : "none"
+                            "pointer-events": lock ? "initial" : "none",
                         });
-                    }
-                }
+                    },
+                },
             );
     }
 
@@ -486,7 +486,7 @@ class Application {
         this.startMenuWrapper.css("display", this.active ? "flex" : "none");
         this.gameAreaWrapper.css({
             display: this.active ? "none" : "block",
-            opacity: this.active ? 0 : 1
+            opacity: this.active ? 0 : 1,
         });
         if (this.active) {
             $("body").removeClass("user-select-none");
@@ -500,14 +500,14 @@ class Application {
         // Hide the left section if on mobile, oriented portrait, and viewing create team
         $("#ad-block-left").css(
             "display",
-            !device.isLandscape && this.teamMenu.active ? "none" : "block"
+            !device.isLandscape && this.teamMenu.active ? "none" : "block",
         );
 
         // Warning
         const hasError = this.active && this.errorMessage != "";
         this.serverWarning.css({
             display: "block",
-            opacity: hasError ? 1 : 0
+            opacity: hasError ? 1 : 0,
         });
         this.serverWarning.html(this.errorMessage);
 
@@ -515,7 +515,7 @@ class Application {
             ele.html(
                 this.quickPlayPendingModeIdx === gameModeIdx
                     ? '<div class="ui-spinner"></div>'
-                    : this.localization.translate(ele.data("l10n"))
+                    : this.localization.translate(ele.data("l10n")),
             );
         };
 
@@ -594,7 +594,7 @@ class Application {
                 zones,
                 playerCount: 1,
                 autoFill: true,
-                gameModeIdx
+                gameModeIdx,
             };
 
             const tryQuickStartGameImpl = () => {
@@ -623,7 +623,7 @@ class Application {
 
     findGame(
         matchArgs: unknown,
-        cb: (err?: string | null, matchData?: MatchData) => void
+        cb: (err?: string | null, matchData?: MatchData) => void,
     ) {
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
@@ -655,7 +655,7 @@ class Application {
                 },
                 error: function (_e) {
                     retry();
-                }
+                },
             });
         })(0, 2);
     }
@@ -673,7 +673,7 @@ class Application {
             urls.push(
                 `ws${matchData.useHttps ? "s" : ""}://${hosts[i]}/play?gameId=${
                     matchData.gameId
-                }`
+                }`,
             );
         }
         const joinGameImpl = (urls: string[], matchData: MatchData) => {
@@ -690,7 +690,7 @@ class Application {
                 matchData.data,
                 this.account.loadoutPriv,
                 this.account.questPriv,
-                onFailure
+                onFailure,
             );
         };
         joinGameImpl(urls, matchData);
@@ -700,7 +700,7 @@ class Application {
         const errMap = {
             full: this.localization.translate("index-failed-finding-game"),
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
-            join_game_failed: this.localization.translate("index-failed-joining-game")
+            join_game_failed: this.localization.translate("index-failed-joining-game"),
         };
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
@@ -818,7 +818,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
         column: columnNo,
         stacktrace,
         browser: navigator.userAgent,
-        protocol: GameConfig.protocolVersion
+        protocol: GameConfig.protocolVersion,
     };
     const errStr = JSON.stringify(errObj);
 

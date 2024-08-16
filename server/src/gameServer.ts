@@ -66,7 +66,7 @@ export class GameServer {
                     this.update();
                 },
                 "",
-                `${1000 / Config.gameTps}m`
+                `${1000 / Config.gameTps}m`,
             );
 
             new NanoTimer().setInterval(
@@ -74,7 +74,7 @@ export class GameServer {
                     this.netSync();
                 },
                 "",
-                `${1000 / Config.netSyncTps}m`
+                `${1000 / Config.netSyncTps}m`,
             );
         } else {
             setInterval(() => {
@@ -103,12 +103,12 @@ export class GameServer {
                 if (gameID !== false) {
                     res.upgrade(
                         {
-                            gameID
+                            gameID,
                         },
                         req.getHeader("sec-websocket-key"),
                         req.getHeader("sec-websocket-protocol"),
                         req.getHeader("sec-websocket-extensions"),
-                        context
+                        context,
                     );
                 } else {
                     forbidden(res);
@@ -144,7 +144,7 @@ export class GameServer {
              */
             close(socket: WebSocket<GameSocketData>) {
                 server.onClose(socket.getUserData());
-            }
+            },
         });
     }
 
@@ -182,7 +182,7 @@ export class GameServer {
             gameId: "",
             useHttps: true,
             hosts: [],
-            addrs: []
+            addrs: [],
         };
 
         if (body.region === this.regionId) {
@@ -203,12 +203,12 @@ export class GameServer {
 
                 if (!mode || !mode.enabled) {
                     response = {
-                        err: "Invalid game mode idx"
+                        err: "Invalid game mode idx",
                     };
                 } else {
                     game = await this.newGame({
                         teamMode: mode.teamMode,
-                        mapName: mode.mapName
+                        mapName: mode.mapName,
                     });
                 }
             }
@@ -247,14 +247,14 @@ export class GameServer {
                     response.data = hash;
                     game.groupDatas.push({
                         hash,
-                        autoFill
+                        autoFill,
                     });
                 }
             }
         } else {
             this.logger.warn("/api/find_game: Invalid region");
             response = {
-                err: "Invalid Region"
+                err: "Invalid Region",
             };
         }
         return { res: [response] };
@@ -317,12 +317,12 @@ export class GameServer {
         const data = fetch(url, {
             body: JSON.stringify({
                 ...body,
-                apiKey: Config.apiKey
+                apiKey: Config.apiKey,
             }),
             method: "post",
             headers: {
-                "Content-type": "application/json"
-            }
+                "Content-type": "application/json",
+            },
         }).catch(console.error);
         return data;
     }
@@ -330,7 +330,7 @@ export class GameServer {
     sendData() {
         try {
             this.fetchApiServer("api/update_region", {
-                playerCount: this.getPlayerCount()
+                playerCount: this.getPlayerCount(),
             });
         } catch (error) {
             this.logger.warn("Failed to send game data to api server, error: ", error);
@@ -344,7 +344,7 @@ if (process.argv.includes("--game-server")) {
     const app = Config.gameServer.ssl
         ? SSLApp({
               key_file_name: Config.gameServer.ssl.keyFile,
-              cert_file_name: Config.gameServer.ssl.certFile
+              cert_file_name: Config.gameServer.ssl.certFile,
           })
         : App();
 
@@ -365,9 +365,9 @@ if (process.argv.includes("--game-server")) {
                     returnJson(res, {
                         res: [
                             {
-                                err: "Failed finding game"
-                            }
-                        ]
+                                err: "Failed finding game",
+                            },
+                        ],
                     });
                 }
             },
@@ -376,18 +376,18 @@ if (process.argv.includes("--game-server")) {
                 returnJson(res, {
                     res: [
                         {
-                            err: "Error retriving body"
-                        }
-                    ]
+                            err: "Error retriving body",
+                        },
+                    ],
                 });
-            }
+            },
         );
     });
 
     app.listen(Config.gameServer.host, Config.gameServer.port, () => {
         server.logger.log(`Resurviv Game Server v${version}`);
         server.logger.log(
-            `Listening on ${Config.gameServer.host}:${Config.gameServer.port}`
+            `Listening on ${Config.gameServer.host}:${Config.gameServer.port}`,
         );
         server.logger.log("Press Ctrl+C to exit.");
 

@@ -21,7 +21,7 @@ export class River {
         riverWidth: number,
         looped: boolean,
         otherRivers: River[],
-        mapBounds: AABB
+        mapBounds: AABB,
     ) {
         this.spline = new Spline(splinePts, looped);
         this.waterWidth = riverWidth;
@@ -66,13 +66,13 @@ export class River {
                 if (Math.abs(e.x) > Math.abs(e.y)) {
                     edgePos = v2.create(
                         e.x > 0.0 ? mapBounds.max.x : mapBounds.min.x,
-                        vert.y
+                        vert.y,
                     );
                     edgeNorm = v2.create(e.x > 0.0 ? 1.0 : -1.0, 0.0);
                 } else {
                     edgePos = v2.create(
                         vert.x,
-                        e.y > 0.0 ? mapBounds.max.y : mapBounds.min.y
+                        e.y > 0.0 ? mapBounds.max.y : mapBounds.min.y,
                     );
                     edgeNorm = v2.create(0.0, e.y > 0.0 ? 1.0 : -1.0);
                 }
@@ -130,7 +130,7 @@ export class River {
             const clipRayToPoly = function clipRayToPoly(
                 pt: Vec2,
                 dir: Vec2,
-                poly: Vec2[]
+                poly: Vec2[],
             ) {
                 const end = v2.add(pt, dir);
                 if (!math.pointInsidePolygon(end, poly)) {
@@ -155,12 +155,12 @@ export class River {
                 const interiorWaterWidth = math.lerp(
                     math.min(waterWidth / avgDistToCenter, 1.0) ** 0.5,
                     waterWidth,
-                    (1.0 - (avgDistToCenter - waterWidth) / _dist) * _dist
+                    (1.0 - (avgDistToCenter - waterWidth) / _dist) * _dist,
                 );
                 const interiorShoreWidth = math.lerp(
                     math.min(shoreWidth / avgDistToCenter, 1.0) ** 0.5,
                     shoreWidth,
-                    (1.0 - (avgDistToCenter - shoreWidth) / _dist) * _dist
+                    (1.0 - (avgDistToCenter - shoreWidth) / _dist) * _dist,
                 );
 
                 waterPtA = v2.add(vert, v2.mul(toVert, waterWidth));

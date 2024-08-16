@@ -21,12 +21,12 @@ class Region {
             fetch(url, {
                 body: JSON.stringify({
                     ...body,
-                    apiKey: Config.apiKey
+                    apiKey: Config.apiKey,
                 }),
                 method: "post",
                 headers: {
-                    "Content-type": "application/json"
-                }
+                    "Content-type": "application/json",
+                },
             })
                 .catch(console.error)
                 .then((response) => {
@@ -86,13 +86,13 @@ export class ApiServer {
             >,
             youtube: { name: "", link: "" },
             twitch: [],
-            country: "US"
+            country: "US",
         };
 
         for (const region in this.regions) {
             data.pops[region] = {
                 playerCount: this.regions[region].playerCount,
-                l10n: Config.regions[region].l10n
+                l10n: Config.regions[region].l10n,
             };
         }
         return data;
@@ -111,12 +111,12 @@ export class ApiServer {
         if (body.region in this.regions) {
             return this.regions[body.region].fetch<FindGameResponse>(
                 "api/find_game",
-                body
+                body,
             );
         }
         this.logger.warn("/api/find_game: Invalid region");
         return {
-            res: [{ err: "Invalid Region" }]
+            res: [{ err: "Invalid Region" }],
         };
     }
 }
@@ -127,7 +127,7 @@ if (process.argv.includes("--api-server")) {
     const app = Config.apiServer.ssl
         ? SSLApp({
               key_file_name: Config.apiServer.ssl.keyFile,
-              cert_file_name: Config.apiServer.ssl.certFile
+              cert_file_name: Config.apiServer.ssl.certFile,
           })
         : App();
 
@@ -147,11 +147,11 @@ if (process.argv.includes("--api-server")) {
                 returnJson(res, {
                     res: [
                         {
-                            err: "Error retriving body"
-                        }
-                    ]
+                            err: "Error retriving body",
+                        },
+                    ],
                 });
-            }
+            },
         );
     });
 
@@ -171,14 +171,14 @@ if (process.argv.includes("--api-server")) {
             },
             () => {
                 forbidden(res);
-            }
+            },
         );
     });
 
     app.listen(Config.apiServer.host, Config.apiServer.port, (): void => {
         server.logger.log(`Resurviv API Server v${version}`);
         server.logger.log(
-            `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`
+            `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`,
         );
         server.logger.log("Press Ctrl+C to exit.");
         0;

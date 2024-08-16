@@ -26,7 +26,7 @@ export class Grid<T extends GameObject = GameObject> {
         this.height = Math.floor(height / this.cellSize);
 
         this._grid = Array.from({ length: this.width + 1 }, () =>
-            Array.from({ length: this.height + 1 }, () => new Set())
+            Array.from({ length: this.height + 1 }, () => new Set()),
         );
     }
 
@@ -126,7 +126,7 @@ export class Grid<T extends GameObject = GameObject> {
     private _roundToCells(vector: Vec2): Vec2 {
         return {
             x: math.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
-            y: math.clamp(Math.floor(vector.y / this.cellSize), 0, this.height)
+            y: math.clamp(Math.floor(vector.y / this.cellSize), 0, this.height),
         };
     }
 }

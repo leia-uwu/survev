@@ -719,5 +719,5 @@ export default {
     "game-xp_compass": "Amélie's True Compass",
     "game-xp_stump": "Ravenstone's Bloody Stump",
     "game-xp_bone": "Bone of Gordon",
-    "game-xp_donut": "Cake Donut"
+    "game-xp_donut": "Cake Donut",
 };

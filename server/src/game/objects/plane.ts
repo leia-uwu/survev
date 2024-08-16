@@ -45,7 +45,7 @@ export class PlaneBarn {
                 !coldet.testPointAabb(
                     plane.pos,
                     this.planeBounds.min,
-                    this.planeBounds.max
+                    this.planeBounds.max,
                 ) &&
                 plane.actionComplete
             ) {
@@ -65,8 +65,8 @@ export class PlaneBarn {
                         this.addAirdrop(
                             v2.add(
                                 this.game.gas.posNew,
-                                util.randomPointInCircle(this.game.gas.radNew)
-                            )
+                                util.randomPointInCircle(this.game.gas.radNew),
+                            ),
                         );
                         break;
                     }
@@ -84,7 +84,7 @@ export class PlaneBarn {
             for (let i = 0; i < circleIdx; i++) {
                 waitTime = math.max(
                     waitTime - GameConfig.gas.waitTimeDecay,
-                    GameConfig.gas.waitTimeMin
+                    GameConfig.gas.waitTimeMin,
                 );
                 total += waitTime;
             }
@@ -93,7 +93,7 @@ export class PlaneBarn {
             for (let i = 0; i < circleIdx; i++) {
                 gasTime = math.max(
                     gasTime - GameConfig.gas.gasTimeDecay,
-                    GameConfig.gas.gasTimeMin
+                    GameConfig.gas.gasTimeMin,
                 );
                 total += gasTime;
             }
@@ -110,7 +110,7 @@ export class PlaneBarn {
     schedulePlane(time: number, options: PlaneOptions) {
         this.scheduledPlanes.push({
             time,
-            options
+            options,
         });
     }
 
@@ -122,7 +122,7 @@ export class PlaneBarn {
         }
 
         const type = util.weightedRandom(
-            this.game.map.mapDef.gameConfig.planes.crates
+            this.game.map.mapDef.gameConfig.planes.crates,
         ).name;
 
         const def = MapObjectDefs[type] as ObstacleDef;
@@ -149,7 +149,7 @@ export class PlaneBarn {
                             coll,
                             v2.mul(intersection.dir, -intersection.pen),
                             0,
-                            1
+                            1,
                         );
                         collided = true;
                         break;
@@ -164,7 +164,7 @@ export class PlaneBarn {
                                 coll,
                                 v2.mul(intersection.dir, -intersection.pen),
                                 0,
-                                1
+                                1,
                             );
                             collided = true;
                             break;
@@ -180,7 +180,7 @@ export class PlaneBarn {
                             coll,
                             v2.mul(intersection.dir, -intersection.pen),
                             0,
-                            1
+                            1,
                         );
                         collided = true;
                         break;
@@ -199,7 +199,7 @@ export class PlaneBarn {
                         coll,
                         v2.mul(intersection.dir, -intersection.pen),
                         0,
-                        1
+                        1,
                     );
                     collided = true;
                     break;
@@ -218,7 +218,7 @@ export class PlaneBarn {
                     const height = coll.max.y - coll.min.y;
                     airdropPos = v2.create(
                         coll.min.x + width / 2,
-                        coll.min.y + height / 2
+                        coll.min.y + height / 2,
                     );
                     rad = math.max(width, height);
                     break;
@@ -234,7 +234,7 @@ export class PlaneBarn {
         const airdrop: ScheduledAirDrop = {
             type,
             pos: airdropPos,
-            collider: collider.transform(def.collision, airdropPos, 0, 1)
+            collider: collider.transform(def.collision, airdropPos, 0, 1),
         };
 
         const planePos = v2.add(pos, v2.mul(v2.randomUnit(), AIRDROP_PLANE_SPAWN_DIST));
@@ -277,7 +277,7 @@ abstract class Plane {
         action: number,
         pos: Vec2,
         targetPos: Vec2,
-        dir: Vec2
+        dir: Vec2,
     ) {
         this.game = game;
         this.planeBarn = game.planeBarn;
@@ -342,7 +342,7 @@ class AirStrikePlane extends Plane {
                     0,
                     v2.mul(v2.randomUnit(), config.bombVel),
                     bombDef.fuseTime,
-                    GameConfig.DamageType.Airstrike
+                    GameConfig.DamageType.Airstrike,
                 );
             }
         }

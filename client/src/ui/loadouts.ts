@@ -17,7 +17,7 @@ export interface Loadout {
 export enum ItemStatus {
     New,
     Confirmed,
-    Ackd
+    Ackd,
 }
 
 const loadout = {
@@ -26,7 +26,7 @@ const loadout = {
         const getGameType = function (
             type: string,
             gameType: string,
-            defaultValue: string
+            defaultValue: string,
         ) {
             const def = GameObjectDefs[gameType];
             if (def && def.type == type) {
@@ -47,11 +47,11 @@ const loadout = {
                     type: "",
                     color: 0xffffff,
                     size: 1,
-                    stroke: 0
+                    stroke: 0,
                 },
-                emotes: []
+                emotes: [],
             },
-            ...userLoadout
+            ...userLoadout,
         } as Loadout;
         const validatedLoadout: Loadout = {
             outfit: getGameType("outfit", mergedLoadout.outfit, "outfitBase"),
@@ -63,21 +63,21 @@ const loadout = {
                 type: getGameType(
                     "crosshair",
                     mergedLoadout.crosshair.type,
-                    "crosshair_default"
+                    "crosshair_default",
                 ),
                 color:
                     parseInt(mergedLoadout.crosshair.color as unknown as string) ||
                     0xffffff,
                 size: getFloat(
                     mergedLoadout.crosshair.size as unknown as string,
-                    1
+                    1,
                 ).toFixed(2) as unknown as number,
                 stroke: getFloat(
                     mergedLoadout.crosshair.stroke as unknown as string,
-                    0
-                ).toFixed(2) as unknown as number
+                    0,
+                ).toFixed(2) as unknown as number,
             },
-            emotes: [] as string[]
+            emotes: [] as string[],
         };
 
         const defaultEmotes = GameConfig.defaultEmoteLoadout.slice();
@@ -85,7 +85,7 @@ const loadout = {
             const inputEmote =
                 i < mergedLoadout.emotes.length ? mergedLoadout.emotes[i] : "";
             validatedLoadout.emotes.push(
-                getGameType("emote", inputEmote, defaultEmotes[i])
+                getGameType("emote", inputEmote, defaultEmotes[i]),
             );
         }
         return validatedLoadout;
@@ -138,13 +138,13 @@ const loadout = {
                 type: unlock,
                 source: "unlock_default",
                 timeAcquired: 0,
-                ackd: loadout.ItemStatus.Ackd
+                ackd: loadout.ItemStatus.Ackd,
             });
         }
         for (let i = 0; i < heroItems.length; i++) {
             items.push(heroItems[i]);
         }
         return items;
-    }
+    },
 };
 export default loadout;

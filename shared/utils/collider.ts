@@ -9,7 +9,7 @@ import { type Vec2, v2 } from "./v2";
 export const collider = {
     Type: {
         Circle: 0 as const,
-        Aabb: 1 as const
+        Aabb: 1 as const,
     },
 
     createCircle(pos: Vec2, rad: number, height = 0) {
@@ -17,7 +17,7 @@ export const collider = {
             type: collider.Type.Circle,
             pos: v2.copy(pos),
             rad,
-            height
+            height,
         };
     },
 
@@ -26,7 +26,7 @@ export const collider = {
             type: collider.Type.Aabb,
             min: v2.copy(min),
             max: v2.copy(max),
-            height
+            height,
         };
     },
 
@@ -73,7 +73,7 @@ export const collider = {
                 v2.create(c.x - e.x, c.y - e.y),
                 v2.create(c.x - e.x, c.y + e.y),
                 v2.create(c.x + e.x, c.y - e.y),
-                v2.create(c.x + e.x, c.y + e.y)
+                v2.create(c.x + e.x, c.y + e.y),
             ];
             const min = v2.create(Number.MAX_VALUE, Number.MAX_VALUE);
             const max = v2.create(-Number.MAX_VALUE, -Number.MAX_VALUE);
@@ -90,7 +90,7 @@ export const collider = {
         return collider.createCircle(
             v2.add(v2.rotate(v2.mul(col.pos, scale), rot), pos),
             col.rad * scale,
-            col.height
+            col.height,
         );
     },
 
@@ -133,5 +133,5 @@ export const collider = {
             return collider.intersectAabb(colA, colB.min, colB.max);
         }
         return collider.intersectCircle(colA, colB.pos, colB.rad);
-    }
+    },
 };

@@ -5,7 +5,7 @@ import { Main } from "./baseDefs";
 const mapDef = {
     assets: {
         audio: [],
-        atlases: ["gradient", "loadout", "shared", "main"]
+        atlases: ["gradient", "loadout", "shared", "main"],
     },
     biome: {
         colors: {
@@ -17,10 +17,10 @@ const mapDef = {
             grass: 6066442,
             underground: 1772803,
             playerSubmerge: 2854052,
-            playerGhillie: 4285194
+            playerGhillie: 4285194,
         },
         sound: { riverShore: "stone" },
-        particles: { camera: "falling_leaf_spring" }
+        particles: { camera: "falling_leaf_spring" },
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
@@ -47,8 +47,8 @@ const mapDef = {
                 shack_01: 7,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
-            }
+                loot_tier_beach: 4,
+            },
         ],
         fixedSpawns: [
             {
@@ -77,12 +77,12 @@ const mapDef = {
                 chest_03: { odds: 0.2 },
                 mil_crate_02: { odds: 0.25 },
                 tree_02: 3,
-                teahouse_01: { small: 2, large: 3 }
-            }
+                teahouse_01: { small: 2, large: 3 },
+            },
         ],
         randomSpawns: [],
-        spawnReplacements: [{ tree_01: "tree_07sp" }]
-    }
+        spawnReplacements: [{ tree_01: "tree_07sp" }],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

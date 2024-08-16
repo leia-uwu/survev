@@ -8,7 +8,7 @@ import * as net from "../../shared/net/net";
 import {
     type ObjectData,
     ObjectType,
-    type ObjectsPartialData
+    type ObjectsPartialData,
 } from "../../shared/net/objectSerializeFns";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
@@ -19,7 +19,7 @@ const config = {
     region: "local",
     gameModeIdx: 0,
     botCount: 79,
-    joinDelay: 100
+    joinDelay: 100,
 };
 
 //
@@ -67,7 +67,7 @@ class ObjectCreator {
             const err = {
                 id,
                 ids: Object.keys(this.idToObj),
-                stream: s._view._view
+                stream: s._view._view,
             };
             console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
             return ObjectType.Invalid;
@@ -78,7 +78,7 @@ class ObjectCreator {
     updateObjFull<Type extends ObjectType>(
         type: Type,
         id: number,
-        data: ObjectData<Type>
+        data: ObjectData<Type>,
     ) {
         let obj = this.getObjById(id);
         if (obj === undefined) {
@@ -118,7 +118,7 @@ class Bot {
         up: false,
         down: false,
         left: false,
-        right: false
+        right: false,
     };
 
     shootStart = false;
@@ -149,7 +149,7 @@ class Bot {
 
         assert("gameId" in res);
         this.ws = new WebSocket(
-            `${res.useHttps ? "wss" : "ws"}://${res.addrs[0]}/play?gameId=${res.gameId}`
+            `${res.useHttps ? "wss" : "ws"}://${res.addrs[0]}/play?gameId=${res.gameId}`,
         );
 
         this.ws.addEventListener("error", console.error);
@@ -234,7 +234,7 @@ class Bot {
                 const msg = new net.GameOverMsg();
                 msg.deserialize(stream);
                 console.log(
-                    `Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${msg.playerStats[0].kills} | rank: ${msg.teamRank}`
+                    `Bot ${this.id} ${msg.gameOver ? "won" : "died"} | kills: ${msg.playerStats[0].kills} | rank: ${msg.teamRank}`,
                 );
                 this.disconnect = true;
                 this.connected = false;
@@ -278,7 +278,7 @@ class Bot {
             outfit: outfits[util.randomInt(0, outfits.length - 1)],
             heal: "heal_basic",
             boost: "boost_basic",
-            emotes: this.emotes
+            emotes: this.emotes,
         };
         this.sendMsg(net.MsgType.Join, joinMsg);
     }
@@ -325,7 +325,7 @@ class Bot {
             up: false,
             down: false,
             left: false,
-            right: false
+            right: false,
         };
 
         this.shootStart = Math.random() < 0.5;
@@ -373,8 +373,8 @@ void (async () => {
                     method: "POST",
                     body: JSON.stringify({
                         region: config.region,
-                        gameModeIdx: config.gameModeIdx
-                    })
+                        gameModeIdx: config.gameModeIdx,
+                    }),
                 })
             ).json();
 

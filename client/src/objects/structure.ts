@@ -5,7 +5,7 @@ import {
     type AABBWithHeight,
     type Collider,
     type ColliderWithHeight,
-    coldet
+    coldet,
 } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
@@ -69,7 +69,7 @@ export class Structure implements AbstractObject {
         data: ObjectData<ObjectType.Structure>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         if (fullUpdate) {
             this.type = data.type;
@@ -87,7 +87,7 @@ export class Structure implements AbstractObject {
                 mapHelpers.getBoundingCollider(this.type),
                 this.pos,
                 this.rot,
-                this.scale
+                this.scale,
             );
             const def = MapObjectDefs[this.type] as StructureDef;
             this.layers = [];
@@ -104,12 +104,12 @@ export class Structure implements AbstractObject {
                     mapHelpers.getBoundingCollider(layer.type),
                     pos,
                     rot,
-                    1
+                    1,
                 );
                 this.layers.push({
                     objId,
                     collision,
-                    underground
+                    underground,
                 });
             }
             this.stairs = [];
@@ -119,7 +119,7 @@ export class Structure implements AbstractObject {
                     stairsDef.collision,
                     this.pos,
                     this.rot,
-                    this.scale
+                    this.scale,
                 ) as AABBWithHeight;
                 const downDir = v2.rotate(stairsDef.downDir, this.rot);
                 const childAabbs = coldet.splitAabb(stairsCol, downDir);
@@ -128,13 +128,13 @@ export class Structure implements AbstractObject {
                     collision: stairsCol as AABB & { height: number },
                     center: v2.add(
                         stairsCol.min,
-                        v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)
+                        v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5),
                     ),
                     downDir,
                     downAabb: collider.createAabb(childAabbs[0].min, childAabbs[0].max),
                     upAabb: collider.createAabb(childAabbs[1].min, childAabbs[1].max),
                     noCeilingReveal: !!stairsDef.noCeilingReveal,
-                    lootOnly: !!stairsDef.lootOnly
+                    lootOnly: !!stairsDef.lootOnly,
                 });
             }
             this.mask = [];
@@ -144,8 +144,8 @@ export class Structure implements AbstractObject {
                         def.mask[i],
                         this.pos,
                         this.rot,
-                        this.scale
-                    ) as AABB
+                        this.scale,
+                    ) as AABB,
                 );
             }
             ctx.renderer.layerMaskDirty = true;
@@ -212,7 +212,7 @@ export class Structure implements AbstractObject {
             this.soundTransitionT = math.clamp(
                 this.soundTransitionT + dt / transitionTime,
                 0,
-                1
+                1,
             );
         }
         const transitionWeight = Math.abs(this.soundTransitionT - 0.5) * 2;

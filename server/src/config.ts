@@ -7,7 +7,7 @@ import { util } from "../../shared/utils/util";
 export enum TeamMode {
     Solo = 1,
     Duo = 2,
-    Squad = 4
+    Squad = 4,
 }
 
 /**
@@ -16,18 +16,18 @@ export enum TeamMode {
 export const Config = {
     devServer: {
         host: "127.0.0.1",
-        port: 8001
+        port: 8001,
     },
 
     apiServer: {
         host: "0.0.0.0",
-        port: 8000
+        port: 8000,
     },
 
     gameServer: {
         host: "0.0.0.0",
         port: 8001,
-        apiServerUrl: "http://127.0.0.1:8000"
+        apiServerUrl: "http://127.0.0.1:8000",
     },
 
     apiKey: "Kongregate Sucks",
@@ -35,7 +35,7 @@ export const Config = {
     modes: [
         { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
-        { mapName: "main", teamMode: TeamMode.Squad, enabled: true }
+        { mapName: "main", teamMode: TeamMode.Squad, enabled: true },
     ],
 
     regions: {},
@@ -47,10 +47,10 @@ export const Config = {
 
     perfLogging: {
         enabled: true,
-        time: 10
+        time: 10,
     },
 
-    gameConfig: {}
+    gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
 const runningOnVite = !process.argv.some((a) => a.includes("vite"));
@@ -59,7 +59,7 @@ const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
 const configPath = path.join(
     __dirname,
     isProduction ? "../../" : "",
-    "../../resurviv-config.json"
+    "../../resurviv-config.json",
 );
 
 if (fs.existsSync(configPath)) {

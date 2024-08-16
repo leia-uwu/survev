@@ -36,7 +36,7 @@ export class PieTimer {
             align: "center",
             fill: 0xffffff,
             stroke: 0,
-            strokeThickness: 3
+            strokeThickness: 3,
         };
         this.container.addChild(this.counterText);
         this.labelText.anchor.set(0.5, 0.5);
@@ -45,7 +45,7 @@ export class PieTimer {
             fontWeight: "100",
             fontSize: fontWidth,
             align: "center",
-            fill: 0xffffff
+            fill: 0xffffff,
         };
         this.container.addChild(this.labelText);
     }
@@ -54,11 +54,11 @@ export class PieTimer {
         // Don't destroy the texture being used by timerBackground
         this.container.removeChild(this.timerBackground);
         this.timerBackground.destroy({
-            children: true
+            children: true,
         });
         this.container.destroy({
             children: true,
-            texture: true
+            texture: true,
         });
     }
 
@@ -113,7 +113,7 @@ export class PieTimer {
         this.labelText.text = this.label;
         this.container.position.set(
             camera.screenWidth / 2,
-            (camera.screenHeight / 3) * this.screenScaleFactor + this.mobileOffset
+            (camera.screenHeight / 3) * this.screenScaleFactor + this.mobileOffset,
         );
         this.container.visible = true;
     }

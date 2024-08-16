@@ -58,7 +58,7 @@ class AirDrop implements AbstractObject {
         data: ObjectData<ObjectType.Airdrop>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         if (isNew) {
             this.isNew = true;
@@ -89,7 +89,7 @@ export class AirdropBarn {
         map: Map,
         particleBarn: ParticleBarn,
         renderer: Renderer,
-        audioManager: AudioManager
+        audioManager: AudioManager,
     ) {
         const airdrops = this.airdropPool.getPool();
         for (let i = 0; i < airdrops.length; i++) {
@@ -102,7 +102,7 @@ export class AirdropBarn {
             const fallT = math.clamp(
                 airdrop.fallTicker / GameConfig.airdrop.fallTime,
                 0.0,
-                1.0
+                1.0,
             );
 
             let layer = 0;
@@ -130,12 +130,12 @@ export class AirdropBarn {
                         for (let j = 0; j < 12; j++) {
                             const ripplePos = v2.add(
                                 airdrop.pos,
-                                v2.mul(v2.randomUnit(), util.random(4.5, 6.0))
+                                v2.mul(v2.randomUnit(), util.random(4.5, 6.0)),
                             );
                             const part = particleBarn.addRippleParticle(
                                 ripplePos,
                                 layer,
-                                surface.data.rippleColor
+                                surface.data.rippleColor,
                             );
                             part.setDelay(j * 0.075);
                         }
@@ -148,7 +148,7 @@ export class AirdropBarn {
                         channel: "sfx",
                         soundPos: airdrop.pos,
                         layer,
-                        filter: "muffled"
+                        filter: "muffled",
                     });
                     audioManager.stopSound(airdrop.fallInstance!);
                     airdrop.fallInstance = null;
@@ -161,7 +161,7 @@ export class AirdropBarn {
                     channel: "sfx",
                     soundPos: airdrop.pos,
                     layer,
-                    rangeMult: 1.75
+                    rangeMult: 1.75,
                 });
                 airdrop.chuteDeployed = true;
             }
@@ -173,7 +173,7 @@ export class AirdropBarn {
                     layer,
                     rangeMult: 1.75,
                     ignoreMinAllowable: true,
-                    offset: airdrop.fallTicker
+                    offset: airdrop.fallTicker,
                 });
             }
 
@@ -182,7 +182,7 @@ export class AirdropBarn {
                 audioManager.updateSound(airdrop.fallInstance, "sfx", airdrop.pos, {
                     layer,
                     rangeMult: 1.75,
-                    ignoreMinAllowable: true
+                    ignoreMinAllowable: true,
                 });
             } else {
                 airdrop.soundUpdateThrottle -= dt;

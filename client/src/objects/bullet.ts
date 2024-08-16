@@ -23,7 +23,7 @@ export function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
     const ang = Math.atan2(dir.y, dir.x);
     return {
         p0: v2.add(pos, v2.rotate(p0, ang)),
-        p1: v2.add(pos, v2.rotate(p1, ang))
+        p1: v2.add(pos, v2.rotate(p1, ang)),
     };
 }
 
@@ -32,7 +32,7 @@ export function createBullet(
     bulletBarn: BulletBarn,
     flareBarn: FlareBarn,
     playerBarn: PlayerBarn,
-    renderer: Renderer
+    renderer: Renderer,
 ) {
     if (BulletDefs[bullet.bulletType].addFlare) {
         flareBarn.addFlare(bullet, playerBarn, renderer);
@@ -48,7 +48,7 @@ export function playHitFx(
     a: Vec2,
     layer: number,
     particleBarn: ParticleBarn,
-    audioManager: AudioManager
+    audioManager: AudioManager,
 ) {
     const numParticles = Math.floor(util.random(1, 2));
     let vel = v2.mul(a, 9.5);
@@ -60,7 +60,7 @@ export function playHitFx(
         channel: "hits",
         soundPos: pos,
         layer,
-        filter: "muffled"
+        filter: "muffled",
     });
 }
 export class BulletBarn {
@@ -102,7 +102,7 @@ export class BulletBarn {
     onMapLoad(map: Map) {
         this.tracerColors = util.mergeDeep(
             GameConfig.tracerColors,
-            map.getMapDef().biome.tracerColors
+            map.getMapDef().biome.tracerColors,
         );
     }
 
@@ -202,7 +202,7 @@ export class BulletBarn {
         activePlayer: Player,
         renderer: Renderer,
         particleBarn: ParticleBarn,
-        audioManager: AudioManager
+        audioManager: AudioManager,
     ) {
         const players = playerBarn.playerPool.getPool();
         for (let i = 0; i < this.bullets.length; i++) {
@@ -229,7 +229,7 @@ export class BulletBarn {
                 ) {
                     audioManager.playGroup("bullet_whiz", {
                         soundPos: b.pos,
-                        fallOff: 4
+                        fallOff: 4,
                     });
                     b.whizHeard = true;
                 }
@@ -239,7 +239,7 @@ export class BulletBarn {
                     const rate = b.tracerAlphaRate;
                     b.bulletTrail.alpha = math.max(
                         b.tracerAlphaMin,
-                        b.bulletTrail.alpha * rate
+                        b.bulletTrail.alpha * rate,
                     );
                 }
 
@@ -269,7 +269,7 @@ export class BulletBarn {
                         const res = collider.intersectSegment(
                             obstacle.collider,
                             posOld,
-                            b.pos
+                            b.pos,
                         );
                         if (res) {
                             colObjs.push({
@@ -277,7 +277,7 @@ export class BulletBarn {
                                 obstacleType: obstacle.type,
                                 collidable: obstacle.collidable,
                                 point: res.point,
-                                normal: res.normal
+                                normal: res.normal,
                             });
                         }
                     }
@@ -299,34 +299,34 @@ export class BulletBarn {
                                 panSeg.p0,
                                 panSeg.p1,
                                 p.posOld,
-                                p.dirOld
+                                p.dirOld,
                             );
                             const newSegment = transformSegment(
                                 panSeg.p0,
                                 panSeg.p1,
                                 p.pos,
-                                p.dir
+                                p.dir,
                             );
                             const newIntersection = coldet.intersectSegmentSegment(
                                 posOld,
                                 b.pos,
                                 oldSegment.p0,
-                                oldSegment.p1
+                                oldSegment.p1,
                             );
                             const oldIntersection = coldet.intersectSegmentSegment(
                                 posOld,
                                 b.pos,
                                 newSegment.p0,
-                                newSegment.p1
+                                newSegment.p1,
                             );
                             const finalIntersection = oldIntersection || newIntersection;
                             if (finalIntersection) {
                                 const normal = v2.normalize(
-                                    v2.perp(v2.sub(newSegment.p1, newSegment.p0))
+                                    v2.perp(v2.sub(newSegment.p1, newSegment.p0)),
                                 );
                                 panCollision = {
                                     point: finalIntersection.point,
-                                    normal: normal
+                                    normal: normal,
                                 };
                             }
                         }
@@ -334,7 +334,7 @@ export class BulletBarn {
                             posOld,
                             b.pos,
                             player.pos,
-                            player.rad
+                            player.rad,
                         );
                         if (
                             collision &&
@@ -348,18 +348,18 @@ export class BulletBarn {
                                 point: collision.point,
                                 normal: collision.normal,
                                 layer: player.layer,
-                                collidable: true
+                                collidable: true,
                             });
                             if (player.hasPerk("steelskin")) {
                                 colObjs.push({
                                     type: "pan",
                                     point: v2.add(
                                         collision.point,
-                                        v2.mul(collision.normal, 0.1)
+                                        v2.mul(collision.normal, 0.1),
                                     ),
                                     normal: collision.normal,
                                     layer: player.layer,
-                                    collidable: false
+                                    collidable: false,
                                 });
                             }
                         } else if (panCollision) {
@@ -368,7 +368,7 @@ export class BulletBarn {
                                 point: panCollision.point,
                                 normal: panCollision.normal,
                                 layer: player.layer,
-                                collidable: true
+                                collidable: true,
                             });
                         }
                         if (collision || panCollision) {
@@ -403,7 +403,7 @@ export class BulletBarn {
                             col.normal,
                             b.layer,
                             particleBarn,
-                            audioManager
+                            audioManager,
                         );
 
                         // Continue travelling if non-collidable
@@ -420,7 +420,7 @@ export class BulletBarn {
                                     "turkeyFeathersHit",
                                     Y.layer,
                                     Y.pos,
-                                    J
+                                    J,
                                 );
                             }
                             const Q = v2.sub(col.point, Y?.pos);
@@ -432,13 +432,13 @@ export class BulletBarn {
                                 v2.create(0, 0),
                                 1,
                                 1,
-                                Y.container
+                                Y.container,
                             );
                             audioManager.playGroup("player_bullet_hit", {
                                 soundPos: Y.pos,
                                 fallOff: 1,
                                 layer: Y.layer,
-                                filter: "muffled"
+                                filter: "muffled",
                             });
                         }
                         hit = col.collidable;
@@ -450,7 +450,7 @@ export class BulletBarn {
                             col.normal,
                             col.layer!,
                             particleBarn,
-                            audioManager
+                            audioManager,
                         );
                         hit = col.collidable;
                     }
@@ -474,7 +474,7 @@ export class BulletBarn {
                                     collider.intersectSegment(
                                         se?.collision!,
                                         b.pos,
-                                        posOld
+                                        posOld,
                                     )
                                 ) {
                                     ae = true;
@@ -511,7 +511,7 @@ export class BulletBarn {
     createBulletHit(
         playerBarn: PlayerBarn,
         targetId: number,
-        audioManager: AudioManager
+        audioManager: AudioManager,
     ) {
         const player = playerBarn.getPlayerById(targetId);
         if (player) {
@@ -519,7 +519,7 @@ export class BulletBarn {
                 soundPos: player.pos,
                 fallOff: 1,
                 layer: player.layer,
-                filter: "muffled"
+                filter: "muffled",
             });
         }
     }

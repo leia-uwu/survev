@@ -7,7 +7,7 @@ import {
     type HealDef,
     type HelmetDef,
     SCOPE_LEVELS,
-    type ScopeDef
+    type ScopeDef,
 } from "../../../../shared/defs/gameObjects/gearDefs";
 import type { GunDef } from "../../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
@@ -91,7 +91,7 @@ export class PlayerBarn {
 
         if (this.game.isTeamMode) {
             const groupData = this.game.groupDatas.find(
-                (gd) => gd.hash == joinMsg.matchPriv
+                (gd) => gd.hash == joinMsg.matchPriv,
             )!;
             if (this.game.groups.has(groupData.hash)) {
                 //group already exists
@@ -202,7 +202,7 @@ export class Player extends BaseGameObject {
 
     bounds = collider.createAabbExtents(
         v2.create(0, 0),
-        v2.create(GameConfig.player.maxVisualRadius, GameConfig.player.maxVisualRadius)
+        v2.create(GameConfig.player.maxVisualRadius, GameConfig.player.maxVisualRadius),
     );
 
     scale = 1;
@@ -366,7 +366,7 @@ export class Player extends BaseGameObject {
     set spectating(player: Player | undefined) {
         if (player === this) {
             throw new Error(
-                `Player ${player.name} tried spectate themselves (how tf did this happen?)`
+                `Player ${player.name} tried spectate themselves (how tf did this happen?)`,
             );
         }
         if (this._spectating === player) return;
@@ -489,9 +489,9 @@ export class Player extends BaseGameObject {
                 this.weapons[1] = {
                     type: "bugle",
                     ammo: this.weaponManager.getTrueAmmoStats(
-                        GameObjectDefs["bugle"] as GunDef
+                        GameObjectDefs["bugle"] as GunDef,
                     ).trueMaxClip,
-                    cooldown: 0
+                    cooldown: 0,
                 };
                 this.weapsDirty = true;
 
@@ -541,7 +541,7 @@ export class Player extends BaseGameObject {
                     if (curWeapDef.type == "gun") {
                         // refills the ammo of the existing weapon
                         this.weapons[i].ammo = this.weaponManager.getTrueAmmoStats(
-                            curWeapDef as GunDef
+                            curWeapDef as GunDef,
                         ).trueMaxClip;
                     }
                     continue;
@@ -596,7 +596,7 @@ export class Player extends BaseGameObject {
     addPerk(type: string, droppable = false) {
         this.perks.push({
             type,
-            droppable
+            droppable,
         });
         this.perkTypes.push(type);
 
@@ -659,7 +659,7 @@ export class Player extends BaseGameObject {
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: GameConfig.defaultEmoteLoadout
+        emotes: GameConfig.defaultEmoteLoadout,
     };
 
     damageTaken = 0;
@@ -740,7 +740,7 @@ export class Player extends BaseGameObject {
             assert(def, `Invalid item type for ${category}: ${type}`);
             assert(
                 def.type === category,
-                `Invalid type ${type}, expected ${def.type} item`
+                `Invalid type ${type}, expected ${def.type} item`,
             );
         }
 
@@ -751,7 +751,7 @@ export class Player extends BaseGameObject {
             this.weapons[i] = {
                 type: weap.type ?? this.weapons[i].type,
                 ammo: weap.ammo ?? 0,
-                cooldown: 0
+                cooldown: 0,
             };
         }
 
@@ -839,7 +839,7 @@ export class Player extends BaseGameObject {
                 this.damage({
                     amount: this.game.map.mapDef.gameConfig.bleedDamage,
                     damageType: GameConfig.DamageType.Bleeding,
-                    dir: this.dir
+                    dir: this.dir,
                 });
                 this.bleedTicker = 0;
             }
@@ -849,7 +849,7 @@ export class Player extends BaseGameObject {
             this.damage({
                 amount: this.game.gas.damage,
                 damageType: GameConfig.DamageType.Gas,
-                dir: this.dir
+                dir: this.dir,
             });
         }
 
@@ -865,7 +865,7 @@ export class Player extends BaseGameObject {
             this.action.time = math.clamp(
                 this.action.time,
                 0,
-                net.Constants.ActionMaxDuration
+                net.Constants.ActionMaxDuration,
             );
 
             if (this.action.time >= this.action.duration) {
@@ -957,7 +957,7 @@ export class Player extends BaseGameObject {
                     if (
                         bugle.ammo <
                         this.weaponManager.getTrueAmmoStats(
-                            GameObjectDefs["bugle"] as GunDef
+                            GameObjectDefs["bugle"] as GunDef,
                         ).trueMaxClip
                     ) {
                         this.bugleTickerActive = true;
@@ -996,12 +996,15 @@ export class Player extends BaseGameObject {
                     const collision = collider.intersectCircle(
                         obj.collider,
                         this.pos,
-                        this.rad
+                        this.rad,
                     );
                     if (collision) {
                         v2.set(
                             this.pos,
-                            v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001))
+                            v2.add(
+                                this.pos,
+                                v2.mul(collision.dir, collision.pen + 0.001),
+                            ),
                         );
                         collided = true;
                         break;
@@ -1028,7 +1031,7 @@ export class Player extends BaseGameObject {
                             this.pos,
                             this.rad,
                             hr.collision.min,
-                            hr.collision.max
+                            hr.collision.max,
                         );
                     });
 
@@ -1048,7 +1051,7 @@ export class Player extends BaseGameObject {
                                 this.pos,
                                 this.rad,
                                 zoomRegion.zoomIn.min,
-                                zoomRegion.zoomIn.max
+                                zoomRegion.zoomIn.max,
                             )
                         ) {
                             this.indoors = true;
@@ -1062,7 +1065,7 @@ export class Player extends BaseGameObject {
                                 this.pos,
                                 this.rad,
                                 zoomRegion.zoomOut.min,
-                                zoomRegion.zoomOut.max
+                                zoomRegion.zoomOut.max,
                             )
                         ) {
                             collidesWithZoomOut = true;
@@ -1076,7 +1079,7 @@ export class Player extends BaseGameObject {
                 const res = collider.intersectCircle(
                     obj.collider,
                     this.pos,
-                    this.rad + obj.interactionRad
+                    this.rad + obj.interactionRad,
                 );
                 if (res) {
                     obj.interact(this, true);
@@ -1250,7 +1253,7 @@ export class Player extends BaseGameObject {
                 curWeapIdx: player.curWeapIdx,
                 weapons: player.weapons,
                 spectatorCountDirty: true,
-                spectatorCount: player.spectatorCount
+                spectatorCount: player.spectatorCount,
             };
             this.startedSpectating = false;
         } else {
@@ -1278,7 +1281,7 @@ export class Player extends BaseGameObject {
                         visible: true,
                         dead: p.dead,
                         downed: p.downed,
-                        role: p.role
+                        role: p.role,
                     });
                 }
                 updateMsg.playerStatusDirty = true;
@@ -1291,7 +1294,7 @@ export class Player extends BaseGameObject {
             for (const p of teamPlayers) {
                 updateMsg.groupStatus.players.push({
                     health: p.health,
-                    disconnected: p.disconnected
+                    disconnected: p.disconnected,
                 });
             }
             updateMsg.groupStatusDirty = true;
@@ -1330,7 +1333,7 @@ export class Player extends BaseGameObject {
                     bullet.pos,
                     bullet.clientEndPos,
                     this.pos,
-                    extendedRadius
+                    extendedRadius,
                 )
             ) {
                 newBullets.push(bullet);
@@ -1353,7 +1356,7 @@ export class Player extends BaseGameObject {
         if (updateMsg.explosions.length > 255) {
             this.game.logger.warn(
                 "Too many new explosions created!",
-                updateMsg.explosions.length
+                updateMsg.explosions.length,
             );
             updateMsg.explosions = updateMsg.explosions.slice(0, 255);
         }
@@ -1437,12 +1440,12 @@ export class Player extends BaseGameObject {
                             : this.game.playerBarn.randomPlayer(this);
                 } else if (spectateMsg.specNext && this.spectating) {
                     specType = this.spectating.group!.nextPlayer.bind(
-                        this.spectating.group
+                        this.spectating.group,
                     );
                     this.enemyTeamCycleCount++;
                 } else if (spectateMsg.specPrev && this.spectating) {
                     specType = this.spectating.group!.prevPlayer.bind(
-                        this.spectating.group
+                        this.spectating.group,
                     );
                     this.enemyTeamCycleCount--;
                 }
@@ -1578,7 +1581,7 @@ export class Player extends BaseGameObject {
                 for (const spectator of this.spectators) {
                     spectator.msgsToSend.push({
                         type: net.MsgType.PlayerStats,
-                        msg: statsMsg
+                        msg: statsMsg,
                     });
                 }
             }
@@ -1595,7 +1598,7 @@ export class Player extends BaseGameObject {
             for (const spectator of this.spectators) {
                 spectator.msgsToSend.push({
                     type: net.MsgType.GameOver,
-                    msg: gameOverMsg
+                    msg: gameOverMsg,
                 });
             }
         }
@@ -1695,7 +1698,7 @@ export class Player extends BaseGameObject {
         this.game.playerBarn.aliveCountDirty = true;
         this.game.playerBarn.livingPlayers.splice(
             this.game.playerBarn.livingPlayers.indexOf(this),
-            1
+            1,
         );
         if (this.group) {
             this.group.checkPlayers();
@@ -1769,7 +1772,7 @@ export class Player extends BaseGameObject {
                     this.layer,
                     velocity,
                     throwableDef.fuseTime,
-                    GameConfig.DamageType.Player
+                    GameConfig.DamageType.Player,
                 );
             }
         }
@@ -1851,7 +1854,7 @@ export class Player extends BaseGameObject {
                     item,
                     this.pos,
                     this.layer,
-                    this.inventory[item]
+                    this.inventory[item],
                 );
             }
         }
@@ -1887,8 +1890,8 @@ export class Player extends BaseGameObject {
                     this.__id,
                     this.pos,
                     this.loadout.emotes[GameConfig.EmoteSlot.Death],
-                    false
-                )
+                    false,
+                ),
             );
         }
 
@@ -1902,7 +1905,7 @@ export class Player extends BaseGameObject {
                     this.pos,
                     this.rad,
                     obj.goreRegion.min,
-                    obj.goreRegion.max
+                    obj.goreRegion.max,
                 )
             ) {
                 obj.onGoreRegionKill();
@@ -1935,13 +1938,13 @@ export class Player extends BaseGameObject {
         // );
         const nearbyDownedTeammates = this.game.grid
             .intersectCollider(
-                collider.createCircle(this.pos, GameConfig.player.reviveRange)
+                collider.createCircle(this.pos, GameConfig.player.reviveRange),
             )
             .filter(
                 (obj): obj is Player =>
                     obj.__type == ObjectType.Player &&
                     obj.teamId == this.teamId &&
-                    obj.downed
+                    obj.downed,
             );
 
         let playerToRevive: Player | undefined;
@@ -1965,7 +1968,7 @@ export class Player extends BaseGameObject {
             "",
             GameConfig.Action.Revive,
             0.75 * GameConfig.player.reviveDuration,
-            this.__id
+            this.__id,
         );
     }
 
@@ -1979,13 +1982,13 @@ export class Player extends BaseGameObject {
             playerToRevive.doAction(
                 "",
                 GameConfig.Action.Revive,
-                GameConfig.player.reviveDuration
+                GameConfig.player.reviveDuration,
             );
             this.doAction(
                 "",
                 GameConfig.Action.Revive,
                 GameConfig.player.reviveDuration,
-                playerToRevive.__id
+                playerToRevive.__id,
             );
             this.playAnim(GameConfig.Anim.Revive, GameConfig.player.reviveDuration);
         }
@@ -2008,11 +2011,11 @@ export class Player extends BaseGameObject {
         return this.game.grid
             .intersectCollider(
                 //includes self
-                collider.createCircle(this.pos, effectRange)
+                collider.createCircle(this.pos, effectRange),
             )
             .filter(
                 (obj): obj is Player =>
-                    obj.__type == ObjectType.Player && obj.isAffectedByAOE(this)
+                    obj.__type == ObjectType.Player && obj.isAffectedByAOE(this),
             );
     }
 
@@ -2035,7 +2038,7 @@ export class Player extends BaseGameObject {
         this.doAction(
             item,
             GameConfig.Action.UseItem,
-            (this.hasPerk("aoe_heal") ? 0.75 : 1) * itemDef.useTime
+            (this.hasPerk("aoe_heal") ? 0.75 : 1) * itemDef.useTime,
         );
     }
 
@@ -2076,7 +2079,7 @@ export class Player extends BaseGameObject {
         this.doAction(
             item,
             GameConfig.Action.UseItem,
-            (this.hasPerk("aoe_heal") ? 0.75 : 1) * itemDef.useTime
+            (this.hasPerk("aoe_heal") ? 0.75 : 1) * itemDef.useTime,
         );
     }
 
@@ -2151,7 +2154,7 @@ export class Player extends BaseGameObject {
                         this.weaponManager.showNextThrowable();
                     } else {
                         this.weaponManager.setCurWeapIndex(
-                            GameConfig.WeaponSlot.Throwable
+                            GameConfig.WeaponSlot.Throwable,
                         );
                     }
                     break;
@@ -2201,7 +2204,7 @@ export class Player extends BaseGameObject {
                         this.weaponManager.setCurWeapIndex(
                             isOtherGunSlotFull
                                 ? otherGunSlotIdx
-                                : GameConfig.WeaponSlot.Melee
+                                : GameConfig.WeaponSlot.Melee,
                         );
                     } else if (
                         this.curWeapIdx == GameConfig.WeaponSlot.Melee &&
@@ -2209,7 +2212,7 @@ export class Player extends BaseGameObject {
                             this.weapons[GameConfig.WeaponSlot.Secondary].type)
                     ) {
                         this.weaponManager.setCurWeapIndex(
-                            +!this.weapons[GameConfig.WeaponSlot.Primary].type
+                            +!this.weapons[GameConfig.WeaponSlot.Primary].type,
                         );
                     } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
                         const bothSlotsEmpty =
@@ -2217,7 +2220,7 @@ export class Player extends BaseGameObject {
                             !this.weapons[GameConfig.WeaponSlot.Secondary].type;
                         if (bothSlotsEmpty) {
                             this.weaponManager.setCurWeapIndex(
-                                GameConfig.WeaponSlot.Melee
+                                GameConfig.WeaponSlot.Melee,
                             );
                         } else {
                             const index = this.weapons[GameConfig.WeaponSlot.Primary].type
@@ -2304,10 +2307,10 @@ export class Player extends BaseGameObject {
                 }
                 case GameConfig.Input.SwapWeapSlots: {
                     const primary = {
-                        ...this.weapons[GameConfig.WeaponSlot.Primary]
+                        ...this.weapons[GameConfig.WeaponSlot.Primary],
                     };
                     const secondary = {
-                        ...this.weapons[GameConfig.WeaponSlot.Secondary]
+                        ...this.weapons[GameConfig.WeaponSlot.Secondary],
                     };
 
                     this.weapons[GameConfig.WeaponSlot.Primary] = secondary;
@@ -2321,7 +2324,7 @@ export class Player extends BaseGameObject {
                         this.weaponManager.setCurWeapIndex(
                             this.curWeapIdx ^ 1,
                             false,
-                            false
+                            false,
                         );
                     } else {
                         this.weapsDirty = true;
@@ -2362,7 +2365,7 @@ export class Player extends BaseGameObject {
 
     getClosestLoot(): Loot | undefined {
         const objs = this.game.grid.intersectCollider(
-            collider.createCircle(this.pos, this.rad + 5)
+            collider.createCircle(this.pos, this.rad + 5),
         );
 
         let closestLoot: Loot | undefined;
@@ -2393,7 +2396,7 @@ export class Player extends BaseGameObject {
 
     getClosestObstacle(): Obstacle | undefined {
         const objs = this.game.grid.intersectCollider(
-            collider.createCircle(this.pos, this.rad + 5)
+            collider.createCircle(this.pos, this.rad + 5),
         );
 
         let closestObj: Obstacle | undefined;
@@ -2407,7 +2410,7 @@ export class Player extends BaseGameObject {
                     const res = collider.intersectCircle(
                         obstacle.collider,
                         this.pos,
-                        obstacle.interactionRad + this.rad
+                        obstacle.interactionRad + this.rad,
                     );
                     if (res && res.pen >= closestPen) {
                         closestObj = obstacle;
@@ -2461,7 +2464,7 @@ export class Player extends BaseGameObject {
             availSlot,
             isDualWield,
             cause,
-            indexOf
+            indexOf,
         };
     }
 
@@ -2577,7 +2580,7 @@ export class Player extends BaseGameObject {
                             this.curWeapIdx in
                                 [
                                     GameConfig.WeaponSlot.Primary,
-                                    GameConfig.WeaponSlot.Secondary
+                                    GameConfig.WeaponSlot.Secondary,
                                 ] &&
                             obj.type != this.weapons[this.curWeapIdx].type
                         ) {
@@ -2691,13 +2694,13 @@ export class Player extends BaseGameObject {
             const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
             const newPos = v2.add(
                 obj.pos,
-                v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle))
+                v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)),
             );
             this.game.lootBarn.addLootWithoutAmmo(
                 lootToAdd,
                 newPos,
                 obj.layer,
-                amountLeft
+                amountLeft,
             );
         }
 
@@ -2706,7 +2709,7 @@ export class Player extends BaseGameObject {
         }
         this.msgsToSend.push({
             type: net.MsgType.Pickup,
-            msg: pickupMsg
+            msg: pickupMsg,
         });
     }
 
@@ -2718,7 +2721,7 @@ export class Player extends BaseGameObject {
             count,
             useCountForAmmo,
             10,
-            v2.neg(this.dir)
+            v2.neg(this.dir),
         );
     }
 
@@ -2862,7 +2865,7 @@ export class Player extends BaseGameObject {
         actionItem: string,
         actionType: number,
         duration: number,
-        targetId: number = 0
+        targetId: number = 0,
     ) {
         if (this.actionDirty) {
             // action already in progress

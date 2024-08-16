@@ -87,7 +87,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             velZ: 5,
             speed: 20,
             spinVel: 10 * Math.PI,
-            spinDrag: 1
+            spinDrag: 1,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -95,46 +95,46 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-frag-nopin-nolever-01.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {
             equip: {
                 right: {
                     sprite: "proj-frag-pin-01.img",
                     pos: { x: 4.2, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             cook: {
                 right: {
                     sprite: "proj-frag-nopin-01.img",
                     pos: { x: 4.2, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
                 left: {
                     sprite: "proj-frag-pin-part.img",
                     pos: { x: 4.2, y: 4.2 },
-                    scale: 0.14
-                }
+                    scale: 0.14,
+                },
             },
             throwing: {
                 right: { sprite: "none" },
-                left: { sprite: "none" }
-            }
+                left: { sprite: "none" },
+            },
         },
         useThrowParticles: true,
         sound: {
             pullPin: "frag_pin_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     mirv: {
         name: "MIRV Grenade",
@@ -153,7 +153,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             velZ: 5,
             speed: 20,
             spinVel: 10 * Math.PI,
-            spinDrag: 1
+            spinDrag: 1,
         },
         numSplit: 6,
         splitType: "mirv_mini",
@@ -163,46 +163,46 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-mirv-nopin-nolever.img",
             scale: 0.13,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {
             equip: {
                 right: {
                     sprite: "proj-mirv-pin.img",
                     pos: { x: 4.2, y: 4.2 },
-                    scale: 0.15
+                    scale: 0.15,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             cook: {
                 right: {
                     sprite: "proj-mirv-nopin.img",
                     pos: { x: 4.2, y: 4.2 },
-                    scale: 0.15
+                    scale: 0.15,
                 },
                 left: {
                     sprite: "proj-frag-pin-part.img",
                     pos: { x: 4.2, y: 4.2 },
-                    scale: 0.15
-                }
+                    scale: 0.15,
+                },
             },
             throwing: {
                 right: { sprite: "none" },
-                left: { sprite: "none" }
-            }
+                left: { sprite: "none" },
+            },
         },
         useThrowParticles: true,
         sound: {
             pullPin: "frag_pin_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     mirv_mini: {
         name: "MIRV Grenade",
@@ -223,7 +223,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             velZ: 5,
             speed: 20,
             spinVel: 10 * Math.PI,
-            spinDrag: 1
+            spinDrag: 1,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -231,20 +231,20 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-mirv-mini-01.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         useThrowParticles: true,
         sound: {
             pullPin: "frag_pin_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     martyr_nade: {
         name: "Martyrdom",
@@ -265,7 +265,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             velZ: 5,
             speed: 20,
             spinVel: 10 * Math.PI,
-            spinDrag: 1
+            spinDrag: 1,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -273,20 +273,20 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-martyrdom-01.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         useThrowParticles: true,
         sound: {
             pullPin: "frag_pin_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     smoke: {
         name: "Smoke Grenade",
@@ -305,7 +305,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             velZ: 5,
             speed: 15,
             spinVel: 10 * Math.PI,
-            spinDrag: 1
+            spinDrag: 1,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -313,46 +313,46 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-smoke-nopin-nolever.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {
             equip: {
                 right: {
                     sprite: "proj-smoke-pin.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             cook: {
                 right: {
                     sprite: "proj-smoke-nopin.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
                 left: {
                     sprite: "proj-frag-pin-part.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
-                }
+                    scale: 0.14,
+                },
             },
             throwing: {
                 right: { sprite: "none" },
-                left: { sprite: "none" }
-            }
+                left: { sprite: "none" },
+            },
         },
         useThrowParticles: true,
         sound: {
             pullPin: "frag_pin_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     strobe: {
         name: "IR Strobe",
@@ -372,7 +372,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             velZ: 5,
             speed: 25,
             spinVel: 6 * Math.PI,
-            spinDrag: 1
+            spinDrag: 1,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -380,46 +380,46 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-strobe-armed.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {
             equip: {
                 right: {
                     sprite: "proj-strobe-unarmed.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             cook: {
                 right: {
                     sprite: "proj-strobe-arming.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
                 left: {
                     sprite: "",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
-                }
+                    scale: 0.14,
+                },
             },
             throwing: {
                 right: { sprite: "none" },
-                left: { sprite: "none" }
-            }
+                left: { sprite: "none" },
+            },
         },
         useThrowParticles: false,
         sound: {
             pullPin: "strobe_click_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     snowball: {
         name: "Snowball",
@@ -441,7 +441,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 40,
             spinVel: 10 * Math.PI,
             spinDrag: 1,
-            fixedCollisionHeight: 0.25
+            fixedCollisionHeight: 0.25,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -449,42 +449,42 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-snowball-01.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {
             equip: {
                 right: {
                     sprite: "proj-snowball-01.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             cook: {
                 right: {
                     sprite: "proj-snowball-01.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             throwing: {
                 right: { sprite: "none" },
-                left: { sprite: "none" }
-            }
+                left: { sprite: "none" },
+            },
         },
         useThrowParticles: false,
         sound: {
             pullPin: "",
             throwing: "frag_throw_01",
             pickup: "snowball_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     snowball_heavy: {
         name: "Snowball",
@@ -506,7 +506,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 45,
             spinVel: 10 * Math.PI,
             spinDrag: 1,
-            fixedCollisionHeight: 0.25
+            fixedCollisionHeight: 0.25,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -514,12 +514,12 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-snowball-02.img",
             scale: 0.2,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {},
         useThrowParticles: false,
@@ -527,8 +527,8 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             pullPin: "",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     potato: {
         name: "Potato",
@@ -551,7 +551,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 40,
             spinVel: 10 * Math.PI,
             spinDrag: 1,
-            fixedCollisionHeight: 0.25
+            fixedCollisionHeight: 0.25,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -559,43 +559,43 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-potato-01.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {
             equip: {
                 right: {
                     sprite: "proj-potato-01.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             cook: {
                 right: {
                     sprite: "proj-potato-01.img",
                     pos: { x: 3, y: 4.2 },
-                    scale: 0.14
+                    scale: 0.14,
                 },
-                left: { sprite: "none" }
+                left: { sprite: "none" },
             },
             throwing: {
                 right: { sprite: "none" },
-                left: { sprite: "none" }
-            }
+                left: { sprite: "none" },
+            },
         },
         useThrowParticles: false,
         sound: {
             pullPin: "",
             throwing: "frag_throw_01",
             pickup: "potato_pickup_01",
-            deploy: "frag_deploy_01"
+            deploy: "frag_deploy_01",
         },
-        emoteId: 210
+        emoteId: 210,
     },
     potato_heavy: {
         name: "Potato",
@@ -617,7 +617,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 45,
             spinVel: 10 * Math.PI,
             spinDrag: 1,
-            fixedCollisionHeight: 0.25
+            fixedCollisionHeight: 0.25,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -625,12 +625,12 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-potato-02.img",
             scale: 0.2,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {},
         useThrowParticles: false,
@@ -638,8 +638,8 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             pullPin: "",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
+            deploy: "frag_deploy_01",
+        },
     },
     potato_cannonball: {
         name: "Potato Cannon",
@@ -662,7 +662,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 65,
             spinVel: 5 * Math.PI,
             spinDrag: 1,
-            fixedCollisionHeight: 0.25
+            fixedCollisionHeight: 0.25,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -670,12 +670,12 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-potato-02.img",
             scale: 0.2,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {},
         useThrowParticles: false,
@@ -683,14 +683,14 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             pullPin: "",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
+            deploy: "frag_deploy_01",
         },
         trail: {
             maxLength: 25,
             width: 2.8,
             alpha: 1,
-            tint: 5916214
-        }
+            tint: 5916214,
+        },
     },
     potato_smgshot: {
         name: "Spud Gun",
@@ -713,7 +713,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 85,
             spinVel: 9 * Math.PI,
             spinDrag: 1,
-            fixedCollisionHeight: 0.25
+            fixedCollisionHeight: 0.25,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -721,12 +721,12 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-wedge-01.img",
             scale: 0.075,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {},
         useThrowParticles: false,
@@ -734,14 +734,14 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             pullPin: "",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
+            deploy: "frag_deploy_01",
         },
         trail: {
             maxLength: 40,
             width: 2.8,
             alpha: 1,
-            tint: 5920310
-        }
+            tint: 5920310,
+        },
     },
     bomb_iron: {
         name: "Iron Bomb",
@@ -762,7 +762,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             speed: 20,
             spinVel: 1 * Math.PI,
             spinDrag: 1,
-            randomizeSpinDir: true
+            randomizeSpinDir: true,
         },
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -770,12 +770,12 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.2
+            scale: 0.2,
         },
         worldImg: {
             sprite: "proj-bomb-iron-01.img",
             scale: 0.12,
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         handImg: {},
         useThrowParticles: true,
@@ -783,7 +783,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             pullPin: "frag_pin_01",
             throwing: "frag_throw_01",
             pickup: "frag_pickup_01",
-            deploy: "frag_deploy_01"
-        }
-    }
+            deploy: "frag_deploy_01",
+        },
+    },
 };

@@ -173,7 +173,7 @@ export class Gas {
                 this.posNew = math.v2Clamp(
                     this.posNew,
                     v2.create(rad, rad),
-                    v2.create(this.map.width - rad, this.map.height - rad)
+                    v2.create(this.map.width - rad, this.map.height - rad),
                 );
             }
 
@@ -190,7 +190,7 @@ export class Gas {
                 this.mode = GasMode.Moving;
                 this.gasTime = math.max(
                     this.gasTime - GameConfig.gas.gasTimeDecay,
-                    GameConfig.gas.gasTimeMin
+                    GameConfig.gas.gasTimeMin,
                 );
                 if (this.radNew > 0) {
                     this.stage++;
@@ -200,7 +200,7 @@ export class Gas {
             case GasMode.Moving: {
                 this.waitTime = math.max(
                     this.waitTime - GameConfig.gas.waitTimeDecay,
-                    GameConfig.gas.waitTimeMin
+                    GameConfig.gas.waitTimeMin,
                 );
                 this.mode = GasMode.Waiting;
                 if (this.radNew > 0) {

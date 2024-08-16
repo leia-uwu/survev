@@ -13,7 +13,7 @@ import {
     GameConfig,
     HasteType,
     Input,
-    type WeaponSlot
+    type WeaponSlot,
 } from "../../../shared/gameConfig";
 import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import {
@@ -21,7 +21,7 @@ import {
     type LocalDataWithDirty,
     type PlayerInfo,
     type PlayerStatus,
-    getPlayerStatusUpdateRate
+    getPlayerStatusUpdateRate,
 } from "../../../shared/net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -46,7 +46,7 @@ import type {
     BoostDef,
     ChestDef,
     HealDef,
-    HelmetDef
+    HelmetDef,
 } from "./../../../shared/defs/gameObjects/gearDefs";
 import type { InputBinds } from "./../inputBinds";
 import { Pool } from "./objectPool";
@@ -80,7 +80,7 @@ function createPlayerNameText() {
         dropShadowColor: "#000000",
         dropShadowBlur: 1,
         dropShadowAngle: Math.PI / 3,
-        dropShadowDistance: 1
+        dropShadowDistance: 1,
     } satisfies Partial<PIXI.ITextStyle>;
     const nameText = new PIXI.Text("", nameStyle);
     nameText.anchor.set(0.5, 0.5);
@@ -177,7 +177,7 @@ export abstract class AbstractObject {
         data: ObjectData<ObjectType>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ): void;
 }
 
@@ -236,7 +236,7 @@ export class Player implements AbstractObject {
         bones: [] as Array<{
             weight: number;
             pose: Pose;
-        }>
+        }>,
     };
 
     perks: Array<{
@@ -290,7 +290,7 @@ export class Player implements AbstractObject {
 
     viewAabb = {
         min: v2.create(0, 0),
-        max: v2.create(0, 0)
+        max: v2.create(0, 0),
     };
 
     auraViewFade = 0;
@@ -313,7 +313,7 @@ export class Player implements AbstractObject {
         time: 0,
         duration: 0,
         throttleCount: 0,
-        throttleTicker: 0
+        throttleTicker: 0,
     };
 
     netData = {
@@ -343,7 +343,7 @@ export class Player implements AbstractObject {
         perks: [] as Array<{
             type: string;
             droppable: boolean;
-        }>
+        }>,
     };
 
     localData = {
@@ -357,7 +357,7 @@ export class Player implements AbstractObject {
             type: string;
             ammo: number;
         }>,
-        spectatorCount: 0
+        spectatorCount: 0,
     };
 
     throwableStatePrev!: string;
@@ -426,7 +426,7 @@ export class Player implements AbstractObject {
             this.bones.push(new Pose());
             this.anim.bones.push({
                 weight: 0,
-                pose: new Pose()
+                pose: new Pose(),
             });
         }
 
@@ -467,7 +467,7 @@ export class Player implements AbstractObject {
         data: ObjectData<ObjectType.Player>,
         fullUpdate: boolean,
         isNew: boolean,
-        _ctx: Ctx
+        _ctx: Ctx,
     ) {
         this.netData.pos = v2.copy(data.pos);
         this.netData.dir = v2.copy(data.dir);
@@ -554,7 +554,7 @@ export class Player implements AbstractObject {
             for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
                 const w = {
                     type: data.weapons[i].type,
-                    ammo: data.weapons[i].ammo
+                    ammo: data.weapons[i].ammo,
                 };
                 this.localData.weapons.push(w);
             }
@@ -614,7 +614,7 @@ export class Player implements AbstractObject {
         const ang = Math.atan2(this.dir.y, this.dir.x);
         const off = v2.add(
             meleeDef.attack.offset,
-            v2.mul(v2.create(1, 0), this.netData.scale - 1)
+            v2.mul(v2.create(1, 0), this.netData.scale - 1),
         );
         const pos = v2.add(this.pos, v2.rotate(off, ang));
         const rad = meleeDef.attack.rad;
@@ -680,7 +680,7 @@ export class Player implements AbstractObject {
                 perks.push({
                     type: perk.type,
                     droppable: perk.droppable,
-                    isNew: isNew && !this.isNew
+                    isNew: isNew && !this.isNew,
                 });
             }
 
@@ -711,7 +711,7 @@ export class Player implements AbstractObject {
         activeId: number,
         preventInput: boolean,
         displayingStats: boolean,
-        isSpectating: boolean
+        isSpectating: boolean,
     ) {
         const curWeapDef = GameObjectDefs[this.netData.activeWeapon];
         const isActivePlayer = this.__id == activeId;
@@ -807,12 +807,12 @@ export class Player implements AbstractObject {
                 soundPos: this.pos,
                 fallOff: 1,
                 layer: this.layer,
-                filter: "muffled"
+                filter: "muffled",
             });
 
             const moveDir = v2.normalizeSafe(
                 v2.sub(this.posOld, this.pos),
-                v2.create(1, 0)
+                v2.create(1, 0),
             );
             const partDir = isInside ? 1 : -1;
             const numParticles = Math.floor(util.random(3, 5));
@@ -820,15 +820,15 @@ export class Player implements AbstractObject {
                 const vel = v2.mul(
                     v2.rotate(
                         v2.mul(moveDir, partDir),
-                        ((Math.random() - 0.5) * Math.PI) / 1.5
+                        ((Math.random() - 0.5) * Math.PI) / 1.5,
                     ),
-                    util.random(6, 8)
+                    util.random(6, 8),
                 );
                 particleBarn.addParticle(
                     obstacleDef.hitParticle,
                     this.layer,
                     this.pos,
-                    vel
+                    vel,
                 );
             }
         }
@@ -848,7 +848,7 @@ export class Player implements AbstractObject {
                 soundPos: this.pos,
                 fallOff: 1,
                 layer: this.layer,
-                filter: "muffled"
+                filter: "muffled",
             });
         }
         this.surface = map.getGroundSurface(this.pos, this.layer);
@@ -866,13 +866,13 @@ export class Player implements AbstractObject {
                 particleBarn.addRippleParticle(
                     this.pos,
                     this.layer,
-                    this.surface?.data.rippleColor!
+                    this.surface?.data.rippleColor!,
                 );
                 audioManager.playGroup("footstep_water", {
                     soundPos: this.pos,
                     fallOff: 3,
                     layer: this.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
             } else if (this.stepDistance > 4 && !inWater) {
                 this.stepDistance = 0;
@@ -880,7 +880,7 @@ export class Player implements AbstractObject {
                     soundPos: this.pos,
                     fallOff: 3,
                     layer: this.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
             }
             this.wasInWater = inWater;
@@ -899,7 +899,7 @@ export class Player implements AbstractObject {
                 : GameConfig.player.bleedTickRate;
             const vel = v2.rotate(
                 v2.mul(this.dir, -1),
-                ((Math.random() - 0.5) * Math.PI) / 3
+                ((Math.random() - 0.5) * Math.PI) / 3,
             );
             vel.y *= -1;
             particleBarn.addParticle(
@@ -910,7 +910,7 @@ export class Player implements AbstractObject {
                 1,
                 Math.random() * Math.PI * 2,
                 this.container,
-                this.renderZOrd + 1
+                this.renderZOrd + 1,
             );
             if (!displayingStats) {
                 audioManager.playSound("player_bullet_hit_02", {
@@ -918,7 +918,7 @@ export class Player implements AbstractObject {
                     soundPos: this.pos,
                     fallOff: 3,
                     layer: this.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
             }
         }
@@ -949,7 +949,7 @@ export class Player implements AbstractObject {
                     audioManager.playSound(itemDef.sound.deploy, {
                         channel: "sfx",
                         soundPos,
-                        fallOff: 3
+                        fallOff: 3,
                     });
                 }
             } else if (itemDef.type == "gun") {
@@ -981,7 +981,7 @@ export class Player implements AbstractObject {
                 }
                 audioManager.stopSound(this.cycleSoundInstance!);
                 this.cycleSoundInstance = audioManager.playSound(switchSound, {
-                    channel: "activePlayer"
+                    channel: "activePlayer",
                 });
                 this.fireDelay = 0;
             }
@@ -1020,20 +1020,20 @@ export class Player implements AbstractObject {
             const hasteEffects = {
                 [HasteType.None]: {
                     particle: "",
-                    sound: ""
+                    sound: "",
                 },
                 [HasteType.Windwalk]: {
                     particle: "windwalk",
-                    sound: "ability_stim_01"
+                    sound: "ability_stim_01",
                 },
                 [HasteType.Takedown]: {
                     particle: "takedown",
-                    sound: "ability_stim_01"
+                    sound: "ability_stim_01",
                 },
                 [HasteType.Inspire]: {
                     particle: "inspire",
-                    sound: "ability_stim_01"
-                }
+                    sound: "ability_stim_01",
+                },
             };
             const fx = hasteEffects[this.netData.hasteType];
 
@@ -1043,14 +1043,14 @@ export class Player implements AbstractObject {
                     soundPos: this.pos,
                     fallOff: 1,
                     layer: this.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
             }
 
             this.hasteEmitter?.stop();
             this.hasteEmitter = particleBarn.addEmitter(fx.particle, {
                 pos: this.pos,
-                layer: this.layer
+                layer: this.layer,
             });
             this.hasteSeq = this.netData.hasteSeq;
         } else if (!this.netData.hasteType && this.hasteEmitter) {
@@ -1067,7 +1067,7 @@ export class Player implements AbstractObject {
         if (this.netData.healEffect && !this.passiveHealEmitter) {
             this.passiveHealEmitter = particleBarn.addEmitter("heal_basic", {
                 pos: this.pos,
-                layer: this.layer
+                layer: this.layer,
             });
         } else if (!this.netData.healEffect && this.passiveHealEmitter) {
             this.passiveHealEmitter.stop();
@@ -1113,7 +1113,7 @@ export class Player implements AbstractObject {
             playerBarn,
             map,
             audioManager,
-            particleBarn
+            particleBarn,
         };
         this.updateAnim(dt, xe);
         if (this.currentAnim() == Anim.None) {
@@ -1135,7 +1135,7 @@ export class Player implements AbstractObject {
             const animBone = this.anim.bones[boneIdx];
             if (animBone.weight > 0) {
                 this.bones[boneIdx].copy(
-                    Pose.lerp(animBone.weight, idleBonePose, animBone.pose)
+                    Pose.lerp(animBone.weight, idleBonePose, animBone.pose),
                 );
             } else {
                 this.bones[boneIdx].copy(idleBonePose);
@@ -1167,7 +1167,7 @@ export class Player implements AbstractObject {
             this.auraContainer,
             this.renderLayer,
             this.renderZOrd - 1,
-            this.renderZIdx
+            this.renderZIdx,
         );
 
         // Special visibility rules for the aura since it doesn't clip well with
@@ -1183,7 +1183,7 @@ export class Player implements AbstractObject {
             this.container,
             this.renderLayer,
             this.renderZOrd,
-            this.renderZIdx
+            this.renderZIdx,
         );
 
         this.isNew = false;
@@ -1215,7 +1215,7 @@ export class Player implements AbstractObject {
         // the bottom and top of stairs
         const visualCol = collider.createCircle(
             this.pos,
-            GameConfig.player.maxVisualRadius
+            GameConfig.player.maxVisualRadius,
         );
         let onMask = false;
         let onStairs = false;
@@ -1232,7 +1232,7 @@ export class Player implements AbstractObject {
 
                         const stairTop = v2.add(
                             stairs.center,
-                            v2.mul(stairs.downDir, -2.5)
+                            v2.mul(stairs.downDir, -2.5),
                         );
                         let dir = v2.sub(stairTop, this.pos);
                         const dist = v2.length(dir);
@@ -1245,7 +1245,7 @@ export class Player implements AbstractObject {
                                 dist,
                                 0.5,
                                 this.layer,
-                                false
+                                false,
                             ) < dist;
                     }
 
@@ -1361,7 +1361,7 @@ export class Player implements AbstractObject {
         const setFootSprite = function (
             sprite: PIXI.Sprite,
             tint: number,
-            downed: boolean
+            downed: boolean,
         ) {
             sprite.texture = PIXI.Texture.from("player-feet-01.img");
             sprite.scale.set(0.45, 0.45);
@@ -1422,7 +1422,7 @@ export class Player implements AbstractObject {
             if (helmetSkin.spriteScale) {
                 this.helmetSprite.scale.set(
                     helmetSkin.spriteScale,
-                    helmetSkin.spriteScale
+                    helmetSkin.spriteScale,
                 );
             } else {
                 this.helmetSprite.scale.set(0.15, 0.15);
@@ -1542,7 +1542,7 @@ export class Player implements AbstractObject {
                     sprite: string;
                     pos?: Vec2;
                     scale?: number;
-                }
+                },
             ) {
                 if (t.sprite && t.sprite != "none") {
                     e.texture = PIXI.Texture.from(t.sprite);
@@ -1640,7 +1640,7 @@ export class Player implements AbstractObject {
                 this.pos,
                 this.rad,
                 activePlayer.viewAabb.min,
-                activePlayer.viewAabb.max
+                activePlayer.viewAabb.max,
             );
         }
         this.auraViewFade = math.lerp(dt * 6, this.auraViewFade, inView ? 1 : 0);
@@ -1650,7 +1650,7 @@ export class Player implements AbstractObject {
             this.auraPulseTicker = math.clamp(
                 this.auraPulseTicker + dt * this.auraPulseDir * 1.5,
                 0,
-                1
+                1,
             );
             const pulseAlpha = math.easeOutExpo(this.auraPulseTicker) * 0.75 + 0.25;
             if (this.auraPulseTicker >= 1 || this.auraPulseTicker <= 0) {
@@ -1686,7 +1686,7 @@ export class Player implements AbstractObject {
     playActionStartEffect(
         isActivePlayer: boolean,
         particleBarn: ParticleBarn,
-        audioManager: AudioManager
+        audioManager: AudioManager,
     ) {
         // Play action sound
         let actionSound = null;
@@ -1701,7 +1701,7 @@ export class Player implements AbstractObject {
                                 this.action.type == Action.ReloadAlt
                                     ? actionItemDef.sound.reloadAlt
                                     : actionItemDef.sound.reload,
-                            channel: isActivePlayer ? "activePlayer" : "otherPlayers"
+                            channel: isActivePlayer ? "activePlayer" : "otherPlayers",
                         };
                     }
                 }
@@ -1713,7 +1713,7 @@ export class Player implements AbstractObject {
                 if (actionItemDef) {
                     actionSound = {
                         sound: actionItemDef.sound.use,
-                        channel: isActivePlayer ? "activePlayer" : "otherPlayers"
+                        channel: isActivePlayer ? "activePlayer" : "otherPlayers",
                     };
                 }
             }
@@ -1727,7 +1727,7 @@ export class Player implements AbstractObject {
                 soundPos: this.pos,
                 fallOff: 2,
                 layer: this.layer,
-                filter: "muffled"
+                filter: "muffled",
             });
         }
 
@@ -1750,7 +1750,7 @@ export class Player implements AbstractObject {
                         this.dir,
                         this.renderLayer,
                         this.renderZOrd + 1,
-                        particleBarn
+                        particleBarn,
                     );
                 }
             }
@@ -1761,7 +1761,7 @@ export class Player implements AbstractObject {
         isActivePlayer: boolean,
         playerInfo: PlayerInfo,
         particleBarn: ParticleBarn,
-        audioManager: AudioManager
+        audioManager: AudioManager,
     ) {
         // Determine if we should have an emitter
         let emitterType = "";
@@ -1831,7 +1831,7 @@ export class Player implements AbstractObject {
             audioManager.updateSound(this.actionSoundInstance, "otherPlayers", this.pos, {
                 layer: this.layer,
                 fallOff: 2,
-                filter: "muffled"
+                filter: "muffled",
             });
         }
     }
@@ -1840,7 +1840,7 @@ export class Player implements AbstractObject {
         const itemDef = GameObjectDefs[item] as LootDef;
         if (itemDef) {
             audioManager.playSound(itemDef.sound?.pickup, {
-                channel: "ui"
+                channel: "ui",
             });
             if (itemDef.type == "throwable") {
                 this.lastThrowablePickupSfxTicker = 0.3;
@@ -1883,7 +1883,7 @@ export class Player implements AbstractObject {
         const t = function (e: string, t: boolean) {
             return {
                 type: e,
-                mirror: !!t && Math.random() < 0.5
+                mirror: !!t && Math.random() < 0.5,
             };
         };
         switch (type) {
@@ -1995,7 +1995,7 @@ export class Player implements AbstractObject {
                 soundPos: this.pos,
                 fallOff: 3,
                 layer: this.layer,
-                filter: "muffled"
+                filter: "muffled",
             });
         }
     }
@@ -2011,7 +2011,7 @@ export class Player implements AbstractObject {
             // Pin
             const pinOff = v2.rotate(
                 v2.create(0.75, 0.75),
-                Math.atan2(this.dir.y, this.dir.x)
+                Math.atan2(this.dir.y, this.dir.x),
             );
             animCtx.particleBarn?.addParticle(
                 "fragPin",
@@ -2021,11 +2021,11 @@ export class Player implements AbstractObject {
                 1,
                 Math.random() * Math.PI * 2,
                 null,
-                this.renderZOrd + 1
+                this.renderZOrd + 1,
             );
             const leverOff = v2.rotate(
                 v2.create(0.75, -0.75),
-                Math.atan2(this.dir.y, this.dir.x)
+                Math.atan2(this.dir.y, this.dir.x),
             );
             animCtx.particleBarn?.addParticle(
                 "fragLever",
@@ -2035,7 +2035,7 @@ export class Player implements AbstractObject {
                 1,
                 Math.random() * Math.PI * 2,
                 null,
-                this.renderZOrd + 1
+                this.renderZOrd + 1,
             );
         }
     }
@@ -2061,7 +2061,7 @@ export class Player implements AbstractObject {
                     let res = collider.intersectCircle(
                         l.collider,
                         meleeCol.pos,
-                        meleeCol.rad
+                        meleeCol.rad,
                     );
 
                     // Certain melee weapons should perform a more expensive wall check
@@ -2070,7 +2070,7 @@ export class Player implements AbstractObject {
                     if (meleeDef.cleave || meleeDef.wallCheck) {
                         const meleeDir = v2.normalizeSafe(
                             v2.sub(l.pos, this.pos),
-                            v2.create(1, 0)
+                            v2.create(1, 0),
                         );
                         const wallCheck = collisionHelpers.intersectSegment(
                             animCtx.map?.obstaclePool.getPool()!,
@@ -2079,7 +2079,7 @@ export class Player implements AbstractObject {
                             meleeDist,
                             1,
                             this.layer,
-                            false
+                            false,
                         );
                         if (wallCheck && wallCheck.id !== l.__id) {
                             res = null;
@@ -2089,11 +2089,11 @@ export class Player implements AbstractObject {
                         const def = MapObjectDefs[l.type] as ObstacleDef;
                         const closestPt = v2.add(
                             meleeCol.pos,
-                            v2.mul(v2.neg(res.dir), meleeCol.rad - res.pen)
+                            v2.mul(v2.neg(res.dir), meleeCol.rad - res.pen),
                         );
                         const vel = v2.rotate(
                             v2.mul(res.dir, 7.5),
-                            ((Math.random() - 0.5) * Math.PI) / 3
+                            ((Math.random() - 0.5) * Math.PI) / 3,
                         );
                         hits.push({
                             pen: res.pen,
@@ -2104,7 +2104,7 @@ export class Player implements AbstractObject {
                             zOrd: this.renderZOrd,
                             particle: def.hitParticle,
                             sound: def.sound.punch,
-                            soundFn: "playGroup"
+                            soundFn: "playGroup",
                         });
                     }
                 }
@@ -2121,13 +2121,13 @@ export class Player implements AbstractObject {
                 ) {
                     const meleeDir = v2.normalizeSafe(
                         v2.sub(playerCol.pos, this.pos),
-                        v2.create(1, 0)
+                        v2.create(1, 0),
                     );
                     const col = coldet.intersectCircleCircle(
                         meleeCol.pos,
                         meleeCol.rad,
                         playerCol.pos,
-                        playerCol.rad
+                        playerCol.rad,
                     );
                     if (
                         col &&
@@ -2140,16 +2140,16 @@ export class Player implements AbstractObject {
                                 meleeDist,
                                 GameConfig.player.meleeHeight,
                                 this.layer,
-                                false
-                            )
+                                false,
+                            ),
                         )
                     ) {
                         const teamId = animCtx.playerBarn?.getPlayerInfo(
-                            playerCol.__id
+                            playerCol.__id,
                         ).teamId;
                         const vel = v2.rotate(
                             meleeDir,
-                            ((Math.random() - 0.5) * Math.PI) / 3
+                            ((Math.random() - 0.5) * Math.PI) / 3,
                         );
                         const hitSound =
                             meleeDef.sound[args.playerHit] || meleeDef.sound.playerHit;
@@ -2162,7 +2162,7 @@ export class Player implements AbstractObject {
                             zOrd: playerCol.renderZOrd,
                             particle: "bloodSplat",
                             sound: hitSound,
-                            soundFn: "playSound"
+                            soundFn: "playSound",
                         });
                     }
                 }
@@ -2190,14 +2190,14 @@ export class Player implements AbstractObject {
                     1,
                     Math.random() * Math.PI * 2,
                     null,
-                    hit.zOrd + 1
+                    hit.zOrd + 1,
                 );
                 // @ts-expect-error go away
                 animCtx.audioManager?.[hit.soundFn](hit.sound, {
                     channel: "hits",
                     soundPos: hit.pos,
                     layer: this.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
             }
         }
@@ -2261,7 +2261,7 @@ export class Player implements AbstractObject {
             this.handLSubmergeSprite,
             this.handRSubmergeSprite,
             this.footLSubmergeSprite,
-            this.footRSubmergeSprite
+            this.footRSubmergeSprite,
         ];
         for (let i = 0; i < limbs.length; i++) {
             const limb = limbs[i];
@@ -2355,7 +2355,7 @@ export class PlayerBarn {
         ui2Manager: UiManager2,
         preventInput: boolean,
         displayingStats: boolean,
-        isSpectating?: boolean
+        isSpectating?: boolean,
     ) {
         // Update players
         const players = this.playerPool.getPool();
@@ -2375,7 +2375,7 @@ export class PlayerBarn {
                     activeId,
                     preventInput,
                     displayingStats,
-                    isSpectating!
+                    isSpectating!,
                 );
             }
         }
@@ -2397,7 +2397,7 @@ export class PlayerBarn {
             dead: activePlayer.netData.dead,
             downed: activePlayer.netData.downed,
             role: activePlayer.netData.role,
-            visible: true
+            visible: true,
         });
 
         const statusUpdateRate = getPlayerStatusUpdateRate(map.factionMode);
@@ -2415,7 +2415,7 @@ export class PlayerBarn {
                 status.posInterp = math.clamp(
                     status.posInterp! + dt * 0.2,
                     dt / statusUpdateRate,
-                    1
+                    1,
                 );
                 status.dead = player.netData.dead;
                 status.downed = player.netData.downed;
@@ -2483,10 +2483,10 @@ export class PlayerBarn {
             nameTruncated: helpers.truncateString(
                 info.name || "",
                 "bold 16px arial",
-                180
+                180,
             ),
             anonName: `Player${info.playerId - 2750}`,
-            loadout: util.cloneDeep(info.loadout)
+            loadout: util.cloneDeep(info.loadout),
         };
         this.playerIds.push(info.playerId);
         this.playerIds.sort((a, b) => {
@@ -2512,7 +2512,7 @@ export class PlayerBarn {
                 name: "",
                 nameTruncated: "",
                 anonName: "",
-                loadout: {}
+                loadout: {},
             }
         );
     }
@@ -2529,14 +2529,14 @@ export class PlayerBarn {
             const teamId = playerInfo.teamId;
             this.teamInfo[teamId] = this.teamInfo[teamId] || {
                 teamId,
-                playerIds: []
+                playerIds: [],
             };
             this.teamInfo[teamId].playerIds.push(playerId);
 
             const groupId = playerInfo.groupId;
             this.groupInfo[groupId] = this.groupInfo[groupId] || {
                 groupId,
-                playerIds: []
+                playerIds: [],
             };
             this.groupInfo[groupId].playerIds.push(playerId);
         }
@@ -2567,7 +2567,7 @@ export class PlayerBarn {
     updatePlayerStatus(
         teamId: number,
         playerStatus: { players: PlayerStatus[] },
-        factionMode: boolean
+        factionMode: boolean,
     ) {
         // In factionMode, playerStatus refers to all playerIds in the game.
         // In all other modes, playerStatus refers to only playerIds in our team.
@@ -2576,7 +2576,7 @@ export class PlayerBarn {
 
         if (playerIds.length != playerStatus.players.length) {
             console.error(
-                `PlayerIds and playerStatus.players out of sync. OurLen: ${playerIds.length} MsgLen: ${playerStatus.players.length} FactionMode: ${factionMode}`
+                `PlayerIds and playerStatus.players out of sync. OurLen: ${playerIds.length} MsgLen: ${playerStatus.players.length} FactionMode: ${factionMode}`,
             );
             return;
         }
@@ -2606,7 +2606,7 @@ export class PlayerBarn {
             timeSinceUpdate: 0,
             timeSinceVisible: 0,
             minimapAlpha: 0,
-            minimapVisible: false
+            minimapVisible: false,
         };
 
         if (!status.minimapVisible) {
@@ -2679,7 +2679,7 @@ export class PlayerBarn {
     getPlayerName(
         playerId: number,
         activePlayerId: number,
-        truncateForKillfeed: boolean
+        truncateForKillfeed: boolean,
     ) {
         const info = this.getPlayerInfo(playerId);
         if (!info) {
@@ -2706,7 +2706,7 @@ export class PlayerBarn {
         killerId: number,
         _sourceType: unknown,
         audioManager: AudioManager,
-        particleBarn: ParticleBarn
+        particleBarn: ParticleBarn,
     ) {
         const target = this.getPlayerById(targetId);
         const killer = this.getPlayerById(killerId);
@@ -2714,13 +2714,13 @@ export class PlayerBarn {
             audioManager.playGroup("cluck", {
                 soundPos: target.pos,
                 layer: target.layer,
-                muffled: true
+                muffled: true,
             });
             audioManager.playSound("feather_01", {
                 channel: "sfx",
                 soundPos: target.pos,
                 layer: target.layer,
-                muffled: true
+                muffled: true,
             });
             const numParticles = Math.floor(util.random(30, 35));
             for (let i = 0; i < numParticles; i++) {
@@ -2729,7 +2729,7 @@ export class PlayerBarn {
                     "turkeyFeathersDeath",
                     target.layer,
                     target.pos,
-                    vel
+                    vel,
                 );
             }
         }

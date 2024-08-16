@@ -24,7 +24,7 @@ function createDeadBodyText() {
         dropShadowColor: "#000000",
         dropShadowBlur: 1,
         dropShadowAngle: Math.PI / 3,
-        dropShadowDistance: 1
+        dropShadowDistance: 1,
     };
     const nameText = new PIXI.Text("", nameStyle);
     nameText.anchor.set(0.5, 0.5);
@@ -67,7 +67,7 @@ class DeadBody implements AbstractObject {
         data: ObjectData<ObjectType.DeadBody>,
         fullUpdate: boolean,
         isNew: boolean,
-        _ctx: Ctx
+        _ctx: Ctx,
     ) {
         this.pos = v2.copy(data.pos);
         if (fullUpdate) {
@@ -90,7 +90,7 @@ export class DeadBodyBarn {
         activePlayer: Player,
         map: Map,
         camera: Camera,
-        renderer: Renderer
+        renderer: Renderer,
     ) {
         const deadBodies = this.deadBodyPool.getPool();
         for (let i = 0; i < deadBodies.length; i++) {
@@ -100,7 +100,7 @@ export class DeadBodyBarn {
                     d.nameText.text = playerBarn.getPlayerName(
                         d.playerId,
                         activePlayer.__id,
-                        false
+                        false,
                     );
                     d.nameTextSet = true;
                 }

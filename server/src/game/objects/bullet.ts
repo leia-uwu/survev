@@ -1,7 +1,7 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
 import {
     type BulletDef,
-    BulletDefs
+    BulletDefs,
 } from "../../../../shared/defs/gameObjects/bulletDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
@@ -24,7 +24,7 @@ function transformSegment(p0: Vec2, p1: Vec2, pos: Vec2, dir: Vec2) {
     const ang = Math.atan2(dir.y, dir.x);
     return {
         p0: v2.add(pos, v2.rotate(p0, ang)),
-        p1: v2.add(pos, v2.rotate(p1, ang))
+        p1: v2.add(pos, v2.rotate(p1, ang)),
     };
 }
 
@@ -90,7 +90,7 @@ export class BulletBarn {
                         bullet.shotSourceType,
                         bullet.mapSourceType,
                         bullet.damageType,
-                        bullet.player
+                        bullet.player,
                     );
                 }
 
@@ -170,7 +170,7 @@ export class Bullet {
 
     constructor(
         public bulletManager: BulletBarn,
-        params: BulletParams
+        params: BulletParams,
     ) {
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
 
@@ -246,7 +246,7 @@ export class Bullet {
 
         const nearbyObjs = this.bulletManager.game.grid.intersectLineSegment(
             this.pos,
-            this.endPos
+            this.endPos,
         );
         const colIds: Array<{
             obj: Obstacle;
@@ -276,7 +276,7 @@ export class Bullet {
                     obj,
                     pos: res.point,
                     nrm: res.normal,
-                    t: dist / this.distance
+                    t: dist / this.distance,
                 });
             }
         }
@@ -290,7 +290,7 @@ export class Bullet {
                 this.startPos,
                 this.endPos,
                 this.bulletManager.game.map.bounds.min,
-                this.bulletManager.game.map.bounds.max
+                this.bulletManager.game.map.bounds.max,
             );
             if (res) {
                 const dist = v2.length(v2.sub(res.point, this.startPos));
@@ -347,7 +347,7 @@ export class Bullet {
 
         const objects = this.bulletManager.game.grid.intersectLineSegment(
             posOld,
-            this.pos
+            this.pos,
         );
 
         for (let i = 0; i < objects.length; i++) {
@@ -371,7 +371,7 @@ export class Bullet {
                         obstacleType: obj.type,
                         collidable: obj.collidable,
                         point: res.point,
-                        normal: res.normal
+                        normal: res.normal,
                     });
                 }
             } else if (obj.__type === ObjectType.Player) {
@@ -398,34 +398,34 @@ export class Bullet {
                         panSeg.p0,
                         panSeg.p1,
                         p.posOld,
-                        p.dirOld
+                        p.dirOld,
                     );
                     const newSegment = transformSegment(
                         panSeg.p0,
                         panSeg.p1,
                         p.pos,
-                        p.dir
+                        p.dir,
                     );
                     const newIntersection = coldet.intersectSegmentSegment(
                         posOld,
                         this.pos,
                         oldSegment.p0,
-                        oldSegment.p1
+                        oldSegment.p1,
                     );
                     const oldIntersection = coldet.intersectSegmentSegment(
                         posOld,
                         this.pos,
                         newSegment.p0,
-                        newSegment.p1
+                        newSegment.p1,
                     );
                     const finalIntersection = oldIntersection || newIntersection;
                     if (finalIntersection) {
                         const normal = v2.normalize(
-                            v2.perp(v2.sub(newSegment.p1, newSegment.p0))
+                            v2.perp(v2.sub(newSegment.p1, newSegment.p0)),
                         );
                         panCollision = {
                             point: finalIntersection.point,
-                            normal: normal
+                            normal: normal,
                         };
                     }
                 }
@@ -433,7 +433,7 @@ export class Bullet {
                     posOld,
                     this.pos,
                     obj.pos,
-                    obj.rad
+                    obj.rad,
                 );
                 if (
                     collision &&
@@ -447,7 +447,7 @@ export class Bullet {
                         point: collision.point,
                         normal: collision.normal,
                         layer: obj.layer,
-                        collidable: true
+                        collidable: true,
                     });
                     if (obj.hasPerk("steelskin")) {
                         collisions.push({
@@ -456,7 +456,7 @@ export class Bullet {
                             normal: collision.normal,
                             layer: obj.layer,
                             collidable: false,
-                            obj: obj
+                            obj: obj,
                         });
                     }
                 } else if (panCollision) {
@@ -466,7 +466,7 @@ export class Bullet {
                         normal: panCollision.normal,
                         layer: obj.layer,
                         collidable: true,
-                        obj: obj
+                        obj: obj,
                     });
                 }
                 if (collision || panCollision) {
@@ -518,7 +518,7 @@ export class Bullet {
                     damageType: this.damageType,
                     source: this.player,
                     amount: finalDamage * def.obstacleDamage,
-                    dir: this.dir
+                    dir: this.dir,
                 });
 
                 if (mapDef.reflectBullets && this.onHitFx !== "explosion_rounds") {
@@ -549,7 +549,7 @@ export class Bullet {
                         source: this.player,
                         damageType: this.damageType,
                         amount: multiplier * finalDamage,
-                        dir: this.dir
+                        dir: this.dir,
                     });
                 }
                 hit = col.collidable;
@@ -594,7 +594,7 @@ export class Bullet {
             trailThick: this.trailThick,
             onHitFx: this.onHitFx,
             varianceT: this.varianceT,
-            distance: this.distance
+            distance: this.distance,
         });
     }
 }

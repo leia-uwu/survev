@@ -19,7 +19,7 @@ export class GasRenderer {
 
     constructor(
         public canvasMode: boolean,
-        public gasColor: number
+        public gasColor: number,
     ) {
         if (canvasMode) {
             this.canvas = document.createElement("canvas");
@@ -110,7 +110,7 @@ export class GasSafeZoneRenderer {
         safeRad: number,
         playerPos: Vec2,
         drawCircle: boolean,
-        drawLine: boolean
+        drawLine: boolean,
     ) {
         // Render a circle showing the safe zone, and a line pointing from
         // the player to the center. Only update geometry if relevant data
@@ -176,11 +176,11 @@ export class Gas {
         const startRad = (Math.sqrt(2) + 0.01) * 1024;
         this.circleOld = {
             pos: v2.create(0, 0),
-            rad: startRad
+            rad: startRad,
         };
         this.circleNew = {
             pos: v2.create(0, 0),
-            rad: startRad
+            rad: startRad,
         };
         this.gasRenderer = new GasRenderer(canvasMode, 16711680);
     }
@@ -201,7 +201,7 @@ export class Gas {
         const t = this.mode == gasMode.Moving ? this.circleT : 0;
         return {
             pos: v2.lerp(t, this.circleOld.pos, this.circleNew.pos),
-            rad: math.lerp(t, this.circleOld.rad, this.circleNew.rad)
+            rad: math.lerp(t, this.circleOld.rad, this.circleNew.rad),
         };
     }
 

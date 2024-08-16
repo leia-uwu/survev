@@ -23,7 +23,7 @@ function errorTypeToString(type: string, localization: Localization) {
         find_game_error: localization.translate("index-failed-finding-game"),
         find_game_full: localization.translate("index-failed-finding-game"),
         find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
-        kicked: localization.translate("index-team-kicked")
+        kicked: localization.translate("index-team-kicked"),
     };
     return typeMap[type as keyof typeof typeMap] || typeMap.lost_conn;
 }
@@ -33,7 +33,7 @@ export class TeamMenu {
     playBtn = $("#btn-start-team");
     serverWarning = $("#server-warning");
     teamOptions = $(
-        "#btn-team-queue-mode-1, #btn-team-queue-mode-2, #btn-team-fill-auto, #btn-team-fill-none"
+        "#btn-team-queue-mode-1, #btn-team-queue-mode-2, #btn-team-fill-auto, #btn-team-fill-none",
     );
 
     serverSelect = $("#team-server-select");
@@ -74,7 +74,7 @@ export class TeamMenu {
         public localization: Localization,
         public audioManager: AudioManager,
         public joinGameCb: (data: MatchData) => void,
-        public leaveCb: (err: string) => void
+        public leaveCb: (err: string) => void,
     ) {
         // Listen for ui modifications
         this.serverSelect.change(() => {
@@ -100,17 +100,17 @@ export class TeamMenu {
         $("#team-copy-url, #team-desc-text").click((e) => {
             const t = $("<div/>", {
                 class: "copy-toast",
-                html: "Copied!"
+                html: "Copied!",
             });
             $("#start-menu-wrapper").append(t);
             t.css({
                 left: e.pageX - parseInt(t.css("width")) / 2,
-                top: $("#team-copy-url").offset()!.top
+                top: $("#team-copy-url").offset()!.top,
             });
             t.animate(
                 {
                     top: "-=20",
-                    opacity: 1
+                    opacity: 1,
                 },
                 {
                     queue: false,
@@ -119,8 +119,8 @@ export class TeamMenu {
                         $(this).fadeOut(250, function () {
                             $(this).remove();
                         });
-                    }
-                }
+                    },
+                },
             );
             const r = $("#team-url").html();
             helpers.copyTextToClipboard(r);
@@ -132,12 +132,12 @@ export class TeamMenu {
                 const el = e.currentTarget;
                 this.hideUrl = !this.hideUrl;
                 $("#team-desc-text, #team-code-text").css({
-                    opacity: this.hideUrl ? 0 : 1
+                    opacity: this.hideUrl ? 0 : 1,
                 });
                 $(el).css({
                     "background-image": this.hideUrl
                         ? "url(../img/gui/hide.svg)"
-                        : "url(../img/gui/eye.svg)"
+                        : "url(../img/gui/eye.svg)",
                 });
             });
         }
@@ -173,7 +173,7 @@ export class TeamMenu {
 
             // Load properties from config
             this.playerData = {
-                name: this.config.get("playerName")
+                name: this.config.get("playerName"),
             };
             this.roomData = {
                 roomUrl,
@@ -181,7 +181,7 @@ export class TeamMenu {
                 gameModeIdx: this.config.get("gameModeIdx")!,
                 autoFill: this.config.get("teamAutoFill")!,
                 findingGame: false,
-                lastError: ""
+                lastError: "",
             } as RoomData;
             this.displayedInvalidProtocolModal = false;
 
@@ -213,12 +213,12 @@ export class TeamMenu {
                     if (this.create) {
                         this.sendMessage("create", {
                             roomData: this.roomData,
-                            playerData: this.playerData
+                            playerData: this.playerData,
                         });
                     } else {
                         this.sendMessage("join", {
                             roomUrl: this.roomData.roomUrl,
-                            playerData: this.playerData
+                            playerData: this.playerData,
                         });
                     }
                 };
@@ -307,7 +307,7 @@ export class TeamMenu {
             if (this.ws.readyState === this.ws.OPEN) {
                 const msg = JSON.stringify({
                     type,
-                    data
+                    data,
                 });
                 this.ws.send(msg);
             } else {
@@ -339,7 +339,7 @@ export class TeamMenu {
             const matchArgs = {
                 version,
                 region,
-                zones
+                zones,
             };
             this.sendMessage("playGame", matchArgs);
             this.roomData.findingGame = true;
@@ -351,7 +351,7 @@ export class TeamMenu {
         const setButtonState = function (
             el: JQuery<HTMLElement>,
             selected: boolean,
-            enabled: boolean
+            enabled: boolean,
         ) {
             el.removeClass("btn-darken btn-disabled btn-opaque btn-hollow-selected");
             if (enabled) {
@@ -415,12 +415,12 @@ export class TeamMenu {
             setButtonState(
                 this.queueMode1,
                 this.roomData.gameModeIdx == 1,
-                this.isLeader && this.roomData.enabledGameModeIdxs.includes(1)
+                this.isLeader && this.roomData.enabledGameModeIdxs.includes(1),
             );
             setButtonState(
                 this.queueMode2,
                 this.roomData.gameModeIdx == 2,
-                this.isLeader && this.roomData.enabledGameModeIdxs.includes(2)
+                this.isLeader && this.roomData.enabledGameModeIdxs.includes(2),
             );
 
             // Fill mode
@@ -445,7 +445,7 @@ export class TeamMenu {
             this.playBtn.html(
                 this.roomData.findingGame || this.joiningGame
                     ? '<div class="ui-spinner"></div>'
-                    : this.playBtn.attr("data-label")!
+                    : this.playBtn.attr("data-label")!,
             );
 
             const gameModeStyles = this.siteInfo.getGameModeStyles();
@@ -457,11 +457,11 @@ export class TeamMenu {
                 this.playBtn.addClass("btn-custom-mode-no-indent");
                 this.playBtn.addClass(style.buttonCss);
                 this.playBtn.css({
-                    "background-image": `url(${style.icon})`
+                    "background-image": `url(${style.icon})`,
                 });
             } else {
                 this.playBtn.css({
-                    "background-image": ""
+                    "background-image": "",
                 });
             }
             let playersInGame = false;
@@ -474,8 +474,8 @@ export class TeamMenu {
             if (this.isLeader) {
                 waitReason.html(
                     `${this.localization.translate(
-                        "index-game-in-progress"
-                    )}<span> ...</span>`
+                        "index-game-in-progress",
+                    )}<span> ...</span>`,
                 );
 
                 const showWaitMessage = playersInGame && !this.joiningGame;
@@ -485,20 +485,20 @@ export class TeamMenu {
                 if (this.roomData.findingGame || this.joiningGame) {
                     waitReason.html(
                         `<div class="ui-spinner" style="margin-right:16px"></div>${this.localization.translate(
-                            "index-joining-game"
-                        )}<span> ...</span>`
+                            "index-joining-game",
+                        )}<span> ...</span>`,
                     );
                 } else if (playersInGame) {
                     waitReason.html(
                         `${this.localization.translate(
-                            "index-game-in-progress"
-                        )}<span> ...</span>`
+                            "index-game-in-progress",
+                        )}<span> ...</span>`,
                     );
                 } else {
                     waitReason.html(
                         `${this.localization.translate(
-                            "index-waiting-for-leader"
-                        )}<span> ...</span>`
+                            "index-waiting-for-leader",
+                        )}<span> ...</span>`,
                     );
                 }
                 waitReason.css("display", "block");
@@ -514,7 +514,7 @@ export class TeamMenu {
                     playerId: 0,
                     isLeader: false,
                     inGame: false,
-                    self: false
+                    self: false,
                 };
                 if (t < this.players.length) {
                     const player = this.players[t];
@@ -523,12 +523,12 @@ export class TeamMenu {
                         playerId: player.playerId,
                         isLeader: player.isLeader,
                         inGame: player.inGame,
-                        self: player.playerId == this.localPlayerId
+                        self: player.playerId == this.localPlayerId,
                     };
                 }
 
                 const member = $("<div/>", {
-                    class: "team-menu-member"
+                    class: "team-menu-member",
                 });
 
                 // Left-side icon
@@ -542,8 +542,8 @@ export class TeamMenu {
                 member.append(
                     $("<div/>", {
                         class: `icon${iconClass}`,
-                        "data-playerid": playerStatus.playerId
-                    })
+                        "data-playerid": playerStatus.playerId,
+                    }),
                 );
                 let n: JQuery<HTMLInputElement> | null = null;
                 let c = null;
@@ -552,7 +552,7 @@ export class TeamMenu {
                         type: "text",
                         tabindex: 0,
                         class: "name menu-option name-text name-self-input",
-                        maxLength: net.Constants.PlayerNameMaxLen
+                        maxLength: net.Constants.PlayerNameMaxLen,
                     });
                     n.val(playerStatus.name);
                     const m = () => {
@@ -560,7 +560,7 @@ export class TeamMenu {
                         playerStatus.name = name;
                         this.config.set("playerName", name);
                         this.sendMessage("changeName", {
-                            name
+                            name,
                         });
                         this.editingName = false;
                         this.refreshUi();
@@ -578,7 +578,7 @@ export class TeamMenu {
                     n.on("blur", h);
                     member.append(n);
                     c = $("<div/>", {
-                        class: "icon icon-submit-name-change"
+                        class: "icon icon-submit-name-change",
                     });
                     c.on("click", m);
                     c.on("mousedown", (e) => {
@@ -597,7 +597,7 @@ export class TeamMenu {
                     }
                     const nameDiv = $("<div/>", {
                         class: `name menu-option ${nameClass}`,
-                        html: helpers.htmlEscape(playerStatus.name)
+                        html: helpers.htmlEscape(playerStatus.name),
                     });
                     if (playerStatus.self) {
                         nameDiv.on("click", () => {
@@ -612,8 +612,8 @@ export class TeamMenu {
                 } else {
                     member.append(
                         $("<div/>", {
-                            class: `icon ${playerStatus.inGame ? "icon-in-game" : ""}`
-                        })
+                            class: `icon ${playerStatus.inGame ? "icon-in-game" : ""}`,
+                        }),
                     );
                 }
                 teamMembers.append(member);
@@ -623,7 +623,7 @@ export class TeamMenu {
             $(".icon-kick", teamMembers).click((e) => {
                 const playerId = Number($(e.currentTarget).attr("data-playerid"));
                 this.sendMessage("kick", {
-                    playerId
+                    playerId,
                 });
             });
 
@@ -639,7 +639,7 @@ export class TeamMenu {
                 playJoinSound
             ) {
                 this.audioManager.playSound("notification_join_01", {
-                    channel: "ui"
+                    channel: "ui",
                 });
             }
             this.prevPlayerCount = this.players.length;

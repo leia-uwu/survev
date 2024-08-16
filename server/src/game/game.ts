@@ -36,7 +36,7 @@ export type GroupData = {
 enum ContextMode {
     Solo,
     Team,
-    Faction
+    Faction,
 }
 
 class ContextManager {
@@ -49,7 +49,7 @@ class ContextManager {
         this._contextMode = [
             game.teamMode == TeamMode.Solo && !game.map.factionMode,
             game.teamMode != TeamMode.Solo && !game.map.factionMode,
-            game.map.factionMode
+            game.map.factionMode,
         ].findIndex((isMode) => isMode);
     }
 
@@ -61,7 +61,7 @@ class ContextManager {
         return this._applyContext<number>({
             [ContextMode.Solo]: () => this._game.playerBarn.livingPlayers.length,
             [ContextMode.Team]: () => this._game.getAliveGroups().length,
-            [ContextMode.Faction]: () => this._game.getAliveTeams().length //tbd
+            [ContextMode.Faction]: () => this._game.getAliveTeams().length, //tbd
         });
     }
 
@@ -89,7 +89,7 @@ class ContextManager {
                     player.addGameOverMsg(winner.teamId);
                 }
                 return true;
-            }
+            },
         });
     }
 
@@ -97,7 +97,7 @@ class ContextManager {
         return this._applyContext<boolean>({
             [ContextMode.Solo]: () => this.aliveCount() > 1,
             [ContextMode.Team]: () => this.aliveCount() > 1,
-            [ContextMode.Faction]: () => this.aliveCount() > 1 //tbd
+            [ContextMode.Faction]: () => this.aliveCount() > 1, //tbd
         });
     }
 
@@ -111,7 +111,7 @@ class ContextManager {
                 for (let i = 0; i < numFactions; i++) {
                     aliveCounts.push(this._game.teams[i].livingPlayers.length);
                 }
-            }
+            },
         });
     }
 
@@ -119,7 +119,7 @@ class ContextManager {
         return this._applyContext<Player[] | undefined>({
             [ContextMode.Solo]: () => undefined,
             [ContextMode.Team]: () => player.group!.players,
-            [ContextMode.Faction]: () => this._game.playerBarn.players
+            [ContextMode.Faction]: () => this._game.playerBarn.players,
         });
     }
 
@@ -128,7 +128,7 @@ class ContextManager {
         return this._applyContext<boolean>({
             [ContextMode.Solo]: () => false,
             [ContextMode.Team]: () => true,
-            [ContextMode.Faction]: () => true
+            [ContextMode.Faction]: () => true,
         });
     }
 
@@ -146,7 +146,7 @@ class ContextManager {
                     player.actionType == GameConfig.Action.Revive &&
                     !!player.action.targetId
                 );
-            }
+            },
         });
     }
 
@@ -175,11 +175,11 @@ class ContextManager {
                                 this.isReviving(medic) &&
                                 player.isAffectedByAOE(medic)
                             );
-                        })
+                        }),
                     );
                 }
                 return false;
-            }
+            },
         });
     }
 
@@ -208,7 +208,7 @@ class ContextManager {
                 }
 
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
-            }
+            },
         });
     }
 
@@ -289,7 +289,7 @@ class ContextManager {
                 } else {
                     player.down(params);
                 }
-            }
+            },
         });
     }
 }
@@ -439,7 +439,7 @@ export class Game {
                     this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
                 this.logger.log(
-                    `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
+                    `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`,
                 );
                 this.tickTimes = [];
             }
@@ -475,7 +475,7 @@ export class Game {
 
     nextTeam(currentTeam: Group) {
         const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected
+            (t) => !t.allDeadOrDisconnected,
         );
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
@@ -484,7 +484,7 @@ export class Game {
 
     prevTeam(currentTeam: Group) {
         const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected
+            (t) => !t.allDeadOrDisconnected,
         );
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex =
@@ -523,7 +523,7 @@ export class Game {
                 emoteMsg.deserialize(stream);
 
                 this.playerBarn.emotes.push(
-                    new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing)
+                    new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing),
                 );
                 break;
             }
@@ -549,7 +549,7 @@ export class Game {
     /** if game over, return group that won */
     isTeamGameOver(): Group | undefined {
         const groupAlives = [...this.groups.values()].filter(
-            (group) => !group.allDeadOrDisconnected
+            (group) => !group.allDeadOrDisconnected,
         );
 
         if (groupAlives.length <= 1) {

@@ -55,7 +55,7 @@ class Decal implements AbstractObject {
         data: ObjectData<ObjectType.Decal>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         if (fullUpdate) {
             const def = MapObjectDefs[data.type] as DecalDef;
@@ -71,7 +71,7 @@ class Decal implements AbstractObject {
                 def.collision,
                 this.pos,
                 this.rot,
-                this.scale
+                this.scale,
             );
             this.surface = def.surface ? util.cloneDeep(def.surface) : null;
             this.hasGore = def.gore !== undefined;
@@ -93,7 +93,7 @@ class Decal implements AbstractObject {
             let goreTarget = math.delerp(
                 this.goreKills,
                 def.gore?.fade.start!,
-                def.gore?.fade.end!
+                def.gore?.fade.end!,
             );
             goreTarget = Math.pow(goreTarget, def.gore?.fade.pow!);
             this.goreT = this.isNew
@@ -109,21 +109,21 @@ class Decal implements AbstractObject {
                 this.decalRender!.spriteAlpha = math.lerp(
                     this.goreT,
                     def.img.alpha,
-                    def.gore.alpha
+                    def.gore.alpha,
                 );
             }
             if (def.gore?.waterColor !== undefined && this.surface) {
                 this.surface.data.waterColor = lerpColor(
                     this.goreT,
                     def.surface?.data.waterColor!,
-                    def.gore.waterColor
+                    def.gore.waterColor,
                 );
             }
             if (def.gore?.rippleColor !== undefined && this.surface) {
                 this.surface.data.rippleColor = lerpColor(
                     this.goreT,
                     def.surface?.data.rippleColor!,
-                    def.gore.rippleColor
+                    def.gore.rippleColor,
                 );
             }
         }
@@ -236,7 +236,7 @@ class DecalRender {
                 this.imgScale = math.lerp(
                     this.flickerRate - this.flickerCooldown,
                     this.imgScale,
-                    this.flickerTarget
+                    this.flickerTarget,
                 );
                 this.flickerCooldown -= dt;
             }

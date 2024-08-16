@@ -58,7 +58,7 @@ export class Group {
      */
     checkAllDowned(player: Player) {
         const filteredPlayers = this.players.filter(
-            (p) => p != player && !p.dead && !p.hasPerk("self_revive")
+            (p) => p != player && !p.dead && !p.hasPerk("self_revive"),
         );
         if (filteredPlayers.length == 0) {
             // this is necessary since for some dumb reason every() on an empty array returns true????
@@ -94,7 +94,7 @@ export class Group {
             p.kill({
                 damageType: GameConfig.DamageType.Bleeding,
                 dir: p.dir,
-                source: p.downedBy
+                source: p.downedBy,
             });
         }
     }

@@ -15,7 +15,7 @@ const allowedMeleeSkins = [
     "huntsman_rugged",
     "huntsman_burnished",
     "bowie_vintage",
-    "bowie_frontier"
+    "bowie_frontier",
 ];
 const allowedOutfits = [
     "outfitBase",
@@ -56,7 +56,7 @@ const allowedOutfits = [
     "outfitDesertCamo",
     "outfitCamo",
     "outfitRed",
-    "outfitWhite"
+    "outfitWhite",
 ];
 const allowedEmotes = [
     "emote_thumbsup",
@@ -192,7 +192,7 @@ const allowedEmotes = [
     "emote_flaguae",
     "emote_flagdominicanrepublic",
     "emote_logocloud",
-    "emote_logotwins"
+    "emote_logotwins",
 ];
 
 export interface UnlockDef {
@@ -213,14 +213,14 @@ export const UnlockDefs: Record<string, UnlockDef> = {
                 ...allowedEmotes,
                 ...allowedHealEffects,
                 ...Object.keys(CrosshairDefs),
-                ...PassDefs.pass_survivr1.items.map((item) => item.item)
-            ])
-        ]
+                ...PassDefs.pass_survivr1.items.map((item) => item.item),
+            ]),
+        ],
     },
     unlock_new_account: {
         type: "unlock",
         name: "new-account",
         free: true,
-        unlocks: ["outfitDarkShirt"]
-    }
+        unlocks: ["outfitDarkShirt"],
+    },
 };

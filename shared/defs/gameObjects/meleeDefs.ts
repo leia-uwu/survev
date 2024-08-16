@@ -92,30 +92,30 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 0.9,
             damageTimes: [0.1],
-            cooldownTime: 0.25
+            cooldownTime: 0.25,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["fists"]
+            attackAnims: ["fists"],
         },
         sound: {
             swing: "punch_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "punch_hit_01"
+            playerHit: "punch_hit_01",
         },
         lootImg: {
             sprite: "loot-weapon-fists.img",
             scale: 0.3,
             rad: 25,
-            tint: 65280
-        }
+            tint: 65280,
+        },
     },
     knuckles: {
         name: "Knuckles",
@@ -131,25 +131,25 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 0.9,
             damageTimes: [0.1],
-            cooldownTime: 0.25
+            cooldownTime: 0.25,
         },
         speed: {
             equip: 1,
-            attack: 0
+            attack: 0,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["fists", "fists"]
+            attackAnims: ["fists", "fists"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "punch_swing_01",
             deploy: "knuckles_deploy_01",
-            playerHit: "punch_hit_01"
+            playerHit: "punch_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-knuckles-rusted.img",
@@ -158,21 +158,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             rad: 25,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-knuckles-rusted.img",
             pos: {
                 x: 0,
-                y: -27
+                y: -27,
             },
             rot: 0.5 * Math.PI,
             scale: {
                 x: 0.2,
-                y: 0.2
+                y: 0.2,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     karambit: {
         name: "Karambit",
@@ -188,24 +188,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 0.9,
             damageTimes: [0.1],
-            cooldownTime: 0.25
+            cooldownTime: 0.25,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "slash",
-            attackAnims: ["slash", "fists"]
+            attackAnims: ["slash", "fists"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "knife_deploy_01",
-            playerHit: "knife_hit_01"
+            playerHit: "knife_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-karambit-rugged.img",
@@ -214,21 +214,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
-            rot: 2.35619
+            rot: 2.35619,
         },
         worldImg: {
             sprite: "loot-melee-karambit-rugged.img",
             pos: {
                 x: 15.5,
-                y: -5
+                y: -5,
             },
             rot: 0.5 * Math.PI,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     bayonet: {
         name: "Bayonet",
@@ -244,24 +244,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 0.9,
             damageTimes: [0.1],
-            cooldownTime: 0.25
+            cooldownTime: 0.25,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["cut", "thrust"]
+            attackAnims: ["cut", "thrust"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "knife_deploy_01",
-            playerHit: "knife_hit_01"
+            playerHit: "knife_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-bayonet-rugged.img",
@@ -269,21 +269,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-bayonet-rugged.img",
             pos: {
                 x: -0.5,
-                y: -32.5
+                y: -32.5,
             },
             rot: 0.785,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     huntsman: {
         name: "Huntsman",
@@ -299,24 +299,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 0.9,
             damageTimes: [0.1],
-            cooldownTime: 0.25
+            cooldownTime: 0.25,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["cut", "thrust"]
+            attackAnims: ["cut", "thrust"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "knife_deploy_01",
-            playerHit: "knife_hit_01"
+            playerHit: "knife_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-huntsman-rugged.img",
@@ -324,21 +324,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-huntsman-rugged.img",
             pos: {
                 x: 2.5,
-                y: -35.5
+                y: -35.5,
             },
             rot: 0.82,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     bowie: {
         name: "Bowie",
@@ -354,24 +354,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 0.9,
             damageTimes: [0.1],
-            cooldownTime: 0.25
+            cooldownTime: 0.25,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["cut", "thrust"]
+            attackAnims: ["cut", "thrust"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "knife_deploy_01",
-            playerHit: "knife_hit_01"
+            playerHit: "knife_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-bowie-vintage.img",
@@ -379,21 +379,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-bowie-vintage.img",
             pos: {
                 x: -0.5,
-                y: -32.5
+                y: -32.5,
             },
             rot: 0.785,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     machete: {
         name: "Machete",
@@ -409,24 +409,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.5,
-                y: 0
+                y: 0,
             },
             rad: 1.75,
             damageTimes: [0.12],
-            cooldownTime: 0.3
+            cooldownTime: 0.3,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "machete",
-            attackAnims: ["cutReverse"]
+            attackAnims: ["cutReverse"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "knife_deploy_01",
-            playerHit: "knife_hit_01"
+            playerHit: "knife_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-machete-taiga.img",
@@ -434,21 +434,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-machete-taiga.img",
             pos: {
                 x: -2.5,
-                y: -48.5
+                y: -48.5,
             },
             rot: 1.885,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     saw: {
         name: "Saw",
@@ -464,25 +464,25 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 2,
-                y: 0
+                y: 0,
             },
             rad: 1.75,
             damageTimes: [0.1, 0.5],
-            cooldownTime: 0.7
+            cooldownTime: 0.7,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "machete",
-            attackAnims: ["sawSwing"]
+            attackAnims: ["sawSwing"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "knife_deploy_01",
             playerHit: "knife_hit_01",
-            playerHit2: "saw_hit_01"
+            playerHit2: "saw_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-bonesaw-rusted.img",
@@ -491,21 +491,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-bonesaw-rusted.img",
             pos: {
                 x: -2.5,
-                y: -48.5
+                y: -48.5,
             },
             rot: 1.885,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     woodaxe: {
         name: "Wood Axe",
@@ -520,24 +520,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 1,
             damageTimes: [0.18],
-            cooldownTime: 0.36
+            cooldownTime: 0.36,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "meleeTwoHanded",
-            attackAnims: ["axeSwing"]
+            attackAnims: ["axeSwing"],
         },
         sound: {
             pickup: "heavy_pickup_01",
             swing: "heavy_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "axe_hit_01"
+            playerHit: "axe_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-woodaxe.img",
@@ -546,22 +546,22 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
-            rot: 2.35619
+            rot: 2.35619,
         },
         worldImg: {
             sprite: "loot-melee-woodaxe.img",
             pos: {
                 x: -12.5,
-                y: -16
+                y: -16,
             },
             rot: 1.2,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
             tint: 0xffffff,
-            leftHandOntop: true
-        }
+            leftHandOntop: true,
+        },
     },
     fireaxe: {
         name: "Fire Axe",
@@ -576,24 +576,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 1,
             damageTimes: [0.21],
-            cooldownTime: 0.42
+            cooldownTime: 0.42,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "meleeTwoHanded",
-            attackAnims: ["axeSwing"]
+            attackAnims: ["axeSwing"],
         },
         sound: {
             pickup: "heavy_pickup_01",
             swing: "heavy_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "axe_hit_01"
+            playerHit: "axe_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-fireaxe.img",
@@ -602,22 +602,22 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
-            rot: 2.35619
+            rot: 2.35619,
         },
         worldImg: {
             sprite: "loot-melee-fireaxe.img",
             pos: {
                 x: -12.5,
-                y: -4
+                y: -4,
             },
             rot: 1.2,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
             tint: 0xffffff,
-            leftHandOntop: true
-        }
+            leftHandOntop: true,
+        },
     },
     katana: {
         name: "Katana",
@@ -633,24 +633,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.75,
-                y: 0
+                y: 0,
             },
             rad: 2,
             damageTimes: [0.2],
-            cooldownTime: 0.4
+            cooldownTime: 0.4,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "meleeKatana",
-            attackAnims: ["katanaSwing"]
+            attackAnims: ["katanaSwing"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "medium_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "knife_hit_01"
+            playerHit: "knife_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-katana.img",
@@ -659,22 +659,22 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
-            rot: 2.35619
+            rot: 2.35619,
         },
         worldImg: {
             sprite: "loot-melee-katana.img",
             pos: {
                 x: 52.5,
-                y: -2
+                y: -2,
             },
             rot: 3,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
             tint: 0xffffff,
-            leftHandOntop: true
-        }
+            leftHandOntop: true,
+        },
     },
     naginata: {
         name: "Naginata",
@@ -690,24 +690,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 3.5,
-                y: 0
+                y: 0,
             },
             rad: 2,
             damageTimes: [0.27],
-            cooldownTime: 0.54
+            cooldownTime: 0.54,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "meleeNaginata",
-            attackAnims: ["naginataSwing"]
+            attackAnims: ["naginataSwing"],
         },
         sound: {
             pickup: "heavy_pickup_01",
             swing: "heavy_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "axe_hit_01"
+            playerHit: "axe_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-naginata.img",
@@ -716,22 +716,22 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
-            rot: 2.35619
+            rot: 2.35619,
         },
         worldImg: {
             sprite: "loot-melee-naginata.img",
             pos: {
                 x: 42.5,
-                y: -3
+                y: -3,
             },
             rot: 1.9,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
             tint: 0xffffff,
-            leftHandOntop: true
-        }
+            leftHandOntop: true,
+        },
     },
     stonehammer: {
         name: "Stone Hammer",
@@ -747,24 +747,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.35,
-                y: 0
+                y: 0,
             },
             rad: 1.25,
             damageTimes: [0.25],
-            cooldownTime: 0.5
+            cooldownTime: 0.5,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "meleeTwoHanded",
-            attackAnims: ["hammerSwing"]
+            attackAnims: ["hammerSwing"],
         },
         sound: {
             pickup: "heavy_pickup_01",
             swing: "heavy_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "hammer_hit_01"
+            playerHit: "hammer_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-stonehammer.img",
@@ -773,22 +773,22 @@ const BaseDefs: Record<string, MeleeDef> = {
             borderTint: 0xffffff,
             scale: 0.3,
             mirror: true,
-            rot: 2.35619
+            rot: 2.35619,
         },
         worldImg: {
             sprite: "loot-melee-stonehammer.img",
             pos: {
                 x: -12.5,
-                y: -4
+                y: -4,
             },
             rot: 1.2,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
             tint: 0xffffff,
-            leftHandOntop: true
-        }
+            leftHandOntop: true,
+        },
     },
     hook: {
         name: "Hook",
@@ -802,24 +802,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.5,
-                y: 0
+                y: 0,
             },
             rad: 1,
             damageTimes: [0.075],
-            cooldownTime: 0.175
+            cooldownTime: 0.175,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["hook"]
+            attackAnims: ["hook"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "hook_hit_01"
+            playerHit: "hook_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-hook-silver.img",
@@ -827,22 +827,22 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-hook-silver.img",
             pos: {
                 x: 0,
-                y: -27
+                y: -27,
             },
             rot: 0.5 * Math.PI,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
             tint: 0xffffff,
-            renderOnHand: true
-        }
+            renderOnHand: true,
+        },
     },
     pan: {
         name: "Pan",
@@ -856,25 +856,25 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 2,
-                y: 0
+                y: 0,
             },
             rad: 1.5,
             damageTimes: [0.15],
-            cooldownTime: 0.5
+            cooldownTime: 0.5,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["pan"]
+            attackAnims: ["pan"],
         },
         sound: {
             pickup: "pan_pickup_01",
             swing: "heavy_swing_01",
             deploy: "pan_pickup_01",
             playerHit: "pan_hit_01",
-            bullet: "pan_bullet"
+            bullet: "pan_bullet",
         },
         lootImg: {
             sprite: "loot-melee-pan-black.img",
@@ -882,56 +882,56 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: -0.785
+            rot: -0.785,
         },
         worldImg: {
             sprite: "loot-melee-pan-black-side.img",
             pos: {
                 x: 0,
-                y: -40
+                y: -40,
             },
             rot: 1.125,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         hipImg: {
             sprite: "loot-melee-pan-black-side.img",
             pos: {
                 x: -17.25,
-                y: 7.5
+                y: 7.5,
             },
             rot: 0.78 * Math.PI,
             scale: {
                 x: 0.3,
-                y: 0.3
+                y: 0.3,
             },
-            tint: 0xffffff
+            tint: 0xffffff,
         },
         reflectSurface: {
             equipped: {
                 p0: {
                     x: 2.65,
-                    y: -0.125
+                    y: -0.125,
                 },
                 p1: {
                     x: 1.35,
-                    y: -0.74
-                }
+                    y: -0.74,
+                },
             },
             unequipped: {
                 p0: {
                     x: -0.625,
-                    y: -1.2
+                    y: -1.2,
                 },
                 p1: {
                     x: -1.4,
-                    y: -0.25
-                }
-            }
-        }
+                    y: -0.25,
+                },
+            },
+        },
     },
     spade: {
         name: "Spade",
@@ -947,24 +947,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.75,
-                y: 0
+                y: 0,
             },
             rad: 1.5,
             damageTimes: [0.12],
-            cooldownTime: 0.35
+            cooldownTime: 0.35,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["cut", "thrust"]
+            attackAnims: ["cut", "thrust"],
         },
         sound: {
             pickup: "heavy_pickup_01",
             swing: "knife_swing_01",
             deploy: "stow_weapon_01",
-            playerHit: "spade_hit_01"
+            playerHit: "spade_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-spade-assault.img",
@@ -972,21 +972,21 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-spade-assault.img",
             pos: {
                 x: -0.5,
-                y: -41.5
+                y: -41.5,
             },
             rot: 1,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
+            tint: 0xffffff,
+        },
     },
     crowbar: {
         name: "Crowbar",
@@ -1002,24 +1002,24 @@ const BaseDefs: Record<string, MeleeDef> = {
         attack: {
             offset: {
                 x: 1.25,
-                y: 0
+                y: 0,
             },
             rad: 1.25,
             damageTimes: [0.12],
-            cooldownTime: 0.3
+            cooldownTime: 0.3,
         },
         speed: {
-            equip: 1
+            equip: 1,
         },
         anim: {
             idlePose: "fists",
-            attackAnims: ["cut", "cutReverseShort"]
+            attackAnims: ["cut", "cutReverseShort"],
         },
         sound: {
             pickup: "frag_pickup_01",
             swing: "knife_swing_01",
             deploy: "frag_pickup_01",
-            playerHit: "crowbar_hit_01"
+            playerHit: "crowbar_hit_01",
         },
         lootImg: {
             sprite: "loot-melee-crowbar-recon.img",
@@ -1027,29 +1027,29 @@ const BaseDefs: Record<string, MeleeDef> = {
             border: "loot-circle-outer-02.img",
             borderTint: 0xffffff,
             scale: 0.3,
-            rot: 0.785
+            rot: 0.785,
         },
         worldImg: {
             sprite: "loot-melee-crowbar-recon.img",
             pos: {
                 x: -1,
-                y: -10
+                y: -10,
             },
             rot: 1,
             scale: {
                 x: 0.35,
-                y: 0.35
+                y: 0.35,
             },
-            tint: 0xffffff
-        }
-    }
+            tint: 0xffffff,
+        },
+    },
 };
 
 const SkinDefs: Record<string, MeleeDef> = {
     fists: defineMeleeSkin("fists", {
         name: "Fists",
         rarity: 0,
-        lore: "The old one-two."
+        lore: "The old one-two.",
     }),
     knuckles_rusted: defineMeleeSkin("knuckles", {
         name: "Knuckles Rusted",
@@ -1057,11 +1057,11 @@ const SkinDefs: Record<string, MeleeDef> = {
         lore: "Rust up for the dust up.",
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-knuckles-rusted.img"
+            sprite: "loot-melee-knuckles-rusted.img",
         },
         worldImg: {
-            sprite: "loot-melee-knuckles-rusted.img"
-        }
+            sprite: "loot-melee-knuckles-rusted.img",
+        },
     }),
     knuckles_heroic: defineMeleeSkin("knuckles", {
         name: "Knuckles Heroic",
@@ -1069,11 +1069,11 @@ const SkinDefs: Record<string, MeleeDef> = {
         lore: "Give 'em a hero sandwich.",
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-knuckles-heroic.img"
+            sprite: "loot-melee-knuckles-heroic.img",
         },
         worldImg: {
-            sprite: "loot-melee-knuckles-heroic.img"
-        }
+            sprite: "loot-melee-knuckles-heroic.img",
+        },
     }),
     karambit_rugged: defineMeleeSkin("karambit", {
         name: "Karambit Rugged",
@@ -1081,80 +1081,80 @@ const SkinDefs: Record<string, MeleeDef> = {
         noPotatoSwap: false,
         anim: {
             idlePose: "slash",
-            attackAnims: ["slash", "fists"]
+            attackAnims: ["slash", "fists"],
         },
         lootImg: {
-            sprite: "loot-melee-karambit-rugged.img"
+            sprite: "loot-melee-karambit-rugged.img",
         },
         worldImg: {
-            sprite: "loot-melee-karambit-rugged.img"
-        }
+            sprite: "loot-melee-karambit-rugged.img",
+        },
     }),
     karambit_prismatic: defineMeleeSkin("karambit", {
         name: "Karambit Prismatic",
         rarity: 4,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-karambit-prismatic.img"
+            sprite: "loot-melee-karambit-prismatic.img",
         },
         worldImg: {
-            sprite: "loot-melee-karambit-prismatic.img"
-        }
+            sprite: "loot-melee-karambit-prismatic.img",
+        },
     }),
     karambit_drowned: defineMeleeSkin("karambit", {
         name: "Karambit Drowned",
         rarity: 4,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-karambit-drowned.img"
+            sprite: "loot-melee-karambit-drowned.img",
         },
         worldImg: {
-            sprite: "loot-melee-karambit-drowned.img"
-        }
+            sprite: "loot-melee-karambit-drowned.img",
+        },
     }),
     bayonet_rugged: defineMeleeSkin("bayonet", {
         name: "Bayonet Rugged",
         rarity: 3,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-bayonet-rugged.img"
+            sprite: "loot-melee-bayonet-rugged.img",
         },
         worldImg: {
-            sprite: "loot-melee-bayonet-rugged.img"
-        }
+            sprite: "loot-melee-bayonet-rugged.img",
+        },
     }),
     bayonet_woodland: defineMeleeSkin("bayonet", {
         name: "Bayonet Woodland",
         rarity: 4,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-bayonet-woodland.img"
+            sprite: "loot-melee-bayonet-woodland.img",
         },
         worldImg: {
-            sprite: "loot-melee-bayonet-woodland.img"
-        }
+            sprite: "loot-melee-bayonet-woodland.img",
+        },
     }),
     huntsman_rugged: defineMeleeSkin("huntsman", {
         name: "Huntsman Rugged",
         rarity: 3,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-huntsman-rugged.img"
+            sprite: "loot-melee-huntsman-rugged.img",
         },
         worldImg: {
-            sprite: "loot-melee-huntsman-rugged.img"
-        }
+            sprite: "loot-melee-huntsman-rugged.img",
+        },
     }),
     huntsman_burnished: defineMeleeSkin("huntsman", {
         name: "Huntsman Burnished",
         rarity: 4,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-huntsman-burnished.img"
+            sprite: "loot-melee-huntsman-burnished.img",
         },
         worldImg: {
-            sprite: "loot-melee-huntsman-burnished.img"
-        }
+            sprite: "loot-melee-huntsman-burnished.img",
+        },
     }),
     bowie_vintage: defineMeleeSkin("bowie", {
         name: "Bowie Vintage",
@@ -1162,27 +1162,27 @@ const SkinDefs: Record<string, MeleeDef> = {
         noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-bowie-vintage.img" },
         worldImg: {
-            sprite: "loot-melee-bowie-vintage.img"
-        }
+            sprite: "loot-melee-bowie-vintage.img",
+        },
     }),
     bowie_frontier: defineMeleeSkin("bowie", {
         name: "Bowie Frontier",
         rarity: 4,
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-bowie-frontier.img"
+            sprite: "loot-melee-bowie-frontier.img",
         },
         worldImg: {
-            sprite: "loot-melee-bowie-frontier.img"
-        }
+            sprite: "loot-melee-bowie-frontier.img",
+        },
     }),
     machete_taiga: defineMeleeSkin("machete", {
         name: "UVSR Taiga",
         noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-machete-taiga.img" },
         worldImg: {
-            sprite: "loot-melee-machete-taiga.img"
-        }
+            sprite: "loot-melee-machete-taiga.img",
+        },
     }),
     kukri_trad: defineMeleeSkin("machete", {
         name: "Tallow's Kukri",
@@ -1190,62 +1190,62 @@ const SkinDefs: Record<string, MeleeDef> = {
         lootImg: { sprite: "loot-melee-kukri-trad.img" },
         worldImg: {
             sprite: "loot-melee-kukri-trad.img",
-            pos: { x: -0.5, y: -46.5 }
-        }
+            pos: { x: -0.5, y: -46.5 },
+        },
     }),
     bonesaw_rusted: defineMeleeSkin("saw", {
         name: "Bonesaw Rusted",
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-bonesaw-rusted.img"
+            sprite: "loot-melee-bonesaw-rusted.img",
         },
         worldImg: {
-            sprite: "loot-melee-bonesaw-rusted.img"
-        }
+            sprite: "loot-melee-bonesaw-rusted.img",
+        },
     }),
     woodaxe_bloody: defineMeleeSkin("woodaxe", {
         name: "Axe Bloodstained",
         lootImg: {
-            sprite: "loot-melee-woodaxe-bloody.img"
+            sprite: "loot-melee-woodaxe-bloody.img",
         },
         worldImg: {
-            sprite: "loot-melee-woodaxe-bloody.img"
-        }
+            sprite: "loot-melee-woodaxe-bloody.img",
+        },
     }),
     katana_rusted: defineMeleeSkin("katana", {
         name: "Katana Rusted",
         lootImg: { sprite: "loot-melee-katana-rusted.img" },
         worldImg: {
-            sprite: "loot-melee-katana-rusted.img"
-        }
+            sprite: "loot-melee-katana-rusted.img",
+        },
     }),
     katana_orchid: defineMeleeSkin("katana", {
         name: "Katana Orchid",
         quality: 1,
         lootImg: { sprite: "loot-melee-katana-orchid.img" },
         worldImg: {
-            sprite: "loot-melee-katana-orchid.img"
-        }
+            sprite: "loot-melee-katana-orchid.img",
+        },
     }),
     sledgehammer: defineMeleeSkin("stonehammer", {
         name: "Sledgehammer",
         lootImg: { sprite: "loot-melee-sledgehammer.img" },
         worldImg: {
             sprite: "loot-melee-sledgehammer.img",
-            pos: { x: -12.5, y: -3.5 }
-        }
+            pos: { x: -12.5, y: -3.5 },
+        },
     }),
     crowbar_scout: defineMeleeSkin("crowbar", {
         name: "Scouting Crowbar",
-        noPotatoSwap: false
+        noPotatoSwap: false,
     }),
     crowbar_recon: defineMeleeSkin("crowbar", {
         name: "Crowbar Carbon",
         noPotatoSwap: false,
         lootImg: { sprite: "loot-melee-crowbar-recon.img" },
         worldImg: {
-            sprite: "loot-melee-crowbar-recon.img"
-        }
+            sprite: "loot-melee-crowbar-recon.img",
+        },
     }),
     kukri_sniper: defineMeleeSkin("machete", {
         name: "Marksman's Recurve",
@@ -1253,27 +1253,27 @@ const SkinDefs: Record<string, MeleeDef> = {
         lootImg: { sprite: "loot-melee-kukri-sniper.img" },
         worldImg: {
             sprite: "loot-melee-kukri-sniper.img",
-            pos: { x: -0.5, y: -46.5 }
-        }
+            pos: { x: -0.5, y: -46.5 },
+        },
     }),
     bonesaw_healer: defineMeleeSkin("saw", {
         name: "The Separator",
         noPotatoSwap: false,
         lootImg: {
-            sprite: "loot-melee-bonesaw-healer.img"
+            sprite: "loot-melee-bonesaw-healer.img",
         },
         worldImg: {
-            sprite: "loot-melee-bonesaw-healer.img"
-        }
+            sprite: "loot-melee-bonesaw-healer.img",
+        },
     }),
     katana_demo: defineMeleeSkin("katana", {
         name: "Hakai no Katana",
         lootImg: { sprite: "loot-melee-katana-demo.img" },
-        worldImg: { sprite: "loot-melee-katana-demo.img" }
+        worldImg: { sprite: "loot-melee-katana-demo.img" },
     }),
     spade_assault: defineMeleeSkin("spade", {
         name: "Trench Spade",
-        noPotatoSwap: false
+        noPotatoSwap: false,
     }),
     warhammer_tank: defineMeleeSkin("stonehammer", {
         name: "Panzerhammer",
@@ -1282,16 +1282,16 @@ const SkinDefs: Record<string, MeleeDef> = {
             offset: { x: 1.5, y: 0 },
             rad: 1.75,
             damageTimes: [0.3],
-            cooldownTime: 0.6
+            cooldownTime: 0.6,
         },
         lootImg: {
-            sprite: "loot-melee-warhammer-tank.img"
+            sprite: "loot-melee-warhammer-tank.img",
         },
         worldImg: {
             sprite: "loot-melee-warhammer-tank.img",
-            pos: { x: -10.5, y: -3 }
-        }
-    })
+            pos: { x: -10.5, y: -3 },
+        },
+    }),
 };
 
 export const MeleeDefs = { ...BaseDefs, ...SkinDefs };

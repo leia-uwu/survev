@@ -51,14 +51,14 @@ class Color {
     constructor(
         public r: number,
         public g: number,
-        public b: number
+        public b: number,
     ) {}
 
     getColors() {
         return {
             r: this.r,
             g: this.g,
-            b: this.b
+            b: this.b,
         };
     }
 }
@@ -276,7 +276,7 @@ export class UiManager {
         public canvasMode: boolean,
         public touch: Touch,
         public inputBinds: InputBinds,
-        public inputBindUi: InputBindUi
+        public inputBindUi: InputBindUi,
     ) {
         this.game = game;
         this.particleBarn = particleBarn;
@@ -427,10 +427,10 @@ export class UiManager {
             if (this.weapDraggedDiv) {
                 this.weapSwitches.css({
                     left: "",
-                    top: ""
+                    top: "",
                 });
                 $("#ui-game").css({
-                    "pointer-events": ""
+                    "pointer-events": "",
                 });
             }
             this.weapDraggedDiv = null;
@@ -456,12 +456,12 @@ export class UiManager {
                     if (this.weapDragging) {
                         this.weapDraggedDiv.css({
                             left: e.pageX - 80,
-                            top: e.pageY - 30
+                            top: e.pageY - 30,
                         });
                         this.weapDraggedDiv.addClass("ui-weapon-dragged");
                     } else {
                         $("#ui-game").css({
-                            "pointer-events": "initial"
+                            "pointer-events": "initial",
                         });
                         this.weapNoSwitches.removeClass("ui-outline-hover");
                         this.weapDragging = true;
@@ -494,7 +494,7 @@ export class UiManager {
             mapSprites: this.mapSpriteBarn.container,
             teammates: new PIXI.Container(),
             player: new PIXI.Container(),
-            border: new PIXI.Graphics()
+            border: new PIXI.Graphics(),
         };
 
         this.mapSprite.anchor = new PIXI.Point(0.5, 0.5) as PIXI.ObservablePoint;
@@ -511,7 +511,7 @@ export class UiManager {
         const minimapSize = this.getMinimapSize();
         this.minimapPos = v2.create(
             minimapMargin + minimapSize / 2,
-            game.camera.screenHeight - minimapSize / 2 - minimapMargin
+            game.camera.screenHeight - minimapSize / 2 - minimapMargin,
         );
 
         // Audio
@@ -526,13 +526,13 @@ export class UiManager {
             let muteAudio = this.audioManager.muteToggle();
             this.muteButtonImage.attr(
                 "src",
-                muteAudio ? this.muteOffImg : this.muteOnImg
+                muteAudio ? this.muteOffImg : this.muteOnImg,
             );
             // @ts-expect-error why assing it to null?
             muteAudio = null;
         });
         this.teamMemberHealthBarWidth = parseInt(
-            $(".ui-team-member-health").find(".ui-bar-inner").css("width")
+            $(".ui-team-member-health").find(".ui-bar-inner").css("width"),
         );
 
         for (let i = 0; i < 4; i++) {
@@ -563,16 +563,16 @@ export class UiManager {
                     disconnected: false,
                     dead: false,
                     downed: false,
-                    role: ""
+                    role: "",
                 },
                 indicators: {
                     main: {
                         elem: $("#ui-team-indicators").find(
-                            `.ui-indicator-main[data-id=${slotIdx}]`
+                            `.ui-indicator-main[data-id=${slotIdx}]`,
                         ),
-                        displayed: false
-                    }
-                }
+                        displayed: false,
+                    },
+                },
             });
         }
         this.init();
@@ -673,7 +673,7 @@ export class UiManager {
         playerBarn: PlayerBarn,
         camera: Camera,
         teamMode: number,
-        factionMode: boolean
+        factionMode: boolean,
     ) {
         const localPlayer = player;
 
@@ -688,7 +688,7 @@ export class UiManager {
         const timeLeft = math.max(Math.floor(gas.duration * (1 - gas.circleT)), 0);
         const gasState = {
             mode: gas.mode,
-            time: timeLeft
+            time: timeLeft,
         };
         if (this.gasState.mode != gasState.mode || this.gasState.time != gasState.time) {
             this.gasState = gasState;
@@ -742,13 +742,13 @@ export class UiManager {
                     if (GameObjectDefs[player.action.item]) {
                         actionTxt1 = this.localization.translate("game-using");
                         actionTxt2 = this.localization.translate(
-                            `game-${player.action.item}`
+                            `game-${player.action.item}`,
                         );
                     }
                     break;
                 case Action.Revive: {
                     const targetName = playerBarn.getPlayerInfo(
-                        player.action.targetId
+                        player.action.targetId,
                     ).name;
                     actionTxt1 = this.localization.translate("game-reviving");
                     actionTxt2 = localPlayer.downed ? "" : targetName;
@@ -782,11 +782,11 @@ export class UiManager {
 
         const camExtents = v2.create(
             (camera.screenWidth * 0.5) / camera.z(),
-            (camera.screenHeight * 0.5) / camera.z()
+            (camera.screenHeight * 0.5) / camera.z(),
         );
         const camAabb = {
             min: v2.sub(camera.pos, camExtents),
-            max: v2.add(camera.pos, camExtents)
+            max: v2.add(camera.pos, camExtents),
         };
 
         // Update team UI elements
@@ -799,7 +799,7 @@ export class UiManager {
                 groupId,
                 spectating: this.spectating,
                 playing: this.game.playingTicker,
-                groupInfo: playerBarn.groupInfo
+                groupInfo: playerBarn.groupInfo,
             };
             console.error(`badTeamInfo_1: ${JSON.stringify(err)}`);
         }
@@ -828,11 +828,11 @@ export class UiManager {
                         disconnected: playerStatus.disconnected,
                         dead: playerStatus.dead,
                         downed: playerStatus.downed,
-                        role: playerStatus.role
+                        role: playerStatus.role,
                     },
                     playerInfo.playerId,
                     playerInfo.teamId,
-                    playerBarn
+                    playerBarn,
                 );
 
                 // Team indicators
@@ -846,13 +846,13 @@ export class UiManager {
                             const playerPos = playerStatus.pos;
                             const dir = v2.normalizeSafe(
                                 v2.sub(playerPos, camera.pos),
-                                v2.create(1, 0)
+                                v2.create(1, 0),
                             );
                             const edge = coldet.intersectRayAabb(
                                 camera.pos,
                                 dir,
                                 camAabb.min,
-                                camAabb.max
+                                camAabb.max,
                             )!;
                             const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
                             const screenEdge = camera.pointToScreen(edge);
@@ -860,7 +860,7 @@ export class UiManager {
                                 playerPos,
                                 GameConfig.player.radius,
                                 camAabb.min,
-                                camAabb.max
+                                camAabb.max,
                             );
                             if (!playerStatus.dead && !onscreen) {
                                 let off = 32;
@@ -875,14 +875,14 @@ export class UiManager {
                                     left: math.clamp(
                                         screenEdge.x,
                                         off,
-                                        camera.screenWidth - off
+                                        camera.screenWidth - off,
                                     ),
                                     top: math.clamp(
                                         screenEdge.y,
                                         off,
-                                        camera.screenHeight - off - heightAdjust
+                                        camera.screenHeight - off - heightAdjust,
                                     ),
-                                    transform
+                                    transform,
                                 });
                                 if (!indicator.displayed) {
                                     elem.css("display", "block");
@@ -925,7 +925,7 @@ export class UiManager {
                 const flairColor = this.flairId == 1 ? "red" : "blue";
                 this.flairElems.css({
                     display: "block",
-                    "background-image": `url(../img/gui/player-patch-${flairColor}.svg)`
+                    "background-image": `url(../img/gui/player-patch-${flairColor}.svg)`,
                 });
             }
         }
@@ -938,11 +938,11 @@ export class UiManager {
         ) {
             this.groupPlayerCount = groupPlayerCount;
             this.spectateOptionsWrapper.css({
-                top: this.groupPlayerCount * this.teamMemberHeight + 12
+                top: this.groupPlayerCount * this.teamMemberHeight + 12,
             });
         } else if (teamMode == 1) {
             this.spectateOptionsWrapper.css({
-                top: 12
+                top: 12,
             });
         }
         this.updatePlayerMapSprites(dt, player, playerBarn, map);
@@ -964,7 +964,7 @@ export class UiManager {
                 this.audioManager.isSoundLoaded("ambient_lab_01", "ambient")
             ) {
                 this.roleMenuInst = this.audioManager.playSound("ambient_lab_01", {
-                    channel: "ambient"
+                    channel: "ambient",
                 });
             }
             if (this.roleMenuTicker <= 0) {
@@ -978,7 +978,7 @@ export class UiManager {
         _dt: unknown,
         activePlayer: Player,
         playerBarn: PlayerBarn,
-        map: Map
+        map: Map,
     ) {
         const activePlayerInfo = playerBarn.getPlayerInfo(activePlayer.__id);
 
@@ -990,7 +990,7 @@ export class UiManager {
             visible: boolean,
             zOrder: number,
             texture: string,
-            tint: number
+            tint: number,
         ) => {
             if (spriteIdx >= this.playerMapSprites.length) {
                 const m = this.mapSpriteBarn.addSprite();
@@ -1060,7 +1060,7 @@ export class UiManager {
                 playerStatus.minimapVisible!,
                 zOrder,
                 texture,
-                tint
+                tint,
             );
 
             // Add an outer sprite if this player is in our group
@@ -1075,7 +1075,7 @@ export class UiManager {
                     visible,
                     zOrder - 1,
                     "player-map-outer.img",
-                    0xffffff
+                    0xffffff,
                 );
             }
         }
@@ -1113,7 +1113,7 @@ export class UiManager {
         playerId: number,
         activePlayerId: number,
         playerBarn: PlayerBarn,
-        _factionMode: unknown
+        _factionMode: unknown,
     ) {
         const pingDef = PingDefs[pingType];
         if (pingDef) {
@@ -1198,7 +1198,7 @@ export class UiManager {
         mapSprite: any,
         sprite: PIXI.Sprite,
         spriteVisible: boolean,
-        dt: number
+        dt: number,
     ) {
         if (mapSprite.displayed) {
             if (mapSprite.life != undefined) {
@@ -1264,7 +1264,7 @@ export class UiManager {
         if (insideMap) {
             const mapOrigin = v2.create(
                 this.mapSprite.x - this.mapSprite.width / 2,
-                this.mapSprite.y + this.mapSprite.height / 2
+                this.mapSprite.y + this.mapSprite.height / 2,
             );
             const xWorldPos =
                 ((screenPos.x - mapOrigin.x) / this.mapSprite.width) * map.width;
@@ -1292,7 +1292,7 @@ export class UiManager {
         this.pieTimer.stop();
         // @ts-expect-error not used anywhere, should be removed, I think.
         this.curAction = {
-            type: Action.None
+            type: Action.None,
         };
         this.displayMapLarge(true);
         this.displayMiniMap();
@@ -1314,7 +1314,7 @@ export class UiManager {
         this.statsMain.css("display", "none");
         this.statsElem.stop().css({
             display: "none",
-            opacity: 0
+            opacity: 0,
         });
         this.statsContents.stop().hide();
     }
@@ -1324,7 +1324,7 @@ export class UiManager {
             unknown: "game-rank",
             1: "game-solo-rank",
             2: "game-duo-rank",
-            4: "game-squad-rank"
+            4: "game-squad-rank",
         };
         const val = l10nMap[teamMode as keyof typeof l10nMap] || l10nMap.unknown;
         return this.localization.translate(val);
@@ -1333,7 +1333,7 @@ export class UiManager {
     getTitleVictoryText(spectatingAnotherTeam: boolean, gameMode: MapDef["gameMode"]) {
         if (spectatingAnotherTeam) {
             return `${this.spectatedPlayerName} ${this.localization.translate(
-                "game-won-the-game"
+                "game-won-the-game",
             )}`;
         }
         let chickenTxt = "game-chicken";
@@ -1346,14 +1346,14 @@ export class UiManager {
     getTitleDefeatText(teamMode: number, spectatingAnotherTeam: boolean) {
         if (spectatingAnotherTeam) {
             return `${this.spectatedPlayerName} ${this.localization.translate(
-                "game-player-died"
+                "game-player-died",
             )}.`;
         }
         if (teamMode > 1) {
             return this.localization.translate("game-team-eliminated");
         }
         return `${this.localization.translate(
-            "game-You"
+            "game-You",
         )} ${this.localization.translate("game-you-died")}.`;
     }
 
@@ -1361,7 +1361,7 @@ export class UiManager {
         teamMode: number,
         teamRank: number,
         teamKills: number,
-        factionMode: boolean
+        factionMode: boolean,
     ) {
         if (factionMode) {
             const redTeamTxt = this.localization.translate("game-red-team");
@@ -1370,13 +1370,13 @@ export class UiManager {
         }
         if (teamMode == 1) {
             return `<div><span class="ui-stats-header-stat">${this.teamModeToString(
-                teamMode
+                teamMode,
             )} </span><span class="ui-stats-header-value">#${teamRank}</span></div>`;
         }
         return `<div class="ui-stats-header-right"><span class="ui-stats-header-stat">${this.teamModeToString(
-            teamMode
+            teamMode,
         )} </span><span class="ui-stats-header-value">#${teamRank}</span></div><div class="ui-stats-header-left"><span class="ui-stats-header-stat">${this.localization.translate(
-            "game-team-kills"
+            "game-team-kills",
         )} </span><span class="ui-stats-header-value">${teamKills}</span></div>`;
     }
 
@@ -1397,7 +1397,7 @@ export class UiManager {
         playerBarn: PlayerBarn,
         _audioManager: unknown,
         map: Map,
-        _ui2: unknown
+        _ui2: unknown,
     ) {
         // If we're spectating a team that's not our own, and the game isn't over yet,
         // don't display the stats screen again.
@@ -1413,10 +1413,10 @@ export class UiManager {
             this.statsLogo.css("display", "block");
 
             this.statsContentsContainer.css({
-                top: ""
+                top: "",
             });
             this.statsInfoBox.css({
-                height: ""
+                height: "",
             });
 
             const victory = localTeamId == winningTeamId;
@@ -1427,7 +1427,7 @@ export class UiManager {
             const S = isLocalTeamWinner
                 ? this.getTitleVictoryText(
                       spectatingAnotherTeam,
-                      map.getMapDef().gameMode
+                      map.getMapDef().gameMode,
                   )
                 : this.getTitleDefeatText(teamMode, spectatingAnotherTeam);
             let teamKills = 0;
@@ -1438,35 +1438,35 @@ export class UiManager {
                 teamMode,
                 teamRank,
                 teamKills,
-                map.getMapDef().gameMode.factionMode!
+                map.getMapDef().gameMode.factionMode!,
             );
             const I = $("<div/>")
                 .append(
                     $("<div/>", {
                         class: "ui-stats-header-title",
-                        html: S
-                    })
+                        html: S,
+                    }),
                 )
                 .append(
                     $("<div/>", {
                         class: "ui-stats-header-overview",
-                        html: z
-                    })
+                        html: z,
+                    }),
                 );
             this.statsHeader.html(I as unknown as HTMLElement);
             const T = function (e: string, t: string | number) {
                 return $("<div/>", {
-                    class: "ui-stats-info"
+                    class: "ui-stats-info",
                 })
                     .append(
                         $("<div/>", {
-                            html: e
-                        })
+                            html: e,
+                        }),
                     )
                     .append(
                         $("<div/>", {
-                            html: t
-                        })
+                            html: t,
+                        }),
                     );
             };
             const M = device.uiLayout != device.UiLayout.Sm || device.tablet ? 250 : 125;
@@ -1481,28 +1481,28 @@ export class UiManager {
                 E += stats.dead ? " ui-stats-info-status" : "";
                 const B = (function (e) {
                     return $("<div/>", {
-                        class: e
+                        class: e,
                     });
                 })(E);
                 B.css("left", P);
                 B.append(
                     $("<div/>", {
                         class: "ui-stats-info-player-name",
-                        html: helpers.htmlEscape(playerInfo.name)
-                    })
+                        html: helpers.htmlEscape(playerInfo.name),
+                    }),
                 );
                 B.append(T(this.localization.translate("game-kills"), `${stats.kills}`))
                     .append(
                         T(
                             this.localization.translate("game-damage-dealt"),
-                            stats.damageDealt
-                        )
+                            stats.damageDealt,
+                        ),
                     )
                     .append(
                         T(
                             this.localization.translate("game-damage-taken"),
-                            stats.damageTaken
-                        )
+                            stats.damageTaken,
+                        ),
                     )
                     .append(T(this.localization.translate("game-survived"), D));
                 if (map.getMapDef().gameMode.factionMode && gameOver) {
@@ -1510,15 +1510,15 @@ export class UiManager {
                         case 1:
                             B.append(
                                 $("<div/>", {
-                                    class: "ui-stats-info-player-badge ui-stats-info-player-red-leader"
-                                })
+                                    class: "ui-stats-info-player-badge ui-stats-info-player-red-leader",
+                                }),
                             );
                             break;
                         case 2:
                             B.append(
                                 $("<div/>", {
-                                    class: "ui-stats-info-player-badge ui-stats-info-player-blue-leader"
-                                })
+                                    class: "ui-stats-info-player-badge ui-stats-info-player-blue-leader",
+                                }),
                             );
                             break;
                         case 3: {
@@ -1528,8 +1528,8 @@ export class UiManager {
                                     : "ui-stats-info-player-blue-ribbon";
                             B.append(
                                 $("<div/>", {
-                                    class: `ui-stats-info-player-badge ${R}`
-                                })
+                                    class: `ui-stats-info-player-badge ${R}`,
+                                }),
                             );
                         }
                     }
@@ -1539,7 +1539,7 @@ export class UiManager {
             }
             const restartButton = $("<a/>", {
                 class: "ui-stats-restart btn-green btn-darken menu-option",
-                html: this.localization.translate("game-play-new-game")
+                html: this.localization.translate("game-play-new-game"),
             });
             restartButton.on("click", () => {
                 this.quitGame();
@@ -1548,16 +1548,20 @@ export class UiManager {
             if (gameOver || this.waitingForPlayers) {
                 restartButton.css({
                     width:
-                        device.uiLayout != device.UiLayout.Sm || device.tablet ? 225 : 130
+                        device.uiLayout != device.UiLayout.Sm || device.tablet
+                            ? 225
+                            : 130,
                 });
             } else {
                 restartButton.css({
                     left:
-                        device.uiLayout != device.UiLayout.Sm || device.tablet ? -72 : -46
+                        device.uiLayout != device.UiLayout.Sm || device.tablet
+                            ? -72
+                            : -46,
                 });
                 const q = $("<a/>", {
                     class: "btn-green btn-darken menu-option ui-stats-spectate",
-                    html: this.localization.translate("game-spectate")
+                    html: this.localization.translate("game-spectate"),
                 });
                 q.on("click", this.beginSpectating.bind(this));
                 this.statsOptions.append(q);
@@ -1572,7 +1576,7 @@ export class UiManager {
                 e.css("opacity", 0);
                 e.delay(statsDelay + baseDelay + (elemIdx + idx) * elemDelay).animate(
                     {
-                        opacity: 1
+                        opacity: 1,
                     },
                     elemFadeTime,
                     () => {
@@ -1581,12 +1585,12 @@ export class UiManager {
                                 .delay(idx * elemDelay)
                                 .animate(
                                     {
-                                        opacity: 1
+                                        opacity: 1,
                                     },
-                                    elemFadeTime
+                                    elemFadeTime,
                                 );
                         });
-                    }
+                    },
                 );
                 e.children().each((_idx, elem) => {
                     $(elem).css("opacity", 0);
@@ -1607,18 +1611,18 @@ export class UiManager {
             this.statsElem.css("display", "block");
             this.statsElem.delay(statsDelay).animate(
                 {
-                    opacity: 1
+                    opacity: 1,
                 },
-                1000
+                1000,
             );
 
             this.statsContents.stop();
             this.statsContents.css("display", "block");
             this.statsContents.delay(statsDelay).animate(
                 {
-                    opacity: 1
+                    opacity: 1,
                 },
-                1000
+                1000,
             );
         }
     }
@@ -1631,12 +1635,12 @@ export class UiManager {
         this.statsContents.stop();
         this.statsContents.css({
             display: "none",
-            opacity: 0
+            opacity: 0,
         });
         this.statsElem.stop();
         this.statsElem.css({
             display: "none",
-            opacity: 0
+            opacity: 0,
         });
         this.statsMain.css("display", "none");
     }
@@ -1657,46 +1661,46 @@ export class UiManager {
                 t += r.localization.translate("game-you-died");
                 t += ".";
                 let a = `<div><span class="ui-stats-header-stat">${r.localization.translate(
-                    "game-kills"
+                    "game-kills",
                 )} </span>`;
                 a += `<span class="ui-stats-header-value">${playerStats.kills}</span></div>`;
                 return $("<div/>", {
-                    class: ""
+                    class: "",
                 })
                     .append(
                         $("<div/>", {
                             class: "ui-stats-header-title",
-                            html: t
-                        })
+                            html: t,
+                        }),
                     )
                     .append(
                         $("<div/>", {
                             class: "ui-stats-header-overview",
-                            html: a
-                        })
+                            html: a,
+                        }),
                     ) as unknown as HTMLElement;
-            })()
+            })(),
         );
         this.statsContentsContainer.css({
-            top: "10%"
+            top: "10%",
         });
         this.statsInfoBox.css({
-            height: 0
+            height: 0,
         });
         const a = $("<a/>", {
             class: "ui-stats-restart btn-green btn-darken menu-option",
-            html: this.localization.translate("game-play-new-game")
+            html: this.localization.translate("game-play-new-game"),
         });
         a.on("click", () => {
             r.quitGame();
         });
         this.statsOptions.append(a);
         a.css({
-            left: device.uiLayout != device.UiLayout.Sm || device.tablet ? -72 : -46
+            left: device.uiLayout != device.UiLayout.Sm || device.tablet ? -72 : -46,
         });
         const i = $("<a/>", {
             class: "btn-green btn-darken menu-option ui-stats-spectate",
-            html: this.localization.translate("game-spectate")
+            html: this.localization.translate("game-spectate"),
         });
         i.on("click", this.beginSpectating.bind(this));
         this.statsOptions.append(i);
@@ -1714,17 +1718,17 @@ export class UiManager {
         this.statsElem.css("display", "block");
         this.statsElem.delay(2500).animate(
             {
-                opacity: 1
+                opacity: 1,
             },
-            1000
+            1000,
         );
         this.statsContents.stop();
         this.statsContents.css("display", "block");
         this.statsContents.delay(2500).animate(
             {
-                opacity: 1
+                opacity: 1,
             },
-            1000
+            1000,
         );
     }
 
@@ -1732,7 +1736,7 @@ export class UiManager {
         targetId: number,
         localId: number,
         teamMode: number,
-        playerBarn: PlayerBarn
+        playerBarn: PlayerBarn,
     ) {
         if (targetId != this.spectatedPlayerId) {
             this.setSpectating(true, teamMode);
@@ -1769,7 +1773,7 @@ export class UiManager {
             kills: this.localization.translate("game-kills"),
             damageDealt: this.localization.translate("game-damage-dealt"),
             damageTaken: this.localization.translate("game-damage-taken"),
-            timeAlive: this.localization.translate("game-survived")
+            timeAlive: this.localization.translate("game-survived"),
         };
 
         this.spectateModeStatsData.empty();
@@ -1792,7 +1796,7 @@ export class UiManager {
         this.specStatsButton.html(
             display
                 ? this.localization.translate("game-hide-match-stats")
-                : this.localization.translate("game-view-match-stats")
+                : this.localization.translate("game-view-match-stats"),
         );
     }
 
@@ -1829,7 +1833,7 @@ export class UiManager {
         playerId: number,
         playerName: string,
         kills: number,
-        gameMode: MapDef["gameMode"]
+        gameMode: MapDef["gameMode"],
     ) {
         const valid = playerId != 0;
         const waitTxt = gameMode?.sniperMode
@@ -1853,7 +1857,7 @@ export class UiManager {
         mapHidden += ", .js-ui-map-hidden";
         $(this.visibilityMode == 2 ? ".js-ui-hud-show" : mapHidden).css(
             "display",
-            this.bigmapDisplayed ? "none" : "block"
+            this.bigmapDisplayed ? "none" : "block",
         );
         $(".js-ui-map-show").css("display", this.bigmapDisplayed ? "block" : "none");
         this.updateSpectatorCountDisplay(true);
@@ -1874,7 +1878,7 @@ export class UiManager {
         if (dirty) {
             this.spectatorCounterContainer.css(
                 "display",
-                displayCounter ? "block" : "none"
+                displayCounter ? "block" : "none",
             );
             this.spectatorCounterDisplayed = displayCounter;
         }
@@ -1921,7 +1925,7 @@ export class UiManager {
             this.mapInfo.css("bottom", "auto");
             this.spectatorCounterContainer.css({
                 bottom: 6,
-                left: 98
+                left: 98,
             });
         }
     }
@@ -1934,7 +1938,7 @@ export class UiManager {
             this.mapInfo.css("bottom", this.mapInfoBottom);
             this.spectatorCounterContainer.css({
                 bottom: layoutSm ? 0 : 218,
-                left: layoutSm ? 0 : 6
+                left: layoutSm ? 0 : 6,
             });
         }
     }
@@ -1968,7 +1972,7 @@ export class UiManager {
                 message +=
                     seconds > 0
                         ? ` ${Math.floor(seconds)} ${this.localization.translate(
-                              "game-seconds"
+                              "game-seconds",
                           )}`
                         : "";
                 break;
@@ -1991,14 +1995,14 @@ export class UiManager {
         _camera: unknown,
         map: Map,
         planeBarn: PlaneBarn,
-        debug: unknown
+        debug: unknown,
     ) {
         // Gas
         const circle = gas.getCircle();
         const gasPos = this.getMapPosFromWorldPos(circle.pos, map);
         const gasEdge = this.getMapPosFromWorldPos(
             v2.add(circle.pos, v2.create(circle.rad, 0)),
-            map
+            map,
         );
         const gasRad = v2.length(v2.sub(gasEdge, gasPos));
         this.gasRenderer.render(gasPos, gasRad, gas.isActive());
@@ -2008,7 +2012,7 @@ export class UiManager {
         const safePos = this.getMapPosFromWorldPos(circleSafe.pos, map);
         const safeEdge = this.getMapPosFromWorldPos(
             v2.add(circleSafe.pos, v2.create(circleSafe.rad, 0)),
-            map
+            map,
         );
         const safeRad = v2.length(v2.sub(safeEdge, safePos));
         const playerMapPos = this.getMapPosFromWorldPos(playerPos, map);
@@ -2019,7 +2023,7 @@ export class UiManager {
             safeRad,
             playerMapPos,
             drawCircle,
-            drawLine
+            drawLine,
         );
 
         planeBarn.renderAirstrikeZones(this, map, debug);
@@ -2033,7 +2037,7 @@ export class UiManager {
             health: number;
             dead: boolean;
             downed: boolean;
-        }
+        },
     ) {
         const healthBarWidth = innerWidth;
         let uiHealth = status.health * 0.01 * healthBarWidth;
@@ -2050,7 +2054,7 @@ export class UiManager {
         if (val > 25) {
             if (status.downed) {
                 selectorInner.css({
-                    backgroundColor: "red"
+                    backgroundColor: "red",
                 });
             } else {
                 if (math.eqAbs(val, 100, 0.2)) {
@@ -2069,7 +2073,7 @@ export class UiManager {
                 const d = Interpolate(m.g, p.g, 45, val);
                 const u = Interpolate(m.b, p.b, 45, val);
                 selectorInner.css({
-                    backgroundColor: `rgba(${h},${d},${u},1)`
+                    backgroundColor: `rgba(${h},${d},${u},1)`,
                 });
             }
             selectorInner.removeClass("ui-bar-danger");
@@ -2085,7 +2089,7 @@ export class UiManager {
         status: PrevStatus,
         playerId: number,
         _o: unknown,
-        _s: unknown
+        _s: unknown,
     ) {
         const groupId = this.teamSelectors[slotIdx].groupId;
         const teamName = this.teamSelectors[slotIdx].teamName;
@@ -2110,7 +2114,7 @@ export class UiManager {
             this.updateHealthBar(this.teamMemberHealthBarWidth, teamHealthInner, null, {
                 health,
                 dead: status.dead,
-                downed: status.downed
+                downed: status.downed,
             });
             if (statusChange) {
                 teamStatus.attr("class", "ui-team-member-status");
@@ -2138,7 +2142,7 @@ export class UiManager {
         $(".ui-team-member-name").removeAttr("style");
         $(".ui-team-member-status").removeAttr("style");
         $(".ui-team-member-status").removeClass(
-            "ui-team-member-status-downed ui-team-member-status-dead ui-team-member-status-disconnected icon-pulse"
+            "ui-team-member-status-downed ui-team-member-status-dead ui-team-member-status-disconnected icon-pulse",
         );
         this.teamSelectors = [];
     }
@@ -2150,7 +2154,7 @@ export class UiManager {
                 : math.min(
                       1,
                       math.clamp(camera.screenWidth / 1280, 0.75, 1) *
-                          math.clamp(camera.screenHeight / 1024, 0.75, 1)
+                          math.clamp(camera.screenHeight / 1024, 0.75, 1),
                   );
         this.pieTimer.resize(this.touch, this.screenScaleFactor);
 
@@ -2160,12 +2164,12 @@ export class UiManager {
 
         const roleMenuScale = math.min(
             1,
-            math.min(camera.screenWidth / 1200, camera.screenHeight / 900)
+            math.min(camera.screenWidth / 1200, camera.screenHeight / 900),
         );
 
         this.roleMenuElem.css(
             "transform",
-            `translateX(-50%) translateY(-50%) scale(${roleMenuScale})`
+            `translateX(-50%) translateY(-50%) scale(${roleMenuScale})`,
         );
 
         this.redraw(camera);
@@ -2207,13 +2211,13 @@ export class UiManager {
                 this.mapSprite.x - this.mapSprite.width / 2,
                 this.mapSprite.y - this.mapSprite.height / 2,
                 this.mapSprite.width,
-                this.mapSprite.height
+                this.mapSprite.height,
             );
             this.container.mask.endFill();
             if (device.touch) {
                 this.bigmapCollision.css({
                     width: screenHeight,
-                    height: screenWidth
+                    height: screenWidth,
                 });
             }
         } else {
@@ -2226,23 +2230,23 @@ export class UiManager {
 
             // Start with a fall back
             let scaleCss: Record<string, number | string> = {
-                zoom: this.screenScaleFactor
+                zoom: this.screenScaleFactor,
             };
             if (document.body) {
                 if ("WebkitTransform" in document.body.style) {
                     scaleCss = {
-                        "-webkit-transform": `scale(${this.screenScaleFactor})`
+                        "-webkit-transform": `scale(${this.screenScaleFactor})`,
                     };
                 } else if ("transform" in document.body.style) {
                     scaleCss = {
-                        transform: `scale(${this.screenScaleFactor})`
+                        transform: `scale(${this.screenScaleFactor})`,
                     };
                 }
             }
             this.mapContainer.css(scaleCss);
             this.mapContainer.css(
                 "bottom",
-                this.mapContainerBottom * this.screenScaleFactor
+                this.mapContainerBottom * this.screenScaleFactor,
             );
             const minimapPosY = layoutSm
                 ? minimapSize / 2 + thisMinimapMargin
@@ -2262,7 +2266,7 @@ export class UiManager {
                 thisMinimapMargin + thisMinimapBorderWidth / 2 + thisMinimapMarginXAdjust,
                 u + thisMinimapMarginYAdjust,
                 minimapSize - thisMinimapBorderWidth,
-                minimapSize - thisMinimapBorderWidth
+                minimapSize - thisMinimapBorderWidth,
             );
             this.display.border.endFill();
 
@@ -2274,7 +2278,7 @@ export class UiManager {
                 thisMinimapMargin + thisMinimapMarginXAdjust,
                 minimapMaskAnchorY - 0.5 + thisMinimapMarginYAdjust,
                 minimapSize,
-                minimapSize
+                minimapSize,
             );
             this.container.mask.endFill();
         }
@@ -2305,7 +2309,7 @@ export class UiManager {
                     },
                     () => {
                         this.inputBinds.menuHovered = false;
-                    }
+                    },
                 );
                 this.inputBinds.menuHovered = false;
                 if (this.roleMenuActive) {
@@ -2358,10 +2362,10 @@ export class UiManager {
             const roleDef = GameObjectDefs[role] as RoleDef;
             const roleOption = $("<div/>", {
                 class: "ui-role-option",
-                "data-role": role
+                "data-role": role,
             });
             roleOption.css({
-                "background-image": `url('${roleDef.guiImg}')`
+                "background-image": `url('${roleDef.guiImg}')`,
             });
             $("#ui-role-header").append(roleOption);
         }
@@ -2383,26 +2387,26 @@ export class UiManager {
         const roleDef = GameObjectDefs[role] as RoleDef;
         $(".ui-role-option").css({
             "background-size": 132,
-            opacity: 0.5
+            opacity: 0.5,
         });
         $("#ui-role-header").find(`[data-role=${role}]`).css({
             "background-size": 164,
-            opacity: 1
+            opacity: 1,
         });
         const roleBodyLeft = $("<div/>", {
-            class: "ui-role-body-left"
+            class: "ui-role-body-left",
         });
         const roleBodyName = $("<div/>", {
-            class: "ui-role-body-name"
+            class: "ui-role-body-name",
         });
         const roleBodyImg = $("<div/>", {
-            class: "ui-role-body-image"
+            class: "ui-role-body-image",
         });
 
         const roleName = this.localization.translate(`game-${role}`);
         roleBodyName.html(roleName);
         roleBodyImg.css({
-            "background-image": `url('${roleDef.guiImg}')`
+            "background-image": `url('${roleDef.guiImg}')`,
         });
         const borderColor = roleDef.color
             ? helpers.colorToHexString(roleDef.color)
@@ -2412,30 +2416,30 @@ export class UiManager {
         roleBodyLeft.append(roleBodyName).append(roleBodyImg);
 
         const roleBodyRight = $("<div/>", {
-            class: "ui-role-body-right"
+            class: "ui-role-body-right",
         });
         const rolePerks = roleDef.perks!;
         for (let i = 0; i < rolePerks.length; i++) {
             const perk = rolePerks[i];
             const perkElem = $("<div/>", {
-                class: "ui-role-body-perk"
+                class: "ui-role-body-perk",
             });
             const perkElemImg = $("<div/>", {
-                class: "ui-role-body-perk-image-wrapper"
+                class: "ui-role-body-perk-image-wrapper",
             }).append(
                 $("<div/>", {
-                    class: "ui-role-body-perk-image-icon"
-                })
+                    class: "ui-role-body-perk-image-icon",
+                }),
             );
             const perkElemName = $("<div/>", {
-                class: "ui-role-body-perk-name"
+                class: "ui-role-body-perk-name",
             });
 
             const perkImg = helpers.getSvgFromGameType(
-                perk instanceof Function ? perk() : perk
+                perk instanceof Function ? perk() : perk,
             );
             perkElemImg.find(".ui-role-body-perk-image-icon").css({
-                "background-image": `url('${perkImg}')`
+                "background-image": `url('${perkImg}')`,
             });
 
             const perkName = this.localization.translate(`game-${perk}`);

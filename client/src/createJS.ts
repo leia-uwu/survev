@@ -94,7 +94,7 @@ export class SoundInstance {
         delay: number,
         offset: number,
         ambient: boolean,
-        detune: number
+        detune: number,
     ) {
         this.volume = this.volumeOld = volume;
         this.pan = this.panOld = pan;
@@ -248,7 +248,7 @@ class Reverb {
         public inNode: GainNode,
         public outNode: GainNode,
         public name: string,
-        public params: ReverbDef
+        public params: ReverbDef,
     ) {
         this.volume = params.volume != undefined ? params.volume : 1.0;
         this.echoVolume = params.echoVolume || 0.0;
@@ -478,7 +478,7 @@ class WebAudioEngine {
                 [1280.0, 2.8284 / 2.0, -25.0, "peaking"],
                 [2560.0, 2.8284 / 2.0, -10.0, "peaking"],
                 [5120.0, 2.8284 / 2.0, -30.0, "peaking"],
-                [10240.0, 2.8284 / 2.0, -25.0, "peaking"]
+                [10240.0, 2.8284 / 2.0, -25.0, "peaking"],
             ],
             club: [
                 [20.0, 2.8284 / 2.0, -6.0, "lowshelf"],
@@ -490,8 +490,8 @@ class WebAudioEngine {
                 [2000.0, 2.8284 / 2.0, -48.0, "peaking"],
                 [4000.0, 2.8284 / 2.0, -50.0, "highshelf"],
                 [8000.0, 2.8284 / 2.0, -50.0, "highshelf"],
-                [16000.0, 2.8284 / 2.0, -50.0, "highshelf"]
-            ]
+                [16000.0, 2.8284 / 2.0, -50.0, "highshelf"],
+            ],
         };
         Object.keys(eqTypes).forEach((item) => {
             const eqNode = this.ctx.createGain();
@@ -578,7 +578,7 @@ class WebAudioEngine {
                 },
                 () => {
                     console.error(`Failed decoding sound: ${path}`);
-                }
+                },
             );
         });
         xhr.addEventListener("abort", onfailure);
@@ -596,7 +596,7 @@ class WebAudioEngine {
             canCoalesce?: boolean;
             volume?: number;
             channels?: number;
-        }
+        },
     ) {
         const file = this.loadFile(path, this.onfileload.bind(this));
         const sound = {
@@ -604,7 +604,7 @@ class WebAudioEngine {
             canCoalesce: !!params.canCoalesce,
             maxInstances: params.channels || 16,
             volume: params.volume || 1.0,
-            instances: []
+            instances: [],
         };
         this.sounds[name] = sound;
     }
@@ -643,7 +643,7 @@ class WebAudioEngine {
             filter !== "club"
         ) {
             console.error(
-                `Invalid filter: ${filter}. Only valid filters are 'none', 'reverb', 'muffled' and 'club'.`
+                `Invalid filter: ${filter}. Only valid filters are 'none', 'reverb', 'muffled' and 'club'.`,
             );
             return nullHandle;
         }
@@ -679,7 +679,7 @@ class WebAudioEngine {
         const instance = this.instances[this.instanceId % kMaxInstances];
         if (instance.sound) {
             console.error(
-                `All ${kMaxInstances} sound instances in use. You are using way too many sounds!`
+                `All ${kMaxInstances} sound instances in use. You are using way too many sounds!`,
             );
             return nullHandle;
         }
@@ -726,7 +726,7 @@ class WebAudioEngine {
             delay,
             offset,
             ambient,
-            detune
+            detune,
         );
         if (!this.playingInstances.includes(instance)) {
             this.playingInstances.push(instance);
@@ -741,7 +741,7 @@ class WebAudioEngine {
             this.reverbNode,
             this.masterGainNode,
             name,
-            params
+            params,
         );
 
         this.loadFile(path, (path) => {
@@ -812,7 +812,7 @@ class WebAudioEngine {
             this.masterGainNode.gain.setTargetAtTime(
                 masterVolume,
                 this.ctx.currentTime,
-                0.02
+                0.02,
             );
         }
 
@@ -908,14 +908,14 @@ class WebAudioEngine {
         this.offlineCtx = new OfflineAudioContext(
             2,
             testTime * this.ctx.sampleRate,
-            this.ctx.sampleRate
+            this.ctx.sampleRate,
         );
 
         // Create the sound to play
         const soundBuffer = this.offlineCtx.createBuffer(
             2,
             testTime * this.ctx.sampleRate,
-            this.ctx.sampleRate
+            this.ctx.sampleRate,
         );
         for (let channel = 0; channel < soundBuffer.numberOfChannels; channel++) {
             const pcm = soundBuffer.getChannelData(channel);
@@ -933,7 +933,7 @@ class WebAudioEngine {
         const convolverBuffer = this.offlineCtx.createBuffer(
             1,
             convolverTime * this.ctx.sampleRate,
-            this.ctx.sampleRate
+            this.ctx.sampleRate,
         );
         for (let channel = 0; channel < convolverBuffer.numberOfChannels; channel++) {
             const _pcm = convolverBuffer.getChannelData(channel);
@@ -958,7 +958,7 @@ class WebAudioEngine {
             echoVolume: 0.5,
             echoLowPass: 800,
             echoDelay: 0.25,
-            stereoSpread: 0.004
+            stereoSpread: 0.004,
         };
         reverb.convolverNode = convolverNode;
         // Static nodes

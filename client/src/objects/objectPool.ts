@@ -2,7 +2,7 @@ import type { BitStream } from "../../../shared/net/net";
 import {
     type ObjectData,
     ObjectType,
-    type ObjectsPartialData
+    type ObjectsPartialData,
 } from "../../../shared/net/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
 import type { Ctx } from "../game";
@@ -20,7 +20,7 @@ export class Pool<T extends AbstractObject> {
 
     constructor(classFn: C<T>) {
         this.creator = {
-            type: classFn
+            type: classFn,
         };
         assert(classFn !== undefined);
     }
@@ -83,7 +83,7 @@ export class Creator {
             const err = {
                 id,
                 ids: Object.keys(this.idToObj),
-                stream: s._view._view
+                stream: s._view._view,
             };
             console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
             return ObjectType.Invalid;
@@ -95,7 +95,7 @@ export class Creator {
         type: Type,
         id: number,
         data: ObjectData<Type>,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         let obj = this.getObjById(id);
         let isNew = false;

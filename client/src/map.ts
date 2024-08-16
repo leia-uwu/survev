@@ -55,13 +55,19 @@ function traceGroundPatch(canvas: PIXI.Graphics, patch: GroundPatch, seed: numbe
     const seededRand = util.seededRand(seed);
     tracePath(
         canvas,
-        generateJaggedAabbPoints(patch as any, divisionsX, divisionsY, offset, seededRand)
+        generateJaggedAabbPoints(
+            patch as any,
+            divisionsX,
+            divisionsY,
+            offset,
+            seededRand,
+        ),
     );
 }
 
 export class Map {
     display = {
-        ground: new PIXI.Graphics()
+        ground: new PIXI.Graphics(),
     };
 
     mapName = "";
@@ -87,7 +93,7 @@ export class Map {
     } = {
         places: [],
         objects: [],
-        groundPatches: []
+        groundPatches: [],
     };
 
     mapLoaded = false;
@@ -120,7 +126,7 @@ export class Map {
         }
         this.mapTexture?.destroy(true);
         this.display.ground.destroy({
-            children: true
+            children: true,
         });
         this.cameraEmitter?.stop();
         this.cameraEmitter = null;
@@ -134,7 +140,7 @@ export class Map {
         mapMsg: MapMsg,
         camera: Camera,
         canvasMode: boolean,
-        particleBarn: ParticleBarn
+        particleBarn: ParticleBarn,
     ) {
         this.mapName = mapMsg.mapName;
         // Clone the source mapDef
@@ -155,12 +161,12 @@ export class Map {
             mapMsg.shoreInset,
             mapMsg.grassInset,
             mapMsg.rivers,
-            this.seed
+            this.seed,
         );
         this.mapData = {
             places: mapMsg.places,
             objects: mapMsg.objects,
-            groundPatches: mapMsg.groundPatches
+            groundPatches: mapMsg.groundPatches,
         };
         this.mapLoaded = true;
         const cameraEmitterType = this.mapDef.biome.particles.camera;
@@ -169,7 +175,7 @@ export class Map {
             this.cameraEmitter = particleBarn.addEmitter(cameraEmitterType, {
                 pos: v2.create(0, 0),
                 dir,
-                layer: 99999
+                layer: 99999,
             });
         }
         this.display.ground.clear();
@@ -197,7 +203,7 @@ export class Map {
         renderer: Renderer,
         camera: Camera,
         _smokeParticles: SmokeParticle[],
-        debug: DebugOptions
+        debug: DebugOptions,
     ) {
         const obstacles = this.obstaclePool.getPool();
         for (let i = 0; i < obstacles.length; i++) {
@@ -210,7 +216,7 @@ export class Map {
                     particleBarn,
                     audioManager,
                     activePlayer,
-                    renderer
+                    renderer,
                 );
                 obstacle.render(camera, debug, activePlayer.layer);
             }
@@ -228,7 +234,7 @@ export class Map {
                     ambience,
                     activePlayer,
                     renderer,
-                    camera
+                    camera,
                 );
                 building.render(camera, debug, activePlayer.layer);
             }
@@ -261,7 +267,7 @@ export class Map {
             this.cameraEmitter.alpha = math.lerp(
                 dt * 6,
                 this.cameraEmitter.alpha,
-                alphaTarget
+                alphaTarget,
             );
         }
     }
@@ -270,26 +276,26 @@ export class Map {
         groundGfx: PIXI.Graphics,
         gridThickness: number,
         canvasMode: boolean,
-        mapRender: boolean
+        mapRender: boolean,
     ) {
         const width = this.width;
         const height = this.height;
         const terrain = this.terrain!;
         const ll = {
             x: 0,
-            y: 0
+            y: 0,
         };
         const lr = {
             x: width,
-            y: 0
+            y: 0,
         };
         const ul = {
             x: 0,
-            y: height
+            y: height,
         };
         const ur = {
             x: width,
-            y: height
+            y: height,
         };
         const mapColors = this.mapDef.biome.colors;
         const groundPatches = this.mapData.groundPatches;
@@ -364,12 +370,12 @@ export class Map {
                 gridGfx,
                 {
                     x,
-                    y: 0
+                    y: 0,
                 },
                 {
                     x,
-                    y: height
-                }
+                    y: height,
+                },
             );
         }
         for (let y = 0; y <= height; y += GameConfig.map.gridSize) {
@@ -377,12 +383,12 @@ export class Map {
                 gridGfx,
                 {
                     x: 0,
-                    y
+                    y,
                 },
                 {
                     x: width,
-                    y
-                }
+                    y,
+                },
             );
         }
         gridGfx.lineStyle(gridThickness, 0, 0);
@@ -434,14 +440,14 @@ export class Map {
                 shapes.push({
                     collider: collider.copy(col) as CircleWithHeight,
                     scale: def.map?.scale! || 1,
-                    color: def.map?.color!
+                    color: def.map?.color!,
                 });
             }
         }
         return {
             obj,
             zIdx,
-            shapes
+            shapes,
         };
     }
 
@@ -471,19 +477,19 @@ export class Map {
             // Border for extra spiffiness
             const ll = {
                 x: 0,
-                y: 0
+                y: 0,
             };
             const lr = {
                 x: this.width,
-                y: 0
+                y: 0,
             };
             const ul = {
                 x: 0,
-                y: this.height
+                y: this.height,
             };
             const ur = {
                 x: this.width,
-                y: this.height
+                y: this.height,
             };
             background.lineStyle(scale * 2, 0, 1);
             drawLine(background, ll, ul);
@@ -515,7 +521,7 @@ export class Map {
                         shape.collider,
                         obj.pos,
                         math.oriToRad(obj.ori),
-                        obj.scale
+                        obj.scale,
                     );
                     const scale = shape.scale !== undefined ? shape.scale : 1;
                     gfx.beginFill(shape.color, 1);
@@ -524,7 +530,7 @@ export class Map {
                             gfx.drawCircle(
                                 col.pos.x,
                                 this.height - col.pos.y,
-                                col.rad * scale
+                                col.rad * scale,
                             );
                             break;
                         case collider.Type.Aabb: {
@@ -535,7 +541,7 @@ export class Map {
                                 O.x - A.x,
                                 this.height - O.y - A.y,
                                 A.x * 2,
-                                A.y * 2
+                                A.y * 2,
                             );
                             gfx.endFill();
                         }
@@ -561,7 +567,7 @@ export class Map {
                     dropShadowAngle: Math.PI / 3,
                     dropShadowDistance: 1,
                     wordWrap: false,
-                    align: "center"
+                    align: "center",
                 });
                 const richText = new PIXI.Text(place.name, style);
                 richText.anchor.set(0.5, 0.5);
@@ -580,30 +586,30 @@ export class Map {
                     width: screenScale,
                     height: screenScale,
                     scaleMode: PIXI.SCALE_MODES.LINEAR,
-                    resolution: 1
+                    resolution: 1,
                 });
             }
             mapRender.scale = new PIXI.Point(
                 screenScale / this.height,
-                screenScale / this.height
+                screenScale / this.height,
             );
             renderer.render(mapRender, {
                 renderTexture: this.mapTexture,
-                clear: true
+                clear: true,
             });
             renderer.render(txtRender, {
                 renderTexture: this.mapTexture,
-                clear: false
+                clear: false,
             });
             mapRender.destroy({
                 children: true,
                 texture: true,
-                baseTexture: true
+                baseTexture: true,
             });
             txtRender.destroy({
                 children: true,
                 texture: true,
-                baseTexture: true
+                baseTexture: true,
             });
         }
     }
@@ -621,7 +627,7 @@ export class Map {
             }
             return {
                 type,
-                data
+                data,
             } as {
                 type: string;
                 data: Required<typeof data>;
@@ -685,7 +691,7 @@ export class Map {
                     ((onRiverShore = true), math.pointInsidePolygon(pos, river.waterPoly))
                 ) {
                     return groundSurface("water", {
-                        river
+                        river,
                     });
                 }
             }
@@ -699,7 +705,7 @@ export class Map {
                     : "grass"
                 : math.pointInsidePolygon(pos, this.terrain?.shore!)
                   ? "sand"
-                  : "water"
+                  : "water",
         );
     }
 

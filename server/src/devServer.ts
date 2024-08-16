@@ -12,9 +12,9 @@ util.mergeDeep(Config, {
         local: {
             https: false,
             address: `${Config.devServer.host}:${Config.devServer.port}`,
-            l10n: "index-local"
-        }
-    }
+            l10n: "index-local",
+        },
+    },
 });
 
 const logger = new Logger("Dev server");
@@ -24,7 +24,7 @@ const apiServer = new ApiServer();
 const app = Config.devServer.ssl
     ? SSLApp({
           key_file_name: Config.devServer.ssl.keyFile,
-          cert_file_name: Config.devServer.ssl.certFile
+          cert_file_name: Config.devServer.ssl.certFile,
       })
     : App();
 
@@ -42,17 +42,17 @@ app.post("/api/find_game", async (res) => {
             returnJson(res, {
                 res: [
                     {
-                        err: "Error retriving body"
-                    }
-                ]
+                        err: "Error retriving body",
+                    },
+                ],
             });
-        }
+        },
     );
 });
 
 setInterval(() => {
     apiServer.updateRegion(gameServer.regionId, {
-        playerCount: gameServer.getPlayerCount()
+        playerCount: gameServer.getPlayerCount(),
     });
 }, 10 * 1000);
 

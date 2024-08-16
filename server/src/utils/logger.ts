@@ -2,79 +2,79 @@ export const ColorStyles = {
     foreground: {
         black: {
             normal: 30,
-            bright: 90
+            bright: 90,
         },
         red: {
             normal: 31,
-            bright: 91
+            bright: 91,
         },
         green: {
             normal: 32,
-            bright: 92
+            bright: 92,
         },
         yellow: {
             normal: 33,
-            bright: 93
+            bright: 93,
         },
         blue: {
             normal: 34,
-            bright: 94
+            bright: 94,
         },
         magenta: {
             normal: 35,
-            bright: 95
+            bright: 95,
         },
         cyan: {
             normal: 36,
-            bright: 96
+            bright: 96,
         },
         white: {
             normal: 37,
-            bright: 97
+            bright: 97,
         },
         default: {
             normal: 39,
-            bright: 39
-        }
+            bright: 39,
+        },
     },
     background: {
         black: {
             normal: 40,
-            bright: 100
+            bright: 100,
         },
         red: {
             normal: 41,
-            bright: 101
+            bright: 101,
         },
         green: {
             normal: 42,
-            bright: 102
+            bright: 102,
         },
         yellow: {
             normal: 43,
-            bright: 103
+            bright: 103,
         },
         blue: {
             normal: 44,
-            bright: 104
+            bright: 104,
         },
         magenta: {
             normal: 45,
-            bright: 105
+            bright: 105,
         },
         cyan: {
             normal: 46,
-            bright: 106
+            bright: 106,
         },
         white: {
             normal: 47,
-            bright: 107
+            bright: 107,
         },
         default: {
             normal: 49,
-            bright: 49
-        }
-    }
+            bright: 49,
+        },
+    },
 } as const;
 
 type Colors = typeof ColorStyles;
@@ -100,13 +100,13 @@ export class Logger {
             styleText(dateString, ColorStyles.foreground.cyan.normal),
             styleText(this.prefix, ColorStyles.foreground.green.normal),
             "|",
-            message.join(" ")
+            message.join(" "),
         );
     }
     warn(...message: any[]): void {
         this.log(
             styleText("[WARNING]", ColorStyles.foreground.yellow.normal),
-            message.join(" ")
+            message.join(" "),
         );
     }
 }

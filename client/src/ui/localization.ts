@@ -5,11 +5,11 @@ import english from "../english";
 
 function downloadFile(
     file: string,
-    onComplete: (err: null | JQuery.jqXHR<any>, data?: Record<string, string>) => void
+    onComplete: (err: null | JQuery.jqXHR<any>, data?: Record<string, string>) => void,
 ) {
     const opts = {
         url: api.resolveUrl(file),
-        type: "GET"
+        type: "GET",
     };
     $.ajax(opts)
         .done((data) => {
@@ -38,7 +38,7 @@ const Locales = {
     ko: "한국어",
     th: "ภาษาไทย",
     "zh-cn": "中文简体",
-    "zh-tw": "中文繁體"
+    "zh-tw": "中文繁體",
 };
 
 export type Locale = keyof typeof Locales;
@@ -46,7 +46,7 @@ export type Locale = keyof typeof Locales;
 export class Localization {
     readonly acceptedLocales: Locale[] = Object.keys(Locales) as Locale[];
     translations: Record<string, Record<string, string>> = {
-        en: english
+        en: english,
     };
 
     locale: Locale = "en";
@@ -79,7 +79,7 @@ export class Localization {
                 downloadFile(`/l10n/${locale}.json`, (err, data) => {
                     if (err) {
                         console.error(
-                            `Failed loading translation data for locale ${locale}`
+                            `Failed loading translation data for locale ${locale}`,
                         );
                         return;
                     }
@@ -132,8 +132,8 @@ export class Localization {
             el.append(
                 $("<option>", {
                     value: locale,
-                    text: name
-                })
+                    text: name,
+                }),
             );
         }
     }

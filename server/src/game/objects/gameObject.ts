@@ -1,7 +1,7 @@
 import { BitStream } from "../../../../shared/net/net";
 import {
     ObjectSerializeFns,
-    ObjectType
+    ObjectType,
 } from "../../../../shared/net/objectSerializeFns";
 import { type AABB, coldet } from "../../../../shared/utils/coldet";
 import { assert } from "../../../../shared/utils/util";
@@ -177,7 +177,7 @@ export abstract class BaseGameObject {
     serializePartial(): void {
         if (!this.initialized) {
             this.game.logger.warn(
-                "Tried to partially serialized object that has not been initialized"
+                "Tried to partially serialized object that has not been initialized",
             );
             return;
         }
@@ -187,7 +187,7 @@ export abstract class BaseGameObject {
         (
             ObjectSerializeFns[this.__type].serializePart as (
                 s: BitStream,
-                data: this
+                data: this,
             ) => void
         )(this.partialStream, this);
     }
@@ -195,7 +195,7 @@ export abstract class BaseGameObject {
     serializeFull(): void {
         if (!this.initialized) {
             this.game.logger.warn(
-                "Tried to fully serialized object that has not been initialized"
+                "Tried to fully serialized object that has not been initialized",
             );
             return;
         }
@@ -205,7 +205,7 @@ export abstract class BaseGameObject {
         (
             ObjectSerializeFns[this.__type].serializeFull as (
                 s: BitStream,
-                data: this
+                data: this,
             ) => void
         )(this.fullStream, this);
     }
@@ -232,7 +232,7 @@ export abstract class BaseGameObject {
                     this.pos,
                     rad,
                     stair.collision.min,
-                    stair.collision.max
+                    stair.collision.max,
                 );
 
                 if (collides) {
@@ -241,7 +241,7 @@ export abstract class BaseGameObject {
                             this.pos,
                             rad,
                             stair.downAabb.min,
-                            stair.downAabb.max
+                            stair.downAabb.max,
                         )
                     ) {
                         this.layer = 3;
@@ -250,7 +250,7 @@ export abstract class BaseGameObject {
                             this.pos,
                             rad,
                             stair.upAabb.min,
-                            stair.upAabb.max
+                            stair.upAabb.max,
                         )
                     ) {
                         this.layer = 2;

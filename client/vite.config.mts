@@ -25,12 +25,12 @@ export default defineConfig(({ mode }) => {
                         if (id.includes("shared")) {
                             return "shared";
                         }
-                    }
-                }
-            }
+                    },
+                },
+            },
         },
         resolve: {
-            extensions: [".js", ".ts"]
+            extensions: [".js", ".ts"],
         },
         define: {
             GAME_REGIONS: {
@@ -40,11 +40,11 @@ export default defineConfig(({ mode }) => {
                           local: {
                               https: false,
                               address: `${Config.devServer.host}:${Config.devServer.port}`,
-                              l10n: "index-local"
-                          }
+                              l10n: "index-local",
+                          },
                       }
-                    : {})
-            }
+                    : {}),
+            },
         },
         plugins: [
             VitePWA({
@@ -60,26 +60,26 @@ export default defineConfig(({ mode }) => {
                         {
                             src: "img/pwa-192x192.png",
                             sizes: "192x192",
-                            type: "image/png"
+                            type: "image/png",
                         },
                         {
                             src: "img/pwa-512x512.png",
                             sizes: "512x512",
-                            type: "image/png"
-                        }
-                    ]
+                            type: "image/png",
+                        },
+                    ],
                 },
                 devOptions: {
-                    enabled: true
-                }
+                    enabled: true,
+                },
             }),
             stripBlockPlugin({
                 start: "STRIP_FROM_PROD_CLIENT:START",
-                end: "STRIP_FROM_PROD_CLIENT:END"
-            })
+                end: "STRIP_FROM_PROD_CLIENT:END",
+            }),
         ],
         json: {
-            stringify: true
+            stringify: true,
         },
         server: {
             port: 3000,
@@ -89,15 +89,15 @@ export default defineConfig(({ mode }) => {
                 "/api": {
                     target: `http://${Config.devServer.host}:${Config.devServer.port}`,
                     changeOrigin: true,
-                    secure: false
+                    secure: false,
                 },
                 "/team_v2": {
                     target: `http://${Config.devServer.host}:${Config.devServer.port}`,
                     changeOrigin: true,
                     secure: false,
-                    ws: true
-                }
-            }
+                    ws: true,
+                },
+            },
         },
         preview: {
             port: 3000,
@@ -107,15 +107,15 @@ export default defineConfig(({ mode }) => {
                 "/api": {
                     target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
-                    secure: false
+                    secure: false,
                 },
                 "/team_v2": {
                     target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
-                    ws: true
-                }
-            }
-        }
+                    ws: true,
+                },
+            },
+        },
     };
 });

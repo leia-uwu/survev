@@ -23,7 +23,7 @@ export const PingDefs: Record<string, PingDef> = {
         pingLife: 4,
         mapLife: 4,
         mapEvent: false,
-        worldDisplay: true
+        worldDisplay: true,
     },
     ping_coming: {
         type: "ping",
@@ -35,7 +35,7 @@ export const PingDefs: Record<string, PingDef> = {
         pingLife: 4,
         mapLife: 300,
         mapEvent: false,
-        worldDisplay: true
+        worldDisplay: true,
     },
     ping_help: {
         type: "ping",
@@ -47,7 +47,7 @@ export const PingDefs: Record<string, PingDef> = {
         pingLife: 4,
         mapLife: 4,
         mapEvent: false,
-        worldDisplay: true
+        worldDisplay: true,
     },
     ping_airdrop: {
         type: "ping",
@@ -59,7 +59,7 @@ export const PingDefs: Record<string, PingDef> = {
         mapLife: 10,
         mapEvent: true,
         worldDisplay: false,
-        tint: 16737792
+        tint: 16737792,
     },
     ping_airstrike: {
         type: "ping",
@@ -71,7 +71,7 @@ export const PingDefs: Record<string, PingDef> = {
         mapLife: 2,
         mapEvent: true,
         worldDisplay: true,
-        tint: 15400704
+        tint: 15400704,
     },
     ping_woodsking: {
         type: "ping",
@@ -83,7 +83,7 @@ export const PingDefs: Record<string, PingDef> = {
         mapLife: 10,
         mapEvent: true,
         worldDisplay: false,
-        tint: 1244928
+        tint: 1244928,
     },
     ping_unlock: {
         type: "ping",
@@ -95,6 +95,6 @@ export const PingDefs: Record<string, PingDef> = {
         mapLife: 10,
         mapEvent: true,
         worldDisplay: false,
-        tint: 55551
-    }
+        tint: 55551,
+    },
 };

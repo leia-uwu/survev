@@ -52,7 +52,7 @@ export class MapIndicatorBarn {
             pulseScaleMax: 1,
             pulseTicker: 0,
             pulseDir: 1,
-            pulseSpeed: 0.3
+            pulseSpeed: 0.3,
         };
         this.mapIndicators.push(indicator);
         this.idToMapIdicator[data.id] = indicator;
@@ -109,7 +109,7 @@ export class MapIndicatorBarn {
             indicator.pulseTicker = math.clamp(
                 indicator.pulseTicker + dt * indicator.pulseDir * indicator.pulseSpeed,
                 indicator.pulseScaleMin,
-                1
+                1,
             );
 
             // Ease up and down

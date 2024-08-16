@@ -75,7 +75,7 @@ class Plane {
         switch (this.type) {
             case GameConfig.Plane.Airdrop:
                 this.sprite.texture = PIXI.Texture.from(
-                    map.getMapDef().biome.airdrop.planeImg
+                    map.getMapDef().biome.airdrop.planeImg,
                 );
                 this.planeSound = map.getMapDef().biome.airdrop.planeSound;
                 break;
@@ -143,7 +143,7 @@ class AirstrikeZone {
         const pos = uiManager.getMapPosFromWorldPos(this.pos, map);
         const edge = uiManager.getMapPosFromWorldPos(
             v2.add(this.pos, v2.create(this.rad, 0)),
-            map
+            map,
         );
         const rad = v2.length(v2.sub(edge, pos));
 
@@ -256,7 +256,7 @@ export class PlaneBarn {
         camera: Camera,
         activePlayer: Player,
         map: Map,
-        renderer: Renderer
+        renderer: Renderer,
     ) {
         for (let i = 0; i < this.planes.length; i++) {
             const p = this.planes[i];
@@ -278,25 +278,25 @@ export class PlaneBarn {
                 if (p.actionComplete) {
                     p.spriteUpdateTime = Math.min(
                         p.spriteUpdateTime + dt,
-                        planeElevateTime
+                        planeElevateTime,
                     );
                     p.rad = math.lerp(
                         p.spriteUpdateTime,
                         p.config.planeRad,
-                        p.config.planeRad * planeElevateMult
+                        p.config.planeRad * planeElevateMult,
                     );
                     p.alpha = math.lerp(
                         p.spriteUpdateTime,
                         planeAlpha,
-                        planeAlpha * planeAlphaMult
+                        planeAlpha * planeAlphaMult,
                     );
                     p.soundRangeMult = math.max(
                         0,
                         math.lerp(
                             p.spriteUpdateTime,
                             p.config.soundRangeMult,
-                            p.config.soundRangeMult - p.config.soundRangeDelta
-                        )
+                            p.config.soundRangeMult - p.config.soundRangeDelta,
+                        ),
                     );
                 }
                 if (p.soundInstance) {
@@ -305,7 +305,7 @@ export class PlaneBarn {
                             layer,
                             rangeMult: p.config.soundRangeMult,
                             ignoreMinAllowable: true,
-                            fallOff: p.config.fallOff
+                            fallOff: p.config.fallOff,
                         });
                         p.soundUpdateThrottle = 0.1;
                     } else {
@@ -326,7 +326,7 @@ export class PlaneBarn {
                                 math.clamp(
                                     math.max(0, distToCompare) / maxDistToOffset,
                                     0,
-                                    1
+                                    1,
                                 )) *
                             maxSoundOffset;
                     }
@@ -339,7 +339,7 @@ export class PlaneBarn {
                             rangeMult: 2.5,
                             ignoreMinAllowable: true,
                             fallOff: p.config.fallOff,
-                            offset
+                            offset,
                         });
                     }
                 }
@@ -348,7 +348,7 @@ export class PlaneBarn {
                 const screenScale = camera.pixels(p.rad / camera.ppu);
                 const activePlayerIndoors = map.insideBuildingCeiling(
                     collider.createCircle(activePlayer.pos, 0.01),
-                    true
+                    true,
                 );
                 let alphaTarget = p.alpha;
                 if (activePlayer.layer == 1) {

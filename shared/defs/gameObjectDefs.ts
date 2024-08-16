@@ -10,7 +10,7 @@ import {
     GearDefs,
     type HealDef,
     type HelmetDef,
-    type ScopeDef
+    type ScopeDef,
 } from "./gameObjects/gearDefs";
 import { type GunDef, GunDefs } from "./gameObjects/gunDefs";
 import { HealEffectDefs } from "./gameObjects/healEffectDefs";
@@ -78,7 +78,7 @@ const ObjectDefsList: Array<Record<string, unknown>> = [
     RoleDefs,
     ThrowableDefs,
     UnlockDefs,
-    XPDefs
+    XPDefs,
 ];
 
 export const GameObjectDefs: Record<string, GameObjectDef> = {};

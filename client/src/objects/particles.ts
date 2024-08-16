@@ -9,7 +9,7 @@ import type { Renderer } from "../renderer";
 class Range {
     constructor(
         public min: number,
-        public max: number
+        public max: number,
     ) {}
 
     getRandom() {
@@ -76,7 +76,7 @@ export class Particle {
         rot: number,
         parent: PIXI.Container | null,
         zOrd: number,
-        valueAdjust: number
+        valueAdjust: number,
     ) {
         const def = ParticleDefs[type];
         this.active = true;
@@ -220,7 +220,7 @@ export class ParticleBarn {
             const sprite = this.particles[i].sprite;
             sprite.parent?.removeChild(sprite);
             sprite.destroy({
-                children: true
+                children: true,
             });
         }
     }
@@ -233,7 +233,7 @@ export class ParticleBarn {
         scale?: number,
         rot?: number,
         parent?: PIXI.Container | null,
-        zOrd?: number
+        zOrd?: number,
     ) {
         let particle = null;
         for (let i = 0; i < this.particles.length; i++) {
@@ -260,7 +260,7 @@ export class ParticleBarn {
             rot,
             parent!,
             zOrd,
-            this.valueAdjust
+            this.valueAdjust,
         );
         return particle;
     }
@@ -273,7 +273,7 @@ export class ParticleBarn {
             v2.create(0, 0),
             1,
             0,
-            null
+            null,
         );
         particle.setColor(color);
         return particle;
@@ -320,13 +320,13 @@ export class ParticleBarn {
                         e.scale,
                         rot,
                         e.parent,
-                        e.zOrd
+                        e.zOrd,
                     );
                     particle.emitterIdx = i;
                     let rate = getRangeValue(def.rate);
                     if (def.maxRate) {
                         const w = math.easeInExpo(
-                            math.min(1, e.ticker / def.maxElapsed!)
+                            math.min(1, e.ticker / def.maxElapsed!),
                         );
                         const maxRate = getRangeValue(def.maxRate);
                         rate = math.lerp(w, rate, maxRate);
@@ -363,7 +363,7 @@ export class ParticleBarn {
                           (p.def.scale.lerp as Range)?.min,
                           (p.def.scale.lerp as Range)?.max,
                           p.scale,
-                          p.scaleEnd
+                          p.scaleEnd,
                       );
                 let alpha = p.alphaUseExp
                     ? p.alpha
@@ -372,7 +372,7 @@ export class ParticleBarn {
                           p.def.alpha.lerp?.min!,
                           p.def.alpha.lerp?.max!,
                           p.alpha,
-                          p.alphaEnd
+                          p.alphaEnd,
                       );
                 if (p.alphaIn && t < p.def.alphaIn?.lerp?.max!) {
                     alpha = math.remap(
@@ -380,7 +380,7 @@ export class ParticleBarn {
                         p.def.alphaIn?.lerp?.min!,
                         p.def.alphaIn?.lerp?.max!,
                         p.alphaInStart,
-                        p.alphaInEnd
+                        p.alphaInEnd,
                     );
                 }
 
@@ -415,16 +415,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.2, 0.35),
             end: new Range(0.08, 0.12),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.06, 0.84, util.random(0.46, 0.48)));
-        }
+        },
     },
     bloodSplat: {
         image: ["part-splat-01.img", "part-splat-02.img", "part-splat-03.img"],
@@ -434,16 +434,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.04,
             end: new Range(0.15, 0.2),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(16711680, 1, util.random(0.45, 0.8)));
-        }
+        },
     },
     barrelPlank: {
         image: ["part-plank-01.img"],
@@ -453,16 +453,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.08, 0.18),
             end: new Range(0.07, 0.17),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.09, 0.8, util.random(0.66, 0.68)));
-        }
+        },
     },
     barrelChip: {
         image: ["part-spark-02.img"],
@@ -472,16 +472,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.01, 0.02, util.random(0.38, 0.41)));
-        }
+        },
     },
     barrelBreak: {
         image: ["part-spark-02.img"],
@@ -491,16 +491,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.01, 0.02, util.random(0.38, 0.41)));
-        }
+        },
     },
     blackChip: {
         image: ["part-woodchip-01.img"],
@@ -510,16 +510,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0.08, util.random(0.16, 0.18)));
-        }
+        },
     },
     blueChip: {
         image: ["part-spark-02.img"],
@@ -529,16 +529,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.64, 1, util.random(0.83, 0.85)));
-        }
+        },
     },
     book: {
         image: ["part-book-01.img"],
@@ -548,16 +548,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.09, 0.19),
             end: new Range(0.07, 0.17),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 0.42, util.random(0.72, 0.74)));
-        }
+        },
     },
     bottleBrownChip: {
         image: ["part-spark-02.img"],
@@ -567,14 +567,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.02, 0.04),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
-        color: 7878664
+        color: 7878664,
     },
     bottleBrownBreak: {
         image: ["part-spark-02.img"],
@@ -584,14 +584,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.03, 0.06),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 7878664
+        color: 7878664,
     },
     bottleBlueChip: {
         image: ["part-spark-02.img"],
@@ -601,14 +601,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.02, 0.04),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
-        color: 19544
+        color: 19544,
     },
     bottleWhiteBreak: {
         image: ["part-spark-02.img"],
@@ -618,14 +618,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.03, 0.06),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.75,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     bottleWhiteChip: {
         image: ["part-spark-02.img"],
@@ -635,14 +635,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.02, 0.04),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.75,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     bottleBlueBreak: {
         image: ["part-spark-02.img"],
@@ -652,14 +652,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.03, 0.06),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 19544
+        color: 19544,
     },
     brickChip: {
         image: ["part-spark-02.img"],
@@ -669,16 +669,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0.71, util.random(0.32, 0.34)));
-        }
+        },
     },
     clothBreak: {
         image: ["part-cloth-01.img"],
@@ -688,16 +688,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.95, 1)));
-        }
+        },
     },
     clothHit: {
         image: ["part-cloth-01.img"],
@@ -707,16 +707,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.95, 1)));
-        }
+        },
     },
     depositBoxGreyBreak: {
         image: ["part-plate-01.img"],
@@ -726,16 +726,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.15, 0.25),
             end: new Range(0.12, 0.2),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.36, 0.38)));
-        }
+        },
     },
     depositBoxGoldBreak: {
         image: ["part-plate-01.img"],
@@ -745,16 +745,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.2, 0.35),
             end: new Range(0.18, 0.25),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.11, 0.84, util.random(0.64, 0.66)));
-        }
+        },
     },
     glassChip: {
         image: ["part-spark-02.img"],
@@ -764,14 +764,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
-        color: 8444415
+        color: 8444415,
     },
     glassPlank: {
         image: ["part-plank-01.img"],
@@ -781,14 +781,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 8444415
+        color: 8444415,
     },
     goldChip: {
         image: ["part-spark-02.img"],
@@ -798,16 +798,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.11, 0.84, util.random(0.88, 0.9)));
-        }
+        },
     },
     greenChip: {
         image: ["part-spark-02.img"],
@@ -817,16 +817,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.4, 0.18, util.random(0.5, 0.62)));
-        }
+        },
     },
     greenPlank: {
         image: ["part-plank-01.img"],
@@ -836,14 +836,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.08, 0.16),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 3884335
+        color: 3884335,
     },
     greenhouseBreak: {
         image: ["part-spark-02.img", "part-plate-01.img", "part-panel-01.img"],
@@ -853,14 +853,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 8444415
+        color: 8444415,
     },
     hutBreak: {
         image: ["part-panel-01.img"],
@@ -870,16 +870,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.1, 0.81, util.random(0.78, 0.82)));
-        }
+        },
     },
     leaf: {
         image: ["part-leaf-01.img"],
@@ -889,16 +889,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.5, 0.75)));
-        }
+        },
     },
     leafPrickly: {
         image: ["part-leaf-01sv.img"],
@@ -908,16 +908,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.8, 0.85)));
-        }
+        },
     },
     leafRiver: {
         image: ["part-leaf-02.img"],
@@ -927,16 +927,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.5, 0.75)));
-        }
+        },
     },
     lockerBreak: {
         image: ["part-plate-01.img"],
@@ -946,16 +946,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.15, 0.2),
             end: new Range(0.12, 0.15),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.1, 0.23, util.random(0.51, 0.53)));
-        }
+        },
     },
     ltgreenChip: {
         image: ["part-woodchip-01.img"],
@@ -965,16 +965,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.2, 0.42, util.random(0.38, 0.42)));
-        }
+        },
     },
     outhouseChip: {
         image: ["part-woodchip-01.img"],
@@ -984,16 +984,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 0.57, util.random(0.4, 0.46)));
-        }
+        },
     },
     outhouseBreak: {
         image: ["part-panel-01.img"],
@@ -1003,16 +1003,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 0.79, util.random(0.52, 0.54)));
-        }
+        },
     },
     outhousePlank: {
         image: ["part-plank-01.img"],
@@ -1022,16 +1022,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 0.57, util.random(0.4, 0.46)));
-        }
+        },
     },
     potChip: {
         image: ["part-spark-02.img"],
@@ -1041,16 +1041,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.06, 0.84, util.random(0.73, 0.77)));
-        }
+        },
     },
     potBreak: {
         image: ["part-pot-01.img"],
@@ -1060,16 +1060,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.06, 0.84, util.random(0.73, 0.77)));
-        }
+        },
     },
     potatoChip: {
         image: ["part-spark-02.img"],
@@ -1079,16 +1079,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.075, 0.43, util.random(0.48, 0.5)));
-        }
+        },
     },
     potatoBreak: {
         image: ["part-pumpkin-01.img"],
@@ -1098,16 +1098,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.075, 0.43, util.random(0.48, 0.5)));
-        }
+        },
     },
     pumpkinChip: {
         image: ["part-spark-02.img"],
@@ -1117,16 +1117,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.07, 1, util.random(0.98, 1)));
-        }
+        },
     },
     pumpkinBreak: {
         image: ["part-pumpkin-01.img"],
@@ -1136,16 +1136,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 1, util.random(0.95, 0.97)));
-        }
+        },
     },
     squashChip: {
         image: ["part-spark-02.img"],
@@ -1155,16 +1155,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.31, 0.86, util.random(0.35, 0.36)));
-        }
+        },
     },
     squashBreak: {
         image: ["part-pumpkin-01.img"],
@@ -1174,16 +1174,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.31, 0.86, util.random(0.35, 0.36)));
-        }
+        },
     },
     redChip: {
         image: ["part-spark-02.img"],
@@ -1193,16 +1193,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.98, 1, util.random(0.52, 0.54)));
-        }
+        },
     },
     redBreak: {
         image: ["part-spark-02.img"],
@@ -1212,16 +1212,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.98, 1, util.random(0.52, 0.54)));
-        }
+        },
     },
     redPlank: {
         image: ["part-plank-01.img"],
@@ -1231,16 +1231,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.02, 1, util.random(0.26, 0.28)));
-        }
+        },
     },
     rockChip: {
         image: ["map-stone-01.img"],
@@ -1250,16 +1250,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.5, 0.75)));
-        }
+        },
     },
     rockBreak: {
         image: ["map-stone-01.img"],
@@ -1269,16 +1269,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.5, 0.75)));
-        }
+        },
     },
     rockEyeChip: {
         image: ["map-stone-01.img"],
@@ -1288,14 +1288,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.03, 0.06),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
-        color: 2696225
+        color: 2696225,
     },
     rockEyeBreak: {
         image: ["map-stone-01.img"],
@@ -1305,14 +1305,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.05, 0.1),
             end: new Range(0.03, 0.06),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 2696225
+        color: 2696225,
     },
     shackBreak: {
         image: ["part-panel-01.img"],
@@ -1322,16 +1322,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.1, 0.24, util.random(0.38, 0.41)));
-        }
+        },
     },
     shackGreenBreak: {
         image: ["part-panel-01.img"],
@@ -1341,14 +1341,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 5730406
+        color: 5730406,
     },
     tanChip: {
         image: ["part-woodchip-01.img"],
@@ -1358,16 +1358,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.1, 0.35, util.random(0.48, 0.52)));
-        }
+        },
     },
     teahouseBreak: {
         image: ["part-panel-01.img"],
@@ -1377,16 +1377,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.6, 0.31, util.random(0.42, 0.45)));
-        }
+        },
     },
     teapavilionBreak: {
         image: ["part-panel-01.img"],
@@ -1396,16 +1396,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.25, 0.55),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0.8, util.random(0.6, 0.62)));
-        }
+        },
     },
     toiletBreak: {
         image: ["part-spark-02.img"],
@@ -1415,16 +1415,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.97, 0, util.random(0.95, 0.97)));
-        }
+        },
     },
     toiletMetalBreak: {
         image: ["part-spark-02.img"],
@@ -1434,16 +1434,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.01, 0.02, util.random(0.38, 0.41)));
-        }
+        },
     },
     turkeyFeathersHit: {
         image: ["part-feather-01.img", "part-feather-02.img"],
@@ -1453,16 +1453,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.12),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return 0xffffff;
-        }
+        },
     },
     turkeyFeathersDeath: {
         image: ["part-feather-01.img", "part-feather-02.img"],
@@ -1472,16 +1472,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.15, 0.25),
             end: new Range(0.12, 0.2),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return 0xffffff;
-        }
+        },
     },
     whiteChip: {
         image: ["part-spark-02.img"],
@@ -1491,16 +1491,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.97, 0, util.random(0.95, 0.97)));
-        }
+        },
     },
     whitePlank: {
         image: ["part-plank-01.img"],
@@ -1510,16 +1510,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.97, 0, util.random(0.95, 0.97)));
-        }
+        },
     },
     windowBreak: {
         image: ["part-spark-02.img"],
@@ -1529,14 +1529,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.8,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 8444415
+        color: 8444415,
     },
     woodChip: {
         image: ["part-woodchip-01.img"],
@@ -1546,16 +1546,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.04, 0.08),
             end: new Range(0.01, 0.02),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.05, 1, util.random(0.35, 0.45)));
-        }
+        },
     },
     woodLog: {
         image: ["part-log-01.img"],
@@ -1565,16 +1565,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.05, 1, util.random(0.35, 0.45)));
-        }
+        },
     },
     woodPlank: {
         image: ["part-plank-01.img"],
@@ -1584,16 +1584,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.2),
             end: new Range(0.08, 0.18),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.05, 1, util.random(0.25, 0.35)));
-        }
+        },
     },
     woodShard: {
         image: ["part-spark-02.img"],
@@ -1603,16 +1603,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.06, 0.15),
             end: new Range(0.02, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.05, 1, util.random(0.25, 0.35)));
-        }
+        },
     },
     "9mm": {
         image: ["part-shell-01.img"],
@@ -1622,16 +1622,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "9mm_cursed": {
         image: ["part-shell-01.img"],
@@ -1641,16 +1641,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "762mm": {
         image: ["part-shell-02.img"],
@@ -1660,16 +1660,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.075,
             end: 0.045,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.925, 1)
+            lerp: new Range(0.925, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "556mm": {
         image: ["part-shell-04.img"],
@@ -1679,16 +1679,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.075,
             end: 0.045,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.925, 1)
+            lerp: new Range(0.925, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "12gauge": {
         image: ["part-shell-03.img"],
@@ -1698,16 +1698,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.1,
             end: 0.05,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "50AE": {
         image: ["part-shell-01.img"],
@@ -1717,16 +1717,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "308sub": {
         image: ["part-shell-05.img"],
@@ -1736,16 +1736,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.0625,
             end: 0.0325,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     flare: {
         image: ["part-shell-03.img"],
@@ -1755,16 +1755,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.1,
             end: 0.05,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     "45acp": {
         image: ["part-shell-01.img"],
@@ -1774,16 +1774,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.07,
             end: 0.04,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     potato_ammo: {
         image: ["part-wedge-01.img"],
@@ -1793,14 +1793,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.07,
             end: 0.04,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.95, 1)
+            lerp: new Range(0.95, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     bugle_ammo: {
         image: ["part-note-02.img"],
@@ -1810,14 +1810,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.1,
             end: 0.14,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.5, 1)
+            lerp: new Range(0.5, 1),
         },
-        color: 16767488
+        color: 16767488,
     },
     fragPin: {
         image: ["part-frag-pin-01.img"],
@@ -1827,14 +1827,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.18,
             end: 0.14,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.5, 1)
+            lerp: new Range(0.5, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     fragLever: {
         image: ["part-frag-lever-01.img"],
@@ -1844,14 +1844,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.18,
             end: 0.14,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.5, 1)
+            lerp: new Range(0.5, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     explosionBurst: {
         image: ["part-frag-burst-01.img"],
@@ -1861,16 +1861,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.065, 1, util.random(0.98, 0.99)));
-        }
+        },
     },
     explosionMIRV: {
         image: ["part-frag-burst-01.img"],
@@ -1880,16 +1880,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.82, 0.84)));
-        }
+        },
     },
     explosionSmoke: {
         image: ["part-smoke-01.img"],
@@ -1899,16 +1899,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     explosionUSAS: {
         image: ["part-frag-burst-01.img"],
@@ -1918,16 +1918,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 1, util.random(0.98, 0.99)));
-        }
+        },
     },
     explosionRounds: {
         image: ["part-frag-burst-03.img"],
@@ -1937,16 +1937,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.08, 0.7, util.random(0.75, 0.8)));
-        }
+        },
     },
     explosionBomb: {
         image: ["part-frag-burst-02.img"],
@@ -1956,14 +1956,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     explosionPotato: {
         image: ["part-frag-burst-01.img"],
@@ -1973,14 +1973,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 11363866
+        color: 11363866,
     },
     explosionPotatoSMG: {
         image: ["part-frag-burst-01.img"],
@@ -1990,14 +1990,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 1,
             end: 4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.75, 1)
+            lerp: new Range(0.75, 1),
         },
-        color: 12888074
+        color: 12888074,
     },
     airdropSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
@@ -2008,16 +2008,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.67, 0.72),
             end: new Range(0.55, 0.61),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     airdropCrate01: {
         image: ["part-airdrop-01.img"],
@@ -2027,14 +2027,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate01h: {
         image: ["part-airdrop-01h.img"],
@@ -2044,14 +2044,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate01x: {
         image: ["part-airdrop-01x.img"],
@@ -2061,14 +2061,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate02: {
         image: ["part-airdrop-02.img"],
@@ -2078,14 +2078,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate02h: {
         image: ["part-airdrop-02h.img"],
@@ -2095,14 +2095,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate02x: {
         image: ["part-airdrop-02x.img"],
@@ -2112,14 +2112,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate03: {
         image: ["part-airdrop-03.img"],
@@ -2129,14 +2129,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     airdropCrate04: {
         image: ["part-airdrop-04.img"],
@@ -2146,14 +2146,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     classShell01a: {
         image: ["part-class-shell-01a.img"],
@@ -2163,14 +2163,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     classShell01b: {
         image: ["part-class-shell-01b.img"],
@@ -2180,14 +2180,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     classShell02a: {
         image: ["part-class-shell-02a.img"],
@@ -2197,14 +2197,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     classShell02b: {
         image: ["part-class-shell-02b.img"],
@@ -2214,14 +2214,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     classShell03a: {
         image: ["part-class-shell-03a.img"],
@@ -2231,14 +2231,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     classShell03b: {
         image: ["part-class-shell-03b.img"],
@@ -2248,14 +2248,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: 0.5,
             end: 0.4,
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 0xffffff
+        color: 0xffffff,
     },
     cabinSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
@@ -2265,21 +2265,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.2, 0.25),
             end: new Range(0.6, 0.65),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.7,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 0.7,
-            lerp: new Range(0, 0.1)
+            lerp: new Range(0, 0.1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.69, 0.695)));
-        }
+        },
     },
     bathhouseSteam: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
@@ -2289,21 +2289,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.2, 0.25),
             end: new Range(0.9, 0.95),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.5,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 0.5,
-            lerp: new Range(0, 0.1)
+            lerp: new Range(0, 0.1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.99, 0.995)));
-        }
+        },
     },
     bunkerBubbles: {
         image: ["player-ripple-01.img"],
@@ -2314,16 +2314,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.2, 0.25),
             end: new Range(0.65, 0.7),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 0.25,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.95, 1)));
-        }
+        },
     },
     waterRipple: {
         image: ["player-ripple-01.img"],
@@ -2333,20 +2333,20 @@ const ParticleDefs: Record<string, ParticleDef> = {
         rotVel: 0,
         scale: {
             start: 0.15,
-            exp: 0.5
+            exp: 0.5,
         },
         alpha: {
             start: 1,
-            exp: -1
+            exp: -1,
         },
-        color: 11792639
+        color: 11792639,
     },
     leafAutumn: {
         image: [
             "part-leaf-03.img",
             "part-leaf-04.img",
             "part-leaf-05.img",
-            "part-leaf-06.img"
+            "part-leaf-06.img",
         ],
         life: new Range(10, 15),
         drag: new Range(0, 0),
@@ -2354,28 +2354,28 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.15),
             end: new Range(0.08, 0.11),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     leafHalloween: {
         image: [
             "part-leaf-03.img",
             "part-leaf-04.img",
             "part-leaf-05.img",
-            "part-leaf-06.img"
+            "part-leaf-06.img",
         ],
         life: new Range(10, 15),
         drag: new Range(0, 0),
@@ -2383,29 +2383,29 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.15),
             end: new Range(0.08, 0.11),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.5, 0.55)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     leafSpring: {
         image: [
             "part-blossom-01.img",
             "part-blossom-02.img",
             "part-blossom-03.img",
-            "part-blossom-04.img"
+            "part-blossom-04.img",
         ],
         life: new Range(10, 15),
         drag: new Range(0, 0),
@@ -2413,21 +2413,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.13, 0.15),
             end: new Range(0.08, 0.11),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     leafSummer: {
         image: ["part-leaf-06.img"],
@@ -2437,22 +2437,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.15),
             end: new Range(0.08, 0.11),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.7, 0.95)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     leafPotato: {
         image: [
@@ -2460,7 +2460,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             "part-blossom-02.img",
             "part-blossom-03.img",
             "part-blossom-04.img",
-            "part-potato-02.img"
+            "part-potato-02.img",
         ],
         life: new Range(10, 15),
         drag: new Range(0, 0),
@@ -2468,21 +2468,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.13, 0.15),
             end: new Range(0.08, 0.11),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     potato: {
         image: ["part-potato-02.img"],
@@ -2492,21 +2492,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.13, 0.15),
             end: new Range(0.08, 0.11),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     snow: {
         image: ["part-snow-01.img"],
@@ -2516,21 +2516,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.07, 0.12),
             end: new Range(0.05, 0.1),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     snowball_impact: {
         image: ["part-snow-01.img"],
@@ -2540,16 +2540,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.13, 0.23),
             end: new Range(0.07, 0.14),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     potato_impact: {
         image: ["part-potato-01.img"],
@@ -2559,16 +2559,16 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.13, 0.23),
             end: new Range(0.07, 0.14),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.9, 0.95)));
-        }
+        },
     },
     potato_smg_impact: {
         image: ["part-potato-01.img"],
@@ -2578,14 +2578,14 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.13, 0.23),
             end: new Range(0.07, 0.14),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.9, 1)
+            lerp: new Range(0.9, 1),
         },
-        color: 16770437
+        color: 16770437,
     },
     heal_basic: {
         image: ["part-heal-basic.img"],
@@ -2595,22 +2595,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.12),
             end: new Range(0.05, 0.07),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     heal_heart: {
         image: ["part-heal-heart.img"],
@@ -2620,22 +2620,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.12),
             end: new Range(0.05, 0.07),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     heal_moon: {
         image: ["part-heal-moon.img"],
@@ -2645,22 +2645,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.12),
             end: new Range(0.05, 0.07),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     heal_tomoe: {
         image: ["part-heal-tomoe.img"],
@@ -2670,22 +2670,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.12),
             end: new Range(0.05, 0.07),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     boost_basic: {
         image: ["part-boost-basic.img"],
@@ -2695,22 +2695,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     boost_star: {
         image: ["part-boost-star.img"],
@@ -2720,22 +2720,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     boost_naturalize: {
         image: ["part-boost-naturalize.img"],
@@ -2745,22 +2745,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     boost_shuriken: {
         image: ["part-boost-shuriken.img"],
@@ -2770,22 +2770,22 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.3, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     revive_basic: {
         image: ["part-heal-basic.img"],
@@ -2795,29 +2795,29 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.1, 0.12),
             end: new Range(0.05, 0.07),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.83, 1, util.random(0.7, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     leafStim: {
         image: [
             "part-blossom-01.img",
             "part-blossom-02.img",
             "part-blossom-03.img",
-            "part-blossom-04.img"
+            "part-blossom-04.img",
         ],
         life: new Range(4, 5),
         drag: 0,
@@ -2825,21 +2825,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.37, 1, util.random(0.95, 1)));
-        }
+        },
     },
     takedownStim: {
         image: ["part-takedown-01.img"],
@@ -2849,19 +2849,19 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
-        color: 13107200
+        color: 13107200,
     },
     inspireStim: {
         image: ["part-note-01.img"],
@@ -2871,21 +2871,21 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             return util.rgbToInt(util.hsvToRgb(0.13, 1, util.random(0.98, 1)));
-        }
+        },
     },
     xp_common: {
         image: ["part-boost-basic.img"],
@@ -2895,17 +2895,17 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             if (Math.random() > 0.5) {
@@ -2913,7 +2913,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             }
             return util.rgbToInt(util.hsvToRgb(0.16, 1, util.random(0.95, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     xp_rare: {
         image: ["part-boost-basic.img"],
@@ -2923,17 +2923,17 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             if (Math.random() > 0.5) {
@@ -2941,7 +2941,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             }
             return util.rgbToInt(util.hsvToRgb(0.06, 0.95, util.random(0.95, 1)));
         },
-        ignoreValueAdjust: true
+        ignoreValueAdjust: true,
     },
     xp_mythic: {
         image: ["part-boost-basic.img"],
@@ -2951,17 +2951,17 @@ const ParticleDefs: Record<string, ParticleDef> = {
         scale: {
             start: new Range(0.12, 0.14),
             end: new Range(0.06, 0.08),
-            lerp: new Range(0, 1)
+            lerp: new Range(0, 1),
         },
         alpha: {
             start: 1,
             end: 0,
-            lerp: new Range(0.7, 1)
+            lerp: new Range(0.7, 1),
         },
         alphaIn: {
             start: 0,
             end: 1,
-            lerp: new Range(0, 0.05)
+            lerp: new Range(0, 0.05),
         },
         color: function () {
             if (Math.random() > 0.5) {
@@ -2969,8 +2969,8 @@ const ParticleDefs: Record<string, ParticleDef> = {
             }
             return util.rgbToInt(util.hsvToRgb(0.03, 0.95, util.random(0.92, 0.95)));
         },
-        ignoreValueAdjust: true
-    }
+        ignoreValueAdjust: true,
+    },
 };
 const EmitterDefs: Record<string, EmitterDef> = {
     smoke_barrel: {
@@ -2980,7 +2980,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(2, 3),
         angle: Math.PI * 0.1,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     cabin_smoke_parent: {
         particle: "cabinSmoke",
@@ -2989,7 +2989,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(64, 96),
         angle: Math.PI * 0.1,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     bathhouse_steam: {
         particle: "bathhouseSteam",
@@ -2997,7 +2997,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         radius: 1,
         speed: new Range(1.5, 2),
         angle: Math.PI * 0.1,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     bunker_bubbles_01: {
         particle: "bunkerBubbles",
@@ -3006,7 +3006,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1.6, 1.8),
         angle: Math.PI * -2.2,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     bunker_bubbles_02: {
         particle: "bunkerBubbles",
@@ -3015,7 +3015,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1.6, 1.8),
         angle: Math.PI * -2.2,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     falling_leaf: {
         particle: "leafAutumn",
@@ -3025,7 +3025,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_leaf_halloween: {
         particle: "leafHalloween",
@@ -3035,7 +3035,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_leaf_spring: {
         particle: "leafSpring",
@@ -3045,7 +3045,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_leaf_summer: {
         particle: "leafSummer",
@@ -3054,7 +3054,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1.4, 2.4),
         angle: Math.PI * 0.2,
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_leaf_potato: {
         particle: "leafPotato",
@@ -3064,7 +3064,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_potato: {
         particle: "potato",
@@ -3074,7 +3074,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_snow_fast: {
         particle: "snow",
@@ -3086,7 +3086,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     falling_snow_slow: {
         particle: "snow",
@@ -3096,7 +3096,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         angle: Math.PI * 0.2,
         rot: new Range(0, Math.PI * 2),
         maxCount: Number.MAX_VALUE,
-        zOrd: 999
+        zOrd: 999,
     },
     heal_basic: {
         particle: "heal_basic",
@@ -3105,7 +3105,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     heal_heart: {
         particle: "heal_heart",
@@ -3114,7 +3114,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     heal_moon: {
         particle: "heal_moon",
@@ -3123,7 +3123,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     heal_tomoe: {
         particle: "heal_tomoe",
@@ -3132,7 +3132,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     boost_basic: {
         particle: "boost_basic",
@@ -3141,7 +3141,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     boost_star: {
         particle: "boost_star",
@@ -3150,7 +3150,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     boost_naturalize: {
         particle: "boost_naturalize",
@@ -3159,7 +3159,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     boost_shuriken: {
         particle: "boost_shuriken",
@@ -3168,7 +3168,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: new Range(0, Math.PI * 2),
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     revive_basic: {
         particle: "revive_basic",
@@ -3177,7 +3177,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     windwalk: {
         particle: "leafStim",
@@ -3186,7 +3186,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     takedown: {
         particle: "takedownStim",
@@ -3195,7 +3195,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     inspire: {
         particle: "inspireStim",
@@ -3204,7 +3204,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     xp_common: {
         particle: "xp_common",
@@ -3213,7 +3213,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     xp_rare: {
         particle: "xp_rare",
@@ -3222,7 +3222,7 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
+        maxCount: Number.MAX_VALUE,
     },
     xp_mythic: {
         particle: "xp_mythic",
@@ -3231,8 +3231,8 @@ const EmitterDefs: Record<string, EmitterDef> = {
         speed: new Range(1, 1.5),
         angle: 0,
         rot: 0,
-        maxCount: Number.MAX_VALUE
-    }
+        maxCount: Number.MAX_VALUE,
+    },
 };
 
 export interface ParticleDef {

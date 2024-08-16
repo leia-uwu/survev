@@ -75,7 +75,7 @@ class Device {
     debug = false;
     UiLayout = {
         Lg: 0,
-        Sm: 1
+        Sm: 1,
     };
 
     isLandscape = true;

@@ -2,7 +2,7 @@ import { MapObjectDefs } from "../../shared/defs/mapObjectDefs";
 import type {
     BuildingDef,
     ObstacleDef,
-    StructureDef
+    StructureDef,
 } from "../../shared/defs/mapObjectsTyping";
 import type { AABBWithHeight } from "../../shared/utils/coldet";
 import { collider } from "../../shared/utils/collider";
@@ -22,8 +22,8 @@ export function renderMapBuildingBounds(mapObj: Building | Structure) {
             mapHelpers.getBoundingCollider(mapObj.type),
             mapObj.pos,
             mapObj.rot,
-            mapObj.scale * boundScale
-        )
+            mapObj.scale * boundScale,
+        ),
     ];
     if (def.bridgeLandBounds !== undefined) {
         for (let i = 0; i < def.bridgeLandBounds.length; i++) {
@@ -32,8 +32,8 @@ export function renderMapBuildingBounds(mapObj: Building | Structure) {
                     def.bridgeLandBounds[i],
                     mapObj.pos,
                     mapObj.rot,
-                    mapObj.scale
-                )
+                    mapObj.scale,
+                ),
             );
         }
     }
@@ -50,8 +50,8 @@ export function renderMapObstacleBounds(mapObj: Obstacle) {
             mapHelpers.getBoundingCollider(mapObj.type),
             mapObj.pos,
             mapObj.rot,
-            mapObj.scale * boundScale
-        )
+            mapObj.scale * boundScale,
+        ),
     ];
     if (def.mapObstacleBounds !== undefined) {
         bounds = [];
@@ -61,8 +61,8 @@ export function renderMapObstacleBounds(mapObj: Obstacle) {
                     def.mapObstacleBounds[i],
                     mapObj.pos,
                     mapObj.rot,
-                    mapObj.scale
-                )
+                    mapObj.scale,
+                ),
             );
         }
     }
@@ -79,7 +79,7 @@ export function renderWaterEdge(mapObj: Structure) {
             mapHelpers.getBoundingCollider(mapObj.type),
             mapObj.pos,
             mapObj.rot,
-            mapObj.scale * 1.15
+            mapObj.scale * 1.15,
         ) as AABBWithHeight;
         const center = v2.add(bounds.min, v2.mul(v2.sub(bounds.max, bounds.min), 0.5));
         const dir = v2.rotate(waterEdge.dir, mapObj.rot);
@@ -104,7 +104,7 @@ export function renderBridge(mapObj: Building | Structure) {
                 bridgeLandBounds[i],
                 mapObj.pos,
                 mapObj.rot,
-                mapObj.scale
+                mapObj.scale,
             );
             debugLines.addCollider(col, 0xff7700, 0.0);
         }
@@ -114,7 +114,7 @@ export function renderBridge(mapObj: Building | Structure) {
                 bridgeWaterBounds[i],
                 mapObj.pos,
                 mapObj.rot,
-                mapObj.scale
+                mapObj.scale,
             );
             debugLines.addCollider(col, 0x0077ff, 0.0);
         }
@@ -128,7 +128,7 @@ export function renderBridge(mapObj: Building | Structure) {
             mapObj.type,
             mapObj.pos,
             mapObj.rot,
-            mapObj.scale
+            mapObj.scale,
         );
         debugLines.addCollider(bridgeOverlapCol, 0x7700ff, 0.0);
     }

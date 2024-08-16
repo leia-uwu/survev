@@ -5,7 +5,7 @@ import type {
     ServerToClientTeamMsg,
     TeamErrorMsg,
     TeamMenuPlayer,
-    TeamStateMsg
+    TeamStateMsg,
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
 import type { ApiServer } from "./apiServer";
@@ -42,8 +42,8 @@ function teamErrorMsg(type: ErrorType): TeamErrorMsg {
     return {
         type: "error",
         data: {
-            type
-        }
+            type,
+        },
     };
 }
 
@@ -79,7 +79,7 @@ export class TeamMenu {
                     req.getHeader("sec-websocket-key"),
                     req.getHeader("sec-websocket-protocol"),
                     req.getHeader("sec-websocket-extensions"),
-                    context
+                    context,
                 );
             },
 
@@ -113,7 +113,7 @@ export class TeamMenu {
                     teamMenu.removePlayer(userData);
                     teamMenu.sendRoomState(room);
                 }
-            }
+            },
         });
     }
 
@@ -135,9 +135,9 @@ export class TeamMenu {
                 autoFill: initialRoomData.autoFill,
                 findingGame: initialRoomData.findingGame,
                 lastError: initialRoomData.lastError,
-                maxPlayers: math.clamp(gameModeIdx * 2, 2, 4)
+                maxPlayers: math.clamp(gameModeIdx * 2, 2, 4),
             },
-            players: [roomLeader]
+            players: [roomLeader],
         };
         this.rooms.set(roomUrl, value);
         return value;
@@ -206,10 +206,10 @@ export class TeamMenu {
                             name: player.name,
                             playerId: id,
                             isLeader: player.isLeader,
-                            inGame: player.inGame
+                            inGame: player.inGame,
                         };
-                    })
-                }
+                    }),
+                },
             };
 
             player.socketData.sendMsg(JSON.stringify(msg));
@@ -218,7 +218,7 @@ export class TeamMenu {
 
     async handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData) {
         const parsedMessage: ClientToServerTeamMsg = JSON.parse(
-            new TextDecoder().decode(message)
+            new TextDecoder().decode(message),
         );
         const type = parsedMessage.type;
         let response: ServerToClientTeamMsg;
@@ -235,7 +235,7 @@ export class TeamMenu {
                     isLeader: true,
                     inGame: false,
                     playerId: 0,
-                    socketData: localPlayerData
+                    socketData: localPlayerData,
                 };
 
                 if (!Config.modes[1].enabled && !Config.modes[2].enabled) {
@@ -285,7 +285,7 @@ export class TeamMenu {
                     isLeader: false,
                     inGame: false,
                     playerId: room.players.length,
-                    socketData: localPlayerData
+                    socketData: localPlayerData,
                 } as RoomPlayer;
                 room.players.push(player);
 
@@ -298,7 +298,7 @@ export class TeamMenu {
                 const newName = parsedMessage.data.name;
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
-                    (p) => p.socketData === localPlayerData
+                    (p) => p.socketData === localPlayerData,
                 )!;
                 player.name = newName;
 
@@ -309,7 +309,7 @@ export class TeamMenu {
                 const newRoomData = parsedMessage.data;
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
-                    (p) => p.socketData === localPlayerData
+                    (p) => p.socketData === localPlayerData,
                 )!;
                 if (!player.isLeader) {
                     return;
@@ -329,7 +329,7 @@ export class TeamMenu {
             case "kick": {
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
-                    (p) => p.socketData === localPlayerData
+                    (p) => p.socketData === localPlayerData,
                 )!;
                 if (!player.isLeader) {
                     return;
@@ -340,7 +340,7 @@ export class TeamMenu {
                 }
 
                 response = {
-                    type: "kicked"
+                    type: "kicked",
                 };
                 this.sendResponse(response, pToKick);
                 //player is removed and new room state is sent when the socket is inevitably closed after the kick
@@ -351,7 +351,7 @@ export class TeamMenu {
                 if (!room) return;
                 response = {
                     type: "keepAlive",
-                    data: {}
+                    data: {},
                 };
                 this.sendResponses(response, room.players);
                 break;
@@ -360,7 +360,7 @@ export class TeamMenu {
                 // this message can only ever be sent by the leader
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
-                    (p) => p.socketData === localPlayerData
+                    (p) => p.socketData === localPlayerData,
                 )!;
 
                 if (!player.isLeader) {
@@ -378,7 +378,7 @@ export class TeamMenu {
                         zones: data.zones,
                         gameModeIdx: room.roomData.gameModeIdx,
                         autoFill: room.roomData.autoFill,
-                        playerCount: room.players.length
+                        playerCount: room.players.length,
                     })
                 ).res[0];
 
@@ -392,8 +392,8 @@ export class TeamMenu {
                     type: "joinGame",
                     data: {
                         ...playData,
-                        data: playData.data
-                    }
+                        data: playData.data,
+                    },
                 };
                 this.sendResponses(response, room.players);
 
@@ -407,7 +407,7 @@ export class TeamMenu {
                 // doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
-                    (p) => p.socketData === localPlayerData
+                    (p) => p.socketData === localPlayerData,
                 )!;
                 player.inGame = false;
                 room.roomData.findingGame = false;

@@ -7,7 +7,7 @@ import type { Localization } from "./ui/localization";
 export enum TeamMode {
     Solo = 1,
     Duo = 2,
-    Squad = 4
+    Squad = 4,
 }
 
 interface Info {
@@ -42,7 +42,7 @@ export class SiteInfo {
 
     constructor(
         public config: ConfigManager,
-        public localization: Localization
+        public localization: Localization,
     ) {
         this.config = config;
         this.localization = localization;
@@ -74,7 +74,7 @@ export class SiteInfo {
         const modeTypes = {
             [TeamMode.Solo]: "solo",
             [TeamMode.Duo]: "duo",
-            [TeamMode.Squad]: "squad"
+            [TeamMode.Squad]: "squad",
         };
 
         const availableModes = [];
@@ -90,7 +90,7 @@ export class SiteInfo {
                 icon: mapDef.icon,
                 buttonCss: mapDef.buttonCss,
                 buttonText,
-                enabled: mode.enabled
+                enabled: mode.enabled,
             });
         }
         return availableModes;
@@ -113,7 +113,7 @@ export class SiteInfo {
                     }
                     btn.addClass(style.buttonCss);
                     btn.css({
-                        "background-image": `url(${style.icon})`
+                        "background-image": `url(${style.icon})`,
                     });
                 }
                 const l = $(`#btn-team-queue-mode-${i}`);
@@ -124,7 +124,7 @@ export class SiteInfo {
                     if (style.icon) {
                         l.addClass("btn-custom-mode-select");
                         l.css({
-                            "background-image": `url(${style.icon})`
+                            "background-image": `url(${style.icon})`,
                         });
                     }
                 }
@@ -160,10 +160,10 @@ export class SiteInfo {
                         .attr("id", "");
                     const link = template.find("a");
                     const text = this.localization.translate(
-                        streamer.viewers == 1 ? "index-viewer" : "index-viewers"
+                        streamer.viewers == 1 ? "index-viewer" : "index-viewers",
                     );
                     link.html(
-                        `${streamer.name} <span>${streamer.viewers} ${text}</span>`
+                        `${streamer.name} <span>${streamer.viewers} ${text}</span>`,
                     );
                     link.css("background-image", `url(${streamer.img})`);
                     link.attr("href", streamer.url);
@@ -173,7 +173,7 @@ export class SiteInfo {
             }
             featuredStreamersElem.css(
                 "visibility",
-                hasTwitchStreamers ? "visible" : "hidden"
+                hasTwitchStreamers ? "visible" : "hidden",
             );
 
             const featuredYoutuberElem = $("#featured-youtuber");

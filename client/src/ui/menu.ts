@@ -8,21 +8,21 @@ function createToast(
     text: string,
     container: JQuery<HTMLElement>,
     parent: JQuery<HTMLElement>,
-    event: JQuery.ClickEvent
+    event: JQuery.ClickEvent,
 ) {
     const copyToast = $("<div/>", {
         class: "copy-toast",
-        html: text
+        html: text,
     });
     container.append(copyToast);
     copyToast.css({
         left: event.pageX - parseInt(copyToast.css("width")) / 2,
-        top: parent.offset()!.top
+        top: parent.offset()!.top,
     });
     copyToast.animate(
         {
             top: "-=25",
-            opacity: 1
+            opacity: 1,
         },
         {
             queue: false,
@@ -31,8 +31,8 @@ function createToast(
                 $(this).fadeOut(250, function () {
                     $(this).remove();
                 });
-            }
-        }
+            },
+        },
     );
 }
 function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
@@ -44,9 +44,9 @@ function setupModals(inputBinds: InputBinds, inputBindUi: InputBindUi) {
         e.css("display", "block");
         startMenuWrapper.animate(
             {
-                scrollTop: height
+                scrollTop: height,
             },
-            1000
+            1000,
         );
         return false;
     });
@@ -227,7 +227,7 @@ function onResize() {
             } else {
                 $("#modal-customize .modal-content").css({
                     transform: "translate(-50%, -50%) scale(0.45)",
-                    top: "38%"
+                    top: "38%",
                 });
             }
         }
@@ -257,5 +257,5 @@ function applyMobileBrowserStyling(isTablet: boolean) {
 export default {
     setupModals,
     onResize,
-    applyMobileBrowserStyling
+    applyMobileBrowserStyling,
 };

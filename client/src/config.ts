@@ -29,7 +29,7 @@ const defaultConfig = {
     loadout: loadout.defaultLoadout(),
     sessionCookie: "" as string | null,
     binds: "",
-    version: 1
+    version: 1,
 };
 
 export type ConfigType = typeof defaultConfig;

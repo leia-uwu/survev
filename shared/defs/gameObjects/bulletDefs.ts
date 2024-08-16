@@ -36,7 +36,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_ak47: {
         type: "bullet",
@@ -49,7 +49,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_scar: {
         type: "bullet",
@@ -62,7 +62,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_an94: {
         type: "bullet",
@@ -75,7 +75,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_groza: {
         type: "bullet",
@@ -88,7 +88,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_grozas: {
         type: "bullet",
@@ -102,7 +102,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_model94: {
         type: "bullet",
@@ -115,7 +115,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.12,
-        tracerLength: 1
+        tracerLength: 1,
     },
     bullet_blr: {
         type: "bullet",
@@ -128,7 +128,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.14,
-        tracerLength: 1
+        tracerLength: 1,
     },
     bullet_mosin: {
         type: "bullet",
@@ -141,7 +141,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.16,
-        tracerLength: 1
+        tracerLength: 1,
     },
     bullet_sv98: {
         type: "bullet",
@@ -154,7 +154,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.2,
-        tracerLength: 1
+        tracerLength: 1,
     },
     bullet_awc: {
         type: "bullet",
@@ -168,7 +168,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "308sub",
         tracerWidth: 0.2,
-        tracerLength: 1
+        tracerLength: 1,
     },
     bullet_scarssr: {
         type: "bullet",
@@ -182,7 +182,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "308sub",
         tracerWidth: 0.14,
-        tracerLength: 1
+        tracerLength: 1,
     },
     bullet_m39: {
         type: "bullet",
@@ -195,7 +195,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_svd: {
         type: "bullet",
@@ -208,7 +208,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_garand: {
         type: "bullet",
@@ -221,7 +221,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.12,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_buckshot: {
         type: "bullet",
@@ -234,7 +234,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.1,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_flechette: {
         type: "bullet",
@@ -247,7 +247,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.075,
-        tracerLength: 0.5
+        tracerLength: 0.5,
     },
     bullet_frag: {
         type: "bullet",
@@ -261,7 +261,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "frag",
         tracerWidth: 0.1,
         tracerLength: 0.5,
-        onHit: "explosion_usas"
+        onHit: "explosion_usas",
     },
     bullet_slug: {
         type: "bullet",
@@ -274,7 +274,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.2,
-        tracerLength: 0.4
+        tracerLength: 0.4,
     },
     bullet_birdshot: {
         type: "bullet",
@@ -287,7 +287,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "12gauge",
         tracerWidth: 0.1,
-        tracerLength: 0.1
+        tracerLength: 0.1,
     },
     bullet_m9: {
         type: "bullet",
@@ -300,7 +300,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_m9_cursed: {
         type: "bullet",
@@ -313,7 +313,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm_cursed",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_m93r: {
         type: "bullet",
@@ -326,7 +326,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_p30l: {
         type: "bullet",
@@ -339,7 +339,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.12,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_ot38: {
         type: "bullet",
@@ -352,7 +352,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.09,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_ots38: {
         type: "bullet",
@@ -366,7 +366,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_colt45: {
         type: "bullet",
@@ -379,7 +379,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.09,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_m1911: {
         type: "bullet",
@@ -392,7 +392,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_m1a1: {
         type: "bullet",
@@ -405,7 +405,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_mkg45: {
         type: "bullet",
@@ -418,7 +418,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_deagle: {
         type: "bullet",
@@ -431,7 +431,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "50AE",
         tracerWidth: 0.12,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_mac10: {
         type: "bullet",
@@ -444,7 +444,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_ump9: {
         type: "bullet",
@@ -457,7 +457,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_vector: {
         type: "bullet",
@@ -470,7 +470,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_vector45: {
         type: "bullet",
@@ -483,7 +483,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "45acp",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_scorpion: {
         type: "bullet",
@@ -497,7 +497,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_vss: {
         type: "bullet",
@@ -511,7 +511,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.8
+        tracerLength: 0.8,
     },
     bullet_dp28: {
         type: "bullet",
@@ -524,7 +524,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_bar: {
         type: "bullet",
@@ -537,7 +537,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_pkp: {
         type: "bullet",
@@ -550,7 +550,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "762mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_glock: {
         type: "bullet",
@@ -563,7 +563,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "9mm",
         tracerWidth: 0.1,
-        tracerLength: 0.7
+        tracerLength: 0.7,
     },
     bullet_famas: {
         type: "bullet",
@@ -576,7 +576,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_hk416: {
         type: "bullet",
@@ -589,7 +589,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_m4a1: {
         type: "bullet",
@@ -603,7 +603,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         suppressed: true,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_mk12: {
         type: "bullet",
@@ -616,7 +616,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_l86: {
         type: "bullet",
@@ -629,7 +629,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_m249: {
         type: "bullet",
@@ -642,7 +642,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_qbb97: {
         type: "bullet",
@@ -655,7 +655,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.1,
-        tracerLength: 0.9
+        tracerLength: 0.9,
     },
     bullet_scout: {
         type: "bullet",
@@ -668,7 +668,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: false,
         tracerColor: "556mm",
         tracerWidth: 0.14,
-        tracerLength: 0.95
+        tracerLength: 0.95,
     },
     bullet_flare: {
         type: "bullet",
@@ -685,7 +685,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         flareColor: 16733184,
         addFlare: true,
         maxFlareScale: 2,
-        skipCollision: true
+        skipCollision: true,
     },
     bullet_potato: {
         type: "bullet",
@@ -699,7 +699,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "invis",
         tracerWidth: 0,
         tracerLength: 1.2,
-        skipCollision: true
+        skipCollision: true,
     },
     bullet_bugle: {
         type: "bullet",
@@ -713,7 +713,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "invis",
         tracerWidth: 0,
         tracerLength: 1.2,
-        skipCollision: true
+        skipCollision: true,
     },
     shrapnel_barrel: {
         type: "bullet",
@@ -726,7 +726,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
-        tracerLength: 0.6
+        tracerLength: 0.6,
     },
     shrapnel_stove: {
         type: "bullet",
@@ -739,7 +739,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
-        tracerLength: 0.6
+        tracerLength: 0.6,
     },
     shrapnel_frag: {
         type: "bullet",
@@ -752,7 +752,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
-        tracerLength: 0.6
+        tracerLength: 0.6,
     },
     shrapnel_strobe: {
         type: "bullet",
@@ -765,7 +765,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.1,
-        tracerLength: 0.3
+        tracerLength: 0.3,
     },
     shrapnel_usas: {
         type: "bullet",
@@ -778,7 +778,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.1,
-        tracerLength: 0.5
+        tracerLength: 0.5,
     },
     shrapnel_mirv_mini: {
         type: "bullet",
@@ -791,7 +791,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.1,
-        tracerLength: 0.5
+        tracerLength: 0.5,
     },
     shrapnel_bomb_iron: {
         type: "bullet",
@@ -804,53 +804,53 @@ export const BaseDefs: Record<string, BulletDef> = {
         shrapnel: true,
         tracerColor: "shrapnel",
         tracerWidth: 0.125,
-        tracerLength: 0.6
-    }
+        tracerLength: 0.6,
+    },
 };
 
 const SkinDefs: Record<string, BulletDef> = {
     bullet_mp5_bonus: defineBulletSkin("bullet_mp5", {
         speed: 106.25,
-        distance: 125
+        distance: 125,
     }),
     bullet_m9_bonus: defineBulletSkin("bullet_m9", {
         speed: 106.25,
-        distance: 125
+        distance: 125,
     }),
     bullet_mac10_bonus: defineBulletSkin("bullet_mac10", {
         speed: 93.75,
-        distance: 62.5
+        distance: 62.5,
     }),
     bullet_ump9_bonus: defineBulletSkin("bullet_ump9", {
         speed: 125,
-        distance: 125
+        distance: 125,
     }),
     bullet_vector_bonus: defineBulletSkin("bullet_vector", {
         speed: 110,
-        distance: 57.5
+        distance: 57.5,
     }),
     bullet_glock_bonus: defineBulletSkin("bullet_glock", {
         speed: 87.5,
-        distance: 55
+        distance: 55,
     }),
     bullet_m93r_bonus: defineBulletSkin("bullet_m93r", {
         speed: 106.25,
-        distance: 125
+        distance: 125,
     }),
     bullet_scorpion_bonus: defineBulletSkin("bullet_scorpion", {
         speed: 112.5,
         distance: 150,
-        tracerColor: "9mm_suppressed_bonus"
+        tracerColor: "9mm_suppressed_bonus",
     }),
     bullet_vss_bonus: defineBulletSkin("bullet_vss", {
         speed: 118.75,
         distance: 156.25,
-        tracerColor: "9mm_suppressed_bonus"
+        tracerColor: "9mm_suppressed_bonus",
     }),
     bullet_p30l_bonus: defineBulletSkin("bullet_p30l", {
         speed: 117.5,
-        distance: 125
-    })
+        distance: 125,
+    }),
 };
 
 export const BulletDefs: Record<string, BulletDef> = { ...BaseDefs, ...SkinDefs };
