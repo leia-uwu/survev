@@ -96,7 +96,7 @@ export class Projectile extends BaseGameObject {
         this.vel = vel;
         this.fuseTime = fuseTime;
         this.damageType = damageType;
-        this.dir = v2.normalize(vel);
+        this.dir = v2.normalizeSafe(vel);
 
         const def = GameObjectDefs[type] as ThrowableDef;
         this.velZ = def.throwPhysics.velZ;
