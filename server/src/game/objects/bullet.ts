@@ -13,6 +13,7 @@ import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
+import { ObjectPool } from "../objectPool";
 import type { DamageParams, GameObject } from "./gameObject";
 import type { Obstacle } from "./obstacle";
 import { Player } from "./player";
@@ -69,6 +70,7 @@ export interface BulletParams {
 export class BulletBarn {
     bullets: Bullet[] = [];
     newBullets: Bullet[] = [];
+    bulletPool: ObjectPool<Bullet> = new ObjectPool<Bullet>(() => new Bullet());
 
     constructor(public game: Game) {}
 
@@ -77,10 +79,11 @@ export class BulletBarn {
     update(dt: number): void {
         for (let i = 0; i < this.bullets.length; i++) {
             const bullet = this.bullets[i];
+            
 
             if (!bullet.alive || bullet.skipCollision || (bullet.player?.dead ?? false)) {
                 this.bullets.splice(i, 1);
-
+                // this.game.bulletPool.freeObj(toFree[0]);
                 if (bullet.onHitFx && !bullet.reflected) {
                     this.game.explosionBarn.addExplosion(
                         bullet.onHitFx,
@@ -93,7 +96,11 @@ export class BulletBarn {
                         bullet.player
                     );
                 }
-
+                // this.game.bulletPool.freeObj(bullet);
+                if (!bullet.alive){
+                    // console.log(bullet.distanceTraveled);
+                    this.bulletPool.freeObj(bullet);
+                }
                 continue;
             }
 
@@ -111,9 +118,13 @@ export class BulletBarn {
         this.newBullets.length = 0;
     }
 
+
     fireBullet(params: BulletParams): Bullet {
         this.game.map.clampToMapBounds(params.pos);
-        const bullet = new Bullet(this, params);
+        const bullet: Bullet = this.bulletPool.getObj();
+        // console.log("pre",bullet.dir);
+        bullet.init(this, params);
+        // console.log("post",bullet.dir);
         this.bullets.push(bullet);
         this.newBullets.push(bullet);
 
@@ -167,11 +178,13 @@ export class Bullet {
     damageType: number;
     isShrapnel: boolean;
     skipCollision: boolean;
+    bulletManager?: BulletBarn;
+    public init( bulletManager: BulletBarn, params: BulletParams): void{
+        this.bulletManager = bulletManager;
+        this.alive = true;
+        this.distanceTraveled = 0;
+        this.reflected = false;
 
-    constructor(
-        public bulletManager: BulletBarn,
-        params: BulletParams
-    ) {
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
 
         const variance = 1 + (params.varianceT ?? 1) * bulletDef.variance;
@@ -315,6 +328,46 @@ export class Bullet {
         }
         this.clientEndPos = v2.add(this.startPos, v2.mul(this.dir, maxDistance));
     }
+    
+    constructor(){
+        const x = v2.create(0,0)
+        this.playerId = 0;
+        this.pos = x;
+        this.endPos = x;
+        this.clientEndPos = x;
+        this.dir = x;
+        this.bulletType = "";
+        this.layer = 0;
+        this.varianceT = 0;
+        this.distAdjIdx = 0;
+        this.clipDistance = false;
+        this.distance = 0;
+        this.maxDistance = 0;
+        this.shotFx = false;
+        this.shotSourceType = "";
+        this.mapSourceType = "";
+        this.shotOffhand = false;
+        this.lastShot = false;
+        this.reflectCount = 0;
+        this.reflectObjId = 0;
+        this.hasSpecialFx = false;
+        this.shotAlt = false;
+        this.splinter = false;
+        this.trailSaturated = false;
+        this.trailSmall = false;
+        this.trailThick = false;
+        this.startPos = x;
+        this.speed = 0;
+        this.damageSelf = false;
+        this.damage = 0;
+        this.damageMult = 0;
+        this.onHitFx = "";
+        this.hasOnHitFx = false;
+        this.damageType = 0;
+        this.isShrapnel = false;
+        this.skipCollision = false;
+        this.distanceTraveled = 0;    
+    }
 
     update(dt: number): void {
         const posOld = v2.copy(this.pos);
@@ -324,7 +377,7 @@ export class Bullet {
 
         v2.set(this.pos, v2.add(this.pos, v2.mul(this.dir, moveDist)));
 
-        const map = this.bulletManager.game.map;
+        const map = this.bulletManager!.game.map;
         if (!coldet.testPointAabb(this.pos, map.bounds.min, map.bounds.max)) {
             this.alive = false;
             map.clampToMapBounds(this.pos);
@@ -344,8 +397,7 @@ export class Bullet {
 
     checkForCollisions(posOld: Vec2): void {
         const collisions: BulletCollision[] = [];
-
-        const objects = this.bulletManager.game.grid.intersectLineSegment(
+        const objects = this.bulletManager!.game.grid.intersectLineSegment(
             posOld,
             this.pos
         );
@@ -511,7 +563,7 @@ export class Bullet {
 
                 const def = GameObjectDefs[this.bulletType] as BulletDef;
 
-                this.bulletManager.damages.push({
+                this.bulletManager!.damages.push({
                     obj: col.obj!,
                     gameSourceType: this.shotSourceType,
                     mapSourceType: this.mapSourceType,
@@ -529,7 +581,7 @@ export class Bullet {
                 hit = col.collidable;
             } else if (col.type == "player") {
                 if (!shooterDead) {
-                    this.bulletManager.damages.push({
+                    this.bulletManager!.damages.push({
                         obj: col.player!,
                         gameSourceType: this.shotSourceType,
                         mapSourceType: this.mapSourceType,
@@ -560,8 +612,9 @@ export class Bullet {
 
         const dot = v2.dot(this.dir, normal);
         const dir = v2.add(v2.mul(normal, dot * -2), this.dir);
+        // this.bulletManager!.bulletPool.freeObj(this);
 
-        this.bulletManager.fireBullet({
+        this.bulletManager!.fireBullet({
             bulletType: this.bulletType,
             gameSourceType: this.shotSourceType,
             mapSourceType: this.mapSourceType,
@@ -583,5 +636,7 @@ export class Bullet {
             varianceT: this.varianceT,
             distance: this.distance
         });
+        this.bulletManager!.bulletPool.freeObj(this);
+
     }
 }

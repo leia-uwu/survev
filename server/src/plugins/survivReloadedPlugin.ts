@@ -374,8 +374,8 @@ export default class SurvivReloadedPlugin extends GamePlugin {
                 player.game.lootBarn.addLoot("blr", player.pos, player.layer, 0, true);
                 player.game.lootBarn.addLoot("mp220", player.pos, player.layer, 0, true);
 
-                player.weapons[0].type = "mk12";
-                player.weapons[0].ammo = 20;
+                player.weapons[0].type = "m249";
+                player.weapons[0].ammo = 255;
                 
             } else if (player.game.teamMode === 2){
                 player.boost = 100;
