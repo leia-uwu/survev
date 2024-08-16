@@ -85,7 +85,7 @@ const mapDef = {
                 weight: 0.25,
             },
             { name: "groza", count: 1, weight: 0.8 },
-            { name: "scout", count: 1, weight: 0.05 },
+            { name: "scout_elite", count: 1, weight: 0.05 },
         ],
         tier_airdrop_uncommon: [
             { name: "mk12", count: 1, weight: 2.5 },
@@ -98,7 +98,7 @@ const mapDef = {
             { name: "qbb97", count: 1, weight: 1.5 },
             { name: "m9", count: 1, weight: 0.01 },
             { name: "flare_gun", count: 1, weight: 0.5 },
-            { name: "scout", count: 1, weight: 1.5 },
+            { name: "scout_elite", count: 1, weight: 1.5 },
             { name: "model94", count: 1, weight: 2 },
             { name: "colt45", count: 1, weight: 1 },
         ],

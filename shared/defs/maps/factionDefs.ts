@@ -224,7 +224,7 @@ const mapDef = {
             { name: "qbb97", count: 1, weight: 0.01 },
             { name: "flare_gun", count: 1, weight: 0.1 },
             { name: "groza", count: 1, weight: 0.8 },
-            { name: "scout", count: 1, weight: 0.05 },
+            { name: "scout_elite", count: 1, weight: 0.05 },
         ],
         tier_toilet: [
             { name: "tier_guns", count: 1, weight: 0.1 },
@@ -281,7 +281,7 @@ const mapDef = {
             { name: "sv98", count: 1, weight: 0.5 },
             { name: "qbb97", count: 1, weight: 1.5 },
             { name: "m9", count: 1, weight: 0.01 },
-            { name: "scout", count: 1, weight: 1.5 },
+            { name: "scout_elite", count: 1, weight: 1.5 },
         ],
         tier_ghillie: [
             {
