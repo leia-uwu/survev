@@ -12,7 +12,7 @@ import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
-import { util } from "../../../shared/utils/util";
+import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { BulletParams } from "../game/objects/bullet";
 import type { GameObject } from "../game/objects/gameObject";
@@ -652,9 +652,11 @@ export class WeaponManager {
             // Shoot a projectile if defined
             if (itemDef.projType) {
                 const projDef = GameObjectDefs[itemDef.projType];
-                if (projDef.type !== "throwable") {
-                    throw new Error(`Invalid projectile type: ${itemDef.projType}`);
-                }
+                assert(
+                    projDef.type === "throwable",
+                    `Invalid projectile type: ${itemDef.projType}`
+                );
+
                 const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
                 this.player.game.projectileBarn.addProjectile(
                     this.player.__id,
@@ -862,9 +864,11 @@ export class WeaponManager {
         }
         this.player.cancelAction();
         const itemDef = GameObjectDefs[this.activeWeapon];
-        if (itemDef.type !== "throwable") {
-            throw new Error(`Invalid throwable item: ${this.activeWeapon}`);
-        }
+        assert(
+            itemDef.type === "throwable",
+            `Invalid projectile type: ${this.activeWeapon}`
+        );
+
         this.cookingThrowable = true;
         this.cookTicker = 0;
 
@@ -881,6 +885,7 @@ export class WeaponManager {
         this.cookingThrowable = false;
         const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
         const throwableDef = GameObjectDefs[throwableType];
+        assert(throwableDef.type === "throwable");
 
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
@@ -891,10 +896,6 @@ export class WeaponManager {
                       GameConfig.player.throwableMaxMouseDist * 1.8
                   ) / 15
                 : 0;
-
-        if (throwableDef.type !== "throwable") {
-            throw new Error();
-        }
 
         const weapSlotId = GameConfig.WeaponSlot.Throwable;
         if (this.player.inventory[throwableType] > 0) {

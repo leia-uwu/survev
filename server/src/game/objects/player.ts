@@ -2018,9 +2018,8 @@ export class Player extends BaseGameObject {
 
     useHealingItem(item: string): void {
         const itemDef = GameObjectDefs[item];
-        if (itemDef.type !== "heal") {
-            throw new Error(`Invalid heal item ${item}`);
-        }
+        assert(itemDef.type === "heal", `Invalid heal item ${item}`);
+
         if (
             !this.hasPerk("aoe_heal") &&
             (this.health == itemDef.maxHeal ||
@@ -2064,9 +2063,7 @@ export class Player extends BaseGameObject {
 
     useBoostItem(item: string): void {
         const itemDef = GameObjectDefs[item];
-        if (itemDef.type !== "boost") {
-            throw new Error(`Invalid boost item ${item}`);
-        }
+        assert(itemDef.type === "boost", `Invalid boost item ${item}`);
 
         if (this.actionType == GameConfig.Action.UseItem) {
             return;
