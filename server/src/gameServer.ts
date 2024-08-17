@@ -308,7 +308,10 @@ export class GameServer {
 
     getPlayerCount() {
         return this.games.reduce((a, b) => {
-            return a + (b ? b.playerBarn.livingPlayers.filter(p => !p.disconnected).length : 0);
+            return (
+                a +
+                (b ? b.playerBarn.livingPlayers.filter((p) => !p.disconnected).length : 0)
+            );
         }, 0);
     }
 
