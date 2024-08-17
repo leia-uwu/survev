@@ -30,14 +30,19 @@ export default class DeathMatchPlugin extends GamePlugin {
 
             {
                 const primary = data.player.weapons[WeaponSlot.Primary];
-                primary.type = "";
-                primary.ammo = 0;
-                primary.cooldown = 0;
+                if (primary.type !== "sv98") {
+                    primary.type = "";
+                    primary.ammo = 0;
+                    primary.cooldown = 0;
+                }
 
                 const secondary = data.player.weapons[WeaponSlot.Secondary];
-                secondary.type = "";
-                secondary.ammo = 0;
-                secondary.cooldown = 0;
+                if (secondary.type !== "sv98") {
+                    secondary.type = "";
+                    secondary.ammo = 0;
+                    secondary.cooldown = 0;
+                }
+
             }
 
             // give the killer nades and gun ammo and inventory ammo
