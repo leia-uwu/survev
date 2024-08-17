@@ -1399,17 +1399,6 @@ export class GameMap {
                 loadedSpawnRuleFunc = () => SpawnRules.radius(this.center, radius);
                 break;
             case "random":
-                let safeZone = undefined;
-                if (this.game.gas.stage === 1) {
-                    let rad = this.game.gas.radNew;
-                    if (this.game.gas.mode === GasMode.Waiting) {
-                        rad = this.game.gas.radOld;
-                    }
-                    safeZone = v2.add(
-                        this.game.gas.posNew,
-                        util.randomPointInCircle(rad)
-                    );
-                }
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
                         SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas);
