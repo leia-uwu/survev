@@ -20,7 +20,7 @@ export default class DeathMatchPlugin extends GamePlugin {
             // );
 
             // clear inventory to prevent loot from dropping;
-            // data.player.inventory = {};
+            data.player.inventory = {};
             data.player.backpack = "backpack00";
             data.player.scope = "1xscope";
             data.player.helmet = "";
@@ -28,17 +28,22 @@ export default class DeathMatchPlugin extends GamePlugin {
 
             data.player.weaponManager.setCurWeapIndex(WeaponSlot.Melee);
 
-            // {
-            //     const primary = data.player.weapons[WeaponSlot.Primary];
-            //     primary.type = "";
-            //     primary.ammo = 0;
-            //     primary.cooldown = 0;
+            {
+                const primary = data.player.weapons[WeaponSlot.Primary];
+                if (primary.type !== "sv98") {
+                    primary.type = "";
+                    primary.ammo = 0;
+                    primary.cooldown = 0;
+                }
 
-            //     const secondary = data.player.weapons[WeaponSlot.Secondary];
-            //     secondary.type = "";
-            //     secondary.ammo = 0;
-            //     secondary.cooldown = 0;
-            // }
+                const secondary = data.player.weapons[WeaponSlot.Secondary];
+                if (secondary.type !== "sv98") {
+                    secondary.type = "";
+                    secondary.ammo = 0;
+                    secondary.cooldown = 0;
+                }
+
+            }
 
             // give the killer nades and gun ammo and inventory ammo
             if (data.source?.__type === ObjectType.Player) {
