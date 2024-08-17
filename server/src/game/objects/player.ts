@@ -1426,8 +1426,8 @@ export class Player extends BaseGameObject {
             if (emotePlayer) {
                 if (
                     ((emote.isPing || emote.itemType) &&
-                        emotePlayer.groupId === this.groupId) ||
-                    (this.visibleObjects.has(emotePlayer) && !emote.isPing)
+                        emotePlayer.groupId === player.groupId) ||
+                    (player.visibleObjects.has(emotePlayer) && !emote.isPing)
                 ) {
                     updateMsg.emotes.push(emote);
                 }
@@ -1450,7 +1450,7 @@ export class Player extends BaseGameObject {
                 coldet.intersectSegmentCircle(
                     bullet.pos,
                     bullet.clientEndPos,
-                    this.pos,
+                    player.pos,
                     extendedRadius,
                 )
             ) {
