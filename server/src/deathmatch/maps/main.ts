@@ -133,5 +133,15 @@ DeatchmatchMain["lootTable"] = {
         { name: "fireaxe", count: 1, weight: 5 },
         { name: "tier_katanas", count: 1, weight: 3 },
         { name: "stonehammer", count: 1, weight: 1 }
+    ],
+    tier_airdrop_uncommon: [
+        { name: "sv98", count: 1, weight: 1 },
+        { name: "outfitGhillie", count: 1, weight: 1 }
+
+    ],
+    tier_airdrop_rare: [
+        { name: "sv98", count: 1, weight: 1 },
+        { name: "outfitGhillie", count: 1, weight: 1 }
+
     ]
 };
