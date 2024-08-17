@@ -23,7 +23,7 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import { IP_SECRET, WEBHOOK_URL } from "../../DO_NOT_PUSH";
+import { IP_SECRET, WEBHOOK_URL } from "../../../DO_NOT_PUSH";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
@@ -1687,17 +1687,17 @@ export class Player extends BaseGameObject {
                         this.game.playerBarn.killLeaderDirty = true;
                     }
                 }
+
+                if (source.hasPerk("takedown")) {
+                    source.health += 25;
+                    source.boost += 25;
+                    source.giveHaste(GameConfig.HasteType.Takedown, 3);
+                }
             }
 
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;
-
-            if (source.hasPerk("takedown")) {
-                source.health += 15;
-                source.boost += 15;
-                source.giveHaste(GameConfig.HasteType.Takedown, 1.4);
-            }
         }
 
         if (this.hasPerk("final_bugle")) {
