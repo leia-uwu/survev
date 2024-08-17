@@ -330,7 +330,9 @@ export class GameServer {
     sendData() {
         try {
             this.fetchApiServer("api/update_region", {
-                playerCount: this.getPlayerCount(),
+                data: {
+                    playerCount: this.getPlayerCount(),
+                },
                 regionId: Config.thisRegion,
             });
         } catch (error) {

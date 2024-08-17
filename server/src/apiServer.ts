@@ -177,13 +177,13 @@ if (process.argv.includes("--api-server")) {
             (body: {
                 apiKey: string;
                 regionId: string;
-                regionData: { playerCount: number };
+                data: RegionData;
             }) => {
                 if (body.apiKey !== Config.apiKey || !(body.regionId in server.regions)) {
                     forbidden(res);
                     return;
                 }
-                server.updateRegion(body.regionId, body.regionData);
+                server.updateRegion(body.regionId, body.data);
             },
             () => {
                 forbidden(res);
