@@ -350,6 +350,10 @@ if (process.argv.includes("--game-server")) {
 
     server.init(app);
 
+    app.options("/api/find_game", (res) => {
+        cors(res);
+        res.end();
+    });
     app.post("/api/find_game", async (res) => {
         cors(res);
         readPostedJSON(

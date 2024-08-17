@@ -70,6 +70,10 @@ export class ApiServer {
             cors(res);
             returnJson(res, this.getSiteInfo());
         });
+        app.options("/api/user/profile", (res) => {
+            cors(res);
+            res.end();
+        });
         app.post("/api/user/profile", (res, _req) => {
             cors(res);
             returnJson(res, this.getUserProfile());
@@ -135,6 +139,10 @@ if (process.argv.includes("--api-server")) {
 
     server.init(app);
 
+    app.options("/api/find_game", (res) => {
+        cors(res);
+        res.end();
+    });
     app.post("/api/find_game", async (res) => {
         cors(res);
         readPostedJSON(
@@ -158,6 +166,10 @@ if (process.argv.includes("--api-server")) {
         );
     });
 
+    app.options("/api/update_region", (res) => {
+        cors(res);
+        res.end();
+    });
     app.post("/api/update_region", (res) => {
         cors(res);
         readPostedJSON(
