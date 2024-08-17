@@ -486,7 +486,7 @@ export class Game {
             (t) => !t.allDeadOrDisconnected,
         );
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
-        return aliveTeams.at(currentTeamIndex - 1);
+        return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
     }
 
     handleMsg(buff: ArrayBuffer | Buffer, socketData: GameSocketData): void {
