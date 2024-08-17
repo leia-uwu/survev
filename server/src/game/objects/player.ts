@@ -157,6 +157,18 @@ export class PlayerBarn {
             }
         }
 
+        if ( !this.game.allowJoin ) {
+            player.dead = true;
+            setTimeout(() => {
+                player.spectating = this.players[0];
+                this.aliveCountDirty = true;
+                this.livingPlayers.splice(
+                    this.livingPlayers.indexOf(player),
+                    1
+                );
+            }, 100)
+        }
+
         return player;
     }
 
@@ -1312,7 +1324,7 @@ export class Player extends BaseGameObject {
     spectate(spectateMsg: net.SpectateMsg): void {
         let playerToSpec: Player | undefined;
         const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        if (!this.game.isTeamMode) {
+        if (!this.game.isTeamMode || true) {
             // solos
             if (spectateMsg.specBegin) {
                 playerToSpec =

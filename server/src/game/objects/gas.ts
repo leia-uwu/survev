@@ -2,6 +2,7 @@ import { GameConfig, GasMode } from "../../../../shared/gameConfig";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import { Game } from "../game";
 import type { GameMap } from "../map";
 
 export class Gas {
@@ -115,7 +116,7 @@ export class Gas {
     doDamage = false;
 
     closeZoneNext = false;
-    constructor(readonly map: GameMap) {
+    constructor(readonly map: GameMap, readonly game: Game) {
         const mapSize = (map.width + map.height) / 2;
 
         this.radNew = this.radOld = this.currentRad = GameConfig.gas.initWidth * mapSize;
@@ -164,6 +165,7 @@ export class Gas {
 
                 if (this.radNew < GameConfig.gas.widthMin || this.closeZoneNext) {
                     this.radNew = 0;
+                    this.game.allowJoin = false;
                 }
 
                 this.posOld = v2.copy(this.posNew);
