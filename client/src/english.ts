@@ -172,6 +172,8 @@ export default {
     "index-loadout": "Loadout",
     "loadout-title-outfit": "Outfit Skin",
     "loadout-title-melee": "Melee Skin",
+    "loadout-title-primary": "Primary Weapon",
+    "loadout-title-secondary": "Secondary Weapon",
     "loadout-title-emote": "Emotes",
     "loadout-title-heal": "Heal Particles",
     "loadout-title-boost": "Boost Particles",
