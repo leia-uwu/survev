@@ -9,7 +9,7 @@ import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
 import type { Player } from "./game/objects/player";
 import { Logger } from "./utils/logger";
-import { forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
+import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
 export interface FindGameBody {
     region: string;
@@ -351,6 +351,7 @@ if (process.argv.includes("--game-server")) {
     server.init(app);
 
     app.post("/api/find_game", async (res) => {
+        cors(res);
         readPostedJSON(
             res,
             async (body: FindGameBody & { apiKey: string }) => {

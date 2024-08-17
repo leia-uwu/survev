@@ -4,7 +4,7 @@ import { Config, type ConfigType } from "./config";
 import type { FindGameBody, FindGameResponse } from "./gameServer";
 import { TeamMenu } from "./teamMenu";
 import { Logger } from "./utils/logger";
-import { forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
+import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
 class Region {
     data: ConfigType["regions"][string];
@@ -67,9 +67,11 @@ export class ApiServer {
         this.teamMenu.init(app);
 
         app.get("/api/site_info", (res) => {
+            cors(res);
             returnJson(res, this.getSiteInfo());
         });
         app.post("/api/user/profile", (res, _req) => {
+            cors(res);
             returnJson(res, this.getUserProfile());
         });
     }
@@ -134,6 +136,7 @@ if (process.argv.includes("--api-server")) {
     server.init(app);
 
     app.post("/api/find_game", async (res) => {
+        cors(res);
         readPostedJSON(
             res,
             async (body: FindGameBody) => {
@@ -156,6 +159,7 @@ if (process.argv.includes("--api-server")) {
     });
 
     app.post("/api/update_region", (res) => {
+        cors(res);
         readPostedJSON(
             res,
             (body: {
