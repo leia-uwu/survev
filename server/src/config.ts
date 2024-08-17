@@ -53,7 +53,7 @@ export const Config = {
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
-const runningOnVite = !process.argv.some((a) => a.includes("vite"));
+const runningOnVite = process.argv.toString().includes("vite");
 const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
 
 const configPath = path.join(
