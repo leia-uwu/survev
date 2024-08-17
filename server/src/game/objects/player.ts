@@ -23,7 +23,7 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import { IP_SECRET, WEBHOOK_URL } from "../../../DO_NOT_PUSH";
+// import { IP_SECRET, WEBHOOK_URL } from "../../../DO_NOT_PUSH";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
@@ -102,19 +102,19 @@ export class PlayerBarn {
             }, 1);
         }
 
-        if (process.env.NODE_ENV === "production" && socketData.ip) {
-            const encodedIP = encodeIP(socketData.ip, IP_SECRET);
-            const message = `${joinMsg.name ?? "Player"} joined the game. ${encodedIP}`;
-            fetch(WEBHOOK_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    content: message
-                })
-            });
-        }
+        // if (process.env.NODE_ENV === "production" && socketData.ip) {
+        //     const encodedIP = encodeIP(socketData.ip, IP_SECRET);
+        //     const message = `${joinMsg.name ?? "Player"} joined the game. ${encodedIP}`;
+        //     fetch(WEBHOOK_URL, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json"
+        //         },
+        //         body: JSON.stringify({
+        //             content: message
+        //         })
+        //     });
+        // }
 
         let group: Group | undefined;
         if (this.game.isTeamMode) {
