@@ -1324,7 +1324,8 @@ export class Player extends BaseGameObject {
     spectate(spectateMsg: net.SpectateMsg): void {
         let playerToSpec: Player | undefined;
         const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        if (!this.game.isTeamMode || true) {
+        const spectateSolo: boolean = true;
+        if (!this.game.isTeamMode || spectateSolo) {
             // solos
             if (spectateMsg.specBegin) {
                 playerToSpec =
