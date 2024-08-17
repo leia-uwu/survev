@@ -331,6 +331,7 @@ export class GameServer {
         try {
             this.fetchApiServer("api/update_region", {
                 playerCount: this.getPlayerCount(),
+                regionId: Config.thisRegion,
             });
         } catch (error) {
             this.logger.warn("Failed to send game data to api server, error: ", error);
