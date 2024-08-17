@@ -358,11 +358,16 @@ if (process.argv.includes("--game-server")) {
         res.end();
     });
     app.post("/api/find_game", async (res) => {
+        let aborted = false;
+        res.onAborted(() => {
+            aborted = true;
+        });
         cors(res);
         readPostedJSON(
             res,
             async (body: FindGameBody & { apiKey: string }) => {
                 try {
+                    if (aborted) return;
                     if (body.apiKey !== Config.apiKey) {
                         forbidden(res);
                         return;
@@ -370,6 +375,7 @@ if (process.argv.includes("--game-server")) {
                     returnJson(res, await server.findGame(body));
                 } catch (err) {
                     console.error("Find game error:", err);
+                    if (aborted) return;
                     returnJson(res, {
                         res: [
                             {
@@ -381,6 +387,7 @@ if (process.argv.includes("--game-server")) {
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
+                if (aborted) return;
                 returnJson(res, {
                     res: [
                         {

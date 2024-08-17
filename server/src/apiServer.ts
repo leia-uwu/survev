@@ -145,16 +145,23 @@ if (process.argv.includes("--api-server")) {
     });
     app.post("/api/find_game", async (res) => {
         cors(res);
+        let aborted = false;
+        res.onAborted(() => {
+            aborted = true;
+        });
         readPostedJSON(
             res,
             async (body: FindGameBody) => {
                 const data = await server.findGame(body);
+                if (aborted) return;
                 res.cork(() => {
+                    if (aborted) return;
                     returnJson(res, data);
                 });
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
+                if (aborted) return;
                 returnJson(res, {
                     res: [
                         {
@@ -172,6 +179,10 @@ if (process.argv.includes("--api-server")) {
     });
     app.post("/api/update_region", (res) => {
         cors(res);
+        let aborted = false;
+        res.onAborted(() => {
+            aborted = true;
+        });
         readPostedJSON(
             res,
             (body: {
@@ -179,15 +190,14 @@ if (process.argv.includes("--api-server")) {
                 regionId: string;
                 data: RegionData;
             }) => {
+                if (aborted) return;
                 if (body.apiKey !== Config.apiKey || !(body.regionId in server.regions)) {
                     forbidden(res);
                     return;
                 }
                 server.updateRegion(body.regionId, body.data);
             },
-            () => {
-                forbidden(res);
-            },
+            () => {},
         );
     });
 
