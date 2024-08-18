@@ -138,15 +138,14 @@ export class PlayerBarn {
             }
         }
 
-        if (!this.game.allowJoin && !this.game.over) {
-            player.dead = true;
-            setTimeout(() => {
-                if (this.game.over) return;
-                player.spectating = this.players[0];
-                this.aliveCountDirty = false;
-                this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
-            }, 50);
-        }
+        // if (!this.game.allowJoin && !this.game.over) {
+        //     player.dead = true;
+        //     this.aliveCountDirty = false;
+        //     this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
+        //     setTimeout(() => {
+        //         player.spectating = this.players[0];
+        //     }, 50);
+        // }
 
         return player;
     }
