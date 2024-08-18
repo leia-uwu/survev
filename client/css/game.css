@@ -1006,6 +1006,32 @@ img {
   background-image: url(/img/gui/quit.svg);
 }
 
+.btn-quit.disabled {
+  background-color: #555;
+  color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-quit.disabled::before {
+  content: attr(data-countdown);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  display: block;
+}
+
+.btn-quit.disabled .btn-text {
+  display: none;
+}
+
 #btn-game-resume {
   margin-top: 30px;
   background-size: 44px;

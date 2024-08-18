@@ -828,3 +828,54 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
         console.error("windowOnError", errStr);
     }
 };
+
+// a countdown for leaving game. there is probably a better way but this gets the job done
+const uiGameMenu = document.getElementById('ui-game-menu');
+const quitButton = document.getElementById('btn-game-quit') as HTMLAnchorElement;
+const quitButtonText = quitButton.querySelector('.btn-text') as HTMLElement;
+let countdownInterval: number | undefined;
+
+if (uiGameMenu && quitButton) {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'style') {
+        const isDisplayed = window.getComputedStyle(uiGameMenu).display === 'block';
+        if (isDisplayed) {
+          if (countdownInterval !== undefined) {
+            clearInterval(countdownInterval);
+            countdownInterval = undefined;
+          }
+          let countdown = 6;
+          quitButton.classList.add('disabled');
+          quitButton.setAttribute('data-countdown', `${countdown} seconds`);
+          quitButtonText.style.display = 'none';
+          quitButton.style.pointerEvents = 'none';
+
+          countdownInterval = setInterval(() => {
+            countdown--;
+            quitButton.setAttribute('data-countdown', countdown > 0 ? `${countdown} seconds` : '');
+            if (countdown <= 0) {
+              clearInterval(countdownInterval);
+              countdownInterval = undefined;
+              quitButton.classList.remove('disabled');
+              quitButton.removeAttribute('data-countdown');
+              quitButtonText.style.display = '';
+              quitButton.style.pointerEvents = 'auto';
+            }
+          }, 1000);
+        } else {
+          if (countdownInterval !== undefined) {
+            clearInterval(countdownInterval);
+            countdownInterval = undefined;
+            quitButton.classList.remove('disabled');
+            quitButton.removeAttribute('data-countdown');
+            quitButtonText.style.display = '';
+            quitButton.style.pointerEvents = 'auto';
+          }
+        }
+      }
+    });
+  });
+
+  observer.observe(uiGameMenu, { attributes: true });
+}
