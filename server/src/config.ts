@@ -70,6 +70,11 @@ util.mergeDeep(Config, {
             https: false,
             address: "resurviv.biz:8001",
             l10n: "index-north-america"
+        },
+        eu: {
+            https: false,
+            address: "217.160.224.171:8001",
+            l10n: "index-europe"
         }
     },
     thisRegion: "na",
