@@ -16,7 +16,6 @@ export default class DeathMatchPlugin extends GamePlugin {
             if (data.outfit === "outfitDarkGloves") {
                 data.chest = "";
                 data.helmet = "";
-                data.addPerk("windwalk");
             }
         });
 
