@@ -7,7 +7,7 @@ const mapDef = {
     desc: {
         name: "Cobalt",
         icon: "img/gui/cobalt.svg",
-        buttonCss: "btn-mode-cobalt"
+        buttonCss: "btn-mode-cobalt",
     },
     assets: {
         audio: [
@@ -15,9 +15,9 @@ const mapDef = {
             { name: "ping_unlock_01", channel: "ui" },
             { name: "ambient_lab_01", channel: "ambient" },
             { name: "log_13", channel: "sfx" },
-            { name: "log_14", channel: "sfx" }
+            { name: "log_14", channel: "sfx" },
         ],
-        atlases: ["gradient", "loadout", "shared", "cobalt"]
+        atlases: ["gradient", "loadout", "shared", "cobalt"],
     },
     biome: {
         colors: {
@@ -28,9 +28,9 @@ const mapDef = {
             grass: 5069416,
             underground: 1772803,
             playerSubmerge: 1192009,
-            playerGhillie: 4937830
+            playerGhillie: 4937830,
         },
-        particles: {}
+        particles: {},
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
@@ -40,17 +40,17 @@ const mapDef = {
                     type: "bunker_structure_09",
                     pos: v2.create(0.5, 0.5),
                     rad: 100,
-                    retryOnFailure: true
-                }
-            ]
-        }
+                    retryOnFailure: true,
+                },
+            ],
+        },
     },
     /* STRIP_FROM_PROD_CLIENT:END */
     gameMode: {
         maxPlayers: 80,
         perkMode: true,
-        perkModeRoles: ["scout", "sniper", "healer", "demo", "assault", "tank"]
-    }
+        perkModeRoles: ["scout", "sniper", "healer", "demo", "assault", "tank"],
+    },
 };
 
 export const Cobalt = util.mergeDeep({}, Main, mapDef);

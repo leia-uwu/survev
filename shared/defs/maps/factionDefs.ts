@@ -4,74 +4,80 @@ import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
 import { Main } from "./baseDefs";
 
+export enum TeamColor {
+    // NONE = 0, //can be used ambiguously with code that runs the same regardless of team color
+    Red = 1,
+    Blue = 2,
+}
+
 const mapDef = {
     mapId: 3,
     desc: {
         name: "50v50",
         icon: "img/gui/star.svg",
         buttonCss: "btn-mode-faction",
-        buttonText: "50v50"
+        buttonText: "50v50",
     },
     assets: {
         audio: [
             {
                 name: "lt_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "medic_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "marksman_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "recon_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "grenadier_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "bugler_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "last_man_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "ping_leader_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "bugle_01",
-                channel: "activePlayer"
+                channel: "activePlayer",
             },
             {
                 name: "bugle_02",
-                channel: "activePlayer"
+                channel: "activePlayer",
             },
             {
                 name: "bugle_03",
-                channel: "activePlayer"
+                channel: "activePlayer",
             },
             {
                 name: "bugle_01",
-                channel: "otherPlayers"
+                channel: "otherPlayers",
             },
             {
                 name: "bugle_02",
-                channel: "otherPlayers"
+                channel: "otherPlayers",
             },
             {
                 name: "bugle_03",
-                channel: "otherPlayers"
-            }
+                channel: "otherPlayers",
+            },
         ],
-        atlases: ["gradient", "loadout", "shared", "faction"]
+        atlases: ["gradient", "loadout", "shared", "faction"],
     },
     biome: {
         colors: {
@@ -83,13 +89,13 @@ const mapDef = {
             grass: 5136680,
             underground: 1772803,
             playerSubmerge: 1192009,
-            playerGhillie: 5005348
-        }
+            playerGhillie: 5005348,
+        },
     },
     gameMode: {
         maxPlayers: 100,
         factionMode: true,
-        factions: 2
+        factions: 2,
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
@@ -103,17 +109,17 @@ const mapDef = {
                         numPlanes: [
                             { count: 3, weight: 5 },
                             { count: 4, weight: 1 },
-                            { count: 5, weight: 0.1 }
+                            { count: 5, weight: 0.1 },
                         ],
                         airstrikeZoneRad: 60,
                         wait: 1.5,
-                        delay: 1
-                    }
+                        delay: 1,
+                    },
                 },
                 {
                     circleIdx: 2,
                     wait: 6,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 2,
@@ -123,12 +129,12 @@ const mapDef = {
                         numPlanes: [
                             { count: 3, weight: 4 },
                             { count: 4, weight: 1 },
-                            { count: 5, weight: 0.1 }
+                            { count: 5, weight: 0.1 },
                         ],
                         airstrikeZoneRad: 55,
                         wait: 1.5,
-                        delay: 1
-                    }
+                        delay: 1,
+                    },
                 },
                 {
                     circleIdx: 3,
@@ -138,17 +144,17 @@ const mapDef = {
                         numPlanes: [
                             { count: 3, weight: 3 },
                             { count: 4, weight: 1 },
-                            { count: 5, weight: 0.1 }
+                            { count: 5, weight: 0.1 },
                         ],
                         airstrikeZoneRad: 50,
                         wait: 1.5,
-                        delay: 1
-                    }
+                        delay: 1,
+                    },
                 },
                 {
                     circleIdx: 4,
                     wait: 3,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 4,
@@ -158,12 +164,12 @@ const mapDef = {
                         numPlanes: [
                             { count: 3, weight: 2 },
                             { count: 4, weight: 1 },
-                            { count: 5, weight: 0.1 }
+                            { count: 5, weight: 0.1 },
                         ],
                         airstrikeZoneRad: 45,
                         wait: 1.5,
-                        delay: 1
-                    }
+                        delay: 1,
+                    },
                 },
                 {
                     circleIdx: 5,
@@ -173,19 +179,19 @@ const mapDef = {
                         numPlanes: [
                             { count: 3, weight: 1 },
                             { count: 4, weight: 1 },
-                            { count: 5, weight: 0.1 }
+                            { count: 5, weight: 0.1 },
                         ],
                         airstrikeZoneRad: 40,
                         wait: 1.5,
-                        delay: 1
-                    }
-                }
+                        delay: 1,
+                    },
+                },
             ],
-            crates: [{ name: "airdrop_crate_03", weight: 1 }]
+            crates: [{ name: "airdrop_crate_03", weight: 1 }],
         },
         bagSizes: {},
         bleedDamage: 2,
-        bleedDamageMult: 1.25
+        bleedDamageMult: 1.25,
     },
     lootTable: {
         tier_guns: [
@@ -218,7 +224,7 @@ const mapDef = {
             { name: "qbb97", count: 1, weight: 0.01 },
             { name: "flare_gun", count: 1, weight: 0.1 },
             { name: "groza", count: 1, weight: 0.8 },
-            { name: "scout", count: 1, weight: 0.05 }
+            { name: "scout_elite", count: 1, weight: 0.05 },
         ],
         tier_toilet: [
             { name: "tier_guns", count: 1, weight: 0.1 },
@@ -227,13 +233,13 @@ const mapDef = {
             {
                 name: "tier_throwables",
                 count: 1,
-                weight: 0.05
+                weight: 0.05,
             },
             {
                 name: "tier_faction_outfits",
                 count: 1,
-                weight: 0.025
-            }
+                weight: 0.025,
+            },
         ],
         tier_container: [
             { name: "tier_guns", count: 1, weight: 0.29 },
@@ -243,26 +249,26 @@ const mapDef = {
             {
                 name: "tier_medical",
                 count: 1,
-                weight: 0.17
+                weight: 0.17,
             },
             {
                 name: "tier_throwables",
                 count: 1,
-                weight: 0.05
+                weight: 0.05,
             },
             { name: "tier_packs", count: 1, weight: 0.09 },
             {
                 name: "tier_faction_outfits",
                 count: 1,
-                weight: 0.035
-            }
+                weight: 0.035,
+            },
         ],
         tier_medical: [
             { name: "bandage", count: 5, weight: 16 },
             { name: "healthkit", count: 1, weight: 4 },
             { name: "soda", count: 1, weight: 15 },
             { name: "painkiller", count: 1, weight: 5 },
-            { name: "frag", count: 1, weight: 2 }
+            { name: "frag", count: 1, weight: 2 },
         ],
         tier_airdrop_uncommon: [
             { name: "mk12", count: 1, weight: 2.5 },
@@ -275,14 +281,14 @@ const mapDef = {
             { name: "sv98", count: 1, weight: 0.5 },
             { name: "qbb97", count: 1, weight: 1.5 },
             { name: "m9", count: 1, weight: 0.01 },
-            { name: "scout", count: 1, weight: 1.5 }
+            { name: "scout_elite", count: 1, weight: 1.5 },
         ],
         tier_ghillie: [
             {
                 name: "outfitDarkGhillie",
                 count: 1,
-                weight: 0.5
-            }
+                weight: 0.5,
+            },
         ],
         tier_airdrop_outfits: [
             { name: "", count: 1, weight: 25 },
@@ -290,8 +296,8 @@ const mapDef = {
             {
                 name: "outfitDarkGhillie",
                 count: 1,
-                weight: 0.5
-            }
+                weight: 0.5,
+            },
         ],
         tier_ammo_crate: [
             { name: "9mm", count: 60, weight: 3 },
@@ -299,7 +305,7 @@ const mapDef = {
             { name: "556mm", count: 60, weight: 3 },
             { name: "12gauge", count: 10, weight: 3 },
             { name: "50AE", count: 21, weight: 1 },
-            { name: "308sub", count: 5, weight: 1 }
+            { name: "308sub", count: 5, weight: 1 },
         ],
         tier_mansion_floor: [{ name: "outfitCamo", count: 1, weight: 1 }],
         tier_conch: [{ name: "outfitKeyLime", count: 1, weight: 1 }],
@@ -307,9 +313,9 @@ const mapDef = {
             {
                 name: "outfitCarbonFiber",
                 count: 1,
-                weight: 1
-            }
-        ]
+                weight: 1,
+            },
+        ],
     },
     mapGen: {
         map: {
@@ -323,27 +329,27 @@ const mapDef = {
                 weights: [
                     { weight: 1, widths: [20] },
                     { weight: 1, widths: [20, 4] },
-                    { weight: 1, widths: [20, 8, 4] }
+                    { weight: 1, widths: [20, 8, 4] },
                 ],
-                smoothness: 0.15
-            }
+                smoothness: 0.15,
+            },
         },
         places: [
             { name: "Riverside", pos: v2.create(0.51, 0.5) },
             {
                 name: "Pineapple",
-                pos: v2.create(0.84, 0.18)
+                pos: v2.create(0.84, 0.18),
             },
-            { name: "Tarkhany", pos: v2.create(0.21, 0.79) }
+            { name: "Tarkhany", pos: v2.create(0.21, 0.79) },
         ],
         bridgeTypes: {
             medium: "bridge_md_structure_01",
             large: "bridge_lg_structure_01",
-            xlarge: "bridge_xlg_structure_01"
+            xlarge: "bridge_xlg_structure_01",
         },
         customSpawnRules: {
             locationSpawns: [],
-            placeSpawns: []
+            placeSpawns: [],
         },
         densitySpawns: [
             {
@@ -364,8 +370,8 @@ const mapDef = {
                 shack_01: 7,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
-            }
+                loot_tier_beach: 4,
+            },
         ],
         fixedSpawns: [
             {
@@ -392,8 +398,8 @@ const mapDef = {
                 chest_03f: 1,
                 mil_crate_02: { odds: 1 },
                 tree_02: 3,
-                river_town_01: 1
-            }
+                river_town_01: 1,
+            },
         ],
         randomSpawns: [],
         spawnReplacements: [
@@ -402,17 +408,17 @@ const mapDef = {
                 crate_02: "crate_01",
                 stone_01: "stone_01f",
                 stone_03: "stone_03f",
-                tree_01: "tree_08f"
-            }
+                tree_01: "tree_08f",
+            },
         ],
         importantSpawns: [
             "river_town_01",
             "police_01",
             "bank_01",
             "mansion_structure_01",
-            "warehouse_complex_01"
-        ]
-    }
+            "warehouse_complex_01",
+        ],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

@@ -32,7 +32,7 @@ export const MapDefs = {
     woods_summer: WoodsSummer,
     savannah: Savannah,
     cobalt: Cobalt,
-    turkey: Turkey
+    turkey: Turkey,
 } satisfies Record<string, MapDef>;
 
 export type Atlas = "gradient" | "loadout" | "shared" | "main";

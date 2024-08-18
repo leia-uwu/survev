@@ -129,14 +129,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.49 },
             tint: 1184274,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.375 },
         sound: {
@@ -144,8 +144,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "mp5_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "mp5_switch_01"
-        }
+            deploy: "mp5_switch_01",
+        },
     },
     mac10: {
         name: "MAC-10",
@@ -177,14 +177,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.44 },
             tint: 3684408,
             leftHandOffset: { x: 1.4, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.35 },
         sound: {
@@ -192,8 +192,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "mac10_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "mac10_switch_01"
-        }
+            deploy: "mac10_switch_01",
+        },
     },
     ump9: {
         name: "UMP9",
@@ -227,14 +227,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.515 },
             tint: 1184274,
             leftHandOffset: { x: 5.6, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.4 },
         sound: {
@@ -242,8 +242,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "ump9_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "ump9_switch_01"
-        }
+            deploy: "ump9_switch_01",
+        },
     },
     vector: {
         name: "Vector",
@@ -275,14 +275,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 9009504,
             leftHandOffset: { x: 7, y: 0 },
-            recoil: 0.89
+            recoil: 0.89,
         },
         particle: { shellScale: 1, shellOffset: 0.4 },
         sound: {
@@ -290,8 +290,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "vector_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "vector_switch_01"
-        }
+            deploy: "vector_switch_01",
+        },
     },
     vector45: {
         name: "Vector",
@@ -322,14 +322,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 9009504,
             leftHandOffset: { x: 7, y: 0 },
-            recoil: 0.89
+            recoil: 0.89,
         },
         particle: { shellScale: 1.2, shellOffset: 0.4 },
         sound: {
@@ -337,8 +337,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "vector_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "vector_switch_01"
-        }
+            deploy: "vector_switch_01",
+        },
     },
     scorpion: {
         name: "CZ-3A1",
@@ -370,14 +370,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-scorpion-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.375 },
         sound: {
@@ -385,8 +385,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "scorpion_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "scorpion_switch_01"
-        }
+            deploy: "scorpion_switch_01",
+        },
     },
     vss: {
         name: "VSS",
@@ -418,14 +418,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-vss-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 9, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.375 },
         sound: {
@@ -433,8 +433,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "vss_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "vss_switch_01"
-        }
+            deploy: "vss_switch_01",
+        },
     },
     famas: {
         name: "FAMAS",
@@ -468,7 +468,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-famas-01.img",
@@ -476,7 +476,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             gunOffset: { x: -8, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.425 },
         sound: {
@@ -484,8 +484,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "famas_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "famas_switch_01"
-        }
+            deploy: "famas_switch_01",
+        },
     },
     hk416: {
         name: "M416",
@@ -516,14 +516,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.52 },
             tint: 14402714,
             leftHandOffset: { x: 4.2, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.4 },
         sound: {
@@ -531,8 +531,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "hk416_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "hk416_switch_01"
-        }
+            deploy: "hk416_switch_01",
+        },
     },
     m4a1: {
         name: "M4A1-S",
@@ -563,14 +563,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-m4a1-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 7.9, y: 0 },
-            recoil: 1.3
+            recoil: 1.3,
         },
         particle: { shellScale: 1, shellOffset: 0.4 },
         sound: {
@@ -579,8 +579,8 @@ export const GunDefs: Record<string, GunDef> = {
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
             deploy: "m4a1_switch_01",
-            fallOff: 3
-        }
+            fallOff: 3,
+        },
     },
     mk12: {
         name: "Mk 12 SPR",
@@ -611,14 +611,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.485 },
             tint: 10984586,
             leftHandOffset: { x: 4.2, y: 0 },
-            recoil: 1.66
+            recoil: 1.66,
         },
         particle: { shellScale: 1.3, shellOffset: 0.55 },
         sound: {
@@ -626,8 +626,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "mk12_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "mk12_switch_01"
-        }
+            deploy: "mk12_switch_01",
+        },
     },
     l86: {
         name: "L86A2",
@@ -658,14 +658,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.46 },
             tint: 14469287,
             leftHandOffset: { x: -3, y: 0 },
-            recoil: 1.66
+            recoil: 1.66,
         },
         particle: { shellScale: 1.3, shellOffset: 0.55 },
         sound: {
@@ -673,8 +673,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "l86_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "l86_switch_01"
-        }
+            deploy: "l86_switch_01",
+        },
     },
     m249: {
         name: "M249",
@@ -705,7 +705,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-m249-top-01.img",
@@ -715,8 +715,8 @@ export const GunDefs: Record<string, GunDef> = {
             recoil: 1.33,
             magImg: {
                 sprite: "gun-m249-bot-01.img",
-                pos: { x: 0, y: -20.5 }
-            }
+                pos: { x: 0, y: -20.5 },
+            },
         },
         particle: { shellScale: 1, shellOffset: 0.5875 },
         sound: {
@@ -724,8 +724,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m249_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "m249_switch_01"
-        }
+            deploy: "m249_switch_01",
+        },
     },
     qbb97: {
         name: "QBB-97",
@@ -755,7 +755,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
@@ -765,8 +765,8 @@ export const GunDefs: Record<string, GunDef> = {
             recoil: 1.33,
             magImg: {
                 sprite: "gun-qbb97-bot-01.img",
-                pos: { x: -1.5, y: -14.25 }
-            }
+                pos: { x: -1.5, y: -14.25 },
+            },
         },
         particle: { shellScale: 1, shellOffset: 0.5875 },
         sound: {
@@ -774,8 +774,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "qbb97_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "qbb97_switch_01"
-        }
+            deploy: "qbb97_switch_01",
+        },
     },
     scout_elite: {
         name: "Scout Elite",
@@ -808,14 +808,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.52 },
             tint: 3290683,
             leftHandOffset: { x: 2.8, y: 0 },
-            recoil: 2.33
+            recoil: 2.33,
         },
         particle: { shellScale: 1.6, shellOffset: 0.6 },
         sound: {
@@ -825,8 +825,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "scout_pull_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "scout_cycle_01"
-        }
+            deploy: "scout_cycle_01",
+        },
     },
     ak47: {
         name: "AK-47",
@@ -857,14 +857,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.435 },
             tint: 6433298,
             leftHandOffset: { x: 2.8, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -872,8 +872,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "ak47_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "ak47_switch_01"
-        }
+            deploy: "ak47_switch_01",
+        },
     },
     scar: {
         name: "SCAR-H",
@@ -904,14 +904,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.435 },
             tint: 10189640,
             leftHandOffset: { x: 2.8, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -919,8 +919,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "scar_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "scar_switch_01"
-        }
+            deploy: "scar_switch_01",
+        },
     },
     scarssr: {
         name: "SCAR-SSR",
@@ -951,14 +951,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-scarssr-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 6, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -966,8 +966,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "scar_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "scar_switch_01"
-        }
+            deploy: "scar_switch_01",
+        },
     },
     an94: {
         name: "AN-94",
@@ -1001,14 +1001,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.46 },
             tint: 2960685,
             leftHandOffset: { x: 2.85, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1016,8 +1016,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "an94_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "an94_switch_01"
-        }
+            deploy: "an94_switch_01",
+        },
     },
     groza: {
         name: "Groza",
@@ -1049,7 +1049,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-groza-01.img",
@@ -1057,7 +1057,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             gunOffset: { x: -8, y: 0 },
-            recoil: 1.4
+            recoil: 1.4,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1065,8 +1065,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "groza_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "groza_switch_01"
-        }
+            deploy: "groza_switch_01",
+        },
     },
     grozas: {
         name: "Groza-S",
@@ -1098,7 +1098,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-grozas-01.img",
@@ -1106,7 +1106,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
             gunOffset: { x: -8, y: 0 },
-            recoil: 1.4
+            recoil: 1.4,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1114,8 +1114,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "groza_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "groza_switch_01"
-        }
+            deploy: "groza_switch_01",
+        },
     },
     dp28: {
         name: "DP-28",
@@ -1146,7 +1146,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
@@ -1157,8 +1157,8 @@ export const GunDefs: Record<string, GunDef> = {
             magImg: {
                 sprite: "gun-dp28-top-01.img",
                 pos: { x: 0, y: -22.5 },
-                top: true
-            }
+                top: true,
+            },
         },
         particle: { shellScale: 1, shellOffset: 0.6 },
         sound: {
@@ -1166,8 +1166,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "dp28_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "dp28_switch_01"
-        }
+            deploy: "dp28_switch_01",
+        },
     },
     bar: {
         name: "BAR M1918",
@@ -1198,14 +1198,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.52 },
             tint: 5065810,
             leftHandOffset: { x: 6.8, y: 0 },
-            recoil: 1.4
+            recoil: 1.4,
         },
         particle: { shellScale: 1, shellOffset: 0.6 },
         sound: {
@@ -1213,8 +1213,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "bar_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "bar_switch_01"
-        }
+            deploy: "bar_switch_01",
+        },
     },
     pkp: {
         name: "PKP Pecheneg",
@@ -1245,7 +1245,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-pkp-top-01.img",
@@ -1255,21 +1255,21 @@ export const GunDefs: Record<string, GunDef> = {
             recoil: 1.33,
             magImg: {
                 sprite: "gun-pkp-bot-01.img",
-                pos: { x: 0, y: -17.5 }
-            }
+                pos: { x: 0, y: -17.5 },
+            },
         },
         particle: {
             shellScale: 1,
             shellOffset: 0.5875,
-            shellReverse: true
+            shellReverse: true,
         },
         sound: {
             shoot: "pkp_01",
             reload: "pkp_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "pkp_switch_01"
-        }
+            deploy: "pkp_switch_01",
+        },
     },
     model94: {
         name: "Model 94",
@@ -1301,14 +1301,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.5175 },
             tint: 10510624,
             leftHandOffset: { x: 3.2, y: 0 },
-            recoil: 2.33
+            recoil: 2.33,
         },
         particle: { shellScale: 1.4, shellOffset: 0.6 },
         sound: {
@@ -1318,8 +1318,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "model94_cycle_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "model94_cycle_01"
-        }
+            deploy: "model94_cycle_01",
+        },
     },
     mkg45: {
         name: "Mk45G",
@@ -1350,14 +1350,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.47 },
             tint: 3487029,
             leftHandOffset: { x: 4.2, y: 0 },
-            recoil: 1.66
+            recoil: 1.66,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1365,8 +1365,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "mkg45_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "mkg45_switch_01"
-        }
+            deploy: "mkg45_switch_01",
+        },
     },
     blr: {
         name: "BLR 81",
@@ -1398,14 +1398,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.53 },
             tint: 4663046,
             leftHandOffset: { x: 6.4, y: 0 },
-            recoil: 2.75
+            recoil: 2.75,
         },
         particle: { shellScale: 1.4, shellOffset: 0.6 },
         sound: {
@@ -1415,8 +1415,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "blr_cycle_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "blr_cycle_01"
-        }
+            deploy: "blr_cycle_01",
+        },
     },
     mosin: {
         name: "Mosin-Nagant",
@@ -1452,14 +1452,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.52 },
             tint: 3348992,
             leftHandOffset: { x: 2.8, y: 0 },
-            recoil: 2.33
+            recoil: 2.33,
         },
         particle: { shellScale: 1.6, shellOffset: 0.6 },
         sound: {
@@ -1470,8 +1470,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "mosin_pull_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "mosin_cycle_01"
-        }
+            deploy: "mosin_cycle_01",
+        },
     },
     sv98: {
         name: "SV-98",
@@ -1504,14 +1504,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.4925 },
             tint: 6654279,
             leftHandOffset: { x: 2.8, y: 0 },
-            recoil: 2.33
+            recoil: 2.33,
         },
         particle: { shellScale: 1.6, shellOffset: 0.6 },
         sound: {
@@ -1521,8 +1521,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "sv98_pull_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "sv98_cycle_01"
-        }
+            deploy: "sv98_cycle_01",
+        },
     },
     awc: {
         name: "AWM-S",
@@ -1555,14 +1555,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-awc-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 11, y: 0 },
-            recoil: 2.66
+            recoil: 2.66,
         },
         particle: { shellScale: 1.5, shellOffset: 0.6 },
         sound: {
@@ -1573,8 +1573,8 @@ export const GunDefs: Record<string, GunDef> = {
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
             deploy: "awc_cycle_01",
-            fallOff: 3
-        }
+            fallOff: 3,
+        },
     },
     m39: {
         name: "M39 EMR",
@@ -1605,14 +1605,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.4925 },
             tint: 3355443,
             leftHandOffset: { x: 2.8, y: 0 },
-            recoil: 1.66
+            recoil: 1.66,
         },
         particle: { shellScale: 1.3, shellOffset: 0.575 },
         sound: {
@@ -1620,8 +1620,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m39_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "m39_switch_01"
-        }
+            deploy: "m39_switch_01",
+        },
     },
     svd: {
         name: "SVD-63",
@@ -1652,14 +1652,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.56 },
             tint: 1842204,
             leftHandOffset: { x: 8, y: 0 },
-            recoil: 2
+            recoil: 2,
         },
         particle: { shellScale: 1.3, shellOffset: 0.575 },
         sound: {
@@ -1667,8 +1667,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "svd_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "svd_switch_01"
-        }
+            deploy: "svd_switch_01",
+        },
     },
     garand: {
         name: "M1 Garand",
@@ -1699,14 +1699,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-garand-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
-            recoil: 1.66
+            recoil: 1.66,
         },
         particle: { shellScale: 1.3, shellOffset: 0.575 },
         sound: {
@@ -1715,8 +1715,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "garand_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "garand_switch_01"
-        }
+            deploy: "garand_switch_01",
+        },
     },
     m870: {
         name: "M870",
@@ -1749,7 +1749,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         speed: { equip: 0, attack: 0 },
         worldImg: {
@@ -1757,7 +1757,7 @@ export const GunDefs: Record<string, GunDef> = {
             scale: { x: 0.5, y: 0.435 },
             tint: 3348992,
             leftHandOffset: { x: 7, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1767,8 +1767,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "m870_pull_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m870_cycle_01"
-        }
+            deploy: "m870_cycle_01",
+        },
     },
     m1100: {
         name: "M1100",
@@ -1799,7 +1799,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         speed: { equip: 0, attack: 0 },
         worldImg: {
@@ -1807,7 +1807,7 @@ export const GunDefs: Record<string, GunDef> = {
             scale: { x: 0.5, y: 0.435 },
             tint: 3032110,
             leftHandOffset: { x: 7, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1815,8 +1815,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m1100_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m1100_deploy_01"
-        }
+            deploy: "m1100_deploy_01",
+        },
     },
     mp220: {
         name: "MP220",
@@ -1848,14 +1848,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-mp220-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.35 },
         sound: {
@@ -1863,8 +1863,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "mp220_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "mp220_deploy_01"
-        }
+            deploy: "mp220_deploy_01",
+        },
     },
     saiga: {
         name: "Saiga-12",
@@ -1896,14 +1896,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-saiga-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1911,8 +1911,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "saiga_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "saiga_switch_01"
-        }
+            deploy: "saiga_switch_01",
+        },
     },
     spas12: {
         name: "SPAS-12",
@@ -1946,14 +1946,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.4 },
             tint: 2966097,
             leftHandOffset: { x: 4.9, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -1963,8 +1963,8 @@ export const GunDefs: Record<string, GunDef> = {
             pull: "spas12_pull_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "spas12_cycle_01"
-        }
+            deploy: "spas12_cycle_01",
+        },
     },
     m1014: {
         name: "M1014",
@@ -1996,14 +1996,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-long-01.img",
             scale: { x: 0.5, y: 0.44 },
             tint: 5656632,
             leftHandOffset: { x: 4.8, y: 0 },
-            recoil: 1.33
+            recoil: 1.33,
         },
         particle: { shellScale: 1, shellOffset: 0.45 },
         sound: {
@@ -2011,8 +2011,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m1014_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m1014_deploy_01"
-        }
+            deploy: "m1014_deploy_01",
+        },
     },
     usas: {
         name: "USAS-12",
@@ -2046,14 +2046,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-usas-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 16, y: 0 },
-            recoil: 1.5
+            recoil: 1.5,
         },
         particle: { shellScale: 1, shellOffset: 0.35 },
         sound: {
@@ -2061,8 +2061,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "usas_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_02",
-            deploy: "usas_switch_01"
-        }
+            deploy: "usas_switch_01",
+        },
     },
     m9: {
         name: "M9",
@@ -2096,14 +2096,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.505 },
             tint: 1973790,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2111,8 +2111,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m9_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m9_switch_01"
-        }
+            deploy: "m9_switch_01",
+        },
     },
     m9_dual: {
         name: "Dual M9",
@@ -2147,14 +2147,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.505 },
             tint: 1973790,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2162,8 +2162,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m9_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m9_switch_01"
-        }
+            deploy: "m9_switch_01",
+        },
     },
     m9_cursed: {
         name: "M9 Cursed",
@@ -2198,14 +2198,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.505 },
             tint: 1973790,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2213,8 +2213,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m9_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m9_switch_01"
-        }
+            deploy: "m9_switch_01",
+        },
     },
     m93r: {
         name: "M93R",
@@ -2250,14 +2250,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.51 },
             tint: 2766875,
             leftHandOffset: { x: 0.8, y: 0 },
-            recoil: 0.5
+            recoil: 0.5,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2265,8 +2265,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m93r_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m93r_switch_01"
-        }
+            deploy: "m93r_switch_01",
+        },
     },
     m93r_dual: {
         name: "Dual M93R",
@@ -2303,14 +2303,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.51 },
             tint: 2766875,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2318,8 +2318,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m93r_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m93r_switch_01"
-        }
+            deploy: "m93r_switch_01",
+        },
     },
     glock: {
         name: "G18C",
@@ -2353,14 +2353,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.49 },
             tint: 1973790,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2368,8 +2368,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "glock_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "glock_switch_01"
-        }
+            deploy: "glock_switch_01",
+        },
     },
     glock_dual: {
         name: "Dual G18C",
@@ -2404,14 +2404,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.49 },
             tint: 1973790,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2419,8 +2419,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "glock_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "glock_switch_01"
-        }
+            deploy: "glock_switch_01",
+        },
     },
     p30l: {
         name: "P30L",
@@ -2454,14 +2454,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-p30l-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2469,8 +2469,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "p30l_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "p30l_switch_01"
-        }
+            deploy: "p30l_switch_01",
+        },
     },
     p30l_dual: {
         name: "Dual P30L",
@@ -2505,14 +2505,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-p30l-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.25 },
         sound: {
@@ -2520,8 +2520,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "p30l_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "p30l_switch_01"
-        }
+            deploy: "p30l_switch_01",
+        },
     },
     ot38: {
         name: "OT-38",
@@ -2554,14 +2554,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.4625 },
             tint: 7368816,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.225 },
         sound: {
@@ -2569,8 +2569,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "ot38_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "ot38_switch_01"
-        }
+            deploy: "ot38_switch_01",
+        },
     },
     ot38_dual: {
         name: "Dual OT-38",
@@ -2604,14 +2604,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.4625 },
             tint: 7368816,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.225 },
         sound: {
@@ -2619,8 +2619,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "ot38_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "ot38_switch_01"
-        }
+            deploy: "ot38_switch_01",
+        },
     },
     ots38: {
         name: "OTs-38",
@@ -2653,14 +2653,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-ots38-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.225 },
         sound: {
@@ -2668,8 +2668,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "ot38_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "ot38_switch_01"
-        }
+            deploy: "ot38_switch_01",
+        },
     },
     ots38_dual: {
         name: "Dual OTs-38",
@@ -2703,14 +2703,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-ots38-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.225 },
         sound: {
@@ -2718,8 +2718,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "ot38_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "ot38_switch_01"
-        }
+            deploy: "ot38_switch_01",
+        },
     },
     colt45: {
         name: "Peacemaker",
@@ -2752,14 +2752,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.52 },
             tint: 12895428,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1.2, shellOffset: 0.225 },
         sound: {
@@ -2767,8 +2767,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "colt45_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "colt45_switch_01"
-        }
+            deploy: "colt45_switch_01",
+        },
     },
     colt45_dual: {
         name: "Dual Peacemaker",
@@ -2802,14 +2802,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.52 },
             tint: 12895428,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1.2, shellOffset: 0.225 },
         sound: {
@@ -2817,8 +2817,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "colt45_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "colt45_switch_01"
-        }
+            deploy: "colt45_switch_01",
+        },
     },
     m1911: {
         name: "M1911",
@@ -2851,14 +2851,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 9605778,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1.2, shellOffset: 0.25 },
         sound: {
@@ -2866,8 +2866,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m1911_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m1911_switch_01"
-        }
+            deploy: "m1911_switch_01",
+        },
     },
     m1911_dual: {
         name: "Dual M1911",
@@ -2901,14 +2901,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 9605778,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1.2, shellOffset: 0.25 },
         sound: {
@@ -2916,8 +2916,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m1911_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m1911_switch_01"
-        }
+            deploy: "m1911_switch_01",
+        },
     },
     m1a1: {
         name: "M1A1",
@@ -2948,14 +2948,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-med-01.img",
             scale: { x: 0.5, y: 0.53 },
             tint: 3674112,
             leftHandOffset: { x: 5.8, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1.2, shellOffset: 0.375 },
         sound: {
@@ -2963,8 +2963,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "m1a1_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "m1a1_switch_01"
-        }
+            deploy: "m1a1_switch_01",
+        },
     },
     deagle: {
         name: "DEagle 50",
@@ -2997,14 +2997,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-deagle-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1.4, shellOffset: 0.265 },
         sound: {
@@ -3012,8 +3012,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "deagle_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "deagle_switch_01"
-        }
+            deploy: "deagle_switch_01",
+        },
     },
     deagle_dual: {
         name: "Dual DEagle 50",
@@ -3047,14 +3047,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-deagle-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.265 },
         sound: {
@@ -3062,8 +3062,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "deagle_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "deagle_switch_01"
-        }
+            deploy: "deagle_switch_01",
+        },
     },
     flare_gun: {
         name: "Flare Gun",
@@ -3099,14 +3099,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.4625 },
             tint: 16733184,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.225 },
         sound: {
@@ -3114,8 +3114,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "flare_gun_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "gun_switch_01"
-        }
+            deploy: "gun_switch_01",
+        },
     },
     flare_gun_dual: {
         name: "Dual Flare Gun",
@@ -3152,14 +3152,14 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-short-01.img",
             scale: { x: 0.5, y: 0.4625 },
             tint: 16733184,
             leftHandOffset: { x: 0, y: 0 },
-            recoil: 1
+            recoil: 1,
         },
         particle: { shellScale: 1, shellOffset: 0.225 },
         sound: {
@@ -3167,8 +3167,8 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "flare_gun_reload_02",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "gun_switch_01"
-        }
+            deploy: "gun_switch_01",
+        },
     },
     potato_cannon: {
         name: "Potato Cannon",
@@ -3205,7 +3205,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-potato-cannon-01.img",
@@ -3214,20 +3214,20 @@ export const GunDefs: Record<string, GunDef> = {
             leftHandOffset: { x: 7, y: 2 },
             gunOffset: { x: -10, y: -4 },
             recoil: 8,
-            handsBelow: true
+            handsBelow: true,
         },
         particle: {
             shellScale: 1,
             shellOffset: -1,
-            shellOffsetY: 1
+            shellOffsetY: 1,
         },
         sound: {
             shoot: "potato_cannon_01",
             reload: "potato_cannon_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "potato_cannon_switch_01"
-        }
+            deploy: "potato_cannon_switch_01",
+        },
     },
     potato_smg: {
         name: "Spud Gun",
@@ -3262,7 +3262,7 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-potato-smg-01.img",
@@ -3272,22 +3272,22 @@ export const GunDefs: Record<string, GunDef> = {
             magImg: {
                 sprite: "gun-potato-smg-top-01.img",
                 pos: { x: 0, y: -15 },
-                top: true
-            }
+                top: true,
+            },
         },
         particle: {
             shellScale: 1,
             shellOffset: 0.1,
             shellReverse: true,
-            shellOffsetY: -1.1
+            shellOffsetY: -1.1,
         },
         sound: {
             shoot: "potato_smg_01",
             reload: "potato_smg_reload_01",
             pickup: "gun_pickup_01",
             empty: "empty_fire_01",
-            deploy: "potato_smg_switch_01"
-        }
+            deploy: "potato_smg_switch_01",
+        },
     },
     bugle: {
         name: "Bugle",
@@ -3323,19 +3323,19 @@ export const GunDefs: Record<string, GunDef> = {
             tint: 65280,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
-            scale: 0.3
+            scale: 0.3,
         },
         worldImg: {
             sprite: "gun-bugle-01.img",
             scale: { x: 0.5, y: 0.5 },
             tint: 0xffffff,
             leftHandOffset: { x: 12, y: 0 },
-            recoil: 4
+            recoil: 4,
         },
         particle: {
             shellScale: 4,
             shellOffset: 2,
-            shellForward: 1
+            shellForward: 1,
         },
         sound: {
             shoot: "bugle_01",
@@ -3344,7 +3344,7 @@ export const GunDefs: Record<string, GunDef> = {
             reload: "",
             pickup: "stow_weapon_01",
             empty: "empty_fire_01",
-            deploy: "stow_weapon_01"
-        }
-    }
+            deploy: "stow_weapon_01",
+        },
+    },
 };

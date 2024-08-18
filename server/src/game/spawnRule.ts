@@ -19,7 +19,7 @@ export const SpawnRules = {
         }
         return {
             x: util.random(inset, width - inset),
-            y: util.random(inset, height - inset)
+            y: util.random(inset, height - inset),
         };
     },
     radius(center: Vec2, radius: number) {
@@ -39,7 +39,7 @@ export const SpawnRules = {
                 a.y += b.y;
                 return a;
             },
-            v2.create(0, 0)
+            v2.create(0, 0),
         );
 
         const mean = v2.div(pointsSum, points.length);
@@ -56,5 +56,5 @@ export const SpawnRules = {
 
         pos = v2.add(pos, center);
         return pos;
-    }
+    },
 };

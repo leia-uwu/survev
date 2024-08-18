@@ -8,7 +8,7 @@ const mapDef = {
             { name: "club_music_02", channel: "ambient" },
             {
                 name: "ambient_steam_01",
-                channel: "ambient"
+                channel: "ambient",
             },
             { name: "cluck_01", channel: "sfx" },
             { name: "cluck_02", channel: "sfx" },
@@ -17,10 +17,10 @@ const mapDef = {
             { name: "xp_pickup_02", channel: "ui" },
             { name: "xp_drop_01", channel: "sfx" },
             { name: "xp_drop_02", channel: "sfx" },
-            { name: "pumpkin_break_01", channel: "sfx" }
-        ]
+            { name: "pumpkin_break_01", channel: "sfx" },
+        ],
     },
-    gameMode: { turkeyMode: 1 }
+    gameMode: { turkeyMode: 1 },
 };
 
 export const Turkey = util.mergeDeep({}, Main, mapDef);

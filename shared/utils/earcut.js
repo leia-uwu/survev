@@ -386,7 +386,7 @@ function findHoleBridge(hole, outerNode) {
                 hy < my ? qx : hx,
                 hy,
                 p.x,
-                p.y
+                p.y,
             )
         ) {
             tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
@@ -688,7 +688,7 @@ earcut.deviation = function (data, holeIndices, dim, triangles) {
         const c = triangles[i + 2] * dim;
         trianglesArea += Math.abs(
             (data[a] - data[c]) * (data[b + 1] - data[a + 1]) -
-                (data[a] - data[b]) * (data[c + 1] - data[a + 1])
+                (data[a] - data[b]) * (data[c + 1] - data[a + 1]),
         );
     }
 

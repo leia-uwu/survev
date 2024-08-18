@@ -18,14 +18,14 @@ export default class Camera {
     pointToScreen(point: Vec2) {
         return {
             x: this.screenWidth * 0.5 + (point.x - this.pos.x) * this.z(),
-            y: this.screenHeight * 0.5 - (point.y - this.pos.y) * this.z()
+            y: this.screenHeight * 0.5 - (point.y - this.pos.y) * this.z(),
         };
     }
 
     screenToPoint(screen: Vec2) {
         return {
             x: this.pos.x + (screen.x - this.screenWidth * 0.5) / this.z(),
-            y: this.pos.y + (this.screenHeight * 0.5 - screen.y) / this.z()
+            y: this.pos.y + (this.screenHeight * 0.5 - screen.y) / this.z(),
         };
     }
 

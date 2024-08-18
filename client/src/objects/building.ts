@@ -152,7 +152,7 @@ export class Building implements AbstractObject {
         sprite.anchor.set(0.5, 0.5);
         this.sprites.push({
             active: true,
-            sprite
+            sprite,
         });
         return sprite;
     }
@@ -161,7 +161,7 @@ export class Building implements AbstractObject {
         data: ObjectData<ObjectType.Building>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         if (fullUpdate) {
             this.type = data.type;
@@ -221,7 +221,7 @@ export class Building implements AbstractObject {
                 mapHelpers.getBoundingCollider(this.type),
                 this.pos,
                 this.rot,
-                this.scale
+                this.scale,
             );
 
             this.zIdx = def.zIdx || 0;
@@ -233,7 +233,7 @@ export class Building implements AbstractObject {
                 const surface = {
                     type: surfaceDef.type,
                     data: surfaceDef.data || {},
-                    colliders: [] as this["surfaces"][number]["colliders"]
+                    colliders: [] as this["surfaces"][number]["colliders"],
                 };
                 for (let j = 0; j < surfaceDef.collision.length; j++) {
                     surface.colliders.push(
@@ -241,8 +241,8 @@ export class Building implements AbstractObject {
                             surfaceDef.collision[j],
                             this.pos,
                             this.rot,
-                            this.scale
-                        )
+                            this.scale,
+                        ),
                     );
                 }
                 this.surfaces.push(surface);
@@ -254,16 +254,16 @@ export class Building implements AbstractObject {
                     dist: 5.5,
                     width: 2.75,
                     linger: 0,
-                    fadeRate: 12
+                    fadeRate: 12,
                 },
-                def.ceiling.vision
+                def.ceiling.vision,
             );
 
             this.ceiling = {
                 zoomRegions: [],
                 vision,
                 visionTicker: 0,
-                fadeAlpha: 1
+                fadeAlpha: 1,
             };
 
             for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
@@ -274,7 +274,7 @@ export class Building implements AbstractObject {
                               region.zoomIn,
                               this.pos,
                               this.rot,
-                              this.scale
+                              this.scale,
                           )
                         : null,
                     zoomOut: region.zoomOut
@@ -282,9 +282,9 @@ export class Building implements AbstractObject {
                               region.zoomOut,
                               this.pos,
                               this.rot,
-                              this.scale
+                              this.scale,
                           )
-                        : null
+                        : null,
                 });
             }
 
@@ -295,7 +295,7 @@ export class Building implements AbstractObject {
                     sprite: createSpriteFromDef(def.floor.imgs[i]),
                     isCeiling: false,
                     zOrd: this.zIdx,
-                    zIdx: this.__id * 100 + i
+                    zIdx: this.__id * 100 + i,
                 });
             }
 
@@ -306,7 +306,7 @@ export class Building implements AbstractObject {
                     isCeiling: true,
                     removeOnDamaged: !!imgDef.removeOnDamaged,
                     zOrd: 750 - this.zIdx,
-                    zIdx: this.__id * 100 + i
+                    zIdx: this.__id * 100 + i,
                 });
             }
 
@@ -344,7 +344,7 @@ export class Building implements AbstractObject {
                     dir,
                     scale,
                     layer: defEmitter.layer,
-                    parent
+                    parent,
                 });
                 this.particleEmitters.push(emitter);
             }
@@ -361,7 +361,7 @@ export class Building implements AbstractObject {
                     pos,
                     range: defSound.range,
                     falloff: defSound.falloff,
-                    volume: defSound.volume
+                    volume: defSound.volume,
                 });
             }
         }
@@ -375,7 +375,7 @@ export class Building implements AbstractObject {
         _ambience: unknown,
         activePlayer: Player,
         renderer: Renderer,
-        camera: Camera
+        camera: Camera,
     ) {
         // Puzzle effects
         if (this.hasPuzzle) {
@@ -405,7 +405,7 @@ export class Building implements AbstractObject {
                     channel: "sfx",
                     soundPos: nearestObj.pos,
                     layer: nearestObj.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
             }
 
@@ -418,7 +418,7 @@ export class Building implements AbstractObject {
                         channel: "sfx",
                         soundPos: this.pos,
                         layer: this.layer,
-                        filter: "muffled"
+                        filter: "muffled",
                     });
                 }
             }
@@ -468,7 +468,7 @@ export class Building implements AbstractObject {
                     0.5,
                     vision.width! * 2,
                     vision.dist!,
-                    5
+                    5,
                 )
             ) {
                 canSeeInside = true;
@@ -492,7 +492,7 @@ export class Building implements AbstractObject {
         const ceilingStep = step(
             this.ceiling.fadeAlpha,
             visible ? 0 : 1,
-            dt * (visible ? 12 : vision?.fadeRate!)
+            dt * (visible ? 12 : vision?.fadeRate!),
         );
         this.ceiling.fadeAlpha += ceilingStep;
 
@@ -527,7 +527,7 @@ export class Building implements AbstractObject {
                         channel: soundEmitter.channel,
                         loop: true,
                         forceStart: true,
-                        startSilent: true
+                        startSilent: true,
                     });
                 }
                 if (soundEmitter.instance) {
@@ -539,7 +539,7 @@ export class Building implements AbstractObject {
                         soundEmitter.range.min,
                         soundEmitter.range.max,
                         1,
-                        0
+                        0,
                     );
                     const volumeFalloff = Math.pow(distT, soundEmitter.falloff);
                     const visibilityMult = math.lerp(this.ceiling.fadeAlpha, 1, 0.25);
@@ -620,7 +620,7 @@ export class Building implements AbstractObject {
             for (let j = 0; j < def.particleCount; j++) {
                 const pos = v2.create(
                     util.random(aabb.min.x, aabb.max.x),
-                    util.random(aabb.min.y, aabb.max.y)
+                    util.random(aabb.min.y, aabb.max.y),
                 );
                 const vel = v2.mul(v2.randomUnit(), util.random(0, 15));
                 particleBarn.addParticle(def.particle, this.layer, pos, vel);
@@ -632,7 +632,7 @@ export class Building implements AbstractObject {
         }
         audioManager.playSound(def.sound || "ceiling_break_01", {
             channel: "sfx",
-            soundPos: this.pos
+            soundPos: this.pos,
         });
     }
 

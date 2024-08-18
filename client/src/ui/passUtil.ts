@@ -28,7 +28,7 @@ export const passUtil = {
         return {
             level,
             xp,
-            nextLevelXp: passUtil.getPassLevelXp(passType, level)
+            nextLevelXp: passUtil.getPassLevelXp(passType, level),
         };
     },
     timeUntilQuestRefresh: function (timeAcquired: number) {
@@ -37,5 +37,5 @@ export const passUtil = {
             25200000 -
             Date.now()
         );
-    }
+    },
 };

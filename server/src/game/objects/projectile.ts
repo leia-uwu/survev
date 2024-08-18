@@ -35,7 +35,7 @@ export class ProjectileBarn {
         layer: number,
         vel: Vec2,
         fuseTime: number,
-        damageType: number
+        damageType: number,
     ): Projectile {
         const proj = new Projectile(
             this.game,
@@ -97,14 +97,13 @@ export class Projectile extends BaseGameObject {
         this.fuseTime = fuseTime;
         this.damageType = damageType;
         this.dir = v2.normalize(vel);
-        console.log(this.dir);
 
         const def = GameObjectDefs[type] as ThrowableDef;
         this.velZ = def.throwPhysics.velZ;
         this.rad = def.rad * 0.5;
         this.bounds = collider.createAabbExtents(
             v2.create(0, 0),
-            v2.create(this.rad, this.rad)
+            v2.create(this.rad, this.rad),
         );
     }
 
@@ -144,7 +143,7 @@ export class Projectile extends BaseGameObject {
                 const intersection = collider.intersectCircle(
                     obj.collider,
                     this.pos,
-                    this.rad
+                    this.rad,
                 );
                 if (intersection) {
                     // break obstacle if its a window
@@ -155,13 +154,13 @@ export class Projectile extends BaseGameObject {
                             damageType: this.damageType,
                             gameSourceType: this.type,
                             mapSourceType: "",
-                            dir: this.vel
+                            dir: this.vel,
                         });
                     } else {
                         if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
                             this.pos = v2.add(
                                 this.pos,
-                                v2.mul(intersection.dir, intersection.pen)
+                                v2.mul(intersection.dir, intersection.pen),
                             );
 
                             if (def.explodeOnImpact) {
@@ -237,7 +236,7 @@ export class Projectile extends BaseGameObject {
                     this.layer,
                     velocity,
                     splitDef.fuseTime,
-                    DamageType.Player
+                    DamageType.Player,
                 );
             }
         }
@@ -252,7 +251,7 @@ export class Projectile extends BaseGameObject {
                 this.type,
                 "",
                 this.damageType,
-                source
+                source,
             );
         }
         this.destroy();

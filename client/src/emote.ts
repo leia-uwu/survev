@@ -116,7 +116,7 @@ export class EmoteBarn {
     zIdxNext = 0;
     emoteSelector = {
         ping: "",
-        emote: ""
+        emote: "",
     };
 
     // Client ping/emote throttle
@@ -225,7 +225,7 @@ export class EmoteBarn {
         public uiManager: UiManager,
         public playerBarn: PlayerBarn,
         public camera: Camera,
-        public map: Map
+        public map: Map,
     ) {
         this.triggerPing = () => {
             if (this.activePlayer) {
@@ -238,21 +238,21 @@ export class EmoteBarn {
                         worldPos = this.uiManager.getWorldPosFromMapPos(
                             this.bigmapPingPos || this.emoteScreenPos,
                             this.map,
-                            this.camera
+                            this.camera,
                         );
                         worldPos ||= this.camera.screenToPoint(this.emoteScreenPos);
                         worldPos.x = math.clamp(worldPos.x, 0, this.map.width);
                         worldPos.y = math.clamp(worldPos.y, 0, this.map.height);
                         this.sendPing({
                             type: this.emoteSelector.ping,
-                            pos: worldPos
+                            pos: worldPos,
                         });
                     }
                 } else if (this.emoteSelector.emote && !this.emoteWheelsGreyed) {
                     worldPos = this.activePlayer.pos;
                     this.sendEmote({
                         type: this.emoteSelector.emote,
-                        pos: worldPos
+                        pos: worldPos,
                     });
                     this.uiManager.displayMapLarge(true);
                 }
@@ -270,7 +270,7 @@ export class EmoteBarn {
                     // Send the emote to the server
                     this.sendEmote({
                         type: this.emoteSelector.emote,
-                        pos: worldPos
+                        pos: worldPos,
                     });
                 }
                 this.inputReset();
@@ -290,11 +290,11 @@ export class EmoteBarn {
                 e.stopPropagation();
                 this.bigmapPingPos = {
                     x: e.originalEvent?.changedTouches[0].pageX!,
-                    y: e.originalEvent?.changedTouches[0].pageY!
+                    y: e.originalEvent?.changedTouches[0].pageY!,
                 };
                 this.emoteScreenPos = v2.create(
                     this.camera.screenWidth / 2,
-                    this.camera.screenHeight / 2
+                    this.camera.screenHeight / 2,
                 );
                 this.pingMouseTriggered = true;
             });
@@ -305,7 +305,7 @@ export class EmoteBarn {
                 event.stopPropagation();
                 this.emoteScreenPos = v2.create(
                     this.camera.screenWidth / 2,
-                    this.camera.screenHeight / 2
+                    this.camera.screenHeight / 2,
                 );
                 this.emoteMouseTriggered = true;
             });
@@ -315,7 +315,7 @@ export class EmoteBarn {
                 e.stopPropagation();
                 this.emoteTouchedPos = {
                     x: e.originalEvent?.changedTouches[0].pageX!,
-                    y: e.originalEvent?.changedTouches[0].pageY!
+                    y: e.originalEvent?.changedTouches[0].pageY!,
                 };
             });
             // Reset wheel
@@ -330,7 +330,7 @@ export class EmoteBarn {
                 vC: v2.create(1, 1),
                 ping: "",
                 emote: "",
-                displayCloseIcon: true
+                displayCloseIcon: true,
             },
             top: {
                 parent: $("#ui-emote-top"),
@@ -338,7 +338,7 @@ export class EmoteBarn {
                 vC: v2.create(1, 1),
                 ping: "",
                 emote: "",
-                emoteSlot: EmoteSlot.Top
+                emoteSlot: EmoteSlot.Top,
             },
             right: {
                 parent: $("#ui-emote-right"),
@@ -346,7 +346,7 @@ export class EmoteBarn {
                 vC: v2.create(1, -1),
                 ping: "",
                 emote: "",
-                emoteSlot: EmoteSlot.Right
+                emoteSlot: EmoteSlot.Right,
             },
             bottom: {
                 parent: $("#ui-emote-bottom"),
@@ -354,7 +354,7 @@ export class EmoteBarn {
                 vC: v2.create(-1, -1),
                 ping: "",
                 emote: "",
-                emoteSlot: EmoteSlot.Bottom
+                emoteSlot: EmoteSlot.Bottom,
             },
             left: {
                 parent: $("#ui-emote-left"),
@@ -362,8 +362,8 @@ export class EmoteBarn {
                 vC: v2.create(-1, 1),
                 ping: "",
                 emote: "",
-                emoteSlot: EmoteSlot.Left
-            }
+                emoteSlot: EmoteSlot.Left,
+            },
         };
 
         // Set ping wheel specific data
@@ -385,35 +385,35 @@ export class EmoteBarn {
                 vC: v2.create(1, 1),
                 ping: "",
                 emote: "",
-                displayCloseIcon: true
+                displayCloseIcon: true,
             },
             top: {
                 parent: $("#ui-team-ping-top"),
                 vA: v2.create(-1, 1),
                 vC: v2.create(1, 1),
                 ping: "ping_danger",
-                emote: ""
+                emote: "",
             },
             right: {
                 parent: $("#ui-team-ping-right"),
                 vA: v2.create(1, 1),
                 vC: v2.create(1, -1),
                 ping: "ping_coming",
-                emote: ""
+                emote: "",
             },
             bottom: {
                 parent: $("#ui-team-ping-bottom"),
                 vA: v2.create(1, -1),
                 vC: v2.create(-1, -1),
                 ping: "ping_help",
-                emote: ""
+                emote: "",
             },
             "bottom-left": {
                 parent: $("#ui-team-ping-bottom-left"),
                 vA: v2.create(-1, -1),
                 vC: v2.create(-1, 0),
                 ping: "",
-                emote: "emote_medical"
+                emote: "emote_medical",
             },
             "top-left": {
                 parent: $("#ui-team-ping-top-left"),
@@ -421,8 +421,8 @@ export class EmoteBarn {
                 vC: v2.create(-1, 1),
                 ping: "",
                 emote: "emote_ammo",
-                ammoEmote: true
-            }
+                ammoEmote: true,
+            },
         };
 
         // Populate the ping selectors
@@ -440,7 +440,7 @@ export class EmoteBarn {
                     ping: pingData.ping,
                     emote: pingData.emote,
                     ammoEmote: pingData?.ammoEmote,
-                    displayCloseIcon: pingData?.displayCloseIcon
+                    displayCloseIcon: pingData?.displayCloseIcon,
                 });
             }
         }
@@ -486,33 +486,33 @@ export class EmoteBarn {
             return {
                 elem: $("#ui-team-indicators").find(`.ui-indicator-ping[data-id=${idx}]`),
                 borderElem: $("#ui-team-indicators").find(
-                    `.ui-indicator-ping-border[data-id=${idx}]`
+                    `.ui-indicator-ping-border[data-id=${idx}]`,
                 ),
                 pingContainer,
                 indContainer,
                 borderSprite: {
                     sprite: pingBorder,
-                    baseScale: 0.4
+                    baseScale: 0.4,
                 },
                 pingSprite: {
                     sprite: pingSprite,
-                    baseScale: 0.4
+                    baseScale: 0.4,
                 },
                 indSpriteOuter: {
                     sprite: indSpriteOuter,
                     baseScale: 0.5,
-                    baseTint: Number(indSpriteOuter.tint)
+                    baseTint: Number(indSpriteOuter.tint),
                 },
                 indSpriteInner: {
                     sprite: indSpriteInner,
                     baseScale: 0.5,
-                    baseTint: Number(indSpriteInner.tint)
+                    baseTint: Number(indSpriteInner.tint),
                 },
                 displayed: false,
                 fadeIn: 0,
                 life: 0,
                 fadeOut: 0,
-                pos: v2.create(0, 0)
+                pos: v2.create(0, 0),
             } satisfies Indicator;
         };
 
@@ -522,23 +522,23 @@ export class EmoteBarn {
             this.pingContainer.addChild(indicator.pingContainer);
             this.indContainer.addChild(indicator.indContainer);
             this.pingIndicators.push({
-                ping: indicator
+                ping: indicator,
             });
         }
         this.airdropIndicator = createIndicator(airdropIdx, PingDefs.ping_airdrop.tint);
         this.pingContainer.addChild(this.airdropIndicator.pingContainer);
         this.indContainer.addChild(this.airdropIndicator.indContainer);
         this.pingIndicators.push({
-            ping: this.airdropIndicator
+            ping: this.airdropIndicator,
         });
         this.airstrikeIndicator = createIndicator(
             airstrikeIdx,
-            PingDefs.ping_airstrike.tint
+            PingDefs.ping_airstrike.tint,
         );
         this.pingContainer.addChild(this.airstrikeIndicator.pingContainer);
         this.indContainer.addChild(this.airstrikeIndicator.indContainer);
         this.pingIndicators.push({
-            ping: this.airstrikeIndicator
+            ping: this.airstrikeIndicator,
         });
     }
 
@@ -588,7 +588,7 @@ export class EmoteBarn {
     sendPing(ping: (typeof this.newPings)[number]) {
         this.newPings.push({
             type: ping.type,
-            pos: ping.pos
+            pos: ping.pos,
         });
         this.incrementEmote();
     }
@@ -604,7 +604,7 @@ export class EmoteBarn {
                     ping.playerId,
                     this.activePlayer.__id,
                     this.playerBarn,
-                    factionMode
+                    factionMode,
                 );
                 let indicator: Indicator | null = null;
                 let pingSound = pingData.sound!;
@@ -616,7 +616,7 @@ export class EmoteBarn {
                     const playerInfo = this.playerBarn.getPlayerInfo(ping.playerId);
                     if (playerInfo) {
                         const activeGroupId = this.playerBarn.getPlayerInfo(
-                            this.activePlayer.__id
+                            this.activePlayer.__id,
                         ).groupId;
                         const groupId = playerInfo.groupId;
                         if (activeGroupId == groupId) {
@@ -636,7 +636,7 @@ export class EmoteBarn {
                 if (factionMode || ping.type != "ping_airstrike") {
                     // Pings always play at full volume
                     this.audioManager.playSound(pingSound, {
-                        channel: "ui"
+                        channel: "ui",
                     });
                 } else {
                     // If we're too far from an air strike ping in non-faction mode, reduce the ping sound
@@ -644,16 +644,16 @@ export class EmoteBarn {
                         channel: "ui",
                         fallOff: 1,
                         soundPos: ping.pos,
-                        rangeMult: 20
+                        rangeMult: 20,
                     });
                 }
                 if (indicator) {
                     indicator.pos = ping.pos!;
                     indicator.pingSprite.sprite.texture = PIXI.Texture.from(
-                        pingData.texture!
+                        pingData.texture!,
                     );
                     indicator.indSpriteInner.sprite.texture = PIXI.Texture.from(
-                        pingData.texture!
+                        pingData.texture!,
                     );
                     indicator.indSpriteInner.sprite.tint = pingData.mapEvent
                         ? pingData.tint!
@@ -674,7 +674,7 @@ export class EmoteBarn {
     sendEmote(emote: { type: string; pos: Vec2 }) {
         this.newEmotes.push({
             type: emote.type,
-            pos: emote.pos
+            pos: emote.pos,
         });
         this.incrementEmote();
     }
@@ -808,7 +808,7 @@ export class EmoteBarn {
         renderer: Renderer,
         input: InputHandler,
         inputBinds: InputBinds,
-        spectating: boolean
+        spectating: boolean,
     ) {
         const playerBarn = this.playerBarn;
         const camera = this.camera;
@@ -889,7 +889,7 @@ export class EmoteBarn {
                 this.parentDisplayed.css({
                     display: "block",
                     left: this.emoteScreenPos.x,
-                    top: this.emoteScreenPos.y
+                    top: this.emoteScreenPos.y,
                 }),
                 this.displayWheel(this.parentDisplayed, true),
                 (this.wheelDisplayed = true),
@@ -943,7 +943,7 @@ export class EmoteBarn {
                                 "50AE": "emote_ammo50ae",
                                 "308sub": "emote_ammo308sub",
                                 flare: "emote_ammoflare",
-                                "45acp": "emote_ammo45acp"
+                                "45acp": "emote_ammo45acp",
                             };
                             const R = E.emote;
                             E.emote = B[O as keyof typeof B] || "emote_ammo";
@@ -1030,7 +1030,7 @@ export class EmoteBarn {
                         this.audioManager.playSound(emote.sound, {
                             channel: emote.channel,
                             soundPos: targetPos,
-                            layer: targetLayer
+                            layer: targetLayer,
                         });
                     }
 
@@ -1058,11 +1058,11 @@ export class EmoteBarn {
         }
         const camExtents = v2.create(
             (camera.screenWidth * 0.5) / camera.z(),
-            (camera.screenHeight * 0.5) / camera.z()
+            (camera.screenHeight * 0.5) / camera.z(),
         );
         const camAabb = {
             min: v2.sub(camera.pos, camExtents),
-            max: v2.add(camera.pos, camExtents)
+            max: v2.add(camera.pos, camExtents),
         };
         // Update indicators and pings (world positioned)
         const groupId = playerBarn.getPlayerInfo(player.__id).groupId;
@@ -1096,13 +1096,13 @@ export class EmoteBarn {
                     const indicatorPos = indicator.pos;
                     const dir = v2.normalizeSafe(
                         v2.sub(indicatorPos, camera.pos),
-                        v2.create(1, 0)
+                        v2.create(1, 0),
                     );
                     const edge = coldet.intersectRayAabb(
                         camera.pos,
                         dir,
                         camAabb.min,
-                        camAabb.max
+                        camAabb.max,
                     )!;
                     const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
                     const screenEdge = camera.pointToScreen(edge);
@@ -1110,7 +1110,7 @@ export class EmoteBarn {
                         indicatorPos,
                         GameConfig.player.radius,
                         camAabb.min,
-                        camAabb.max
+                        camAabb.max,
                     );
                     const borderScale = camera.pixels(indicator.borderSprite.baseScale);
                     const pingScale = camera.pixels(indicator.pingSprite.baseScale);
@@ -1149,7 +1149,7 @@ export class EmoteBarn {
                         borderSprite.alpha <= 0 ? 1 : borderSprite.alpha - dt;
                     borderSprite.alpha = pulseAlpha;
                     const pulseScale = camera.pixels(
-                        indicator.borderSprite.baseScale * (2 - pulseAlpha)
+                        indicator.borderSprite.baseScale * (2 - pulseAlpha),
                     );
                     borderSprite.scale.set(pulseScale, pulseScale);
                     indSpriteInner.alpha = onscreen ? 0 : pulseAlpha;
@@ -1204,7 +1204,7 @@ export class EmoteBarn {
             top: emoteLoadout[EmoteSlot.Top],
             right: emoteLoadout[EmoteSlot.Right],
             bottom: emoteLoadout[EmoteSlot.Bottom],
-            left: emoteLoadout[EmoteSlot.Left]
+            left: emoteLoadout[EmoteSlot.Left],
         };
 
         for (const key in emotes) {
@@ -1230,10 +1230,10 @@ export class EmoteBarn {
                             angleA,
                             angleC,
                             highlight: ewData.parent.find(".ui-emote-hl"),
-                            highlightDisplayed: false
+                            highlightDisplayed: false,
                         },
-                        ewData
-                    )
+                        ewData,
+                    ),
                 );
                 // Change the image background to our chosen emotes
                 const imageElem = ewData.parent.find(".ui-emote-image");
@@ -1261,7 +1261,7 @@ export class EmoteBarn {
 
                 const pos = v2.add(
                     emote.pos,
-                    v2.mul(emote.posOffset, 1 / math.clamp(camera.zoom, 0.75, 1))
+                    v2.mul(emote.posOffset, 1 / math.clamp(camera.zoom, 0.75, 1)),
                 );
                 const screenPos = camera.pointToScreen(pos);
                 const screenScale =

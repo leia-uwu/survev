@@ -27,7 +27,7 @@ export class Ambiance {
             name: string,
             sound: string,
             channel: string,
-            immediateMode: boolean
+            immediateMode: boolean,
         ) => {
             this.tracks.push({
                 name,
@@ -38,7 +38,7 @@ export class Ambiance {
                 instSound: "",
                 filter: "",
                 weight: 0,
-                volume: 0
+                volume: 0,
             });
             this.trackToIdx[name] = this.tracks.length - 1;
         };
@@ -99,7 +99,7 @@ export class Ambiance {
                     loop: track.channel == "ambient",
                     forceStart: true,
                     filter: track.filter,
-                    forceFilter: true
+                    forceFilter: true,
                 });
                 track.instSound = track.sound;
                 if (i == 0) {
@@ -115,7 +115,7 @@ export class Ambiance {
                 track.volume = volume;
                 const defVolume = audioManager.getSoundDefVolume(
                     track.sound,
-                    track.channel
+                    track.channel,
                 );
                 audioManager.setVolume(track.inst, volume * defVolume, track.channel);
             }

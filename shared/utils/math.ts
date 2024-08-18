@@ -146,7 +146,7 @@ export const math = {
 
     radToOri(rad: number) {
         return Math.floor(
-            math.fmod(rad + Math.PI * 0.25, Math.PI * 2.0) / (Math.PI * 0.5)
+            math.fmod(rad + Math.PI * 0.25, Math.PI * 2.0) / (Math.PI * 0.5),
         );
     },
 
@@ -166,11 +166,11 @@ export const math = {
         minY: number,
         maxX: number,
         maxY: number,
-        bits: number
+        bits: number,
     ) {
         return v2.create(
             math.quantize(v.x, minX, maxX, bits),
-            math.quantize(v.y, minY, maxY, bits)
+            math.quantize(v.y, minY, maxY, bits),
         );
     },
 
@@ -205,7 +205,7 @@ export const math = {
                 origin,
                 direction,
                 vertices[j],
-                vertices[i]
+                vertices[i],
             );
             if (distance !== undefined) {
                 if (distance < t) {
@@ -285,7 +285,7 @@ export const math = {
             const cx = verts[idx2 * 2 + 0];
             const cy = verts[idx2 * 2 + 1];
             area += Math.abs(
-                (ax * by + bx * cy + cx * ay - bx * ay - cx * by - ax * cy) * 0.5
+                (ax * by + bx * cy + cx * ay - bx * ay - cx * by - ax * cy) * 0.5,
             );
         }
         return area;
@@ -300,7 +300,7 @@ export const math = {
         x3: number,
         y3: number,
         x4: number,
-        y4: number
+        y4: number,
     ) {
         // Check if none of the lines are of length 0
         if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
@@ -348,5 +348,5 @@ export const math = {
                 break;
         }
         return v2.add(pos1, v2.create(xOffset!, yOffset!));
-    }
+    },
 };

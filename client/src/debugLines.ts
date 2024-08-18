@@ -8,7 +8,7 @@ enum kShapes {
     Line,
     Ray,
     Circle,
-    Aabb
+    Aabb,
 }
 
 interface BaseShape {
@@ -52,7 +52,7 @@ class DebugLines {
             start: v2.copy(start),
             end: v2.copy(end),
             color,
-            fill
+            fill,
         });
     }
 
@@ -63,7 +63,7 @@ class DebugLines {
             dir: v2.copy(dir),
             len,
             color,
-            fill
+            fill,
         });
     }
 
@@ -73,7 +73,7 @@ class DebugLines {
             pos: v2.copy(pos),
             rad,
             color,
-            fill
+            fill,
         });
     }
 
@@ -83,7 +83,7 @@ class DebugLines {
             min: v2.copy(min),
             max: v2.copy(max),
             color,
-            fill
+            fill,
         });
     }
 
@@ -105,7 +105,7 @@ class DebugLines {
             gfx.fill.alpha = shape.fill;
             gfx.lineStyle({
                 width: 1,
-                color: shape.color
+                color: shape.color,
             });
 
             switch (shape.type) {
@@ -120,7 +120,7 @@ class DebugLines {
                     const start = camera.pointToScreen(shape.pos);
                     gfx.moveTo(start.x, start.y);
                     const end = camera.pointToScreen(
-                        v2.add(shape.pos, v2.mul(shape.dir, shape.len))
+                        v2.add(shape.pos, v2.mul(shape.dir, shape.len)),
                     );
                     gfx.lineTo(end.x, end.y);
                     break;

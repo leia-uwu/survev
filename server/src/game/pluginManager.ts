@@ -45,7 +45,7 @@ const pluginDir = path.join(__dirname, "../plugins/");
 let pluginPaths: string[] = [];
 if (fs.existsSync(pluginDir)) {
     pluginPaths = readDirectory(pluginDir).filter(
-        (path) => path.endsWith(".ts") || path.endsWith(".js")
+        (path) => path.endsWith(".ts") || path.endsWith(".js"),
     );
 }
 

@@ -102,14 +102,14 @@ export class AudioManager {
                         const options = {
                             canCoalesce: sound.canCoalesce!,
                             channels: sound.maxInstances!,
-                            volume: sound.volume
+                            volume: sound.volume,
                         };
                         loadList.push({
                             name: key,
                             channel: channelKey,
                             path: sound.path,
                             options,
-                            priority: sound.loadPriority || 0
+                            priority: sound.loadPriority || 0,
                         });
                     }
                 }
@@ -149,7 +149,7 @@ export class AudioManager {
             this.sounds[name] = {
                 path: sound.path,
                 name: sound.name,
-                channel: sound.channel
+                channel: sound.channel,
             };
         }
     }
@@ -175,7 +175,7 @@ export class AudioManager {
         const layerVolumeMap = [0, 1, 1 / 3, 2 / 3];
         const reverbVolume = this.underground ? layerVolumeMap[this.activeLayer] : 0;
         CreateJS.Sound.setReverbs({
-            cathedral: reverbVolume
+            cathedral: reverbVolume,
         });
         // Update the audio backend
         CreateJS.Sound.update(dt);
@@ -238,7 +238,7 @@ export class AudioManager {
                         delay: options.delay,
                         offset: options.offset,
                         ambient: options.ambient,
-                        detune: options.detune
+                        detune: options.detune,
                     });
                 }
             } else {
@@ -251,7 +251,7 @@ export class AudioManager {
                     delay: options.delay,
                     offset: options.offset,
                     ambient: options.ambient,
-                    detune: options.detune
+                    detune: options.detune,
                 });
             }
             // Add looped sounds and music to stored sounds
@@ -259,7 +259,7 @@ export class AudioManager {
                 const type = options.channel == "music" ? "music" : "sound";
                 this.soundInstances.push({
                     instance,
-                    type
+                    type,
                 });
             }
         }
@@ -281,7 +281,7 @@ export class AudioManager {
         instance: SoundHandle,
         channel: string,
         soundPos: Vec2,
-        options = {} as Partial<Options>
+        options = {} as Partial<Options>,
     ) {
         options.fallOff = options.fallOff || 0;
         options.rangeMult = options.rangeMult || 1;

@@ -71,7 +71,7 @@ export class Loot implements AbstractObject {
             map: Map;
             renderer: Renderer;
             particleBarn: ParticleBarn;
-        }
+        },
     ) {
         this.updatedData = true;
         this.pos = v2.copy(data.pos);
@@ -130,7 +130,7 @@ export class Loot implements AbstractObject {
             if (itemDef.type == "xp" && itemDef.emitter) {
                 this.emitter = ctx.particleBarn.addEmitter(itemDef.emitter, {
                     pos: this.pos,
-                    layer: this.layer
+                    layer: this.layer,
                 });
             }
 
@@ -162,7 +162,7 @@ export class LootBarn {
         map: Map,
         audioManager: AudioManager,
         camera: Camera,
-        debug: DebugOptions
+        debug: DebugOptions,
     ) {
         this.closestLoot = null;
         let closestDist = Number.MAX_VALUE;
@@ -198,7 +198,7 @@ export class LootBarn {
                         channel: "sfx",
                         soundPos: loot.pos,
                         layer: loot.layer,
-                        filter: "muffled"
+                        filter: "muffled",
                     });
                 }
 

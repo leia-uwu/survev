@@ -8,7 +8,7 @@ import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
 import type { Player } from "./game/objects/player";
 import { Logger } from "./utils/logger";
-import { forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
+import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
 export interface FindGameBody {
     region: string;
@@ -67,7 +67,7 @@ export class GameServer {
                     this.update();
                 },
                 "",
-                `${1000 / Config.gameTps}m`
+                `${1000 / Config.gameTps}m`,
             );
 
             new NanoTimer().setInterval(
@@ -75,7 +75,7 @@ export class GameServer {
                     this.netSync();
                 },
                 "",
-                `${1000 / Config.netSyncTps}m`
+                `${1000 / Config.netSyncTps}m`,
             );
         } else {
             setInterval(() => {
@@ -117,7 +117,7 @@ export class GameServer {
                         req.getHeader("sec-websocket-key"),
                         req.getHeader("sec-websocket-protocol"),
                         req.getHeader("sec-websocket-extensions"),
-                        context
+                        context,
                     );
                 } else {
                     forbidden(res);
@@ -153,7 +153,7 @@ export class GameServer {
              */
             close(socket: WebSocket<GameSocketData>) {
                 server.onClose(socket.getUserData());
-            }
+            },
         });
     }
 
@@ -191,7 +191,7 @@ export class GameServer {
             gameId: "",
             useHttps: true,
             hosts: [],
-            addrs: []
+            addrs: [],
         };
 
         if (body.region === this.regionId) {
@@ -212,12 +212,12 @@ export class GameServer {
 
                 if (!mode || !mode.enabled) {
                     response = {
-                        err: "Invalid game mode idx"
+                        err: "Invalid game mode idx",
                     };
                 } else {
                     game = await this.newGame({
                         teamMode: mode.teamMode,
-                        mapName: mode.mapName
+                        mapName: mode.mapName,
                     });
                 }
             }
@@ -228,45 +228,43 @@ export class GameServer {
                 const mode = Config.modes[body.gameModeIdx];
                 if (mode.teamMode > 1) {
                     let group: Group | undefined;
-                    const groupsArray = [...game.groups.values()];
-                    let groupAlreadyExist = groupsArray.find(
-                        (group) => group.hash === body.groupHash
-                    );
+                    let hash: string;
+                    let autoFill: boolean;
 
-                    if (groupAlreadyExist) {
-                        response.data = body.groupHash!;
-                    } else {
+                    const team = game.getSmallestTeam();
+
                         if (body.autoFill) {
-                            const filteredGroups = groupsArray.filter((group) => {
-                                if (game.groups.size < 2) group.autoFill = false;
-                                return (
-                                    group.autoFill && group.players.length < mode.teamMode
-                                );
-                            });
-
-                            group =
-                                filteredGroups[
-                                    Math.floor(Math.random() * filteredGroups.length)
-                                ];
-                        }
-
-                        if (!group) {
-                            group = game.addGroup(
-                                randomBytes(20).toString("hex"),
-                                body.autoFill
-                            );
-                        }
-
-                        if (group) {
-                            response.data = group.hash;
-                        }
+                        group = [...game.groups.values()].filter((group) => {
+                            return group.autoFill && group.players.length < mode.teamMode;
+                        })[0];
                     }
+
+                    if (!group) {
+                        group = game.addGroup(
+                            randomBytes(20).toString("hex"),
+                            body.autoFill
+                        );
+                    }
+
+                    if (group) {
+                        hash = group.hash;
+                        autoFill = group.autoFill;
+                    } else {
+                        hash = randomBytes(20).toString("hex");
+                        autoFill = body.autoFill;
+                    }
+
+                    response.data = hash;
+                    game.groupDatas.push({
+                        hash,
+                        autoFill,
+                    });
                 }
             }
         } else {
             this.logger.warn("/api/find_game: Invalid region");
             response = {
-                err: "Invalid Region"
+                err: "Invalid Region",
             };
         }
         return { res: [response] };
@@ -321,7 +319,10 @@ export class GameServer {
 
     getPlayerCount() {
         return this.games.reduce((a, b) => {
-            return a + (b ? b.playerBarn.players.length : 0);
+            return (
+                a +
+                (b ? b.playerBarn.livingPlayers.filter((p) => !p.disconnected).length : 0)
+            );
         }, 0);
     }
 
@@ -330,12 +331,12 @@ export class GameServer {
         const data = fetch(url, {
             body: JSON.stringify({
                 ...body,
-                apiKey: Config.apiKey
+                apiKey: Config.apiKey,
             }),
             method: "post",
             headers: {
-                "Content-type": "application/json"
-            }
+                "Content-type": "application/json",
+            },
         }).catch(console.error);
         return data;
     }
@@ -343,7 +344,10 @@ export class GameServer {
     sendData() {
         try {
             this.fetchApiServer("api/update_region", {
-                playerCount: this.getPlayerCount()
+                data: {
+                    playerCount: this.getPlayerCount(),
+                },
+                regionId: Config.thisRegion,
             });
         } catch (error) {
             this.logger.warn("Failed to send game data to api server, error: ", error);
@@ -357,17 +361,27 @@ if (process.argv.includes("--game-server")) {
     const app = Config.gameServer.ssl
         ? SSLApp({
               key_file_name: Config.gameServer.ssl.keyFile,
-              cert_file_name: Config.gameServer.ssl.certFile
+              cert_file_name: Config.gameServer.ssl.certFile,
           })
         : App();
 
     server.init(app);
 
+    app.options("/api/find_game", (res) => {
+        cors(res);
+        res.end();
+    });
     app.post("/api/find_game", async (res) => {
+        let aborted = false;
+        res.onAborted(() => {
+            aborted = true;
+        });
+        cors(res);
         readPostedJSON(
             res,
             async (body: FindGameBody & { apiKey: string }) => {
                 try {
+                    if (aborted) return;
                     if (body.apiKey !== Config.apiKey) {
                         forbidden(res);
                         return;
@@ -375,32 +389,34 @@ if (process.argv.includes("--game-server")) {
                     returnJson(res, await server.findGame(body));
                 } catch (err) {
                     console.error("Find game error:", err);
+                    if (aborted) return;
                     returnJson(res, {
                         res: [
                             {
-                                err: "Failed finding game"
-                            }
-                        ]
+                                err: "Failed finding game",
+                            },
+                        ],
                     });
                 }
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
+                if (aborted) return;
                 returnJson(res, {
                     res: [
                         {
-                            err: "Error retriving body"
-                        }
-                    ]
+                            err: "Error retriving body",
+                        },
+                    ],
                 });
-            }
+            },
         );
     });
 
     app.listen(Config.gameServer.host, Config.gameServer.port, () => {
         server.logger.log(`Resurviv Game Server v${version}`);
         server.logger.log(
-            `Listening on ${Config.gameServer.host}:${Config.gameServer.port}`
+            `Listening on ${Config.gameServer.host}:${Config.gameServer.port}`,
         );
         server.logger.log("Press Ctrl+C to exit.");
 

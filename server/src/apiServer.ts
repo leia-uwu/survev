@@ -4,7 +4,7 @@ import { Config, type ConfigType } from "./config";
 import type { FindGameBody, FindGameResponse } from "./gameServer";
 import { TeamMenu } from "./teamMenu";
 import { Logger } from "./utils/logger";
-import { forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
+import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
 class Region {
     data: ConfigType["regions"][string];
@@ -21,12 +21,12 @@ class Region {
             fetch(url, {
                 body: JSON.stringify({
                     ...body,
-                    apiKey: Config.apiKey
+                    apiKey: Config.apiKey,
                 }),
                 method: "post",
                 headers: {
-                    "Content-type": "application/json"
-                }
+                    "Content-type": "application/json",
+                },
             })
                 .catch(console.error)
                 .then((response) => {
@@ -67,9 +67,15 @@ export class ApiServer {
         this.teamMenu.init(app);
 
         app.get("/api/site_info", (res) => {
+            cors(res);
             returnJson(res, this.getSiteInfo());
         });
+        app.options("/api/user/profile", (res) => {
+            cors(res);
+            res.end();
+        });
         app.post("/api/user/profile", (res, _req) => {
+            cors(res);
             returnJson(res, this.getUserProfile());
         });
     }
@@ -86,13 +92,13 @@ export class ApiServer {
             >,
             youtube: { name: "", link: "" },
             twitch: [],
-            country: "US"
+            country: "US",
         };
 
         for (const region in this.regions) {
             data.pops[region] = {
                 playerCount: this.regions[region].playerCount,
-                l10n: Config.regions[region].l10n
+                l10n: Config.regions[region].l10n,
             };
         }
         return data;
@@ -111,12 +117,12 @@ export class ApiServer {
         if (body.region in this.regions) {
             return this.regions[body.region].fetch<FindGameResponse>(
                 "api/find_game",
-                body
+                body,
             );
         }
         this.logger.warn("/api/find_game: Invalid region");
         return {
-            res: [{ err: "Invalid Region" }]
+            res: [{ err: "Invalid Region" }],
         };
     }
 }
@@ -127,58 +133,78 @@ if (process.argv.includes("--api-server")) {
     const app = Config.apiServer.ssl
         ? SSLApp({
               key_file_name: Config.apiServer.ssl.keyFile,
-              cert_file_name: Config.apiServer.ssl.certFile
+              cert_file_name: Config.apiServer.ssl.certFile,
           })
         : App();
 
     server.init(app);
 
+    app.options("/api/find_game", (res) => {
+        cors(res);
+        res.end();
+    });
     app.post("/api/find_game", async (res) => {
+        cors(res);
+        let aborted = false;
+        res.onAborted(() => {
+            aborted = true;
+        });
         readPostedJSON(
             res,
             async (body: FindGameBody) => {
                 const data = await server.findGame(body);
+                if (aborted) return;
                 res.cork(() => {
+                    if (aborted) return;
                     returnJson(res, data);
                 });
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
+                if (aborted) return;
                 returnJson(res, {
                     res: [
                         {
-                            err: "Error retriving body"
-                        }
-                    ]
+                            err: "Error retriving body",
+                        },
+                    ],
                 });
-            }
+            },
         );
     });
 
+    app.options("/api/update_region", (res) => {
+        cors(res);
+        res.end();
+    });
     app.post("/api/update_region", (res) => {
+        cors(res);
+        let aborted = false;
+        res.onAborted(() => {
+            aborted = true;
+        });
         readPostedJSON(
             res,
             (body: {
                 apiKey: string;
                 regionId: string;
-                regionData: { playerCount: number };
+                data: RegionData;
             }) => {
+                if (aborted) return;
                 if (body.apiKey !== Config.apiKey || !(body.regionId in server.regions)) {
                     forbidden(res);
                     return;
                 }
-                server.updateRegion(body.regionId, body.regionData);
+                server.updateRegion(body.regionId, body.data);
             },
-            () => {
-                forbidden(res);
-            }
+            () => {},
         );
     });
 
     app.listen(Config.apiServer.host, Config.apiServer.port, (): void => {
         server.logger.log(`Resurviv API Server v${version}`);
         server.logger.log(
-            `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`
+            `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`,
         );
         server.logger.log("Press Ctrl+C to exit.");
         0;

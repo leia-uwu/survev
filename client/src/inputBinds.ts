@@ -10,13 +10,13 @@ import {
     InputValue,
     Key,
     MouseButton,
-    MouseWheel
+    MouseWheel,
 } from "./input";
 
 function def(name: string, defaultValue: InputValue | null) {
     return {
         name,
-        defaultValue
+        defaultValue,
     };
 }
 function inputKey(key: Key) {
@@ -63,7 +63,7 @@ const BindDefs = {
     [GameInput.EquipOtherGun]: def("Equip Other Gun", null),
     [GameInput.Fullscreen]: def("Full Screen", inputKey(Key.L)),
     [GameInput.HideUI]: def("Hide UI", null),
-    [GameInput.TeamPingSingle]: def("Team Ping Menu", null)
+    [GameInput.TeamPingSingle]: def("Team Ping Menu", null),
 };
 
 export class InputBinds {
@@ -73,7 +73,7 @@ export class InputBinds {
 
     constructor(
         public input: InputHandler,
-        public config: ConfigManager
+        public config: ConfigManager,
     ) {
         this.input = input;
         this.config = config;
@@ -248,7 +248,7 @@ export class InputBinds {
 export class InputBindUi {
     constructor(
         public input: InputHandler,
-        public inputBinds: InputBinds
+        public inputBinds: InputBinds,
     ) {
         this.input = input;
         this.inputBinds = inputBinds;
@@ -274,11 +274,11 @@ export class InputBindUi {
             const bind = binds[key as unknown as number];
             const btn = $("<a/>", {
                 class: "btn-game-menu btn-darken btn-keybind-desc",
-                text: bindDef.name
+                text: bindDef.name,
             });
             const val = $("<div/>", {
                 class: "btn-keybind-display",
-                text: bind ? bind.toString() : ""
+                text: bind ? bind.toString() : "",
             });
             btn.on("click", (event) => {
                 const targetElem = $(event.target);
@@ -303,7 +303,7 @@ export class InputBindUi {
                         Key.F9,
                         Key.F10,
                         Key.F11,
-                        Key.F12
+                        Key.F12,
                     ];
                     if (
                         inputValue.type == InputType.Key &&
@@ -326,10 +326,10 @@ export class InputBindUi {
             });
             container.append(
                 $("<div/>", {
-                    class: "ui-keybind-container"
+                    class: "ui-keybind-container",
                 })
                     .append(btn)
-                    .append(val)
+                    .append(val),
             );
         }
         $("#keybind-link").html(this.inputBinds.toBase64());

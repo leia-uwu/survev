@@ -9,12 +9,12 @@ const mapDef = {
             { name: "club_music_02", channel: "ambient" },
             {
                 name: "ambient_steam_01",
-                channel: "ambient"
+                channel: "ambient",
             },
             { name: "log_11", channel: "sfx" },
-            { name: "log_12", channel: "sfx" }
+            { name: "log_12", channel: "sfx" },
         ],
-        atlases: ["gradient", "loadout", "shared", "main"]
+        atlases: ["gradient", "loadout", "shared", "main"],
     },
     biome: {
         colors: {
@@ -25,8 +25,8 @@ const mapDef = {
             riverbank: 10711321,
             grass: 6460706,
             underground: 1772803,
-            playerSubmerge: 2854052
-        }
+            playerSubmerge: 2854052,
+        },
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
@@ -49,8 +49,8 @@ const mapDef = {
                 shack_01: 7,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
-            }
+                loot_tier_beach: 4,
+            },
         ],
         fixedSpawns: [
             {
@@ -80,14 +80,14 @@ const mapDef = {
                 tree_02: 3,
                 teahouse_complex_01su: {
                     small: 1,
-                    large: 2
+                    large: 2,
                 },
                 stone_04: 1,
-                club_complex_01: 1
-            }
+                club_complex_01: 1,
+            },
         ],
-        spawnReplacements: [{ bush_01: "bush_01f", tree_01: "tree_08su" }]
-    }
+        spawnReplacements: [{ bush_01: "bush_01f", tree_01: "tree_08su" }],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

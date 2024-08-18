@@ -2,7 +2,7 @@ import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type {
     BuildingDef,
     ObstacleDef,
-    StructureDef
+    StructureDef,
 } from "../../../../shared/defs/mapObjectsTyping";
 import { Puzzles } from "../../../../shared/defs/puzzles";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
@@ -77,7 +77,7 @@ export class Building extends BaseGameObject {
         pos: Vec2,
         ori: number,
         layer: number,
-        parentStructureId?: number
+        parentStructureId?: number,
     ) {
         super(game, pos);
         this.layer = layer;
@@ -98,7 +98,7 @@ export class Building extends BaseGameObject {
             mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
             this.rot,
-            1
+            1,
         ) as AABB;
 
         // transforms heal region local coordinates to world coordinates
@@ -108,9 +108,9 @@ export class Building extends BaseGameObject {
                     hr.collision,
                     this.pos,
                     this.rot,
-                    this.scale
+                    this.scale,
                 ) as AABB,
-                healRate: hr.healRate
+                healRate: hr.healRate,
             };
         });
 
@@ -119,7 +119,7 @@ export class Building extends BaseGameObject {
                 def.goreRegion,
                 this.pos,
                 this.rot,
-                this.scale
+                this.scale,
             ) as AABB;
         }
 
@@ -135,11 +135,11 @@ export class Building extends BaseGameObject {
             const surfaceDef = def.floor.surfaces[i];
             const surface = {
                 type: surfaceDef.type,
-                colliders: [] as Collider[]
+                colliders: [] as Collider[],
             };
             for (let i = 0; i < surfaceDef.collision.length; i++) {
                 surface.colliders.push(
-                    collider.transform(surfaceDef.collision[i], this.pos, this.rot, 1)
+                    collider.transform(surfaceDef.collision[i], this.pos, this.rot, 1),
                 );
             }
             this.surfaces.push(surface);
@@ -153,7 +153,7 @@ export class Building extends BaseGameObject {
                       region.zoomIn,
                       this.pos,
                       this.rot,
-                      this.scale
+                      this.scale,
                   ) as AABB)
                 : undefined;
 
@@ -168,10 +168,10 @@ export class Building extends BaseGameObject {
                           region.zoomOut,
                           this.pos,
                           this.rot,
-                          this.scale
+                          this.scale,
                       ) as AABB)
                     : undefined,
-                zoom: region.zoom
+                zoom: region.zoom,
             });
         }
 
@@ -239,7 +239,7 @@ export class Building extends BaseGameObject {
             this.setPartDirty();
             this.puzzleResetTimeout = setTimeout(
                 this.resetPuzzle.bind(this),
-                puzzleDef.errorResetDelay * 1000
+                puzzleDef.errorResetDelay * 1000,
             );
         } else {
             this.puzzleResetTimeout = setTimeout(() => {
@@ -248,7 +248,7 @@ export class Building extends BaseGameObject {
                 setTimeout(
                     this.resetPuzzle.bind(this),
                     puzzleDef.errorResetDelay * 1000,
-                    this
+                    this,
                 );
             }, puzzleDef.pieceResetDelay * 1000);
         }

@@ -36,7 +36,7 @@ function humanizeTime(time: number, minutesFloor = false) {
 export class Pass {
     pass = {
         data: {
-            type: "pass_survivr1"
+            type: "pass_survivr1",
         },
         currentXp: 0,
         currentLevel: 1,
@@ -48,7 +48,7 @@ export class Pass {
             levelXp: number;
             targetLevel: number;
         }>,
-        elems: {}
+        elems: {},
     };
 
     quests: Array<{
@@ -103,7 +103,7 @@ export class Pass {
     constructor(
         public account: Account,
         public loadoutMenu: LoadoutMenu,
-        public localization: Localization
+        public localization: Localization,
     ) {
         this.account = account;
         this.loadoutMenu = loadoutMenu;
@@ -118,7 +118,7 @@ export class Pass {
             },
             () => {
                 $("#pass-unlock-tooltip").fadeOut(50);
-            }
+            },
         );
     }
 
@@ -145,8 +145,8 @@ export class Pass {
                     refreshEnabled: false,
                     timer: {
                         enabled: false,
-                        str: ""
-                    }
+                        str: "",
+                    },
                 } as (typeof this.quests)[number];
                 const curQuest = This.quests.find((x) => {
                     return x.data.idx == quest.data.idx && x.data.type == quest.data.type;
@@ -178,19 +178,19 @@ export class Pass {
                     counter: fixedQuestElem.find(".pass-quest-counter"),
                     barFill: fixedQuestElem.find(".pass-quest-bar-fill"),
                     timer: fixedQuestElem.find(".pass-quest-timer"),
-                    loading: fixedQuestElem.find(".pass-quest-spinner")
+                    loading: fixedQuestElem.find(".pass-quest-spinner"),
                 };
                 quest.elems.barFill.clearQueue();
                 quest.elems.main.removeClass("pass-bg-pulse");
                 quest.elems.main.stop().css({
-                    opacity: 1
+                    opacity: 1,
                 });
                 quest.elems.xp.removeClass("pass-text-pulse");
                 quest.elems.refresh.stop().css({
-                    opacity: 1
+                    opacity: 1,
                 });
                 quest.elems.counter.stop().css({
-                    opacity: 1
+                    opacity: 1,
                 });
 
                 // Initialize quest UI
@@ -203,7 +203,7 @@ export class Pass {
                 quest.elems.cur.html(Math.round(quest.current));
                 quest.elems.xp.html(`${questDef.xp} XP`);
                 quest.elems.barFill.css({
-                    width: `${pct}%`
+                    width: `${pct}%`,
                 });
                 quest.elems.loading.css("display", "none");
 
@@ -217,7 +217,7 @@ export class Pass {
                 if (questDef.icon) {
                     quest.elems.desc.addClass("pass-quest-desc-icon");
                     quest.elems.desc.css({
-                        "background-image": `url(${questDef.icon})`
+                        "background-image": `url(${questDef.icon})`,
                     });
                 } else {
                     quest.elems.desc.removeClass("pass-quest-desc-icon");
@@ -250,7 +250,7 @@ export class Pass {
                     startXp: xp,
                     targetXp: levelXp,
                     levelXp,
-                    targetLevel: level + 1
+                    targetLevel: level + 1,
                 });
                 level++;
                 xp = 0;
@@ -265,7 +265,7 @@ export class Pass {
             startXp: xp,
             targetXp: pass.xp,
             levelXp,
-            targetLevel: level
+            targetLevel: level,
         });
         $("#pass-block").css("z-index", "1");
         $("#pass-locked").css("display", "none");
@@ -279,7 +279,7 @@ export class Pass {
         $("#pass-progress-xp-target").html(this.pass.levelXp);
         const pct = (this.pass.currentXp / this.pass.levelXp) * 100;
         $("#pass-progress-bar-fill").css({
-            width: `${pct}%`
+            width: `${pct}%`,
         });
         this.loaded = true;
     }
@@ -331,15 +331,15 @@ export class Pass {
         const i = helpers.getCssTransformFromGameType(item);
         $("#pass-progress-unlock").css({
             opacity: t ? 1 : 0.15,
-            transform: `translate(-50%, -50%) ${i}`
+            transform: `translate(-50%, -50%) ${i}`,
         });
         $("#pass-progress-unlock-image").css({
-            "background-image": a
+            "background-image": a,
         });
         const o = t
             ? this.localization
                   .translate(
-                      `loadout-title-${this.loadoutMenu.getCategory(t.type)!.loadoutType}`
+                      `loadout-title-${this.loadoutMenu.getCategory(t.type)!.loadoutType}`,
                   )
                   .toUpperCase()
             : "";
@@ -349,10 +349,10 @@ export class Pass {
         s.find(".tooltip-pass-desc").html(t ? t.name! : "");
         const c = t ? `url(${this.loadoutMenu.getCategory(t.type)!.categoryImage})` : "";
         $("#pass-progress-unlock-type-image").css({
-            "background-image": c
+            "background-image": c,
         });
         $("#pass-progress-unlock-type-wrapper").css({
-            display: t ? "block" : "none"
+            display: t ? "block" : "none",
         });
     }
 
@@ -371,15 +371,15 @@ export class Pass {
             .queue((e) => {
                 o.animate(
                     {
-                        opacity: 0
+                        opacity: 0,
                     },
-                    250
+                    250,
                 );
                 s.animate(
                     {
-                        opacity: 0
+                        opacity: 0,
                     },
-                    250
+                    250,
                 );
                 $(e).dequeue();
             })
@@ -390,15 +390,15 @@ export class Pass {
                 a.removeClass("pass-unlock-pulse");
                 o.animate(
                     {
-                        opacity: 1
+                        opacity: 1,
                     },
-                    250
+                    250,
                 );
                 s.animate(
                     {
-                        opacity: 1
+                        opacity: 1,
                     },
-                    250
+                    250,
                 );
                 $(t).dequeue();
             });
@@ -411,22 +411,22 @@ export class Pass {
                 quest.elems.xp.addClass("pass-text-pulse");
                 quest.elems.refresh.animate(
                     {
-                        opacity: 0.25
+                        opacity: 0.25,
                     },
-                    250
+                    250,
                 );
                 quest.elems.refresh.removeClass("pass-quest-refresh-disabled");
                 quest.elems.refresh.animate(
                     {
-                        opacity: 0
+                        opacity: 0,
                     },
-                    250
+                    250,
                 );
                 quest.elems.counter.animate(
                     {
-                        opacity: 0
+                        opacity: 0,
                     },
-                    250
+                    250,
                 );
                 quest.elems.desc.html("QUEST COMPLETE!");
                 $(el).dequeue();
@@ -435,9 +435,9 @@ export class Pass {
             .queue((el) => {
                 quest.elems.main.animate(
                     {
-                        opacity: 0
+                        opacity: 0,
                     },
-                    750
+                    750,
                 );
                 $(el).dequeue();
             });
@@ -459,7 +459,7 @@ export class Pass {
                 fixedQuest.current = math.lerp(
                     math.easeOutExpo(a),
                     fixedQuest.start,
-                    fixedQuest.data.progress
+                    fixedQuest.data.progress,
                 );
                 const pctComplete = (fixedQuest.current / fixedQuest.data.target) * 100;
 
@@ -471,7 +471,7 @@ export class Pass {
                 }
                 fixedQuest.elems.cur.html(currentText);
                 fixedQuest.elems.barFill.css({
-                    width: `${pctComplete}%`
+                    width: `${pctComplete}%`,
                 });
                 if (a >= 1) {
                     fixedQuest.progressAnimFinished = true;
@@ -504,9 +504,9 @@ export class Pass {
                 fixedQuest.elems.main.removeClass("pass-bg-pulse");
                 fixedQuest.elems.main.stop().animate(
                     {
-                        opacity: 1
+                        opacity: 1,
                     },
-                    250
+                    250,
                 );
                 const h = fixedQuest.elems.refreshPrompt.css("display") == "block";
                 fixedQuest.elems.info.css("display", p || h ? "none" : "block");
@@ -531,7 +531,7 @@ export class Pass {
             $("#pass-progress-xp-current").html(Math.round(this.pass.currentXp));
             $("#pass-progress-xp-target").html(this.pass.levelXp);
             $("#pass-progress-bar-fill").css({
-                width: `${f}%`
+                width: `${f}%`,
             });
             if (w >= 1) {
                 if (y.targetLevel > this.pass.currentLevel) {

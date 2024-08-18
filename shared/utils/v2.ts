@@ -58,7 +58,7 @@ export const v2 = {
         const len = v2.length(a);
         return {
             x: len > eps ? a.x / len : a.x,
-            y: len > eps ? a.y / len : a.y
+            y: len > eps ? a.y / len : a.y,
         };
     },
 
@@ -77,7 +77,7 @@ export const v2 = {
         const len = v2.length(a);
         return {
             x: len > eps ? a.x / len : v.x,
-            y: len > eps ? a.y / len : v.y
+            y: len > eps ? a.y / len : v.y,
         };
     },
 
@@ -98,7 +98,7 @@ export const v2 = {
         const sinr = Math.sin(rad);
         return {
             x: a.x * cosr - a.y * sinr,
-            y: a.x * sinr + a.y * cosr
+            y: a.x * sinr + a.y * cosr,
         };
     },
 
@@ -121,7 +121,7 @@ export const v2 = {
     randomUnit() {
         return v2.normalizeSafe(
             v2.create(Math.random() - 0.5, Math.random() - 0.5),
-            v2.create(1.0, 0.0)
+            v2.create(1.0, 0.0),
         );
     },
 
@@ -131,5 +131,5 @@ export const v2 = {
 
     eq(a: Vec2, b: Vec2, epsilon = 0.0001) {
         return Math.abs(a.x - b.x) <= epsilon && Math.abs(a.y - b.y) <= epsilon;
-    }
+    },
 };

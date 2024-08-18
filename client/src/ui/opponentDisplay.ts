@@ -62,7 +62,7 @@ export class LoadoutDisplay {
         public audioManager: AudioManager,
         public config: ConfigManager,
         public inputBinds: InputBinds,
-        public account: Account
+        public account: Account,
     ) {}
 
     init() {
@@ -82,7 +82,7 @@ export class LoadoutDisplay {
             [ObjectType.Building]: this.map.buildingPool,
             [ObjectType.Structure]: this.map.structurePool,
             [ObjectType.Decal]: this.decalBarn.decalPool,
-            [ObjectType.Smoke]: this.smokeBarn.smokePool
+            [ObjectType.Smoke]: this.smokeBarn.smokePool,
         };
 
         this.objectCreator = new Creator();
@@ -90,7 +90,7 @@ export class LoadoutDisplay {
             if (TypeToPool.hasOwnProperty(type)) {
                 this.objectCreator.registerType(
                     type,
-                    TypeToPool[type as unknown as keyof typeof TypeToPool]
+                    TypeToPool[type as unknown as keyof typeof TypeToPool],
                 );
             }
         }
@@ -105,7 +105,7 @@ export class LoadoutDisplay {
             this.renderer.layers[1],
             this.renderer.layers[2],
             this.renderer.layers[3],
-            this.debugDisplay
+            this.debugDisplay,
         ];
         for (let i = 0; i < pixiContainers.length; i++) {
             const container = pixiContainers[i];
@@ -133,11 +133,11 @@ export class LoadoutDisplay {
                 rivers: [],
                 seed: 218051654,
                 shoreInset: 48,
-                width: 720
+                width: 720,
             } as unknown as MapMsg,
             this.camera,
             this.canvasMode,
-            this.particleBarn
+            this.particleBarn,
         );
 
         this.activePlayer = this.playerBarn.getPlayerById(this.activeId)!;
@@ -165,15 +165,15 @@ export class LoadoutDisplay {
                     },
                     {
                         name: "bayonet_rugged",
-                        ammo: 0
+                        ammo: 0,
                     },
                     {
                         name: "",
-                        ammo: 0
-                    }
-                ]
+                        ammo: 0,
+                    },
+                ],
             } as unknown as LocalDataWithDirty,
-            this.playerBarn
+            this.playerBarn,
         );
 
         this.activePlayer.layer = this.activePlayer.netData.layer;
@@ -208,7 +208,7 @@ export class LoadoutDisplay {
                 const e = this.pixi.stage.children[0];
                 this.pixi.stage.removeChild(e);
                 e.destroy({
-                    children: true
+                    children: true,
                 });
             }
         }
@@ -239,7 +239,7 @@ export class LoadoutDisplay {
             actionSeq: number;
             actionType: number;
             actionItem: string;
-        }>
+        }>,
     ) {
         const ctx = {
             audioManager: this.audioManager,
@@ -247,7 +247,7 @@ export class LoadoutDisplay {
             particleBarn: this.particleBarn,
             map: this.map,
             smokeBarn: this.smokeBarn,
-            decalBarn: this.decalBarn
+            decalBarn: this.decalBarn,
         };
 
         // HACK: clear the player particle emitter and reset the anim counter
@@ -283,14 +283,14 @@ export class LoadoutDisplay {
             perks: [],
             $r: false,
             pos: v2.create(50, 50),
-            dir: v2.create(0, -1)
+            dir: v2.create(0, -1),
         };
 
         this.objectCreator.updateObjFull(
             ObjectType.Player,
             98,
             obj as unknown as ObjectData<ObjectType.Player>,
-            ctx
+            ctx,
         );
 
         this.playerBarn.setPlayerInfo({
@@ -300,8 +300,8 @@ export class LoadoutDisplay {
             name: "",
             loadout: {
                 heal: this.loadout.heal,
-                boost: this.loadout.boost
-            }
+                boost: this.loadout.boost,
+            },
         });
     }
 
@@ -327,18 +327,18 @@ export class LoadoutDisplay {
         const modalBound = modal.getBoundingClientRect();
         const modalAabb = collider.createAabb(
             this.camera.screenToPoint(
-                v2.create(modalBound.left, modalBound.top + modalBound.height)
+                v2.create(modalBound.left, modalBound.top + modalBound.height),
             ),
             this.camera.screenToPoint(
-                v2.create(modalBound.left + modalBound.width, modalBound.top)
-            )
+                v2.create(modalBound.left + modalBound.width, modalBound.top),
+            ),
         );
         const modalExt = v2.mul(v2.sub(modalAabb.max, modalAabb.min), 0.5);
         const modalPos = v2.add(modalAabb.min, modalExt);
 
         const screenAabb = collider.createAabb(
             this.camera.screenToPoint(v2.create(0, this.camera.screenHeight)),
-            this.camera.screenToPoint(v2.create(this.camera.screenWidth, 0))
+            this.camera.screenToPoint(v2.create(this.camera.screenWidth, 0)),
         );
 
         const screenExt = v2.mul(v2.sub(screenAabb.max, screenAabb.min), 0.5);
@@ -349,7 +349,7 @@ export class LoadoutDisplay {
         const offsetY = 0.33;
         const offset = v2.create(
             modalOffset.x + modalExt.x + offsetX,
-            modalOffset.y + offsetY
+            modalOffset.y + offsetY,
         );
         this.camera.zoom = zoomPrev;
         return offset;
@@ -395,7 +395,7 @@ export class LoadoutDisplay {
                 const options = {
                     actionType: GameConfig.Action.UseItem,
                     actionItem: "bandage",
-                    actionSeq: this.actionSeq
+                    actionSeq: this.actionSeq,
                 };
                 this.updateCharDisplay(options);
                 this.animIdleTicker = 2 + Math.random();
@@ -404,7 +404,7 @@ export class LoadoutDisplay {
                 const options = {
                     actionType: GameConfig.Action.UseItem,
                     actionItem: "soda",
-                    actionSeq: this.actionSeq
+                    actionSeq: this.actionSeq,
                 };
                 this.updateCharDisplay(options);
                 this.animIdleTicker = 2 + Math.random();
@@ -426,7 +426,7 @@ export class LoadoutDisplay {
             const itemDef = GameObjectDefs[this.loadout.outfit] as OutfitDef;
             if (itemDef) {
                 this.audioManager.playSound(itemDef.sound.pickup, {
-                    channel: "ui"
+                    channel: "ui",
                 });
             }
         }
@@ -444,14 +444,14 @@ export class LoadoutDisplay {
             // @ts-expect-error big mismatch between params passed and expected, need to debug later;
             false,
             false,
-            false
+            false,
         );
         this.smokeBarn.update(
             dt,
             this.camera,
             this.activePlayer,
             this.map,
-            this.renderer
+            this.renderer,
         );
         this.particleBarn.update(dt, this.camera, debug);
         this.decalBarn.update(dt, this.camera, this.renderer, debug);

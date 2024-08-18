@@ -124,7 +124,7 @@ export class Obstacle implements AbstractObject {
         data: ObjectData<ObjectType.Obstacle>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         if (fullUpdate) {
             this.type = data.type;
@@ -170,7 +170,7 @@ export class Obstacle implements AbstractObject {
                     open: data.door?.open!,
                     wasOpen: data.door?.open!,
                     locked: data.door?.locked!,
-                    casingSprite: null
+                    casingSprite: null,
                 };
                 const casingImgDef = def.door?.casingImg;
                 if (casingImgDef !== undefined) {
@@ -193,7 +193,7 @@ export class Obstacle implements AbstractObject {
                     interactionRad: def.button?.interactionRad!,
                     interactionText: def.button?.interactionText || "game-use",
                     seq: data.button?.seq!,
-                    seqOld: data.button?.seq!
+                    seqOld: data.button?.seq!,
                 };
             }
             this.isPuzzlePiece = data.isPuzzlePiece;
@@ -205,7 +205,7 @@ export class Obstacle implements AbstractObject {
             this.door.seq = data.door?.seq!;
             const u = v2.rotate(
                 v2.create(def.door?.slideOffset!, 0),
-                this.rot + Math.PI * 0.5
+                this.rot + Math.PI * 0.5,
             );
             this.door.closedPos = data.door?.open
                 ? v2.add(data.pos, u)
@@ -226,7 +226,7 @@ export class Obstacle implements AbstractObject {
             this.smokeEmitter = ctx.particleBarn.addEmitter("smoke_barrel", {
                 pos: this.pos,
                 dir: g,
-                layer: this.layer
+                layer: this.layer,
             });
         }
         let y = false;
@@ -270,14 +270,14 @@ export class Obstacle implements AbstractObject {
             return {
                 rad: this.button.interactionRad,
                 action: this.button.interactionText,
-                object: `game-${this.type}`
+                object: `game-${this.type}`,
             };
         }
         if (this.isDoor && this.door.canUse && !this.door.autoOpen) {
             return {
                 rad: this.door.interactionRad,
                 action: this.door.open ? "game-close-door" : "game-open-door",
-                object: ""
+                object: "",
             };
         }
         return null;
@@ -290,7 +290,7 @@ export class Obstacle implements AbstractObject {
         particleBarn: ParticleBarn,
         audioManager: AudioManager,
         activePlayer: Player,
-        renderer: Renderer
+        renderer: Renderer,
     ) {
         if (this.isButton) {
             const button = this.button;
@@ -305,7 +305,7 @@ export class Obstacle implements AbstractObject {
                         def.button.useParticle,
                         this.layer,
                         center,
-                        vel
+                        vel,
                     );
                 }
                 const sound = this.button.onOff
@@ -316,7 +316,7 @@ export class Obstacle implements AbstractObject {
                         channel: "sfx",
                         soundPos: this.pos,
                         layer: this.layer,
-                        filter: "muffled"
+                        filter: "muffled",
                     });
                 }
             }
@@ -356,7 +356,7 @@ export class Obstacle implements AbstractObject {
                         channel: "sfx",
                         soundPos: this.pos,
                         layer: this.layer,
-                        filter: "muffled"
+                        filter: "muffled",
                     });
                 }
                 door.seqOld = door.seq;
@@ -370,7 +370,7 @@ export class Obstacle implements AbstractObject {
                     channel: "sfx",
                     soundPos: this.pos,
                     layer: this.layer,
-                    filter: "muffled"
+                    filter: "muffled",
                 });
                 door.wasOpen = door.open;
             }
@@ -403,7 +403,7 @@ export class Obstacle implements AbstractObject {
                 channel: "sfx",
                 soundPos: center,
                 layer: this.layer,
-                filter: "muffled"
+                filter: "muffled",
             });
         }
 
@@ -467,7 +467,7 @@ export class Obstacle implements AbstractObject {
 
         if (this.isDoor && this.door?.casingSprite) {
             const casingPos = camera.pointToScreen(
-                v2.add(this.door.closedPos, this.door.casingSprite.posOffset)
+                v2.add(this.door.closedPos, this.door.casingSprite.posOffset),
             );
             const casingScale = camera.pixels(scale * this.door.casingSprite.imgScale);
             this.door.casingSprite.position.set(casingPos.x, casingPos.y);

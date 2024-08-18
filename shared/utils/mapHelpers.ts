@@ -20,7 +20,7 @@ function computeBoundingCollider(type: string): Collider {
                 mapHelpers.getBoundingCollider(obj.type),
                 obj.pos,
                 rot,
-                1.0
+                1.0,
             );
             aabbs.push(collider.toAabb(col));
         }
@@ -67,7 +67,7 @@ function computeBoundingCollider(type: string): Collider {
                     mapHelpers.getBoundingCollider(mt),
                     mapObj.pos,
                     rot,
-                    mapObj.scale
+                    mapObj.scale,
                 );
                 aabbs.push(collider.toAabb(col));
             }
@@ -117,7 +117,7 @@ export const mapHelpers = {
         const dir = v2.create(1.0, 0.0);
         const ext = v2.add(
             v2.mul(dir, dims.length * 1.5),
-            v2.mul(v2.perp(dir), dims.width * def.terrain.bridge!.nearbyWidthMult)
+            v2.mul(v2.perp(dir), dims.width * def.terrain.bridge!.nearbyWidthMult),
         );
         const col = collider.createAabbExtents(v2.create(0.0, 0.0), v2.mul(ext, 0.5));
         return collider.transform(col, pos, rot, scale) as AABB;
@@ -126,5 +126,5 @@ export const mapHelpers = {
     lt: 0.9,
     validateSpriteAlpha: function (e: any, t: number) {
         return e.sprite?.visible && e.sprite.alpha < t;
-    }
+    },
 };

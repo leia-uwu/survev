@@ -27,7 +27,7 @@ export class ExplosionBarn {
                     explosion.pos,
                     explosion.layer,
                     0,
-                    1
+                    1,
                 );
             }
 
@@ -53,7 +53,7 @@ export class ExplosionBarn {
 
                 const lineEnd = v2.add(
                     explosion.pos,
-                    v2.rotate(v2.create(explosion.rad, 0), angle)
+                    v2.rotate(v2.create(explosion.rad, 0), angle),
                 );
 
                 for (const obj of objects) {
@@ -70,14 +70,14 @@ export class ExplosionBarn {
                         const intersection = collider.intersectSegment(
                             obj.collider,
                             explosion.pos,
-                            lineEnd
+                            lineEnd,
                         );
                         if (intersection) {
                             lineCollisions.push({
                                 pos: intersection.point,
                                 obj,
                                 distance: v2.distance(explosion.pos, intersection.point),
-                                dir: v2.neg(v2.normalize(v2.sub(explosion.pos, obj.pos)))
+                                dir: v2.neg(v2.normalize(v2.sub(explosion.pos, obj.pos))),
                             });
                         }
                     }
@@ -98,6 +98,12 @@ export class ExplosionBarn {
                             obj.__type === ObjectType.Obstacle
                         ) {
                             let damage = def.damage;
+                            if (
+                                obj.__type == ObjectType.Player &&
+                                obj.hasPerk("flak_jacket")
+                            ) {
+                                damage *= 0.1;
+                            }
 
                             if (dist > def.rad.min) {
                                 damage = math.remap(
@@ -105,7 +111,7 @@ export class ExplosionBarn {
                                     def.rad.min,
                                     def.rad.max,
                                     damage,
-                                    0
+                                    0,
                                 );
                             }
 
@@ -119,14 +125,14 @@ export class ExplosionBarn {
                                 mapSourceType: explosion.mapSourceType,
                                 source: explosion.source,
                                 damageType: explosion.damageType,
-                                dir: collision.dir
+                                dir: collision.dir,
                             });
                         }
 
                         if (obj.__type === ObjectType.Loot) {
                             obj.push(
                                 v2.normalize(v2.sub(collision.pos, explosion.pos)),
-                                (def.rad.max - dist) * 4
+                                (def.rad.max - dist) * 4,
                             );
                         }
                     }
@@ -149,7 +155,7 @@ export class ExplosionBarn {
                         varianceT: Math.random(),
                         gameSourceType: explosion.gameSourceType,
                         mapSourceType: explosion.mapSourceType,
-                        dir: v2.randomUnit()
+                        dir: v2.randomUnit(),
                     });
                 }
             }
@@ -168,7 +174,7 @@ export class ExplosionBarn {
         gameSourceType = "",
         mapSourceType = "",
         damageType: number = GameConfig.DamageType.Player,
-        source?: GameObject
+        source?: GameObject,
     ) {
         const def = GameObjectDefs[type];
         assert(def.type === "explosion", `Invalid explosion with type ${type}`);
@@ -181,7 +187,7 @@ export class ExplosionBarn {
             gameSourceType,
             mapSourceType,
             damageType,
-            source
+            source,
         };
         this.explosions.push(explosion);
         this.newExplosions.push(explosion);

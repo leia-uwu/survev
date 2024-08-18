@@ -12,15 +12,13 @@ export class Group {
      * 1 is red
      * 2 is blue
      */
-    teamId: number;
     allDeadOrDisconnected = true; //only set to false when first player is added to the group
     players: Player[] = [];
     autoFill: boolean;
 
-    constructor(hash: string, groupId: number, teamId: number, autoFill: boolean) {
+    constructor(hash: string, groupId: number, autoFill: boolean) {
         this.hash = hash;
         this.groupId = groupId;
-        this.teamId = teamId;
         this.autoFill = autoFill;
     }
 
@@ -43,7 +41,6 @@ export class Group {
 
     addPlayer(player: Player) {
         player.groupId = this.groupId;
-        player.teamId = this.teamId;
         player.group = this;
         player.setGroupStatuses();
         player.playerStatusDirty = true;
@@ -60,7 +57,9 @@ export class Group {
      * true if all ALIVE teammates besides the passed in player are downed
      */
     checkAllDowned(player: Player) {
-        const filteredPlayers = this.players.filter((p) => p != player && !p.dead);
+        const filteredPlayers = this.players.filter(
+            (p) => p != player && !p.dead && !p.hasPerk("self_revive"),
+        );
         if (filteredPlayers.length == 0) {
             // this is necessary since for some dumb reason every() on an empty array returns true????
             return false;
@@ -95,7 +94,7 @@ export class Group {
             p.kill({
                 damageType: GameConfig.DamageType.Bleeding,
                 dir: p.dir,
-                source: p.downedBy
+                source: p.downedBy,
             });
         }
     }

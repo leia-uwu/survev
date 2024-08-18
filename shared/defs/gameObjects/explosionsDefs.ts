@@ -22,7 +22,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 12,
         shrapnelType: "shrapnel_frag",
         explosionEffectType: "frag",
-        decalType: "decal_frag_explosion"
+        decalType: "decal_frag_explosion",
     },
     explosion_smoke: {
         type: "explosion",
@@ -32,7 +32,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "shrapnel_frag",
         explosionEffectType: "smoke",
-        decalType: "decal_smoke_explosion"
+        decalType: "decal_smoke_explosion",
     },
     explosion_strobe: {
         type: "explosion",
@@ -42,7 +42,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 3,
         shrapnelType: "shrapnel_strobe",
         explosionEffectType: "strobe",
-        decalType: "decal_smoke_explosion"
+        decalType: "decal_smoke_explosion",
     },
     explosion_barrel: {
         type: "explosion",
@@ -52,7 +52,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 12,
         shrapnelType: "shrapnel_barrel",
         explosionEffectType: "barrel",
-        decalType: "decal_barrel_explosion"
+        decalType: "decal_barrel_explosion",
     },
     explosion_stove: {
         type: "explosion",
@@ -62,7 +62,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 16,
         shrapnelType: "shrapnel_stove",
         explosionEffectType: "barrel",
-        decalType: "decal_barrel_explosion"
+        decalType: "decal_barrel_explosion",
     },
     explosion_usas: {
         type: "explosion",
@@ -72,7 +72,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 9,
         shrapnelType: "shrapnel_usas",
         explosionEffectType: "usas",
-        decalType: "decal_frag_small_explosion"
+        decalType: "decal_frag_small_explosion",
     },
     explosion_rounds: {
         type: "explosion",
@@ -82,7 +82,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "shrapnel_usas",
         explosionEffectType: "rounds",
-        decalType: "decal_rounds_explosion"
+        decalType: "decal_rounds_explosion",
     },
     explosion_rounds_sg: {
         type: "explosion",
@@ -92,7 +92,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "shrapnel_usas",
         explosionEffectType: "rounds_sg",
-        decalType: "decal_rounds_explosion"
+        decalType: "decal_rounds_explosion",
     },
     explosion_mirv: {
         type: "explosion",
@@ -102,7 +102,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 12,
         shrapnelType: "shrapnel_frag",
         explosionEffectType: "mirv",
-        decalType: "decal_frag_explosion"
+        decalType: "decal_frag_explosion",
     },
     explosion_mirv_mini: {
         type: "explosion",
@@ -112,7 +112,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 7,
         shrapnelType: "shrapnel_mirv_mini",
         explosionEffectType: "mirv_mini",
-        decalType: "decal_frag_small_explosion"
+        decalType: "decal_frag_small_explosion",
     },
     explosion_martyr_nade: {
         type: "explosion",
@@ -122,7 +122,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 8,
         shrapnelType: "shrapnel_mirv_mini",
         explosionEffectType: "martyr_nade",
-        decalType: "decal_frag_small_explosion"
+        decalType: "decal_frag_small_explosion",
     },
     explosion_snowball: {
         type: "explosion",
@@ -132,7 +132,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "",
         explosionEffectType: "snowball",
-        decalType: "decal_snowball_explosion"
+        decalType: "decal_snowball_explosion",
     },
     explosion_snowball_heavy: {
         type: "explosion",
@@ -142,7 +142,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "",
         explosionEffectType: "snowball_heavy",
-        decalType: "decal_snowball_explosion"
+        decalType: "decal_snowball_explosion",
     },
     explosion_potato: {
         type: "explosion",
@@ -153,7 +153,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "",
         explosionEffectType: "potato",
-        decalType: "decal_potato_explosion"
+        decalType: "decal_potato_explosion",
     },
     explosion_potato_heavy: {
         type: "explosion",
@@ -164,7 +164,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "",
         explosionEffectType: "potato_heavy",
-        decalType: "decal_potato_explosion"
+        decalType: "decal_potato_explosion",
     },
     explosion_potato_cannonball: {
         type: "explosion",
@@ -175,7 +175,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "",
         explosionEffectType: "potato_cannonball",
-        decalType: "decal_frag_small_explosion"
+        decalType: "decal_frag_small_explosion",
     },
     explosion_potato_smgshot: {
         type: "explosion",
@@ -186,7 +186,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 0,
         shrapnelType: "",
         explosionEffectType: "potato_smgshot",
-        decalType: ""
+        decalType: "",
     },
     explosion_bomb_iron: {
         type: "explosion",
@@ -196,6 +196,6 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelCount: 2,
         shrapnelType: "shrapnel_bomb_iron",
         explosionEffectType: "bomb_iron",
-        decalType: "decal_bomb_iron_explosion"
-    }
+        decalType: "decal_bomb_iron_explosion",
+    },
 };

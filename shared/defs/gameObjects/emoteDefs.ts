@@ -6,7 +6,7 @@ export enum EmoteCategory {
     Logos,
     Other,
     Flags,
-    Default
+    Default,
 }
 
 export interface EmoteDef {
@@ -29,7 +29,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo: {
         type: "emote",
@@ -38,7 +38,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo9mm: {
         type: "emote",
@@ -47,7 +47,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo12gauge: {
         type: "emote",
@@ -56,7 +56,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo762mm: {
         type: "emote",
@@ -65,7 +65,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo556mm: {
         type: "emote",
@@ -74,7 +74,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo50ae: {
         type: "emote",
@@ -83,7 +83,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo308sub: {
         type: "emote",
@@ -92,7 +92,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammoflare: {
         type: "emote",
@@ -101,7 +101,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_ammo45acp: {
         type: "emote",
@@ -110,7 +110,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: true,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_loot: {
         type: "emote",
@@ -119,7 +119,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         channel: "ui",
         teamOnly: false,
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_trick_nothing: {
         type: "emote",
@@ -127,7 +127,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "trick_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_trick_size: {
         type: "emote",
@@ -135,7 +135,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "trick_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_trick_m9: {
         type: "emote",
@@ -143,7 +143,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "trick_03",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_trick_chatty: {
         type: "emote",
@@ -151,7 +151,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "trick_02",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_trick_drain: {
         type: "emote",
@@ -159,7 +159,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "trick_02",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_treat_9mm: {
         type: "emote",
@@ -167,7 +167,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "treat_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_treat_12g: {
         type: "emote",
@@ -175,7 +175,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "treat_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_treat_556: {
         type: "emote",
@@ -183,7 +183,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "treat_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_treat_762: {
         type: "emote",
@@ -191,7 +191,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "treat_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_treat_super: {
         type: "emote",
@@ -199,7 +199,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "treat_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Locked
+        category: EmoteCategory.Locked,
     },
     emote_bugle_inspiration_red: {
         type: "emote",
@@ -207,7 +207,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_bugle_final_red: {
         type: "emote",
@@ -215,7 +215,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_bugle_inspiration_blue: {
         type: "emote",
@@ -223,7 +223,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_bugle_final_blue: {
         type: "emote",
@@ -231,7 +231,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         noCustom: true,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_thumbsup: {
         type: "emote",
@@ -241,7 +241,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_sadface: {
         type: "emote",
@@ -251,7 +251,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_happyface: {
         type: "emote",
@@ -261,7 +261,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_surviv: {
         type: "emote",
@@ -271,7 +271,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_gg: {
         type: "emote",
@@ -281,7 +281,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_question: {
         type: "emote",
@@ -291,7 +291,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_tombstone: {
         type: "emote",
@@ -301,7 +301,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_joyface: {
         type: "emote",
@@ -311,7 +311,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_sobface: {
         type: "emote",
@@ -321,7 +321,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_thinkingface: {
         type: "emote",
@@ -331,7 +331,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_flagus: {
         type: "emote",
@@ -341,7 +341,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagthailand: {
         type: "emote",
@@ -351,7 +351,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaggermany: {
         type: "emote",
@@ -361,7 +361,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagfrance: {
         type: "emote",
@@ -371,7 +371,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagsouthkorea: {
         type: "emote",
@@ -381,7 +381,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagbrazil: {
         type: "emote",
@@ -391,7 +391,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagcanada: {
         type: "emote",
@@ -401,7 +401,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagspain: {
         type: "emote",
@@ -411,7 +411,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagrussia: {
         type: "emote",
@@ -421,7 +421,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagmexico: {
         type: "emote",
@@ -431,7 +431,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagpoland: {
         type: "emote",
@@ -441,7 +441,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaguk: {
         type: "emote",
@@ -451,7 +451,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagcolombia: {
         type: "emote",
@@ -461,7 +461,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagukraine: {
         type: "emote",
@@ -471,7 +471,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagturkey: {
         type: "emote",
@@ -481,7 +481,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagphilippines: {
         type: "emote",
@@ -491,7 +491,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagczechia: {
         type: "emote",
@@ -501,7 +501,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagperu: {
         type: "emote",
@@ -511,7 +511,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagaustria: {
         type: "emote",
@@ -521,7 +521,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagargentina: {
         type: "emote",
@@ -531,7 +531,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagjapan: {
         type: "emote",
@@ -541,7 +541,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagvenezuela: {
         type: "emote",
@@ -551,7 +551,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagvietnam: {
         type: "emote",
@@ -561,7 +561,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagswitzerland: {
         type: "emote",
@@ -571,7 +571,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagnetherlands: {
         type: "emote",
@@ -581,7 +581,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagchina: {
         type: "emote",
@@ -591,7 +591,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagtaiwan: {
         type: "emote",
@@ -601,7 +601,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagchile: {
         type: "emote",
@@ -611,7 +611,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagaustralia: {
         type: "emote",
@@ -621,7 +621,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagdenmark: {
         type: "emote",
@@ -631,7 +631,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagitaly: {
         type: "emote",
@@ -641,7 +641,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagsweden: {
         type: "emote",
@@ -651,7 +651,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagecuador: {
         type: "emote",
@@ -661,7 +661,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagslovakia: {
         type: "emote",
@@ -671,7 +671,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaghungary: {
         type: "emote",
@@ -681,7 +681,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagromania: {
         type: "emote",
@@ -691,7 +691,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaghongkong: {
         type: "emote",
@@ -701,7 +701,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagindonesia: {
         type: "emote",
@@ -711,7 +711,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagfinland: {
         type: "emote",
@@ -721,7 +721,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagnorway: {
         type: "emote",
@@ -731,7 +731,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_heart: {
         type: "emote",
@@ -741,7 +741,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_sleepy: {
         type: "emote",
@@ -751,7 +751,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_flex: {
         type: "emote",
@@ -761,7 +761,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_angryface: {
         type: "emote",
@@ -771,7 +771,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_upsidedownface: {
         type: "emote",
@@ -781,7 +781,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_teabag: {
         type: "emote",
@@ -791,7 +791,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_alienface: {
         type: "emote",
@@ -801,7 +801,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_flagbelarus: {
         type: "emote",
@@ -811,7 +811,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagbelgium: {
         type: "emote",
@@ -821,7 +821,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagkazakhstan: {
         type: "emote",
@@ -831,7 +831,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_egg: {
         type: "emote",
@@ -841,7 +841,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_police: {
         type: "emote",
@@ -851,7 +851,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_dabface: {
         type: "emote",
@@ -861,7 +861,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_flagmalaysia: {
         type: "emote",
@@ -871,7 +871,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagnewzealand: {
         type: "emote",
@@ -881,7 +881,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_logosurviv: {
         type: "emote",
@@ -891,7 +891,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_logoegg: {
         type: "emote",
@@ -901,7 +901,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_logoswine: {
         type: "emote",
@@ -911,7 +911,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_logohydra: {
         type: "emote",
@@ -921,7 +921,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_logostorm: {
         type: "emote",
@@ -931,7 +931,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_flaghonduras: {
         type: "emote",
@@ -941,7 +941,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_logocaduceus: {
         type: "emote",
@@ -951,7 +951,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_impface: {
         type: "emote",
@@ -961,7 +961,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_monocleface: {
         type: "emote",
@@ -971,7 +971,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_sunglassface: {
         type: "emote",
@@ -981,7 +981,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_headshotface: {
         type: "emote",
@@ -991,7 +991,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_potato: {
         type: "emote",
@@ -1001,7 +1001,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_leek: {
         type: "emote",
@@ -1011,7 +1011,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_eggplant: {
         type: "emote",
@@ -1021,7 +1021,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_baguette: {
         type: "emote",
@@ -1031,7 +1031,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_chick: {
         type: "emote",
@@ -1041,7 +1041,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_flagbolivia: {
         type: "emote",
@@ -1051,7 +1051,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagcroatia: {
         type: "emote",
@@ -1061,7 +1061,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagindia: {
         type: "emote",
@@ -1071,7 +1071,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagisrael: {
         type: "emote",
@@ -1081,7 +1081,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaggeorgia: {
         type: "emote",
@@ -1091,7 +1091,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaggreece: {
         type: "emote",
@@ -1101,7 +1101,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagguatemala: {
         type: "emote",
@@ -1111,7 +1111,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagportugal: {
         type: "emote",
@@ -1121,7 +1121,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagserbia: {
         type: "emote",
@@ -1131,7 +1131,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagsingapore: {
         type: "emote",
@@ -1141,7 +1141,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagtrinidad: {
         type: "emote",
@@ -1151,7 +1151,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaguruguay: {
         type: "emote",
@@ -1161,7 +1161,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_logoconch: {
         type: "emote",
@@ -1171,7 +1171,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_pineapple: {
         type: "emote",
@@ -1181,7 +1181,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_coconut: {
         type: "emote",
@@ -1191,7 +1191,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_crab: {
         type: "emote",
@@ -1201,7 +1201,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Animals
+        category: EmoteCategory.Animals,
     },
     emote_whale: {
         type: "emote",
@@ -1211,7 +1211,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Animals
+        category: EmoteCategory.Animals,
     },
     emote_logometeor: {
         type: "emote",
@@ -1221,7 +1221,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_salt: {
         type: "emote",
@@ -1231,7 +1231,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_disappointface: {
         type: "emote",
@@ -1241,7 +1241,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_logocrossing: {
         type: "emote",
@@ -1251,7 +1251,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_fish: {
         type: "emote",
@@ -1261,7 +1261,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Animals
+        category: EmoteCategory.Animals,
     },
     emote_campfire: {
         type: "emote",
@@ -1271,7 +1271,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_chickendinner: {
         type: "emote",
@@ -1281,7 +1281,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_cattle: {
         type: "emote",
@@ -1291,7 +1291,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Animals
+        category: EmoteCategory.Animals,
     },
     emote_icecream: {
         type: "emote",
@@ -1301,7 +1301,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_cupcake: {
         type: "emote",
@@ -1311,7 +1311,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_donut: {
         type: "emote",
@@ -1321,7 +1321,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_logohatchet: {
         type: "emote",
@@ -1331,7 +1331,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_acorn: {
         type: "emote",
@@ -1341,7 +1341,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_trunk: {
         type: "emote",
@@ -1351,7 +1351,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_forest: {
         type: "emote",
@@ -1361,7 +1361,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_pumpkin: {
         type: "emote",
@@ -1371,7 +1371,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_candycorn: {
         type: "emote",
@@ -1381,7 +1381,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Food
+        category: EmoteCategory.Food,
     },
     emote_pilgrimhat: {
         type: "emote",
@@ -1391,7 +1391,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_turkeyanimal: {
         type: "emote",
@@ -1401,7 +1401,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Animals
+        category: EmoteCategory.Animals,
     },
     emote_heartface: {
         type: "emote",
@@ -1411,7 +1411,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_logochrysanthemum: {
         type: "emote",
@@ -1421,7 +1421,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_santahat: {
         type: "emote",
@@ -1431,7 +1431,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_snowman: {
         type: "emote",
@@ -1441,7 +1441,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_snowflake: {
         type: "emote",
@@ -1451,7 +1451,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_flagmorocco: {
         type: "emote",
@@ -1461,7 +1461,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagestonia: {
         type: "emote",
@@ -1471,7 +1471,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagalgeria: {
         type: "emote",
@@ -1481,7 +1481,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagegypt: {
         type: "emote",
@@ -1491,7 +1491,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagazerbaijan: {
         type: "emote",
@@ -1501,7 +1501,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagalbania: {
         type: "emote",
@@ -1511,7 +1511,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaglithuania: {
         type: "emote",
@@ -1521,7 +1521,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaglatvia: {
         type: "emote",
@@ -1531,7 +1531,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flaguae: {
         type: "emote",
@@ -1541,7 +1541,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_flagdominicanrepublic: {
         type: "emote",
@@ -1551,7 +1551,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Flags
+        category: EmoteCategory.Flags,
     },
     emote_logocloud: {
         type: "emote",
@@ -1561,7 +1561,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
+        category: EmoteCategory.Logos,
     },
     emote_ghost_base: {
         type: "emote",
@@ -1571,7 +1571,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_bandagedface: {
         type: "emote",
@@ -1581,7 +1581,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_picassoface: {
         type: "emote",
@@ -1591,7 +1591,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_pooface: {
         type: "emote",
@@ -1601,7 +1601,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Faces
+        category: EmoteCategory.Faces,
     },
     emote_ok: {
         type: "emote",
@@ -1611,7 +1611,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_rainbow: {
         type: "emote",
@@ -1621,7 +1621,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Other
+        category: EmoteCategory.Other,
     },
     emote_logotwins: {
         type: "emote",
@@ -1631,6 +1631,6 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         sound: "emote_01",
         channel: "ui",
         teamOnly: false,
-        category: EmoteCategory.Logos
-    }
+        category: EmoteCategory.Logos,
+    },
 };

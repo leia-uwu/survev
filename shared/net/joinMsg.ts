@@ -16,7 +16,7 @@ export class JoinMsg implements AbstractMsg {
         secondary: "",
         heal: "",
         boost: "",
-        emotes: [] as string[]
+        emotes: [] as string[],
     };
 
     deserialize(s: BitStream) {

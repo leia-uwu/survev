@@ -35,7 +35,7 @@ class SmokeEmitter {
         public smokeBarn: SmokeBarn,
         public pos: Vec2,
         public layer: number,
-        public interior: number
+        public interior: number,
     ) {}
 
     update(dt: number) {
@@ -126,7 +126,7 @@ export class Smoke extends BaseGameObject {
         this.interior = interior;
         this.bounds = collider.createAabbExtents(
             v2.create(0, 0),
-            v2.create(this.rad, this.rad)
+            v2.create(this.rad, this.rad),
         );
     }
 

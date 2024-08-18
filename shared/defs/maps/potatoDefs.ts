@@ -8,7 +8,7 @@ const mapDef = {
     desc: {
         name: "Potato",
         icon: "img/loot/loot-throwable-potato.svg",
-        buttonCss: "btn-mode-potato"
+        buttonCss: "btn-mode-potato",
     },
     assets: {
         audio: [
@@ -20,12 +20,12 @@ const mapDef = {
             { name: "club_music_02", channel: "ambient" },
             {
                 name: "ambient_steam_01",
-                channel: "ambient"
+                channel: "ambient",
             },
             { name: "log_11", channel: "sfx" },
-            { name: "log_12", channel: "sfx" }
+            { name: "log_12", channel: "sfx" },
         ],
-        atlases: ["gradient", "loadout", "shared", "potato"]
+        atlases: ["gradient", "loadout", "shared", "potato"],
     },
     biome: {
         colors: {
@@ -36,10 +36,10 @@ const mapDef = {
             riverbank: 9461284,
             grass: 8433481,
             underground: 1772803,
-            playerSubmerge: 2854052
+            playerSubmerge: 2854052,
         },
         particles: { camera: "falling_potato" },
-        frozenSprites: ["player-mash-01.img", "player-mash-02.img", "player-mash-03.img"]
+        frozenSprites: ["player-mash-01.img", "player-mash-02.img", "player-mash-03.img"],
     },
     gameMode: { maxPlayers: 80, potatoMode: true },
     /* STRIP_FROM_PROD_CLIENT:START */
@@ -49,19 +49,19 @@ const mapDef = {
                 {
                     circleIdx: 1,
                     wait: 10,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 3,
                     wait: 2,
-                    options: { type: GameConfig.Plane.Airdrop }
-                }
+                    options: { type: GameConfig.Plane.Airdrop },
+                },
             ],
             crates: [
                 { name: "airdrop_crate_01", weight: 1 },
-                { name: "airdrop_crate_02", weight: 1 }
-            ]
-        }
+                { name: "airdrop_crate_02", weight: 1 },
+            ],
+        },
     },
     lootTable: {
         tier_guns: [
@@ -72,39 +72,39 @@ const mapDef = {
             { name: "ot38", count: 1, weight: 8 },
             { name: "m9", count: 1, weight: 19 },
             { name: "m93r", count: 1, weight: 5 },
-            { name: "glock", count: 1, weight: 7 }
+            { name: "glock", count: 1, weight: 7 },
         ],
         tier_throwables: [
             { name: "frag", count: 2, weight: 1 },
             { name: "smoke", count: 1, weight: 1 },
             { name: "mirv", count: 2, weight: 0.05 },
-            { name: "potato", count: 5, weight: 2 }
+            { name: "potato", count: 5, weight: 2 },
         ],
         tier_airdrop_throwables: [
             { name: "frag", count: 2, weight: 1 },
             { name: "mirv", count: 2, weight: 0.5 },
-            { name: "potato", count: 10, weight: 2 }
+            { name: "potato", count: 10, weight: 2 },
         ],
         tier_ammo: [
             { name: "9mm", count: 60, weight: 1 },
             { name: "762mm", count: 60, weight: 3 },
             { name: "556mm", count: 60, weight: 3 },
             { name: "12gauge", count: 10, weight: 3 },
-            { name: "45acp", count: 60, weight: 3 }
+            { name: "45acp", count: 60, weight: 3 },
         ],
         tier_ammo_crate: [
             { name: "9mm", count: 60, weight: 1 },
             { name: "762mm", count: 60, weight: 3 },
             { name: "556mm", count: 60, weight: 3 },
             { name: "12gauge", count: 10, weight: 3 },
-            { name: "45acp", count: 60, weight: 3 }
+            { name: "45acp", count: 60, weight: 3 },
         ],
         tier_airdrop_ammo: [
             { name: "9mm", count: 60, weight: 1 },
             { name: "762mm", count: 60, weight: 3 },
             { name: "556mm", count: 60, weight: 3 },
             { name: "12gauge", count: 10, weight: 3 },
-            { name: "45acp", count: 60, weight: 3 }
+            { name: "45acp", count: 60, weight: 3 },
         ],
         tier_armor: [
             { name: "helmet01", count: 1, weight: 9 },
@@ -113,11 +113,11 @@ const mapDef = {
             {
                 name: "helmet03_potato",
                 count: 1,
-                weight: 0.1
+                weight: 0.1,
             },
             { name: "chest01", count: 1, weight: 15 },
             { name: "chest02", count: 1, weight: 6 },
-            { name: "chest03", count: 1, weight: 0.2 }
+            { name: "chest03", count: 1, weight: 0.2 },
         ],
         tier_police: [
             { name: "scar", count: 1, weight: 0.5 },
@@ -125,23 +125,23 @@ const mapDef = {
             {
                 name: "helmet03_potato",
                 count: 1,
-                weight: 0.1
+                weight: 0.1,
             },
             { name: "chest03", count: 1, weight: 0.1 },
-            { name: "backpack03", count: 1, weight: 0.25 }
+            { name: "backpack03", count: 1, weight: 0.25 },
         ],
         tier_airdrop_armor: [
             { name: "helmet03", count: 1, weight: 1 },
             {
                 name: "helmet03_potato",
                 count: 1,
-                weight: 0.1
+                weight: 0.1,
             },
             { name: "chest03", count: 1, weight: 1 },
-            { name: "backpack03", count: 1, weight: 1 }
+            { name: "backpack03", count: 1, weight: 1 },
         ],
         tier_ring_case: [{ name: "potato_cannon", count: 1, weight: 1 }],
-        tier_airdrop_rare: [{ name: "potato_cannon", count: 1, weight: 1 }]
+        tier_airdrop_rare: [{ name: "potato_cannon", count: 1, weight: 1 }],
     },
     mapGen: {
         densitySpawns: [
@@ -166,8 +166,8 @@ const mapDef = {
                 shack_01: 7,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
-            }
+                loot_tier_beach: 4,
+            },
         ],
         fixedSpawns: [
             {
@@ -196,17 +196,17 @@ const mapDef = {
                 tree_02: 3,
                 teahouse_complex_01s: { small: 1, large: 2 },
                 stone_04: 1,
-                club_complex_01: 1
-            }
+                club_complex_01: 1,
+            },
         ],
         randomSpawns: [
             {
                 spawns: ["mansion_structure_01", "police_01", "bank_01"],
-                choose: 2
-            }
+                choose: 2,
+            },
         ],
-        importantSpawns: ["club_complex_01"]
-    }
+        importantSpawns: ["club_complex_01"],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 export const Potato = util.mergeDeep({}, Main, mapDef) as MapDef;

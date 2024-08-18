@@ -30,7 +30,7 @@ export function createCasingParticle(
     dir: Vec2,
     layer: number,
     zOrd: number,
-    particleBarn: ParticleBarn
+    particleBarn: ParticleBarn,
 ) {
     const weapDef = GameObjectDefs[weapType] as GunDef;
     if (weapDef) {
@@ -42,7 +42,7 @@ export function createCasingParticle(
         vel = v2.rotate(vel, ((Math.random() - 0.5) * Math.PI) / 3);
         let shellPos = v2.add(
             pos,
-            v2.mul(dir, GameConfig.player.radius + weapDef.particle.shellOffset)
+            v2.mul(dir, GameConfig.player.radius + weapDef.particle.shellOffset),
         );
         if (weapDef.particle.shellOffsetY) {
             shellPos = v2.add(shellPos, v2.mul(shellDir, weapDef.particle.shellOffsetY));
@@ -58,7 +58,7 @@ export function createCasingParticle(
             weapDef.particle.shellScale,
             -Math.atan2(shellDir.y, shellDir.x),
             null,
-            zOrd
+            zOrd,
         );
     }
 }
@@ -101,7 +101,7 @@ export class ShotBarn {
         activePlayerId: number,
         playerBarn: PlayerBarn,
         particleBarn: ParticleBarn,
-        audioManager: AudioManager
+        audioManager: AudioManager,
     ) {
         for (let i = 0; i < this.shots.length; i++) {
             const shot = this.shots[i];
@@ -145,7 +145,7 @@ export class ShotBarn {
                         filter: "muffled",
                         fallOff: weaponDef.sound.fallOff ? weaponDef.sound.fallOff : 0,
                         detune,
-                        volumeScale: shot.splinter ? 0.75 : 1
+                        volumeScale: shot.splinter ? 0.75 : 1,
                     });
 
                     if (shot.splinter) {
@@ -162,7 +162,7 @@ export class ShotBarn {
                                 : 0,
                             detune: 1200,
                             delay: 30,
-                            volumeScale: 0.75
+                            volumeScale: 0.75,
                         });
                     }
 
@@ -182,7 +182,7 @@ export class ShotBarn {
                                     : weaponDef.sound.pull;
                             audioManager.stopSound(player.cycleSoundInstance!);
                             player.cycleSoundInstance = audioManager.playSound(
-                                soundName!
+                                soundName!,
                             );
                         }
 
@@ -213,7 +213,7 @@ export class ShotBarn {
                             player.netData.dir,
                             player.renderLayer,
                             player.renderZOrd + 1,
-                            particleBarn
+                            particleBarn,
                         );
                     }
                     shot.active = false;

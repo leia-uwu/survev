@@ -79,7 +79,7 @@ class Projectile implements AbstractObject {
         data: ObjectData<ObjectType.Projectile>,
         fullUpdate: boolean,
         isNew: boolean,
-        ctx: Ctx
+        ctx: Ctx,
     ) {
         // Copy data
         if (fullUpdate) {
@@ -153,7 +153,7 @@ class Projectile implements AbstractObject {
 const groundSounds = {
     grass: "frag_grass",
     sand: "frag_sand",
-    water: "frag_water"
+    water: "frag_water",
 };
 
 export class ProjectileBarn {
@@ -166,7 +166,7 @@ export class ProjectileBarn {
         activePlayer: Player,
         map: Map,
         renderer: Renderer,
-        camera: Camera
+        camera: Camera,
     ) {
         const projectiles = this.projectilePool.getPool();
         for (let i = 0; i < projectiles.length; i++) {
@@ -186,14 +186,14 @@ export class ProjectileBarn {
                     pen: number;
                 } = {
                     obj: null,
-                    pen: 0
+                    pen: 0,
                 };
                 const groundCol: {
                     obj: Obstacle | null;
                     pen: number;
                 } = {
                     obj: null,
-                    pen: 0
+                    pen: 0,
                 };
                 const projCollider = collider.createCircle(p.pos, p.rad);
                 const obstacles = map.obstaclePool.getPool();
@@ -232,7 +232,7 @@ export class ProjectileBarn {
                         dir,
                         p.layer,
                         particleBarn,
-                        audioManager
+                        audioManager,
                     );
                 }
                 const surface = map.getGroundSurface(p.pos, p.layer);
@@ -243,7 +243,7 @@ export class ProjectileBarn {
                         particleBarn.addRippleParticle(
                             p.pos,
                             p.layer,
-                            surface.data.rippleColor
+                            surface.data.rippleColor,
                         );
                     }
                     p.inWater = surface.type == "water";
@@ -263,7 +263,7 @@ export class ProjectileBarn {
                     } = {
                         fn: "playGroup",
                         channel: "hits",
-                        name: ""
+                        name: "",
                     };
                     if (groundCol.obj) {
                         if (p.lastSoundObjId != groundCol.obj.__id) {
@@ -288,7 +288,7 @@ export class ProjectileBarn {
                             channel: sound.channel,
                             soundPos: p.pos,
                             layer: p.layer,
-                            filter: "muffled"
+                            filter: "muffled",
                         });
                     }
                 }
@@ -298,7 +298,7 @@ export class ProjectileBarn {
                     p.strobeTicker = math.clamp(
                         p.strobeTicker + dt * p.strobeDir * p.strobeSpeed,
                         0,
-                        1
+                        1,
                     );
                     p.strobeScale = math.easeInExpo(p.strobeTicker) * p.strobeScaleMax;
                     p.strobeSprite.scale.set(p.strobeScale, p.strobeScale);
@@ -318,18 +318,18 @@ export class ProjectileBarn {
                             itemDef.throwPhysics.speed * 0.25,
                             itemDef.throwPhysics.speed * 1,
                             0,
-                            1
+                            1,
                         ) *
                         math.remap(
                             p.posZ,
                             0.1,
                             GameConfig.projectile.maxHeight * 0.5,
                             0,
-                            1
+                            1,
                         );
                     p.trail.scale.set(
                         itemDef.trail.maxLength * trailT,
-                        itemDef.trail.width
+                        itemDef.trail.width,
                     );
                     p.trail.rotation = -Math.atan2(p.dir.y, p.dir.x);
                     p.trail.tint = itemDef.trail.tint;

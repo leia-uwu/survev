@@ -5,7 +5,7 @@ import {
     type ChestDef,
     GEAR_TYPES,
     type HealDef,
-    SCOPE_LEVELS
+    SCOPE_LEVELS,
 } from "../../../shared/defs/gameObjects/gearDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
@@ -36,14 +36,14 @@ enum InteractionType {
     Cancel,
     Loot,
     Revive,
-    Object
+    Object,
 }
 
 const WeaponSlotToBind = {
     [GameConfig.WeaponSlot.Primary]: Input.EquipPrimary,
     [GameConfig.WeaponSlot.Secondary]: Input.EquipSecondary,
     [GameConfig.WeaponSlot.Melee]: Input.EquipMelee,
-    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable
+    [GameConfig.WeaponSlot.Throwable]: Input.EquipThrowable,
 };
 
 function domElemById(id: string) {
@@ -122,14 +122,14 @@ class UiState {
         lootType: "",
         ticker: 0,
         duration: 0,
-        opacity: 0
+        opacity: 0,
     };
 
     pickupMessage = {
         message: "",
         ticker: 0,
         duration: 0,
-        opacity: 0
+        opacity: 0,
     };
 
     killMessage = {
@@ -137,7 +137,7 @@ class UiState {
         count: "",
         ticker: 0,
         duration: 0,
-        opacity: 0
+        opacity: 0,
     };
 
     killFeed = Array.from({ length: maxKillFeedLines }, () => ({
@@ -145,21 +145,21 @@ class UiState {
         color: "#000000",
         offset: 0,
         opacity: 0,
-        ticker: Number.MAX_VALUE
+        ticker: Number.MAX_VALUE,
     }));
 
     ammo = {
         current: 0,
         remaining: 0,
         displayCurrent: false,
-        displayRemaining: false
+        displayRemaining: false,
     };
 
     interaction = {
         type: InteractionType.None,
         text: "",
         key: "",
-        usable: false
+        usable: false,
     };
 
     weapons = Array.from({ length: GameConfig.WeaponSlot.Count }, (_, i) => ({
@@ -172,14 +172,14 @@ class UiState {
         width: 0,
         ticker: 0,
         bind: WeaponSlotToBind[i as keyof typeof WeaponSlotToBind],
-        bindStr: ""
+        bindStr: "",
     }));
 
     scopes = SCOPE_LEVELS.map((type) => ({
         type,
         visible: false,
         equipped: false,
-        selectable: false
+        selectable: false,
     }));
 
     loot = m().map((type) => ({
@@ -188,7 +188,7 @@ class UiState {
         maximum: 0,
         selectable: false,
         width: 0,
-        ticker: 0
+        ticker: 0,
     }));
 
     perks = Array.from({ length: perkUiCount }, () => ({
@@ -196,7 +196,7 @@ class UiState {
         droppable: false,
         width: 0,
         ticker: 0,
-        pulse: false
+        pulse: false,
     }));
 
     gear = GEAR_TYPES.map((type) => ({
@@ -205,7 +205,7 @@ class UiState {
         selectable: false,
         width: 0,
         ticker: 0,
-        rot: 0
+        rot: 0,
     }));
 
     health = GameConfig.player.health as number;
@@ -214,7 +214,7 @@ class UiState {
 }
 
 interface EventListeners<
-    T extends keyof HTMLElementEventMap = keyof HTMLElementEventMap
+    T extends keyof HTMLElementEventMap = keyof HTMLElementEventMap,
 > {
     event: T;
     elem: HTMLElement;
@@ -232,24 +232,24 @@ export class UiManager2 {
         emoteButton: domElemById("ui-emote-button"),
         menu: {
             touchStyles: domElemById("btn-touch-styles"),
-            aimLine: domElemById("btn-game-aim-line")
+            aimLine: domElemById("btn-game-aim-line"),
         },
         rareLootMessage: {
             icon: domElemById("ui-perk-message-image-icon"),
             imageWrapper: domElemById("ui-perk-message-image-wrapper"),
             wrapper: domElemById("ui-perk-message-wrapper"),
             name: domElemById("ui-perk-message-name"),
-            desc: domElemById("ui-perk-message-acquired")
+            desc: domElemById("ui-perk-message-acquired"),
         },
         pickupMessage: domElemById("ui-pickup-message"),
         killMessage: {
             div: domElemById("ui-kills"),
             text: domElemById("ui-kill-text"),
-            count: domElemById("ui-kill-count")
+            count: domElemById("ui-kill-count"),
         },
         killFeed: {
             div: domElemById("ui-killfeed-contents"),
-            lines: [] as Array<{ line: HTMLElement; text: HTMLElement }>
+            lines: [] as Array<{ line: HTMLElement; text: HTMLElement }>,
         },
         weapons: [] as Array<{
             div: HTMLElement;
@@ -261,16 +261,16 @@ export class UiManager2 {
         ammo: {
             current: domElemById("ui-current-clip"),
             remaining: domElemById("ui-remaining-ammo"),
-            reloadButton: domElemById("ui-reload-button-container")
+            reloadButton: domElemById("ui-reload-button-container"),
         },
         interaction: {
             div: domElemById("ui-interaction"),
             key: domElemById("ui-interaction-press"),
-            text: domElemById("ui-interaction-description")
+            text: domElemById("ui-interaction-description"),
         },
         health: {
             inner: domElemById("ui-health-actual"),
-            depleted: domElemById("ui-health-depleted")
+            depleted: domElemById("ui-health-depleted"),
         },
         boost: {
             div: domElemById("ui-boost-counter"),
@@ -278,8 +278,8 @@ export class UiManager2 {
                 domElemById("ui-boost-counter-0").firstElementChild,
                 domElemById("ui-boost-counter-1").firstElementChild,
                 domElemById("ui-boost-counter-2").firstElementChild,
-                domElemById("ui-boost-counter-3").firstElementChild
-            ] as unknown as HTMLElement[]
+                domElemById("ui-boost-counter-3").firstElementChild,
+            ] as unknown as HTMLElement[],
         },
         scopes: [] as Array<{
             scopeType: string;
@@ -304,7 +304,7 @@ export class UiManager2 {
             divTitle: HTMLElement;
             divDesc: HTMLElement;
             image: HTMLImageElement;
-        }>
+        }>,
     };
 
     rareLootMessageQueue: string[] = [];
@@ -327,7 +327,7 @@ export class UiManager2 {
 
     constructor(
         public localization: Localization,
-        public inputBinds: InputBinds
+        public inputBinds: InputBinds,
     ) {
         const itemAction = this;
 
@@ -349,7 +349,7 @@ export class UiManager2 {
 
             this.dom.killFeed.lines.push({
                 line,
-                text: line.firstElementChild as HTMLElement
+                text: line.firstElementChild as HTMLElement,
             });
         }
 
@@ -360,14 +360,14 @@ export class UiManager2 {
                 div: weapon,
                 type: weapon.getElementsByClassName("ui-weapon-name")[0] as HTMLElement,
                 number: weapon.getElementsByClassName(
-                    "ui-weapon-number"
+                    "ui-weapon-number",
                 )[0] as HTMLElement,
                 image: weapon.getElementsByClassName(
-                    "ui-weapon-image"
+                    "ui-weapon-image",
                 )[0] as HTMLImageElement,
                 ammo: weapon.getElementsByClassName(
-                    "ui-weapon-ammo-counter"
-                )[0] as HTMLElement
+                    "ui-weapon-ammo-counter",
+                )[0] as HTMLElement,
             };
             this.dom.weapons.push(weaponData);
         }
@@ -376,7 +376,7 @@ export class UiManager2 {
             const scopeType = SCOPE_LEVELS[i];
             const x = {
                 scopeType,
-                div: domElemById(`ui-scope-${scopeType}`)
+                div: domElemById(`ui-scope-${scopeType}`),
             };
             this.dom.scopes.push(x);
         }
@@ -389,9 +389,11 @@ export class UiManager2 {
                     div: T,
                     count: T.getElementsByClassName("ui-loot-count")[0] as HTMLElement,
                     image: T.getElementsByClassName(
-                        "ui-loot-image"
+                        "ui-loot-image",
                     )[0] as HTMLImageElement,
-                    overlay: T.getElementsByClassName("ui-loot-overlay")[0] as HTMLElement
+                    overlay: T.getElementsByClassName(
+                        "ui-loot-overlay",
+                    )[0] as HTMLElement,
                 };
                 this.dom.loot.push(P);
             }
@@ -403,7 +405,9 @@ export class UiManager2 {
                 gearType,
                 div,
                 level: div.getElementsByClassName("ui-armor-level")[0] as HTMLElement,
-                image: div.getElementsByClassName("ui-armor-image")[0] as HTMLImageElement
+                image: div.getElementsByClassName(
+                    "ui-armor-image",
+                )[0] as HTMLImageElement,
             };
             this.dom.gear.push(L);
         }
@@ -415,23 +419,23 @@ export class UiManager2 {
                 divTitle: perk.getElementsByClassName("tooltip-title")[0] as HTMLElement,
                 divDesc: perk.getElementsByClassName("tooltip-desc")[0] as HTMLElement,
                 image: perk.getElementsByClassName(
-                    "ui-armor-image"
-                )[0] as HTMLImageElement
+                    "ui-armor-image",
+                )[0] as HTMLImageElement,
             };
             this.dom.perks.push(perkData);
         }
 
         const setEventListener = <
-            T extends keyof HTMLElementEventMap = keyof HTMLElementEventMap
+            T extends keyof HTMLElementEventMap = keyof HTMLElementEventMap,
         >(
             event: T,
             elem: HTMLElement,
-            fn: (e: HTMLElementEventMap[T]) => void
+            fn: (e: HTMLElementEventMap[T]) => void,
         ) => {
             this.eventListeners.push({
                 event,
                 elem,
-                fn
+                fn,
             });
             elem.addEventListener(event, fn);
         };
@@ -440,7 +444,7 @@ export class UiManager2 {
             action: string,
             type: string,
             data: string,
-            div: HTMLElement
+            div: HTMLElement,
         ) => {
             this.itemActions.push({
                 action,
@@ -448,7 +452,7 @@ export class UiManager2 {
                 data,
                 div,
                 actionQueued: false,
-                actionTime: 0
+                actionTime: 0,
             });
         };
 
@@ -457,13 +461,13 @@ export class UiManager2 {
                 "use",
                 "weapon",
                 i as unknown as string,
-                this.dom.weapons[i].div
+                this.dom.weapons[i].div,
             );
             addItemAction(
                 "drop",
                 "weapon",
                 i as unknown as string,
-                this.dom.weapons[i].div
+                this.dom.weapons[i].div,
             );
         }
         for (let i = 0; i < this.dom.scopes.length; i++) {
@@ -578,7 +582,7 @@ export class UiManager2 {
         this.uiEvents.push({
             action: itemAction.action,
             type: itemAction.type,
-            data: itemAction.data
+            data: itemAction.data,
         });
     }
 
@@ -593,7 +597,7 @@ export class UiManager2 {
         playerBarn: PlayerBarn,
         lootBarn: LootBarn,
         map: Map,
-        inputBinds: InputBinds
+        inputBinds: InputBinds,
     ) {
         const state = this.newState;
 
@@ -697,7 +701,7 @@ export class UiManager2 {
                         const res = collider.intersectCircle(
                             obstacle.collider,
                             activePlayer.netData.pos,
-                            interact.rad + activePlayer.rad
+                            interact.rad + activePlayer.rad,
                         );
                         if (res && res.pen >= closestPen) {
                             closestObj = obstacle;
@@ -773,7 +777,7 @@ export class UiManager2 {
                             p.action.type != Action.Revive
                         ) {
                             const dist = v2.length(
-                                v2.sub(p.netData.pos, activePlayer.netData.pos)
+                                v2.sub(p.netData.pos, activePlayer.netData.pos),
                             );
                             if (
                                 dist < GameConfig.player.reviveRange &&
@@ -813,7 +817,7 @@ export class UiManager2 {
         state.interaction.text = this.getInteractionText(
             interactionType,
             interactionObject!,
-            activePlayer
+            activePlayer,
         );
         state.interaction.key = this.getInteractionKey(interactionType);
         state.interaction.usable = interactionUsable && !spectating;
@@ -1001,7 +1005,7 @@ export class UiManager2 {
 
         if (patch.rareLootMessage.opacity) {
             dom.rareLootMessage.wrapper.style.opacity = String(
-                state.rareLootMessage.opacity
+                state.rareLootMessage.opacity,
             );
         }
 
@@ -1050,32 +1054,32 @@ export class UiManager2 {
             const steps = [
                 {
                     health: 100,
-                    color: [179, 179, 179]
+                    color: [179, 179, 179],
                 },
                 {
                     health: 100,
-                    color: [255, 255, 255]
+                    color: [255, 255, 255],
                 },
                 {
                     health: 75,
-                    color: [255, 255, 255]
+                    color: [255, 255, 255],
                 },
                 {
                     health: 75,
-                    color: [255, 158, 158]
+                    color: [255, 158, 158],
                 },
                 {
                     health: 25,
-                    color: [255, 82, 82]
+                    color: [255, 82, 82],
                 },
                 {
                     health: 25,
-                    color: [255, 0, 0]
+                    color: [255, 0, 0],
                 },
                 {
                     health: 0,
-                    color: [255, 0, 0]
-                }
+                    color: [255, 0, 0],
+                },
             ];
 
             let endIdx = 0;
@@ -1091,7 +1095,7 @@ export class UiManager2 {
             let rgb = [
                 Math.floor(math.lerp(t, stepA.color[0], stepB.color[0])),
                 Math.floor(math.lerp(t, stepA.color[1], stepB.color[1])),
-                Math.floor(math.lerp(t, stepA.color[2], stepB.color[2]))
+                Math.floor(math.lerp(t, stepA.color[2], stepB.color[2])),
             ];
 
             if (state.downed) {
@@ -1199,10 +1203,10 @@ export class UiManager2 {
         }
         if (patch.ammo.displayRemaining) {
             dom.ammo.remaining.style.opacity = String(
-                state.ammo.displayRemaining ? 1 : 0
+                state.ammo.displayRemaining ? 1 : 0,
             );
             dom.ammo.reloadButton.style.opacity = String(
-                state.ammo.displayRemaining ? 1 : 0
+                state.ammo.displayRemaining ? 1 : 0,
             );
         }
         for (let U = 0; U < patch.scopes.length; U++) {
@@ -1241,7 +1245,7 @@ export class UiManager2 {
                             ? 0
                             : J.count > 0
                               ? 1
-                              : 0.25
+                              : 0.25,
                     );
                     Y.div.style.color = J.count == J.maximum ? "#ff9900" : "#ffffff";
                 }
@@ -1292,7 +1296,7 @@ export class UiManager2 {
                 pe.perkType = he.type;
                 pe.divTitle.innerHTML = this.localization.translate(`game-${he.type}`);
                 pe.divDesc.innerHTML = this.localization.translate(
-                    `game-${he.type}-desc`
+                    `game-${he.type}-desc`,
                 );
                 pe.div.style.display = he.type ? "block" : "none";
                 pe.image.src = he.type ? helpers.getSvgFromGameType(he.type) : "";
@@ -1338,7 +1342,7 @@ export class UiManager2 {
     hideKillMessage() {
         this.newState.killMessage.ticker = math.max(
             this.newState.killMessage.ticker,
-            this.newState.killMessage.duration - 0.2
+            this.newState.killMessage.duration - 0.2,
         );
     }
 
@@ -1385,18 +1389,18 @@ export class UiManager2 {
         killerName: string,
         sourceType: string,
         damageType: DamageType,
-        downed: boolean
+        downed: boolean,
     ) {
         switch (damageType) {
             case DamageType.Player:
                 return `${killerName} ${this.localization.translate(
-                    downed ? "game-knocked-out" : "game-killed"
+                    downed ? "game-knocked-out" : "game-killed",
                 )} ${targetName} ${this.localization.translate(
-                    "game-with"
+                    "game-with",
                 )} ${this.localization.translate(`game-${sourceType}`)}`;
             case DamageType.Bleeding: {
                 const killTxt = this.localization.translate(
-                    killerName ? "game-finally-killed" : "game-finally-bled-out"
+                    killerName ? "game-finally-killed" : "game-finally-bled-out",
                 );
                 if (killerName) {
                     return `${killerName} ${killTxt} ${targetName}`;
@@ -1411,7 +1415,7 @@ export class UiManager2 {
                     killTxt = this.localization.translate("game-knocked-out");
                 } else {
                     killTxt = this.localization.translate(
-                        killerName ? "game-finally-killed" : "game-died-outside"
+                        killerName ? "game-finally-killed" : "game-died-outside",
                     );
                 }
                 if (killName) {
@@ -1431,15 +1435,15 @@ export class UiManager2 {
             }
             case DamageType.Airstrike: {
                 const killTxt = this.localization.translate(
-                    downed ? "game-knocked-out" : "game-killed"
+                    downed ? "game-knocked-out" : "game-killed",
                 );
                 if (killerName) {
                     return `${killerName} ${killTxt} ${targetName} ${this.localization.translate(
-                        "game-with"
+                        "game-with",
                     )} ${this.localization.translate("game-an-air-strike")}`;
                 }
                 return `${this.localization.translate(
-                    "game-the-air-strike"
+                    "game-the-air-strike",
                 )} ${killTxt} ${targetName}`;
             }
             default:
@@ -1451,7 +1455,7 @@ export class UiManager2 {
         activeTeamId: number,
         targetTeamId: number,
         killerTeamId: number,
-        factionMode: boolean
+        factionMode: boolean,
     ) {
         if (factionMode) {
             return "#efeeee";
@@ -1483,14 +1487,14 @@ export class UiManager2 {
 
     getRoleAnnouncementText(role: string, teamId: number) {
         return `${this.localization.translate(
-            "game-youve-been-promoted-to"
+            "game-youve-been-promoted-to",
         )} ${this.getRoleTranslation(role, teamId)}!`;
     }
 
     getRoleAssignedKillFeedText(role: string, teamId: number, playerName: string) {
         const roleTxt = this.getRoleTranslation(role, teamId);
         return `${playerName} ${this.localization.translate(
-            "game-promoted-to"
+            "game-promoted-to",
         )} ${roleTxt}!`;
     }
 
@@ -1498,7 +1502,7 @@ export class UiManager2 {
         const roleTxt = this.getRoleTranslation(role, teamId);
         if (killerName) {
             return `${killerName} ${this.localization.translate(
-                "game-killed"
+                "game-killed",
             )} ${roleTxt}!`;
         }
         return `${roleTxt} ${this.localization.translate("game-is-dead")}!`;
@@ -1513,7 +1517,7 @@ export class UiManager2 {
         suicide: boolean,
         sourceType: string,
         damageType: DamageType,
-        spectating: boolean
+        spectating: boolean,
     ) {
         const knockedOut = downed && !killed;
         const youTxt = spectating
@@ -1533,7 +1537,7 @@ export class UiManager2 {
         const damageTxt = this.localization.translate(
             damageType == GameConfig.DamageType.Airstrike
                 ? "game-an-air-strike"
-                : `game-${sourceType}`
+                : `game-${sourceType}`,
         );
         const withTxt = this.localization.translate("game-with");
 
@@ -1545,7 +1549,7 @@ export class UiManager2 {
 
     getKillCountText(killCount: number) {
         return `${killCount} ${this.localization.translate(
-            killCount != 1 ? "game-kills" : "game-kill"
+            killCount != 1 ? "game-kills" : "game-kill",
         )}`;
     }
 
@@ -1554,7 +1558,7 @@ export class UiManager2 {
         targetName: string,
         sourceType: string,
         damageType: DamageType,
-        spectating: boolean
+        spectating: boolean,
     ) {
         const youTxt = spectating
             ? targetName
@@ -1586,7 +1590,7 @@ export class UiManager2 {
             [PickupMsgType.AlreadyOwned]: "game-item-already-owned",
             [PickupMsgType.AlreadyEquipped]: "game-item-already-equipped",
             [PickupMsgType.BetterItemEquipped]: "game-better-item-equipped",
-            [PickupMsgType.GunCannotFire]: "game-gun-cannot-fire"
+            [PickupMsgType.GunCannotFire]: "game-gun-cannot-fire",
         };
         const key = typeMap[type] || typeMap[PickupMsgType.Full];
         return this.localization.translate(key);
@@ -1595,7 +1599,7 @@ export class UiManager2 {
     getInteractionText(
         type: InteractionType,
         object: Obstacle | Loot | Player,
-        player: Player
+        player: Player,
     ) {
         switch (type) {
             case InteractionType.None:
@@ -1615,7 +1619,7 @@ export class UiManager2 {
             case InteractionType.Object: {
                 const x = (object as Obstacle).getInteraction()!;
                 return `${this.localization.translate(
-                    x.action
+                    x.action,
                 )} ${this.localization.translate(x.object)}`;
             }
             case InteractionType.Loot: {
@@ -1678,7 +1682,7 @@ export function loadStaticDomImages() {
         "ui-loot-50AE": "img/loot/loot-ammo-box.svg",
         "ui-loot-308sub": "img/loot/loot-ammo-box.svg",
         "ui-loot-flare": "img/loot/loot-ammo-box.svg",
-        "ui-loot-45acp": "img/loot/loot-ammo-box.svg"
+        "ui-loot-45acp": "img/loot/loot-ammo-box.svg",
     };
 
     for (const [id, img] of Object.entries(lootImages)) {
