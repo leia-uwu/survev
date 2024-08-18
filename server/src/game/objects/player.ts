@@ -23,7 +23,6 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-// import { IP_SECRET, WEBHOOK_URL } from "../../../DO_NOT_PUSH";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
@@ -33,26 +32,6 @@ import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject
 import type { Loot } from "./loot";
 import type { Obstacle } from "./obstacle";
 
-function encodeIP(ip: string, secret: string) {
-    let encoded = "";
-    for (let i = 0; i < ip.length; i++) {
-        encoded += String.fromCharCode(
-            ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
-        );
-    }
-    return Buffer.from(encoded).toString("base64");
-}
-
-function decodeIP(encoded: string, secret: string) {
-    const decoded = Buffer.from(encoded, "base64").toString();
-    let ip = "";
-    for (let i = 0; i < decoded.length; i++) {
-        ip += String.fromCharCode(
-            decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
-        );
-    }
-    return ip;
-}
 export class Emote {
     playerId: number;
     pos: Vec2;
