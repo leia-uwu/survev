@@ -832,7 +832,9 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 // a countdown for leaving game. there is probably a better way but this gets the job done
 const uiGameMenu = document.getElementById('ui-game-menu');
 const quitButton = document.getElementById('btn-game-quit') as HTMLAnchorElement;
+const quitButtonText = quitButton.querySelector('.btn-text') as HTMLElement;
 let countdownInterval: number | undefined;
+
 if (uiGameMenu && quitButton) {
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
@@ -845,8 +847,10 @@ if (uiGameMenu && quitButton) {
           }
           let countdown = 6;
           quitButton.classList.add('disabled');
-          quitButton.style.pointerEvents = 'none';
           quitButton.setAttribute('data-countdown', `${countdown} seconds`);
+          quitButtonText.style.display = 'none';
+          quitButton.style.pointerEvents = 'none';
+
           countdownInterval = setInterval(() => {
             countdown--;
             quitButton.setAttribute('data-countdown', countdown > 0 ? `${countdown} seconds` : '');
@@ -854,8 +858,9 @@ if (uiGameMenu && quitButton) {
               clearInterval(countdownInterval);
               countdownInterval = undefined;
               quitButton.classList.remove('disabled');
-              quitButton.style.pointerEvents = 'auto';
               quitButton.removeAttribute('data-countdown');
+              quitButtonText.style.display = '';
+              quitButton.style.pointerEvents = 'auto';
             }
           }, 1000);
         } else {
@@ -863,12 +868,14 @@ if (uiGameMenu && quitButton) {
             clearInterval(countdownInterval);
             countdownInterval = undefined;
             quitButton.classList.remove('disabled');
-            quitButton.style.pointerEvents = 'auto';
             quitButton.removeAttribute('data-countdown');
+            quitButtonText.style.display = '';
+            quitButton.style.pointerEvents = 'auto';
           }
         }
       }
     });
   });
+
   observer.observe(uiGameMenu, { attributes: true });
 }
