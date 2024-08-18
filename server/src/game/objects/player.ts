@@ -138,13 +138,14 @@ export class PlayerBarn {
             }
         }
 
-        if (!this.game.allowJoin) {
+        if (!this.game.allowJoin && !this.game.over) {
             player.dead = true;
             setTimeout(() => {
+                if (this.game.over) return;
                 player.spectating = this.players[0];
-                this.aliveCountDirty = true;
+                this.aliveCountDirty = false;
                 this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
-            }, 100);
+            }, 50);
         }
 
         return player;
