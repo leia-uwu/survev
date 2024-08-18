@@ -15,7 +15,7 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
-import { GameConfig } from "../../../../shared/gameConfig";
+import { GameConfig, WeaponSlot } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type Circle, coldet } from "../../../../shared/utils/coldet";
@@ -80,20 +80,6 @@ export class PlayerBarn {
                 socketData.closeSocket();
             }, 1);
         }
-
-        // if (process.env.NODE_ENV === "production" && socketData.ip) {
-        //     const encodedIP = encodeIP(socketData.ip, IP_SECRET);
-        //     const message = `${joinMsg.name ?? "Player"} joined the game. ${encodedIP}`;
-        //     fetch(WEBHOOK_URL, {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         },
-        //         body: JSON.stringify({
-        //             content: message
-        //         })
-        //     });
-        // }
 
         let group: Group | undefined;
         if (this.game.isTeamMode) {
@@ -694,6 +680,11 @@ export class Player extends BaseGameObject {
             this.weapons[slot].type = joinMsg.loadout.secondary;
             const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
             this.weapons[slot].ammo = gunDef.maxClip;
+        }
+
+        if ( this.weapons[WeaponSlot.Primary].type == "bugle" ||
+             this.weapons[WeaponSlot.Secondary].type == "bugle" ) {
+                this.addPerk("inspiration", false)
         }
 
         this.scopeZoomRadius =
