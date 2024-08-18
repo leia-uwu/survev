@@ -201,7 +201,8 @@ export class Gas {
                 break;
             }
             case GasMode.Moving: {
-                this.waitTime = math.max(40, GameConfig.gas.waitTimeMin);
+                this.waitTime = math.max(
+                    GameConfig.gas.customZoneTime ?? this.waitTime - GameConfig.gas.waitTimeDecay, GameConfig.gas.waitTimeMin);
                 this.mode = GasMode.Waiting;
                 if (this.radNew > 0) {
                     this.circleIdx++;

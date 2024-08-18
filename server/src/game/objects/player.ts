@@ -1294,8 +1294,7 @@ export class Player extends BaseGameObject {
     spectate(spectateMsg: net.SpectateMsg): void {
         let playerToSpec: Player | undefined;
         const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        const spectateSolo: boolean = true;
-        if (!this.game.isTeamMode || spectateSolo) {
+        if (!this.game.isTeamMode || GameConfig.disableGroupSpectate) {
             // solos
             if (spectateMsg.specBegin) {
                 playerToSpec =
@@ -1479,8 +1478,11 @@ export class Player extends BaseGameObject {
                     group.killAllTeammates();
                 }
             } else {
-                this.kill(params);
-                // this.down(params);
+                if ( GameConfig.disableKnocking ) {
+                    this.kill(params);
+                } else {
+                    this.down(params);
+                }
             }
         }
     }

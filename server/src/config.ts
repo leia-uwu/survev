@@ -91,8 +91,11 @@ util.mergeDeep(Config, {
         }
     ],
     gameConfig: {
+        disableKnocking: true,
+        disableGroupSpectate: true,
         gas: {
-            initWaitTime: 300,
+            customZoneTime: 40,
+            initWaitTime: 5 * 60,
             damageTickRate: 1,
             damage: [35],
             widthDecay: 0.3,

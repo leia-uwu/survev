@@ -112,7 +112,10 @@ export const GameConfig = {
     GasMode,
     Plane,
     HasteType,
+    disableKnocking: false,
+    disableGroupSpectate: false,
     gas: {
+        customZoneTime: undefined as number | undefined,
         initWaitTime: 90,
         waitTimeDecay: 15,
         waitTimeMin: 10,
