@@ -5,7 +5,7 @@ import type {
     ObstacleDef,
     StructureDef
 } from "../../../shared/defs/mapObjectsTyping";
-import { GameConfig, GasMode } from "../../../shared/gameConfig";
+import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { MsgStream, MsgType } from "../../../shared/net/net";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
@@ -1401,12 +1401,22 @@ export class GameMap {
             case "random":
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
-                        SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas);
+                        SpawnRules.random(
+                            this.width,
+                            this.height,
+                            this.shoreInset,
+                            this.game.gas
+                        );
                 } else {
                     loadedSpawnRuleFunc =
                         this._getGroupLoadedSpawnRuleFunc(group) ??
                         (() =>
-                            SpawnRules.random(this.width, this.height, this.shoreInset, this.game.gas));
+                            SpawnRules.random(
+                                this.width,
+                                this.height,
+                                this.shoreInset,
+                                this.game.gas
+                            ));
                 }
                 break;
             case "donut":

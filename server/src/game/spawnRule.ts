@@ -1,4 +1,3 @@
-import { GasMode } from "../../../shared/gameConfig";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -6,16 +5,16 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Gas } from "./objects/gas";
 
-export const SpawnRules = { 
+export const SpawnRules = {
     fixed(pos: Vec2) {
         return v2.copy(pos);
     },
     random(width: number, height: number, inset: number, gas: Gas) {
-            if (gas.stage >= 1) {
-                const rad = gas.radNew === 0 ? gas.radOld : gas.radNew; 
-                return coldet.clampPosToAabb(
-                    v2.add(gas.posNew, util.randomPointInCircle(rad)),
-                collider.createAabbExtents(v2.create(0, 0), v2.create(width, height)),
+        if (gas.stage >= 1) {
+            const rad = gas.radNew === 0 ? gas.radOld : gas.radNew;
+            return coldet.clampPosToAabb(
+                v2.add(gas.posNew, util.randomPointInCircle(rad)),
+                collider.createAabbExtents(v2.create(0, 0), v2.create(width, height))
             );
         }
         return {

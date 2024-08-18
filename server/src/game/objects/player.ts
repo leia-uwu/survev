@@ -122,16 +122,13 @@ export class PlayerBarn {
             }
         }
 
-        if ( !this.game.allowJoin ) {
+        if (!this.game.allowJoin) {
             player.dead = true;
             setTimeout(() => {
                 player.spectating = this.players[0];
                 this.aliveCountDirty = true;
-                this.livingPlayers.splice(
-                    this.livingPlayers.indexOf(player),
-                    1
-                );
-            }, 100)
+                this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
+            }, 100);
         }
 
         return player;
@@ -682,9 +679,11 @@ export class Player extends BaseGameObject {
             this.weapons[slot].ammo = gunDef.maxClip;
         }
 
-        if ( this.weapons[WeaponSlot.Primary].type == "bugle" ||
-             this.weapons[WeaponSlot.Secondary].type == "bugle" ) {
-                this.addPerk("inspiration", false)
+        if (
+            this.weapons[WeaponSlot.Primary].type == "bugle" ||
+            this.weapons[WeaponSlot.Secondary].type == "bugle"
+        ) {
+            this.addPerk("inspiration", false);
         }
 
         this.scopeZoomRadius =
@@ -1478,7 +1477,7 @@ export class Player extends BaseGameObject {
                     group.killAllTeammates();
                 }
             } else {
-                if ( GameConfig.disableKnocking ) {
+                if (GameConfig.disableKnocking) {
                     this.kill(params);
                 } else {
                     this.down(params);

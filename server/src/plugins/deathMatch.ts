@@ -12,8 +12,8 @@ export default class DeathMatchPlugin extends GamePlugin {
             data.scope = "4xscope";
             data.boost = 100;
             data.weaponManager.setCurWeapIndex(WeaponSlot.Primary);
-            
-            if ( data.outfit === "outfitDarkGloves") {
+
+            if (data.outfit === "outfitDarkGloves") {
                 data.chest = "";
                 data.helmet = "";
                 data.addPerk("windwalk");
@@ -49,7 +49,6 @@ export default class DeathMatchPlugin extends GamePlugin {
                     secondary.ammo = 0;
                     secondary.cooldown = 0;
                 }
-
             }
 
             // give the killer nades and gun ammo and inventory ammo

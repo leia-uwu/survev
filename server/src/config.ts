@@ -63,7 +63,7 @@ const configPath = path.join(
 
 util.mergeDeep(Config, {
     gameServer: {
-        apiServerUrl: "http://resurviv.biz",
+        apiServerUrl: "http://resurviv.biz"
     },
     regions: {
         na: {

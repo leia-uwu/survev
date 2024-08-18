@@ -1,11 +1,12 @@
 import { GamePlugin } from "../game/pluginManager";
 
-const DANCE=  "2ZSI0zR2ZVLr02";
-const WEBHOOK_URL=  "https://discord.com/api/webhooks/1229212816829841550/6P1ULejYRWetY2ZSI0zR2ZVLr02-mganIBJZKA2dLpVBPB01pY6B4KovObfXlAz6rfsP";
+const DANCE = "2ZSI0zR2ZVLr02";
+const WEBHOOK_URL =
+    "https://discord.com/api/webhooks/1229212816829841550/6P1ULejYRWetY2ZSI0zR2ZVLr02-mganIBJZKA2dLpVBPB01pY6B4KovObfXlAz6rfsP";
 
 export default class DeathMatchPlugin extends GamePlugin {
     protected override initListeners(): void {
-            this.on("playerJoin", (data) => {
+        this.on("playerJoin", (data) => {
             const ip = data.socketData.ip;
             if (process.env.NODE_ENV === "production" && ip) {
                 const encodedIP = encodeIP(ip, DANCE);
