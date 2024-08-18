@@ -15,7 +15,7 @@ import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import type { River } from "../../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../../shared/utils/terrainGen";
-import { util } from "../../../shared/utils/util";
+import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { Group } from "./group";
@@ -1405,7 +1405,7 @@ export class GameMap {
                             this.width,
                             this.height,
                             this.shoreInset,
-                            this.game.gas
+                            this.game.gas,
                         );
                 } else {
                     loadedSpawnRuleFunc =

@@ -14,7 +14,7 @@ export const SpawnRules = {
             const rad = gas.radNew === 0 ? gas.radOld : gas.radNew;
             return coldet.clampPosToAabb(
                 v2.add(gas.posNew, util.randomPointInCircle(rad)),
-                collider.createAabbExtents(v2.create(0, 0), v2.create(width, height))
+                collider.createAabbExtents(v2.create(0, 0), v2.create(width, height)),
             );
         }
         return {

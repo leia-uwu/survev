@@ -65,7 +65,7 @@ export default class DeathMatchPlugin extends GamePlugin {
                         const gunDef = GameObjectDefs[weapon.type] as GunDef;
                         killer.weapons[slot] = {
                             ...weapon,
-                            ammo: calculateAmmoToGive(weapon.ammo, gunDef.maxClip)
+                            ammo: calculateAmmoToGive(weapon.ammo, gunDef.maxClip),
                         };
                     }
                 }

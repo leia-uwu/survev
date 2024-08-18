@@ -148,12 +148,12 @@ export class LoadoutMenu {
         {
             loadoutType: "primary",
             gameType: "gun",
-            categoryImage: "img/loot/loot-weapon-m870.svg"
+            categoryImage: "img/loot/loot-weapon-m870.svg",
         },
         {
             loadoutType: "secondary",
             gameType: "gun",
-            categoryImage: "img/loot/loot-weapon-ak.svg"
+            categoryImage: "img/loot/loot-weapon-ak.svg",
         },
         {
             loadoutType: "emote",
@@ -500,7 +500,7 @@ export class LoadoutMenu {
             function () {
                 const skinOutfit = OutfitDefs["outfitBase"];
                 var lodoutOutfit = document.querySelector<HTMLElement>(
-                    "#modal-customize-body"
+                    "#modal-customize-body",
                 )!;
                 var colorPicker = `
                         <div class="container" style="color: white; padding: 10px 5px">
@@ -547,7 +547,7 @@ export class LoadoutMenu {
                 });
                 function changeBodyColor() {
                     skinOutfit.skinImg.baseTint = util.hexToInt(
-                        bodyColorPicker.value.substring(1)
+                        bodyColorPicker.value.substring(1),
                     );
                 }
                 const handsColorPicker =
@@ -565,7 +565,7 @@ export class LoadoutMenu {
 
                 function changeBackpackColor() {
                     skinOutfit.skinImg.backpackTint = util.hexToInt(
-                        backpackColoPicker.value.substring(1)
+                        backpackColoPicker.value.substring(1),
                     );
                 }
                 const chooseSprite =
@@ -578,14 +578,14 @@ export class LoadoutMenu {
                             "player-base-01.img",
                             "player-hands-01.img",
                             "player-circle-base-01.img",
-                            "player-feet-01.img"
+                            "player-feet-01.img",
                         );
                     } else if (id == "base02") {
                         changeSprite(
                             "player-base-02.img",
                             "player-hands-02.img",
                             "player-circle-base-02.img",
-                            "player-feet-02.img"
+                            "player-feet-02.img",
                         );
                     }
                 });
@@ -593,17 +593,17 @@ export class LoadoutMenu {
                     baseSprite: string,
                     handSprite: string,
                     backpackSprite: string,
-                    footSprite: string
+                    footSprite: string,
                 ) {
                     Object.assign(skinOutfit.skinImg, {
                         baseSprite,
                         handSprite,
                         backpackSprite,
-                        footSprite
+                        footSprite,
                     });
                 }
             },
-            !1
+            !1,
         );
     }
 

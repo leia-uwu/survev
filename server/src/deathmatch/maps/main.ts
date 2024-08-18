@@ -4,12 +4,12 @@ import { GameConfig } from "../../../../shared/gameConfig";
 import { util } from "../../../../shared/utils/util";
 
 const config = {
-    places: 3
+    places: 3,
 } as const;
 
 export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
     biome: {
-        particles: { camera: "falling_leaf_spring" }
+        particles: { camera: "falling_leaf_spring" },
     },
     gameConfig: {
         planes: {
@@ -17,10 +17,10 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 {
                     circleIdx: 0,
                     wait: 2,
-                    options: { type: GameConfig.Plane.Airdrop }
-                }
-            ]
-        }
+                    options: { type: GameConfig.Plane.Airdrop },
+                },
+            ],
+        },
     },
     mapGen: {
         map: {
@@ -28,8 +28,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
             baseHeight: 290,
             shoreInset: 40,
             rivers: {
-                weights: []
-            }
+                weights: [],
+            },
         },
         places: Main.mapGen
             ? Array(config.places)
@@ -50,7 +50,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                       array.push(object);
                       return array;
                   },
-                  [] as Record<string, number>[]
+                  [] as Record<string, number>[],
               )
             : {},
         fixedSpawns: [
@@ -80,8 +80,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 tree_02: 3,
                 teahouse_complex_01su: { odds: 0.5 },
                 // stone_04: 1,
-                club_complex_01: 1
-            }
+                club_complex_01: 1,
+            },
         ],
         randomSpawns: [
             {
@@ -89,12 +89,12 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                     "mansion_structure_01",
                     // "warehouse_complex_01",
                     "police_01",
-                    "bank_01"
+                    "bank_01",
                 ],
-                choose: 2
-            }
-        ]
-    }
+                choose: 2,
+            },
+        ],
+    },
 });
 
 DeatchmatchMain["lootTable"] = {
@@ -106,7 +106,7 @@ DeatchmatchMain["lootTable"] = {
     tier_chrys_case: [
         // { name: "helmet03_forest", count: 1, weight: 199 },
         { name: "tier_katanas", count: 1, weight: 3 },
-        { name: "naginata", count: 1, weight: 1 }
+        { name: "naginata", count: 1, weight: 1 },
     ],
     tier_eye_02: [{ name: "stonehammer", count: 1, weight: 1 }],
     tier_eye_block: [
@@ -119,12 +119,12 @@ DeatchmatchMain["lootTable"] = {
         { name: "m4a1", count: 1, weight: 1 },
         { name: "m249", count: 1, weight: 1 },
         { name: "awc", count: 1, weight: 1 },
-        { name: "pkp", count: 1, weight: 1 }
+        { name: "pkp", count: 1, weight: 1 },
     ],
     tier_sledgehammer: [{ name: "sledgehammer", count: 1, weight: 1 }],
     tier_chest_04: [
         { name: "p30l", count: 1, weight: 40 },
-        { name: "p30l_dual", count: 1, weight: 1 }
+        { name: "p30l_dual", count: 1, weight: 1 },
     ],
     tier_woodaxe: [{ name: "woodaxe", count: 1, weight: 1 }],
     tier_club_melee: [{ name: "machete_taiga", count: 1, weight: 1 }],
@@ -132,14 +132,14 @@ DeatchmatchMain["lootTable"] = {
     tier_hatchet_melee: [
         { name: "fireaxe", count: 1, weight: 5 },
         { name: "tier_katanas", count: 1, weight: 3 },
-        { name: "stonehammer", count: 1, weight: 1 }
+        { name: "stonehammer", count: 1, weight: 1 },
     ],
     tier_airdrop_uncommon: [
         { name: "sv98", count: 1, weight: 1 },
-        { name: "outfitGhillie", count: 1, weight: 1 }
+        { name: "outfitGhillie", count: 1, weight: 1 },
     ],
     tier_airdrop_rare: [
         { name: "sv98", count: 1, weight: 1 },
-        { name: "outfitGhillie", count: 1, weight: 1 }
-    ]
+        { name: "outfitGhillie", count: 1, weight: 1 },
+    ],
 };

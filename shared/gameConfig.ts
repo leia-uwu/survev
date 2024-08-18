@@ -174,8 +174,8 @@ export const GameConfig = {
         killLeaderMinKills: 3,
         minSpawnDistance: 50, // minimum distance enemy players need to spawn from each other
         gracePeriodTime: 0, // time from game start where players can't move
-
         /* STRIP_FROM_PROD_CLIENT:START */
+        removeOnDisconnect: true,
         defaultItems: {
             weapons: [
                 { type: "", ammo: 0 },

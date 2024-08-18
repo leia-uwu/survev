@@ -3,6 +3,7 @@ import { platform } from "os";
 import NanoTimer from "nanotimer";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
+import { GameConfig } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
@@ -36,10 +37,10 @@ export type FindGameResponse = {
 
 export interface GameSocketData {
     readonly gameID: string;
-    readonly ip?: string;
     sendMsg: (msg: ArrayBuffer | Uint8Array) => void;
     closeSocket: () => void;
     player?: Player;
+    ip?: string;
 }
 
 export class GameServer {
@@ -101,18 +102,13 @@ export class GameServer {
 
                 const ip = Buffer.from(res.getRemoteAddressAsText()).toString();
 
-                // const forwardedFor = req.getHeader('x-forwarded-for');
-                // if (forwardedFor) {
-                //   clientIP = forwardedFor.split(',')[0].trim();
-                // }
-
                 const searchParams = new URLSearchParams(req.getQuery());
                 const gameID = server.validateGameId(searchParams);
                 if (gameID !== false) {
                     res.upgrade(
                         {
                             gameID,
-                            ip
+                            ip,
                         },
                         req.getHeader("sec-websocket-key"),
                         req.getHeader("sec-websocket-protocol"),
@@ -231,34 +227,52 @@ export class GameServer {
                     let hash: string;
                     let autoFill: boolean;
 
+                    const groupsArray = [...game.groups.values()];
+                    let groupAlreadyExist = groupsArray.find(
+                        (group) => group.hash === body.groupHash,
+                    );
                     const team = game.getSmallestTeam();
 
-                        if (body.autoFill) {
-                        group = [...game.groups.values()].filter((group) => {
-                            return group.autoFill && group.players.length < mode.teamMode;
-                        })[0];
-                    }
-
-                    if (!group) {
-                        group = game.addGroup(
-                            randomBytes(20).toString("hex"),
-                            body.autoFill
-                        );
-                    }
-
-                    if (group) {
-                        hash = group.hash;
-                        autoFill = group.autoFill;
+                    if (groupAlreadyExist) {
+                        hash = body.groupHash!;
+                        response.data = hash;
+                        game.groupDatas.push({
+                            hash,
+                            autoFill: groupAlreadyExist.autoFill,
+                        });
                     } else {
-                        hash = randomBytes(20).toString("hex");
-                        autoFill = body.autoFill;
-                    }
+                        if (body.autoFill) {
+                            const filteredGroups = groupsArray.filter((group) => {
+                                if (game.groups.size < 2) group.autoFill = false;
+                                const sameTeamId =
+                                    team && team.teamId == group.players[0].teamId;
+                                return (
+                                    (team ? sameTeamId : true) &&
+                                    group.autoFill &&
+                                    group.players.length < mode.teamMode
+                                );
+                            });
 
-                    response.data = hash;
-                    game.groupDatas.push({
-                        hash,
-                        autoFill,
-                    });
+                            group =
+                                filteredGroups[
+                                    Math.floor(Math.random() * filteredGroups.length)
+                                ];
+                        }
+
+                        if (group) {
+                            hash = group.hash;
+                            autoFill = group.autoFill;
+                        } else {
+                            hash = randomBytes(20).toString("hex");
+                            autoFill = body.autoFill;
+                        }
+
+                        response.data = hash;
+                        game.groupDatas.push({
+                            hash,
+                            autoFill,
+                        });
+                    }
                 }
             }
         } else {
@@ -311,10 +325,12 @@ export class GameServer {
         game.logger.log(`"${player.name}" left`);
         player.disconnected = true;
         if (player.group) player.group.checkPlayers();
-        // @NOTE: always remove the player once disconnected
-        // if (player.timeAlive < GameConfig.player.minActiveTime) {
-        player.game.playerBarn.removePlayer(player);
-        // }
+        if (
+            player.timeAlive < GameConfig.player.minActiveTime ||
+            GameConfig.player.removeOnDisconnect
+        ) {
+            player.game.playerBarn.removePlayer(player);
+        }
     }
 
     getPlayerCount() {

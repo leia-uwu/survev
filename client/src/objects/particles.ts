@@ -2427,7 +2427,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
         },
         color: function () {
             return 0x3a6e49 ?? util.rgbToInt(util.hsvToRgb(0, 0, util.random(0.3, 0.35)));
-        }
+        },
     },
     leafSummer: {
         image: ["part-leaf-06.img"],

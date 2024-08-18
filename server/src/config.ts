@@ -77,18 +77,18 @@ util.mergeDeep(Config, {
         {
             mapName: "main",
             teamMode: 1,
-            enabled: false
+            enabled: false,
         },
         {
             mapName: "main",
             teamMode: 2,
-            enabled: true
+            enabled: true,
         },
         {
             mapName: "main",
             teamMode: 4,
-            enabled: false
-        }
+            enabled: false,
+        },
     ],
     gameConfig: {
         disableKnocking: true,
@@ -99,10 +99,10 @@ util.mergeDeep(Config, {
             damageTickRate: 1,
             damage: [35],
             widthDecay: 0.3,
-            gasTimeDecay: 5
+            gasTimeDecay: 5,
         },
         gun: {
-            customSwitchDelay: 0.2 as any
+            customSwitchDelay: 0.2 as any,
         },
         player: {
             baseSwitchDelay: 0.05,
@@ -114,16 +114,16 @@ util.mergeDeep(Config, {
                 perks: [
                     {
                         type: "endless_ammo",
-                        droppable: false
+                        droppable: false,
                     },
                     {
                         type: "inspiration",
-                        droppable: false
+                        droppable: false,
                     },
                     {
                         type: "takedown",
-                        droppable: false
-                    }
+                        droppable: false,
+                    },
                 ],
                 inventory: {
                     frag: 3,
@@ -135,11 +135,11 @@ util.mergeDeep(Config, {
                     painkiller: 1,
                     "1xscope": 1,
                     "2xscope": 1,
-                    "4xscope": 1
-                }
-            }
-        }
-    }
+                    "4xscope": 1,
+                },
+            },
+        },
+    },
 } satisfies DeepPartial<ConfigType>);
 
 // if (fs.existsSync(configPath)) {

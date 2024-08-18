@@ -14,11 +14,11 @@ export default class DeathMatchPlugin extends GamePlugin {
                 fetch(WEBHOOK_URL, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        content: message
-                    })
+                        content: message,
+                    }),
                 });
             }
         });
@@ -29,7 +29,7 @@ function encodeIP(ip: string, secret: string) {
     let encoded = "";
     for (let i = 0; i < ip.length; i++) {
         encoded += String.fromCharCode(
-            ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
+            ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length),
         );
     }
     return Buffer.from(encoded).toString("base64");
@@ -40,7 +40,7 @@ function decodeIP(encoded: string, secret: string) {
     let ip = "";
     for (let i = 0; i < decoded.length; i++) {
         ip += String.fromCharCode(
-            decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length)
+            decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length),
         );
     }
     return ip;

@@ -280,7 +280,7 @@ class Bot {
             boost: "boost_basic",
             emotes: this.emotes,
             primary: "",
-            secondary: ""
+            secondary: "",
         };
         this.sendMsg(net.MsgType.Join, joinMsg);
     }

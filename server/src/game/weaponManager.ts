@@ -684,7 +684,7 @@ export class WeaponManager {
                 const projDef = GameObjectDefs[itemDef.projType];
                 assert(
                     projDef.type === "throwable",
-                    `Invalid projectile type: ${itemDef.projType}`
+                    `Invalid projectile type: ${itemDef.projType}`,
                 );
 
                 const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
@@ -894,7 +894,7 @@ export class WeaponManager {
         const itemDef = GameObjectDefs[this.activeWeapon];
         assert(
             itemDef.type === "throwable",
-            `Invalid projectile type: ${this.activeWeapon}`
+            `Invalid projectile type: ${this.activeWeapon}`,
         );
 
         this.cookingThrowable = true;

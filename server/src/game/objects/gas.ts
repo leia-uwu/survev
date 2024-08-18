@@ -118,7 +118,7 @@ export class Gas {
     closeZoneNext = false;
     constructor(
         readonly map: GameMap,
-        readonly game: Game
+        readonly game: Game,
     ) {
         const mapSize = (map.width + map.height) / 2;
 
@@ -207,7 +207,7 @@ export class Gas {
                 this.waitTime = math.max(
                     GameConfig.gas.customZoneTime ??
                         this.waitTime - GameConfig.gas.waitTimeDecay,
-                    GameConfig.gas.waitTimeMin
+                    GameConfig.gas.waitTimeMin,
                 );
                 this.mode = GasMode.Waiting;
                 if (this.radNew > 0) {

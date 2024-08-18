@@ -46,7 +46,7 @@ export class ProjectileBarn {
             playerId,
             vel,
             fuseTime,
-            damageType
+            damageType,
         );
 
         this.projectiles.push(proj);
@@ -86,7 +86,7 @@ export class Projectile extends BaseGameObject {
         playerId: number,
         vel: Vec2,
         fuseTime: number,
-        damageType: DamageType
+        damageType: DamageType,
     ) {
         super(game, pos);
         this.layer = layer;

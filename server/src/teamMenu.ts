@@ -380,7 +380,7 @@ export class TeamMenu {
                         gameModeIdx: room.roomData.gameModeIdx,
                         autoFill: room.roomData.autoFill,
                         playerCount: room.players.length,
-                        groupHash: room.groupHash
+                        groupHash: room.groupHash,
                     })
                 ).res[0];
 

@@ -215,9 +215,9 @@ export const UnlockDefs: Record<string, UnlockDef> = {
                 ...allowedHealEffects,
                 ...Object.keys(CrosshairDefs),
                 ...PassDefs.pass_survivr1.items.map((item) => item.item),
-                ...allowedGuns
-            ])
-        ]
+                ...allowedGuns,
+            ]),
+        ],
     },
     unlock_new_account: {
         type: "unlock",

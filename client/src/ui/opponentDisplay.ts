@@ -156,12 +156,12 @@ export class LoadoutDisplay {
                     {
                         name: "",
                         type: "spas12",
-                        ammo: 0
+                        ammo: 0,
                     },
                     {
                         name: "",
                         type: "mosin",
-                        ammo: 0
+                        ammo: 0,
                     },
                     {
                         name: "bayonet_rugged",
@@ -412,7 +412,7 @@ export class LoadoutDisplay {
                 this.animSeq = (this.animSeq + 1) % 8;
                 const options = {
                     animType: GameConfig.Anim.None,
-                    animSeq: this.animSeq
+                    animSeq: this.animSeq,
                 };
                 this.updateCharDisplay(options);
                 this.animIdleTicker = 1.5 + Math.random();
