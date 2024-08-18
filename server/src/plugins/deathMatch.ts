@@ -12,6 +12,12 @@ export default class DeathMatchPlugin extends GamePlugin {
             data.scope = "4xscope";
             data.boost = 100;
             data.weaponManager.setCurWeapIndex(WeaponSlot.Primary);
+            
+            if ( data.outfit === "outfitDarkGloves") {
+                data.chest = "";
+                data.helmet = "";
+                data.addPerk("windwalk");
+            }
         });
 
         this.on("playerKill", (data) => {
@@ -25,6 +31,7 @@ export default class DeathMatchPlugin extends GamePlugin {
             data.player.scope = "1xscope";
             data.player.helmet = "";
             data.player.chest = "";
+            data.player.outfit = "outfitBase";
 
             data.player.weaponManager.setCurWeapIndex(WeaponSlot.Melee);
 
