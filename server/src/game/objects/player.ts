@@ -1701,7 +1701,11 @@ export class Player extends BaseGameObject {
             if (!this.downed && this.hasPerk("self_revive")) {
                 this.down(params);
             } else {
-                this.game.contextManager.handlePlayerDeath(this, params);
+                if ( GameConfig.disableKnocking ) {
+                    this.kill(params)
+                } else {
+                    this.game.contextManager.handlePlayerDeath(this, params);
+                }
             }
         }
     }
