@@ -144,9 +144,19 @@ class ContextManager {
 
     /** includes passed in player */
     getNearbyAlivePlayersContext(player: Player, range: number): Player[] {
+        const alivePlayersContext = this.getAlivePlayersContext(player);
         //if only 1 player in context left, no need to run grid checks
-        if (this.getAlivePlayersContext(player).length == 1) {
+        if (alivePlayersContext.length == 1) {
             return [player];
+        }
+
+        //probably more efficient when there's 4 or less players in the context (untested)
+        if (alivePlayersContext.length <= 4) {
+            return alivePlayersContext.filter(
+                (p) =>
+                    !!util.sameLayer(player.layer, p.layer) &&
+                    v2.lengthSqr(v2.sub(player.pos, p.pos)) <= range * range,
+            );
         }
 
         const playerIdContext = this.getIdContext(player);
