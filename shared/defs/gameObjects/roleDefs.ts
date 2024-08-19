@@ -305,6 +305,21 @@ export const RoleDefs: Record<string, RoleDef> = {
         killFeed: { assign: true },
         sound: { assign: "bugler_assigned_01" },
         perks: ["inspiration", "final_bugle"],
+        defaultItems: createDefaultItems({
+            weapons: [
+                { type: "", ammo: 0 },
+                { type: "bugle", ammo: 1 },
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+            ],
+            backpack: "backpack03",
+            helmet: "helmet03_bugler",
+            chest: "chest03",
+            scope: "4xscope",
+            inventory: {
+                "4xscope": 1,
+            },
+        }),
     },
     last_man: {
         type: "role",

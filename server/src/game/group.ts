@@ -14,6 +14,7 @@ export class Group {
      */
     allDeadOrDisconnected = true; //only set to false when first player is added to the group
     players: Player[] = [];
+    livingPlayers: Player[] = [];
     autoFill: boolean;
 
     constructor(hash: string, groupId: number, autoFill: boolean) {
@@ -45,10 +46,12 @@ export class Group {
         player.setGroupStatuses();
         player.playerStatusDirty = true;
         this.players.push(player);
+        this.livingPlayers.push(player);
         this.allDeadOrDisconnected = false;
     }
 
     removePlayer(player: Player) {
+        this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
         this.players.splice(this.players.indexOf(player), 1);
         this.checkPlayers();
     }
