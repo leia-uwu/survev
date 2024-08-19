@@ -270,6 +270,38 @@ const SkinDefs: Record<string, OutfitDef> = {
             tint: 1776411,
         },
     }),
+    outfitLargeSky: defineOutfitSkin("outfitBase", {
+        name: "Large Sky",
+        skinImg: {  "baseTint": 8794533,  "baseSprite": "player-base-02.img",  "handTint": 13988345,  "handSprite": "player-hands-02.img",  "footTint": 13988345,  "footSprite": "player-feet-02.img",  "backpackTint": 4136031,  "backpackSprite": "player-circle-base-02.img"},
+        lootImg: {
+            sprite: "loot-shirt-01.img",
+            tint: 8794533,
+        },
+    }),
+    outfitOceanEyes: defineOutfitSkin("outfitBase", {
+        name: "Ocean Eyes",
+        skinImg: {  "baseTint": 7458041,  "baseSprite": "player-base-01.img",  "handTint": 14282999,  "handSprite": "player-hands-01.img",  "footTint": 14282999,  "footSprite": "player-feet-01.img",  "backpackTint": 5735320,  "backpackSprite": "player-circle-base-01.img"},
+        lootImg: {
+            sprite: "loot-shirt-01.img",
+            tint: 7458041,
+        },
+    }),
+    outfitRoseWater: defineOutfitSkin("outfitBase", {
+        name: "Rose Water",
+        skinImg: {  "baseTint": 16029105,  "baseSprite": "player-base-01.img",  "handTint": 16111326,  "handSprite": "player-hands-01.img",  "footTint": 16111326,  "footSprite": "player-feet-01.img",  "backpackTint": 15086440,  "backpackSprite": "player-circle-base-01.img"},
+        lootImg: {
+            sprite: "loot-shirt-01.img",
+            tint: 16029105,
+        },
+    }),
+    outfitGreeLeafes: defineOutfitSkin("outfitBase", {
+        name: "Green Leafes",
+        skinImg: {  "baseTint": 4898653,  "baseSprite": "player-base-01.img",  "handTint": 11263659,  "handSprite": "player-hands-01.img",  "footTint": 11263659,  "footSprite": "player-feet-01.img",  "backpackTint": 1266467,  "backpackSprite": "player-circle-base-01.img"},
+        lootImg: {
+            sprite: "loot-shirt-01.img",
+            tint: 4898653,
+        },
+    }),
     outfitRedLeaderAged: defineOutfitSkin("outfitBase", {
         name: "Weathered Red",
         skinImg: {

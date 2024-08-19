@@ -58,6 +58,10 @@ const allowedOutfits = [
     "outfitCamo",
     "outfitRed",
     "outfitWhite",
+    "outfitGreeLeafes",
+    "outfitRoseWater",
+    "outfitOceanEyes",
+    "outfitLargeSky"
 ];
 const allowedEmotes = [
     "emote_thumbsup",
