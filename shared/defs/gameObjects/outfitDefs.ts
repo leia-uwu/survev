@@ -319,6 +319,63 @@ const SkinDefs: Record<string, OutfitDef> = {
             tint: 10098712,
         },
     }),
+    outfitGreenEyes: defineOutfitSkin("outfitBase", {
+        name: "Green Eyes",
+        noDropOnDeath: true,
+        rarity: 1,
+        skinImg: {
+            baseTint: 0x0e2f11,
+            baseSprite: "player-base-02.img",
+            handTint: 0x5e7f61,
+            handSprite: "player-hands-02.img",
+            footTint: 0x5e7f61,
+            footSprite: "player-feet-02.img",
+            backpackTint: 0x051707,
+            backpackSprite: "player-circle-base-02.img"
+        },
+        lootImg: {
+            sprite: "loot-shirt-02.img",
+            tint: 0x0e2f11
+        }
+    }),
+    outfitOwnr: defineOutfitSkin("outfitBase", {
+        name: "OWNR",
+        noDropOnDeath: true,
+        rarity: 1,
+        skinImg: {
+            baseTint: 0xFF7900,
+            baseSprite: "player-base-02.img",
+            handTint: 0xFF6D00,
+            handSprite: "player-hands-02.img",
+            footTint: 0xFF6D00,
+            footSprite: "player-feet-02.img",
+            backpackTint: 0x273E47,
+            backpackSprite: "player-circle-base-02.img"
+        },
+        lootImg: {
+            sprite: "loot-shirt-02.img",
+            tint: 0xFF7900
+        }
+    }),
+    outfitShinyGold: defineOutfitSkin("outfitBase", {
+        name: "Shiny Gold",
+        noDropOnDeath: true,
+        rarity: 1,
+        skinImg: {
+            baseTint: 0xf4cd2a,
+            baseSprite: "player-base-02.img",
+            handTint: 0xf4cd2a,
+            handSprite: "player-hands-02.img",
+            footTint: 0xf4cd2a,
+            footSprite: "player-feet-02.img",
+            backpackTint: 0xf4cd2a,
+            backpackSprite: "player-circle-base-02.img"
+        },
+        lootImg: {
+            sprite: "loot-shirt-01.img",
+            tint: 0xf4cd2a
+        }
+    }),
     outfitBlueLeaderAged: defineOutfitSkin("outfitBase", {
         name: "Stifled Blue",
         skinImg: {

@@ -14,7 +14,7 @@ import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/me
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
+import { privateOutfits, UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import { TeamColor } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig, WeaponSlot } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
@@ -710,7 +710,7 @@ export class Player extends BaseGameObject {
             return true;
         };
 
-        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
+        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit") || privateOutfits.includes(joinMsg.loadout.outfit)) {
             this.outfit = joinMsg.loadout.outfit;
         } else {
             this.outfit = defaultItems.outfit;

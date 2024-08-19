@@ -18,6 +18,12 @@ const allowedMeleeSkins = [
     "bowie_vintage",
     "bowie_frontier",
 ];
+export const privateOutfits = [
+    "outfitGreenEyes",
+    "outfitOwnr",
+    "outfitShinyGold"
+];
+
 const allowedOutfits = [
     "outfitBase",
     "outfitTurkey",
