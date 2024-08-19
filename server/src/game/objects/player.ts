@@ -3030,20 +3030,17 @@ export class Player extends BaseGameObject {
     }
 
     initLastBreath(): void {
-        for (const obj of this.visibleObjects) {
-            //includes self
-            if (
-                obj.__type != ObjectType.Player ||
-                obj == this ||
-                obj.groupId != this.groupId
-            )
-                continue;
+        const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
+            this,
+            60,
+        );
 
-            obj.lastBreathActive = true;
-            obj._lastBreathTicker = 5;
+        for (const player of affectedPlayers) {
+            player.lastBreathActive = true;
+            player._lastBreathTicker = 5;
 
-            obj.scale += 0.2;
-            obj.giveHaste(GameConfig.HasteType.Inspire, 5);
+            player.scale += 0.2;
+            player.giveHaste(GameConfig.HasteType.Inspire, 5);
         }
     }
 

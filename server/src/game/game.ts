@@ -145,10 +145,6 @@ class ContextManager {
     /** includes passed in player */
     getNearbyAlivePlayersContext(player: Player, range: number): Player[] {
         const alivePlayersContext = this.getAlivePlayersContext(player);
-        //if only 1 player in context left, no need to run grid checks
-        if (alivePlayersContext.length == 1) {
-            return [player];
-        }
 
         //probably more efficient when there's 4 or less players in the context (untested)
         if (alivePlayersContext.length <= 4) {
