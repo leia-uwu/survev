@@ -2,6 +2,9 @@ import type { MapDefs } from "../../../shared/defs/mapDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
+import { collider } from "../../../shared/utils/collider";
+import { util } from "../../../shared/utils/util";
+import { v2 } from "../../../shared/utils/v2";
 import { Config, TeamMode } from "../config";
 import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
@@ -121,6 +124,48 @@ class ContextManager {
             [ContextMode.Team]: () => player.group!.players,
             [ContextMode.Faction]: () => this._game.playerBarn.players,
         });
+    }
+
+    getAlivePlayersContext(player: Player): Player[] {
+        return this._applyContext<Player[]>({
+            [ContextMode.Solo]: () => (!player.dead ? [player] : []),
+            [ContextMode.Team]: () => player.group!.livingPlayers,
+            [ContextMode.Faction]: () => player.team!.livingPlayers,
+        });
+    }
+
+    getIdContext(player: Player): number {
+        return this._applyContext<number>({
+            [ContextMode.Solo]: () => player.__id,
+            [ContextMode.Team]: () => player.groupId,
+            [ContextMode.Faction]: () => player.teamId,
+        });
+    }
+
+    /** includes passed in player */
+    getNearbyAlivePlayersContext(player: Player, range: number): Player[] {
+        const alivePlayersContext = this.getAlivePlayersContext(player);
+
+        //probably more efficient when there's 4 or less players in the context (untested)
+        if (alivePlayersContext.length <= 4) {
+            return alivePlayersContext.filter(
+                (p) =>
+                    !!util.sameLayer(player.layer, p.layer) &&
+                    v2.lengthSqr(v2.sub(player.pos, p.pos)) <= range * range,
+            );
+        }
+
+        const playerIdContext = this.getIdContext(player);
+        return this._game.grid
+            .intersectCollider(collider.createCircle(player.pos, range))
+            .filter(
+                (obj): obj is Player =>
+                    obj.__type == ObjectType.Player &&
+                    playerIdContext == this.getIdContext(obj) &&
+                    !obj.dead && //necessary since player isnt deleted from grid on death
+                    !!util.sameLayer(player.layer, obj.layer) &&
+                    v2.lengthSqr(v2.sub(player.pos, obj.pos)) <= range * range,
+            );
     }
 
     /** if the current context mode supports reviving, unrelated to individual players */

@@ -486,17 +486,6 @@ export class Player extends BaseGameObject {
 
         switch (role) {
             case "bugler":
-                this.weaponManager.dropGun(1);
-
-                this.weaponManager.setWeapon(
-                    1,
-                    "bugle",
-                    this.weaponManager.getTrueAmmoStats(GameObjectDefs["bugle"] as GunDef)
-                        .trueMaxClip,
-                );
-                this.weapsDirty = true;
-
-                this.helmet = "helmet03_bugler";
                 break;
             case "leader":
                 break;
@@ -515,11 +504,24 @@ export class Player extends BaseGameObject {
         }
 
         if (def.defaultItems) {
+            //inventory
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
                 if (value == 0) continue; //prevents overwriting existing inventory
                 this.inventory[key] = value;
             }
 
+            //armor
+            this.scope = def.defaultItems.scope;
+            this.helmet =
+                def.defaultItems.helmet instanceof Object
+                    ? def.defaultItems.helmet[this.teamId as TeamColor]
+                    : def.defaultItems.helmet;
+            if (this.chest)
+                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
+            this.chest = def.defaultItems.chest;
+            this.backpack = def.defaultItems.backpack;
+
+            //weapons
             for (let i = 0; i < def.defaultItems.weapons.length; i++) {
                 const weaponDef = def.defaultItems.weapons[i];
                 let trueWeapon;
@@ -554,21 +556,14 @@ export class Player extends BaseGameObject {
 
                     if (trueWeapon.fillInv) {
                         const ammoType = gunDef.ammo;
-                        this.inventory[ammoType] = GameConfig.bagSizes[ammoType][3];
+                        this.inventory[ammoType] =
+                            GameConfig.bagSizes[ammoType][
+                                this.getGearLevel(this.backpack)
+                            ];
                     }
                 }
                 this.weaponManager.setWeapon(i, trueWeapon.type, trueWeapon.ammo);
             }
-
-            this.scope = def.defaultItems.scope;
-            this.helmet =
-                def.defaultItems.helmet instanceof Object
-                    ? def.defaultItems.helmet[this.teamId as TeamColor]
-                    : def.defaultItems.helmet;
-            if (this.chest)
-                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
-            this.chest = def.defaultItems.chest;
-            this.backpack = def.defaultItems.backpack;
         }
 
         if (def.perks) {
@@ -1819,6 +1814,7 @@ export class Player extends BaseGameObject {
             1,
         );
         if (this.group) {
+            this.group.livingPlayers.splice(this.group.livingPlayers.indexOf(this), 1);
             this.group.checkPlayers();
         }
         if (this.team) {
@@ -3034,33 +3030,31 @@ export class Player extends BaseGameObject {
     }
 
     initLastBreath(): void {
-        for (const obj of this.visibleObjects) {
-            //includes self
-            if (
-                obj.__type != ObjectType.Player ||
-                obj == this ||
-                obj.groupId != this.groupId
-            )
-                continue;
+        const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
+            this,
+            60,
+        );
 
-            obj.lastBreathActive = true;
-            obj._lastBreathTicker = 5;
+        for (const player of affectedPlayers) {
+            player.lastBreathActive = true;
+            player._lastBreathTicker = 5;
 
-            obj.scale += 0.2;
-            obj.giveHaste(GameConfig.HasteType.Inspire, 5);
+            player.scale += 0.2;
+            player.giveHaste(GameConfig.HasteType.Inspire, 5);
         }
     }
 
     playBugle(): void {
-        if (!this.group) return;
         this.bugleTickerActive = true;
         this._bugleTicker = 8;
 
-        for (const groupPlayer of this.group.getAlivePlayers()) {
-            //includes self
-            if (v2.distance(this.pos, groupPlayer.pos) <= 60) {
-                groupPlayer.giveHaste(GameConfig.HasteType.Inspire, 3);
-            }
+        const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
+            this,
+            60,
+        );
+
+        for (const player of affectedPlayers) {
+            player.giveHaste(GameConfig.HasteType.Inspire, 3);
         }
     }
 
