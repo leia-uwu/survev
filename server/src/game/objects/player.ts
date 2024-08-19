@@ -504,11 +504,24 @@ export class Player extends BaseGameObject {
         }
 
         if (def.defaultItems) {
+            //inventory
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
                 if (value == 0) continue; //prevents overwriting existing inventory
                 this.inventory[key] = value;
             }
 
+            //armor
+            this.scope = def.defaultItems.scope;
+            this.helmet =
+                def.defaultItems.helmet instanceof Object
+                    ? def.defaultItems.helmet[this.teamId as TeamColor]
+                    : def.defaultItems.helmet;
+            if (this.chest)
+                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
+            this.chest = def.defaultItems.chest;
+            this.backpack = def.defaultItems.backpack;
+
+            //weapons
             for (let i = 0; i < def.defaultItems.weapons.length; i++) {
                 const weaponDef = def.defaultItems.weapons[i];
                 let trueWeapon;
@@ -543,21 +556,14 @@ export class Player extends BaseGameObject {
 
                     if (trueWeapon.fillInv) {
                         const ammoType = gunDef.ammo;
-                        this.inventory[ammoType] = GameConfig.bagSizes[ammoType][3];
+                        this.inventory[ammoType] =
+                            GameConfig.bagSizes[ammoType][
+                                this.getGearLevel(this.backpack)
+                            ];
                     }
                 }
                 this.weaponManager.setWeapon(i, trueWeapon.type, trueWeapon.ammo);
             }
-
-            this.scope = def.defaultItems.scope;
-            this.helmet =
-                def.defaultItems.helmet instanceof Object
-                    ? def.defaultItems.helmet[this.teamId as TeamColor]
-                    : def.defaultItems.helmet;
-            if (this.chest)
-                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
-            this.chest = def.defaultItems.chest;
-            this.backpack = def.defaultItems.backpack;
         }
 
         if (def.perks) {
