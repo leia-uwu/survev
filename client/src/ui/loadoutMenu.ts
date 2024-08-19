@@ -4,10 +4,14 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { OutfitDefs } from "../../../shared/defs/gameObjects/outfitDefs";
-import { privateOutfits, type UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
+import {
+    type UnlockDef,
+    privateOutfits,
+} from "../../../shared/defs/gameObjects/unlockDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
 import type { Account } from "../account";
+import type { ConfigManager } from "../config";
 import { crosshair } from "../crosshair";
 import { device } from "../device";
 import { helpers } from "../helpers";
@@ -15,7 +19,6 @@ import loadout, { type ItemStatus, type Loadout } from "./loadouts";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 import type { LoadoutDisplay } from "./opponentDisplay";
-import { ConfigManager } from "../config";
 
 function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
     const emoteSlotToDomId = {
@@ -219,7 +222,7 @@ export class LoadoutMenu {
     constructor(
         public account: Account,
         public localization: Localization,
-        readonly config: ConfigManager
+        readonly config: ConfigManager,
     ) {
         if (!device.touch) {
             this.categories.push({
@@ -830,14 +833,17 @@ export class LoadoutMenu {
                 stroke: Number(stroke.toFixed(2)),
             };
         } else {
-            const privateSkin = helpers.getParameterByName("customSkin");   
-            if ( loadoutType === "outfit" && privateSkin && (
+            const privateSkin = helpers.getParameterByName("customSkin");
+            if (
+                loadoutType === "outfit" &&
+                privateSkin &&
                 privateOutfits.includes(privateSkin)
-            ) ) {
+            ) {
                 this.loadout.outfit = privateSkin;
                 this.config.set("loadout", this.loadout);
             } else {
-                this.loadout[loadoutType as keyof Loadout] = this.selectedItem.type as any;
+                this.loadout[loadoutType as keyof Loadout] = this.selectedItem
+                    .type as any;
             }
         }
         this.loadout = loadout.validate(this.loadout);

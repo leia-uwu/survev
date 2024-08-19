@@ -18,11 +18,7 @@ const allowedMeleeSkins = [
     "bowie_vintage",
     "bowie_frontier",
 ];
-export const privateOutfits = [
-    "outfitGreenEyes",
-    "outfitOwnr",
-    "outfitShinyGold"
-];
+export const privateOutfits = ["outfitGreenEyes", "outfitOwnr", "outfitShinyGold"];
 
 const allowedOutfits = [
     "outfitBase",
@@ -67,7 +63,7 @@ const allowedOutfits = [
     "outfitGreeLeafes",
     "outfitRoseWater",
     "outfitOceanEyes",
-    "outfitLargeSky"
+    "outfitLargeSky",
 ];
 const allowedEmotes = [
     "emote_thumbsup",

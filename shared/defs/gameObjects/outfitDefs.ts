@@ -272,7 +272,16 @@ const SkinDefs: Record<string, OutfitDef> = {
     }),
     outfitLargeSky: defineOutfitSkin("outfitBase", {
         name: "Large Sky",
-        skinImg: {  "baseTint": 8794533,  "baseSprite": "player-base-02.img",  "handTint": 13988345,  "handSprite": "player-hands-02.img",  "footTint": 13988345,  "footSprite": "player-feet-02.img",  "backpackTint": 4136031,  "backpackSprite": "player-circle-base-02.img"},
+        skinImg: {
+            baseTint: 8794533,
+            baseSprite: "player-base-02.img",
+            handTint: 13988345,
+            handSprite: "player-hands-02.img",
+            footTint: 13988345,
+            footSprite: "player-feet-02.img",
+            backpackTint: 4136031,
+            backpackSprite: "player-circle-base-02.img",
+        },
         lootImg: {
             sprite: "loot-shirt-01.img",
             tint: 8794533,
@@ -280,7 +289,16 @@ const SkinDefs: Record<string, OutfitDef> = {
     }),
     outfitOceanEyes: defineOutfitSkin("outfitBase", {
         name: "Ocean Eyes",
-        skinImg: {  "baseTint": 7458041,  "baseSprite": "player-base-01.img",  "handTint": 14282999,  "handSprite": "player-hands-01.img",  "footTint": 14282999,  "footSprite": "player-feet-01.img",  "backpackTint": 5735320,  "backpackSprite": "player-circle-base-01.img"},
+        skinImg: {
+            baseTint: 7458041,
+            baseSprite: "player-base-01.img",
+            handTint: 14282999,
+            handSprite: "player-hands-01.img",
+            footTint: 14282999,
+            footSprite: "player-feet-01.img",
+            backpackTint: 5735320,
+            backpackSprite: "player-circle-base-01.img",
+        },
         lootImg: {
             sprite: "loot-shirt-01.img",
             tint: 7458041,
@@ -288,7 +306,16 @@ const SkinDefs: Record<string, OutfitDef> = {
     }),
     outfitRoseWater: defineOutfitSkin("outfitBase", {
         name: "Rose Water",
-        skinImg: {  "baseTint": 16029105,  "baseSprite": "player-base-01.img",  "handTint": 16111326,  "handSprite": "player-hands-01.img",  "footTint": 16111326,  "footSprite": "player-feet-01.img",  "backpackTint": 15086440,  "backpackSprite": "player-circle-base-01.img"},
+        skinImg: {
+            baseTint: 16029105,
+            baseSprite: "player-base-01.img",
+            handTint: 16111326,
+            handSprite: "player-hands-01.img",
+            footTint: 16111326,
+            footSprite: "player-feet-01.img",
+            backpackTint: 15086440,
+            backpackSprite: "player-circle-base-01.img",
+        },
         lootImg: {
             sprite: "loot-shirt-01.img",
             tint: 16029105,
@@ -296,7 +323,16 @@ const SkinDefs: Record<string, OutfitDef> = {
     }),
     outfitGreeLeafes: defineOutfitSkin("outfitBase", {
         name: "Green Leafes",
-        skinImg: {  "baseTint": 4898653,  "baseSprite": "player-base-01.img",  "handTint": 11263659,  "handSprite": "player-hands-01.img",  "footTint": 11263659,  "footSprite": "player-feet-01.img",  "backpackTint": 1266467,  "backpackSprite": "player-circle-base-01.img"},
+        skinImg: {
+            baseTint: 4898653,
+            baseSprite: "player-base-01.img",
+            handTint: 11263659,
+            handSprite: "player-hands-01.img",
+            footTint: 11263659,
+            footSprite: "player-feet-01.img",
+            backpackTint: 1266467,
+            backpackSprite: "player-circle-base-01.img",
+        },
         lootImg: {
             sprite: "loot-shirt-01.img",
             tint: 4898653,
@@ -331,31 +367,31 @@ const SkinDefs: Record<string, OutfitDef> = {
             footTint: 0x5e7f61,
             footSprite: "player-feet-02.img",
             backpackTint: 0x051707,
-            backpackSprite: "player-circle-base-02.img"
+            backpackSprite: "player-circle-base-02.img",
         },
         lootImg: {
             sprite: "loot-shirt-02.img",
-            tint: 0x0e2f11
-        }
+            tint: 0x0e2f11,
+        },
     }),
     outfitOwnr: defineOutfitSkin("outfitBase", {
         name: "OWNR",
         noDropOnDeath: true,
         rarity: 1,
         skinImg: {
-            baseTint: 0xFF7900,
+            baseTint: 0xff7900,
             baseSprite: "player-base-02.img",
-            handTint: 0xFF6D00,
+            handTint: 0xff6d00,
             handSprite: "player-hands-02.img",
-            footTint: 0xFF6D00,
+            footTint: 0xff6d00,
             footSprite: "player-feet-02.img",
-            backpackTint: 0x273E47,
-            backpackSprite: "player-circle-base-02.img"
+            backpackTint: 0x273e47,
+            backpackSprite: "player-circle-base-02.img",
         },
         lootImg: {
             sprite: "loot-shirt-02.img",
-            tint: 0xFF7900
-        }
+            tint: 0xff7900,
+        },
     }),
     outfitShinyGold: defineOutfitSkin("outfitBase", {
         name: "Shiny Gold",
@@ -369,12 +405,12 @@ const SkinDefs: Record<string, OutfitDef> = {
             footTint: 0xf4cd2a,
             footSprite: "player-feet-02.img",
             backpackTint: 0xf4cd2a,
-            backpackSprite: "player-circle-base-02.img"
+            backpackSprite: "player-circle-base-02.img",
         },
         lootImg: {
             sprite: "loot-shirt-01.img",
-            tint: 0xf4cd2a
-        }
+            tint: 0xf4cd2a,
+        },
     }),
     outfitBlueLeaderAged: defineOutfitSkin("outfitBase", {
         name: "Stifled Blue",

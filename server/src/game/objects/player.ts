@@ -14,7 +14,10 @@ import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/me
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { privateOutfits, UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
+import {
+    UnlockDefs,
+    privateOutfits,
+} from "../../../../shared/defs/gameObjects/unlockDefs";
 import { TeamColor } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig, WeaponSlot } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
@@ -710,7 +713,10 @@ export class Player extends BaseGameObject {
             return true;
         };
 
-        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit") || privateOutfits.includes(joinMsg.loadout.outfit)) {
+        if (
+            isItemInLoadout(joinMsg.loadout.outfit, "outfit") ||
+            privateOutfits.includes(joinMsg.loadout.outfit)
+        ) {
             this.outfit = joinMsg.loadout.outfit;
         } else {
             this.outfit = defaultItems.outfit;
@@ -1701,8 +1707,8 @@ export class Player extends BaseGameObject {
             if (!this.downed && this.hasPerk("self_revive")) {
                 this.down(params);
             } else {
-                if ( GameConfig.disableKnocking ) {
-                    this.kill(params)
+                if (GameConfig.disableKnocking) {
+                    this.kill(params);
                 } else {
                     this.game.contextManager.handlePlayerDeath(this, params);
                 }
