@@ -8,7 +8,6 @@ const defaultConfig = {
     soundVolume: 1,
     musicVolume: 1,
     highResTex: true,
-    showFps: false,
     screenShake: true,
     anonPlayerNames: false,
     touchMoveStyle: "anywhere" as "locked" | "anywhere",
