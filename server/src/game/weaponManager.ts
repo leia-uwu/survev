@@ -83,7 +83,7 @@ export class WeaponManager {
 
             const swappingToGun = nextWeaponDef.type == "gun";
 
-            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay * 0.3 : 0;
+            effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay * 0.33 : 0;
 
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
@@ -97,7 +97,7 @@ export class WeaponManager {
                 //                  for two identical non-zero numerical deploy groups
                 curWeaponDef.deployGroup / nextWeaponDef.deployGroup === 1
             ) {
-                // effectiveSwitchDelay = nextWeaponDef.switchDelay;
+                effectiveSwitchDelay = nextWeaponDef.switchDelay * 0.6;
             }
 
             nextWeapon.cooldown = effectiveSwitchDelay;
