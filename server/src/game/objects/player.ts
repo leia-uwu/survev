@@ -15,7 +15,6 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
-import { TeamColor } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
@@ -512,9 +511,11 @@ export class Player extends BaseGameObject {
 
             //armor
             this.scope = def.defaultItems.scope;
+            if (this.helmet && !this.hasRoleHelmet)
+                this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
             this.helmet =
-                def.defaultItems.helmet instanceof Object
-                    ? def.defaultItems.helmet[this.teamId as TeamColor]
+                def.defaultItems.helmet instanceof Function
+                    ? def.defaultItems.helmet(this.teamId)
                     : def.defaultItems.helmet;
             if (this.chest)
                 this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
@@ -523,16 +524,11 @@ export class Player extends BaseGameObject {
 
             //weapons
             for (let i = 0; i < def.defaultItems.weapons.length; i++) {
-                const weaponDef = def.defaultItems.weapons[i];
-                let trueWeapon;
-
-                if (weaponDef instanceof Function) {
-                    trueWeapon = weaponDef();
-                } else if (TeamColor.Red in weaponDef) {
-                    trueWeapon = weaponDef[this.teamId as TeamColor];
-                } else {
-                    trueWeapon = weaponDef;
-                }
+                const weaponOrWeaponFunc = def.defaultItems.weapons[i];
+                const trueWeapon =
+                    weaponOrWeaponFunc instanceof Function
+                        ? weaponOrWeaponFunc(this.teamId)
+                        : weaponOrWeaponFunc;
 
                 if (!trueWeapon.type) {
                     //prevents overwriting existing weapons
