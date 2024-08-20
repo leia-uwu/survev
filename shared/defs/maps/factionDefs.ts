@@ -189,6 +189,36 @@ const mapDef = {
             ],
             crates: [{ name: "airdrop_crate_03", weight: 1 }],
         },
+        roles: {
+            timings: [
+                {
+                    role: "leader",
+                    circleIdx: 0,
+                    wait: 5,
+                },
+                {
+                    role: () =>
+                        util.weightedRandom([
+                            { type: "lieutenant", weight: 1 },
+                            { type: "marksman", weight: 1 },
+                            { type: "recon", weight: 1 },
+                            { type: "grenadier", weight: 1 },
+                        ]).type,
+                    circleIdx: 0,
+                    wait: 10,
+                },
+                {
+                    role: "medic",
+                    circleIdx: 0,
+                    wait: 15,
+                },
+                {
+                    role: "bugler",
+                    circleIdx: 0,
+                    wait: 20,
+                },
+            ],
+        },
         bagSizes: {},
         bleedDamage: 2,
         bleedDamageMult: 1.25,
