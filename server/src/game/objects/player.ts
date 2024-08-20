@@ -407,6 +407,7 @@ export class Player extends BaseGameObject {
     dead = false;
     downed = false;
 
+    bleedDamage: number;
     bleedTicker = 0;
     playerBeingRevived: Player | undefined;
 
@@ -776,6 +777,8 @@ export class Player extends BaseGameObject {
 
         this.zoom = this.scopeZoomRadius[this.scope];
 
+        this.bleedDamage = this.game.map.mapDef.gameConfig.bleedDamage;
+
         this.weaponManager.showNextThrowable();
     }
 
@@ -814,7 +817,7 @@ export class Player extends BaseGameObject {
             this.bleedTicker += dt;
             if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
                 this.damage({
-                    amount: this.game.map.mapDef.gameConfig.bleedDamage,
+                    amount: this.bleedDamage,
                     damageType: GameConfig.DamageType.Bleeding,
                     dir: this.dir,
                 });
@@ -1729,6 +1732,10 @@ export class Player extends BaseGameObject {
         this.shootStart = false;
         this.shootHold = false;
         this.cancelAction();
+
+        if (this.game.map.mapDef.gameConfig.bleedDamageMult != 1) {
+            this.bleedDamage *= this.game.map.mapDef.gameConfig.bleedDamageMult;
+        }
 
         //
         // Send downed msg
