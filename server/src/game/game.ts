@@ -118,6 +118,22 @@ class ContextManager {
         });
     }
 
+    /**
+     * Solos: all living players in game wrapped in outer array
+     *
+     * Duos/Squads: 2D array of living players in each group
+     *
+     * Factions: 2D array of living players on each team
+     */
+    getAlivePlayersContext(): Player[][] {
+        return this._applyContext<Player[][]>({
+            [ContextMode.Solo]: () => [this._game.playerBarn.livingPlayers],
+            [ContextMode.Team]: () =>
+                [...this._game.groups.values()].map((g) => g.livingPlayers),
+            [ContextMode.Faction]: () => this._game.teams.map((t) => t.livingPlayers),
+        });
+    }
+
     getPlayerStatusPlayers(player: Player): Player[] | undefined {
         return this._applyContext<Player[] | undefined>({
             [ContextMode.Solo]: () => undefined,
@@ -126,7 +142,7 @@ class ContextManager {
         });
     }
 
-    getAlivePlayersContext(player: Player): Player[] {
+    getPlayerAlivePlayersContext(player: Player): Player[] {
         return this._applyContext<Player[]>({
             [ContextMode.Solo]: () => (!player.dead ? [player] : []),
             [ContextMode.Team]: () => player.group!.livingPlayers,
@@ -144,7 +160,7 @@ class ContextManager {
 
     /** includes passed in player */
     getNearbyAlivePlayersContext(player: Player, range: number): Player[] {
-        const alivePlayersContext = this.getAlivePlayersContext(player);
+        const alivePlayersContext = this.getPlayerAlivePlayersContext(player);
 
         //probably more efficient when there's 4 or less players in the context (untested)
         if (alivePlayersContext.length <= 4) {
@@ -468,6 +484,7 @@ export class Game {
         this.deadBodyBarn.update(dt);
         this.decalBarn.update(dt);
         this.planeBarn.update(dt);
+        this.updateScheduledRoles(dt);
 
         if (Config.perfLogging.enabled) {
             // Record performance and start the next tick
@@ -637,6 +654,58 @@ export class Game {
         // const group = new Group(hash, groupId, teamId, autoFill);
         this.groups.set(hash, group);
         return group;
+    }
+
+    scheduledRoles: Array<{
+        role: string;
+        time: number;
+    }> = [];
+
+    /**
+     * called everytime gas.circleIdx is incremented for efficiency purposes
+     * schedules all roles that need to be assigned for the respective circleIdx
+     */
+    scheduleRoleAssignments(): void {
+        if (!this.map.mapDef.gameConfig.roles) {
+            throw new Error(
+                '"roles" property is undefined in chosen map definition, cannot call this function',
+            );
+        }
+        const rolesToSchedule = this.map.mapDef.gameConfig.roles.timings.filter(
+            (timing) => this.gas.circleIdx == timing.circleIdx,
+        );
+
+        for (let i = 0; i < rolesToSchedule.length; i++) {
+            const roleObj = rolesToSchedule[i];
+            const roleStr =
+                roleObj.role instanceof Function ? roleObj.role() : roleObj.role;
+            this.scheduledRoles.push({
+                role: roleStr,
+                time: roleObj.wait,
+            });
+        }
+    }
+
+    updateScheduledRoles(dt: number) {
+        for (let i = this.scheduledRoles.length - 1; i >= 0; i--) {
+            const scheduledRole = this.scheduledRoles[i];
+            scheduledRole.time -= dt;
+            if (scheduledRole.time <= 0) {
+                this.scheduledRoles.splice(i, 1);
+
+                const fullAliveContext = this.contextManager.getAlivePlayersContext();
+                for (let i = 0; i < fullAliveContext.length; i++) {
+                    const promotablePlayers = fullAliveContext[i].filter((p) => !p.role);
+                    if (promotablePlayers.length == 0) continue;
+
+                    const randomPlayer =
+                        promotablePlayers[
+                            util.randomInt(0, promotablePlayers.length - 1)
+                        ];
+                    randomPlayer.promoteToRole(scheduledRole.role);
+                }
+            }
+        }
     }
 
     stop(): void {

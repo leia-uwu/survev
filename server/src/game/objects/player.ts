@@ -15,7 +15,6 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
-import { TeamColor } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
@@ -512,9 +511,11 @@ export class Player extends BaseGameObject {
 
             //armor
             this.scope = def.defaultItems.scope;
+            if (this.helmet && !this.hasRoleHelmet)
+                this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
             this.helmet =
-                def.defaultItems.helmet instanceof Object
-                    ? def.defaultItems.helmet[this.teamId as TeamColor]
+                def.defaultItems.helmet instanceof Function
+                    ? def.defaultItems.helmet(this.teamId)
                     : def.defaultItems.helmet;
             if (this.chest)
                 this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
@@ -523,16 +524,11 @@ export class Player extends BaseGameObject {
 
             //weapons
             for (let i = 0; i < def.defaultItems.weapons.length; i++) {
-                const weaponDef = def.defaultItems.weapons[i];
-                let trueWeapon;
-
-                if (weaponDef instanceof Function) {
-                    trueWeapon = weaponDef();
-                } else if (TeamColor.Red in weaponDef) {
-                    trueWeapon = weaponDef[this.teamId as TeamColor];
-                } else {
-                    trueWeapon = weaponDef;
-                }
+                const weaponOrWeaponFunc = def.defaultItems.weapons[i];
+                const trueWeapon =
+                    weaponOrWeaponFunc instanceof Function
+                        ? weaponOrWeaponFunc(this.teamId)
+                        : weaponOrWeaponFunc;
 
                 if (!trueWeapon.type) {
                     //prevents overwriting existing weapons
@@ -1419,11 +1415,15 @@ export class Player extends BaseGameObject {
                 | Player
                 | undefined;
             if (emotePlayer) {
-                if (
-                    ((emote.isPing || emote.itemType) &&
-                        emotePlayer.groupId === player.groupId) ||
-                    (player.visibleObjects.has(emotePlayer) && !emote.isPing)
-                ) {
+                const seeNormalEmote =
+                    !emote.isPing && player.visibleObjects.has(emotePlayer);
+
+                const partOfGroup = emotePlayer.groupId === player.groupId;
+                const isTeamLeader =
+                    emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
+                const seePing =
+                    (emote.isPing || emote.itemType) && (partOfGroup || isTeamLeader);
+                if (seeNormalEmote || seePing) {
                     updateMsg.emotes.push(emote);
                 }
             } else if (emote.playerId === 0 && emote.isPing) {
@@ -1888,6 +1888,19 @@ export class Player extends BaseGameObject {
                     throwableDef.fuseTime,
                     GameConfig.DamageType.Player,
                 );
+            }
+        }
+
+        if (this.game.map.factionMode && this.team!.livingPlayers.length <= 2) {
+            const last1 = this.team!.livingPlayers[0] as Player | undefined;
+            const last2 = this.team!.livingPlayers[1] as Player | undefined;
+
+            if (last1 && last1.role != "last_man") {
+                last1.promoteToRole("last_man");
+            }
+
+            if (last2 && last2.role != "last_man") {
+                last2.promoteToRole("last_man");
             }
         }
 
