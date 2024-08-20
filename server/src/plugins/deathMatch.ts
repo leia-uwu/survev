@@ -4,6 +4,8 @@ import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { GamePlugin } from "../game/pluginManager";
 
+const outfitsAllowedToDrop: string[] = ["outfitGhillie"];
+const gunsAllowedToDrop: string[] = ["sv98"];
 export default class DeathMatchPlugin extends GamePlugin {
     protected override initListeners(): void {
         this.on("gameCreated", (_data) => {});
@@ -30,20 +32,22 @@ export default class DeathMatchPlugin extends GamePlugin {
             data.player.scope = "1xscope";
             data.player.helmet = "";
             data.player.chest = "";
-            data.player.outfit = "outfitBase";
+            if ( !outfitsAllowedToDrop.includes(data.player.outfit) ) {
+                data.player.outfit = "outfitBase";
+            }
 
             data.player.weaponManager.setCurWeapIndex(WeaponSlot.Melee);
 
             {
                 const primary = data.player.weapons[WeaponSlot.Primary];
-                if (primary.type !== "sv98") {
+                if (!gunsAllowedToDrop.includes(primary.type)) {
                     primary.type = "";
                     primary.ammo = 0;
                     primary.cooldown = 0;
                 }
 
                 const secondary = data.player.weapons[WeaponSlot.Secondary];
-                if (secondary.type !== "sv98") {
+                if (!gunsAllowedToDrop.includes(secondary.type)) {
                     secondary.type = "";
                     secondary.ammo = 0;
                     secondary.cooldown = 0;
