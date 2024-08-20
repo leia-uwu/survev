@@ -257,9 +257,20 @@ class ContextManager {
         });
     }
 
-    setMsgPlayerStatus(player: Player, msg: net.UpdateMsg): void{
-        if (this._contextMode == ContextMode.Solo || !(player.playerStatusDirty || player.playerStatusTicker > net.getPlayerStatusUpdateRate(this._game.map.factionMode))) return;
-        const playerPool: Player[] = this._contextMode === ContextMode.Team ? player.group!.players : this._game.playerBarn.players;
+    setMsgPlayerStatus(player: Player, msg: net.UpdateMsg): void {
+        if (
+            this._contextMode == ContextMode.Solo ||
+            !(
+                player.playerStatusDirty ||
+                player.playerStatusTicker >
+                    net.getPlayerStatusUpdateRate(this._game.map.factionMode)
+            )
+        )
+            return;
+        const playerPool: Player[] =
+            this._contextMode === ContextMode.Team
+                ? player.group!.players
+                : this._game.playerBarn.players;
         msg.playerStatusDirty = true;
         player.playerStatusTicker = 0;
         for (const p of playerPool) {

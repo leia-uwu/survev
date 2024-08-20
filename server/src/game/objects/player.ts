@@ -24,7 +24,6 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import { TeamMode } from "../../config";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import type { Game } from "../game";
@@ -1387,7 +1386,6 @@ export class Player extends BaseGameObject {
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
         this.game.contextManager.setMsgPlayerStatus(player, updateMsg);
-
 
         if (player.groupStatusDirty) {
             const teamPlayers = player.group!.players;
