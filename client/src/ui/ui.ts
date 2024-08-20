@@ -395,7 +395,13 @@ export class UiManager {
         $("#btn-game-quit").on("click", () => {
             this.game.updatePass = true;
             this.game.updatePassDelay = 1;
-            this.quitGame();
+            const secondsBeforeLeaving = 6;
+            const prevTxt = $("#btn-game-quit").text();
+            $("#btn-game-quit").text(`Leaving in ${secondsBeforeLeaving} seconds...`);
+            setTimeout(() => {
+                this.quitGame();
+                $("#btn-game-quit").text(prevTxt);
+            }, secondsBeforeLeaving * 1000)
         });
         this.specStatsButton.on("click", () => {
             this.toggleLocalStats();
