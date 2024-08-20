@@ -75,7 +75,13 @@ util.mergeDeep(Config, {
             https: false,
             address: "217.160.224.171:8001",
             l10n: "index-europe"
+        },
+        as: {
+            https: false,
+            address: "172.105.112.218:8001",
+            l10n: "index-asia"
         }
+
     },
     thisRegion: "na",
     modes: [
