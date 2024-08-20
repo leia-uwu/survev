@@ -737,7 +737,7 @@ export class WeaponManager {
                     v2.distance(p.pos, this.player.pos) > p.zoom,
             )
         ) {
-            this.player.timeLastSeen = Date.now();
+            this.player.timeUntilHidden = 1;
         }
     }
 

@@ -426,7 +426,7 @@ export class Player extends BaseGameObject {
     actionSeq = 0;
     action = { time: 0, duration: 0, targetId: 0 };
 
-    timeLastSeen = 0; // for showing on enemy minimap in 50v50
+    timeUntilHidden = 0; // for showing on enemy minimap in 50v50
 
     /**
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
@@ -794,6 +794,7 @@ export class Player extends BaseGameObject {
     update(dt: number): void {
         if (this.dead) return;
         this.timeAlive += dt;
+        this.timeUntilHidden -= dt;
 
         //
         // Boost logic
@@ -1385,42 +1386,8 @@ export class Player extends BaseGameObject {
             : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
-        if (
-            (player.playerStatusDirty ||
-            this.playerStatusTicker >
-                net.getPlayerStatusUpdateRate(this.game.map.factionMode))
-                && this.game.teamMode !== TeamMode.Solo
-        ) {
-            updateMsg.playerStatusDirty = true;
-            this.playerStatusTicker = 0;
+        this.game.contextManager.setMsgPlayerStatus(player, updateMsg);
 
-            if (player.group && !player.game.map.factionMode) {
-                const players = this.game.contextManager.getPlayerStatusPlayers(player)!;
-                for (let i = 0; i < players.length; i++) {
-                    const p = players[i];
-                    updateMsg.playerStatus.players.push({
-                        hasData: p.playerStatusDirty,
-                        pos: p.pos,
-                        visible: true,
-                        dead: p.dead,
-                        downed: p.downed,
-                        role: p.role,
-                    });
-                }
-            }
-            if (player.game.map.factionMode) {
-                for (const p of player.game.playerBarn.players) {
-                    updateMsg.playerStatus.players.push({
-                        hasData: p.playerStatusDirty,
-                        pos: p.pos,
-                        visible: p.teamId === player.teamId || p.timeLastSeen + 2000 > Date.now(),
-                        dead: p.dead,
-                        downed: p.downed,
-                        role: p.role,
-                    });
-                }
-            }
-        }
 
         if (player.groupStatusDirty) {
             const teamPlayers = player.group!.players;

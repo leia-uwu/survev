@@ -257,6 +257,23 @@ class ContextManager {
         });
     }
 
+    setMsgPlayerStatus(player: Player, msg: net.UpdateMsg): void{
+        if (this._contextMode == ContextMode.Solo || !(player.playerStatusDirty || player.playerStatusTicker > net.getPlayerStatusUpdateRate(this._game.map.factionMode))) return;
+        const playerPool: Player[] = this._contextMode === ContextMode.Team ? player.group!.players : this._game.playerBarn.players;
+        msg.playerStatusDirty = true;
+        player.playerStatusTicker = 0;
+        for (const p of playerPool) {
+            msg.playerStatus.players.push({
+                hasData: p.playerStatusDirty,
+                pos: p.pos,
+                visible: p.teamId === player.teamId || p.timeUntilHidden > 0,
+                dead: p.dead,
+                downed: p.downed,
+                role: p.role,
+            });
+        }
+    }
+
     handlePlayerDeath(player: Player, params: DamageParams): void {
         return this._applyContext<void>({
             [ContextMode.Solo]: () => player.kill(params),
