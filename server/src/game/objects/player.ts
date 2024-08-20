@@ -425,7 +425,7 @@ export class Player extends BaseGameObject {
     actionSeq = 0;
     action = { time: 0, duration: 0, targetId: 0 };
 
-    timeUntilHidden = 0; // for showing on enemy minimap in 50v50
+    timeUntilHidden = -1; // for showing on enemy minimap in 50v50
 
     /**
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
@@ -793,7 +793,10 @@ export class Player extends BaseGameObject {
     update(dt: number): void {
         if (this.dead) return;
         this.timeAlive += dt;
-        this.timeUntilHidden -= dt;
+
+        if (this.game.map.factionMode) {
+            this.timeUntilHidden -= dt;
+        }
 
         //
         // Boost logic

@@ -261,13 +261,13 @@ class ContextManager {
     getPlayerStatuses(player: Player): PlayerStatus[] {
         if (this._contextMode == ContextMode.Solo) return [];
 
-        const players: PlayerStatus[] = [];
-        const playerPool: Player[] =
+        const playerStatuses: PlayerStatus[] = [];
+        const players: Player[] =
             this._contextMode === ContextMode.Team
                 ? player.group!.players
                 : this._game.playerBarn.players;
-        for (const p of playerPool) {
-            players.push({
+        for (const p of players) {
+            playerStatuses.push({
                 hasData: p.playerStatusDirty,
                 pos: p.pos,
                 visible: p.teamId === player.teamId || p.timeUntilHidden > 0,
@@ -276,7 +276,7 @@ class ContextManager {
                 role: p.role,
             });
         }
-        return players;
+        return playerStatuses;
     }
 
     handlePlayerDeath(player: Player, params: DamageParams): void {
