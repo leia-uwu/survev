@@ -1891,6 +1891,19 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.game.map.factionMode && this.team!.livingPlayers.length <= 2) {
+            const last1 = this.team!.livingPlayers[0] as Player | undefined;
+            const last2 = this.team!.livingPlayers[1] as Player | undefined;
+
+            if (last1 && last1.role != "last_man") {
+                last1.promoteToRole("last_man");
+            }
+
+            if (last2 && last2.role != "last_man") {
+                last2.promoteToRole("last_man");
+            }
+        }
+
         this.game.sendMsg(net.MsgType.Kill, killMsg);
 
         if (this.role && this.role !== "kill_leader") {
