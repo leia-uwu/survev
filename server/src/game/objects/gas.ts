@@ -218,7 +218,7 @@ export class Gas {
         }
 
         if (this.map.mapDef.gameConfig.roles && oldCircleIdx != this.circleIdx) {
-            this.map.game.scheduleRoleAssignments();
+            this.map.game.playerBarn.scheduleRoleAssignments();
         }
 
         this.damage =
