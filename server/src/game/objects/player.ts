@@ -1415,11 +1415,15 @@ export class Player extends BaseGameObject {
                 | Player
                 | undefined;
             if (emotePlayer) {
-                if (
-                    ((emote.isPing || emote.itemType) &&
-                        emotePlayer.groupId === player.groupId) ||
-                    (player.visibleObjects.has(emotePlayer) && !emote.isPing)
-                ) {
+                const seeNormalEmote =
+                    !emote.isPing && player.visibleObjects.has(emotePlayer);
+
+                const partOfGroup = emotePlayer.groupId === player.groupId;
+                const isTeamLeader =
+                    emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
+                const seePing =
+                    (emote.isPing || emote.itemType) && (partOfGroup || isTeamLeader);
+                if (seeNormalEmote || seePing) {
                     updateMsg.emotes.push(emote);
                 }
             } else if (emote.playerId === 0 && emote.isPing) {
