@@ -134,6 +134,13 @@ export interface MapDef {
                 weight: number;
             }>;
         };
+        roles?: {
+            timings: Array<{
+                role: string | (() => string);
+                circleIdx: number;
+                wait: number;
+            }>;
+        };
         bagSizes: Record<string, number[]>;
         bleedDamage: number;
         bleedDamageMult: number;

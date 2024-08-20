@@ -15,7 +15,6 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
-import { TeamColor } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
@@ -63,6 +62,11 @@ export class PlayerBarn {
     killLeader?: Player;
 
     medics: Player[] = [];
+
+    scheduledRoles: Array<{
+        role: string;
+        time: number;
+    }> = [];
 
     constructor(readonly game: Game) {}
 
@@ -148,6 +152,28 @@ export class PlayerBarn {
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].update(dt);
         }
+
+        // update scheduled roles
+        for (let i = this.scheduledRoles.length - 1; i >= 0; i--) {
+            const scheduledRole = this.scheduledRoles[i];
+            scheduledRole.time -= dt;
+            if (scheduledRole.time <= 0) {
+                this.scheduledRoles.splice(i, 1);
+
+                const fullAliveContext =
+                    this.game.contextManager.getAlivePlayersContext();
+                for (let i = 0; i < fullAliveContext.length; i++) {
+                    const promotablePlayers = fullAliveContext[i].filter((p) => !p.role);
+                    if (promotablePlayers.length == 0) continue;
+
+                    const randomPlayer =
+                        promotablePlayers[
+                            util.randomInt(0, promotablePlayers.length - 1)
+                        ];
+                    randomPlayer.promoteToRole(scheduledRole.role);
+                }
+            }
+        }
     }
 
     removePlayer(player: Player) {
@@ -196,6 +222,32 @@ export class PlayerBarn {
             player.spectatorCountDirty = false;
             player.activeIdDirty = false;
             player.groupStatusDirty = false;
+        }
+    }
+
+    /**
+     * called everytime gas.circleIdx is incremented for efficiency purposes
+     * schedules all roles that need to be assigned for the respective circleIdx
+     */
+    scheduleRoleAssignments(): void {
+        const roles = this.game.map.mapDef.gameConfig.roles;
+        assert(
+            roles,
+            '"roles" property is undefined in chosen map definition, cannot call this function',
+        );
+
+        const rolesToSchedule = roles.timings.filter(
+            (timing) => this.game.gas.circleIdx == timing.circleIdx,
+        );
+
+        for (let i = 0; i < rolesToSchedule.length; i++) {
+            const roleObj = rolesToSchedule[i];
+            const roleStr =
+                roleObj.role instanceof Function ? roleObj.role() : roleObj.role;
+            this.scheduledRoles.push({
+                role: roleStr,
+                time: roleObj.wait,
+            });
         }
     }
 }
@@ -517,9 +569,11 @@ export class Player extends BaseGameObject {
 
             //armor
             this.scope = def.defaultItems.scope;
+            if (this.helmet && !this.hasRoleHelmet)
+                this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
             this.helmet =
-                def.defaultItems.helmet instanceof Object
-                    ? def.defaultItems.helmet[this.teamId as TeamColor]
+                def.defaultItems.helmet instanceof Function
+                    ? def.defaultItems.helmet(this.teamId)
                     : def.defaultItems.helmet;
             if (this.chest)
                 this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
@@ -528,16 +582,11 @@ export class Player extends BaseGameObject {
 
             //weapons
             for (let i = 0; i < def.defaultItems.weapons.length; i++) {
-                const weaponDef = def.defaultItems.weapons[i];
-                let trueWeapon;
-
-                if (weaponDef instanceof Function) {
-                    trueWeapon = weaponDef();
-                } else if (TeamColor.Red in weaponDef) {
-                    trueWeapon = weaponDef[this.teamId as TeamColor];
-                } else {
-                    trueWeapon = weaponDef;
-                }
+                const weaponOrWeaponFunc = def.defaultItems.weapons[i];
+                const trueWeapon =
+                    weaponOrWeaponFunc instanceof Function
+                        ? weaponOrWeaponFunc(this.teamId)
+                        : weaponOrWeaponFunc;
 
                 if (!trueWeapon.type) {
                     //prevents overwriting existing weapons
@@ -1416,11 +1465,15 @@ export class Player extends BaseGameObject {
                 | Player
                 | undefined;
             if (emotePlayer) {
-                if (
-                    ((emote.isPing || emote.itemType) &&
-                        emotePlayer.groupId === player.groupId) ||
-                    (player.visibleObjects.has(emotePlayer) && !emote.isPing)
-                ) {
+                const seeNormalEmote =
+                    !emote.isPing && player.visibleObjects.has(emotePlayer);
+
+                const partOfGroup = emotePlayer.groupId === player.groupId;
+                const isTeamLeader =
+                    emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
+                const seePing =
+                    (emote.isPing || emote.itemType) && (partOfGroup || isTeamLeader);
+                if (seeNormalEmote || seePing) {
                     updateMsg.emotes.push(emote);
                 }
             } else if (emote.playerId === 0 && emote.isPing) {
@@ -1885,6 +1938,19 @@ export class Player extends BaseGameObject {
                     throwableDef.fuseTime,
                     GameConfig.DamageType.Player,
                 );
+            }
+        }
+
+        if (this.game.map.factionMode && this.team!.livingPlayers.length <= 2) {
+            const last1 = this.team!.livingPlayers[0] as Player | undefined;
+            const last2 = this.team!.livingPlayers[1] as Player | undefined;
+
+            if (last1 && last1.role != "last_man") {
+                last1.promoteToRole("last_man");
+            }
+
+            if (last2 && last2.role != "last_man") {
+                last2.promoteToRole("last_man");
             }
         }
 

@@ -247,6 +247,7 @@ export const Main: MapDef = {
             { name: "flare_gun_dual", count: 1, weight: 0.0025 }, // !
             { name: "groza", count: 1, weight: 0.8 },
             { name: "scout_elite", count: 1, weight: 0.05 },
+            { name: "vss", count: 1, weight: 0.05 }, // !
         ],
         tier_police: [
             { name: "scar", count: 1, weight: 0.5 },
@@ -353,6 +354,7 @@ export const Main: MapDef = {
             { name: "m9", count: 1, weight: 0.01 },
             { name: "flare_gun", count: 1, weight: 0.5 },
             { name: "scout_elite", count: 1, weight: 1.5 },
+            { name: "vss", count: 1, weight: 1.5 }, // !
         ],
         tier_airdrop_rare: [
             { name: "garand", count: 1, weight: 6 },
