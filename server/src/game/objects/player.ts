@@ -63,6 +63,11 @@ export class PlayerBarn {
 
     medics: Player[] = [];
 
+    scheduledRoles: Array<{
+        role: string;
+        time: number;
+    }> = [];
+
     constructor(readonly game: Game) {}
 
     randomPlayer(player?: Player) {
@@ -144,6 +149,28 @@ export class PlayerBarn {
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].update(dt);
         }
+
+        // update scheduled roles
+        for (let i = this.scheduledRoles.length - 1; i >= 0; i--) {
+            const scheduledRole = this.scheduledRoles[i];
+            scheduledRole.time -= dt;
+            if (scheduledRole.time <= 0) {
+                this.scheduledRoles.splice(i, 1);
+
+                const fullAliveContext =
+                    this.game.contextManager.getAlivePlayersContext();
+                for (let i = 0; i < fullAliveContext.length; i++) {
+                    const promotablePlayers = fullAliveContext[i].filter((p) => !p.role);
+                    if (promotablePlayers.length == 0) continue;
+
+                    const randomPlayer =
+                        promotablePlayers[
+                            util.randomInt(0, promotablePlayers.length - 1)
+                        ];
+                    randomPlayer.promoteToRole(scheduledRole.role);
+                }
+            }
+        }
     }
 
     removePlayer(player: Player) {
@@ -192,6 +219,32 @@ export class PlayerBarn {
             player.spectatorCountDirty = false;
             player.activeIdDirty = false;
             player.groupStatusDirty = false;
+        }
+    }
+
+    /**
+     * called everytime gas.circleIdx is incremented for efficiency purposes
+     * schedules all roles that need to be assigned for the respective circleIdx
+     */
+    scheduleRoleAssignments(): void {
+        const roles = this.game.map.mapDef.gameConfig.roles;
+        assert(
+            roles,
+            '"roles" property is undefined in chosen map definition, cannot call this function',
+        );
+
+        const rolesToSchedule = roles.timings.filter(
+            (timing) => this.game.gas.circleIdx == timing.circleIdx,
+        );
+
+        for (let i = 0; i < rolesToSchedule.length; i++) {
+            const roleObj = rolesToSchedule[i];
+            const roleStr =
+                roleObj.role instanceof Function ? roleObj.role() : roleObj.role;
+            this.scheduledRoles.push({
+                role: roleStr,
+                time: roleObj.wait,
+            });
         }
     }
 }
