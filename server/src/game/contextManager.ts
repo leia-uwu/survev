@@ -1,5 +1,6 @@
 import { GameConfig } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
+import type { PlayerStatus } from "../../../shared/net/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
@@ -242,6 +243,24 @@ export class ContextManager {
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
             },
         });
+    }
+
+    getPlayerStatuses(player: Player): PlayerStatus[] {
+        if (this._contextMode == ContextMode.Solo) return [];
+
+        const playerStatuses: PlayerStatus[] = [];
+        const players: Player[] = this.getPlayerStatusPlayers(player)!;
+        for (const p of players) {
+            playerStatuses.push({
+                hasData: p.playerStatusDirty,
+                pos: p.pos,
+                visible: p.teamId === player.teamId || p.timeUntilHidden > 0,
+                dead: p.dead,
+                downed: p.downed,
+                role: p.role,
+            });
+        }
+        return playerStatuses;
     }
 
     handlePlayerDeath(player: Player, params: DamageParams): void {
