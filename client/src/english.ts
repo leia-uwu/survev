@@ -68,7 +68,6 @@ export default {
     "index-viewers": "viewers",
     "index-settings": "Settings",
     "index-high-resolution": "High resolution (check to increase visual quality)",
-    "index-show-fps": "Show FPS",
     "index-screen-shake": "Screen shake",
     "index-anon-player-names": "Anonymize player names",
     "index-master-volume": "Master Volume",
