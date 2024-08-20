@@ -2,6 +2,7 @@ import type { MapDefs } from "../../../shared/defs/mapDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
+import type { PlayerStatus } from "../../../shared/net/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
@@ -257,24 +258,16 @@ class ContextManager {
         });
     }
 
-    setMsgPlayerStatus(player: Player, msg: net.UpdateMsg): void {
-        if (
-            this._contextMode == ContextMode.Solo ||
-            !(
-                player.playerStatusDirty ||
-                player.playerStatusTicker >
-                    net.getPlayerStatusUpdateRate(this._game.map.factionMode)
-            )
-        )
-            return;
+    getPlayerStatuses(player: Player): PlayerStatus[] {
+        if (this._contextMode == ContextMode.Solo) return [];
+
+        const players: PlayerStatus[] = [];
         const playerPool: Player[] =
             this._contextMode === ContextMode.Team
                 ? player.group!.players
                 : this._game.playerBarn.players;
-        msg.playerStatusDirty = true;
-        player.playerStatusTicker = 0;
         for (const p of playerPool) {
-            msg.playerStatus.players.push({
+            players.push({
                 hasData: p.playerStatusDirty,
                 pos: p.pos,
                 visible: p.teamId === player.teamId || p.timeUntilHidden > 0,
@@ -283,6 +276,7 @@ class ContextManager {
                 role: p.role,
             });
         }
+        return players;
     }
 
     handlePlayerDeath(player: Player, params: DamageParams): void {

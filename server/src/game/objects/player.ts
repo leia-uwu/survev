@@ -1385,7 +1385,16 @@ export class Player extends BaseGameObject {
             : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
-        this.game.contextManager.setMsgPlayerStatus(player, updateMsg);
+        if (
+            player.playerStatusDirty ||
+            player.playerStatusTicker >
+                net.getPlayerStatusUpdateRate(this.game.map.factionMode)
+        ) {
+            updateMsg.playerStatus.players =
+                this.game.contextManager.getPlayerStatuses(player);
+            updateMsg.playerStatusDirty = true;
+            player.playerStatusTicker = 0;
+        }
 
         if (player.groupStatusDirty) {
             const teamPlayers = player.group!.players;
