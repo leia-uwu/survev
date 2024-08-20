@@ -123,6 +123,9 @@ export class PlayerBarn {
             player.groupId = this.groupIdAllocator.getNextId();
             player.teamId = player.groupId;
         }
+        if (player.game.map.factionMode) {
+            player.playerStatusDirty = true;
+        }
 
         this.game.logger.log(`Player ${player.name} joined`);
 
@@ -474,6 +477,8 @@ export class Player extends BaseGameObject {
     actionType: number = GameConfig.Action.None;
     actionSeq = 0;
     action = { time: 0, duration: 0, targetId: 0 };
+
+    timeUntilHidden = -1; // for showing on enemy minimap in 50v50
 
     /**
      * specifically for reloading single shot guns to keep reloading until maxClip is reached
@@ -841,6 +846,10 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
         this.timeAlive += dt;
 
+        if (this.game.map.factionMode) {
+            this.timeUntilHidden -= dt;
+        }
+
         //
         // Boost logic
         //
@@ -1013,7 +1022,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        if (this.game.isTeamMode) {
+        if (this.game.isTeamMode || this.game.map.factionMode) {
             this.playerStatusTicker += dt;
             for (const spectator of this.spectators) {
                 spectator.playerStatusTicker += dt;
@@ -1431,27 +1440,15 @@ export class Player extends BaseGameObject {
             : playerBarn.newPlayers;
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
 
-        if (player.group) {
-            if (
-                player.playerStatusDirty ||
-                this.playerStatusTicker >
-                    net.getPlayerStatusUpdateRate(this.game.map.factionMode)
-            ) {
-                const players = this.game.contextManager.getPlayerStatusPlayers(player)!;
-                for (let i = 0; i < players.length; i++) {
-                    const p = players[i];
-                    updateMsg.playerStatus.players.push({
-                        hasData: p.playerStatusDirty,
-                        pos: p.pos,
-                        visible: true,
-                        dead: p.dead,
-                        downed: p.downed,
-                        role: p.role,
-                    });
-                }
-                updateMsg.playerStatusDirty = true;
-                this.playerStatusTicker = 0;
-            }
+        if (
+            player.playerStatusDirty ||
+            player.playerStatusTicker >
+                net.getPlayerStatusUpdateRate(this.game.map.factionMode)
+        ) {
+            updateMsg.playerStatus.players =
+                this.game.contextManager.getPlayerStatuses(player);
+            updateMsg.playerStatusDirty = true;
+            player.playerStatusTicker = 0;
         }
 
         if (player.groupStatusDirty) {
