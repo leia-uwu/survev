@@ -262,10 +262,7 @@ class ContextManager {
         if (this._contextMode == ContextMode.Solo) return [];
 
         const playerStatuses: PlayerStatus[] = [];
-        const players: Player[] =
-            this._contextMode === ContextMode.Team
-                ? player.group!.players
-                : this._game.playerBarn.players;
+        const players: Player[] = this.getPlayerStatusPlayers(player)!;
         for (const p of players) {
             playerStatuses.push({
                 hasData: p.playerStatusDirty,
