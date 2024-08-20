@@ -248,19 +248,15 @@ export class ContextManager {
     getPlayerStatuses(player: Player): PlayerStatus[] {
         if (this._contextMode == ContextMode.Solo) return [];
 
-        const playerStatuses: PlayerStatus[] = [];
         const players: Player[] = this.getPlayerStatusPlayers(player)!;
-        for (const p of players) {
-            playerStatuses.push({
-                hasData: p.playerStatusDirty,
-                pos: p.pos,
-                visible: p.teamId === player.teamId || p.timeUntilHidden > 0,
-                dead: p.dead,
-                downed: p.downed,
-                role: p.role,
-            });
-        }
-        return playerStatuses;
+        return players.map((p) => ({
+            hasData: p.playerStatusDirty,
+            pos: p.pos,
+            visible: p.teamId === player.teamId || p.timeUntilHidden > 0,
+            dead: p.dead,
+            downed: p.downed,
+            role: p.role,
+        }));
     }
 
     handlePlayerDeath(player: Player, params: DamageParams): void {
