@@ -568,6 +568,15 @@ export class Player extends BaseGameObject {
                 this.inventory[key] = value;
             }
 
+            //outfit
+            const newOutfit = def.defaultItems.outfit;
+            if (newOutfit instanceof Function) {
+                this.outfit = newOutfit(this.teamId);
+            } else {
+                //string
+                if (newOutfit) this.outfit = newOutfit;
+            }
+
             //armor
             this.scope = def.defaultItems.scope;
             if (this.helmet && !this.hasRoleHelmet)
