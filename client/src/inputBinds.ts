@@ -60,7 +60,7 @@ const BindDefs = {
     [GameInput.CycleUIMode]: def("Toggle Minimap", inputKey(Key.V)),
     [GameInput.EmoteMenu]: def("Emote Menu", mouseButton(MouseButton.Right)),
     [GameInput.TeamPingMenu]: def("Team Ping Hold", inputKey(Key.C)),
-    [GameInput.EquipOtherGun]: def("Equip Other Gun", null),
+    [GameInput.EquipOtherGun]: def("Equip Other Gun", inputKey(Key.Space)),
     [GameInput.Fullscreen]: def("Full Screen", inputKey(Key.L)),
     [GameInput.HideUI]: def("Hide UI", null),
     [GameInput.TeamPingSingle]: def("Team Ping Menu", null),
