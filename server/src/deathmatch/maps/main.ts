@@ -2,9 +2,15 @@ import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { Main } from "../../../../shared/defs/maps/baseDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import { util } from "../../../../shared/utils/util";
+import { THIS_REGION } from "../../resurviv-config";
+
+const switchToSmallMap = THIS_REGION === "eu" || THIS_REGION === "as";
 
 const config = {
+    mapSize: switchToSmallMap ? "small" : "large",
     places: 3,
+    mapWidth: { large: 290, small: 220 },
+    spawnDensity: { large: 37, small: 27 },
 } as const;
 
 export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
@@ -24,8 +30,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
     },
     mapGen: {
         map: {
-            baseWidth: 290,
-            baseHeight: 290,
+            baseWidth: config.mapWidth[config.mapSize],
+            baseHeight: config.mapWidth[config.mapSize],
             shoreInset: 40,
             rivers: {
                 weights: [],
@@ -45,7 +51,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                   (array, item) => {
                       let object: Record<string, number> = {};
                       for (const [key, value] of Object.entries(item)) {
-                          object[key] = (value * 37) / 100;
+                          object[key] = (value * config.spawnDensity[config.mapSize]) / 100;
                       }
                       array.push(object);
                       return array;
@@ -69,7 +75,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 cache_02: { odds: 0.1 }, // mosin tree
                 cache_07: 1,
                 // bunker_structure_01: { odds: 0.05 },
-                bunker_structure_02: 1,
+                bunker_structure_02: config.mapSize === "large" ? 1 : 0,
                 // bunker_structure_03: 1,
                 // bunker_structure_04: 1,
                 // bunker_structure_05: 1,
@@ -91,7 +97,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                     "police_01",
                     "bank_01",
                 ],
-                choose: 2,
+                choose: config.mapSize === "large" ? 2 : 1,
             },
         ],
     },
