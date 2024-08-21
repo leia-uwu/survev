@@ -18,7 +18,6 @@ import {
     UnlockDefs,
     privateOutfits,
 } from "../../../../shared/defs/gameObjects/unlockDefs";
-import { TeamColor } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig, WeaponSlot } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";

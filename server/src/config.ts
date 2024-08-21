@@ -1,4 +1,3 @@
-import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";

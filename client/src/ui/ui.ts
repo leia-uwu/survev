@@ -387,7 +387,7 @@ export class UiManager {
             setTimeout(() => {
                 this.quitGame();
                 $("#btn-game-quit").text(prevTxt);
-            }, secondsBeforeLeaving * 1000)
+            }, secondsBeforeLeaving * 1000);
         });
         this.specStatsButton.on("click", () => {
             this.toggleLocalStats();

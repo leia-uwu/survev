@@ -10,44 +10,44 @@ const serverDataConfig = {
     local: {},
     na: {
         gameServer: {
-            apiServerUrl: "http://resurviv.biz"
+            apiServerUrl: "http://resurviv.biz",
         },
         regions: {
             na: {
                 https: false,
                 address: "resurviv.biz:8001",
-                l10n: "index-north-america"
+                l10n: "index-north-america",
             },
             eu: {
                 https: false,
                 address: "217.160.224.171:8001",
-                l10n: "index-europe"
+                l10n: "index-europe",
             },
             as: {
                 https: false,
                 address: "172.105.112.218:8001",
-                l10n: "index-asia"
-            }
+                l10n: "index-asia",
+            },
         },
         thisRegion: "na",
-    }, 
+    },
     eu: {
         gameServer: {
-            apiServerUrl: "http://217.160.224.171"
+            apiServerUrl: "http://217.160.224.171",
         },
         regions: {
             eu: {
                 https: false,
                 address: "217.160.224.171:8001",
-                l10n: "index-europe"
+                l10n: "index-europe",
             },
         },
         thisRegion: "eu",
     },
     as: {
         // TODO: add as region here??
-    }
-}
+    },
+};
 
 export const CustomConfig: DeepPartial<ConfigType> = {
     ...serverDataConfig[THIS_REGION],

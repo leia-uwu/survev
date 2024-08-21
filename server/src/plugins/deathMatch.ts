@@ -32,7 +32,7 @@ export default class DeathMatchPlugin extends GamePlugin {
             data.player.scope = "1xscope";
             data.player.helmet = "";
             data.player.chest = "";
-            if ( !outfitsAllowedToDrop.includes(data.player.outfit) ) {
+            if (!outfitsAllowedToDrop.includes(data.player.outfit)) {
                 data.player.outfit = "outfitBase";
             }
 
