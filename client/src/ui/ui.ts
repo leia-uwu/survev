@@ -80,9 +80,6 @@ export class UiManager {
     statsOptions = $("#ui-stats-options");
     statsAds = $(".ui-stats-ad-container");
     statsLogo = $("#ui-stats-logo");
-
-    fpsDisplay = $("#ui-fps-counter");
-
     escMenuElem = $("#ui-game-menu");
     escMenuDisplayed = false;
     roleMenuElemWrapper = $("#ui-role-menu-wrapper");
@@ -284,17 +281,6 @@ export class UiManager {
         this.touch = touch;
         this.inputBinds = inputBinds;
         this.inputBindUi = inputBindUi;
-
-        this.fpsDisplay.toggle(this.game.config.get("showFps"));
-        this.game.config.addModifiedListener((key) => {
-            if (key === "showFps") {
-                this.fpsDisplay.toggle(this.game.config.get("showFps"));
-            }
-        });
-
-        setInterval(() => {
-            this.fpsDisplay.text(`${Math.round(this.game.pixi.ticker.FPS)} FPS`);
-        }, 500);
 
         this.roleMenuConfirm.on("click", (e) => {
             e.stopPropagation();

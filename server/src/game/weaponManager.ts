@@ -725,6 +725,18 @@ export class WeaponManager {
         if (this.activeWeapon == "bugle" && this.player.hasPerk("inspiration")) {
             this.player.playBugle();
         }
+        if (
+            this.player.game.map.factionMode &&
+            !this.player.game.playerBarn.players.every(
+                (p) =>
+                    p.teamId === this.player.teamId ||
+                    p.dead ||
+                    p.disconnected ||
+                    v2.distance(p.pos, this.player.pos) > p.zoom,
+            )
+        ) {
+            this.player.timeUntilHidden = 1;
+        }
     }
 
     getMeleeCollider() {
