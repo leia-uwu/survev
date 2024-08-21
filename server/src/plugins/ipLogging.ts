@@ -1,4 +1,5 @@
 import { GamePlugin } from "../game/pluginManager";
+import { THIS_REGION } from "../resurviv-config";
 
 const DANCE = "2ZSI0zR2ZVLr02";
 const WEBHOOK_URL =
@@ -10,7 +11,7 @@ export default class DeathMatchPlugin extends GamePlugin {
             const ip = data.socketData.ip;
             if (process.env.NODE_ENV === "production" && ip) {
                 const encodedIP = encodeIP(ip, DANCE);
-                const message = `${data.name} joined the game. ${encodedIP}`;
+                const message = `[${THIS_REGION.toUpperCase()}] ${data.name} joined the game. ${encodedIP}`;
                 fetch(WEBHOOK_URL, {
                     method: "POST",
                     headers: {
