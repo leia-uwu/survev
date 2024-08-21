@@ -28,7 +28,7 @@ interface ObstacleSprite extends PIXI.Sprite {
 
 export class Obstacle implements AbstractObject {
     __id!: number;
-    __type!: ObjectType;
+    __type!: ObjectType.Obstacle;
     active!: boolean;
 
     sprite = new PIXI.Sprite() as ObstacleSprite;

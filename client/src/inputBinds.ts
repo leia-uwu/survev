@@ -3,7 +3,6 @@ import BitBuffer from "bit-buffer";
 import $ from "jquery";
 import { Input as GameInput, type Input } from "../../shared/gameConfig";
 import type { ConfigManager } from "./config";
-import { crc16 } from "./crc";
 import {
     type InputHandler,
     InputType,
@@ -12,6 +11,7 @@ import {
     MouseButton,
     MouseWheel,
 } from "./input";
+import { crc16 } from "./lib/crc";
 
 function def(name: string, defaultValue: InputValue | null) {
     return {

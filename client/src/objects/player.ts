@@ -33,11 +33,11 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Animations, Bones, IdlePoses, Pose } from "../animData";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
-import type { SoundHandle } from "../createJS";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
 import type { Ctx, DebugOptions } from "../game";
 import { helpers } from "../helpers";
+import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import type { UiManager2 } from "../ui/ui2";
@@ -183,7 +183,7 @@ export abstract class AbstractObject {
 
 export class Player implements AbstractObject {
     __id!: number;
-    __type!: ObjectType;
+    __type!: ObjectType.Player;
     active!: boolean;
 
     bodySprite = createSprite();

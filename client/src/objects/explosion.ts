@@ -5,7 +5,7 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
-import type { SoundHandle } from "../createJS";
+import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import type { Particle, ParticleBarn } from "./particles";
 import type { PlayerBarn } from "./player";

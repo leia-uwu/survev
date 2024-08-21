@@ -1,7 +1,7 @@
 import $ from "jquery";
-import { helpers } from "../helpers";
-import { device } from "../device";
 import english from "../../l10n/en.json";
+import { device } from "../device";
+import { helpers } from "../helpers";
 
 function downloadFile(
     file: string,
