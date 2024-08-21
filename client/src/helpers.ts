@@ -12,6 +12,9 @@ export function getParameterByName(name: string, url?: string) {
 }
 
 export const helpers = {
+    resolveApiUrl: function (url: string) {
+        return url;
+    },
     getParameterByName,
     getCookie: function (cname: string) {
         const name = `${cname}=`;

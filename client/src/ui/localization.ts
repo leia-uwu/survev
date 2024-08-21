@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { api } from "../api";
+import { helpers } from "../helpers";
 import { device } from "../device";
 import english from "../english";
 
@@ -8,7 +8,7 @@ function downloadFile(
     onComplete: (err: null | JQuery.jqXHR<any>, data?: Record<string, string>) => void,
 ) {
     const opts = {
-        url: api.resolveUrl(file),
+        url: helpers.resolveApiUrl(file),
         type: "GET",
     };
     $.ajax(opts)

@@ -1,6 +1,5 @@
 import $ from "jquery";
 import type { Account } from "../account";
-import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { LoadoutMenu } from "./loadoutMenu";
@@ -238,7 +237,7 @@ export class ProfileUi {
 
         // Leaderboard
         $(".account-leaderboard-link").click((_e) => {
-            window.open(api.resolveUrl("/stats"), "_blank");
+            window.open(helpers.resolveApiUrl("/stats"), "_blank");
             return false;
         });
         $(".account-stats-link").click(() => {

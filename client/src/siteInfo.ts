@@ -1,8 +1,8 @@
 import $ from "jquery";
 import { MapDefs } from "../../shared/defs/mapDefs";
-import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
+import { helpers } from "./helpers";
 import type { Localization } from "./ui/localization";
 export enum TeamMode {
     Solo = 1,
@@ -50,7 +50,7 @@ export class SiteInfo {
 
     load() {
         const locale = this.localization.getLocale();
-        const siteInfoUrl = api.resolveUrl(`/api/site_info?language=${locale}`);
+        const siteInfoUrl = helpers.resolveApiUrl(`/api/site_info?language=${locale}`);
 
         const mainSelector = $("#server-opts");
         const teamSelector = $("#team-server-opts");
