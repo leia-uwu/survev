@@ -2,6 +2,7 @@ import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
+import { CustomConfig } from "./resurviv-config";
 
 export enum TeamMode {
     Solo = 1,
@@ -52,118 +53,10 @@ export const Config = {
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
-const runningOnVite = process.argv.toString().includes("vite");
-const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
-
-const configPath = path.join(
-    __dirname,
-    isProduction ? "../../" : "",
-    "../../resurviv-config.json",
-);
-
-util.mergeDeep(Config, {
-    gameServer: {
-        apiServerUrl: "http://resurviv.biz"
-    },
-    regions: {
-        na: {
-            https: false,
-            address: "resurviv.biz:8001",
-            l10n: "index-north-america"
-        },
-        eu: {
-            https: false,
-            address: "217.160.224.171:8001",
-            l10n: "index-europe"
-        },
-        as: {
-            https: false,
-            address: "172.105.112.218:8001",
-            l10n: "index-asia"
-        }
-
-    },
-    thisRegion: "na",
-    modes: [
-        {
-            mapName: "main",
-            teamMode: 1,
-            enabled: false,
-        },
-        {
-            mapName: "main",
-            teamMode: 2,
-            enabled: true,
-        },
-        {
-            mapName: "main",
-            teamMode: 4,
-            enabled: false,
-        },
-    ],
-    gameConfig: {
-        disableKnocking: true,
-        disableGroupSpectate: true,
-        gas: {
-            customZoneTime: 40,
-            initWaitTime: 5 * 60,
-            damageTickRate: 1,
-            damage: [35],
-            widthDecay: 0.3,
-            gasTimeDecay: 5,
-        },
-        gun: {
-            customSwitchDelay: 0.2 as any,
-        },
-        player: {
-            baseSwitchDelay: 0.05,
-            defaultItems: {
-                backpack: "backpack03",
-                helmet: "helmet03",
-                chest: "chest03",
-                scope: "4xscope",
-                perks: [
-                    {
-                        type: "endless_ammo",
-                        droppable: false,
-                    },
-                    {
-                        type: "inspiration",
-                        droppable: false,
-                    },
-                    {
-                        type: "takedown",
-                        droppable: false,
-                    },
-                ],
-                inventory: {
-                    frag: 3,
-                    smoke: 1,
-                    mirv: 1,
-                    bandage: 15,
-                    healthkit: 2,
-                    soda: 4,
-                    painkiller: 1,
-                    "1xscope": 1,
-                    "2xscope": 1,
-                    "4xscope": 1,
-                },
-            },
-        },
-    },
-} satisfies DeepPartial<ConfigType>);
-
-// if (fs.existsSync(configPath)) {
-//     const localConfig = JSON.parse(fs.readFileSync(configPath).toString());
-//     util.mergeDeep(Config, localConfig);
-// } else {
-//     console.log("Config file doesn't exist... creating");
-//     fs.writeFileSync(configPath, JSON.stringify({}, null, 2));
-// }
-
+util.mergeDeep(Config, CustomConfig);
 util.mergeDeep(GameConfig, Config.gameConfig);
 
-type DeepPartial<T> = T extends object
+export type DeepPartial<T> = T extends object
     ? {
           [P in keyof T]?: DeepPartial<T[P]>;
       }
