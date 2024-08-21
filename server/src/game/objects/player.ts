@@ -2911,6 +2911,25 @@ export class Player extends BaseGameObject {
         }
     }
 
+    customDropItem(dropMsg: net.DropItemMsg): void {
+        const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
+        switch (itemDef.type) {
+            case "gun":
+                this.weaponManager.dropGun(dropMsg.weapIdx);
+                break;
+            case "melee":
+                this.weaponManager.dropMelee();
+                break;
+        }
+
+        const reloading = this.isReloading();
+        this.cancelAction();
+
+        if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
+            this.weaponManager.tryReload();
+        }
+    }
+
     dropItem(dropMsg: net.DropItemMsg): void {
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         switch (itemDef.type) {
