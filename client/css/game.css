@@ -903,17 +903,17 @@ img {
 
 #ui-stats-logo {
   /* Game over logo, don't forget there's main menu logo in app.css */
-  background-image: url("/img/resurviv_logo_full.png");
+  background-image: url("/img/survev_logo_full.png");
   background-repeat: no-repeat;
   /* In case of logo change, update this value to width divided by 3 ceiled  */
-  background-size: 304px;
+  background-size: 264px;
   background-position: center;
   height: 125px;
   position: absolute;
   left: 20px;
   top: 8px;
   /* In case of logo change, update this value to width divided by 3 ceiled  */
-  width: 304px;
+  width: 264px;
 }
 
 @media (max-width: 1280px),
