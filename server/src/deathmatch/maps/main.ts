@@ -9,7 +9,7 @@ const switchToSmallMap = THIS_REGION === "eu" || THIS_REGION === "as";
 const config = {
     mapSize: switchToSmallMap ? "small" : "large",
     places: 3,
-    mapWidth: { large: 290, small: 220 },
+    mapWidth: { large: 280, small: 240 },
     spawnDensity: { large: 37, small: 27 },
 } as const;
 
@@ -61,9 +61,10 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
             : {},
         fixedSpawns: [
             {
+                club_complex_01: 1,
                 // small is spawn count for solos and duos, large is spawn count for squads
-                warehouse_01: 1,
-                house_red_01: 2,
+                warehouse_01: { odds: 0.5   },
+                house_red_01: config.mapSize === "large" ? 1 : { odds: 0.5   },
                 // house_red_02: 1,
                 // barn_01: { small: 1, large: 3 },
                 // barn_02: 1,
@@ -86,7 +87,6 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 tree_02: 3,
                 teahouse_complex_01su: { odds: 0.5 },
                 // stone_04: 1,
-                club_complex_01: 1,
             },
         ],
         randomSpawns: [
