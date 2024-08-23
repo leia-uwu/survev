@@ -1320,7 +1320,7 @@ img {
   height: 32px;
   top: 23px;
   left: 32px;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
 }
 
 .ui-team-indicator-image {

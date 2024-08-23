@@ -6678,10 +6678,6 @@ input [type="image"]:focus {
     transform: translateX(-50%);
   }
 
-  .ad-block-med-rect {
-    transform: scale(0.92);
-  }
-
   #team-menu {
     position: absolute;
     width: 275px;
