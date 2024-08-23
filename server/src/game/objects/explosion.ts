@@ -131,7 +131,7 @@ export class ExplosionBarn {
 
                         if (obj.__type === ObjectType.Loot) {
                             obj.push(
-                                v2.normalize(v2.sub(collision.pos, explosion.pos)),
+                                v2.normalize(v2.sub(obj.pos, explosion.pos)),
                                 (def.rad.max - dist) * 4,
                             );
                         }

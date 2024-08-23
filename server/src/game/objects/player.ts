@@ -2886,17 +2886,14 @@ export class Player extends BaseGameObject {
             lootToAdd !== "" &&
             !(lootToAddDef as ChestDef).noDrop
         ) {
-            const angle = Math.atan2(this.dir.y, this.dir.x);
-            const invertedAngle = (angle + Math.PI) % (2 * Math.PI);
-            const newPos = v2.add(
-                obj.pos,
-                v2.create(0.4 * Math.cos(invertedAngle), 0.4 * Math.sin(invertedAngle)),
-            );
+            const dir = v2.neg(this.dir);
             this.game.lootBarn.addLootWithoutAmmo(
                 lootToAdd,
-                newPos,
+                v2.add(obj.pos, v2.mul(dir, 0.4)),
                 obj.layer,
                 amountLeft,
+                undefined,
+                dir,
             );
         }
 

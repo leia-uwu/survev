@@ -46,8 +46,15 @@ export class LootBarn {
     /**
      * spawns loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
      */
-    addLootWithoutAmmo(type: string, pos: Vec2, layer: number, count: number) {
-        const loot = new Loot(this.game, type, pos, layer, count);
+    addLootWithoutAmmo(
+        type: string,
+        pos: Vec2,
+        layer: number,
+        count: number,
+        pushSpeed?: number,
+        dir?: Vec2,
+    ) {
+        const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
     }
 
@@ -73,24 +80,24 @@ export class LootBarn {
             const leftAmmo = new Loot(
                 this.game,
                 def.ammo,
-                v2.add(pos, v2.create(-0.2, -0.2)),
+                v2.add(pos, v2.create(-0.8, -0.3)),
                 layer,
                 halfAmmo,
-                0,
+                2,
+                v2.create(-1.3, -0.4),
             );
-            leftAmmo.push(v2.create(-1, -1), 1);
             this._addLoot(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
                 const rightAmmo = new Loot(
                     this.game,
                     def.ammo,
-                    v2.add(pos, v2.create(0.2, -0.2)),
+                    v2.add(pos, v2.create(0.8, -0.3)),
                     layer,
                     ammoCount - halfAmmo,
-                    0,
+                    2,
+                    v2.create(1.3, -0.4),
                 );
-                rightAmmo.push(v2.create(1, -1), 1);
                 this._addLoot(rightAmmo);
             }
         }
@@ -259,15 +266,16 @@ export class Loot extends BaseGameObject {
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
 
-                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
-                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.2));
+                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.06));
+                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.06));
                 const vRelativeVelocity = v2.create(
                     this.vel.x - obj.vel.x,
                     this.vel.y - obj.vel.y,
                 );
 
                 const speed =
-                    vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y;
+                    (vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y) *
+                    0.6;
                 if (speed < 0) continue;
 
                 this.push(res.dir, -speed);
