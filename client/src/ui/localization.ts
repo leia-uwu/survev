@@ -1,8 +1,7 @@
 import $ from "jquery";
 import english from "../../l10n/en.json";
-import { device } from "../device";
-import { helpers } from "../helpers";
 import { api } from "../api";
+import { device } from "../device";
 
 function downloadFile(
     file: string,
