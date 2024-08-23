@@ -365,7 +365,7 @@ export class WeaponManager {
         if (
             weaponDef.reloadTimeAlt &&
             this.weapons[this.curWeapIdx].ammo === 0 &&
-            this.player.inventory[weaponDef.ammo] > 1
+            (this.player.inventory[weaponDef.ammo] > 1 || this.isInfinite(weaponDef))
         ) {
             duration = weaponDef.reloadTimeAlt!;
             action = GameConfig.Action.ReloadAlt;

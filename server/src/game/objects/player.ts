@@ -463,6 +463,7 @@ export class Player extends BaseGameObject {
     dead = false;
     downed = false;
 
+    downedCount = 0;
     bleedTicker = 0;
     playerBeingRevived: Player | undefined;
 
@@ -565,6 +566,15 @@ export class Player extends BaseGameObject {
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
                 if (value == 0) continue; //prevents overwriting existing inventory
                 this.inventory[key] = value;
+            }
+
+            //outfit
+            const newOutfit = def.defaultItems.outfit;
+            if (newOutfit instanceof Function) {
+                this.outfit = newOutfit(this.teamId);
+            } else {
+                //string
+                if (newOutfit) this.outfit = newOutfit;
             }
 
             //armor
@@ -876,7 +886,10 @@ export class Player extends BaseGameObject {
             this.bleedTicker += dt;
             if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
                 this.damage({
-                    amount: this.game.map.mapDef.gameConfig.bleedDamage,
+                    amount:
+                        this.game.map.mapDef.gameConfig.bleedDamage *
+                        (this.downedCount *
+                            this.game.map.mapDef.gameConfig.bleedDamageMult),
                     damageType: GameConfig.DamageType.Bleeding,
                     dir: this.dir,
                 });
@@ -1771,6 +1784,7 @@ export class Player extends BaseGameObject {
     /** downs a player */
     down(params: DamageParams): void {
         this.downed = true;
+        this.downedCount++;
         this.boost = 0;
         this.health = 100;
         this.animType = 0;
