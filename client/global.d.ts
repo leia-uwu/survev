@@ -13,8 +13,8 @@ declare global {
                 | ((
                       this: TElement,
                       index: number,
-                      oldhtml: JQuery.htmlString
-                  ) => JQuery.htmlString | JQuery.Node)
+                      oldhtml: JQuery.htmlString,
+                  ) => JQuery.htmlString | JQuery.Node),
         ): this;
     }
 

@@ -74,7 +74,7 @@ export class DeadBody extends BaseGameObject {
 
         const originalLayer = this.layer;
         const objs = this.game.grid.intersectCollider(
-            collider.createCircle(this.pos, 0.1)
+            collider.createCircle(this.pos, 0.1),
         );
         this.checkStairs(objs, 2);
 

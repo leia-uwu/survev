@@ -7,7 +7,7 @@ export class PlayerStatsMsg implements AbstractMsg {
         kills: 0,
         dead: false,
         damageDealt: 0,
-        damageTaken: 0
+        damageTaken: 0,
     };
 
     serialize(s: BitStream) {

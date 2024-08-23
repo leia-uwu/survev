@@ -18,7 +18,7 @@ export function assert(value: unknown, message?: string | Error): asserts value 
 export function defineSkin<Def>(
     baseDefs: Record<string, Def>,
     baseType: string,
-    params: Partial<Def>
+    params: Partial<Def>,
 ) {
     return util.mergeDeep({}, baseDefs[baseType], { baseType }, params) as Def;
 }
@@ -80,7 +80,7 @@ export const util = {
         }
         const pos = v2.create(
             b * rad * Math.cos((2.0 * Math.PI * a) / b),
-            b * rad * Math.sin((2.0 * Math.PI * a) / b)
+            b * rad * Math.sin((2.0 * Math.PI * a) / b),
         );
         return pos;
     },
@@ -88,7 +88,7 @@ export const util = {
     randomPointInAabb(aabb: AABB) {
         return v2.create(
             util.random(aabb.min.x, aabb.max.x),
-            util.random(aabb.min.y, aabb.max.y)
+            util.random(aabb.min.y, aabb.max.y),
         );
     },
 
@@ -193,7 +193,7 @@ export const util = {
         return {
             r: Math.round(r * 255.0),
             g: Math.round(g * 255.0),
-            b: Math.round(b * 255.0)
+            b: Math.round(b * 255.0),
         };
     },
 
@@ -212,14 +212,14 @@ export const util = {
             return {
                 r: c.r ** 2.2,
                 g: c.g ** 2.2,
-                b: c.b ** 2.2
+                b: c.b ** 2.2,
             };
         };
         const toSRGB = function toSRGB(c: { r: number; g: number; b: number }) {
             return {
                 r: c.r ** (1.0 / 2.2),
                 g: c.g ** (1.0 / 2.2),
-                b: c.b ** (1.0 / 2.2)
+                b: c.b ** (1.0 / 2.2),
             };
         };
 
@@ -230,8 +230,8 @@ export const util = {
             toSRGB({
                 r: math.lerp(t, s.r, e.r),
                 g: math.lerp(t, s.g, e.g),
-                b: math.lerp(t, s.b, e.b)
-            })
+                b: math.lerp(t, s.b, e.b),
+            }),
         );
     },
 
@@ -243,7 +243,7 @@ export const util = {
         return {
             r: (c >> 16) & 0xff,
             g: (c >> 8) & 0xff,
-            b: c & 0xff
+            b: c & 0xff,
         };
     },
 
@@ -260,7 +260,7 @@ export const util = {
             ? {
                   r: parseInt(result[1], 16),
                   g: parseInt(result[2], 16),
-                  b: parseInt(result[3], 16)
+                  b: parseInt(result[3], 16),
               }
             : null;
     },
@@ -340,5 +340,5 @@ export const util = {
             idx++;
         }
         return items[idx];
-    }
+    },
 };

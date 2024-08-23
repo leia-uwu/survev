@@ -22,7 +22,7 @@ function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
         [EmoteSlot.Bottom]: "customize-emote-bottom",
         [EmoteSlot.Left]: "customize-emote-left",
         [EmoteSlot.Win]: "customize-emote-win",
-        [EmoteSlot.Death]: "customize-emote-death"
+        [EmoteSlot.Death]: "customize-emote-death",
     };
     const domId = emoteSlotToDomId[e] || emoteSlotToDomId[EmoteSlot.Top];
     return $(`#${domId}`);
@@ -88,7 +88,7 @@ const sortTypes: Record<string, any> = {
     newest: itemSort(sortAcquired),
     alpha: itemSort(sortAlphabetical),
     rarity: itemSort(sortRarity),
-    subcat: itemSort(sortSubcat)
+    subcat: itemSort(sortSubcat),
 };
 
 interface Item {
@@ -137,28 +137,28 @@ export class LoadoutMenu {
         {
             loadoutType: "outfit",
             gameType: "outfit",
-            categoryImage: "img/gui/loadout-outfit.svg"
+            categoryImage: "img/gui/loadout-outfit.svg",
         },
         {
             loadoutType: "melee",
             gameType: "melee",
-            categoryImage: "img/gui/loadout-melee.svg"
+            categoryImage: "img/gui/loadout-melee.svg",
         },
         {
             loadoutType: "emote",
             gameType: "emote",
-            categoryImage: "img/gui/loadout-emote.svg"
+            categoryImage: "img/gui/loadout-emote.svg",
         },
         {
             loadoutType: "heal",
             gameType: "heal_effect",
-            categoryImage: "img/gui/loadout-heal.svg"
+            categoryImage: "img/gui/loadout-heal.svg",
         },
         {
             loadoutType: "boost",
             gameType: "boost_effect",
-            categoryImage: "img/gui/loadout-boost.svg"
-        }
+            categoryImage: "img/gui/loadout-boost.svg",
+        },
     ];
 
     selectedItem: {
@@ -174,7 +174,7 @@ export class LoadoutMenu {
     } = {
         prevSlot: null,
         img: "",
-        type: ""
+        type: "",
     };
 
     emotesLoaded = false;
@@ -206,19 +206,19 @@ export class LoadoutMenu {
     highlightOpacityMin!: number;
     constructor(
         public account: Account,
-        public localization: Localization
+        public localization: Localization,
     ) {
         if (!device.touch) {
             this.categories.push({
                 loadoutType: "crosshair",
                 gameType: "crosshair",
-                categoryImage: "img/gui/loadout-crosshair.svg"
+                categoryImage: "img/gui/loadout-crosshair.svg",
             });
         }
         this.categories.push({
             loadoutType: "player_icon",
             gameType: "emote",
-            categoryImage: "img/gui/loadout-emote.svg"
+            categoryImage: "img/gui/loadout-emote.svg",
         });
 
         this.modalCustomize = $("#modal-customize");
@@ -254,7 +254,7 @@ export class LoadoutMenu {
             for (let i = 0; i < this.categories.length; i++) {
                 const r = $("<div/>", {
                     class: "modal-customize-cat",
-                    "data-idx": i
+                    "data-idx": i,
                 });
                 if (i == this.categories.length - 1) {
                     r.attr("id", "modal-customize-cat-standalone");
@@ -263,19 +263,19 @@ export class LoadoutMenu {
                     $("<div/>", {
                         class: "modal-customize-cat-image",
                         css: {
-                            "background-image": `url(${this.categories[i].categoryImage})`
-                        }
-                    })
+                            "background-image": `url(${this.categories[i].categoryImage})`,
+                        },
+                    }),
                 );
                 r.append(
                     $("<div/>", {
-                        class: "modal-customize-cat-connect"
-                    })
+                        class: "modal-customize-cat-connect",
+                    }),
                 );
                 r.append(
                     $("<div/>", {
-                        class: "account-alert account-alert-cat"
-                    })
+                        class: "account-alert account-alert-cat",
+                    }),
                 );
                 $("#modal-customize-header").append(r);
             }
@@ -297,13 +297,13 @@ export class LoadoutMenu {
             });
             this.modalCustomizeItemName.on("click", () => {
                 const elements = document.getElementsByClassName(
-                    "customize-list-item-selected"
+                    "customize-list-item-selected",
                 );
                 if (elements.length > 0) {
                     elements[0].scrollIntoView({
                         behavior: "smooth",
                         block: "start",
-                        inline: "nearest"
+                        inline: "nearest",
                     });
                 }
             });
@@ -383,7 +383,7 @@ export class LoadoutMenu {
         }
         this.clearConfirmItemModal();
         this.modalCustomize.css({
-            cursor: "initial"
+            cursor: "initial",
         });
         $("#start-bottom-right, #start-main").fadeIn(200);
         $("#background").show();
@@ -398,7 +398,7 @@ export class LoadoutMenu {
             } else {
                 $("#modal-customize-list").attr(
                     "style",
-                    device.isLandscape ? "" : "height: 380px"
+                    device.isLandscape ? "" : "height: 380px",
                 );
             }
         }
@@ -407,7 +407,7 @@ export class LoadoutMenu {
     onRequest() {
         $("#modal-customize-loading").css(
             "opacity",
-            this.account.requestsInFlight > 0 ? 1 : 0
+            this.account.requestsInFlight > 0 ? 1 : 0,
         );
     }
 
@@ -469,7 +469,7 @@ export class LoadoutMenu {
             const hasUnlock = !!pass.unlocks[unlockType as keyof typeof pass.unlocks];
             const el = $(`.customize-social-unlock[data-lock-reason='${unlockType}']`);
             el.css({
-                display: hasUnlock ? "none" : "inline-block"
+                display: hasUnlock ? "none" : "inline-block",
             });
             el.off("click").on("click", () => {
                 this.account.setPassUnlock(unlockType);
@@ -547,7 +547,7 @@ export class LoadoutMenu {
                 type: currentNewItem.type,
                 rarity: objDef.rarity || 0,
                 displayName: objDef.name!,
-                category: objDef.type
+                category: objDef.type,
             };
             const svg = helpers.getSvgFromGameType(currentNewItem.type);
             const imageUrl = `url(${svg})`;
@@ -556,7 +556,7 @@ export class LoadoutMenu {
                 $("#modal-item-confirm-name").html(itemInfo.displayName);
                 $("#modal-item-confirm-image-inner").css({
                     "background-image": imageUrl,
-                    transform
+                    transform,
                 });
                 this.confirmItemModal.show();
             }, 200);
@@ -623,7 +623,7 @@ export class LoadoutMenu {
                     this.updateSlot(
                         parent,
                         this.selectedItem.img,
-                        this.selectedItem.type
+                        this.selectedItem.type,
                     );
                     this.updateLoadoutFromDOM();
                     this.deselectItem();
@@ -635,7 +635,7 @@ export class LoadoutMenu {
                         this.updateSlot(
                             parent,
                             this.selectedItem.img,
-                            this.selectedItem.type
+                            this.selectedItem.type,
                         );
                         this.updateLoadoutFromDOM();
                     }
@@ -695,7 +695,7 @@ export class LoadoutMenu {
                 type: this.selectedItem.type,
                 color: util.hexToInt(color),
                 size: Number(size.toFixed(2)),
-                stroke: Number(stroke.toFixed(2))
+                stroke: Number(stroke.toFixed(2)),
             };
         } else {
             this.loadout[loadoutType as keyof Loadout] = this.selectedItem.type as any;
@@ -725,7 +725,7 @@ export class LoadoutMenu {
             this.selectedItem = {
                 prevSlot: null,
                 img: "",
-                type: ""
+                type: "",
             };
             return;
         }
@@ -752,7 +752,7 @@ export class LoadoutMenu {
             displaySource: selectedItem.displaySource || "Unknown",
             displayLore: selectedItem.displayLore || "",
             loadoutType: selectedItem.loadoutType,
-            subcat: selectedItem.subcat
+            subcat: selectedItem.subcat,
         };
         this.modalCustomizeItemName.html(this.selectedItem.displayName!);
         const source =
@@ -771,7 +771,7 @@ export class LoadoutMenu {
             [EmoteCategory.Logos]: "Logos",
             [EmoteCategory.Other]: "Other",
             [EmoteCategory.Flags]: "Flags",
-            [EmoteCategory.Default]: "Default"
+            [EmoteCategory.Default]: "Default",
         };
         const localizedLore =
             selectedItem.loadoutType == "emote"
@@ -787,19 +787,19 @@ export class LoadoutMenu {
             "#12ff00",
             "#00deff",
             "#f600ff",
-            "#d96100"
+            "#d96100",
         ];
         const localizedRarity = this.localization.translate(
-            `loadout-${rarityNames[this.selectedItem.rarity!]}`
+            `loadout-${rarityNames[this.selectedItem.rarity!]}`,
         );
         this.modalCustomizeItemRarity.html(localizedRarity);
         this.modalCustomizeItemRarity.css({
-            color: Rarities[this.selectedItem.rarity!]
+            color: Rarities[this.selectedItem.rarity!],
         });
         if (this.selectedItem.loadoutType == "emote") {
             this.highlightedSlots.css({
                 display: "block",
-                opacity: this.highlightOpacityMin
+                opacity: this.highlightOpacityMin,
             });
         }
 
@@ -857,7 +857,7 @@ export class LoadoutMenu {
         this.selectableSlots.removeClass("customize-list-item-selected");
         this.highlightedSlots.css({
             display: "none",
-            opacity: 0
+            opacity: 0,
         });
         this.modalCustomizeItemName.html("");
         this.modalCustomizeItemSource.html("");
@@ -878,7 +878,7 @@ export class LoadoutMenu {
                 rarity: emoteDef.rarity || 0,
                 displayName: emoteDef.name!,
                 displayLore: emoteDef.lore,
-                subcat: emoteDef.category
+                subcat: emoteDef.category,
             };
             this.equippedItems[slotIdx] = itemInfo;
         } else {
@@ -933,10 +933,10 @@ export class LoadoutMenu {
         this.selectableCatImages.removeClass("modal-customize-cat-image-selected");
         _.addClass("modal-customize-cat-selected");
         _.find(".modal-customize-cat-connect").addClass(
-            "modal-customize-cat-connect-selected"
+            "modal-customize-cat-connect-selected",
         );
         _.find(".modal-customize-cat-image").addClass(
-            "modal-customize-cat-image-selected"
+            "modal-customize-cat-image-selected",
         );
         const localizedTitle = this.localization
             .translate(`loadout-title-${category.loadoutType}`)
@@ -944,16 +944,16 @@ export class LoadoutMenu {
         $("#modal-customize-cat-title").html(localizedTitle);
         $("#modal-content-right-crosshair").css(
             "display",
-            category.loadoutType == "crosshair" ? "block" : "none"
+            category.loadoutType == "crosshair" ? "block" : "none",
         );
         $("#modal-content-right-emote").css(
             "display",
-            category.loadoutType == "emote" ? "block" : "none"
+            category.loadoutType == "emote" ? "block" : "none",
         );
         $("#customize-emote-parent").css("display", displayEmoteWheel ? "block" : "none");
         $("#customize-crosshair-parent").css(
             "display",
-            displayCrosshairAdjust ? "block" : "none"
+            displayCrosshairAdjust ? "block" : "none",
         );
         this.modalCustomizeItemName.html("");
         this.modalCustomizeItemSource.html("");
@@ -985,13 +985,13 @@ export class LoadoutMenu {
                 timeAcquired: item.timeAcquired,
                 idx: i,
                 subcat: (objDef as unknown as EmoteDef).category,
-                outerDiv: null
+                outerDiv: null,
             };
 
             // Create div for emote customization list
             const outerDiv = $("<div/>", {
                 class: "customize-list-item customize-list-item-unlocked",
-                "data-idx": i
+                "data-idx": i,
             });
 
             const svg = helpers.getSvgFromGameType(item.type);
@@ -1000,10 +1000,10 @@ export class LoadoutMenu {
                 class: "customize-item-image",
                 css: {
                     "background-image": `url(${svg})`,
-                    transform
+                    transform,
                 },
                 "data-img": `url(${svg})`,
-                draggable
+                draggable,
             });
             outerDiv.append(innerDiv);
 
@@ -1016,8 +1016,8 @@ export class LoadoutMenu {
                 const alertDiv = $("<div/>", {
                     class: "account-alert account-alert-cat",
                     css: {
-                        display: "block"
-                    }
+                        display: "block",
+                    },
                 });
                 outerDiv.append(alertDiv);
             }
@@ -1029,7 +1029,7 @@ export class LoadoutMenu {
                     type: itemInfo.type,
                     color: 0xffffff,
                     size: 1,
-                    stroke: 0
+                    stroke: 0,
                 };
                 crosshair.setElemCrosshair(outerDiv, crosshairDef);
             }
@@ -1098,7 +1098,7 @@ export class LoadoutMenu {
             if (category.loadoutType == "crosshair") {
                 const disableElem = function (
                     parentElem: JQuery<HTMLElement>,
-                    disableElem: JQuery<HTMLElement>
+                    disableElem: JQuery<HTMLElement>,
                 ) {
                     const height =
                         parentElem.height()! +
@@ -1108,11 +1108,11 @@ export class LoadoutMenu {
                 };
                 disableElem(
                     $("#modal-customize-body"),
-                    $("#modal-content-left").find(".modal-disabled")
+                    $("#modal-content-left").find(".modal-disabled"),
                 );
                 disableElem(
                     $("#modal-content-right-crosshair"),
-                    $("#modal-content-right-crosshair").find(".modal-disabled")
+                    $("#modal-content-right-crosshair").find(".modal-disabled"),
                 );
                 $(".modal-disabled").css("display", "block");
             } else {
@@ -1159,7 +1159,7 @@ export class LoadoutMenu {
         $("#customize-crosshair-selected")
             .find(".customize-item-image")
             .css({
-                "background-image": crosshair.getCursorURL(crosshairDef)
+                "background-image": crosshair.getCursorURL(crosshairDef),
             });
         crosshair.setElemCrosshair($("#customize-crosshair-selected"), crosshairDef);
     }

@@ -1,15 +1,24 @@
+import { coldet } from "../../../shared/utils/coldet";
+import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import type { Gas } from "./objects/gas";
 
 export const SpawnRules = {
     fixed(pos: Vec2) {
         return v2.copy(pos);
     },
-    random(width: number, height: number, inset: number) {
+    random(width: number, height: number, inset: number, gas: Gas) {
+        if (gas.circleIdx >= 1) {
+            return coldet.clampPosToAabb(
+                v2.add(gas.posNew, util.randomPointInCircle(gas.radNew)),
+                collider.createAabbExtents(v2.create(0, 0), v2.create(width, height)),
+            );
+        }
         return {
             x: util.random(inset, width - inset),
-            y: util.random(inset, height - inset)
+            y: util.random(inset, height - inset),
         };
     },
     radius(center: Vec2, radius: number) {
@@ -29,7 +38,7 @@ export const SpawnRules = {
                 a.y += b.y;
                 return a;
             },
-            v2.create(0, 0)
+            v2.create(0, 0),
         );
 
         const mean = v2.div(pointsSum, points.length);
@@ -46,5 +55,5 @@ export const SpawnRules = {
 
         pos = v2.add(pos, center);
         return pos;
-    }
+    },
 };

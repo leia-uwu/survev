@@ -5,7 +5,7 @@ export enum EmoteSlot {
     Left,
     Win,
     Death,
-    Count
+    Count,
 }
 
 export enum DamageType {
@@ -13,7 +13,7 @@ export enum DamageType {
     Bleeding,
     Gas,
     Airdrop,
-    Airstrike
+    Airstrike,
 }
 
 export enum Action {
@@ -21,7 +21,7 @@ export enum Action {
     Reload,
     ReloadAlt,
     UseItem,
-    Revive
+    Revive,
 }
 
 export enum WeaponSlot {
@@ -29,13 +29,13 @@ export enum WeaponSlot {
     Secondary,
     Melee,
     Throwable,
-    Count
+    Count,
 }
 
 export enum GasMode {
     Inactive,
     Waiting,
-    Moving
+    Moving,
 }
 
 export enum Anim {
@@ -45,19 +45,19 @@ export enum Anim {
     Throw,
     CrawlForward,
     CrawlBackward,
-    Revive
+    Revive,
 }
 
 export enum Plane {
     Airdrop,
-    Airstrike
+    Airstrike,
 }
 
 export enum HasteType {
     None,
     Windwalk,
     Takedown,
-    Inspire
+    Inspire,
 }
 
 export enum Input {
@@ -97,7 +97,7 @@ export enum Input {
     Fullscreen,
     HideUI,
     TeamPingSingle,
-    Count
+    Count,
 }
 
 export const GameConfig = {
@@ -123,12 +123,12 @@ export const GameConfig = {
         widthDecay: 0.5,
         widthMin: 10,
         damageTickRate: 2,
-        damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22]
+        damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22],
     },
     map: {
         gridSize: 16,
         shoreVariation: 3,
-        grassVariation: 2
+        grassVariation: 2,
     },
     player: {
         radius: 1,
@@ -178,7 +178,7 @@ export const GameConfig = {
                 { type: "", ammo: 0 },
                 { type: "", ammo: 0 },
                 { type: "fists", ammo: 0 },
-                { type: "", ammo: 0 }
+                { type: "", ammo: 0 },
             ],
             outfit: "outfitBase",
             backpack: "backpack00",
@@ -209,9 +209,9 @@ export const GameConfig = {
                 "2xscope": 0,
                 "4xscope": 0,
                 "8xscope": 0,
-                "15xscope": 0
-            } as Record<string, number>
-        }
+                "15xscope": 0,
+            } as Record<string, number>,
+        },
         /* STRIP_FROM_PROD_CLIENT:END */
     },
     defaultEmoteLoadout: [
@@ -220,7 +220,7 @@ export const GameConfig = {
         "emote_surviv",
         "emote_sadface",
         "",
-        ""
+        "",
     ],
     airdrop: {
         actionOffset: 0,
@@ -231,7 +231,7 @@ export const GameConfig = {
         soundRangeMult: 2.5,
         soundRangeDelta: 0.25,
         soundRangeMax: 92,
-        fallOff: 0
+        fallOff: 0,
     },
     airstrike: {
         actionOffset: 0,
@@ -244,7 +244,7 @@ export const GameConfig = {
         soundRangeMult: 18,
         soundRangeDelta: 18,
         soundRangeMax: 48,
-        fallOff: 1.25
+        fallOff: 1.25,
     },
     groupColors: [16776960, 16711935, 65535, 16733184],
     teamColors: [13369344, 32511],
@@ -252,7 +252,7 @@ export const GameConfig = {
         maxReflect: 3,
         reflectDistDecay: 1.5,
         height: 0.25,
-        falloff: true
+        falloff: true,
     },
     gun: {
         customSwitchDelay: undefined,
@@ -260,12 +260,12 @@ export const GameConfig = {
         customShootingSpeed: {
             single: undefined,
             auto: undefined,
-            burst: undefined
+            burst: undefined,
         } as Record<"auto" | "single" | "burst", number | undefined>,
-        headshotBlacklist: [] as string[]
+        headshotBlacklist: [] as string[],
     },
     projectile: {
-        maxHeight: 5
+        maxHeight: 5,
     },
     structureLayerCount: 2,
     tracerColors: {
@@ -274,66 +274,66 @@ export const GameConfig = {
             saturated: 16767411,
             chambered: 16744192,
             alphaRate: 0.92,
-            alphaMin: 0.14
+            alphaMin: 0.14,
         },
         "9mm_suppressed_bonus": {
             regular: 16704198,
             saturated: 16767411,
             chambered: 16744192,
             alphaRate: 0.96,
-            alphaMin: 0.28
+            alphaMin: 0.28,
         },
         "9mm_cursed": {
             regular: 1247488,
             saturated: 1247488,
             chambered: 1247488,
             alphaRate: 0.92,
-            alphaMin: 0.14
+            alphaMin: 0.14,
         },
         "762mm": {
             regular: 12965630,
             saturated: 11257087,
             chambered: 19711,
             alphaRate: 0.94,
-            alphaMin: 0.2
+            alphaMin: 0.2,
         },
         "12gauge": {
             regular: 16702684,
             saturated: 16702684,
-            chambered: 16711680
+            chambered: 16711680,
         },
         "556mm": {
             regular: 11141010,
             saturated: 11141010,
             chambered: 3604224,
             alphaRate: 0.92,
-            alphaMin: 0.14
+            alphaMin: 0.14,
         },
         "50AE": {
             regular: 16773256,
             saturated: 16773256,
-            chambered: 16768768
+            chambered: 16768768,
         },
         "308sub": {
             regular: 2435840,
             saturated: 4608e3,
             chambered: 1250816,
             alphaRate: 0.92,
-            alphaMin: 0.07
+            alphaMin: 0.07,
         },
         flare: {
             regular: 14869218,
             saturated: 14869218,
-            chambered: 12895428
+            chambered: 12895428,
         },
         "45acp": {
             regular: 15515391,
             saturated: 15183103,
-            chambered: 11862271
+            chambered: 11862271,
         },
         shrapnel: { regular: 3355443, saturated: 3355443 },
         frag: { regular: 13303808, saturated: 13303808 },
-        invis: { regular: 0, saturated: 0, chambered: 0 }
+        invis: { regular: 0, saturated: 0, chambered: 0 },
     },
     scopeZoomRadius: {
         desktop: {
@@ -341,15 +341,15 @@ export const GameConfig = {
             "2xscope": 36,
             "4xscope": 48,
             "8xscope": 68,
-            "15xscope": 104
+            "15xscope": 104,
         } as Record<string, number>,
         mobile: {
             "1xscope": 32,
             "2xscope": 40,
             "4xscope": 48,
             "8xscope": 64,
-            "15xscope": 88
-        } as Record<string, number>
+            "15xscope": 88,
+        } as Record<string, number>,
     },
     bagSizes: {
         "9mm": [120, 240, 330, 420],
@@ -374,7 +374,7 @@ export const GameConfig = {
         "2xscope": [1, 1, 1, 1],
         "4xscope": [1, 1, 1, 1],
         "8xscope": [1, 1, 1, 1],
-        "15xscope": [1, 1, 1, 1]
+        "15xscope": [1, 1, 1, 1],
     } as Record<string, number[]>,
     lootRadius: {
         outfit: 1,
@@ -389,6 +389,6 @@ export const GameConfig = {
         chest: 1,
         scope: 1,
         perk: 1.25,
-        xp: 1
-    } as Record<string, number>
+        xp: 1,
+    } as Record<string, number>,
 };

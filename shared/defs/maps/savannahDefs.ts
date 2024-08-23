@@ -6,11 +6,11 @@ const mapDef = {
     desc: {
         name: "Savannah",
         icon: "img/gui/player-the-hunted.svg",
-        buttonCss: "btn-mode-savannah"
+        buttonCss: "btn-mode-savannah",
     },
     assets: {
         audio: [],
-        atlases: ["gradient", "loadout", "shared", "savannah"]
+        atlases: ["gradient", "loadout", "shared", "savannah"],
     },
     biome: {
         colors: {
@@ -22,11 +22,11 @@ const mapDef = {
             grass: 11841582,
             underground: 4001027,
             playerSubmerge: 5151631,
-            playerGhillie: 11578411
+            playerGhillie: 11578411,
         },
-        particles: {}
+        particles: {},
     },
-    gameMode: { maxPlayers: 80, sniperMode: true }
+    gameMode: { maxPlayers: 80, sniperMode: true },
 };
 
 export const Savannah = util.mergeDeep({}, Main, mapDef);

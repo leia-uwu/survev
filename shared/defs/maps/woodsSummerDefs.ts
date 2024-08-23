@@ -13,10 +13,10 @@ const mapDef = {
             grass: 6460706,
             underground: 1772803,
             playerSubmerge: 2854052,
-            playerGhillie: 6658085
+            playerGhillie: 6658085,
         },
-        particles: { camera: "falling_leaf_summer" }
-    }
+        particles: { camera: "falling_leaf_summer" },
+    },
 };
 
 export const WoodsSummer = util.mergeDeep({}, Woods, mapDef) as MapDef;

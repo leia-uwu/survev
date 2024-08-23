@@ -3,7 +3,7 @@ import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type {
     BuildingDef,
     ObstacleDef,
-    StructureDef
+    StructureDef,
 } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
@@ -15,7 +15,7 @@ import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import type { River } from "../../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../../shared/utils/terrainGen";
-import { util } from "../../../shared/utils/util";
+import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { Group } from "./group";
@@ -41,7 +41,7 @@ function computeColliders(type: string) {
 
     const colliders: GroundBunkerColliders = {
         ground: [],
-        bunker: []
+        bunker: [],
     };
 
     if (def === undefined) return colliders;
@@ -69,7 +69,7 @@ function computeColliders(type: string) {
                         layerColliders.ground[j],
                         layer.pos,
                         rot,
-                        1
+                        1,
                     );
                     colliders[colliderLayer].push(coll);
                 }
@@ -78,7 +78,7 @@ function computeColliders(type: string) {
                         layerColliders.bunker[j],
                         layer.pos,
                         rot,
-                        1
+                        1,
                     );
                     colliders[colliderLayer].push(coll);
                 }
@@ -100,7 +100,7 @@ function computeColliders(type: string) {
                         objColliders.ground[j],
                         object.pos,
                         rot,
-                        1
+                        1,
                     );
                     colliders.ground.push(coll);
                 }
@@ -109,7 +109,7 @@ function computeColliders(type: string) {
                         objColliders.bunker[j],
                         object.pos,
                         rot,
-                        1
+                        1,
                     );
                     colliders.bunker.push(coll);
                 }
@@ -153,7 +153,7 @@ export function getColliders(type: string) {
 function transformColliders(colls: GroundBunkerColliders, pos: Vec2, rot: number) {
     const newColls: GroundBunkerColliders = {
         ground: [],
-        bunker: []
+        bunker: [],
     };
     for (let i = 0; i < colls.ground.length; i++) {
         newColls.ground.push(collider.transform(colls.ground[i], pos, rot, 1));
@@ -167,7 +167,7 @@ function transformColliders(colls: GroundBunkerColliders, pos: Vec2, rot: number
 function checkCollision(
     collsA: GroundBunkerColliders,
     collsB: Collider[],
-    layer: number
+    layer: number,
 ) {
     const collLayer = layer === 0 ? "ground" : "bunker";
     const layerColls = collsA[collLayer];
@@ -246,11 +246,10 @@ export class GameMap {
         this.game = game;
 
         const mapDef = (this.mapDef = util.cloneDeep(
-            MapDefs[game.config.mapName]
+            MapDefs[game.config.mapName],
         ) as MapDef);
-        if (mapDef === undefined) {
-            throw new Error(`Invalid map name: ${game.config.mapName}`);
-        }
+
+        assert(mapDef, `Invalid map name: ${game.config.mapName}`);
 
         const scale = (this.scale = game.teamMode > 2 ? "large" : "small");
 
@@ -260,7 +259,7 @@ export class GameMap {
 
         this.bounds = collider.createAabb(
             v2.create(0, 0),
-            v2.create(this.width, this.height)
+            v2.create(this.width, this.height),
         );
 
         this.msg.mapName = game.config.mapName;
@@ -291,14 +290,14 @@ export class GameMap {
             return v2.create(
                 place.pos.x * this.width,
                 // places Y axis is inverted lol
-                Math.abs(place.pos.y - 1) * this.height
+                Math.abs(place.pos.y - 1) * this.height,
             );
         });
 
         this.riverMasks = this.mapDef.mapGen.map.rivers.masks.map((mask) => {
             return {
                 pos: v2.create(mask.pos.x * this.width, mask.pos.y * this.height),
-                rad: mask.rad
+                rad: mask.rad,
             };
         });
     }
@@ -312,7 +311,7 @@ export class GameMap {
             this.shoreInset,
             this.grassInset,
             this.riverDescs,
-            this.seed
+            this.seed,
         );
 
         this.generateObjects();
@@ -343,7 +342,7 @@ export class GameMap {
                             player.pos,
                             player.rad,
                             region.zoomIn.min,
-                            region.zoomIn.max
+                            region.zoomIn.max,
                         )
                     ) {
                         building.occupied = true;
@@ -374,7 +373,7 @@ export class GameMap {
 
             const center = v2.add(
                 v2.mulElems(v2.create(this.width, this.height), lake.spawnBound.pos),
-                util.randomPointInCircle(lake.spawnBound.rad)
+                util.randomPointInCircle(lake.spawnBound.rad),
             );
 
             let len = lake.outerRad - lake.innerRad;
@@ -393,14 +392,14 @@ export class GameMap {
             const river = {
                 width: (lake.outerRad - lake.innerRad) / 2,
                 points,
-                looped: true
+                looped: true,
             };
 
             this.riverDescs.push(river);
 
             this.lakes.push({
                 river,
-                center
+                center,
             });
         }
 
@@ -414,7 +413,7 @@ export class GameMap {
 
         const riverRect = collider.createAabb(
             v2.create(1, 1),
-            v2.create(this.width - 1, this.height - 1)
+            v2.create(this.width - 1, this.height - 1),
         );
         const center = v2.create(halfWidth, halfHeight);
         const mapWidth = this.width - 1;
@@ -486,12 +485,12 @@ export class GameMap {
                             lastPoint,
                             pos,
                             points[j - 1],
-                            points[j]
+                            points[j],
                         );
                         if (intersection) {
                             const dist = v2.distance(
                                 intersection.point,
-                                riverPoints[i - 1]
+                                riverPoints[i - 1],
                             );
                             if (dist > 6) riverPoints[i] = intersection.point;
                             collided = true;
@@ -510,7 +509,7 @@ export class GameMap {
             this.riverDescs.push({
                 width: widths[i],
                 points: riverPoints,
-                looped: false
+                looped: false,
             });
             i++;
         }
@@ -529,7 +528,7 @@ export class GameMap {
             const maxBridges = {
                 medium: 4,
                 large: 3,
-                xlarge: 2
+                xlarge: 2,
             };
 
             let bridgeSize: keyof typeof maxBridges | undefined;
@@ -569,13 +568,13 @@ export class GameMap {
 
             const riverObjs = {
                 stone_03: 3,
-                bush_04: 1.2
+                bush_04: 1.2,
             };
             for (const type in riverObjs) {
                 for (const river of this.terrain.rivers) {
                     const amount = math.min(
                         river.waterWidth * riverObjs[type as keyof typeof riverObjs],
-                        30
+                        30,
                     );
 
                     for (let i = 0; i < amount; i++) {
@@ -591,7 +590,7 @@ export class GameMap {
 
             const center = v2.create(
                 customSpawnRule.pos.x * this.width,
-                customSpawnRule.pos.y * this.height
+                customSpawnRule.pos.y * this.height,
             );
 
             let attempts = 0;
@@ -608,7 +607,7 @@ export class GameMap {
             } else {
                 this.game.logger.warn(
                     "Failed to generate custom spawn rule",
-                    customSpawnRule.type
+                    customSpawnRule.type,
                 );
             }
         }
@@ -690,7 +689,7 @@ export class GameMap {
         scale?: number,
         parentId?: number,
         puzzlePiece?: string,
-        ignoreMapSpawnReplacement?: boolean
+        ignoreMapSpawnReplacement?: boolean,
     ) {
         const def = MapObjectDefs[type];
 
@@ -709,7 +708,7 @@ export class GameMap {
                     ori,
                     scale,
                     parentId,
-                    puzzlePiece
+                    puzzlePiece,
                 );
             case "building":
                 return this.genBuilding(type, pos, layer, ori, parentId);
@@ -730,7 +729,7 @@ export class GameMap {
                             layer,
                             item.count,
                             undefined,
-                            0
+                            0,
                         );
                     }
                 }
@@ -741,7 +740,7 @@ export class GameMap {
     static collidableTypes = [
         ObjectType.Obstacle,
         ObjectType.Building,
-        ObjectType.Structure
+        ObjectType.Structure,
     ];
 
     /**
@@ -758,7 +757,7 @@ export class GameMap {
             mapHelpers.getBoundingCollider(type),
             pos,
             rot,
-            scale
+            scale,
         );
         const objs = this.game.grid.intersectCollider(boundCollider);
 
@@ -778,14 +777,14 @@ export class GameMap {
                     otherBridge.type,
                     otherBridge.pos,
                     otherBridge.rot,
-                    1
+                    1,
                 );
                 if (
                     coldet.testAabbAabb(
                         thisBounds.min,
                         thisBounds.max,
                         thatBounds.min,
-                        thatBounds.max
+                        thatBounds.max,
                     )
                 ) {
                     return false;
@@ -799,7 +798,7 @@ export class GameMap {
                         def.bridgeLandBounds[i],
                         pos,
                         rot,
-                        1
+                        1,
                     ) as AABB;
 
                     // check all 4 corners of the AABB
@@ -807,7 +806,7 @@ export class GameMap {
                         bound.min,
                         bound.max,
                         v2.create(bound.min.x, bound.max.y),
-                        v2.create(bound.max.x, bound.min.y)
+                        v2.create(bound.max.x, bound.min.y),
                     ];
 
                     for (let j = 0; j < points.length; j++) {
@@ -825,7 +824,7 @@ export class GameMap {
                         def.bridgeWaterBounds[i],
                         pos,
                         rot,
-                        1
+                        1,
                     ) as AABB;
 
                     // check all 4 corners of the AABB
@@ -833,7 +832,7 @@ export class GameMap {
                         bound.min,
                         bound.max,
                         v2.create(bound.min.x, bound.max.y),
-                        v2.create(bound.max.x, bound.min.y)
+                        v2.create(bound.max.x, bound.min.y),
                     ];
 
                     for (let j = 0; j < points.length; j++) {
@@ -873,7 +872,7 @@ export class GameMap {
             const inset = this.shoreInset / 2;
             const mapBound = collider.createAabb(
                 v2.create(inset, inset),
-                v2.create(this.width - inset, this.height - inset)
+                v2.create(this.width - inset, this.height - inset),
             );
             if (!coldet.testPointAabb(pos, mapBound.min, mapBound.max)) {
                 return false;
@@ -948,7 +947,7 @@ export class GameMap {
             // generate a position and rotate it based on the orientation and map center
             const tempPos = {
                 x: util.random(min.x, max.x),
-                y: util.random(min.y, max.y)
+                y: util.random(min.y, max.y),
             };
             const offset = v2.sub(this.center, tempPos);
             pos = v2.add(this.center, v2.rotate(offset, rot));
@@ -981,12 +980,12 @@ export class GameMap {
             return {
                 x: util.random(
                     this.shoreInset + width,
-                    this.width - this.shoreInset - width
+                    this.width - this.shoreInset - width,
                 ),
                 y: util.random(
                     this.shoreInset + height,
-                    this.height - this.shoreInset - height
-                )
+                    this.height - this.shoreInset - height,
+                ),
             };
         };
 
@@ -1004,14 +1003,14 @@ export class GameMap {
                         place,
                         v2.mulElems(
                             v2.mul(v2.randomUnit(), 0.5),
-                            v2.create(width + attempts * 2, height + attempts * 2)
-                        )
+                            v2.create(width + attempts * 2, height + attempts * 2),
+                        ),
                     ),
                     v2.create(this.shoreInset + width, this.shoreInset + height),
                     v2.create(
                         this.width - this.shoreInset - width,
-                        this.height - this.shoreInset - height
-                    )
+                        this.height - this.shoreInset - height,
+                    ),
                 );
             };
         }
@@ -1063,14 +1062,14 @@ export class GameMap {
 
             const min = v2.create(
                 this.shoreInset + width,
-                this.shoreInset + width + this.grassInset
+                this.shoreInset + width + this.grassInset,
             );
             const max = v2.create(min.x, this.height - this.shoreInset - height);
 
             // generate a position and rotate it based on the orientation and map center
             const tempPos = {
                 x: util.random(min.x, max.x),
-                y: util.random(min.y, max.y)
+                y: util.random(min.y, max.y),
             };
             const offset = v2.sub(this.center, tempPos);
             pos = v2.add(this.center, v2.rotate(offset, rot));
@@ -1159,7 +1158,7 @@ export class GameMap {
         const inset = this.grassInset + this.shoreInset;
         const mapBound = collider.createAabb(
             v2.create(inset, inset),
-            v2.create(this.width - inset, this.height - inset)
+            v2.create(this.width - inset, this.height - inset),
         );
 
         const def = MapObjectDefs[type] as BuildingDef;
@@ -1213,7 +1212,7 @@ export class GameMap {
                     bridge.type,
                     bridge.pos,
                     bridge.rot,
-                    1
+                    1,
                 );
                 if (coldet.test(bounds, bridgeBound)) {
                     collided = true;
@@ -1268,7 +1267,7 @@ export class GameMap {
         ori?: number,
         scale?: number,
         buildingId?: number,
-        puzzlePiece?: string
+        puzzlePiece?: string,
     ): Obstacle {
         const def = MapObjectDefs[type] as ObstacleDef;
 
@@ -1282,7 +1281,7 @@ export class GameMap {
             ori,
             scale,
             buildingId,
-            puzzlePiece
+            puzzlePiece,
         );
         this.game.objectRegister.register(obstacle);
         this.obstacles.push(obstacle);
@@ -1298,7 +1297,7 @@ export class GameMap {
         pos: Vec2,
         layer = 0,
         ori?: number,
-        parentId?: number
+        parentId?: number,
     ): Building {
         const def = MapObjectDefs[type] as BuildingDef;
 
@@ -1335,7 +1334,7 @@ export class GameMap {
                 mapObject.scale,
                 building.__id,
                 mapObject.puzzlePiece,
-                mapObject.ignoreMapSpawnReplacement
+                mapObject.ignoreMapSpawnReplacement,
             );
 
             if (obj) building.childObjects.push(obj);
@@ -1349,7 +1348,7 @@ export class GameMap {
                 roughness: patch.roughness ?? 0,
                 offsetDist: patch.offsetDist ?? 0,
                 order: patch.order ?? 0,
-                useAsMapShape: patch.useAsMapShape ?? true
+                useAsMapShape: patch.useAsMapShape ?? true,
             });
         }
 
@@ -1373,7 +1372,7 @@ export class GameMap {
                 math.addAdjust(pos, layerDef.pos, ori),
                 layer,
                 (layerDef.ori + ori) % 4,
-                structure.__id
+                structure.__id,
             );
             layer++;
             structure.layerObjIds.push(building.__id);
@@ -1398,12 +1397,22 @@ export class GameMap {
             case "random":
                 if (!group) {
                     loadedSpawnRuleFunc = () =>
-                        SpawnRules.random(this.width, this.height, this.shoreInset);
+                        SpawnRules.random(
+                            this.width,
+                            this.height,
+                            this.shoreInset,
+                            this.game.gas,
+                        );
                 } else {
                     loadedSpawnRuleFunc =
                         this._getGroupLoadedSpawnRuleFunc(group) ??
                         (() =>
-                            SpawnRules.random(this.width, this.height, this.shoreInset));
+                            SpawnRules.random(
+                                this.width,
+                                this.height,
+                                this.shoreInset,
+                                this.game.gas,
+                            ));
                 }
                 break;
             case "donut":
@@ -1411,13 +1420,13 @@ export class GameMap {
 
                 if (!group) {
                     const points = this.game.playerBarn.livingPlayers.map((p) =>
-                        v2.sub(p.pos, this.center)
+                        v2.sub(p.pos, this.center),
                     );
                     loadedSpawnRuleFunc = () =>
                         SpawnRules.donut(this.center, innerRadius, outerRadius, points);
                 } else {
                     const enemyGroups = [...this.game.groups.values()].filter(
-                        (g) => g != group && !g.allDeadOrDisconnected
+                        (g) => g != group && !g.allDeadOrDisconnected,
                     );
                     const points = enemyGroups
                         .map((g) => g.getAlivePlayers()[0])
@@ -1429,7 +1438,7 @@ export class GameMap {
                                 this.center,
                                 innerRadius,
                                 outerRadius,
-                                points
+                                points,
                             ));
                 }
                 break;
@@ -1454,7 +1463,7 @@ export class GameMap {
 
         const circle = collider.createCircle(getPos(), GameConfig.player.radius);
 
-        while (attempts++ < 200 && collided) {
+        while (attempts++ < 500 && collided) {
             collided = false;
             v2.set(circle.pos, getPos());
 
@@ -1515,8 +1524,8 @@ export class GameMap {
             math.v2Clamp(
                 pos,
                 v2.create(rad, rad),
-                v2.create(this.width - rad, this.height - rad)
-            )
+                v2.create(this.width - rad, this.height - rad),
+            ),
         );
     }
 
@@ -1600,7 +1609,7 @@ export class GameMap {
         if (math.pointInsidePolygon(pos, this.terrain.grass)) {
             // Use a stone step sound if we're in the main-spring def
             return groundSurface(
-                onRiverShore ? this.mapDef.biome.sound.riverShore : "grass"
+                onRiverShore ? this.mapDef.biome.sound.riverShore : "grass",
             );
         }
         if (math.pointInsidePolygon(pos, this.terrain.shore)) {

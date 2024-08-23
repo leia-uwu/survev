@@ -10,9 +10,9 @@ const mapDef = {
             { name: "snowball_02", channel: "sfx" },
             { name: "plane_02", channel: "sfx" },
             { name: "bells_01", channel: "ui" },
-            { name: "snowball_pickup_01", channel: "ui" }
+            { name: "snowball_pickup_01", channel: "ui" },
         ],
-        atlases: ["gradient", "loadout", "shared", "snow"]
+        atlases: ["gradient", "loadout", "shared", "snow"],
     },
     biome: {
         colors: {
@@ -23,15 +23,15 @@ const mapDef = {
             riverbank: 9461284,
             grass: 12434877,
             underground: 1772803,
-            playerSubmerge: 2854052
+            playerSubmerge: 2854052,
         },
         particles: { camera: "falling_snow_fast" },
         airdrop: {
             planeImg: "map-plane-01x.img",
             planeSound: "plane_02",
-            airdropImg: "map-chute-01x.img"
+            airdropImg: "map-chute-01x.img",
         },
-        frozenSprites: ["player-snow-01.img", "player-snow-02.img", "player-snow-03.img"]
+        frozenSprites: ["player-snow-01.img", "player-snow-02.img", "player-snow-03.img"],
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
@@ -40,46 +40,46 @@ const mapDef = {
                 {
                     circleIdx: 0,
                     wait: 10,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 1,
                     wait: 10,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 2,
                     wait: 6,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 3,
                     wait: 2,
-                    options: { type: GameConfig.Plane.Airdrop }
-                }
+                    options: { type: GameConfig.Plane.Airdrop },
+                },
             ],
             crates: [
                 { name: "airdrop_crate_01x", weight: 10 },
-                { name: "airdrop_crate_02x", weight: 1 }
-            ]
-        }
+                { name: "airdrop_crate_02x", weight: 1 },
+            ],
+        },
     },
     lootTable: {
         tier_airdrop_outfits: [
             { name: "", count: 1, weight: 3 },
-            { name: "outfitElf", count: 1, weight: 1 }
+            { name: "outfitElf", count: 1, weight: 1 },
         ],
         tier_throwables: [
             { name: "frag", count: 2, weight: 1 },
             { name: "smoke", count: 1, weight: 1 },
             { name: "mirv", count: 2, weight: 0.05 },
-            { name: "snowball", count: 5, weight: 0.5 }
+            { name: "snowball", count: 5, weight: 0.5 },
         ],
         tier_airdrop_throwables: [
             { name: "frag", count: 2, weight: 1 },
             { name: "mirv", count: 2, weight: 0.5 },
-            { name: "snowball", count: 10, weight: 0.5 }
-        ]
+            { name: "snowball", count: 10, weight: 0.5 },
+        ],
     },
     mapGen: {
         densitySpawns: [
@@ -102,8 +102,8 @@ const mapDef = {
                 shack_01: 7,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
-            }
+                loot_tier_beach: 4,
+            },
         ],
         randomSpawns: [],
         spawnReplacements: [
@@ -137,10 +137,10 @@ const mapDef = {
                 table_02: "table_02x",
                 table_03: "table_03x",
                 tree_01: "tree_10",
-                mil_crate_02: "mil_crate_03"
-            }
-        ]
-    }
+                mil_crate_02: "mil_crate_03",
+            },
+        ],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

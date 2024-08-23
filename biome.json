@@ -41,7 +41,7 @@
   },
   "javascript": {
     "formatter": {
-      "trailingCommas": "none"
+      "trailingCommas": "all"
     }
   },
   "json": {

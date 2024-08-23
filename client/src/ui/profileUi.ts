@@ -12,47 +12,47 @@ function createLoginOptions(
     parentElem: JQuery<HTMLElement>,
     linkAccount: boolean | undefined,
     account: Account,
-    localization: Localization
+    localization: Localization,
 ) {
     const contentsElem = parentElem.find(".login-options-content");
     contentsElem.empty();
     if (linkAccount) {
         contentsElem.append(
             $("<div/>", {
-                class: "account-login-desc"
+                class: "account-login-desc",
             }).append(
                 $("<p/>", {
-                    html: localization.translate("index-link-account-to")
-                })
-            )
+                    html: localization.translate("index-link-account-to"),
+                }),
+            ),
         );
     }
     const buttonParentElem = $("<div/>", {
-        class: "account-buttons"
+        class: "account-buttons",
     });
     contentsElem.append(buttonParentElem);
     const addLoginOption = function (
         method: string,
         linked: boolean,
-        onClick: () => void
+        onClick: () => void,
     ) {
         const el = $("<div/>", {
-            class: `menu-option btn-darken btn-standard btn-login-${method}`
+            class: `menu-option btn-darken btn-standard btn-login-${method}`,
         });
         el.append(
             $("<span/>", {
-                class: "login-button-name"
+                class: "login-button-name",
             })
                 .append(
                     $("<span/>", {
-                        html: localization.translate(`index-${method}`)
-                    })
+                        html: localization.translate(`index-${method}`),
+                    }),
                 )
                 .append(
                     $("<div/>", {
-                        class: "icon"
-                    })
-                )
+                        class: "icon",
+                    }),
+                ),
         );
         if (linkAccount && linked) {
             el.addClass("btn-login-linked");
@@ -89,7 +89,7 @@ export class ProfileUi {
         public account: Account,
         public localization: Localization,
         public loadoutMenu: LoadoutMenu,
-        public errorModal: MenuModal
+        public errorModal: MenuModal,
     ) {
         this.account = account;
         this.localization = localization;
@@ -123,7 +123,8 @@ export class ProfileUi {
                         failed: "Failed setting username.",
                         invalid: "Invalid username.",
                         taken: "Name already taken!",
-                        change_time_not_expired: "Username has already been set recently."
+                        change_time_not_expired:
+                            "Username has already been set recently.",
                     };
                     const message =
                         ERROR_CODE_TO_LOCALIZATION[
@@ -251,7 +252,7 @@ export class ProfileUi {
                     }
                 } else {
                     this.showLoginMenu({
-                        modal: true
+                        modal: true,
                     });
                 }
             });
@@ -262,7 +263,7 @@ export class ProfileUi {
             this.waitOnLogin(() => {
                 if (!this.account.loggedIn) {
                     this.showLoginMenu({
-                        modal: true
+                        modal: true,
                     });
                 }
             });
@@ -285,7 +286,7 @@ export class ProfileUi {
                         this.userSettingsModal!.show();
                     } else {
                         this.showLoginMenu({
-                            modal: false
+                            modal: false,
                         });
                     }
                 });
@@ -296,7 +297,7 @@ export class ProfileUi {
             this.userSettingsModal!.hide();
             this.showLoginMenu({
                 modal: false,
-                link: true
+                link: true,
             });
             return false;
         });
@@ -305,7 +306,7 @@ export class ProfileUi {
                 this.userSettingsModal!.hide();
                 this.modalMobileAccount.hide();
                 $("#modal-account-name-title").html(
-                    this.localization.translate("index-change-account-name")
+                    this.localization.translate("index-change-account-name"),
                 );
                 this.setNameModal!.show();
             }
@@ -327,7 +328,7 @@ export class ProfileUi {
         });
         $("#btn-pass-locked").click(() => {
             this.showLoginMenu({
-                modal: true
+                modal: true,
             });
             return false;
         });
@@ -345,7 +346,7 @@ export class ProfileUi {
             discord_account_in_use:
                 "Failed linking Discord account.<br/>Account already in use!",
             account_banned: `Account banned: ${data}`,
-            login_failed: "Login failed."
+            login_failed: "Login failed.",
         };
         const text = typeText[type as keyof typeof typeText];
         if (text) {
@@ -387,7 +388,7 @@ export class ProfileUi {
         });
         const displayAlert = unconfirmedItemCount > 0 || unackedItemCount > 0;
         $("#loadout-alert-main").css({
-            display: displayAlert ? "block" : "none"
+            display: displayAlert ? "block" : "none",
         });
     }
 
@@ -407,9 +408,9 @@ export class ProfileUi {
         opts = Object.assign(
             {
                 modal: false,
-                link: false
+                link: false,
             },
-            opts
+            opts,
         );
         const modal = opts.modal
             ? this.createAccountModal
@@ -426,7 +427,7 @@ export class ProfileUi {
             "img/gui/player-gui.svg";
         $(".account-details-user .account-avatar").css(
             "background-image",
-            `url(${icon})`
+            `url(${icon})`,
         );
     }
 
@@ -444,7 +445,7 @@ export class ProfileUi {
         $("#account-player-name").html(usernameText);
         $("#account-player-name").css(
             "display",
-            this.account.loggedIn ? "block" : "none"
+            this.account.loggedIn ? "block" : "none",
         );
         $("#account-login").css("display", this.account.loggedIn ? "none" : "block");
         this.updateUserIcon();

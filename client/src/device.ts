@@ -1,11 +1,5 @@
 import { isMobile } from "pixi.js-legacy";
-
-function getParameterByName(name: string, url?: string) {
-    const searchParams = new URLSearchParams(
-        url || window.location.href || window.location.search
-    );
-    return searchParams.get(name) || "";
-}
+import { getParameterByName } from "./helpers";
 
 function detectMobile() {
     return isMobile.android.device || isMobile.apple.device || isIpad();
@@ -81,7 +75,7 @@ class Device {
     debug = false;
     UiLayout = {
         Lg: 0,
-        Sm: 1
+        Sm: 1,
     };
 
     isLandscape = true;

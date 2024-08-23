@@ -10,9 +10,9 @@ const mapDef = {
             { name: "footstep_09", channel: "sfx" },
             { name: "snowball_01", channel: "sfx" },
             { name: "snowball_02", channel: "sfx" },
-            { name: "snowball_pickup_01", channel: "ui" }
+            { name: "snowball_pickup_01", channel: "ui" },
         ],
-        atlases: ["gradient", "loadout", "shared", "woods", "snow"]
+        atlases: ["gradient", "loadout", "shared", "woods", "snow"],
     },
     biome: {
         colors: {
@@ -23,7 +23,7 @@ const mapDef = {
             riverbank: 9461284,
             grass: 12434877,
             underground: 1772803,
-            playerSubmerge: 2854052
+            playerSubmerge: 2854052,
         },
         particles: { camera: "falling_snow_slow" },
         tracerColors: {
@@ -31,9 +31,9 @@ const mapDef = {
                 regular: 9871846,
                 saturated: 11257087,
                 alphaRate: 0.96,
-                alphaMin: 0.4
-            }
-        }
+                alphaMin: 0.4,
+            },
+        },
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     lootTable: {
@@ -41,12 +41,12 @@ const mapDef = {
             { name: "frag", count: 3, weight: 1 },
             { name: "mirv", count: 2, weight: 0.5 },
             { name: "smoke", count: 1, weight: 1 },
-            { name: "snowball", count: 5, weight: 0.25 }
+            { name: "snowball", count: 5, weight: 0.25 },
         ],
         tier_airdrop_throwables: [
             { name: "mirv", count: 2, weight: 1 },
-            { name: "snowball", count: 10, weight: 0.25 }
-        ]
+            { name: "snowball", count: 10, weight: 0.25 },
+        ],
     },
     mapGen: {
         spawnReplacements: [
@@ -77,10 +77,10 @@ const mapDef = {
                 crate_01: "crate_01x",
                 stone_01: "stone_01x",
                 stone_03: "stone_03x",
-                tree_01: "tree_07"
-            }
-        ]
-    }
+                tree_01: "tree_07",
+            },
+        ],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

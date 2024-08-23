@@ -8,76 +8,76 @@ const mapDef = {
     desc: {
         name: "Halloween",
         icon: "img/gui/pumpkin-play.svg",
-        buttonCss: "btn-mode-halloween"
+        buttonCss: "btn-mode-halloween",
     },
     assets: {
         audio: [
             {
                 name: "log_01",
-                channel: "sfx"
+                channel: "sfx",
             },
             {
                 name: "log_02",
-                channel: "sfx"
+                channel: "sfx",
             },
             {
                 name: "pumpkin_break_01",
-                channel: "sfx"
+                channel: "sfx",
             },
             {
                 name: "vault_change_02",
-                channel: "sfx"
+                channel: "sfx",
             },
             {
                 name: "kill_leader_assigned_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "kill_leader_assigned_02",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "kill_leader_dead_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "kill_leader_dead_02",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "trick_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "trick_02",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "trick_03",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "treat_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "xp_pickup_01",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "xp_pickup_02",
-                channel: "ui"
+                channel: "ui",
             },
             {
                 name: "xp_drop_01",
-                channel: "sfx"
+                channel: "sfx",
             },
             {
                 name: "xp_drop_02",
-                channel: "sfx"
-            }
+                channel: "sfx",
+            },
         ],
-        atlases: ["gradient", "loadout", "shared", "halloween"]
+        atlases: ["gradient", "loadout", "shared", "halloween"],
     },
     biome: {
         colors: {
@@ -88,17 +88,17 @@ const mapDef = {
             riverbank: 3939077,
             grass: 2171908,
             underground: 1181697,
-            playerSubmerge: 1310720
+            playerSubmerge: 1310720,
         },
         particles: {
-            camera: "falling_leaf_halloween"
+            camera: "falling_leaf_halloween",
         },
-        valueAdjust: 0.3
+        valueAdjust: 0.3,
     },
     gameMode: {
         maxPlayers: 80,
         killLeaderEnabled: true,
-        spookyKillSounds: true
+        spookyKillSounds: true,
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     gameConfig: {
@@ -107,29 +107,29 @@ const mapDef = {
                 {
                     circleIdx: 1,
                     wait: 10,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 3,
                     wait: 2,
-                    options: { type: GameConfig.Plane.Airdrop }
-                }
+                    options: { type: GameConfig.Plane.Airdrop },
+                },
             ],
             crates: [
                 { name: "airdrop_crate_01", weight: 10 },
-                { name: "airdrop_crate_02", weight: 1 }
-            ]
-        }
+                { name: "airdrop_crate_02", weight: 1 },
+            ],
+        },
     },
     lootTable: {
         tier_throwables: [
             { name: "frag", count: 2, weight: 0.5 },
             { name: "smoke", count: 1, weight: 1 },
-            { name: "mirv", count: 2, weight: 0.05 }
+            { name: "mirv", count: 2, weight: 0.05 },
         ],
         tier_airdrop_outfits: [
             { name: "", count: 1, weight: 4 },
-            { name: "outfitAirdrop", count: 1, weight: 1 }
+            { name: "outfitAirdrop", count: 1, weight: 1 },
         ],
         tier_toilet: [
             { name: "tier_guns", count: 1, weight: 0.1 },
@@ -138,9 +138,9 @@ const mapDef = {
             {
                 name: "tier_throwables",
                 count: 1,
-                weight: 0.05
+                weight: 0.05,
             },
-            { name: "tier_outfits", count: 1, weight: 0 }
+            { name: "tier_outfits", count: 1, weight: 0 },
         ],
         tier_container: [
             { name: "tier_guns", count: 1, weight: 0.29 },
@@ -150,24 +150,24 @@ const mapDef = {
             {
                 name: "tier_medical",
                 count: 1,
-                weight: 0.17
+                weight: 0.17,
             },
             {
                 name: "tier_throwables",
                 count: 1,
-                weight: 0.05
+                weight: 0.05,
             },
             { name: "tier_packs", count: 1, weight: 0.09 },
-            { name: "tier_outfits", count: 1, weight: 0 }
+            { name: "tier_outfits", count: 1, weight: 0 },
         ],
         tier_scopes: [
             { name: "2xscope", count: 1, weight: 24 },
-            { name: "4xscope", count: 1, weight: 5 }
+            { name: "4xscope", count: 1, weight: 5 },
         ],
         tier_airdrop_scopes: [
             { name: "", count: 1, weight: 18 },
-            { name: "4xscope", count: 1, weight: 0 }
-        ]
+            { name: "4xscope", count: 1, weight: 0 },
+        ],
     },
     mapGen: {
         map: {
@@ -182,10 +182,10 @@ const mapDef = {
                     { weight: 0.2, widths: [8, 8, 4] },
                     {
                         weight: 1e-4,
-                        widths: [8, 8, 8, 6, 4]
-                    }
-                ]
-            }
+                        widths: [8, 8, 8, 6, 4],
+                    },
+                ],
+            },
         },
         densitySpawns: [
             {
@@ -201,8 +201,8 @@ const mapDef = {
                 shack_01: 6,
                 outhouse_01: 6,
                 loot_tier_1: 48,
-                loot_tier_beach: 8
-            }
+                loot_tier_beach: 8,
+            },
         ],
         fixedSpawns: [
             {
@@ -226,8 +226,8 @@ const mapDef = {
                 refrigerator_01: 24,
                 table_01: 24,
                 vending_01: 24,
-                woodpile_01: 24
-            }
+                woodpile_01: 24,
+            },
         ],
         randomSpawns: [],
         spawnReplacements: [
@@ -236,10 +236,10 @@ const mapDef = {
                 stone_03: "stone_01",
                 cabin_01: "cabin_02",
                 house_red_01: "house_red_01b",
-                house_red_02: "house_red_01b"
-            }
-        ]
-    }
+                house_red_02: "house_red_01b",
+            },
+        ],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

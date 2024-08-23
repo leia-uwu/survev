@@ -12,11 +12,11 @@ export interface Crosshair {
 function getCrosshairDims(crosshairDef: Crosshair) {
     const crosshairBase = {
         width: 64,
-        height: 64
+        height: 64,
     };
     return {
         width: Math.round((crosshairBase.width * Number(crosshairDef.size)) / 4) * 4,
-        height: Math.round((crosshairBase.height * Number(crosshairDef.size)) / 4) * 4
+        height: Math.round((crosshairBase.height * Number(crosshairDef.size)) / 4) * 4,
     };
 }
 function getBaseURL(crosshairDef: Crosshair) {
@@ -46,7 +46,7 @@ export const crosshair = {
             cursor = objDef.cursor ? objDef.cursor : getCursorCSS(crosshairDef);
         }
         elem.css({
-            cursor
+            cursor,
         });
     },
     setGameCrosshair: function (crosshairDef: Crosshair) {
@@ -57,7 +57,7 @@ export const crosshair = {
         const objDef = CrosshairDefs[crosshairDef.type];
         const style = !objDef || objDef.cursor ? "pointer" : "inherit";
         $(".ui-zoom, .ui-medical, .ui-settings-button, .ui-weapon-switch").css({
-            cursor: style
+            cursor: style,
         });
-    }
+    },
 };

@@ -23,11 +23,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     firepower: {
         name: "Firepower",
@@ -37,11 +37,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     gotw: {
         name: "Gift of the Wild",
@@ -51,11 +51,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     windwalk: {
         name: "Windwalk",
@@ -65,11 +65,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     rare_potato: {
         name: "Rare Potato",
@@ -79,11 +79,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     aoe_heal: {
         name: "Mass Medicate",
@@ -93,11 +93,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     endless_ammo: {
         name: "Endless Ammo",
@@ -107,11 +107,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     steelskin: {
         name: "Steelskin",
@@ -121,11 +121,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     splinter: {
         name: "Splinter Rounds",
@@ -135,11 +135,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     small_arms: {
         name: "Small Arms",
@@ -149,11 +149,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     takedown: {
         name: "Takedown",
@@ -163,11 +163,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     field_medic: {
         name: "Field Medic",
@@ -177,11 +177,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     tree_climbing: {
         name: "Tree Climbing",
@@ -191,11 +191,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     scavenger: {
         name: "Scavenger",
@@ -205,11 +205,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     scavenger_adv: {
         name: "Master Scavenger",
@@ -219,11 +219,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     hunted: {
         name: "The Hunted",
@@ -233,11 +233,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     chambered: {
         name: "One In The Chamber",
@@ -247,11 +247,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     martyrdom: {
         name: "Martyrdom",
@@ -261,11 +261,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     targeting: {
         name: "Targeting",
@@ -275,11 +275,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     bonus_45: {
         name: ".45 In The Chamber",
@@ -289,11 +289,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     broken_arrow: {
         name: "Broken Arrow",
@@ -303,11 +303,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     fabricate: {
         name: "Fabricate",
@@ -317,11 +317,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     self_revive: {
         name: "Revivify",
@@ -331,11 +331,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     bonus_9mm: {
         name: "9mm Overpressure",
@@ -345,11 +345,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     flak_jacket: {
         name: "Flak Jacket",
@@ -359,11 +359,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     explosive: {
         name: "Explosive Rounds",
@@ -373,11 +373,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     bonus_assault: {
         name: "Hollow-points",
@@ -387,11 +387,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     inspiration: {
         name: "Inspiration",
@@ -401,9 +401,9 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
-        sound: { pickup: "perk_pickup_01" }
+        sound: { pickup: "perk_pickup_01" },
     },
     final_bugle: {
         name: "Last Breath",
@@ -413,9 +413,9 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
-        sound: { pickup: "perk_pickup_01" }
+        sound: { pickup: "perk_pickup_01" },
     },
     halloween_mystery: {
         name: "Trick Or Treat?",
@@ -425,11 +425,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     trick_nothing: {
         name: "One With Nothing",
@@ -440,11 +440,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-04.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     trick_size: {
         name: "Feedership",
@@ -455,11 +455,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-04.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     trick_m9: {
         name: "Dev Troll Special",
@@ -470,11 +470,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-04.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     trick_chatty: {
         name: "Gabby Ghost",
@@ -485,11 +485,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-04.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     trick_drain: {
         name: "That Sucks",
@@ -500,11 +500,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-04.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     treat_9mm: {
         name: "Candy Corn",
@@ -515,11 +515,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     treat_12g: {
         name: "Red Jelly Beans",
@@ -530,11 +530,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     treat_556: {
         name: "Sour Apple Belt",
@@ -545,11 +545,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     treat_762: {
         name: "Blueberry Taffy",
@@ -560,11 +560,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     treat_super: {
         name: "Full Size OKAMI Bar",
@@ -575,11 +575,11 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
+            pickup: "perk_pickup_01",
+        },
     },
     turkey_shoot: {
         name: "Perky Shoot",
@@ -590,10 +590,10 @@ export const PerkDefs: Record<string, PerkDef> = {
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
-            scale: 0.275
+            scale: 0.275,
         },
         sound: {
-            pickup: "perk_pickup_01"
-        }
-    }
+            pickup: "perk_pickup_01",
+        },
+    },
 };

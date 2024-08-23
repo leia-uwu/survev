@@ -30,7 +30,7 @@ function getControlPoints(t: number, points: Vec2[], looped: boolean) {
         p0: points[i0],
         p1: points[i1],
         p2: points[i2],
-        p3: points[i3]
+        p3: points[i3],
     };
 }
 
@@ -97,7 +97,7 @@ export class Spline {
 
         return v2.create(
             catmullRom(pt, p0.x, p1.x, p2.x, p3.x),
-            catmullRom(pt, p0.y, p1.y, p2.y, p3.y)
+            catmullRom(pt, p0.y, p1.y, p2.y, p3.y),
         );
     }
 
@@ -111,7 +111,7 @@ export class Spline {
 
         return v2.create(
             catmullRomDerivative(pt, p0.x, p1.x, p2.x, p3.x),
-            catmullRomDerivative(pt, p0.y, p1.y, p2.y, p3.y)
+            catmullRomDerivative(pt, p0.y, p1.y, p2.y, p3.y),
         );
     }
 

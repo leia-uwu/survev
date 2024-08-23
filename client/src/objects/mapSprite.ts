@@ -66,7 +66,7 @@ export class MapSpriteBarn {
             const sprite = this.mapSprites[i].sprite;
             sprite.parent?.removeChild(sprite);
             sprite.destroy({
-                children: true
+                children: true,
             });
         }
     }

@@ -25,7 +25,7 @@ export const coldet = {
         return {
             type: 1,
             min: v2.sub(pos, extent),
-            max: v2.add(pos, extent)
+            max: v2.add(pos, extent),
         };
     },
 
@@ -35,7 +35,7 @@ export const coldet = {
         return {
             type: 0,
             pos: c,
-            rad: v2.length(e)
+            rad: v2.length(e),
         };
     },
 
@@ -43,7 +43,7 @@ export const coldet = {
         return {
             type: collider.Type.Aabb,
             min: v2.create(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y),
-            max: v2.create(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y)
+            max: v2.create(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y),
         };
     },
 
@@ -86,12 +86,12 @@ export const coldet = {
         return {
             min: v2.create(
                 y ? aabb.min.x : c.x - e.x * scale,
-                y ? c.y - e.y * scale : aabb.min.y
+                y ? c.y - e.y * scale : aabb.min.y,
             ),
             max: v2.create(
                 y ? aabb.max.x : c.x + e.x * scale,
-                y ? c.y + e.y * scale : aabb.max.y
-            )
+                y ? c.y + e.y * scale : aabb.max.y,
+            ),
         };
     },
 
@@ -114,7 +114,7 @@ export const coldet = {
     testCircleAabb(pos: Vec2, rad: number, min: Vec2, max: Vec2) {
         const cpt = v2.create(
             math.clamp(pos.x, min.x, max.x),
-            math.clamp(pos.y, min.y, max.y)
+            math.clamp(pos.y, min.y, max.y),
         );
         const dstSqr = v2.lengthSqr(v2.sub(pos, cpt));
         return (
@@ -150,7 +150,7 @@ export const coldet = {
                     coll1.pos,
                     coll1.rad,
                     coll2.pos,
-                    coll2.rad
+                    coll2.rad,
                 );
             }
             return coldet.testCircleAabb(coll1.pos, coll1.rad, coll2.min, coll2.max);
@@ -180,7 +180,7 @@ export const coldet = {
             if (x3 * x4 < 0.0) {
                 const t = x3 / (x3 - x4);
                 return {
-                    point: v2.add(a0, v2.mul(v2.sub(a1, a0), t))
+                    point: v2.add(a0, v2.mul(v2.sub(a1, a0), t)),
                 };
             }
         }
@@ -210,7 +210,7 @@ export const coldet = {
             const point = v2.add(s0, v2.mul(d, t));
             return {
                 point,
-                normal: v2.normalize(v2.sub(point, pos))
+                normal: v2.normalize(v2.sub(point, pos)),
             };
         }
         return null;
@@ -271,13 +271,13 @@ export const coldet = {
         const n = v2.normalizeSafe(
             v2.create(
                 x < 0.0 ? Math.ceil(x) : Math.floor(x),
-                y < 0.0 ? Math.ceil(y) : Math.floor(y)
+                y < 0.0 ? Math.ceil(y) : Math.floor(y),
             ),
-            v2.create(1.0, 0.0)
+            v2.create(1.0, 0.0),
         );
         return {
             point: p,
-            normal: n
+            normal: n,
         };
     },
 
@@ -288,7 +288,7 @@ export const coldet = {
             { a: v2.create(min.x, min.y), b: v2.create(max.x, min.y) },
             { a: v2.create(max.x, min.y), b: v2.create(max.x, max.y) },
             { a: v2.create(max.x, max.y), b: v2.create(min.x, max.y) },
-            { a: v2.create(min.x, max.y), b: v2.create(min.x, min.y) }
+            { a: v2.create(min.x, max.y), b: v2.create(min.x, min.y) },
         ];
         for (let i = 0; i < segments.length; i++) {
             const seg = segments[i];
@@ -325,7 +325,7 @@ export const coldet = {
             const dist = Math.sqrt(distSqr);
             return {
                 dir: dist > 0.00001 ? v2.div(toP1, dist) : v2.create(1.0, 0.0),
-                pen: r - dist
+                pen: r - dist,
             };
         }
         return null;
@@ -336,7 +336,7 @@ export const coldet = {
         max: Vec2,
         pos: Vec2,
         rad: number,
-        _isPlayerCollision = false
+        _isPlayerCollision = false,
     ) {
         if (pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y) {
             const e = v2.mul(v2.sub(max, min), 0.5);
@@ -347,17 +347,17 @@ export const coldet = {
             if (xp > yp) {
                 return {
                     dir: v2.create(p.x > 0.0 ? 1.0 : -1.0, 0.0),
-                    pen: -xp
+                    pen: -xp,
                 };
             }
             return {
                 dir: v2.create(0.0, p.y > 0.0 ? 1.0 : -1.0),
-                pen: -yp
+                pen: -yp,
             };
         }
         const cpt = v2.create(
             math.clamp(pos.x, min.x, max.x),
-            math.clamp(pos.y, min.y, max.y)
+            math.clamp(pos.y, min.y, max.y),
         );
         let dir = v2.sub(pos, cpt);
 
@@ -368,7 +368,7 @@ export const coldet = {
             const dst = Math.sqrt(dstSqr);
             return {
                 dir: dst > 0.0001 ? v2.div(dir, dst) : v2.create(1.0, 0.0),
-                pen: rad - dst
+                pen: rad - dst,
             };
         }
 
@@ -388,15 +388,15 @@ export const coldet = {
                 if (xo > yo) {
                     return {
                         dir: n.x < 0.0 ? v2.create(-1.0, 0.0) : v2.create(1.0, 0.0),
-                        pen: xo
+                        pen: xo,
                     };
                 }
                 return {
                     dir: n.y < 0.0 ? v2.create(0.0, -1.0) : v2.create(0.0, 1.0),
-                    pen: yo
+                    pen: yo,
                 };
             }
         }
         return null;
-    }
+    },
 };

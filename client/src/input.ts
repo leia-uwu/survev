@@ -4,17 +4,17 @@ class Touch {
     id = 0;
     pos = {
         x: 0,
-        y: 0
+        y: 0,
     };
 
     posOld = {
         x: 0,
-        y: 0
+        y: 0,
     };
 
     posDown = {
         x: 0,
-        y: 0
+        y: 0,
     };
 
     startTime = 0;
@@ -38,7 +38,7 @@ export class InputHandler {
     captureNextInputCb:
         | ((
               event: KeyboardEvent | MouseEvent | globalThis.TouchEvent,
-              inputValue: InputValue
+              inputValue: InputValue,
           ) => void)
         | null = null;
 
@@ -52,7 +52,7 @@ export class InputHandler {
         window.addEventListener("mouseup", this.onMouseUp.bind(this), false);
         window.addEventListener("wheel", this.onMouseWheel.bind(this), {
             capture: false,
-            passive: true
+            passive: true,
         });
         window.addEventListener("touchmove", this.onTouchMove.bind(this), false);
         window.addEventListener("touchstart", this.onTouchStart.bind(this), false);
@@ -63,7 +63,7 @@ export class InputHandler {
             (e) => {
                 e.preventDefault();
             },
-            false
+            false,
         );
     }
 
@@ -107,7 +107,7 @@ export class InputHandler {
     checkCaptureInput(
         event: KeyboardEvent | MouseEvent | globalThis.TouchEvent,
         inputType: InputType,
-        inputCode: number
+        inputCode: number,
     ) {
         return (
             !!this.captureNextInputCb?.(event, new InputValue(inputType, inputCode)) &&
@@ -373,7 +373,7 @@ export enum Key {
     Plus = 187,
     Minus = 189,
     FwdSlash = 191,
-    Tilde = 192
+    Tilde = 192,
 }
 
 export enum MouseButton {
@@ -381,20 +381,20 @@ export enum MouseButton {
     Middle,
     Right,
     Thumb1,
-    Thumb2
+    Thumb2,
 }
 
 export enum MouseWheel {
     None,
     Up,
-    Down
+    Down,
 }
 
 export enum InputType {
     None,
     Key,
     MouseButton,
-    MouseWheel
+    MouseWheel,
 }
 const KeyNames = [
     "",
@@ -652,21 +652,21 @@ const KeyNames = [
     "",
     "PA1",
     "WIN_OEM_CLEAR",
-    ""
+    "",
 ];
 const MouseButtonNames = [
     "Left Mouse",
     "Middle Mouse",
     "Right Mouse",
     "Thumb Mouse 1",
-    "Thumb Mouse 2"
+    "Thumb Mouse 2",
 ];
 const MouseWheelNames = ["", "Mouse Wheel Up", "Mouse Wheel Down"];
 
 export class InputValue {
     constructor(
         public type: InputType,
-        public code: number
+        public code: number,
     ) {
         this.type = type;
         this.code = code;
@@ -694,5 +694,5 @@ enum TouchEvent {
     Move,
     Start,
     End,
-    Cancel
+    Cancel,
 }

@@ -107,7 +107,7 @@ export class Obstacle extends BaseGameObject {
         ori = 0,
         scale = 1,
         parentBuildingId?: number,
-        puzzlePiece?: string
+        puzzlePiece?: string,
     ) {
         super(game, pos);
         this.type = type;
@@ -132,7 +132,7 @@ export class Obstacle extends BaseGameObject {
             throw new Error(`Invalid obstacle with type ${type}`);
         }
         this.bounds = collider.toAabb(
-            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale)
+            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale),
         );
 
         this.height = def.height;
@@ -207,15 +207,15 @@ export class Obstacle extends BaseGameObject {
                     def.collision,
                     openPos,
                     math.oriToRad(openOri),
-                    this.scale
+                    this.scale,
                 ),
                 openAltCollider: collider.transform(
                     def.collision,
                     openPos,
                     math.oriToRad(openAltOri),
-                    this.scale
+                    this.scale,
                 ),
-                closedCollider: collider.copy(this.collider)
+                closedCollider: collider.copy(this.collider),
             };
 
             this.interactionRad = def.door.interactionRad;
@@ -231,7 +231,7 @@ export class Obstacle extends BaseGameObject {
                 useOnce: def.button.useOnce,
                 useType: def.button.useType!,
                 useDelay: def.button.useDelay,
-                useDir: def.button.useDir
+                useDir: def.button.useDir,
             };
             this.interactionRad = def.button.interactionRad;
         }
@@ -304,7 +304,7 @@ export class Obstacle extends BaseGameObject {
                     def.collision,
                     this.pos,
                     math.oriToRad(this.ori),
-                    this.scale
+                    this.scale,
                 );
             }
 
@@ -338,7 +338,7 @@ export class Obstacle extends BaseGameObject {
                 tier: "tier_world",
                 min: 1,
                 max: 1,
-                props: {}
+                props: {},
             });
         }
 
@@ -357,7 +357,7 @@ export class Obstacle extends BaseGameObject {
                             item.count,
                             undefined,
                             undefined,
-                            params.dir
+                            params.dir,
                         );
                     }
                 }
@@ -369,7 +369,7 @@ export class Obstacle extends BaseGameObject {
                     lootTierOrItem.count!,
                     undefined,
                     undefined,
-                    params.dir
+                    params.dir,
                 );
             }
         }
@@ -386,7 +386,7 @@ export class Obstacle extends BaseGameObject {
                 "",
                 this.type,
                 params.damageType,
-                params.source
+                params.source,
             );
         }
 
@@ -449,7 +449,7 @@ export class Obstacle extends BaseGameObject {
                             this.toggleDoor(player);
                         },
                         this.door.openDelay * 1000,
-                        this
+                        this,
                     );
                 } else {
                     this.toggleDoor(player);
@@ -489,7 +489,7 @@ export class Obstacle extends BaseGameObject {
             setTimeout(() => {
                 this.kill({
                     damageType: GameConfig.DamageType.Airdrop,
-                    dir: v2.create(0, 0)
+                    dir: v2.create(0, 0),
                 });
             }, this.button.useDelay * 1000);
         }
@@ -528,7 +528,7 @@ export class Obstacle extends BaseGameObject {
 
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.bounds = collider.toAabb(
-            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale)
+            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale),
         );
 
         const margin = v2.create(this.interactionRad, this.interactionRad);

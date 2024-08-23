@@ -17,7 +17,7 @@ export class PingTest {
             recvCount: 0,
             recvCountMax: 6,
             retryCount: 0,
-            retryCountMax: 1
+            retryCountMax: 1,
         };
     });
 
@@ -119,7 +119,7 @@ export class PingTest {
                     "zone  ",
                     test.zone,
                     "ping  ",
-                    test.ping
+                    test.ping,
                 );
             }
             this.printSummary = false;

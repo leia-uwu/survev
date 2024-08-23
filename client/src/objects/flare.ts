@@ -122,7 +122,7 @@ export class FlareBarn {
         activePlayer: Player,
         renderer: Renderer,
         _particleBarn: unknown,
-        _audioManager: unknown
+        _audioManager: unknown,
     ) {
         for (let h = 0; h < this.bullets.length; h++) {
             const d = this.bullets[h];
@@ -147,7 +147,7 @@ export class FlareBarn {
                             : d.tracerAlphaRate * 0.9;
                     d.bulletTrail.alpha = math.max(
                         d.tracerAlphaMin,
-                        d.bulletTrail.alpha * rate
+                        d.bulletTrail.alpha * rate,
                     );
                 }
 
@@ -196,14 +196,14 @@ export class FlareBarn {
                 const screenScale = camera.pixels(1);
                 b.flareContainer.scale.set(
                     screenScale * b.flareScale,
-                    screenScale * b.flareScale
+                    screenScale * b.flareScale,
                 );
                 const dist = v2.length(v2.sub(b.pos, b.startPos));
                 b.trailContainer.position.set(screenPos.x, screenPos.y);
                 const trailLength = math.min(b.tracerLength * 15, dist / 2);
                 b.trailContainer.scale.set(
                     screenScale * trailLength * b.trailScale,
-                    screenScale
+                    screenScale,
                 );
             }
         }

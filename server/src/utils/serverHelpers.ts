@@ -9,7 +9,7 @@ export function cors(res: HttpResponse): void {
         .writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         .writeHeader(
             "Access-Control-Allow-Headers",
-            "origin, content-type, accept, x-requested-with"
+            "origin, content-type, accept, x-requested-with",
         )
         .writeHeader("Access-Control-Max-Age", "3600");
 }
@@ -32,7 +32,7 @@ export function returnJson(res: HttpResponse, data: Record<string, unknown>): vo
 export function readPostedJSON<T>(
     res: HttpResponse,
     cb: (json: T) => void,
-    err: () => void
+    err: () => void,
 ): void {
     let buffer: Buffer | Uint8Array;
     /* Register data cb */

@@ -23,7 +23,7 @@ function intersectSegmentObstacle(
     s1: Vec2,
     height: number,
     layer: number,
-    hackStairs: boolean
+    hackStairs: boolean,
 ) {
     const o = obstacle;
 
@@ -54,7 +54,7 @@ function getIntersectSegmentEnd(
     pos: Vec2,
     dir: Vec2,
     len: number,
-    layer: number
+    layer: number,
 ) {
     const dist = collisionHelpers.intersectSegmentDist(
         obstacles,
@@ -63,7 +63,7 @@ function getIntersectSegmentEnd(
         len,
         0.0,
         layer,
-        false
+        false,
     );
     return v2.add(pos, v2.mul(dir, dist));
 }
@@ -79,7 +79,7 @@ export const collisionHelpers = {
         len: number,
         height: number,
         layer: number,
-        hackStairs: boolean
+        hackStairs: boolean,
     ) {
         const end = v2.add(pos, v2.mul(dir, len));
         const cols: Array<{ id: number; dist: number }> = [];
@@ -90,7 +90,7 @@ export const collisionHelpers = {
                 const dist = v2.length(v2.sub(res.point, pos));
                 cols.push({
                     id: o.__id,
-                    dist
+                    dist,
                 });
             }
         }
@@ -105,7 +105,7 @@ export const collisionHelpers = {
         len: number,
         height: number,
         layer: number,
-        hackStairs: boolean
+        hackStairs: boolean,
     ) {
         let dist = len;
         const end = v2.add(pos, v2.mul(dir, len));
@@ -126,7 +126,7 @@ export const collisionHelpers = {
         height: number,
         scanWidth: number,
         scanDist: number,
-        rayCount: number
+        rayCount: number,
     ) {
         const toCol = collider.intersectCircle(col, pos, scanDist);
         if (!toCol) {
@@ -144,14 +144,14 @@ export const collisionHelpers = {
             pos,
             v2.neg(perp),
             0.5 * scanWidth,
-            layer
+            layer,
         );
         const scanEnd = getIntersectSegmentEnd(
             obstacles,
             pos,
             perp,
             0.5 * scanWidth,
-            layer
+            layer,
         );
         let scanDir = v2.sub(scanEnd, scanStart);
         const scanLen = v2.length(scanDir);
@@ -180,12 +180,12 @@ export const collisionHelpers = {
                 scanDist,
                 rayHeight,
                 layer,
-                true
+                true,
             );
             const res = collider.intersectSegment(
                 col,
                 rayPos,
-                v2.add(rayPos, v2.mul(rayDir, scanDist))
+                v2.add(rayPos, v2.mul(rayDir, scanDist)),
             );
             const dist = res ? v2.length(v2.sub(res.point, rayPos)) : 0.0;
             const rayHit = res && dist <= maxDist;
@@ -196,5 +196,5 @@ export const collisionHelpers = {
         }
 
         return null;
-    }
+    },
 };

@@ -9,16 +9,16 @@ const mapDef = {
     desc: {
         name: "Desert",
         icon: "img/loot/loot-weapon-flare-gun.svg",
-        buttonCss: "btn-mode-desert"
+        buttonCss: "btn-mode-desert",
     },
     assets: {
         audio: [
             { name: "piano_02", channel: "sfx" },
             { name: "log_03", channel: "sfx" },
             { name: "log_04", channel: "sfx" },
-            { name: "piano_music_01", channel: "ambient" }
+            { name: "piano_music_01", channel: "ambient" },
         ],
-        atlases: ["gradient", "loadout", "shared", "desert"]
+        atlases: ["gradient", "loadout", "shared", "desert"],
     },
     biome: {
         colors: {
@@ -29,9 +29,9 @@ const mapDef = {
             riverbank: 11689508,
             grass: 14657367,
             underground: 4001027,
-            playerSubmerge: 5151631
+            playerSubmerge: 5151631,
         },
-        particles: {}
+        particles: {},
     },
     gameMode: { maxPlayers: 80, desertMode: true },
     /* STRIP_FROM_PROD_CLIENT:START */
@@ -41,19 +41,19 @@ const mapDef = {
                 {
                     circleIdx: 1,
                     wait: 10,
-                    options: { type: GameConfig.Plane.Airdrop }
+                    options: { type: GameConfig.Plane.Airdrop },
                 },
                 {
                     circleIdx: 3,
                     wait: 2,
-                    options: { type: GameConfig.Plane.Airdrop }
-                }
+                    options: { type: GameConfig.Plane.Airdrop },
+                },
             ],
             crates: [
                 { name: "airdrop_crate_01", weight: 10 },
-                { name: "airdrop_crate_02", weight: 1 }
-            ]
-        }
+                { name: "airdrop_crate_02", weight: 1 },
+            ],
+        },
     },
     lootTable: {
         tier_guns: [
@@ -82,10 +82,10 @@ const mapDef = {
             {
                 name: "flare_gun_dual",
                 count: 1,
-                weight: 0.25
+                weight: 0.25,
             },
             { name: "groza", count: 1, weight: 0.8 },
-            { name: "scout", count: 1, weight: 0.05 }
+            { name: "scout_elite", count: 1, weight: 0.05 },
         ],
         tier_airdrop_uncommon: [
             { name: "mk12", count: 1, weight: 2.5 },
@@ -98,9 +98,9 @@ const mapDef = {
             { name: "qbb97", count: 1, weight: 1.5 },
             { name: "m9", count: 1, weight: 0.01 },
             { name: "flare_gun", count: 1, weight: 0.5 },
-            { name: "scout", count: 1, weight: 1.5 },
+            { name: "scout_elite", count: 1, weight: 1.5 },
             { name: "model94", count: 1, weight: 2 },
-            { name: "colt45", count: 1, weight: 1 }
+            { name: "colt45", count: 1, weight: 1 },
         ],
         tier_airdrop_rare: [
             { name: "garand", count: 1, weight: 6 },
@@ -108,13 +108,13 @@ const mapDef = {
             { name: "pkp", count: 1, weight: 3 },
             { name: "m249", count: 1, weight: 0.1 },
             { name: "m4a1", count: 1, weight: 4 },
-            { name: "ots38_dual", count: 1, weight: 4.5 }
+            { name: "ots38_dual", count: 1, weight: 4.5 },
         ],
         tier_ammo: [
             { name: "45acp", count: 60, weight: 3 },
             { name: "762mm", count: 60, weight: 3 },
             { name: "556mm", count: 60, weight: 3 },
-            { name: "12gauge", count: 10, weight: 3 }
+            { name: "12gauge", count: 10, weight: 3 },
         ],
         tier_ammo_crate: [
             { name: "45acp", count: 60, weight: 3 },
@@ -123,13 +123,13 @@ const mapDef = {
             { name: "12gauge", count: 10, weight: 3 },
             { name: "50AE", count: 21, weight: 1 },
             { name: "308sub", count: 5, weight: 1 },
-            { name: "flare", count: 1, weight: 1 }
+            { name: "flare", count: 1, weight: 1 },
         ],
         tier_airdrop_ammo: [
             { name: "45acp", count: 30, weight: 3 },
             { name: "762mm", count: 30, weight: 3 },
             { name: "556mm", count: 30, weight: 3 },
-            { name: "12gauge", count: 5, weight: 3 }
+            { name: "12gauge", count: 5, weight: 3 },
         ],
         tier_airdrop_outfits: [
             { name: "", count: 1, weight: 20 },
@@ -138,13 +138,13 @@ const mapDef = {
             {
                 name: "outfitGhillie",
                 count: 1,
-                weight: 0.5
-            }
+                weight: 0.5,
+            },
         ],
         tier_airdrop_melee: [
             { name: "", count: 1, weight: 19 },
             { name: "stonehammer", count: 1, weight: 1 },
-            { name: "pan", count: 1, weight: 1 }
+            { name: "pan", count: 1, weight: 1 },
         ],
         tier_chest: [
             { name: "famas", count: 1, weight: 1.15 },
@@ -168,7 +168,7 @@ const mapDef = {
             { name: "chest02", count: 1, weight: 1 },
             { name: "chest03", count: 1, weight: 0.25 },
             { name: "4xscope", count: 1, weight: 0.5 },
-            { name: "8xscope", count: 1, weight: 0.25 }
+            { name: "8xscope", count: 1, weight: 0.25 },
         ],
         tier_hatchet: [
             { name: "vector45", count: 1, weight: 0.4 },
@@ -176,18 +176,18 @@ const mapDef = {
             { name: "mp220", count: 1, weight: 0.15 },
             { name: "pkp", count: 1, weight: 0.01 },
             { name: "m249", count: 1, weight: 0.01 },
-            { name: "m9", count: 1, weight: 0.01 }
+            { name: "m9", count: 1, weight: 0.01 },
         ],
         tier_throwables: [
             { name: "frag", count: 2, weight: 1 },
             { name: "smoke", count: 1, weight: 1 },
             { name: "strobe", count: 1, weight: 0.2 },
-            { name: "mirv", count: 2, weight: 0.05 }
+            { name: "mirv", count: 2, weight: 0.05 },
         ],
         tier_airdrop_throwables: [
             { name: "strobe", count: 1, weight: 1 },
-            { name: "frag", count: 3, weight: 0.1 }
-        ]
+            { name: "frag", count: 3, weight: 0.1 },
+        ],
     },
     mapGen: {
         map: {
@@ -204,29 +204,29 @@ const mapDef = {
                     { weight: 0.2, widths: [8, 8, 4] },
                     {
                         weight: 1e-4,
-                        widths: [8, 8, 8, 6, 4]
-                    }
+                        widths: [8, 8, 8, 6, 4],
+                    },
                 ],
-                masks: [{ pos: v2.create(0.5, 0.5), rad: 80 }]
-            }
+                masks: [{ pos: v2.create(0.5, 0.5), rad: 80 }],
+            },
         },
         places: [
             {
                 name: "Blood Gulch",
-                pos: v2.create(0.51, 0.5)
+                pos: v2.create(0.51, 0.5),
             },
             {
                 name: "Southhaven",
-                pos: v2.create(0.35, 0.76)
+                pos: v2.create(0.35, 0.76),
             },
             {
                 name: "Atonement",
-                pos: v2.create(0.8, 0.4)
+                pos: v2.create(0.8, 0.4),
             },
             {
                 name: "Los Perdidos",
-                pos: v2.create(0.33, 0.25)
-            }
+                pos: v2.create(0.33, 0.25),
+            },
         ],
         customSpawnRules: {
             locationSpawns: [
@@ -234,10 +234,10 @@ const mapDef = {
                     type: "river_town_02",
                     pos: v2.create(0.51, 0.5),
                     rad: 50,
-                    retryOnFailure: false
-                }
+                    retryOnFailure: false,
+                },
             ],
-            placeSpawns: ["desert_town_01", "desert_town_02"]
+            placeSpawns: ["desert_town_01", "desert_town_02"],
         },
         densitySpawns: [
             {
@@ -258,8 +258,8 @@ const mapDef = {
                 shack_01: 8,
                 outhouse_01: 5,
                 loot_tier_1: 24,
-                loot_tier_beach: 4
-            }
+                loot_tier_beach: 4,
+            },
         ],
         fixedSpawns: [
             {
@@ -281,8 +281,8 @@ const mapDef = {
                 desert_town_02: 1,
                 river_town_02: 1,
                 greenhouse_02: 1,
-                stone_05: 6
-            }
+                stone_05: 6,
+            },
         ],
         randomSpawns: [],
         spawnReplacements: [
@@ -291,11 +291,11 @@ const mapDef = {
                 bush_01: "bush_05",
                 crate_02: "crate_18",
                 stone_01: "stone_01b",
-                stone_03: "stone_03b"
-            }
+                stone_03: "stone_03b",
+            },
         ],
-        importantSpawns: ["desert_town_01", "desert_town_02", "river_town_02"]
-    }
+        importantSpawns: ["desert_town_01", "desert_town_02", "river_town_02"],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

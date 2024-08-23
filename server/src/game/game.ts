@@ -1,10 +1,10 @@
 import type { MapDefs } from "../../../shared/defs/mapDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
-import { util } from "../../../shared/utils/util";
 import { Config, TeamMode } from "../config";
 import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
+import { ContextManager } from "./contextManager";
 import { Grid } from "./grid";
 import { Group } from "./group";
 import { GameMap } from "./map";
@@ -21,68 +21,17 @@ import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
+import { Team } from "./team";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;
     readonly teamMode: TeamMode;
 }
 
-enum ContextMode {
-    Solo,
-    Team,
-    Faction
-}
-
-class ContextManager {
-    private _game: Game;
-    private _contextMode: ContextMode;
-
-    constructor(game: Game) {
-        this._game = game;
-
-        this._contextMode = [
-            game.teamMode == TeamMode.Solo,
-            (game.teamMode == TeamMode.Duo || game.teamMode == TeamMode.Squad) &&
-                !game.map.factionMode,
-            game.teamMode == TeamMode.Squad && game.map.factionMode
-        ].findIndex((isMode) => isMode);
-    }
-
-    private _applyContext<T>(contextObj: Record<ContextMode, () => T>) {
-        return contextObj[this._contextMode]();
-    }
-
-    aliveCount(): number {
-        return this._applyContext<number>({
-            [ContextMode.Solo]: () => this._game.playerBarn.livingPlayers.length,
-            [ContextMode.Team]: () => this._game.getAliveGroups().length,
-            [ContextMode.Faction]: () => this._game.getAliveGroups().length //tbd
-        });
-    }
-
-    /** true if game needs to end */
-    handleGameEnd(): boolean {
-        return this._applyContext<boolean>({
-            [ContextMode.Solo]: () => {
-                if (!this._game.started || this.aliveCount() > 1) return false;
-                const winner = this._game.playerBarn.livingPlayers[0];
-                winner.addGameOverMsg(winner.teamId);
-                return true;
-            },
-            [ContextMode.Team]: () => {
-                if (!this._game.started || this.aliveCount() > 1) return false;
-                const winner = this._game.getAliveGroups()[0];
-                for (const player of winner.getAlivePlayers()) {
-                    player.addGameOverMsg(winner.groupId);
-                }
-                return true;
-            },
-            [ContextMode.Faction]: () => {
-                return false;
-            }
-        });
-    }
-}
+export type GroupData = {
+    hash: string;
+    autoFill: boolean;
+};
 
 export class Game {
     started = false;
@@ -101,7 +50,9 @@ export class Game {
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
 
+    teams: Team[] = [];
     groups = new Map<string, Group>();
+    groupDatas: GroupData[] = [];
 
     get aliveCount(): number {
         return this.playerBarn.livingPlayers.length;
@@ -118,6 +69,10 @@ export class Game {
 
     getAliveGroups(): Group[] {
         return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected);
+    }
+
+    getAliveTeams(): Team[] {
+        return this.teams.filter((team) => team.livingPlayers.length > 0);
     }
 
     /**
@@ -142,7 +97,6 @@ export class Game {
     gas: Gas;
 
     now!: number;
-    gameStartTime = 0;
 
     perfTicker = 0;
     tickTimes: number[] = [];
@@ -168,6 +122,12 @@ export class Game {
         this.gas = new Gas(this.map);
 
         this.contextManager = new ContextManager(this);
+
+        if (this.map.factionMode) {
+            for (let i = 1; i <= this.map.mapDef.gameMode.factions!; i++) {
+                this.addTeam(i);
+            }
+        }
     }
 
     async init() {
@@ -217,7 +177,7 @@ export class Game {
                     this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
                 this.logger.log(
-                    `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`
+                    `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`,
                 );
                 this.tickTimes = [];
             }
@@ -253,7 +213,7 @@ export class Game {
 
     nextTeam(currentTeam: Group) {
         const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected
+            (t) => !t.allDeadOrDisconnected,
         );
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
@@ -262,12 +222,10 @@ export class Game {
 
     prevTeam(currentTeam: Group) {
         const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected
+            (t) => !t.allDeadOrDisconnected,
         );
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
-        const newIndex =
-            currentTeamIndex == 0 ? aliveTeams.length - 1 : currentTeamIndex - 1;
-        return aliveTeams[newIndex];
+        return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
     }
 
     handleMsg(buff: ArrayBuffer | Buffer, socketData: GameSocketData): void {
@@ -301,7 +259,7 @@ export class Game {
                 emoteMsg.deserialize(stream);
 
                 this.playerBarn.emotes.push(
-                    new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing)
+                    new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing),
                 );
                 break;
             }
@@ -327,7 +285,7 @@ export class Game {
     /** if game over, return group that won */
     isTeamGameOver(): Group | undefined {
         const groupAlives = [...this.groups.values()].filter(
-            (group) => !group.allDeadOrDisconnected
+            (group) => !group.allDeadOrDisconnected,
         );
 
         if (groupAlives.length <= 1) {
@@ -346,13 +304,31 @@ export class Game {
         }
     }
 
+    getSmallestTeam() {
+        if (!this.map.factionMode) return undefined;
+
+        return this.teams.reduce((smallest, current) => {
+            if (current.livingPlayers.length < smallest.livingPlayers.length) {
+                return current;
+            }
+            return smallest;
+        }, this.teams[0]);
+    }
+
+    addTeam(teamId: number) {
+        const team = new Team(teamId);
+        this.teams.push(team);
+    }
+
     addGroup(hash: string, autoFill: boolean) {
         const groupId = this.playerBarn.groupIdAllocator.getNextId();
-        let teamId = groupId;
+        // let teamId = groupId;
         if (this.map.factionMode) {
-            teamId = util.randomInt(1, 2);
+            // teamId = util.randomInt(1, 2);
+            // teamId = util.randomInt(1, this.map.mapDef.gameMode.factions ?? 2);
         }
-        const group = new Group(hash, groupId, teamId, autoFill);
+        const group = new Group(hash, groupId, autoFill);
+        // const group = new Group(hash, groupId, teamId, autoFill);
         this.groups.set(hash, group);
         return group;
     }

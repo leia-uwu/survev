@@ -52,7 +52,7 @@ export class Structure extends BaseGameObject {
             mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
             this.rot,
-            1
+            1,
         ) as AABB;
 
         const def = MapObjectDefs[type] as StructureDef;
@@ -64,7 +64,7 @@ export class Structure extends BaseGameObject {
                 stairsDef.collision,
                 this.pos,
                 this.rot,
-                this.scale
+                this.scale,
             ) as AABB;
             const downDir = v2.rotate(stairsDef.downDir, this.rot);
 
@@ -76,7 +76,7 @@ export class Structure extends BaseGameObject {
                 collision: stairsCol,
                 center: v2.add(
                     stairsCol.min,
-                    v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5)
+                    v2.mul(v2.sub(stairsCol.max, stairsCol.min), 0.5),
                 ),
                 downDir,
                 downOri,
@@ -84,7 +84,7 @@ export class Structure extends BaseGameObject {
                 downAabb: collider.createAabb(childAabbs[0].min, childAabbs[0].max),
                 upAabb: collider.createAabb(childAabbs[1].min, childAabbs[1].max),
                 noCeilingReveal: !!stairsDef.noCeilingReveal,
-                lootOnly: !!stairsDef.lootOnly
+                lootOnly: !!stairsDef.lootOnly,
             });
         }
 

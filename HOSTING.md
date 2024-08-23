@@ -248,6 +248,7 @@ Description=Resurviv dedicated game server.
 Type=simple
 WorkingDirectory=/opt/resurviv/server
 ExecStart=/usr/bin/pnpm start:game
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
@@ -275,6 +276,7 @@ Description=Resurviv dedicated API server.
 Type=simple
 WorkingDirectory=/opt/resurviv/server
 ExecStart=/usr/bin/pnpm start:api
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

@@ -47,7 +47,7 @@ export class Renderer {
 
     constructor(
         public game: Game,
-        public canvasMode: boolean
+        public canvasMode: boolean,
     ) {
         for (let i = 0; i < 4; i++) {
             this.layers.push(new RenderGroup(`layer_${i}`));
@@ -74,7 +74,7 @@ export class Renderer {
                 mode: this.game.teamMode,
                 layer,
                 zOrd,
-                zIdx
+                zIdx,
             });
             console.error(str);
         }
@@ -272,7 +272,7 @@ class RenderGroup extends PIXI.Container {
     checkSort() {
         if (this.dirty) {
             this.children.sort((a, b) =>
-                a.__zOrd == b.__zOrd ? a.__zIdx - b.__zIdx : a.__zOrd - b.__zOrd
+                a.__zOrd == b.__zOrd ? a.__zIdx - b.__zIdx : a.__zOrd - b.__zOrd,
             );
             this.dirty = false;
             return true;

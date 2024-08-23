@@ -6,7 +6,7 @@ import { type AABB, type Circle, coldet } from "../../../../shared/utils/coldet"
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import type { River } from "../../../../shared/utils/river";
-import { util } from "../../../../shared/utils/util";
+import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
@@ -58,7 +58,7 @@ export class LootBarn {
         count: number,
         useCountForAmmo?: boolean,
         pushSpeed?: number,
-        dir?: Vec2
+        dir?: Vec2,
     ) {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
@@ -76,7 +76,7 @@ export class LootBarn {
                 v2.add(pos, v2.create(-0.2, -0.2)),
                 layer,
                 halfAmmo,
-                0
+                0,
             );
             leftAmmo.push(v2.create(-1, -1), 1);
             this._addLoot(leftAmmo);
@@ -88,7 +88,7 @@ export class LootBarn {
                     v2.add(pos, v2.create(0.2, -0.2)),
                     layer,
                     ammoCount - halfAmmo,
-                    0
+                    0,
                 );
                 rightAmmo.push(v2.create(1, -1), 1);
                 this._addLoot(rightAmmo);
@@ -172,14 +172,12 @@ export class Loot extends BaseGameObject {
         layer: number,
         count: number,
         pushSpeed = 2,
-        dir?: Vec2
+        dir?: Vec2,
     ) {
         super(game, pos);
 
         const def = GameObjectDefs[type];
-        if (!def) {
-            throw new Error(`Invalid loot with type ${type}`);
-        }
+        assert("lootImg" in def, `Invalid loot type ${type}`);
 
         this.layer = layer;
         this.type = type;
@@ -192,7 +190,7 @@ export class Loot extends BaseGameObject {
 
         this.bounds = collider.createAabbExtents(
             v2.create(0, 0),
-            v2.create(this.rad, this.rad)
+            v2.create(this.rad, this.rad),
         );
 
         this.push(dir ?? v2.randomUnit(), pushSpeed);
@@ -240,12 +238,12 @@ export class Loot extends BaseGameObject {
                 const collision = collider.intersectCircle(
                     obj.collider,
                     this.pos,
-                    this.rad
+                    this.rad,
                 );
                 if (collision) {
                     v2.set(
                         this.pos,
-                        v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001))
+                        v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
                 }
             } else if (obj.__type === ObjectType.Loot && obj.__id !== this.__id) {
@@ -258,7 +256,7 @@ export class Loot extends BaseGameObject {
                     this.pos,
                     this.collider.rad,
                     obj.pos,
-                    obj.collider.rad
+                    obj.collider.rad,
                 );
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
@@ -267,7 +265,7 @@ export class Loot extends BaseGameObject {
                 obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.2));
                 const vRelativeVelocity = v2.create(
                     this.vel.x - obj.vel.x,
-                    this.vel.y - obj.vel.y
+                    this.vel.y - obj.vel.y,
                 );
 
                 const speed =
@@ -310,7 +308,7 @@ export class Loot extends BaseGameObject {
         }
         if (finalRiver) {
             const tangent = finalRiver.spline.getTangent(
-                finalRiver.spline.getClosestTtoPoint(this.pos)
+                finalRiver.spline.getClosestTtoPoint(this.pos),
             );
             this.push(tangent, 0.5 * dt);
         }

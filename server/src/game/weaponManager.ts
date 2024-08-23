@@ -3,7 +3,7 @@ import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import {
     type ThrowableDef,
-    ThrowableDefs
+    ThrowableDefs,
 } from "../../../shared/defs/gameObjects/throwableDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
@@ -12,7 +12,7 @@ import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
 import { math } from "../../../shared/utils/math";
-import { util } from "../../../shared/utils/util";
+import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { BulletParams } from "../game/objects/bullet";
 import type { GameObject } from "../game/objects/gameObject";
@@ -55,6 +55,7 @@ export class WeaponManager {
     setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
+        if (this.bursts.length) return;
 
         this.player.cancelAnim();
 
@@ -122,7 +123,27 @@ export class WeaponManager {
             this.delayScheduledReload(effectiveSwitchDelay);
         }
 
+        if (idx === this.curWeapIdx && GameConfig.WeaponSlot[idx] == "gun") {
+            this.offHand = false;
+        }
+
         this.player.setDirty();
+        this.player.weapsDirty = true;
+    }
+
+    setWeapon(idx: number, type: string, ammo: number) {
+        const weaponDef = GameObjectDefs[type];
+        assert(
+            weaponDef.type === "gun" ||
+                weaponDef.type === "melee" ||
+                weaponDef.type === "throwable",
+        );
+        this.weapons[idx].type = type;
+        this.weapons[idx].cooldown = 0;
+        this.weapons[idx].ammo = ammo;
+        if (weaponDef.type === "gun") {
+            this.weapons[idx].recoilTime = weaponDef.recoilTime;
+        }
         this.player.weapsDirty = true;
     }
 
@@ -130,6 +151,7 @@ export class WeaponManager {
         type: string;
         ammo: number;
         cooldown: number;
+        recoilTime: number;
     }> = [];
 
     get activeWeapon(): string {
@@ -143,7 +165,8 @@ export class WeaponManager {
             this.weapons.push({
                 type: GameConfig.WeaponType[i] === "melee" ? "fists" : "",
                 ammo: 0,
-                cooldown: 0
+                cooldown: 0,
+                recoilTime: Infinity,
             });
         }
     }
@@ -166,6 +189,7 @@ export class WeaponManager {
 
         for (let i = 0; i < this.weapons.length; i++) {
             this.weapons[i].cooldown -= dt;
+            this.weapons[i].recoilTime -= dt;
         }
 
         this.reloadTicker -= dt;
@@ -221,12 +245,14 @@ export class WeaponManager {
         switch (itemDef.fireMode) {
             case "auto":
                 if (player.shootHold && weapon.cooldown <= 0) {
-                    this.fireWeapon();
+                    this.fireWeapon(this.offHand);
+                    this.offHand = !this.offHand;
                 }
                 break;
             case "single":
                 if (player.shootStart && weapon.cooldown < 0) {
-                    this.fireWeapon();
+                    this.fireWeapon(this.offHand);
+                    this.offHand = !this.offHand;
                 }
                 break;
             case "burst":
@@ -236,16 +262,16 @@ export class WeaponManager {
                         this.bursts.push(weapon.cooldown);
                         weapon.cooldown += itemDef.burstDelay!;
                     }
+                    this.offHand = !this.offHand;
                     weapon.cooldown += itemDef.fireDelay;
                 }
                 for (let i = 0; i < this.bursts.length; i++) {
                     this.bursts[i] -= dt;
                     if (this.bursts[i] <= 0) {
-                        this.fireWeapon();
+                        this.fireWeapon(this.offHand);
                         this.bursts.splice(i, 1);
                     }
                 }
-
                 break;
         }
     }
@@ -290,14 +316,14 @@ export class WeaponManager {
             return {
                 trueMaxClip: weaponDef.extendedClip,
                 trueMaxReload: weaponDef.extendedReload,
-                trueMaxReloadAlt: weaponDef.extendedReloadAlt
+                trueMaxReloadAlt: weaponDef.extendedReloadAlt,
             };
         }
 
         return {
             trueMaxClip: weaponDef.maxClip,
             trueMaxReload: weaponDef.maxReload,
-            trueMaxReloadAlt: weaponDef.maxReloadAlt
+            trueMaxReloadAlt: weaponDef.maxReloadAlt,
         };
     }
 
@@ -328,7 +354,7 @@ export class WeaponManager {
                 this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
             this.curWeapIdx == GameConfig.WeaponSlot.Melee ||
-                this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+                this.curWeapIdx == GameConfig.WeaponSlot.Throwable,
         ];
         if (conditions.some((c) => c)) {
             return;
@@ -339,7 +365,7 @@ export class WeaponManager {
         if (
             weaponDef.reloadTimeAlt &&
             this.weapons[this.curWeapIdx].ammo === 0 &&
-            this.player.inventory[weaponDef.ammo] > 1
+            (this.player.inventory[weaponDef.ammo] > 1 || this.isInfinite(weaponDef))
         ) {
             duration = weaponDef.reloadTimeAlt!;
             action = GameConfig.Action.ReloadAlt;
@@ -368,7 +394,7 @@ export class WeaponManager {
             this.weapons[this.curWeapIdx].ammo += math.clamp(
                 amountToReload,
                 0,
-                spaceLeft
+                spaceLeft,
             );
         } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
@@ -386,7 +412,7 @@ export class WeaponManager {
             this.weapons[this.curWeapIdx].ammo += math.clamp(
                 amountToReload,
                 0,
-                spaceLeft
+                spaceLeft,
             );
             inv[weaponDef.ammo] -= math.clamp(amountToReload, 0, spaceLeft);
         }
@@ -476,16 +502,21 @@ export class WeaponManager {
     }
 
     offHand = false;
-    fireWeapon() {
+    fireWeapon(offHand: boolean) {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
+        const weapon = this.weapons[this.curWeapIdx];
+
         this.scheduledReload = false;
-        if (this.weapons[this.curWeapIdx].ammo <= 1) {
+        if (weapon.ammo <= 1) {
             this.delayScheduledReload(itemDef.fireDelay);
         }
-        if (this.weapons[this.curWeapIdx].ammo <= 0) return;
+        if (weapon.ammo <= 0) return;
 
-        this.weapons[this.curWeapIdx].cooldown = itemDef.fireDelay;
+        const firstShotAccuracy = weapon.recoilTime <= 0;
+
+        weapon.cooldown = itemDef.fireDelay;
+        weapon.recoilTime = itemDef.recoilTime;
 
         // Check firing location
         if (itemDef.outsideOnly && this.player.indoors) {
@@ -502,14 +533,14 @@ export class WeaponManager {
 
         this.player.cancelAction();
 
-        this.weapons[this.curWeapIdx].ammo--;
+        weapon.ammo--;
         this.player.weapsDirty = true;
 
         const collisionLayer = util.toGroundLayer(this.player.layer);
         const bulletLayer = this.player.aimLayer;
 
         const gunOff = itemDef.isDual
-            ? itemDef.dualOffset! * (this.offHand ? 1.0 : -1.0)
+            ? itemDef.dualOffset! * (offHand ? 1.0 : -1.0)
             : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));
         const gunLen = GameConfig.gun.customBarrelLength ?? itemDef.barrelLength;
@@ -522,15 +553,14 @@ export class WeaponManager {
         let clipNrm = v2.mul(direction, -1.0);
         const aabb = collider.createAabbExtents(
             this.player.pos,
-            v2.create(this.player.rad + gunLen + 1.5)
+            v2.create(this.player.rad + gunLen + 1.5),
         );
 
-        const nearbyObjs = this.player.game.grid
-            .intersectCollider(aabb)
-            .filter((obj) => obj.__type === ObjectType.Obstacle);
+        const nearbyObjs = this.player.game.grid.intersectCollider(aabb);
 
         for (let i = 0; i < nearbyObjs.length; i++) {
             const obj = nearbyObjs[i];
+            if (obj.__type !== ObjectType.Obstacle) continue;
 
             if (
                 obj.dead ||
@@ -585,7 +615,9 @@ export class WeaponManager {
         const jitter = itemDef.jitter ?? 0.25;
 
         for (let i = 0; i < bulletCount; i++) {
-            const deviation = util.random(-0.5, 0.5) * (spread || 0);
+            const deviation = firstShotAccuracy
+                ? 0
+                : util.random(-0.5, 0.5) * (spread || 0);
             const shotDir = v2.rotate(direction, math.deg2rad(deviation));
 
             // Compute shot start position
@@ -594,7 +626,7 @@ export class WeaponManager {
                 // Add shotgun jitter
                 const offset = v2.mul(
                     v2.create(util.random(-jitter, jitter), util.random(-jitter, jitter)),
-                    1.11
+                    1.11,
                 );
                 bltStart = v2.add(bltStart, offset);
             }
@@ -639,22 +671,24 @@ export class WeaponManager {
                 clipDistance: itemDef.toMouseHit,
                 damageMult,
                 shotFx: i === 0,
-                shotOffhand: this.offHand,
+                shotOffhand: offHand,
                 trailSaturated: this.isBulletSaturated(),
                 trailSmall: false,
                 reflectCount: 0,
                 splinter: hasSplinter,
                 // reflectObjId: this.player.linkedObstacleId,
-                onHitFx: hasExplosive ? "explosion_rounds" : undefined
+                onHitFx: hasExplosive ? "explosion_rounds" : undefined,
             };
             this.player.game.bulletBarn.fireBullet(params);
 
             // Shoot a projectile if defined
             if (itemDef.projType) {
                 const projDef = GameObjectDefs[itemDef.projType];
-                if (projDef.type !== "throwable") {
-                    throw new Error(`Invalid projectile type: ${itemDef.projType}`);
-                }
+                assert(
+                    projDef.type === "throwable",
+                    `Invalid projectile type: ${itemDef.projType}`,
+                );
+
                 const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
                 this.player.game.projectileBarn.addProjectile(
                     this.player.__id,
@@ -664,7 +698,7 @@ export class WeaponManager {
                     bulletLayer,
                     vel,
                     projDef.fuseTime,
-                    GameConfig.DamageType.Player
+                    GameConfig.DamageType.Player,
                 );
             }
 
@@ -693,8 +727,18 @@ export class WeaponManager {
         if (this.activeWeapon == "bugle" && this.player.hasPerk("inspiration")) {
             this.player.playBugle();
         }
-
-        this.offHand = !this.offHand;
+        if (
+            this.player.game.map.factionMode &&
+            !this.player.game.playerBarn.players.every(
+                (p) =>
+                    p.teamId === this.player.teamId ||
+                    p.dead ||
+                    p.disconnected ||
+                    v2.distance(p.pos, this.player.pos) > p.zoom,
+            )
+        ) {
+            this.player.timeUntilHidden = 1;
+        }
     }
 
     getMeleeCollider() {
@@ -703,7 +747,7 @@ export class WeaponManager {
 
         const pos = v2.add(
             meleeDef.attack.offset,
-            v2.mul(v2.create(1, 0), this.player.scale - 1)
+            v2.mul(v2.create(1, 0), this.player.scale - 1),
         );
         const rotated = v2.add(this.player.pos, v2.rotate(pos, rot));
         const rad = meleeDef.attack.rad;
@@ -742,13 +786,13 @@ export class WeaponManager {
                     let collision = collider.intersectCircle(
                         obstacle.collider,
                         coll.pos,
-                        coll.rad
+                        coll.rad,
                     );
 
                     if (meleeDef.cleave) {
                         const normalized = v2.normalizeSafe(
                             v2.sub(obstacle.pos, this.player.pos),
-                            v2.create(1, 0)
+                            v2.create(1, 0),
                         );
                         const intersectedObstacle = collisionHelpers.intersectSegment(
                             obstacles,
@@ -757,7 +801,7 @@ export class WeaponManager {
                             lineEnd,
                             1,
                             this.player.layer,
-                            false
+                            false,
                         );
                         intersectedObstacle &&
                             intersectedObstacle.id !== obstacle.__id &&
@@ -766,14 +810,14 @@ export class WeaponManager {
                     if (collision) {
                         const pos = v2.add(
                             coll.pos,
-                            v2.mul(v2.neg(collision.dir), coll.rad - collision.pen)
+                            v2.mul(v2.neg(collision.dir), coll.rad - collision.pen),
                         );
                         hits.push({
                             obj: obstacle,
                             pen: collision.pen,
                             prio: 1,
                             pos,
-                            dir: collision.dir
+                            dir: collision.dir,
                         });
                     }
                 }
@@ -786,13 +830,13 @@ export class WeaponManager {
                 ) {
                     const normalized = v2.normalizeSafe(
                         v2.sub(player.pos, this.player.pos),
-                        v2.create(1, 0)
+                        v2.create(1, 0),
                     );
                     const collision = coldet.intersectCircleCircle(
                         coll.pos,
                         coll.rad,
                         player.pos,
-                        player.rad
+                        player.rad,
                     );
                     if (
                         collision &&
@@ -805,8 +849,8 @@ export class WeaponManager {
                                 lineEnd,
                                 GameConfig.player.meleeHeight,
                                 this.player.layer,
-                                false
-                            )
+                                false,
+                            ),
                         )
                     ) {
                         hits.push({
@@ -814,7 +858,7 @@ export class WeaponManager {
                             pen: collision.pen,
                             prio: player.teamId === this.player.teamId ? 2 : 0,
                             pos: v2.copy(player.pos),
-                            dir: collision.dir
+                            dir: collision.dir,
                         });
                     }
                 }
@@ -838,7 +882,7 @@ export class WeaponManager {
                     gameSourceType: this.activeWeapon,
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
-                    dir: hit.dir
+                    dir: hit.dir,
                 });
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {
@@ -847,7 +891,7 @@ export class WeaponManager {
                     gameSourceType: this.activeWeapon,
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
-                    dir: hit.dir
+                    dir: hit.dir,
                 });
             }
         }
@@ -862,9 +906,11 @@ export class WeaponManager {
         }
         this.player.cancelAction();
         const itemDef = GameObjectDefs[this.activeWeapon];
-        if (itemDef.type !== "throwable") {
-            throw new Error(`Invalid throwable item: ${this.activeWeapon}`);
-        }
+        assert(
+            itemDef.type === "throwable",
+            `Invalid projectile type: ${this.activeWeapon}`,
+        );
+
         this.cookingThrowable = true;
         this.cookTicker = 0;
 
@@ -873,7 +919,7 @@ export class WeaponManager {
             itemDef.cookable ? itemDef.fuseTime : Infinity,
             () => {
                 this.throwThrowable();
-            }
+            },
         );
     }
 
@@ -881,6 +927,7 @@ export class WeaponManager {
         this.cookingThrowable = false;
         const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
         const throwableDef = GameObjectDefs[throwableType];
+        assert(throwableDef.type === "throwable");
 
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
@@ -888,13 +935,9 @@ export class WeaponManager {
                 ? math.clamp(
                       this.player.toMouseLen,
                       0,
-                      GameConfig.player.throwableMaxMouseDist * 1.8
+                      GameConfig.player.throwableMaxMouseDist * 1.8,
                   ) / 15
                 : 0;
-
-        if (throwableDef.type !== "throwable") {
-            throw new Error();
-        }
 
         const weapSlotId = GameConfig.WeaponSlot.Throwable;
         if (this.player.inventory[throwableType] > 0) {
@@ -920,8 +963,8 @@ export class WeaponManager {
             this.player.pos,
             v2.rotate(
                 v2.create(0.5, -1.0),
-                Math.atan2(this.player.dir.y, this.player.dir.x)
-            )
+                Math.atan2(this.player.dir.y, this.player.dir.x),
+            ),
         );
 
         let { dir } = this.player;
@@ -929,7 +972,7 @@ export class WeaponManager {
         if (throwableDef.aimDistance > 0.0) {
             const aimTarget = v2.add(
                 this.player.pos,
-                v2.mul(this.player.dir, throwableDef.aimDistance)
+                v2.mul(this.player.dir, throwableDef.aimDistance),
             );
             dir = v2.normalizeSafe(v2.sub(aimTarget, pos), v2.create(1.0, 0.0));
         }
@@ -939,12 +982,12 @@ export class WeaponManager {
         // Incorporate some of the player motion into projectile velocity
         const vel = v2.add(
             v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult),
-            v2.mul(dir, throwPhysicsSpeed * throwStr)
+            v2.mul(dir, throwPhysicsSpeed * throwStr),
         );
 
         const fuseTime = math.max(
             0.0,
-            throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0)
+            throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0),
         );
         this.player.game.projectileBarn.addProjectile(
             this.player.__id,
@@ -954,7 +997,7 @@ export class WeaponManager {
             this.player.layer,
             vel,
             fuseTime,
-            GameConfig.DamageType.Player
+            GameConfig.DamageType.Player,
         );
 
         const animationDuration = GameConfig.player.throwTime;

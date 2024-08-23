@@ -16,7 +16,7 @@ export function generateJaggedAabbPoints(
     divisionsX: number,
     divisionsY: number,
     variation: number,
-    rand: (typeof util)["random"]
+    rand: (typeof util)["random"],
 ) {
     const ll = v2.create(aabb.min.x, aabb.min.y);
     const lr = v2.create(aabb.max.x, aabb.min.y);
@@ -60,7 +60,7 @@ export function generateTerrain(
     shoreInset: number,
     grassInset: number,
     riverDescs: MapRiverData[],
-    seed: number
+    seed: number,
 ) {
     // Subdivisions along one edge of the shore
     const shoreDivisions = 64.0;
@@ -83,7 +83,7 @@ export function generateTerrain(
         shoreDivisions,
         shoreDivisions,
         shoreVariation,
-        seededRand
+        seededRand,
     );
 
     // Create grass path by insetting the shore path

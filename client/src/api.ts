@@ -4,5 +4,5 @@ export const api = {
     },
     resolveRoomHost: function () {
         return window.location.host;
-    }
+    },
 };

@@ -55,7 +55,7 @@ export class Decal extends BaseGameObject {
         pos: Vec2,
         layer: number,
         ori?: number,
-        scale?: number
+        scale?: number,
     ) {
         super(game, pos);
         this.layer = layer;
@@ -70,7 +70,7 @@ export class Decal extends BaseGameObject {
             def.collision,
             this.pos,
             this.rot,
-            this.scale
+            this.scale,
         ) as Circle;
         this.surface = def.surface?.type;
 
@@ -79,8 +79,8 @@ export class Decal extends BaseGameObject {
                 mapHelpers.getBoundingCollider(type),
                 v2.create(0, 0),
                 this.rot,
-                1
-            )
+                1,
+            ),
         );
 
         const fadeChance = def.fadeChance ?? 1;

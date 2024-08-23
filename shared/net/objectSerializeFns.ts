@@ -15,7 +15,7 @@ export enum ObjectType {
     Decal,
     Projectile,
     Smoke,
-    Airdrop
+    Airdrop,
 }
 
 export type ObjectData<T extends ObjectType> = ObjectsFullData[T] & ObjectsPartialData[T];
@@ -234,7 +234,7 @@ export const ObjectSerializeFns: {
                     data.scale,
                     Constants.PlayerMinScale,
                     Constants.PlayerMaxScale,
-                    8
+                    8,
                 );
             }
 
@@ -305,12 +305,12 @@ export const ObjectSerializeFns: {
                     const droppable = s.readBoolean();
                     data.perks.push({
                         type,
-                        droppable
+                        droppable,
                     });
                 }
             }
             s.readAlignToNextByte();
-        }
+        },
     },
     [ObjectType.Obstacle]: {
         serializedFullSize: 0,
@@ -321,7 +321,7 @@ export const ObjectSerializeFns: {
                 data.scale,
                 Constants.MapObjectMinScale,
                 Constants.MapObjectMaxScale,
-                8
+                8,
             );
             s.writeBits(0, 6);
         },
@@ -359,7 +359,7 @@ export const ObjectSerializeFns: {
             data.scale = s.readFloat(
                 Constants.MapObjectMinScale,
                 Constants.MapObjectMaxScale,
-                8
+                8,
             );
             s.readBits(6);
         },
@@ -392,7 +392,7 @@ export const ObjectSerializeFns: {
                 data.skinPlayerId = s.readUint16();
             }
             s.readBits(5);
-        }
+        },
     },
     [ObjectType.Building]: {
         serializedFullSize: 0,
@@ -429,7 +429,7 @@ export const ObjectSerializeFns: {
             data.type = s.readMapType();
             data.ori = s.readBits(2);
             data.layer = s.readBits(2);
-        }
+        },
     },
     [ObjectType.Structure]: {
         serializedFullSize: 0,
@@ -456,7 +456,7 @@ export const ObjectSerializeFns: {
                 const a = s.readUint16();
                 data.layerObjIds.push(a);
             }
-        }
+        },
     },
     [ObjectType.LootSpawner]: {
         serializedFullSize: 0,
@@ -473,7 +473,7 @@ export const ObjectSerializeFns: {
             data.layer = s.readBits(2);
             s.readBits(2);
         },
-        deserializeFull: () => {}
+        deserializeFull: () => {},
     },
     [ObjectType.Loot]: {
         serializedFullSize: 5,
@@ -506,7 +506,7 @@ export const ObjectSerializeFns: {
                 data.ownerId = s.readUint16();
             }
             s.readBits(1);
-        }
+        },
     },
     [ObjectType.DeadBody]: {
         serializedFullSize: 0,
@@ -523,7 +523,7 @@ export const ObjectSerializeFns: {
         deserializeFull: (s, data) => {
             data.layer = s.readUint8();
             data.playerId = s.readUint16();
-        }
+        },
     },
     [ObjectType.Decal]: {
         serializedFullSize: 0,
@@ -534,7 +534,7 @@ export const ObjectSerializeFns: {
                 data.scale,
                 Constants.MapObjectMinScale,
                 Constants.MapObjectMaxScale,
-                8
+                8,
             );
             s.writeMapType(data.type);
             s.writeBits(data.ori, 2);
@@ -547,13 +547,13 @@ export const ObjectSerializeFns: {
             data.scale = s.readFloat(
                 Constants.MapObjectMinScale,
                 Constants.MapObjectMaxScale,
-                8
+                8,
             );
             data.type = s.readMapType();
             data.ori = s.readBits(2);
             data.layer = s.readBits(2);
             data.goreKills = s.readUint8();
-        }
+        },
     },
     [ObjectType.Projectile]: {
         serializedFullSize: 0,
@@ -576,7 +576,7 @@ export const ObjectSerializeFns: {
             data.type = s.readGameType();
             data.layer = s.readBits(2);
             s.readBits(4);
-        }
+        },
     },
     [ObjectType.Smoke]: {
         serializedFullSize: 0,
@@ -595,7 +595,7 @@ export const ObjectSerializeFns: {
         deserializeFull: (s, data) => {
             data.layer = s.readBits(2);
             data.interior = s.readBits(6);
-        }
+        },
     },
     [ObjectType.Airdrop]: {
         serializedFullSize: 0,
@@ -612,7 +612,7 @@ export const ObjectSerializeFns: {
         },
         deserializeFull: (s, data) => {
             data.pos = s.readVec(0, 0, 1024, 1024, 16);
-        }
+        },
     },
     // * to please ts
     [ObjectType.Invalid]: {
@@ -620,6 +620,6 @@ export const ObjectSerializeFns: {
         deserializeFull: () => {},
         deserializePart: () => {},
         serializeFull: () => {},
-        serializePart: () => {}
-    }
+        serializePart: () => {},
+    },
 };

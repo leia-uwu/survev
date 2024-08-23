@@ -11,12 +11,12 @@ const mapDef = {
             { name: "footstep_09", channel: "sfx" },
             {
                 name: "helmet03_forest_pickup_01",
-                channel: "ui"
+                channel: "ui",
             },
             { name: "ability_stim_01", channel: "sfx" },
-            { name: "leader_dead_01", channel: "ui" }
+            { name: "leader_dead_01", channel: "ui" },
         ],
-        atlases: ["gradient", "loadout", "shared", "woods"]
+        atlases: ["gradient", "loadout", "shared", "woods"],
     },
     biome: {
         colors: {
@@ -27,10 +27,10 @@ const mapDef = {
             riverbank: 9079434,
             grass: 4351497,
             underground: 1772803,
-            playerSubmerge: 2854052
+            playerSubmerge: 2854052,
         },
         sound: { riverShore: "stone" },
-        particles: { camera: "falling_leaf_spring" }
+        particles: { camera: "falling_leaf_spring" },
     },
     /* STRIP_FROM_PROD_CLIENT:START */
     lootTable: {
@@ -38,9 +38,9 @@ const mapDef = {
             {
                 name: "outfitSpringGhillie",
                 count: 1,
-                weight: 1
-            }
-        ]
+                weight: 1,
+            },
+        ],
     },
     mapGen: {
         customSpawnRules: {
@@ -49,9 +49,9 @@ const mapDef = {
                     type: "logging_complex_01sp",
                     pos: v2.create(0.5, 0.5),
                     rad: 200,
-                    retryOnFailure: true
-                }
-            ]
+                    retryOnFailure: true,
+                },
+            ],
         },
         densitySpawns: [
             {
@@ -76,8 +76,8 @@ const mapDef = {
                 tree_07sp: 1380,
                 tree_07spr: 106,
                 tree_08spr: 53,
-                tree_09: 60
-            }
+                tree_09: 60,
+            },
         ],
         fixedSpawns: [
             {
@@ -95,8 +95,8 @@ const mapDef = {
                 stone_04: { small: 6, large: 8 },
                 tree_02: { small: 6, large: 8 },
                 teahouse_01: { small: 2, large: 3 },
-                teapavilion_01w: 1
-            }
+                teapavilion_01w: 1,
+            },
         ],
         spawnReplacements: [
             {
@@ -105,15 +105,15 @@ const mapDef = {
                 tree_07: "tree_07sp",
                 crate_02: "crate_19",
                 crate_08: "crate_19",
-                crate_09: "crate_19"
-            }
+                crate_09: "crate_19",
+            },
         ],
         importantSpawns: [
             "logging_complex_01sp",
             "logging_complex_02sp",
-            "teapavilion_01w"
-        ]
-    }
+            "teapavilion_01w",
+        ],
+    },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
 

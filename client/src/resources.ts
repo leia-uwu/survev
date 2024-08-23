@@ -11,7 +11,7 @@ type AtlasDef = Record<Atlas, PIXI.ISpritesheetData[]>;
 
 const spritesheetDefs = {
     low: lowResAtlasDefs as unknown as AtlasDef,
-    high: fullResAtlasDefs as unknown as AtlasDef
+    high: fullResAtlasDefs as unknown as AtlasDef,
 };
 
 function loadTexture(renderer: PIXI.IRenderer, url: string) {
@@ -35,7 +35,7 @@ function loadTexture(renderer: PIXI.IRenderer, url: string) {
                             baseTex.updateSourceImage(url.substring(5, url.length));
                         }
                     },
-                    (loadAttempts - 1) * 1000
+                    (loadAttempts - 1) * 1000,
                 );
             }
         });
@@ -79,7 +79,7 @@ function selectTextureRes(renderer: PIXI.IRenderer, config: ConfigManager) {
         textureRes,
         "screenDims",
         window.screen.width,
-        window.screen.height
+        window.screen.height,
     );
     return textureRes;
 }
@@ -103,7 +103,7 @@ export class ResourceManager {
     constructor(
         public renderer: PIXI.IRenderer,
         public audioManager: AudioManager,
-        public config: ConfigManager
+        public config: ConfigManager,
     ) {
         this.textureRes = selectTextureRes(this.renderer, this.config);
         // @ts-expect-error private field L
@@ -139,7 +139,7 @@ export class ResourceManager {
 
         this.atlases[name] = this.atlases[name] || {
             loaded: false,
-            spritesheets: []
+            spritesheets: [],
         };
 
         const atlasDefs = spritesheetDefs[this.textureRes] || spritesheetDefs.low;
@@ -228,14 +228,14 @@ export class ResourceManager {
                 const options = {
                     canCoalesce: soundDef.canCoalesce!,
                     channels: soundDef.maxInstances,
-                    volume: soundDef.volume
+                    volume: soundDef.volume,
                 };
 
                 this.audioManager.loadSound({
                     name: sound.name,
                     channel: sound.channel,
                     path: soundDef.path,
-                    options
+                    options,
                 });
             }
         }, 0);

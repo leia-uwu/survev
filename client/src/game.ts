@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js-legacy";
 import type { Game as ServerGame } from "../../server/src/game/game";
-import type { GameSocketData } from "../../server/src/server";
+import type { GameSocketData } from "../../server/src/gameServer";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameConfig, Input } from "../../shared/gameConfig";
@@ -13,7 +13,6 @@ import type { AudioManager } from "./audioManager";
 import type { Bot } from "./bot";
 import { Camera } from "./camera";
 import type { ConfigManager } from "./config";
-import type { SoundHandle } from "./createJS";
 import { debugLines } from "./debugLines";
 import { device } from "./device";
 import { EmoteBarn } from "./emote";
@@ -21,6 +20,7 @@ import { Gas } from "./gas";
 import { helpers } from "./helpers";
 import { type InputHandler, Key } from "./input";
 import type { InputBindUi, InputBinds } from "./inputBinds";
+import type { SoundHandle } from "./lib/createJS";
 import { Map } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
 import { BulletBarn, createBullet } from "./objects/bullet";
@@ -138,7 +138,7 @@ export class Game {
         public ambience: Ambiance,
         public resourceManager: ResourceManager,
         public onJoin: () => void,
-        public onQuit: (err?: string) => void
+        public onQuit: (err?: string) => void,
     ) {
         this.pixi = pixi;
         this.audioManager = audioManager;
@@ -230,7 +230,7 @@ export class Game {
             this.canvasMode,
             this.touch,
             this.inputBinds,
-            this.inputBindUi
+            this.inputBindUi,
         );
         this.ui2Manager = new UiManager2(this.localization, this.inputBinds);
         this.emoteBarn = new EmoteBarn(
@@ -238,7 +238,7 @@ export class Game {
             this.uiManager,
             this.playerBarn,
             this.camera,
-            this.map
+            this.map,
         );
         this.shotBarn = new ShotBarn();
         // this.particleBarn,
@@ -256,7 +256,7 @@ export class Game {
             [ObjectType.Decal]: this.decalBarn.decalPool,
             [ObjectType.Projectile]: this.projectileBarn.projectilePool,
             [ObjectType.Smoke]: this.smokeBarn.smokePool,
-            [ObjectType.Airdrop]: this.airdropBarn.airdropPool
+            [ObjectType.Airdrop]: this.airdropBarn.airdropPool,
         };
 
         this.objectCreator = new Creator();
@@ -264,7 +264,7 @@ export class Game {
             if (TypeToPool.hasOwnProperty(type)) {
                 this.objectCreator.registerType(
                     type,
-                    TypeToPool[type as unknown as keyof typeof TypeToPool]
+                    TypeToPool[type as unknown as keyof typeof TypeToPool],
                 );
             }
         }
@@ -283,7 +283,7 @@ export class Game {
             this.emoteBarn.container,
             this.uiManager.container,
             this.uiManager.pieTimer.container,
-            this.emoteBarn.indContainer
+            this.emoteBarn.indContainer,
         ];
         for (let i = 0; i < pixiContainers.length; i++) {
             const container = pixiContainers[i];
@@ -352,7 +352,7 @@ export class Game {
                 const c = this.pixi.stage.children[0];
                 this.pixi.stage.removeChild(c);
                 c.destroy({
-                    children: true
+                    children: true,
                 });
             }
         }
@@ -389,7 +389,7 @@ export class Game {
             this.ui2Manager,
             this.emoteBarn.wheelKeyTriggered,
             this.uiManager.displayingStats,
-            this.spectating
+            this.spectating,
         );
         this.updateAmbience();
 
@@ -407,7 +407,7 @@ export class Game {
         this.camera.zoom = math.lerp(
             dt * zoomLerp,
             this.camera.zoom,
-            this.camera.targetZoom
+            this.camera.targetZoom,
         );
         this.audioManager.cameraPos = v2.copy(this.camera.pos);
         if (this.input.keyPressed(Key.Escape)) {
@@ -452,7 +452,7 @@ export class Game {
                 const touchPlayerMovement = this.touch.getTouchMovement(this.camera);
                 const touchAimMovement = this.touch.getAimMovement(
                     this.activePlayer,
-                    this.camera
+                    this.camera,
                 );
                 let aimDir = v2.copy(touchAimMovement.aimMovement.toAimDir);
                 this.touch.turnDirTicker -= dt;
@@ -460,7 +460,7 @@ export class Game {
                     // Keep looking in the old aimDir while waiting for the ticker
                     const touchDir = v2.normalizeSafe(
                         touchPlayerMovement.toMoveDir,
-                        v2.create(1, 0)
+                        v2.create(1, 0),
                     );
                     const modifiedAimDir =
                         this.touch.turnDirTicker < 0
@@ -475,10 +475,10 @@ export class Game {
                 if (this.touch.moveDetected) {
                     inputMsg.touchMoveDir = v2.normalizeSafe(
                         touchPlayerMovement.toMoveDir,
-                        v2.create(1, 0)
+                        v2.create(1, 0),
                     );
                     inputMsg.touchMoveLen = Math.round(
-                        math.clamp(touchPlayerMovement.toMoveLen, 0, 1) * 255
+                        math.clamp(touchPlayerMovement.toMoveLen, 0, 1) * 255,
                     );
                 } else {
                     inputMsg.touchMoveLen = 0;
@@ -512,14 +512,14 @@ export class Game {
             }
             inputMsg.touchMoveDir = v2.normalizeSafe(
                 inputMsg.touchMoveDir,
-                v2.create(1, 0)
+                v2.create(1, 0),
             );
             inputMsg.touchMoveLen = math.clamp(inputMsg.touchMoveLen, 0, 255);
             inputMsg.toMouseDir = v2.normalizeSafe(inputMsg.toMouseDir, v2.create(1, 0));
             inputMsg.toMouseLen = math.clamp(
                 inputMsg.toMouseLen,
                 0,
-                net.Constants.MouseMaxDist
+                net.Constants.MouseMaxDist,
             );
             inputMsg.shootStart =
                 this.inputBinds.isBindPressed(Input.Fire) || this.touch.shotDetected;
@@ -542,7 +542,7 @@ export class Game {
                 Input.EquipOtherGun,
                 Input.EquipPrevScope,
                 Input.EquipNextScope,
-                Input.StowWeapons
+                Input.StowWeapons,
             ];
             for (let i = 0; i < checkInputs.length; i++) {
                 const input = checkInputs[i];
@@ -598,7 +598,7 @@ export class Game {
                             0: Input.EquipPrimary,
                             1: Input.EquipSecondary,
                             2: Input.EquipMelee,
-                            3: Input.EquipThrowable
+                            3: Input.EquipThrowable,
                         };
                         const input =
                             weapIdxToInput[
@@ -659,7 +659,7 @@ export class Game {
             }
             if (playDropSound) {
                 this.audioManager.playSound("loot_drop_01", {
-                    channel: "ui"
+                    channel: "ui",
                 });
             }
             if (this.uiManager.roleSelected) {
@@ -704,7 +704,7 @@ export class Game {
                     const dot = math.clamp(
                         v2.dot(inputMsg[k], this.prevInputMsg[k]),
                         -1,
-                        1
+                        1,
                     );
                     const angle = math.rad2deg(Math.acos(dot));
                     diff = angle > 0.1;
@@ -749,7 +749,7 @@ export class Game {
             this.renderer,
             this.camera,
             smokeParticles,
-            debug
+            debug,
         );
         this.lootBarn.update(
             dt,
@@ -757,7 +757,7 @@ export class Game {
             this.map,
             this.audioManager,
             this.camera,
-            debug
+            debug,
         );
         this.bulletBarn.update(
             dt,
@@ -767,7 +767,7 @@ export class Game {
             this.activePlayer,
             this.renderer,
             this.particleBarn,
-            this.audioManager
+            this.audioManager,
         );
         this.flareBarn.update(
             dt,
@@ -777,7 +777,7 @@ export class Game {
             this.activePlayer,
             this.renderer,
             this.particleBarn,
-            this.audioManager
+            this.audioManager,
         );
         this.projectileBarn.update(
             dt,
@@ -786,7 +786,7 @@ export class Game {
             this.activePlayer,
             this.map,
             this.renderer,
-            this.camera
+            this.camera,
         );
         this.explosionBarn.update(
             dt,
@@ -795,7 +795,7 @@ export class Game {
             this.camera,
             this.particleBarn,
             this.audioManager,
-            debug
+            debug,
         );
         this.airdropBarn.update(
             dt,
@@ -804,28 +804,28 @@ export class Game {
             this.map,
             this.particleBarn,
             this.renderer,
-            this.audioManager
+            this.audioManager,
         );
         this.planeBarn.update(
             dt,
             this.camera,
             this.activePlayer,
             this.map,
-            this.renderer
+            this.renderer,
         );
         this.smokeBarn.update(
             dt,
             this.camera,
             this.activePlayer,
             this.map,
-            this.renderer
+            this.renderer,
         );
         this.shotBarn.update(
             dt,
             this.activeId,
             this.playerBarn,
             this.particleBarn,
-            this.audioManager
+            this.audioManager,
         );
         this.particleBarn.update(dt, this.camera, debug);
         this.deadBodyBarn.update(
@@ -834,7 +834,7 @@ export class Game {
             this.activePlayer,
             this.map,
             this.camera,
-            this.renderer
+            this.renderer,
         );
         this.decalBarn.update(dt, this.camera, this.renderer, debug);
         this.uiManager.update(
@@ -846,7 +846,7 @@ export class Game {
             this.playerBarn,
             this.camera,
             this.teamMode,
-            this.map.factionMode
+            this.map.factionMode,
         );
         this.ui2Manager.update(
             dt,
@@ -855,7 +855,7 @@ export class Game {
             this.playerBarn,
             this.lootBarn,
             this.map,
-            this.inputBinds
+            this.inputBinds,
         );
         this.emoteBarn.update(
             dt,
@@ -867,7 +867,7 @@ export class Game {
             this.renderer,
             this.input,
             this.inputBinds,
-            this.spectating
+            this.spectating,
         );
         this.touch.update(dt, this.activePlayer, this.map, this.camera, this.renderer);
         this.renderer.update(dt, this.camera, this.map, debug);
@@ -912,7 +912,7 @@ export class Game {
             this.camera,
             this.map,
             this.planeBarn,
-            debug
+            debug,
         );
         this.emoteBarn.render(this.camera);
         if (device.debug) {
@@ -943,7 +943,7 @@ export class Game {
                 const normalizedDistance = math.delerp(
                     distanceToRiver,
                     30 + riverWidth,
-                    riverWidth
+                    riverWidth,
                 );
                 const riverStrength = math.clamp(river.waterWidth / 8, 0.25, 1);
                 riverWeight = math.max(normalizedDistance * riverStrength, riverWeight);
@@ -975,7 +975,7 @@ export class Game {
             particleBarn: this.particleBarn,
             map: this.map,
             smokeBarn: this.smokeBarn,
-            decalBarn: this.decalBarn
+            decalBarn: this.decalBarn,
         };
         // Update active playerId
         if (msg.activePlayerIdDirty) {
@@ -999,7 +999,7 @@ export class Game {
             this.playerBarn.updatePlayerStatus(
                 teamId,
                 msg.playerStatus,
-                this.map.factionMode
+                this.map.factionMode,
             );
         }
 
@@ -1036,7 +1036,7 @@ export class Game {
                 this.activeId,
                 this.localId,
                 this.teamMode,
-                this.playerBarn
+                this.playerBarn,
             );
             this.touch.hideAll();
         }
@@ -1063,7 +1063,7 @@ export class Game {
                 this.bulletBarn,
                 this.flareBarn,
                 this.playerBarn,
-                this.renderer
+                this.renderer,
             );
             if (b.shotFx) {
                 this.shotBarn.addShot(b);
@@ -1099,13 +1099,13 @@ export class Game {
         // Update kill leader
         if (msg.killLeaderDirty) {
             const leaderNameText = helpers.htmlEscape(
-                this.playerBarn.getPlayerName(msg.killLeaderId, this.activeId, true)
+                this.playerBarn.getPlayerName(msg.killLeaderId, this.activeId, true),
             );
             this.uiManager.updateKillLeader(
                 msg.killLeaderId,
                 leaderNameText,
                 msg.killLeaderKills,
-                this.map.getMapDef().gameMode
+                this.map.getMapDef().gameMode,
             );
         }
 
@@ -1137,7 +1137,7 @@ export class Game {
                 // Play a sound if the user in another windows or tab
                 if (!document.hasFocus()) {
                     this.audioManager.playSound("notification_start_01", {
-                        channel: "ui"
+                        channel: "ui",
                     });
                 }
 
@@ -1157,7 +1157,7 @@ export class Game {
                     const role = this.config.get("perkModeRole")!;
                     this.uiManager.setRoleMenuOptions(
                         role,
-                        this.map.getMapDef().gameMode.perkModeRoles!
+                        this.map.getMapDef().gameMode.perkModeRoles!,
                     );
                     this.uiManager.setRoleMenuActive(true);
                 } else {
@@ -1190,17 +1190,17 @@ export class Game {
                 let targetName = this.playerBarn.getPlayerName(
                     targetInfo.playerId,
                     this.activeId,
-                    true
+                    true,
                 );
                 let killerName = this.playerBarn.getPlayerName(
                     killerInfo.playerId,
                     this.activeId,
-                    true
+                    true,
                 );
                 let killfeedKillerName = this.playerBarn.getPlayerName(
                     killfeedKillerInfo.playerId,
                     this.activeId,
-                    true
+                    true,
                 );
                 targetName = helpers.htmlEscape(targetName);
                 killerName = helpers.htmlEscape(killerName);
@@ -1219,7 +1219,7 @@ export class Game {
                         suicide,
                         sourceType,
                         msg.damageType,
-                        this.spectating
+                        this.spectating,
                     );
                     const killCountText =
                         msg.killed && !suicide
@@ -1232,7 +1232,7 @@ export class Game {
                         targetName,
                         sourceType,
                         msg.damageType,
-                        this.spectating
+                        this.spectating,
                     );
                     this.ui2Manager.displayKillMessage(downedText, "");
                 }
@@ -1248,13 +1248,13 @@ export class Game {
                     killfeedKillerInfo.teamId ? killfeedKillerName : "",
                     sourceType,
                     msg.damageType,
-                    msg.downed && !msg.killed
+                    msg.downed && !msg.killed,
                 );
                 const killColor = this.ui2Manager.getKillFeedColor(
                     activeTeamId,
                     targetInfo.teamId,
                     killerInfo.teamId,
-                    this.map.factionMode
+                    this.map.factionMode,
                 );
                 this.ui2Manager.addKillFeedMessage(killText, killColor);
                 if (msg.killed) {
@@ -1263,7 +1263,7 @@ export class Game {
                         msg.killerId,
                         sourceType,
                         this.audioManager,
-                        this.particleBarn
+                        this.particleBarn,
                     );
                 }
 
@@ -1272,7 +1272,7 @@ export class Game {
                     this.bulletBarn.createBulletHit(
                         this.playerBarn,
                         msg.targetId,
-                        this.audioManager
+                        this.audioManager,
                     );
                 }
 
@@ -1287,7 +1287,7 @@ export class Game {
                 }
                 const playerInfo = this.playerBarn.getPlayerInfo(msg.playerId);
                 const nameText = helpers.htmlEscape(
-                    this.playerBarn.getPlayerName(msg.playerId, this.activeId, true)
+                    this.playerBarn.getPlayerName(msg.playerId, this.activeId, true),
                 );
                 if (msg.assigned) {
                     if (roleDef.sound?.assign) {
@@ -1297,7 +1297,7 @@ export class Game {
                         ) {
                             // Halloween map has special logic for the kill leader sounds
                             this.audioManager.playGroup("kill_leader_assigned", {
-                                channel: "ui"
+                                channel: "ui",
                             });
                         } else if (
                             // The intent here is to not play the role-specific assignment sounds in perkMode unless you're the player selecting a role.
@@ -1306,7 +1306,7 @@ export class Game {
                             this.localId == msg.playerId
                         ) {
                             this.audioManager.playSound(roleDef.sound.assign, {
-                                channel: "ui"
+                                channel: "ui",
                             });
                         }
                     }
@@ -1318,12 +1318,12 @@ export class Game {
                         const killText = this.ui2Manager.getRoleAssignedKillFeedText(
                             msg.role,
                             playerInfo.teamId,
-                            nameText
+                            nameText,
                         );
                         const killColor = this.ui2Manager.getRoleKillFeedColor(
                             msg.role,
                             playerInfo.teamId,
-                            this.playerBarn
+                            this.playerBarn,
                         );
                         this.ui2Manager.addKillFeedMessage(killText, killColor);
                     }
@@ -1331,7 +1331,7 @@ export class Game {
                     if (roleDef.announce && this.localId == msg.playerId) {
                         const assignText = this.ui2Manager.getRoleAnnouncementText(
                             msg.role,
-                            playerInfo.teamId
+                            playerInfo.teamId,
                         );
                         this.uiManager.displayAnnouncement(assignText.toUpperCase());
                     }
@@ -1341,8 +1341,8 @@ export class Game {
                             this.playerBarn.getPlayerName(
                                 msg.killerId,
                                 this.activeId,
-                                true
-                            )
+                                true,
+                            ),
                         );
 
                         if (msg.playerId == msg.killerId) {
@@ -1351,23 +1351,23 @@ export class Game {
                         const killText = this.ui2Manager.getRoleKilledKillFeedText(
                             msg.role,
                             playerInfo.teamId,
-                            killerName
+                            killerName,
                         );
                         const killColor = this.ui2Manager.getRoleKillFeedColor(
                             msg.role,
                             playerInfo.teamId,
-                            this.playerBarn
+                            this.playerBarn,
                         );
                         this.ui2Manager.addKillFeedMessage(killText, killColor);
                     }
                     if (roleDef.sound?.dead) {
                         if (this.map.getMapDef().gameMode.spookyKillSounds) {
                             this.audioManager.playGroup("kill_leader_dead", {
-                                channel: "ui"
+                                channel: "ui",
                             });
                         } else {
                             this.audioManager.playSound(roleDef.sound.dead, {
-                                channel: "ui"
+                                channel: "ui",
                             });
                         }
                     }
@@ -1414,13 +1414,13 @@ export class Game {
                     this.playerBarn,
                     this.audioManager,
                     this.map,
-                    this.ui2Manager
+                    this.ui2Manager,
                 );
                 if (localTeamId == msg.winningTeamId) {
                     this.victoryMusic = this.audioManager.playSound("menu_music", {
                         channel: "music",
                         delay: 1300,
-                        forceStart: true
+                        forceStart: true,
                     });
                 }
                 this.touch.hideAll();

@@ -8,7 +8,6 @@ const defaultConfig = {
     soundVolume: 1,
     musicVolume: 1,
     highResTex: true,
-    showFps: false,
     screenShake: true,
     anonPlayerNames: false,
     touchMoveStyle: "anywhere" as "locked" | "anywhere",
@@ -29,7 +28,7 @@ const defaultConfig = {
     loadout: loadout.defaultLoadout(),
     sessionCookie: "" as string | null,
     binds: "",
-    version: 1
+    version: 1,
 };
 
 export type ConfigType = typeof defaultConfig;

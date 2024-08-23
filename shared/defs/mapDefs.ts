@@ -32,7 +32,7 @@ export const MapDefs = {
     woods_summer: WoodsSummer,
     savannah: Savannah,
     cobalt: Cobalt,
-    turkey: Turkey
+    turkey: Turkey,
 } satisfies Record<string, MapDef>;
 
 export type Atlas = "gradient" | "loadout" | "shared" | "main";
@@ -132,6 +132,13 @@ export interface MapDef {
             crates: Array<{
                 name: string;
                 weight: number;
+            }>;
+        };
+        roles?: {
+            timings: Array<{
+                role: string | (() => string);
+                circleIdx: number;
+                wait: number;
             }>;
         };
         bagSizes: Record<string, number[]>;

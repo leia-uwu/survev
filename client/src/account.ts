@@ -12,7 +12,7 @@ type DataOrCallback =
 function ajaxRequest(
     url: string,
     data: DataOrCallback,
-    cb: (err: null | JQuery.jqXHR<any>, res?: any) => void
+    cb: (err: null | JQuery.jqXHR<any>, res?: any) => void,
 ) {
     if (typeof data === "function") {
         cb = data;
@@ -27,8 +27,8 @@ function ajaxRequest(
             //
             // JQuery does this automatically, however we'll add it here explicitly
             // so the intent is clear incase of refactoring in the future.
-            "X-Requested-With": "XMLHttpRequest"
-        }
+            "X-Requested-With": "XMLHttpRequest",
+        },
     };
     if (data) {
         opts.contentType = "application/json; charset=utf-8";
@@ -54,7 +54,7 @@ export class Account {
         usernameSet: false,
         username: "",
         slug: "",
-        usernameChangeTime: 0
+        usernameChangeTime: 0,
     };
 
     loadout = loadouts.defaultLoadout();
@@ -87,11 +87,11 @@ export class Account {
                 "/api/user/set_quest",
                 {
                     questType,
-                    idx
+                    idx,
                 },
                 (_e, _t) => {
                     r.getPass();
-                }
+                },
             );
         };
         window.refreshQuest = function (idx) {
@@ -169,7 +169,7 @@ export class Account {
     loginWithAccessToken(
         authUrl: string,
         requestTokenFn: (cb: (...args: any[]) => void) => void,
-        extractTokenFn: (...args: any[]) => void
+        extractTokenFn: (...args: any[]) => void,
     ) {
         requestTokenFn((err, data) => {
             if (err) {
@@ -268,7 +268,7 @@ export class Account {
         this.ajaxRequest(
             "/api/user/username",
             {
-                username
+                username,
             },
             (err, res) => {
                 if (err) {
@@ -282,7 +282,7 @@ export class Account {
                 } else {
                     callback(res.result);
                 }
-            }
+            },
         );
     }
 
@@ -332,13 +332,13 @@ export class Account {
                 "/api/user/set_item_status",
                 {
                     status,
-                    itemTypes
+                    itemTypes,
                 },
                 (err, _res) => {
                     if (err) {
                         console.error("account", "set_item_status_error");
                     }
-                }
+                },
             );
         }
     }
@@ -347,7 +347,7 @@ export class Account {
         this.ajaxRequest(
             "/api/user/unlock",
             {
-                unlockType
+                unlockType,
             },
             (e, r) => {
                 if (e || !r.success) {
@@ -357,7 +357,7 @@ export class Account {
                 }
                 this.items = r.items;
                 this.emit("items", this.items);
-            }
+            },
         );
     }
 
@@ -397,7 +397,7 @@ export class Account {
         this.ajaxRequest(
             "/api/user/set_pass_unlock",
             {
-                unlockType
+                unlockType,
             },
             (err, res) => {
                 if (err || !res.success) {
@@ -405,7 +405,7 @@ export class Account {
                 } else {
                     this.getPass(false);
                 }
-            }
+            },
         );
     }
 
@@ -413,7 +413,7 @@ export class Account {
         this.ajaxRequest(
             "/api/user/refresh_quest",
             {
-                idx
+                idx,
             },
             (e, r) => {
                 if (e) {
@@ -426,7 +426,7 @@ export class Account {
                     // Give the pass UI a chance to update quests
                     this.emit("pass", this.pass, this.quests, false);
                 }
-            }
+            },
         );
     }
 }

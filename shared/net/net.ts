@@ -33,7 +33,7 @@ class ConfigTypeMap {
     addType(type: string) {
         assert(
             this._typeToId[type] === undefined,
-            `Type ${type} has already been defined!`
+            `Type ${type} has already been defined!`,
         );
         assert(this.nextId < this.maxId);
         this._typeToId[type] = this.nextId;
@@ -54,7 +54,7 @@ class ConfigTypeMap {
                 "Invalid id given to idToType",
                 id,
                 "max",
-                Object.keys(this._idToType).length
+                Object.keys(this._idToType).length,
             );
         }
         return type;
@@ -64,14 +64,14 @@ class ConfigTypeMap {
 function createTypeSerialization(
     type: string,
     typeList: Record<string, unknown>,
-    bitsPerType: number
+    bitsPerType: number,
 ) {
     const typeMap = new ConfigTypeMap(bitsPerType);
 
     const types = Object.keys(typeList);
     assert(
         types.length <= typeMap.maxId,
-        `${type} contains ${types.length} types, max ${typeMap.maxId}`
+        `${type} contains ${types.length} types, max ${typeMap.maxId}`,
     );
     for (let i = 0; i < types.length; i++) {
         typeMap.addType(types[i]);
@@ -108,7 +108,7 @@ export class BitStream extends bb.BitStream {
         assert(bits > 0 && bits < 31);
         assert(
             f >= min && f <= max,
-            `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`
+            `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`,
         );
         const range = (1 << bits) - 1;
         const x = math.clamp(f, min, max);
@@ -132,7 +132,7 @@ export class BitStream extends bb.BitStream {
         minY: number,
         maxX: number,
         maxY: number,
-        bitCount: number
+        bitCount: number,
     ) {
         this.writeFloat(vec.x, minX, maxX, bitCount);
         this.writeFloat(vec.y, minY, maxY, bitCount);
@@ -141,7 +141,7 @@ export class BitStream extends bb.BitStream {
     readVec(minX: number, minY: number, maxX: number, maxY: number, bitCount: number) {
         return {
             x: this.readFloat(minX, maxX, bitCount),
-            y: this.readFloat(minY, maxY, bitCount)
+            y: this.readFloat(minY, maxY, bitCount),
         };
     }
 
@@ -161,7 +161,7 @@ export class BitStream extends bb.BitStream {
     readVec32() {
         return {
             x: this.readFloat32(),
-            y: this.readFloat32()
+            y: this.readFloat32(),
         };
     }
 
@@ -220,7 +220,7 @@ export class MsgStream {
             throw new Error(
                 `Invalid buf type ${
                     typeof buf === "undefined" ? "undefined" : typeof buf
-                }`
+                }`,
             );
         }
         this.arrayBuf = arrayBuf;
@@ -269,7 +269,7 @@ export const Constants = {
     MapObjectMinScale: 0.125,
     MapObjectMaxScale: 2.5,
     MaxPerks: 8,
-    MaxMapIndicators: 16
+    MaxMapIndicators: 16,
 };
 
 export enum MsgType {
@@ -296,7 +296,7 @@ export enum MsgType {
     Stats,
     UpdatePass,
     AliveCounts,
-    PerkModeRoleSelect
+    PerkModeRoleSelect,
 }
 
 export enum PickupMsgType {
@@ -305,7 +305,7 @@ export enum PickupMsgType {
     AlreadyEquipped,
     BetterItemEquipped,
     Success,
-    GunCannotFire
+    GunCannotFire,
 }
 
 export class UpdatePassMsg {

@@ -5,7 +5,7 @@ import {
     ObjectSerializeFns,
     type ObjectType,
     type ObjectsFullData,
-    type ObjectsPartialData
+    type ObjectsPartialData,
 } from "./objectSerializeFns";
 
 function serializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
@@ -93,7 +93,7 @@ function deserializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             data.weapons.push({
                 type: s.readGameType(),
-                ammo: s.readUint8()
+                ammo: s.readUint8(),
             });
         }
     }
@@ -245,7 +245,7 @@ export const UpdateExtFlags = {
     Planes: 1 << 12,
     AirstrikeZones: 1 << 13,
     MapIndicators: 1 << 14,
-    KillLeader: 1 << 15
+    KillLeader: 1 << 15,
 };
 
 export class UpdateMsg implements AbstractMsg {
@@ -503,7 +503,7 @@ export class UpdateMsg implements AbstractMsg {
     // @ts-expect-error deserialize only accept one argument for now
     deserialize(
         s: BitStream,
-        objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType }
+        objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType },
     ) {
         const flags = s.readUint16();
 
@@ -523,13 +523,13 @@ export class UpdateMsg implements AbstractMsg {
                 (
                     ObjectSerializeFns[data.__type].deserializePart as (
                         s: BitStream,
-                        d: typeof data
+                        d: typeof data,
                     ) => void
                 )(s, data);
                 (
                     ObjectSerializeFns[data.__type].deserializeFull as (
                         s: BitStream,
-                        d: typeof data
+                        d: typeof data,
                     ) => void
                 )(s, data);
                 this.fullObjects.push(data);
@@ -543,7 +543,7 @@ export class UpdateMsg implements AbstractMsg {
             (
                 ObjectSerializeFns[type].deserializePart as (
                     s: BitStream,
-                    d: typeof data
+                    d: typeof data,
                 ) => void
             )(s, data);
             this.partObjects.push(data);
@@ -689,7 +689,7 @@ export class UpdateMsg implements AbstractMsg {
                 airStrikeZone.duration = s.readFloat(
                     0,
                     Constants.AirstrikeZoneMaxDuration,
-                    8
+                    8,
                 );
                 this.airstrikeZones.push(airStrikeZone);
             }
