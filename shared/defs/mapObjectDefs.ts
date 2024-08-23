@@ -14,7 +14,12 @@ import type {
 // } : T;
 
 // Helpers
-function tierLoot(tier: string, min: number, max: number, props?: any) {
+function tierLoot(
+    tier: string,
+    min: number,
+    max: number,
+    props?: ObstacleDef["loot"][number]["props"],
+) {
     props = props || {};
     return {
         tier,

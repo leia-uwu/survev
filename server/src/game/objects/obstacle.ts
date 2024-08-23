@@ -360,6 +360,7 @@ export class Obstacle extends BaseGameObject {
                             undefined,
                             def.type == "gun" ? 0 : undefined,
                             dir,
+                            lootTierOrItem.props?.preloadGuns,
                         );
                     }
                 }
@@ -374,6 +375,7 @@ export class Obstacle extends BaseGameObject {
                     undefined,
                     def.type == "gun" ? 0 : undefined,
                     dir,
+                    lootTierOrItem.props?.preloadGuns,
                 );
             }
         }

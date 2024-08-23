@@ -66,13 +66,17 @@ export class LootBarn {
         useCountForAmmo?: boolean,
         pushSpeed?: number,
         dir?: Vec2,
+        preloadGun?: boolean,
     ) {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
 
-        const def = GameObjectDefs[type];
+        if (preloadGun) {
+            loot.isPreloadedGun = true;
+        }
 
-        if (def.type === "gun" && GameObjectDefs[def.ammo]) {
+        const def = GameObjectDefs[type];
+        if (def.type === "gun" && GameObjectDefs[def.ammo] && !preloadGun) {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
             if (ammoCount <= 0) return;
             const halfAmmo = Math.ceil(ammoCount / 2);
@@ -188,7 +192,7 @@ export class Loot extends BaseGameObject {
 
         this.layer = layer;
         this.type = type;
-        this.count = count;
+        this.count = def.type === "gun" ? 1 : count;
 
         this.collider = collider.createCircle(pos, GameConfig.lootRadius[def.type]);
         this.collider.pos = this.pos;

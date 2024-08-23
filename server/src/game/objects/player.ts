@@ -2805,6 +2805,29 @@ export class Player extends BaseGameObject {
                     }
                     if (gunType) {
                         this.weaponManager.setWeapon(newGunIdx, gunType, 0);
+
+                        // if "preloaded" gun add ammo to inventory
+                        if (obj.isPreloadedGun) {
+                            const ammoAmount = def.ammoSpawnCount;
+                            const ammoType = def.ammo;
+                            const backpackLevel = this.getGearLevel(this.backpack);
+                            const bagSpace = GameConfig.bagSizes[ammoType]
+                                ? GameConfig.bagSizes[ammoType][backpackLevel]
+                                : 0;
+                            if (this.inventory[ammoType] + ammoAmount <= bagSpace) {
+                                this.inventory[ammoType] += ammoAmount;
+                                this.inventoryDirty = true;
+                            } else {
+                                // spawn new loot object to animate the pickup rejection
+                                const spaceLeft = bagSpace - this.inventory[ammoType];
+                                const amountToAdd = spaceLeft;
+                                this.inventory[ammoType] += amountToAdd;
+                                this.inventoryDirty = true;
+
+                                const amountLeft = ammoAmount - amountToAdd;
+                                this.dropLoot(ammoType, amountLeft);
+                            }
+                        }
                     }
                     if (reload) {
                         this.cancelAction();

@@ -23,7 +23,9 @@ export interface ObstacleDef {
         tier?: string;
         min?: number;
         max?: number;
-        props: Record<string, unknown>;
+        props?: {
+            preloadGuns?: boolean;
+        };
         type?: string;
         count?: number;
     }>;
