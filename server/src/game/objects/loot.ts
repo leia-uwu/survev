@@ -211,9 +211,8 @@ export class Loot extends BaseGameObject {
 
         this.oldPos = v2.copy(this.pos);
 
-        const halfDt = dt / 2;
         const calculateSafeDisplacement = (): Vec2 => {
-            let displacement = v2.mul(this.vel, halfDt);
+            let displacement = v2.mul(this.vel, dt);
             if (v2.lengthSqr(displacement) >= 10) {
                 displacement = v2.normalizeSafe(displacement);
             }
@@ -222,8 +221,7 @@ export class Loot extends BaseGameObject {
         };
 
         v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
-        this.vel = v2.mul(this.vel, 0.94);
-        v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * 4));
 
         let objs = this.game.grid.intersectCollider(this.collider);
 
