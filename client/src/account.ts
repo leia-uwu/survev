@@ -1,7 +1,7 @@
 import $ from "jquery";
 import { util } from "../../shared/utils/util";
+import { api } from "./api";
 import type { ConfigManager } from "./config";
-import { helpers } from "./helpers";
 import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
 
 type DataOrCallback =
@@ -19,7 +19,7 @@ function ajaxRequest(
         data = null;
     }
     const opts: JQueryAjaxSettings = {
-        url: helpers.resolveApiUrl(url),
+        url: api.resolveUrl(url),
         type: "POST",
         timeout: 10 * 1000,
         headers: {

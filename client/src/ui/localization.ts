@@ -2,13 +2,14 @@ import $ from "jquery";
 import english from "../../l10n/en.json";
 import { device } from "../device";
 import { helpers } from "../helpers";
+import { api } from "../api";
 
 function downloadFile(
     file: string,
     onComplete: (err: null | JQuery.jqXHR<any>, data?: Record<string, string>) => void,
 ) {
     const opts = {
-        url: helpers.resolveApiUrl(file),
+        url: api.resolveUrl(file),
         type: "GET",
     };
     $.ajax(opts)

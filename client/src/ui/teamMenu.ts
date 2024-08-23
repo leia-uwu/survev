@@ -2,6 +2,7 @@ import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import type { RoomData } from "../../../shared/net/team";
+import { api } from "../api";
 import type { AudioManager } from "../audioManager";
 import type { ConfigManager } from "../config";
 import { device } from "../device";
@@ -160,7 +161,7 @@ export class TeamMenu {
 
     connect(create: boolean, roomUrl: string) {
         if (!this.active || roomUrl !== this.roomData.roomUrl) {
-            const roomHost = window.location.host;
+            const roomHost = api.resolveRoomHost();
             const url = `w${
                 window.location.protocol === "https:" ? "ss" : "s"
             }://${roomHost}/team_v2`;

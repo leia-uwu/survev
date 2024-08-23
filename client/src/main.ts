@@ -5,6 +5,7 @@ import * as net from "../../shared/net/net";
 import { math } from "../../shared/utils/math";
 import { Account } from "./account";
 import { Ambiance } from "./ambiance";
+import { api } from "./api";
 import { AudioManager } from "./audioManager";
 import { ConfigManager, type ConfigType } from "./config";
 import { device } from "./device";
@@ -636,7 +637,7 @@ class Application {
             };
             $.ajax({
                 type: "POST",
-                url: helpers.resolveApiUrl("/api/find_game"),
+                url: api.resolveUrl("/api/find_game"),
                 data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
