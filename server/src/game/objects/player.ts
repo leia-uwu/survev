@@ -1482,6 +1482,13 @@ export class Player extends BaseGameObject {
                     !emote.isPing && player.visibleObjects.has(emotePlayer);
 
                 const partOfGroup = emotePlayer.groupId === player.groupId;
+                
+                if (
+                    (emote.type === "emote_medical" || emote.type === "emote_ammo") &&
+                    !partOfGroup
+                )
+                    continue;
+
                 const isTeamLeader =
                     emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
                 const seePing =
