@@ -134,7 +134,8 @@ export class PlayerBarn {
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
-        if (this.game.isTeamMode) this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+        if (this.game.isTeamMode)
+            this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
 
@@ -193,7 +194,8 @@ export class PlayerBarn {
                 this.game.groups.delete(player.group.hash);
             }
         }
-        if (this.game.isTeamMode) this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+        if (this.game.isTeamMode)
+            this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
 
         this.game.checkGameOver();
     }
@@ -1579,23 +1581,32 @@ export class Player extends BaseGameObject {
     spectate(spectateMsg: net.SpectateMsg): void {
         let playerToSpec: Player | undefined;
         const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        const teamExistsOrAlive = this.game.isTeamMode && this.group && !this.group.checkAllDeadOrDisconnected(this);
+        const teamExistsOrAlive =
+            this.game.isTeamMode &&
+            this.group &&
+            !this.group.checkAllDeadOrDisconnected(this);
         switch (true) {
             case spectateMsg.specBegin:
-                if (teamExistsOrAlive)
-                    playerToSpec = this.group!.randomPlayer(this);
+                if (teamExistsOrAlive) playerToSpec = this.group!.randomPlayer(this);
                 else
-                    playerToSpec = this.killedBy && this.killedBy != this
-                        ? this.killedBy
-                        : this.game.playerBarn.randomPlayer(this);
+                    playerToSpec =
+                        this.killedBy && this.killedBy != this
+                            ? this.killedBy
+                            : this.game.playerBarn.randomPlayer(this);
                 break;
             case spectateMsg.specNext:
             case spectateMsg.specPrev:
                 const nextOrPrev = +spectateMsg.specNext - +spectateMsg.specPrev;
                 if (teamExistsOrAlive)
-                    playerToSpec = util.wrappedArrayIndex(this.group!.livingPlayers, this.group!.livingPlayers.indexOf(this.spectating!) + nextOrPrev);
+                    playerToSpec = util.wrappedArrayIndex(
+                        this.group!.livingPlayers,
+                        this.group!.livingPlayers.indexOf(this.spectating!) + nextOrPrev,
+                    );
                 else
-                    playerToSpec = util.wrappedArrayIndex(spectatablePlayers, spectatablePlayers.indexOf(this.spectating!) + nextOrPrev)
+                    playerToSpec = util.wrappedArrayIndex(
+                        spectatablePlayers,
+                        spectatablePlayers.indexOf(this.spectating!) + nextOrPrev,
+                    );
                 break;
         }
         this.spectating = playerToSpec;
