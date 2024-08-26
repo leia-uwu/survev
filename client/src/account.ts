@@ -65,40 +65,39 @@ export class Account {
     pass = {};
 
     constructor(public config: ConfigManager) {
-        const r = this;
 
-        window.login = function () {
-            r.login();
+        window.login = () => {
+            this.login();
         };
-        window.deleteAccount = function () {
-            r.deleteAccount();
+        window.deleteAccount = () => {
+            this.deleteAccount();
         };
-        window.deleteItems = function () {
-            r.ajaxRequest("/api/user/delete_items", {}, (_e, _t) => {
-                r.loadProfile();
+        window.deleteItems = () => {
+            this.ajaxRequest("/api/user/delete_items", {}, (_e, _t) => {
+                this.loadProfile();
             });
         };
-        window.unlock = function (type) {
+        window.unlock = (type) => {
             console.log(`Unlocking ${type}`);
-            r.unlock(type);
+            this.unlock(type);
         };
-        window.setQuest = function (questType, idx = 0) {
-            r.ajaxRequest(
+        window.setQuest = (questType, idx = 0) => {
+            this.ajaxRequest(
                 "/api/user/set_quest",
                 {
                     questType,
                     idx,
                 },
                 (_e, _t) => {
-                    r.getPass();
+                    this.getPass();
                 },
             );
         };
-        window.refreshQuest = function (idx) {
-            r.refreshQuest(idx);
+        window.refreshQuest = (idx) => {
+            this.refreshQuest(idx);
         };
-        window.setPassUnlock = function (unlockType) {
-            r.setPassUnlock(unlockType);
+        window.setPassUnlock = (unlockType) => {
+            this.setPassUnlock(unlockType);
         };
     }
 
@@ -241,11 +240,10 @@ export class Account {
     }
 
     resetStats() {
-        const e = this;
         this.ajaxRequest("/api/user/reset_stats", (t, _r) => {
             if (t) {
                 console.error("account", "reset_stats_error");
-                e.emit("error", "server_error");
+                this.emit("error", "server_error");
             }
         });
     }
@@ -264,7 +262,6 @@ export class Account {
     }
 
     setUsername(username: string, callback: (err?: string) => void) {
-        const r = this;
         this.ajaxRequest(
             "/api/user/username",
             {
@@ -277,7 +274,7 @@ export class Account {
                     return;
                 }
                 if (res.result == "success") {
-                    r.loadProfile();
+                    this.loadProfile();
                     callback();
                 } else {
                     callback(res.result);
@@ -287,15 +284,14 @@ export class Account {
     }
 
     setLoadout(loadout: Loadout) {
-        // const t = this;
-        // const r = this.loadout;
+        const r = this.loadout;
         this.loadout = loadout;
         this.emit("loadout", this.loadout);
         this.config.set("loadout", loadout);
         /* this.ajaxRequest(
                 "/api/user/loadout",
                 {
-                    loadout: e
+                    loadout: {}
                 },
                 (e, a) => {
                     if (e) {
@@ -303,17 +299,18 @@ export class Account {
                             "account",
                             "set_loadout_error"
                         );
-                        t.emit("error", "server_error");
+                        this.emit("error", "server_error");
                     }
                     if (e || !a.loadout) {
-                        t.loadout = r;
+                        this.loadout = r;
                     } else {
-                        t.loadout = a.loadout;
-                        t.loadoutPriv = a.loadoutPriv;
+                        this.loadout = a.loadout;
+                        this.loadoutPriv = a.loadoutPriv;
                     }
-                    t.emit("loadout", t.loadout);
+                    this.emit("loadout", this.loadout);
                 }
-            ); */
+            );
+        */
     }
 
     setItemStatus(status: ItemStatus, itemTypes: string[]) {

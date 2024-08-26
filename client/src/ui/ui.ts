@@ -1440,8 +1440,7 @@ export class UiManager {
                     }),
                 );
             this.statsHeader.html(I as unknown as HTMLElement);
-            const T = function (e: string, t: string | number) {
-                return $("<div/>", {
+            const T = (e: string, t: string | number) => $("<div/>", {
                     class: "ui-stats-info",
                 })
                     .append(
@@ -1454,7 +1453,6 @@ export class UiManager {
                             html: t,
                         }),
                     );
-            };
             const M = device.uiLayout != device.UiLayout.Sm || device.tablet ? 250 : 125;
             let P = 0;
             P -= ((playerStats.length - 1) * M) / 2;
@@ -1465,11 +1463,9 @@ export class UiManager {
                 const D = humanizeTime(stats.timeAlive);
                 let E = "ui-stats-info-player";
                 E += stats.dead ? " ui-stats-info-status" : "";
-                const B = (function (e) {
-                    return $("<div/>", {
+                const B = ((e) => $("<div/>", {
                         class: e,
-                    });
-                })(E);
+                    }))(E);
                 B.css("left", P);
                 B.append(
                     $("<div/>", {
@@ -1632,7 +1628,6 @@ export class UiManager {
     }
 
     showTeamAd(playerStats: PlayerStatsMsg["playerStats"], _ui2Manager: unknown) {
-        const r = this;
         this.toggleEscMenu(true);
         this.displayMapLarge(true);
         this.clearStatsElems();
@@ -1641,12 +1636,12 @@ export class UiManager {
         this.pieTimer.stop();
         this.displayingStats = true;
         this.statsHeader.html(
-            (function () {
-                let t = r.localization.translate("game-You");
+            (() => {
+                let t = this.localization.translate("game-You");
                 t += " ";
-                t += r.localization.translate("game-you-died");
+                t += this.localization.translate("game-you-died");
                 t += ".";
-                let a = `<div><span class="ui-stats-header-stat">${r.localization.translate(
+                let a = `<div><span class="ui-stats-header-stat">${this.localization.translate(
                     "game-kills",
                 )} </span>`;
                 a += `<span class="ui-stats-header-value">${playerStats.kills}</span></div>`;
@@ -1678,7 +1673,7 @@ export class UiManager {
             html: this.localization.translate("game-play-new-game"),
         });
         a.on("click", () => {
-            r.quitGame();
+            this.quitGame();
         });
         this.statsOptions.append(a);
         a.css({
