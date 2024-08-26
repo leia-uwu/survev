@@ -4,7 +4,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { PingDefs } from "../../../shared/defs/gameObjects/pingDefs";
 import { type RoleDef, RoleDefs } from "../../../shared/defs/gameObjects/roleDefs";
 import type { MapDef } from "../../../shared/defs/mapDefs";
-import { Action, GameConfig, GasMode } from "../../../shared/gameConfig";
+import { Action, GameConfig, GasMode, TeamMode } from "../../../shared/gameConfig";
 import type { PlayerStatsMsg } from "../../../shared/net/playerStatsMsg";
 import type { MapIndicator, PlayerStatus } from "../../../shared/net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
@@ -658,7 +658,7 @@ export class UiManager {
         _i: unknown,
         playerBarn: PlayerBarn,
         camera: Camera,
-        teamMode: number,
+        teamMode: TeamMode,
         factionMode: boolean,
     ) {
         const localPlayer = player;
@@ -799,7 +799,7 @@ export class UiManager {
             const playerInfo = playerBarn.getPlayerInfo(playerId);
             const isLocalPlayer = playerId == localPlayer.__id;
             const playerStatus = playerBarn.getPlayerStatus(playerId);
-            if (playerStatus && teamMode > 1) {
+            if (playerStatus && teamMode > TeamMode.Solo) {
                 if (!teamElems.groupIdDisplayed) {
                     teamElems.groupId.css("display", "block");
                     teamElems.groupIdDisplayed = true;
@@ -918,7 +918,7 @@ export class UiManager {
 
         // Set the spectate options height if player count changed
         if (
-            teamMode > 1 &&
+            teamMode > TeamMode.Solo &&
             this.groupPlayerCount != groupPlayerCount &&
             device.uiLayout == device.UiLayout.Lg
         ) {
@@ -926,7 +926,7 @@ export class UiManager {
             this.spectateOptionsWrapper.css({
                 top: this.groupPlayerCount * this.teamMemberHeight + 12,
             });
-        } else if (teamMode == 1) {
+        } else if (teamMode == TeamMode.Solo) {
             this.spectateOptionsWrapper.css({
                 top: 12,
             });
@@ -1305,14 +1305,14 @@ export class UiManager {
         this.statsContents.stop().hide();
     }
 
-    teamModeToString(teamMode: number) {
+    teamModeToString(teamMode: TeamMode) {
         const l10nMap = {
             unknown: "game-rank",
-            1: "game-solo-rank",
-            2: "game-duo-rank",
-            4: "game-squad-rank",
+            [TeamMode.Solo]: "game-solo-rank",
+            [TeamMode.Duo]: "game-duo-rank",
+            [TeamMode.Squad]: "game-squad-rank",
         };
-        const val = l10nMap[teamMode as keyof typeof l10nMap] || l10nMap.unknown;
+        const val = l10nMap[teamMode] || l10nMap.unknown;
         return this.localization.translate(val);
     }
 
@@ -1329,13 +1329,13 @@ export class UiManager {
         return this.localization.translate(chickenTxt);
     }
 
-    getTitleDefeatText(teamMode: number, spectatingAnotherTeam: boolean) {
+    getTitleDefeatText(teamMode: TeamMode, spectatingAnotherTeam: boolean) {
         if (spectatingAnotherTeam) {
             return `${this.spectatedPlayerName} ${this.localization.translate(
                 "game-player-died",
             )}.`;
         }
-        if (teamMode > 1) {
+        if (teamMode > TeamMode.Solo) {
             return this.localization.translate("game-team-eliminated");
         }
         return `${this.localization.translate(
@@ -1344,7 +1344,7 @@ export class UiManager {
     }
 
     getOverviewElems(
-        teamMode: number,
+        teamMode: TeamMode,
         teamRank: number,
         teamKills: number,
         factionMode: boolean,
@@ -1354,7 +1354,7 @@ export class UiManager {
             const blueTeamTxt = this.localization.translate("game-blue-team");
             return `<div class="ui-stats-header-right ui-stats-header-red-team"><span class="ui-stats-header-stat">${redTeamTxt} </span><span class="ui-stats-header-value">${this.playersAliveRedCounter}</span></div><div class="ui-stats-header-left ui-stats-header-blue-team"><span class="ui-stats-header-stat">${blueTeamTxt} </span><span class="ui-stats-header-value">${this.playersAliveBlueCounter}</span></div>`;
         }
-        if (teamMode == 1) {
+        if (teamMode == TeamMode.Solo) {
             return `<div><span class="ui-stats-header-stat">${this.teamModeToString(
                 teamMode,
             )} </span><span class="ui-stats-header-value">#${teamRank}</span></div>`;
@@ -1378,7 +1378,7 @@ export class UiManager {
         winningTeamId: number,
         gameOver: boolean,
         localTeamId: number,
-        teamMode: number,
+        teamMode: TeamMode,
         spectating: boolean,
         playerBarn: PlayerBarn,
         _audioManager: unknown,
@@ -1721,7 +1721,7 @@ export class UiManager {
     setSpectateTarget(
         targetId: number,
         localId: number,
-        teamMode: number,
+        teamMode: TeamMode,
         playerBarn: PlayerBarn,
     ) {
         if (targetId != this.spectatedPlayerId) {
@@ -1737,13 +1737,13 @@ export class UiManager {
         }
     }
 
-    setSpectating(spectating: boolean, teamMode?: number) {
+    setSpectating(spectating: boolean, teamMode?: TeamMode) {
         if (this.spectating != spectating) {
             this.spectating = spectating;
             if (this.spectating) {
                 this.spectateMode.css("display", "block");
                 $(".ui-zoom").removeClass("ui-zoom-hover");
-                const hideSpec = teamMode == 1;
+                const hideSpec = teamMode == TeamMode.Solo;
                 this.specPrevButton.css("display", hideSpec ? "none" : "block");
                 this.specNextButton.css("display", hideSpec ? "none" : "block");
                 this.hideStats();

@@ -5,7 +5,7 @@ import type {
     ObstacleDef,
     StructureDef,
 } from "../../../shared/defs/mapObjectsTyping";
-import { GameConfig } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { MsgStream, MsgType } from "../../../shared/net/net";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
@@ -251,7 +251,7 @@ export class GameMap {
 
         assert(mapDef, `Invalid map name: ${game.config.mapName}`);
 
-        const scale = (this.scale = game.teamMode > 2 ? "large" : "small");
+        const scale = (this.scale = game.teamMode > TeamMode.Duo ? "large" : "small");
 
         const mapConfig = mapDef.mapGen.map;
         this.width = mapConfig.baseWidth * mapConfig.scale[scale] + mapConfig.extension;

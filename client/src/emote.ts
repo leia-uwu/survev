@@ -5,7 +5,7 @@ import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import type { AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
 import type { GunDef } from "../../shared/defs/gameObjects/gunDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
-import { EmoteSlot, GameConfig, Input } from "../../shared/gameConfig";
+import { EmoteSlot, GameConfig, Input, TeamMode } from "../../shared/gameConfig";
 import type { Emote } from "../../shared/net/updateMsg";
 import { coldet } from "../../shared/utils/coldet";
 import { math } from "../../shared/utils/math";
@@ -802,7 +802,7 @@ export class EmoteBarn {
         dt: number,
         localId: number,
         player: Player,
-        teamMode: number,
+        teamMode: TeamMode,
         deadBodyBarn: DeadBodyBarn,
         map: Map,
         renderer: Renderer,
@@ -910,7 +910,7 @@ export class EmoteBarn {
                     this.emoteWheels.css("opacity", 1);
                     this.emoteWheelsGreyed = false;
                 }
-                if (!this.teamEmotesGreyed && teamMode == 1) {
+                if (!this.teamEmotesGreyed && teamMode == TeamMode.Solo) {
                     this.teamEmotes.css("opacity", this.teamEmoteOpacityReset);
                     this.teamEmotesGreyed = true;
                 }
@@ -958,7 +958,7 @@ export class EmoteBarn {
                         const emoteData = EmotesDefs[E.emote];
                         const teamOnly = emoteData?.teamOnly;
 
-                        const disableInSolo = teamOnly && teamMode == 1;
+                        const disableInSolo = teamOnly && teamMode == TeamMode.Solo;
                         if (
                             distToCenter <= 35 &&
                             !highlight &&

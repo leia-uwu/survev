@@ -1,7 +1,7 @@
 import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { GameConfig } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
-import { Config, TeamMode } from "../config";
+import { Config } from "../config";
 import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
 import { ContextManager } from "./contextManager";
