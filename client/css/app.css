@@ -174,17 +174,17 @@ a:active {
 
 #start-row-header {
   /* Main menu logo, don't forget there's also game over logo in game.css */
-  background-image: url(/img/resurviv_logo_full.png);
+  background-image: url(/img/survev_logo_full.png);
   background-repeat: no-repeat;
   /* In case of logo change, update this value to width divided by 2 ceiled  */
-  background-size: 455px;
+  background-size: 396px;
   background-position: center;
   height: 140px;
   margin: auto;
   margin-bottom: 32px;
   position: relative;
   /* In case of logo change, update this value to width divided by 2 ceiled  */
-  width: 455px;
+  width: 396px;
 }
 
 @media (max-width: 850px),
@@ -6712,10 +6712,6 @@ input [type="image"]:focus {
     top: 292px;
     left: 50%;
     transform: translateX(-50%);
-  }
-
-  .ad-block-med-rect {
-    transform: scale(0.92);
   }
 
   #team-menu {

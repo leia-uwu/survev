@@ -38,6 +38,7 @@ type DefaultItems = {
     backpack: string;
     helmet: string | ((teamcolor: TeamColor) => string);
     chest: string;
+    outfit: string | ((teamcolor: TeamColor) => string);
     scope: string;
     inventory: {
         "9mm": number;
@@ -110,6 +111,7 @@ function createDefaultItems<T extends DefaultItems>(e: DeepPartial<T>): T {
         backpack: "backpack00",
         helmet: "",
         chest: "",
+        outfit: "",
         scope: "1xscope",
         // perks: [] as Array<{ type: string; droppable?: boolean }>,
         inventory: {
@@ -179,6 +181,11 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet04_leader",
             chest: "chest03",
+            outfit: (teamcolor: TeamColor) =>
+                ({
+                    [TeamColor.Red]: "outfitRedLeader",
+                    [TeamColor.Blue]: "outfitBlueLeader",
+                })[teamcolor],
             scope: "8xscope",
             inventory: {
                 "8xscope": 1,

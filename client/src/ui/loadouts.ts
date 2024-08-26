@@ -1,8 +1,8 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
-import { deepEqual } from "../../../shared/utils/deepEqual";
 import type { Crosshair } from "../crosshair";
+import { deepEqual } from "../lib/deepEqual";
 
 export interface Loadout {
     player_icon: string;

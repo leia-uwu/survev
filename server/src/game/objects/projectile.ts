@@ -111,8 +111,8 @@ export class Projectile extends BaseGameObject {
         //
         // Velocity
         //
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * (this.posZ != 0 ? 1.2 : 2)));
         this.pos = v2.add(this.pos, v2.mul(this.vel, dt));
-        this.vel = v2.mul(this.vel, this.posZ != 0 ? 0.99 : 0.98); // decrease vel slightly faster once touching ground
 
         const def = GameObjectDefs[this.type] as ThrowableDef;
 
@@ -137,8 +137,7 @@ export class Projectile extends BaseGameObject {
             if (
                 obj.__type === ObjectType.Obstacle &&
                 util.sameLayer(this.layer, obj.layer) &&
-                !obj.dead &&
-                obj.collidable
+                !obj.dead
             ) {
                 const intersection = collider.intersectCircle(
                     obj.collider,
@@ -146,9 +145,7 @@ export class Projectile extends BaseGameObject {
                     this.rad,
                 );
                 if (intersection) {
-                    // break obstacle if its a window
-                    // resolve the collision otherwise
-                    if (obj.isWindow) {
+                    if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
                         obj.damage({
                             amount: 1,
                             damageType: this.damageType,
@@ -156,26 +153,26 @@ export class Projectile extends BaseGameObject {
                             mapSourceType: "",
                             dir: this.vel,
                         });
-                    } else {
-                        if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
-                            this.pos = v2.add(
-                                this.pos,
-                                v2.mul(intersection.dir, intersection.pen),
-                            );
 
-                            if (def.explodeOnImpact) {
-                                this.explode();
-                            } else {
-                                const len = v2.length(this.vel);
-                                const dir = v2.div(this.vel, len);
-                                const normal = intersection.dir;
-                                const dot = v2.dot(dir, normal);
-                                const newDir = v2.add(v2.mul(normal, dot * -2), this.dir);
-                                this.vel = v2.mul(newDir, len * 0.2);
-                            }
+                        if (obj.dead || !obj.collidable) continue;
+
+                        this.pos = v2.add(
+                            this.pos,
+                            v2.mul(intersection.dir, intersection.pen),
+                        );
+
+                        if (def.explodeOnImpact) {
+                            this.explode();
                         } else {
-                            this.obstacleBellowId = obj.__id;
+                            const len = v2.length(this.vel);
+                            const dir = v2.div(this.vel, len);
+                            const normal = intersection.dir;
+                            const dot = v2.dot(dir, normal);
+                            const newDir = v2.add(v2.mul(normal, dot * -2), this.dir);
+                            this.vel = v2.mul(newDir, len * 0.2);
                         }
+                    } else if (obj.collidable) {
+                        this.obstacleBellowId = obj.__id;
                     }
                 }
             } else if (

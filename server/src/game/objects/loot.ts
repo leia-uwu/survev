@@ -46,8 +46,15 @@ export class LootBarn {
     /**
      * spawns loot without ammo attached, use addLoot() if you want the respective ammo to drop alongside the gun
      */
-    addLootWithoutAmmo(type: string, pos: Vec2, layer: number, count: number) {
-        const loot = new Loot(this.game, type, pos, layer, count);
+    addLootWithoutAmmo(
+        type: string,
+        pos: Vec2,
+        layer: number,
+        count: number,
+        pushSpeed?: number,
+        dir?: Vec2,
+    ) {
+        const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
     }
 
@@ -59,13 +66,17 @@ export class LootBarn {
         useCountForAmmo?: boolean,
         pushSpeed?: number,
         dir?: Vec2,
+        preloadGun?: boolean,
     ) {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
 
-        const def = GameObjectDefs[type];
+        if (preloadGun) {
+            loot.isPreloadedGun = true;
+        }
 
-        if (def.type === "gun" && GameObjectDefs[def.ammo]) {
+        const def = GameObjectDefs[type];
+        if (def.type === "gun" && GameObjectDefs[def.ammo] && !preloadGun) {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
             if (ammoCount <= 0) return;
             const halfAmmo = Math.ceil(ammoCount / 2);
@@ -73,24 +84,24 @@ export class LootBarn {
             const leftAmmo = new Loot(
                 this.game,
                 def.ammo,
-                v2.add(pos, v2.create(-0.2, -0.2)),
+                v2.add(pos, v2.create(-0.8, -0.3)),
                 layer,
                 halfAmmo,
-                0,
+                2,
+                v2.create(-1.3, -0.4),
             );
-            leftAmmo.push(v2.create(-1, -1), 1);
             this._addLoot(leftAmmo);
 
             if (ammoCount - halfAmmo >= 1) {
                 const rightAmmo = new Loot(
                     this.game,
                     def.ammo,
-                    v2.add(pos, v2.create(0.2, -0.2)),
+                    v2.add(pos, v2.create(0.8, -0.3)),
                     layer,
                     ammoCount - halfAmmo,
-                    0,
+                    2,
+                    v2.create(1.3, -0.4),
                 );
-                rightAmmo.push(v2.create(1, -1), 1);
                 this._addLoot(rightAmmo);
             }
         }
@@ -181,7 +192,7 @@ export class Loot extends BaseGameObject {
 
         this.layer = layer;
         this.type = type;
-        this.count = count;
+        this.count = def.type === "gun" ? 1 : count;
 
         this.collider = collider.createCircle(pos, GameConfig.lootRadius[def.type]);
         this.collider.pos = this.pos;
@@ -211,9 +222,8 @@ export class Loot extends BaseGameObject {
 
         this.oldPos = v2.copy(this.pos);
 
-        const halfDt = dt / 2;
         const calculateSafeDisplacement = (): Vec2 => {
-            let displacement = v2.mul(this.vel, halfDt);
+            let displacement = v2.mul(this.vel, dt);
             if (v2.lengthSqr(displacement) >= 10) {
                 displacement = v2.normalizeSafe(displacement);
             }
@@ -222,8 +232,7 @@ export class Loot extends BaseGameObject {
         };
 
         v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
-        this.vel = v2.mul(this.vel, 0.94);
-        v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * 4));
 
         let objs = this.game.grid.intersectCollider(this.collider);
 
@@ -261,15 +270,16 @@ export class Loot extends BaseGameObject {
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
 
-                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.2));
-                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.2));
+                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.06));
+                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.06));
                 const vRelativeVelocity = v2.create(
                     this.vel.x - obj.vel.x,
                     this.vel.y - obj.vel.y,
                 );
 
                 const speed =
-                    vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y;
+                    (vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y) *
+                    0.6;
                 if (speed < 0) continue;
 
                 this.push(res.dir, -speed);
