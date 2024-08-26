@@ -382,12 +382,16 @@ export class UiManager {
             this.game.updatePass = true;
             this.game.updatePassDelay = 1;
             const secondsBeforeLeaving = 6;
+            if ( import.meta.env.PROD ) {
             const prevTxt = $("#btn-game-quit").text();
             $("#btn-game-quit").text(`Leaving in ${secondsBeforeLeaving} seconds...`);
             setTimeout(() => {
                 this.quitGame();
                 $("#btn-game-quit").text(prevTxt);
             }, secondsBeforeLeaving * 1000);
+        } else {
+            this.quitGame();
+        }
         });
         this.specStatsButton.on("click", () => {
             this.toggleLocalStats();
