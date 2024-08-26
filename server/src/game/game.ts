@@ -258,6 +258,8 @@ export class Game {
                 const emoteMsg = new net.EmoteMsg();
                 emoteMsg.deserialize(stream);
 
+                if (player.dead) break;
+
                 this.playerBarn.emotes.push(
                     new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing),
                 );

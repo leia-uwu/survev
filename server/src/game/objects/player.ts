@@ -1,4 +1,5 @@
 import { GameObjectDefs, type LootDef } from "../../../../shared/defs/gameObjectDefs";
+import type { EmoteDef } from "../../../../shared/defs/gameObjects/emoteDefs";
 import {
     type BackpackDef,
     type BoostDef,
@@ -1482,6 +1483,11 @@ export class Player extends BaseGameObject {
                     !emote.isPing && player.visibleObjects.has(emotePlayer);
 
                 const partOfGroup = emotePlayer.groupId === player.groupId;
+
+                if ((GameObjectDefs[emote.type] as EmoteDef)?.teamOnly && !partOfGroup) {
+                    continue;
+                }
+
                 const isTeamLeader =
                     emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
                 const seePing =
