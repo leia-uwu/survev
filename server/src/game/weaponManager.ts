@@ -597,6 +597,9 @@ export class WeaponManager {
 
         const hasExplosive = this.player.hasPerk("explosive");
         const hasSplinter = this.player.hasPerk("splinter");
+        const shouldApplyChambered = this.player.hasPerk("chambered")
+            && itemDef.bulletCount === 1
+            && (weapon.ammo === 0 || weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
         // Movement spread
         let spread = itemDef.shotSpread ?? 0;
@@ -657,6 +660,8 @@ export class WeaponManager {
                 damageMult *= 1.08;
             } else if (this.player.lastBreathActive) {
                 damageMult *= 1.08;
+            } else if (shouldApplyChambered) {
+                damageMult *= 1.25;
             }
 
             const params: BulletParams = {
@@ -672,8 +677,9 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: offHand,
-                trailSaturated: this.isBulletSaturated(),
+                trailSaturated: this.isBulletSaturated() || shouldApplyChambered,
                 trailSmall: false,
+                trailThick: shouldApplyChambered,
                 reflectCount: 0,
                 splinter: hasSplinter,
                 // reflectObjId: this.player.linkedObstacleId,
