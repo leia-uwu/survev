@@ -328,6 +328,10 @@ export const util = {
         }
     },
 
+    wrappedArrayIndex<T>(arr: T[], index: number): T {
+        return arr.at(index % arr.length) as T;
+    },
+
     weightedRandom<T extends Object>(items: Array<T & { weight: number }>) {
         let total = 0.0;
         for (let i = 0; i < items.length; i++) {
