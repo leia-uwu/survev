@@ -598,17 +598,9 @@ export class GameMap {
                 ori = this.getOriAndScale(customSpawnRule.type).ori;
                 pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
 
-                if (this.canSpawn(customSpawnRule.type, pos, ori)) {
-                    break;
-                }
-            }
-            if (pos && ori !== undefined && attempts < GameMap.MaxSpawnAttempts) {
+                if (!this.canSpawn(customSpawnRule.type, pos, ori)) continue;
                 this.genAuto(customSpawnRule.type, pos);
-            } else {
-                this.game.logger.warn(
-                    "Failed to generate custom spawn rule",
-                    customSpawnRule.type,
-                );
+                break;
             }
         }
 
