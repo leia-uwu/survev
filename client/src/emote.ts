@@ -4,7 +4,9 @@ import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { EmotesDefs } from "../../shared/defs/gameObjects/emoteDefs";
 import type { AmmoDef } from "../../shared/defs/gameObjects/gearDefs";
 import type { GunDef } from "../../shared/defs/gameObjects/gunDefs";
+import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 import { PingDefs } from "../../shared/defs/gameObjects/pingDefs";
+import type { ThrowableDef } from "../../shared/defs/gameObjects/throwableDefs";
 import { EmoteSlot, GameConfig, Input } from "../../shared/gameConfig";
 import type { Emote } from "../../shared/net/updateMsg";
 import { coldet } from "../../shared/utils/coldet";
@@ -737,12 +739,15 @@ export class EmoteBarn {
 
             // Rotate if it's loot and rotation defined
             if (emote.type == "emote_loot") {
-                const lootDef = GameObjectDefs[emote.itemType] as any; // as MeleeDef | GunDef;
+                const lootDef = GameObjectDefs[emote.itemType] as
+                    | MeleeDef
+                    | GunDef
+                    | ThrowableDef;
                 if (lootDef?.lootImg) {
                     e.sprite.texture = PIXI.Texture.from(lootDef.lootImg.sprite);
 
                     // Colorize if defined
-                    const ammo = GameObjectDefs[lootDef.ammo] as AmmoDef;
+                    const ammo = GameObjectDefs[(lootDef as GunDef).ammo] as AmmoDef;
                     e.circleOuter.tint = ammo ? ammo.lootImg.tintDark! : 0;
 
                     // Rotate if defined

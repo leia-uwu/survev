@@ -31,6 +31,8 @@ export interface ThrowableDef {
         border: "loot-circle-outer-01.img";
         borderTint: number;
         scale: number;
+        rot?: number;
+        mirror?: boolean;
     };
     worldImg: {
         sprite: string;
