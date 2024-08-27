@@ -189,30 +189,31 @@ export class Renderer {
     }
 
     redrawDebugLayerMask(camera: Camera, map: Map) {
-        const r = this.debugLayerMask as unknown as PIXI.Graphics;
-        r.clear();
-        r.beginFill(16711935, 1);
-        for (let a = map.structurePool.getPool(), i = 0; i < a.length; i++) {
-            const o = a[i];
-            if (o.active) {
-                for (let s = 0; s < o.mask.length; s++) {
-                    const n = o.mask[s];
+        const mask = this.debugLayerMask as unknown as PIXI.Graphics;
+        mask.clear();
+        mask.beginFill(16711935, 1);
+        const structures = map.structurePool.getPool();
+        for (let i = 0; i < structures.length; i++) {
+            const structure = structures[i];
+            if (structure.active) {
+                for (let s = 0; s < structure.mask.length; s++) {
+                    const n = structure.mask[s];
                     const c = v2.mul(v2.sub(n.max, n.min), 0.5);
                     const m = v2.add(n.min, c);
                     const p = m.x - c.x;
                     const h = m.y - c.y;
                     const u = c.x * 2;
                     const g = c.y * 2;
-                    drawRect(r, p, h, u, g);
+                    drawRect(mask, p, h, u, g);
                 }
             }
         }
-        r.endFill();
-        const y = camera.pointToScreen(v2.create(0, 0));
-        camera.pointToScreen(v2.create(1, 0));
-        const w = camera.scaleToScreen(1);
-        r.position.set(y.x, y.y);
-        r.scale.set(w, -w);
+        mask.endFill();
+        const p0 = camera.pointToScreen(v2.create(0, 0));
+        const p1 = camera.pointToScreen(v2.create(1, 0));
+        const s = camera.scaleToScreen(1);
+        mask.position.set(p0.x, p0.y);
+        mask.scale.set(s, -s);
     }
 
     update(dt: number, camera: Camera, map: Map, _debug: unknown) {

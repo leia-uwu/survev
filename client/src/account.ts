@@ -65,7 +65,6 @@ export class Account {
     pass = {};
 
     constructor(public config: ConfigManager) {
-
         window.login = () => {
             this.login();
         };

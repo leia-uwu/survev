@@ -1440,7 +1440,8 @@ export class UiManager {
                     }),
                 );
             this.statsHeader.html(I as unknown as HTMLElement);
-            const T = (e: string, t: string | number) => $("<div/>", {
+            const T = (e: string, t: string | number) =>
+                $("<div/>", {
                     class: "ui-stats-info",
                 })
                     .append(
@@ -1463,7 +1464,8 @@ export class UiManager {
                 const D = humanizeTime(stats.timeAlive);
                 let E = "ui-stats-info-player";
                 E += stats.dead ? " ui-stats-info-status" : "";
-                const B = ((e) => $("<div/>", {
+                const B = ((e) =>
+                    $("<div/>", {
                         class: e,
                     }))(E);
                 B.css("left", P);
