@@ -848,6 +848,8 @@ export class Player extends BaseGameObject {
         this.zoom = this.scopeZoomRadius[this.scope];
 
         this.weaponManager.showNextThrowable();
+
+        this.addPerk("rare_potato");
     }
 
     visibleObjects = new Set<GameObject>();
@@ -3072,15 +3074,31 @@ export class Player extends BaseGameObject {
         }
     }
 
-    static toAllowedPotatoModeList(arr: [string, GunDef | MeleeDef | ThrowableDef][]) {
-        return arr.filter(([_, def]) => !def.noPotatoSwap).map(([idString, _]) => idString);
+    static toAllowedPotatoModeList(arr: [string, GunDef | MeleeDef | ThrowableDef][], quality = false) {
+        return arr
+            .filter(([_, def]) => {
+              if (quality) return !def.noPotatoSwap && def.quality === 1;
+              return !def.noPotatoSwap;
+            })
+            .map(([idString, _]) => idString);
     }
-    static allowedPotatoModeGuns = this.toAllowedPotatoModeList(Object.entries(GunDefs));
-    static allowedPotatoModeMelees = this.toAllowedPotatoModeList(Object.entries(MeleeDefs));
-    static allowedPotatoModeThrowables = this.toAllowedPotatoModeList(Object.entries(ThrowableDefs));
+    static allowedPotatoModeWeapons = Object.freeze({
+      guns: Player.toAllowedPotatoModeList(Object.entries(GunDefs)),
+      guns_rare: Player.toAllowedPotatoModeList(Object.entries(GunDefs), true),
+      melees: Player.toAllowedPotatoModeList(Object.entries(MeleeDefs)),
+      melees_rare: Player.toAllowedPotatoModeList(Object.entries(MeleeDefs), true),
+      throwables: Player.toAllowedPotatoModeList(Object.entries(ThrowableDefs)),
+      throwables_rare: Player.toAllowedPotatoModeList(Object.entries(ThrowableDefs), true)
+    })
+
+    private potatoModeWeaponSwitchLock = false;
 
     potatoModeWeaponSwitch(weaponType: string | undefined) {
-        const slot = this.weapons.findIndex(w => w.type === weaponType)
+        if (this.potatoModeWeaponSwitchLock) return;
+
+        this.potatoModeWeaponSwitchLock = true;
+
+        const slot = this.weapons.findIndex((w) => w.type === weaponType);
 
         if (slot === -1) return;
 
@@ -3089,7 +3107,7 @@ export class Player extends BaseGameObject {
 
         switch (GameConfig.WeaponType[slot]) {
             case "gun":
-                weapon = util.pickRandomInArr(Player.allowedPotatoModeGuns);
+                weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "guns_rare" : "guns"]);
                 const gunDef = GunDefs[weapon];
 
                 ammo = gunDef.maxClip;
@@ -3102,10 +3120,10 @@ export class Player extends BaseGameObject {
 
                 break;
             case "melee":
-                weapon = util.pickRandomInArr(Player.allowedPotatoModeMelees);
+                weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "melees_rare" : "melees"]);
                 break;
             case "throwable":
-                weapon = util.pickRandomInArr(Player.allowedPotatoModeThrowables);
+                weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "throwables_rare" : "throwables"]);
                 const throwableDef = ThrowableDefs[weapon];
 
                 ammo = math.max(
@@ -3115,13 +3133,15 @@ export class Player extends BaseGameObject {
                 break;
         }
 
-        if (!weapon) return;
-
-        this.weaponManager.setWeapon(slot, weapon, ammo);
-        const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
-        emote.itemType = weapon;
-        this.game.playerBarn.emotes.push(emote);
-        this.setDirty();
+        if (weapon) {
+            this.weaponManager.setWeapon(slot, weapon, ammo);
+            const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
+            emote.itemType = weapon;
+            this.game.playerBarn.emotes.push(emote);
+            this.shootHold = false;
+            this.setDirty();
+        }
+        this.potatoModeWeaponSwitchLock = false;
     }
 
     isOnOtherSide(door: Obstacle): boolean {
