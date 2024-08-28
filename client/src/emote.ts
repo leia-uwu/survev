@@ -731,7 +731,9 @@ export class EmoteBarn {
             e.life = this.emoteLife;
             e.lifeOut = this.emoteLifeOut;
             e.zIdx = this.zIdxNext++;
-            e.sprite.texture = PIXI.Texture.from(emoteData.texture);
+            if (emoteData.texture) {
+                e.sprite.texture = PIXI.Texture.from(emoteData.texture);
+            }
             e.container.visible = false;
             e.baseScale = 0.55;
             e.sound = emoteData.sound;
