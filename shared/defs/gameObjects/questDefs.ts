@@ -1,4 +1,4 @@
-interface QuestDef {
+export interface QuestDef {
     readonly type: "quest";
     category: string;
     target: number;

@@ -13,22 +13,23 @@ import {
     type ScopeDef,
 } from "./gameObjects/gearDefs";
 import { type GunDef, GunDefs } from "./gameObjects/gunDefs";
-import { HealEffectDefs } from "./gameObjects/healEffectDefs";
+import { type HealEffectDef, HealEffectDefs } from "./gameObjects/healEffectDefs";
 import { type MeleeDef, MeleeDefs } from "./gameObjects/meleeDefs";
 import { type OutfitDef, OutfitDefs } from "./gameObjects/outfitDefs";
-import { PassDefs } from "./gameObjects/passDefs";
+import { type PassDef, PassDefs } from "./gameObjects/passDefs";
 import { type PerkDef, PerkDefs } from "./gameObjects/perkDefs";
 import { type PingDef, PingDefs } from "./gameObjects/pingDefs";
-import { QuestDefs } from "./gameObjects/questDefs";
+import { type QuestDef, QuestDefs } from "./gameObjects/questDefs";
 import { type RoleDef, RoleDefs } from "./gameObjects/roleDefs";
 import { type ThrowableDef, ThrowableDefs } from "./gameObjects/throwableDefs";
-import { UnlockDefs } from "./gameObjects/unlockDefs";
+import { type UnlockDef, UnlockDefs } from "./gameObjects/unlockDefs";
 import { type XPDef, XPDefs } from "./gameObjects/xpDefs";
 
 export type GameObjectDef =
     | BulletDef
     | EmoteDef
     | CrosshairDef
+    | HealEffectDef
     | ExplosionDef
     | AmmoDef
     | HealDef
@@ -40,10 +41,13 @@ export type GameObjectDef =
     | GunDef
     | MeleeDef
     | OutfitDef
+    | QuestDef
     | PerkDef
+    | PassDef
     | PingDef
     | RoleDef
     | ThrowableDef
+    | UnlockDef
     | XPDef;
 
 export type LootDef =
@@ -61,7 +65,7 @@ export type LootDef =
     | ThrowableDef
     | XPDef;
 
-const ObjectDefsList: Array<Record<string, unknown>> = [
+const ObjectDefsList: Array<Record<string, GameObjectDef>> = [
     BulletDefs,
     CrosshairDefs,
     HealEffectDefs,
@@ -92,6 +96,6 @@ for (let i = 0; i < ObjectDefsList.length; i++) {
         if (GameObjectDefs[objectType] !== undefined) {
             throw new Error(`GameObject ${objectType} is already defined`);
         }
-        GameObjectDefs[objectType] = gameObjectDefs[objectType] as GameObjectDef;
+        GameObjectDefs[objectType] = gameObjectDefs[objectType];
     }
 }
