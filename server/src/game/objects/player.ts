@@ -3091,19 +3091,14 @@ export class Player extends BaseGameObject {
       throwables_rare: Player.toAllowedPotatoModeList(Object.entries(ThrowableDefs), true)
     })
 
-    private potatoModeWeaponSwitchLock = false;
-
     potatoModeWeaponSwitch(weaponType: string | undefined) {
-        if (this.potatoModeWeaponSwitchLock) return;
-
-        this.potatoModeWeaponSwitchLock = true;
-
         const slot = this.weapons.findIndex((w) => w.type === weaponType);
 
         if (slot === -1) return;
 
         let weapon: string | undefined;
         let ammo: number = 0;
+        let isThrowable = false;
 
         switch (GameConfig.WeaponType[slot]) {
             case "gun":
@@ -3126,22 +3121,24 @@ export class Player extends BaseGameObject {
                 weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "throwables_rare" : "throwables"]);
                 const throwableDef = ThrowableDefs[weapon];
 
-                ammo = math.max(
-                    this.inventory[weapon],
-                    throwableDef.quality === 1 ? 1 : 3,
-                );
+                ammo = throwableDef.quality === 1 ? 1 : 3;
+
+                isThrowable = true;
                 break;
         }
 
         if (weapon) {
-            this.weaponManager.setWeapon(slot, weapon, ammo);
+            if (isThrowable) {
+                this.inventory[weapon] = math.max(this.inventory[weapon], ammo);
+                this.inventoryDirty = true;
+            } else
+                this.weaponManager.setWeapon(slot, weapon, ammo);
             const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
             emote.itemType = weapon;
             this.game.playerBarn.emotes.push(emote);
             this.shootHold = false;
             this.setDirty();
         }
-        this.potatoModeWeaponSwitchLock = false;
     }
 
     isOnOtherSide(door: Obstacle): boolean {
