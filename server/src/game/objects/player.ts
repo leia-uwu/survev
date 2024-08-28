@@ -13,7 +13,10 @@ import { GunDefs, type GunDef } from "../../../../shared/defs/gameObjects/gunDef
 import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
-import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
+import {
+    ThrowableDefs,
+    type ThrowableDef,
+} from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
@@ -2105,8 +2108,9 @@ export class Player extends BaseGameObject {
 
         // Potato mode swap
         if (this.game.map.potatoMode && params.source instanceof Player) {
-            (params.source as Player).potatoModeWeaponSwitch();
+            (params.source as Player).potatoModeWeaponSwitch(params.gameSourceType);
         }
+
         // Check for game over
         this.game.checkGameOver();
     }
@@ -3068,33 +3072,56 @@ export class Player extends BaseGameObject {
         }
     }
 
-    potatoModeWeaponSwitch() {
-        const allowedGuns = Object.entries(GunDefs)
-            .filter(([_, def]) => !def.noPotatoSwap)
-            .map(([idString, _]) => idString);
+    static toAllowedPotatoModeList(arr: [string, GunDef | MeleeDef | ThrowableDef][]) {
+        return arr.filter(([_, def]) => !def.noPotatoSwap).map(([idString, _]) => idString);
+    }
+    static allowedPotatoModeGuns = this.toAllowedPotatoModeList(Object.entries(GunDefs));
+    static allowedPotatoModeMelees = this.toAllowedPotatoModeList(Object.entries(MeleeDefs));
+    static allowedPotatoModeThrowables = this.toAllowedPotatoModeList(Object.entries(ThrowableDefs));
+
+    potatoModeWeaponSwitch(weaponType: string | undefined) {
+        const slot = this.weapons.findIndex(w => w.type === weaponType)
+
+        if (slot === -1) return;
 
         let weapon: string | undefined;
         let ammo: number = 0;
 
-        switch (GameConfig.WeaponType[this.curWeapIdx]) {
+        switch (GameConfig.WeaponType[slot]) {
             case "gun":
-                weapon = util.pickRandomInArr(allowedGuns)
-                ammo = GunDefs[weapon].maxClip;
+                weapon = util.pickRandomInArr(Player.allowedPotatoModeGuns);
+                const gunDef = GunDefs[weapon];
+
+                ammo = gunDef.maxClip;
+
+                this.inventory[gunDef.ammo] = math.max(
+                    this.inventory[gunDef.ammo],
+                    gunDef.ammoSpawnCount - ammo,
+                );
+                this.inventoryDirty = true;
+
                 break;
             case "melee":
-                weapon = util.pickRandomInArr(Object.keys(MeleeDefs));
+                weapon = util.pickRandomInArr(Player.allowedPotatoModeMelees);
                 break;
             case "throwable":
+                weapon = util.pickRandomInArr(Player.allowedPotatoModeThrowables);
+                const throwableDef = ThrowableDefs[weapon];
+
+                ammo = math.max(
+                    this.inventory[weapon],
+                    throwableDef.quality === 1 ? 1 : 3,
+                );
                 break;
         }
 
-        if (weapon) {
-            this.weaponManager.setWeapon(this.curWeapIdx, weapon, ammo);
-            const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
-            emote.itemType = weapon;
-            this.game.playerBarn.emotes.push(emote);
-            this.setDirty();
-        }
+        if (!weapon) return;
+
+        this.weaponManager.setWeapon(slot, weapon, ammo);
+        const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
+        emote.itemType = weapon;
+        this.game.playerBarn.emotes.push(emote);
+        this.setDirty();
     }
 
     isOnOtherSide(door: Obstacle): boolean {
