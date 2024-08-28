@@ -3130,14 +3130,22 @@ export class Player extends BaseGameObject {
         if (weapon) {
             if (isThrowable) {
                 this.inventory[weapon] = math.max(this.inventory[weapon], ammo);
-                this.inventoryDirty = true;
             } else
                 this.weaponManager.setWeapon(slot, weapon, ammo);
             const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
             emote.itemType = weapon;
             this.game.playerBarn.emotes.push(emote);
             this.shootHold = false;
+            this.clampInventory();
+            this.inventoryDirty = true;
             this.setDirty();
+        }
+    }
+
+    clampInventory() {
+        for (const type of Object.keys(this.inventory)) {
+            if (!GameConfig.bagSizes[type]) continue;
+            this.inventory[type] = math.clamp(this.inventory[type], 0, GameConfig.bagSizes[type][this.getGearLevel(this.backpack)]);
         }
     }
 
