@@ -848,8 +848,6 @@ export class Player extends BaseGameObject {
         this.zoom = this.scopeZoomRadius[this.scope];
 
         this.weaponManager.showNextThrowable();
-
-        this.addPerk("rare_potato");
     }
 
     visibleObjects = new Set<GameObject>();
