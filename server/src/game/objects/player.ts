@@ -1491,6 +1491,8 @@ export class Player extends BaseGameObject {
                     emotePlayer.role == "leader" && emotePlayer.teamId === player.teamId;
                 const seePing =
                     (emote.isPing || emote.itemType) && (partOfGroup || isTeamLeader);
+                // HACK: Potato mode forces players to send potato emotes
+                if (this.game.map.potatoMode && !emote.isPing && emote.type !== "emote_loot") emote.type = "emote_potato"
                 if (seeNormalEmote || seePing) {
                     updateMsg.emotes.push(emote);
                 }
