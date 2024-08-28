@@ -9,7 +9,7 @@ import {
     SCOPE_LEVELS,
     type ScopeDef,
 } from "../../../../shared/defs/gameObjects/gearDefs";
-import type { GunDef } from "../../../../shared/defs/gameObjects/gunDefs";
+import { GunDefs, type GunDef } from "../../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
@@ -2103,6 +2103,10 @@ export class Player extends BaseGameObject {
             }
         }
 
+        // Potato mode swap
+        if (this.game.map.potatoMode && params.source instanceof Player) {
+            (params.source as Player).potatoModeWeaponSwitch();
+        }
         // Check for game over
         this.game.checkGameOver();
     }
@@ -3061,6 +3065,35 @@ export class Player extends BaseGameObject {
 
         if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
             this.weaponManager.tryReload();
+        }
+    }
+
+    potatoModeWeaponSwitch() {
+        const allowedGuns = Object.entries(GunDefs)
+            .filter(([_, def]) => !def.noPotatoSwap)
+            .map(([idString, _]) => idString);
+
+        let weapon: string | undefined;
+        let ammo: number = 0;
+
+        switch (GameConfig.WeaponType[this.curWeapIdx]) {
+            case "gun":
+                weapon = util.pickRandomInArr(allowedGuns)
+                ammo = GunDefs[weapon].maxClip;
+                break;
+            case "melee":
+                weapon = util.pickRandomInArr(Object.keys(MeleeDefs));
+                break;
+            case "throwable":
+                break;
+        }
+
+        if (weapon) {
+            this.weaponManager.setWeapon(this.curWeapIdx, weapon, ammo);
+            const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
+            emote.itemType = weapon;
+            this.game.playerBarn.emotes.push(emote);
+            this.setDirty();
         }
     }
 

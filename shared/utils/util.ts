@@ -63,6 +63,10 @@ export const util = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
+    pickRandomInArr<T>(arr: T[]) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    },
+
     randomPointOnCircle(rad: number) {
         const angle = util.random(0, 2 * Math.PI);
         return v2.create(Math.cos(angle) * rad, Math.sin(angle) * rad);
