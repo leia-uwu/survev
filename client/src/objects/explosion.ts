@@ -100,7 +100,7 @@ class PhysicsParticle {
         this.particle.pos = v2.copy(this.pos);
         this.ticker += dt;
         if (this.ticker >= this.particle.life) {
-            this.particle.n();
+            this.particle.free();
             this.active = false;
         }
     }
