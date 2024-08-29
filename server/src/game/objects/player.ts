@@ -2032,7 +2032,7 @@ export class Player extends BaseGameObject {
 
         if (this.outfit) {
             const def = GameObjectDefs[this.outfit] as OutfitDef;
-            if (!def.noDropOnDeath) {
+            if (!def.noDropOnDeath && !def.noDrop) {
                 this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
             }
         }
@@ -2844,6 +2844,11 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case "outfit":
+                if (this.role == "leader") {
+                    amountLeft = 1;
+                    pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
+                    break;
+                }
                 amountLeft = 1;
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
