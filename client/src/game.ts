@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
-import { GameConfig, Input, TeamMode } from "../../shared/gameConfig";
+import { GameConfig, Input, TeamMode, WeaponSlot } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
 import { ObjectType } from "../../shared/net/objectSerializeFns";
 import { math } from "../../shared/utils/math";
@@ -616,10 +616,10 @@ export class Game {
                 if (e.action == "use") {
                     if (e.type == "weapon") {
                         const weapIdxToInput = {
-                            0: Input.EquipPrimary,
-                            1: Input.EquipSecondary,
-                            2: Input.EquipMelee,
-                            3: Input.EquipThrowable,
+                            [WeaponSlot.Primary]: Input.EquipPrimary,
+                            [WeaponSlot.Secondary]: Input.EquipSecondary,
+                            [WeaponSlot.Melee]: Input.EquipMelee,
+                            [WeaponSlot.Throwable]: Input.EquipThrowable,
                         };
                         const input =
                             weapIdxToInput[

@@ -283,7 +283,7 @@ export class Account {
     }
 
     setLoadout(loadout: Loadout) {
-        const r = this.loadout;
+        const _r = this.loadout;
         this.loadout = loadout;
         this.emit("loadout", this.loadout);
         this.config.set("loadout", loadout);

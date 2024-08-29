@@ -210,7 +210,7 @@ export class Renderer {
         }
         mask.endFill();
         const p0 = camera.pointToScreen(v2.create(0, 0));
-        const p1 = camera.pointToScreen(v2.create(1, 0));
+        const _p1 = camera.pointToScreen(v2.create(1, 0));
         const s = camera.scaleToScreen(1);
         mask.position.set(p0.x, p0.y);
         mask.scale.set(s, -s);

@@ -349,7 +349,7 @@ export class WeaponManager {
 
         const conditions = [
             this.player.inventory[weaponDef.ammo] == undefined,
-            this.player.actionType == (GameConfig.Action.UseItem as number),
+            this.player.actionType == GameConfig.Action.UseItem,
             this.weapons[this.curWeapIdx].ammo >=
                 this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),

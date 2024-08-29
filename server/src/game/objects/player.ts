@@ -16,7 +16,12 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
-import { GameConfig } from "../../../../shared/gameConfig";
+import {
+    type Action,
+    type Anim,
+    GameConfig,
+    type HasteType,
+} from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type Circle, coldet } from "../../../../shared/utils/coldet";
@@ -403,7 +408,7 @@ export class Player extends BaseGameObject {
         this.setGroupStatuses();
     }
 
-    _spectatorCount = 0;
+    private _spectatorCount = 0;
     set spectatorCount(spectatorCount: number) {
         if (this._spectatorCount === spectatorCount) return;
         this._spectatorCount = spectatorCount;
@@ -472,14 +477,14 @@ export class Player extends BaseGameObject {
     bleedTicker = 0;
     playerBeingRevived: Player | undefined;
 
-    animType: number = GameConfig.Anim.None;
+    animType: Anim = GameConfig.Anim.None;
     animSeq = 0;
     private _animTicker = 0;
     private _animCb?: () => void;
 
     distSinceLastCrawl = 0;
 
-    actionType: number = GameConfig.Action.None;
+    actionType: Action = GameConfig.Action.None;
     actionSeq = 0;
     action = { time: 0, duration: 0, targetId: 0 };
 
@@ -496,7 +501,7 @@ export class Player extends BaseGameObject {
     frozenOri = 0;
 
     private _hasteTicker = 0;
-    hasteType: number = GameConfig.HasteType.None;
+    hasteType: HasteType = GameConfig.HasteType.None;
     hasteSeq = 0;
 
     actionItem = "";
@@ -537,10 +542,10 @@ export class Player extends BaseGameObject {
     }
 
     lastBreathActive = false;
-    _lastBreathTicker = 0;
+    private _lastBreathTicker = 0;
 
     bugleTickerActive = false;
-    _bugleTicker = 0;
+    private _bugleTicker = 0;
 
     handleFactionModeRoles(role: string): void {
         if (this.role === role) return;
@@ -1753,7 +1758,7 @@ export class Player extends BaseGameObject {
         this.downedCount++;
         this.boost = 0;
         this.health = 100;
-        this.animType = 0;
+        this.animType = GameConfig.Anim.None;
         this.setDirty();
 
         this.shootStart = false;
@@ -1831,9 +1836,9 @@ export class Player extends BaseGameObject {
         if (this.downed) this.downed = false;
         this.dead = true;
         this.boost = 0;
-        this.actionType = 0;
-        this.hasteType = 0;
-        this.animType = 0;
+        this.actionType = GameConfig.Action.None;
+        this.hasteType = GameConfig.HasteType.None;
+        this.animType = GameConfig.Anim.None;
         this.setDirty();
 
         this.shootHold = false;
@@ -1886,7 +1891,7 @@ export class Player extends BaseGameObject {
                 if (source.hasPerk("takedown")) {
                     source.health += 25;
                     source.boost += 25;
-                    source.giveHaste(GameConfig.HasteType.Takedown, 3);
+                    source.giveHaste(GameConfig.HasteType.Takedown, 20);
                 }
             }
 
@@ -1922,8 +1927,8 @@ export class Player extends BaseGameObject {
         }
 
         if (this.game.map.factionMode && this.team!.livingPlayers.length <= 2) {
-            const last1 = this.team!.livingPlayers[0] as Player | undefined;
-            const last2 = this.team!.livingPlayers[1] as Player | undefined;
+            const last1 = this.team!.livingPlayers[0];
+            const last2 = this.team!.livingPlayers[1];
 
             if (last1 && last1.role != "last_man") {
                 last1.promoteToRole("last_man");
@@ -3121,14 +3126,14 @@ export class Player extends BaseGameObject {
         }
     }
 
-    giveHaste(type: number, duration: number): void {
+    giveHaste(type: HasteType, duration: number): void {
         this.hasteType = type;
         this.hasteSeq++;
         this._hasteTicker = duration;
         this.setDirty();
     }
 
-    playAnim(type: number, duration: number, cb?: () => void): void {
+    playAnim(type: Anim, duration: number, cb?: () => void): void {
         this.animType = type;
         this.animSeq++;
         this.setDirty();
