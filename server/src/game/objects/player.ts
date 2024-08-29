@@ -135,7 +135,7 @@ export class PlayerBarn {
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
-        if (this.game.isTeamMode)
+        if (!this.game.contextManager.isContextModeSolo())
             this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
@@ -567,6 +567,9 @@ export class Player extends BaseGameObject {
         }
 
         if (def.defaultItems) {
+            //for non faction modes where teamId > 2, just cycles between blue and red teamId
+            const clampedTeamId = ((this.teamId - 1) % 2) + 1;
+
             //inventory
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
                 if (value == 0) continue; //prevents overwriting existing inventory
@@ -576,7 +579,7 @@ export class Player extends BaseGameObject {
             //outfit
             const newOutfit = def.defaultItems.outfit;
             if (newOutfit instanceof Function) {
-                this.outfit = newOutfit(this.teamId);
+                this.outfit = newOutfit(clampedTeamId);
             } else {
                 //string
                 if (newOutfit) this.outfit = newOutfit;
@@ -588,7 +591,7 @@ export class Player extends BaseGameObject {
                 this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
             this.helmet =
                 def.defaultItems.helmet instanceof Function
-                    ? def.defaultItems.helmet(this.teamId)
+                    ? def.defaultItems.helmet(clampedTeamId)
                     : def.defaultItems.helmet;
             if (this.chest)
                 this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
@@ -600,7 +603,7 @@ export class Player extends BaseGameObject {
                 const weaponOrWeaponFunc = def.defaultItems.weapons[i];
                 const trueWeapon =
                     weaponOrWeaponFunc instanceof Function
-                        ? weaponOrWeaponFunc(this.teamId)
+                        ? weaponOrWeaponFunc(clampedTeamId)
                         : weaponOrWeaponFunc;
 
                 if (!trueWeapon.type) {
@@ -1577,42 +1580,44 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
-    /** incremented when next, decremented when prev, when it reaches this.spectating.team.getAlivePlayers().length-1, switch to next team */
-    enemyTeamCycleCount = 0;
-
-    /**
-     * the main purpose of this function is to asynchronously set "spectating"
-     * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
-     */
     spectate(spectateMsg: net.SpectateMsg): void {
+        const spectatablePlayers = this.game.contextManager.getSpectatablePlayers(this);
         let playerToSpec: Player | undefined;
-        const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        const teamExistsOrAlive =
-            this.game.isTeamMode &&
-            this.group &&
-            !this.group.checkAllDeadOrDisconnected(this);
         switch (true) {
             case spectateMsg.specBegin:
-                if (teamExistsOrAlive) playerToSpec = this.group!.randomPlayer(this);
-                else
+                const groupExistsOrAlive =
+                    this.game.isTeamMode && this.group!.livingPlayers.length > 0;
+                if (groupExistsOrAlive) {
                     playerToSpec =
-                        this.killedBy && this.killedBy != this
-                            ? this.killedBy
-                            : this.game.playerBarn.randomPlayer(this);
+                        spectatablePlayers[
+                            util.randomInt(0, spectatablePlayers.length - 1)
+                        ];
+                } else {
+                    const getAliveKiller = (
+                        killer: Player | undefined,
+                    ): Player | undefined => {
+                        if (!killer) return undefined;
+                        if (!killer.dead) return killer;
+                        if (killer.killedBy && killer.killedBy != this)
+                            return getAliveKiller(killer.killedBy);
+
+                        return undefined;
+                    };
+                    const aliveKiller = getAliveKiller(this.killedBy);
+                    playerToSpec =
+                        aliveKiller ??
+                        spectatablePlayers[
+                            util.randomInt(0, spectatablePlayers.length - 1)
+                        ];
+                }
                 break;
             case spectateMsg.specNext:
             case spectateMsg.specPrev:
                 const nextOrPrev = +spectateMsg.specNext - +spectateMsg.specPrev;
-                if (teamExistsOrAlive)
-                    playerToSpec = util.wrappedArrayIndex(
-                        this.group!.livingPlayers,
-                        this.group!.livingPlayers.indexOf(this.spectating!) + nextOrPrev,
-                    );
-                else
-                    playerToSpec = util.wrappedArrayIndex(
-                        spectatablePlayers,
-                        spectatablePlayers.indexOf(this.spectating!) + nextOrPrev,
-                    );
+                playerToSpec = util.wrappedArrayIndex(
+                    spectatablePlayers,
+                    spectatablePlayers.indexOf(this.spectating!) + nextOrPrev,
+                );
                 break;
         }
         this.spectating = playerToSpec;

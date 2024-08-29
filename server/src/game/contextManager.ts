@@ -9,8 +9,11 @@ import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
 enum ContextMode {
+    /** default solos, any map besides factions */
     Solo,
+    /** default duos or squads, any map besides factions */
     Team,
+    /** irrelevant to gamemode type, always the mode if faction map is selected */
     Faction,
 }
 
@@ -69,10 +72,19 @@ export class ContextManager {
     }
 
     isGameStarted(): boolean {
+        // return this._applyContext<boolean>({
+        //     [ContextMode.Solo]: () => this.aliveCount() > 1,
+        //     [ContextMode.Team]: () => this.aliveCount() > 1,
+        //     [ContextMode.Faction]: () => this.aliveCount() > 1,
+        // });
+        return this.aliveCount() > 1;
+    }
+
+    isContextModeSolo(): boolean {
         return this._applyContext<boolean>({
-            [ContextMode.Solo]: () => this.aliveCount() > 1,
-            [ContextMode.Team]: () => this.aliveCount() > 1,
-            [ContextMode.Faction]: () => this.aliveCount() > 1, //tbd
+            [ContextMode.Solo]: () => true,
+            [ContextMode.Team]: () => false,
+            [ContextMode.Faction]: () => false,
         });
     }
 
@@ -104,6 +116,20 @@ export class ContextManager {
                 [...this._game.groups.values()].map((g) => g.livingPlayers),
             [ContextMode.Faction]: () => this._game.teams.map((t) => t.livingPlayers),
         });
+    }
+
+    getSpectatablePlayers(player: Player): Player[] {
+        switch (this._contextMode) {
+            case ContextMode.Solo:
+                return this._game.playerBarn.livingPlayers.filter((p) => !p.disconnected);
+            case ContextMode.Team:
+            case ContextMode.Faction:
+                //livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
+                //if theres no one on the player's team left alive, teamId check will cancel itself out and only the living players will return
+                return this._game.playerBarn.livingPlayers.filter(
+                    (p) => !p.disconnected && p.teamId == player.teamId,
+                );
+        }
     }
 
     getPlayerStatusPlayers(player: Player): Player[] | undefined {
