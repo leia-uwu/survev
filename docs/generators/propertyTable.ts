@@ -1,6 +1,8 @@
+import { GameImagePaths } from "../util/gameImages";
+
 export default function generatePropertyTable(obj: any): string {
     let buffer = "";
-    buffer += "<table>";
+    buffer += "<table style='font-size: 0.7rem; max-width: 60ch;'>";
 
     buffer += "<thead>";
     buffer += "<tr>";
@@ -15,6 +17,8 @@ export default function generatePropertyTable(obj: any): string {
         buffer += `<td><b>${property}</b></td>`;
         buffer += "<td>";
         switch (true) {
+            case typeof value === "string" && value.endsWith(".img"):
+                buffer += `<img src="${GameImagePaths[value]}" height="30">`;
             case typeof value === "string":
                 buffer += value;
                 break;
