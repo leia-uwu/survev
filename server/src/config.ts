@@ -1,14 +1,8 @@
 import fs from "fs";
 import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
-import { GameConfig } from "../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
-
-export enum TeamMode {
-    Solo = 1,
-    Duo = 2,
-    Squad = 4,
-}
 
 /**
  * Default server config
