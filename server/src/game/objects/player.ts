@@ -2126,21 +2126,17 @@ export class Player extends BaseGameObject {
         return playerToRevive;
     }
 
-    selfRevive() {
-        this.doAction(
-            "",
-            GameConfig.Action.Revive,
-            0.75 * GameConfig.player.reviveDuration,
-            this.__id,
-        );
-    }
-
     revive(playerToRevive: Player | undefined) {
         if (!playerToRevive) return;
 
         this.playerBeingRevived = playerToRevive;
         if (this.downed && this.hasPerk("self_revive")) {
-            this.selfRevive();
+            this.doAction(
+                "",
+                GameConfig.Action.Revive,
+                GameConfig.player.reviveDuration,
+                this.__id,
+            );
         } else {
             playerToRevive.doAction(
                 "",
