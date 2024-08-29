@@ -139,7 +139,7 @@ export const util = {
     },
 
     // Taken from: https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
-    hsvToRgb(h: any, s: number, v: number) {
+    hsvToRgb(h: number, s: number, v: number) {
         let r = 0;
         let g = 0;
         let b = 0;
@@ -148,11 +148,7 @@ export const util = {
         let p = 0;
         let q = 0;
         let t = 0;
-        if (arguments.length === 1) {
-            s = h.s;
-            v = h.v;
-            h = h.h;
-        }
+
         i = Math.floor(h * 6.0);
         f = h * 6.0 - i;
         p = v * (1.0 - s);

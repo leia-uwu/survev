@@ -64,7 +64,7 @@ interface TeamPingSelector {
     parent: JQuery<HTMLElement>;
     angleA: number;
     angleC: number;
-    highlight: any;
+    highlight: JQuery<HTMLElement>;
     highlightDisplayed: boolean;
     ping: string;
     emote: string;

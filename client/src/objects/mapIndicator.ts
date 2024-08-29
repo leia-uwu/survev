@@ -5,15 +5,15 @@ import type { MapIndicator } from "../../../shared/net/updateMsg";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { device } from "../device";
-import type { MapSpriteBarn } from "./mapSprite";
+import type { MapSprite, MapSpriteBarn } from "./mapSprite";
 
 interface Indicator {
     id: number;
     type: string;
     pos: Vec2;
     equipped: boolean;
-    mapSprite: any;
-    pulseSprite: any;
+    mapSprite: MapSprite;
+    pulseSprite: MapSprite;
     pulseScale: number;
     pulseScaleMin: number;
     pulseScaleMax: number;
@@ -91,7 +91,7 @@ export class MapIndicatorBarn {
         mapSprite.visible = true;
         mapSprite.sprite.texture = PIXI.Texture.from(objDef.mapIndicator?.sprite!);
 
-        mapSprite.sprite.tint = objDef.mapIndicator?.tint;
+        mapSprite.sprite.tint = objDef.mapIndicator?.tint ?? 0xffffff;
         if (objDef.mapIndicator?.pulse) {
             const pulseSprite = indicator.pulseSprite;
             pulseSprite.pos = v2.copy(indicator.pos);

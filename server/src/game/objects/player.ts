@@ -3208,7 +3208,7 @@ export class Player extends BaseGameObject {
         }
     }
 
-    sendMsg(type: number, msg: any, bytes = 128): void {
+    sendMsg(type: number, msg: net.AbstractMsg, bytes = 128): void {
         const stream = new net.MsgStream(new ArrayBuffer(bytes));
         stream.serializeMsg(type, msg);
         this.sendData(stream.getBuffer());

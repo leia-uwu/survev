@@ -1,6 +1,6 @@
 import type { AABBWithHeight, ColliderWithHeight } from "../../utils/coldet";
 import type { Vec2 } from "../../utils/v2";
-import type { TerrainSpawnDef } from "../mapObjectsTyping";
+import type { LootSpawnDef, TerrainSpawnDef } from "../mapObjectsTyping";
 
 export interface ObstacleDef {
     readonly type: "obstacle";
@@ -19,16 +19,7 @@ export interface ObstacleDef {
     hitParticle: string;
     explodeParticle: string[] | string;
     reflectBullets: boolean;
-    loot: Array<{
-        tier?: string;
-        min?: number;
-        max?: number;
-        props?: {
-            preloadGuns?: boolean;
-        };
-        type?: string;
-        count?: number;
-    }>;
+    loot: Array<LootSpawnDef>;
     map?: {
         display: boolean;
         color?: number;

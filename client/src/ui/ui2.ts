@@ -52,11 +52,11 @@ function domElemById(id: string) {
 function isLmb(e: MouseEvent) {
     return e.button == 0;
 }
-function isRmb(e: any) {
+function isRmb(e: MouseEvent) {
     if ("which" in e) {
         return e.which == 3;
     }
-    return e.button == 2;
+    return (e as MouseEvent).button == 2;
 }
 // These functions, copy and diff, only work if both
 // arguments have the same internal structure
