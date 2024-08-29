@@ -119,17 +119,14 @@ export class ContextManager {
     }
 
     getSpectatablePlayers(player: Player): Player[] {
-        switch (this._contextMode) {
-            case ContextMode.Solo:
-                return this._game.playerBarn.livingPlayers.filter((p) => !p.disconnected);
-            case ContextMode.Team:
-            case ContextMode.Faction:
-                //livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
-                //if theres no one on the player's team left alive, teamId check will cancel itself out and only the living players will return
-                return this._game.playerBarn.livingPlayers.filter(
-                    (p) => !p.disconnected && p.teamId == player.teamId,
-                );
+        let playerFilter: (p: Player) => boolean;
+        if (this.getPlayerAlivePlayersContext(player).length != 0) {
+            playerFilter = (p: Player) => !p.disconnected && p.teamId == player.teamId;
+        } else {
+            playerFilter = (p: Player) => !p.disconnected;
         }
+        //livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
+        return this._game.playerBarn.livingPlayers.filter(playerFilter);
     }
 
     getPlayerStatusPlayers(player: Player): Player[] | undefined {
