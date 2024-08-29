@@ -2091,7 +2091,7 @@ export class Player extends BaseGameObject {
             // action in progress
             return;
         }
-        if (!this.game.contextManager.canRevive()) {
+        if (!this.game.contextManager.canRevive(this)) {
             return;
         }
 

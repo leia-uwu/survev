@@ -179,13 +179,21 @@ export class ContextManager {
             );
     }
 
-    /** if the current context mode supports reviving, unrelated to individual players */
-    canRevive(): boolean {
-        return this._applyContext<boolean>({
-            [ContextMode.Solo]: () => false,
-            [ContextMode.Team]: () => true,
-            [ContextMode.Faction]: () => true,
-        });
+    /**
+     * by default, true if the current context mode supports reviving
+     *
+     * always true regardless of context mode with self revive
+     * @param playerReviving player that initializes the revive action
+     */
+    canRevive(playerReviving: Player): boolean {
+        return (
+            playerReviving.hasPerk("self_revive") ||
+            this._applyContext<boolean>({
+                [ContextMode.Solo]: () => false,
+                [ContextMode.Team]: () => true,
+                [ContextMode.Faction]: () => true,
+            })
+        );
     }
 
     isReviving(player: Player): boolean {
