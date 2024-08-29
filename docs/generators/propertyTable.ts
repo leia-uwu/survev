@@ -1,4 +1,9 @@
 import { GameImagePaths } from "../util/gameImages";
+import { BulletDefs } from "../../shared/defs/gameObjects/bulletDefs";
+
+const definitionMap: Record<string, Record<string, any>> = {
+  "bulletType": BulletDefs
+}
 
 export default function generatePropertyTable(obj: any): string {
     let buffer = "";
@@ -17,8 +22,13 @@ export default function generatePropertyTable(obj: any): string {
         buffer += `<td><b>${property}</b></td>`;
         buffer += "<td>";
         switch (true) {
+            case definitionMap[property] !== undefined && typeof value === "string":
+                buffer += `<b>${value}</b>`
+                buffer += generatePropertyTable(definitionMap[property][value]);
+                break;
             case typeof value === "string" && value.endsWith(".img"):
                 buffer += `<img src="${GameImagePaths[value]}" height="30">`;
+                break;
             case typeof value === "string":
                 buffer += value;
                 break;
