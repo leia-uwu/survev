@@ -123,6 +123,9 @@ export const GameConfig = {
         widthDecay: 0.5,
         widthMin: 10,
         damageTickRate: 2,
+        lastNonMovingIdx: 1e10,
+        movingWidthDecay: 0.7,
+        movingCenterRadMulti: 0.8, //how far into the old zone new zone will be centered
         damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22],
     },
     map: {
