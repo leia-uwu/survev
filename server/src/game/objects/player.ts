@@ -955,6 +955,7 @@ export class Player extends BaseGameObject {
                         target.health = GameConfig.player.reviveHealth;
                         target.setDirty();
                         target.setGroupStatuses();
+                        this.game.pluginManager.emit("playerRevived", target);
                     });
                 }
 
