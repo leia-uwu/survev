@@ -2826,9 +2826,6 @@ export class Player extends BaseGameObject {
                     break;
                 }
 
-                if (def.role) {
-                    this.promoteToRole(def.role);
-                }
             case "chest":
             case "backpack":
                 {
@@ -2850,6 +2847,10 @@ export class Player extends BaseGameObject {
                         pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     }
                     if (this.getGearLevel(lootToAdd) === 0) lootToAdd = "";
+
+                    if (def.type == "helmet" && def.role) {
+                        this.promoteToRole(def.role);
+                    }
                 }
                 break;
             case "outfit":
