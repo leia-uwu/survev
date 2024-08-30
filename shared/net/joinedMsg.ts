@@ -1,7 +1,8 @@
+import type { TeamMode } from "../gameConfig";
 import type { AbstractMsg, BitStream } from "./net";
 
 export class JoinedMsg implements AbstractMsg {
-    teamMode = 0;
+    teamMode!: TeamMode;
     playerId = 0;
     started = false;
     emotes: string[] = [];

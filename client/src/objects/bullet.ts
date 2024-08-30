@@ -45,13 +45,13 @@ export function playHitFx(
     particleName: string,
     soundName: string,
     pos: Vec2,
-    a: Vec2,
+    dir: Vec2,
     layer: number,
     particleBarn: ParticleBarn,
     audioManager: AudioManager,
 ) {
     const numParticles = Math.floor(util.random(1, 2));
-    let vel = v2.mul(a, 9.5);
+    let vel = v2.mul(dir, 9.5);
     for (let i = 0; i < numParticles; i++) {
         vel = v2.rotate(vel, ((Math.random() - 0.5) * Math.PI) / 3);
         particleBarn.addParticle(particleName, layer, pos, vel);

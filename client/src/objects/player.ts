@@ -376,7 +376,7 @@ export class Player implements AbstractObject {
     wasInsideObstacle!: boolean;
     insideObstacleType!: string;
     lastInsideObstacleTime!: number;
-    dead: any;
+    dead!: boolean;
     gunSwitchCooldown!: number;
 
     constructor() {
@@ -1856,8 +1856,8 @@ export class Player implements AbstractObject {
         let idlePose = "fists";
         idlePose = this.downed
             ? "downed"
-            : (curWeapDef as any).anim?.idlePose
-              ? (curWeapDef as any).anim.idlePose
+            : (curWeapDef as MeleeDef).anim?.idlePose
+              ? (curWeapDef as MeleeDef).anim.idlePose
               : curWeapDef.type == "gun"
                 ? curWeapDef.pistol
                     ? curWeapDef.isDual

@@ -55,13 +55,7 @@ function traceGroundPatch(canvas: PIXI.Graphics, patch: GroundPatch, seed: numbe
     const seededRand = util.seededRand(seed);
     tracePath(
         canvas,
-        generateJaggedAabbPoints(
-            patch as any,
-            divisionsX,
-            divisionsY,
-            offset,
-            seededRand,
-        ),
+        generateJaggedAabbPoints(patch, divisionsX, divisionsY, offset, seededRand),
     );
 }
 
