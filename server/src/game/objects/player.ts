@@ -2820,6 +2820,10 @@ export class Player extends BaseGameObject {
                     pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     break;
                 }
+
+                if (def.role) {
+                    this.promoteToRole(def.role);
+                }
             case "chest":
             case "backpack":
                 {
@@ -2880,7 +2884,8 @@ export class Player extends BaseGameObject {
             removeLoot &&
             amountLeft > 0 &&
             lootToAdd !== "" &&
-            !(lootToAddDef as ChestDef).noDrop
+            //if obj you tried picking up can't be picked up and needs to be dropped, "noDrop" is irrelevant
+            (obj.type == lootToAdd || !(lootToAddDef as ChestDef).noDrop)
         ) {
             const dir = v2.neg(this.dir);
             this.game.lootBarn.addLootWithoutAmmo(
