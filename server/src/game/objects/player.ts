@@ -904,11 +904,11 @@ export class Player extends BaseGameObject {
         } else if (this.downed) {
             this.bleedTicker += dt;
             if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
+                const bleedDamageMult = this.game.map.mapDef.gameConfig.bleedDamageMult;
+                const multiplier =
+                    bleedDamageMult != 1 ? this.downedCount * bleedDamageMult : 1;
                 this.damage({
-                    amount:
-                        this.game.map.mapDef.gameConfig.bleedDamage *
-                        (this.downedCount *
-                            this.game.map.mapDef.gameConfig.bleedDamageMult),
+                    amount: this.game.map.mapDef.gameConfig.bleedDamage * multiplier,
                     damageType: GameConfig.DamageType.Bleeding,
                     dir: this.dir,
                 });
