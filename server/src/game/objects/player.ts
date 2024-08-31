@@ -2159,7 +2159,10 @@ export class Player extends BaseGameObject {
     }
 
     isAffectedByAOE(medic: Player): boolean {
-        const effectRange = medic.actionType == GameConfig.Action.Revive ? 6 : 8.5;
+        const effectRange =
+            medic.actionType == GameConfig.Action.Revive
+                ? GameConfig.player.medicReviveRange
+                : GameConfig.player.medicHealRange;
 
         return (
             medic.teamId == this.teamId &&
@@ -2170,7 +2173,10 @@ export class Player extends BaseGameObject {
 
     /** for the medic role in 50v50 */
     getAOEPlayers(): Player[] {
-        const effectRange = this.actionType == GameConfig.Action.Revive ? 6 : 8.5;
+        const effectRange =
+            this.actionType == GameConfig.Action.Revive
+                ? GameConfig.player.medicReviveRange
+                : GameConfig.player.medicHealRange;
 
         return this.game.grid
             .intersectCollider(
