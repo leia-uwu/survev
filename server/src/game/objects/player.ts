@@ -2194,9 +2194,8 @@ export class Player extends BaseGameObject {
         assert(itemDef.type === "heal", `Invalid heal item ${item}`);
 
         if (
-            !this.hasPerk("aoe_heal") &&
-            (this.health == itemDef.maxHeal ||
-                this.actionType == GameConfig.Action.UseItem)
+            (!this.hasPerk("aoe_heal") && this.health == itemDef.maxHeal) ||
+            this.actionType == GameConfig.Action.UseItem
         ) {
             return;
         }
