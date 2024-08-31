@@ -46,6 +46,10 @@ export default defineConfig(({ mode }) => {
                     : {}),
             },
         },
+        esbuild: {
+            jsxFactory: "h",
+            jsxFragment: "Fragment",
+        },
         plugins: [
             VitePWA({
                 registerType: "autoUpdate",
