@@ -598,9 +598,13 @@ export class Player extends BaseGameObject {
                 def.defaultItems.helmet instanceof Function
                     ? def.defaultItems.helmet(clampedTeamId)
                     : def.defaultItems.helmet;
-            if (this.chest)
-                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
-            this.chest = def.defaultItems.chest;
+
+            if (def.defaultItems.chest) {
+                if (this.chest) {
+                    this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
+                }
+                this.chest = def.defaultItems.chest;
+            }
             this.backpack = def.defaultItems.backpack;
 
             //weapons
@@ -627,17 +631,19 @@ export class Player extends BaseGameObject {
                     continue;
                 }
 
-                const gunDef = GameObjectDefs[trueWeapon.type] as GunDef;
-                if (gunDef && gunDef.type == "gun") {
+                const trueWeapDef = GameObjectDefs[trueWeapon.type] as LootDef;
+                if (trueWeapDef && trueWeapDef.type == "gun") {
                     if (this.weapons[i].type) this.weaponManager.dropGun(i);
 
                     if (trueWeapon.fillInv) {
-                        const ammoType = gunDef.ammo;
+                        const ammoType = trueWeapDef.ammo;
                         this.inventory[ammoType] =
                             GameConfig.bagSizes[ammoType][
                                 this.getGearLevel(this.backpack)
                             ];
                     }
+                } else if (trueWeapDef && trueWeapDef.type == "melee") {
+                    if (this.weapons[i].type) this.weaponManager.dropMelee();
                 }
                 this.weaponManager.setWeapon(i, trueWeapon.type, trueWeapon.ammo);
             }
