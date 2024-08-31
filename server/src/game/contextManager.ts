@@ -319,8 +319,11 @@ export class ContextManager {
 
                 const allDeadOrDisconnected = group.checkAllDeadOrDisconnected(player);
                 const allDowned = group.checkAllDowned(player);
+                const groupHasSelfRevive = group.livingPlayers.find((p) =>
+                    p.hasPerk("self_revive"),
+                );
 
-                if (allDeadOrDisconnected || allDowned) {
+                if (!groupHasSelfRevive && (allDeadOrDisconnected || allDowned)) {
                     group.allDeadOrDisconnected = true; // must set before any kill() calls so the gameovermsgs are accurate
                     player.kill(params);
                     if (allDowned) {
