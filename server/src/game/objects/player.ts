@@ -719,6 +719,8 @@ export class Player extends BaseGameObject {
 
     socketData: GameSocketData;
 
+    ack = 0;
+
     name: string;
     isMobile: boolean;
 
@@ -1369,6 +1371,8 @@ export class Player extends BaseGameObject {
         }
 
         const updateMsg = new net.UpdateMsg();
+
+        updateMsg.ack = this.ack;
 
         if (game.gas.dirty || this._firstUpdate) {
             updateMsg.gasDirty = true;
@@ -2274,6 +2278,8 @@ export class Player extends BaseGameObject {
     }
 
     handleInput(msg: net.InputMsg): void {
+        this.ack = msg.seq;
+
         if (this.dead) return;
 
         if (!v2.eq(this.dir, msg.toMouseDir)) {

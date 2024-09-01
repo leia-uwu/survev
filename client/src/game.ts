@@ -1134,6 +1134,7 @@ export class Game {
         this.updateRecvCount++;
         if (msg.ack == this.seq && this.seqInFlight) {
             this.seqInFlight = false;
+            // const ping = Date.now() - this.seqSendTime;
         }
     }
 
