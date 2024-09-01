@@ -964,6 +964,7 @@ export class Player extends BaseGameObject {
                         if (!target.downed) return;
                         target.downed = false;
                         target.health = GameConfig.player.reviveHealth;
+                        if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
                         target.setGroupStatuses();
                         this.game.pluginManager.emit("playerRevived", target);
