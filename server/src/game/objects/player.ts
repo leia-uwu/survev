@@ -140,7 +140,7 @@ export class PlayerBarn {
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
-        if (this.game.isTeamMode)
+        if (!this.game.contextManager.isContextModeSolo())
             this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
@@ -572,6 +572,9 @@ export class Player extends BaseGameObject {
         }
 
         if (def.defaultItems) {
+            //for non faction modes where teamId > 2, just cycles between blue and red teamId
+            const clampedTeamId = ((this.teamId - 1) % 2) + 1;
+
             //inventory
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
                 if (value == 0) continue; //prevents overwriting existing inventory
@@ -581,7 +584,7 @@ export class Player extends BaseGameObject {
             //outfit
             const newOutfit = def.defaultItems.outfit;
             if (newOutfit instanceof Function) {
-                this.outfit = newOutfit(this.teamId);
+                this.outfit = newOutfit(clampedTeamId);
             } else {
                 //string
                 if (newOutfit) this.outfit = newOutfit;
@@ -593,11 +596,15 @@ export class Player extends BaseGameObject {
                 this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
             this.helmet =
                 def.defaultItems.helmet instanceof Function
-                    ? def.defaultItems.helmet(this.teamId)
+                    ? def.defaultItems.helmet(clampedTeamId)
                     : def.defaultItems.helmet;
-            if (this.chest)
-                this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
-            this.chest = def.defaultItems.chest;
+
+            if (def.defaultItems.chest) {
+                if (this.chest) {
+                    this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
+                }
+                this.chest = def.defaultItems.chest;
+            }
             this.backpack = def.defaultItems.backpack;
 
             //weapons
@@ -605,7 +612,7 @@ export class Player extends BaseGameObject {
                 const weaponOrWeaponFunc = def.defaultItems.weapons[i];
                 const trueWeapon =
                     weaponOrWeaponFunc instanceof Function
-                        ? weaponOrWeaponFunc(this.teamId)
+                        ? weaponOrWeaponFunc(clampedTeamId)
                         : weaponOrWeaponFunc;
 
                 if (!trueWeapon.type) {
@@ -624,17 +631,19 @@ export class Player extends BaseGameObject {
                     continue;
                 }
 
-                const gunDef = GameObjectDefs[trueWeapon.type] as GunDef;
-                if (gunDef && gunDef.type == "gun") {
+                const trueWeapDef = GameObjectDefs[trueWeapon.type] as LootDef;
+                if (trueWeapDef && trueWeapDef.type == "gun") {
                     if (this.weapons[i].type) this.weaponManager.dropGun(i);
 
                     if (trueWeapon.fillInv) {
-                        const ammoType = gunDef.ammo;
+                        const ammoType = trueWeapDef.ammo;
                         this.inventory[ammoType] =
                             GameConfig.bagSizes[ammoType][
                                 this.getGearLevel(this.backpack)
                             ];
                     }
+                } else if (trueWeapDef && trueWeapDef.type == "melee") {
+                    if (this.weapons[i].type) this.weaponManager.dropMelee();
                 }
                 this.weaponManager.setWeapon(i, trueWeapon.type, trueWeapon.ammo);
             }
@@ -897,11 +906,11 @@ export class Player extends BaseGameObject {
         } else if (this.downed) {
             this.bleedTicker += dt;
             if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
+                const bleedDamageMult = this.game.map.mapDef.gameConfig.bleedDamageMult;
+                const multiplier =
+                    bleedDamageMult != 1 ? this.downedCount * bleedDamageMult : 1;
                 this.damage({
-                    amount:
-                        this.game.map.mapDef.gameConfig.bleedDamage *
-                        (this.downedCount *
-                            this.game.map.mapDef.gameConfig.bleedDamageMult),
+                    amount: this.game.map.mapDef.gameConfig.bleedDamage * multiplier,
                     damageType: GameConfig.DamageType.Bleeding,
                     dir: this.dir,
                 });
@@ -957,8 +966,10 @@ export class Player extends BaseGameObject {
                         if (!target.downed) return;
                         target.downed = false;
                         target.health = GameConfig.player.reviveHealth;
+                        if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
                         target.setGroupStatuses();
+                        this.game.pluginManager.emit("playerRevived", target);
                     });
                 }
 
@@ -1586,42 +1597,44 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
-    /** incremented when next, decremented when prev, when it reaches this.spectating.team.getAlivePlayers().length-1, switch to next team */
-    enemyTeamCycleCount = 0;
-
-    /**
-     * the main purpose of this function is to asynchronously set "spectating"
-     * so there can be an if statement inside the update() func that handles the rest of the logic syncrhonously
-     */
     spectate(spectateMsg: net.SpectateMsg): void {
+        const spectatablePlayers = this.game.contextManager.getSpectatablePlayers(this);
         let playerToSpec: Player | undefined;
-        const spectatablePlayers = this.game.playerBarn.livingPlayers;
-        const teamExistsOrAlive =
-            this.game.isTeamMode &&
-            this.group &&
-            !this.group.checkAllDeadOrDisconnected(this);
         switch (true) {
             case spectateMsg.specBegin:
-                if (teamExistsOrAlive) playerToSpec = this.group!.randomPlayer(this);
-                else
+                const groupExistsOrAlive =
+                    this.game.isTeamMode && this.group!.livingPlayers.length > 0;
+                if (groupExistsOrAlive) {
                     playerToSpec =
-                        this.killedBy && this.killedBy != this
-                            ? this.killedBy
-                            : this.game.playerBarn.randomPlayer(this);
+                        spectatablePlayers[
+                            util.randomInt(0, spectatablePlayers.length - 1)
+                        ];
+                } else {
+                    const getAliveKiller = (
+                        killer: Player | undefined,
+                    ): Player | undefined => {
+                        if (!killer) return undefined;
+                        if (!killer.dead) return killer;
+                        if (killer.killedBy && killer.killedBy != this)
+                            return getAliveKiller(killer.killedBy);
+
+                        return undefined;
+                    };
+                    const aliveKiller = getAliveKiller(this.killedBy);
+                    playerToSpec =
+                        aliveKiller ??
+                        spectatablePlayers[
+                            util.randomInt(0, spectatablePlayers.length - 1)
+                        ];
+                }
                 break;
             case spectateMsg.specNext:
             case spectateMsg.specPrev:
                 const nextOrPrev = +spectateMsg.specNext - +spectateMsg.specPrev;
-                if (teamExistsOrAlive)
-                    playerToSpec = util.wrappedArrayIndex(
-                        this.group!.livingPlayers,
-                        this.group!.livingPlayers.indexOf(this.spectating!) + nextOrPrev,
-                    );
-                else
-                    playerToSpec = util.wrappedArrayIndex(
-                        spectatablePlayers,
-                        spectatablePlayers.indexOf(this.spectating!) + nextOrPrev,
-                    );
+                playerToSpec = util.wrappedArrayIndex(
+                    spectatablePlayers,
+                    spectatablePlayers.indexOf(this.spectating!) + nextOrPrev,
+                );
                 break;
         }
         this.spectating = playerToSpec;
@@ -2035,7 +2048,7 @@ export class Player extends BaseGameObject {
 
         if (this.outfit) {
             const def = GameObjectDefs[this.outfit] as OutfitDef;
-            if (!def.noDropOnDeath) {
+            if (!def.noDropOnDeath && !def.noDrop) {
                 this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1);
             }
         }
@@ -2095,7 +2108,7 @@ export class Player extends BaseGameObject {
             // action in progress
             return;
         }
-        if (!this.game.contextManager.canRevive()) {
+        if (!this.game.contextManager.canRevive(this)) {
             return;
         }
 
@@ -2129,21 +2142,17 @@ export class Player extends BaseGameObject {
         return playerToRevive;
     }
 
-    selfRevive() {
-        this.doAction(
-            "",
-            GameConfig.Action.Revive,
-            0.75 * GameConfig.player.reviveDuration,
-            this.__id,
-        );
-    }
-
     revive(playerToRevive: Player | undefined) {
         if (!playerToRevive) return;
 
         this.playerBeingRevived = playerToRevive;
         if (this.downed && this.hasPerk("self_revive")) {
-            this.selfRevive();
+            this.doAction(
+                "",
+                GameConfig.Action.Revive,
+                GameConfig.player.reviveDuration,
+                this.__id,
+            );
         } else {
             playerToRevive.doAction(
                 "",
@@ -2161,7 +2170,10 @@ export class Player extends BaseGameObject {
     }
 
     isAffectedByAOE(medic: Player): boolean {
-        const effectRange = medic.actionType == GameConfig.Action.Revive ? 6 : 8.5;
+        const effectRange =
+            medic.actionType == GameConfig.Action.Revive
+                ? GameConfig.player.medicReviveRange
+                : GameConfig.player.medicHealRange;
 
         return (
             medic.teamId == this.teamId &&
@@ -2172,7 +2184,10 @@ export class Player extends BaseGameObject {
 
     /** for the medic role in 50v50 */
     getAOEPlayers(): Player[] {
-        const effectRange = this.actionType == GameConfig.Action.Revive ? 6 : 8.5;
+        const effectRange =
+            this.actionType == GameConfig.Action.Revive
+                ? GameConfig.player.medicReviveRange
+                : GameConfig.player.medicHealRange;
 
         return this.game.grid
             .intersectCollider(
@@ -2190,9 +2205,8 @@ export class Player extends BaseGameObject {
         assert(itemDef.type === "heal", `Invalid heal item ${item}`);
 
         if (
-            !this.hasPerk("aoe_heal") &&
-            (this.health == itemDef.maxHeal ||
-                this.actionType == GameConfig.Action.UseItem)
+            (!this.hasPerk("aoe_heal") && this.health == itemDef.maxHeal) ||
+            this.actionType == GameConfig.Action.UseItem
         ) {
             return;
         }
@@ -2829,6 +2843,7 @@ export class Player extends BaseGameObject {
                     pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     break;
                 }
+
             case "chest":
             case "backpack":
                 {
@@ -2850,9 +2865,18 @@ export class Player extends BaseGameObject {
                         pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     }
                     if (this.getGearLevel(lootToAdd) === 0) lootToAdd = "";
+
+                    if (def.type == "helmet" && def.role) {
+                        this.promoteToRole(def.role);
+                    }
                 }
                 break;
             case "outfit":
+                if (this.role == "leader") {
+                    amountLeft = 1;
+                    pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
+                    break;
+                }
                 amountLeft = 1;
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
@@ -2884,7 +2908,8 @@ export class Player extends BaseGameObject {
             removeLoot &&
             amountLeft > 0 &&
             lootToAdd !== "" &&
-            !(lootToAddDef as ChestDef).noDrop
+            //if obj you tried picking up can't be picked up and needs to be dropped, "noDrop" is irrelevant
+            (obj.type == lootToAdd || !(lootToAddDef as ChestDef).noDrop)
         ) {
             const dir = v2.neg(this.dir);
             this.game.lootBarn.addLootWithoutAmmo(

@@ -68,7 +68,9 @@ export class Game {
     }
 
     getAliveGroups(): Group[] {
-        return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected);
+        return [...this.groups.values()].filter(
+            (group) => group.livingPlayers.length > 0,
+        );
     }
 
     getAliveTeams(): Team[] {
