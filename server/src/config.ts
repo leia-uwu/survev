@@ -50,6 +50,17 @@ export const Config = {
 const runningOnVite = process.argv.toString().includes("vite");
 const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
 
+if (!isProduction) {
+    util.mergeDeep(Config, {
+        regions: {
+            local: {
+                https: false,
+                address: `${Config.devServer.host}:${Config.devServer.port}`,
+                l10n: "index-local",
+            },
+        },
+    });
+}
 const configPath = path.join(
     __dirname,
     isProduction ? "../../" : "",

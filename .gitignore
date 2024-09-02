@@ -3,6 +3,12 @@ reference/
 # config file
 resurviv-config.json
 
+# env file
+.env
+
+# sqlite db
+game.db
+
 # Compiled source
 dist/
 

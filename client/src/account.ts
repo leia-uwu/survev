@@ -150,6 +150,7 @@ export class Account {
         }
         // if (helpers.getCookie("app-data")) {
         this.login();
+        // this.loadProfile();
         // }
     }
 
@@ -204,7 +205,9 @@ export class Account {
 
     loadProfile() {
         this.loggingIn = !this.loggedIn;
+        let _loadout = {};
         this.ajaxRequest("/api/user/profile", (err, data) => {
+            console.log(data);
             const a = this.loggingIn;
             this.loggingIn = false;
             this.loggedIn = false;
@@ -220,6 +223,7 @@ export class Account {
                 this.profile = data.profile;
                 this.loadoutPriv = data.loadoutPriv;
                 this.items = data.items;
+                this.emit("loadout", data.loadout);
                 const profile = this.config.get("profile") || { slug: "" };
                 profile.slug = data.profile.slug;
                 this.config.set("profile", profile);
@@ -283,33 +287,30 @@ export class Account {
     }
 
     setLoadout(loadout: Loadout) {
-        const _r = this.loadout;
+        // Preemptively set the new loadout and revert if the call fail
+        const loadoutPrev = this.loadout;
         this.loadout = loadout;
         this.emit("loadout", this.loadout);
         this.config.set("loadout", loadout);
-        /* this.ajaxRequest(
-                "/api/user/loadout",
-                {
-                    loadout: {}
-                },
-                (e, a) => {
-                    if (e) {
-                        console.error(
-                            "account",
-                            "set_loadout_error"
-                        );
-                        this.emit("error", "server_error");
-                    }
-                    if (e || !a.loadout) {
-                        this.loadout = r;
-                    } else {
-                        this.loadout = a.loadout;
-                        this.loadoutPriv = a.loadoutPriv;
-                    }
-                    this.emit("loadout", this.loadout);
+        this.ajaxRequest(
+            "/api/user/loadout",
+            {
+                loadout: loadout,
+            },
+            (err, res) => {
+                if (err) {
+                    console.error("account", "set_loadout_error");
+                    this.emit("error", "server_error");
                 }
-            );
-        */
+                if (err || !res.loadout) {
+                    this.loadout = loadoutPrev;
+                } else {
+                    this.loadout = res.loadout;
+                    this.loadoutPriv = res.loadoutPriv;
+                }
+                this.emit("loadout", this.loadout);
+            },
+        );
     }
 
     setItemStatus(status: ItemStatus, itemTypes: string[]) {
@@ -340,6 +341,7 @@ export class Account {
     }
 
     unlock(unlockType: string) {
+        return;
         this.ajaxRequest(
             "/api/user/unlock",
             {
@@ -411,12 +413,12 @@ export class Account {
             {
                 idx,
             },
-            (e, r) => {
-                if (e) {
+            (err, res) => {
+                if (err) {
                     console.error("account", "refresh_quest_error");
                     return;
                 }
-                if (r.success) {
+                if (res.success) {
                     this.getPass(false);
                 } else {
                     // Give the pass UI a chance to update quests

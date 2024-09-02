@@ -127,7 +127,7 @@ const loadout = {
     modified: function (a: Loadout, b: Loadout) {
         return !deepEqual(a, b);
     },
-    getUserAvailableItems: function (heroItems: unknown[]) {
+    getUserAvailableItems: function (heroItems: unknown[] = []) {
         const items = [];
         // Add default items
         const unlockDefaultDef =

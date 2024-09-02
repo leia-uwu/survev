@@ -450,6 +450,7 @@ export class LoadoutMenu {
 
         // Request the default unlock if we don't have it yet
         if (this.account.loggedIn) {
+            console.log(this.items);
             if (
                 !this.items.find((x) => {
                     return x.type == "unlock_new_account";

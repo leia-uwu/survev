@@ -66,11 +66,15 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    addLoginOption("twitch", account.profile.linkedTwitch, () => {
-        window.location.href = "/api/user/auth/twitch";
-    });
-    addLoginOption("discord", account.profile.linkedDiscord, () => {
-        window.location.href = "/api/user/auth/discord";
+    // addLoginOption("twitch", account.profile.linkedTwitch, () => {
+    //     window.location.href = "/api/user/auth/twitch";
+    // });
+    // addLoginOption("discord", account.profile.linkedDiscord, () => {
+    //     window.location.href = "/api/user/auth/github";
+    // });
+    // TODO: clean up and make the login options     configurable
+    addLoginOption("github", account.profile.linkedDiscord, () => {
+        window.location.href = "/api/user/auth/github";
     });
 }
 
@@ -368,7 +372,7 @@ export class ProfileUi {
         this.updateUserIcon();
     }
 
-    onItemsUpdated(items: Array<{ status: number }>) {
+    onItemsUpdated(items: Array<{ status: number }> = []) {
         let unconfirmedItemCount = 0;
         let unackedItemCount = 0;
         for (let i = 0; i < items.length; i++) {
