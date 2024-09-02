@@ -57,8 +57,12 @@ export default class DeathMatchPlugin extends GamePlugin {
             // give the killer nades and gun ammo and inventory ammo
             if (data.source?.__type === ObjectType.Player) {
                 const killer = data.source;
-                killer.inventory["frag"] += 3;
-                killer.inventory["mirv"] += 1;
+                if (killer.inventory["frag"] == 0) {
+                    killer.weapons[ WeaponSlot.Throwable ].type = "frag";
+                }
+
+                killer.inventory["frag"] = Math.min(killer.inventory["frag"] + 3, 12);
+                killer.inventory["mirv"] = Math.min(killer.inventory["mirv"] + 1, 4);
                 killer.inventoryDirty = true;
                 killer.weapsDirty = true;
 
