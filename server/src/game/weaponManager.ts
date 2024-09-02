@@ -597,9 +597,11 @@ export class WeaponManager {
 
         const hasExplosive = this.player.hasPerk("explosive");
         const hasSplinter = this.player.hasPerk("splinter");
-        const shouldApplyChambered = this.player.hasPerk("chambered")
-            && itemDef.bulletCount === 1
-            && (weapon.ammo === 0 || weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
+        const shouldApplyChambered =
+            this.player.hasPerk("chambered") &&
+            itemDef.bulletCount === 1 &&
+            (weapon.ammo === 0 ||
+                weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
         // Movement spread
         let spread = itemDef.shotSpread ?? 0;
