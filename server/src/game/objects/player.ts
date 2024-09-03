@@ -769,6 +769,49 @@ export class Player extends BaseGameObject {
         this.weapons = this.weaponManager.weapons;
         const defaultItems = GameConfig.player.defaultItems;
 
+        function assertType(type: string, category: string, acceptNoItem: boolean) {
+            if (!type && acceptNoItem) return;
+            const def = GameObjectDefs[type];
+            assert(def, `Invalid item type for ${category}: ${type}`);
+            assert(
+                def.type === category,
+                `Invalid type ${type}, expected ${def.type} item`,
+            );
+        }
+
+        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
+            const weap = defaultItems.weapons[i];
+            if (!weap.type) continue;
+            assertType(weap.type, GameConfig.WeaponType[i], true);
+            this.weaponManager.setWeapon(
+                i,
+                weap.type ?? this.weapons[i].type,
+                weap.ammo ?? 0,
+            );
+        }
+
+        for (const key in GameConfig.bagSizes) {
+            this.inventory[key] = defaultItems.inventory[key] ?? 0;
+        }
+
+        this.chest = defaultItems.chest;
+        assertType(this.chest, "chest", true);
+
+        this.scope = defaultItems.scope;
+        assertType(this.scope, "scope", false);
+        this.inventory[this.scope] = 1;
+
+        this.helmet = defaultItems.helmet;
+        assertType(this.helmet, "helmet", true);
+
+        this.backpack = defaultItems.backpack;
+        assertType(this.backpack, "backpack", false);
+
+        for (const perk of defaultItems.perks) {
+            assertType(perk.type, "perk", false);
+            this.addPerk(perk.type, perk.droppable);
+        }
+        
         /**
          * Checks if an item is present in the player's loadout
          */
@@ -816,49 +859,6 @@ export class Player extends BaseGameObject {
         // so set it manually to link both
         this.collider = collider.createCircle(this.pos, this.rad);
         this.collider.pos = this.pos;
-
-        function assertType(type: string, category: string, acceptNoItem: boolean) {
-            if (!type && acceptNoItem) return;
-            const def = GameObjectDefs[type];
-            assert(def, `Invalid item type for ${category}: ${type}`);
-            assert(
-                def.type === category,
-                `Invalid type ${type}, expected ${def.type} item`,
-            );
-        }
-
-        for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
-            const weap = defaultItems.weapons[i];
-            if (!weap.type) continue;
-            assertType(weap.type, GameConfig.WeaponType[i], true);
-            this.weaponManager.setWeapon(
-                i,
-                weap.type ?? this.weapons[i].type,
-                weap.ammo ?? 0,
-            );
-        }
-
-        for (const key in GameConfig.bagSizes) {
-            this.inventory[key] = defaultItems.inventory[key] ?? 0;
-        }
-
-        this.chest = defaultItems.chest;
-        assertType(this.chest, "chest", true);
-
-        this.scope = defaultItems.scope;
-        assertType(this.scope, "scope", false);
-        this.inventory[this.scope] = 1;
-
-        this.helmet = defaultItems.helmet;
-        assertType(this.helmet, "helmet", true);
-
-        this.backpack = defaultItems.backpack;
-        assertType(this.backpack, "backpack", false);
-
-        for (const perk of defaultItems.perks) {
-            assertType(perk.type, "perk", false);
-            this.addPerk(perk.type, perk.droppable);
-        }
 
         this.scopeZoomRadius =
             GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"];
