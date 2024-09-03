@@ -811,7 +811,7 @@ export class Player extends BaseGameObject {
             assertType(perk.type, "perk", false);
             this.addPerk(perk.type, perk.droppable);
         }
-        
+
         /**
          * Checks if an item is present in the player's loadout
          */
@@ -824,14 +824,23 @@ export class Player extends BaseGameObject {
             return true;
         };
 
-        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
+        if (
+            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
+            joinMsg.loadout.outfit !== "outfitBase"
+        ) {
             this.outfit = joinMsg.loadout.outfit;
         } else {
             this.outfit = defaultItems.outfit;
         }
 
-        if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
+        if (
+            isItemInLoadout(joinMsg.loadout.melee, "melee") &&
+            joinMsg.loadout.melee != "fists"
+        ) {
             this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
+        } else {
+            this.weapons[GameConfig.WeaponSlot.Melee].type =
+                defaultItems.weapons[GameConfig.WeaponSlot.Melee].type;
         }
 
         const loadout = this.loadout;
