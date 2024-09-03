@@ -108,13 +108,15 @@ export class Projectile extends BaseGameObject {
     }
 
     update(dt: number) {
+        const def = GameObjectDefs[this.type] as ThrowableDef;
         //
         // Velocity
         //
-        this.vel = v2.mul(this.vel, 1 / (1 + dt * (this.posZ != 0 ? 1.2 : 2)));
+        if (!def.forceMaxThrowDistance) {
+            //velocity needs to stay constant to reach max throw dist
+            this.vel = v2.mul(this.vel, 1 / (1 + dt * (this.posZ != 0 ? 1.2 : 2)));
+        }
         this.pos = v2.add(this.pos, v2.mul(this.vel, dt));
-
-        const def = GameObjectDefs[this.type] as ThrowableDef;
 
         //
         // Height / posZ
@@ -181,6 +183,10 @@ export class Projectile extends BaseGameObject {
                 obj.__id !== this.playerId
             ) {
                 if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
+                    if (this.type == "snowball" || this.type == "potato") {
+                        obj.dropRandomLoot();
+                        obj.projectileSlowdownTicker = 0.5;
+                    }
                     this.explode();
                 }
             }

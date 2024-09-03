@@ -495,6 +495,9 @@ export class Player extends BaseGameObject {
      */
     reloadAgain = false;
 
+    //if hit by snowball or potato, slowed down for "x" seconds
+    projectileSlowdownTicker = 0;
+
     wearingPan = false;
     healEffect = false;
     frozen = false;
@@ -996,6 +999,13 @@ export class Player extends BaseGameObject {
                 this.setDirty();
                 this._animCb?.();
             }
+        }
+
+        //
+        // Projectile slowdown logic
+        //
+        if (this.projectileSlowdownTicker > 0) {
+            this.projectileSlowdownTicker -= dt;
         }
 
         //
@@ -2925,6 +2935,49 @@ export class Player extends BaseGameObject {
         });
     }
 
+    // in original game, only called on snowball or potato collision
+    dropRandomLoot(): void {
+        // all possible droppable loot held by the player
+        //4 categories: inventory, weapons, armor, perks
+        const playerLootTypes: string[] = [];
+
+        for (const [type, count] of Object.entries(this.inventory)) {
+            if (count == 0) continue;
+            if (type == "1xscope") continue;
+            playerLootTypes.push(type);
+        }
+
+        for (let i = 0; i < this.weapons.length; i++) {
+            if (GameConfig.WeaponType[i] == "throwable") continue;
+            const weapon = this.weapons[i];
+            if (!weapon.type) continue;
+            if (weapon.type == "fists") continue;
+            playerLootTypes.push(weapon.type);
+        }
+
+        for (let i = 0; i < this.perks.length; i++) {
+            const perk = this.perks[i];
+            if (!perk.droppable) continue;
+            playerLootTypes.push(perk.type);
+        }
+
+        for (const armor of [this.helmet, this.chest] as const) {
+            if (!armor) continue;
+            if ((GameObjectDefs[armor] as ChestDef | HelmetDef).noDrop) continue;
+            playerLootTypes.push(armor);
+        }
+
+        if (playerLootTypes.length == 0) return;
+
+        const item = playerLootTypes[util.randomInt(0, playerLootTypes.length - 1)];
+        const weapIdx = this.weapons.findIndex((w) => w.type == item);
+
+        const dropMsg = new net.DropItemMsg();
+        dropMsg.item = item;
+        dropMsg.weapIdx = weapIdx;
+        this.dropItem(dropMsg);
+    }
+
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
         this.mobileDropTicker = 3;
         this.game.lootBarn.addLoot(
@@ -3226,6 +3279,10 @@ export class Player extends BaseGameObject {
 
         if (this.hasteType != GameConfig.HasteType.None) {
             this.speed += GameConfig.player.hasteSpeedBonus;
+        }
+
+        if (this.projectileSlowdownTicker > 0) {
+            this.speed -= GameConfig.player.projectileHitPenalty;
         }
 
         // decrease speed if shooting or popping adren or heals
