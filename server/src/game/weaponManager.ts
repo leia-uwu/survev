@@ -933,8 +933,20 @@ export class WeaponManager {
 
     throwThrowable(): void {
         this.cookingThrowable = false;
-        const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
-        const throwableDef = GameObjectDefs[throwableType];
+        //need to store this incase throwableType gets replaced with its "heavy" variant like snowball => snowball_heavy
+        //used to manage inventory since snowball_heavy isnt stored in inventory, when it's thrown you decrement "snowball" from inv
+        const oldThrowableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
+
+        let throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
+        let throwableDef = GameObjectDefs[throwableType];
+        assert(throwableDef.type === "throwable");
+
+        if (throwableDef.heavyType && throwableDef.changeTime) {
+            if (this.cookTicker >= throwableDef.changeTime) {
+                throwableType = throwableDef.heavyType;
+                throwableDef = GameObjectDefs[throwableType] as ThrowableDef;
+            }
+        }
         assert(throwableDef.type === "throwable");
 
         let multiplier: number;
@@ -956,13 +968,13 @@ export class WeaponManager {
         const throwStr = multiplier * throwableDef.throwPhysics.speed;
 
         const weapSlotId = GameConfig.WeaponSlot.Throwable;
-        if (this.player.inventory[throwableType] > 0) {
-            this.player.inventory[throwableType] -= 1;
+        if (this.player.inventory[oldThrowableType] > 0) {
+            this.player.inventory[oldThrowableType] -= 1;
 
             // if throwable count drops below 0
             // show the next throwable
             // if theres none switch to last weapon
-            if (this.player.inventory[throwableType] == 0) {
+            if (this.player.inventory[oldThrowableType] == 0) {
                 this.showNextThrowable();
                 if (this.weapons[weapSlotId].type === "") {
                     this.setCurWeapIndex(this.lastWeaponIdx);
