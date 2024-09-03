@@ -104,17 +104,22 @@ export class ExplosionBarn {
                                     damage *= 0.1;
                                 }
 
-                                if (
-                                    explosion.type == "explosion_snowball" ||
-                                    explosion.type == "explosion_potato"
-                                ) {
+                                if (def.freezeAmount && def.freezeDuration) {
                                     const isSourceTeammate =
                                         explosion.source &&
                                         explosion.source.__type == ObjectType.Player &&
                                         explosion.source.teamId == obj.teamId;
                                     if (!isSourceTeammate) {
                                         obj.dropRandomLoot();
-                                        obj.projectileSlowdownTicker = 0.5;
+                                        const colAngle = math.rad2degFromDirection(
+                                            -collision.dir.y,
+                                            collision.dir.x,
+                                        );
+
+                                        obj.freeze(
+                                            Math.floor(colAngle / 120), //TODO: make dividend dynamic based on num frozen sprites
+                                            def.freezeDuration,
+                                        );
                                     }
                                 }
                             }

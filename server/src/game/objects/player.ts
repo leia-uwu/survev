@@ -495,11 +495,10 @@ export class Player extends BaseGameObject {
      */
     reloadAgain = false;
 
-    //if hit by snowball or potato, slowed down for "x" seconds
-    projectileSlowdownTicker = 0;
-
     wearingPan = false;
     healEffect = false;
+    //if hit by snowball or potato, slowed down for "x" seconds
+    frozenTicker = 0;
     frozen = false;
     frozenOri = 0;
 
@@ -1015,8 +1014,14 @@ export class Player extends BaseGameObject {
         //
         // Projectile slowdown logic
         //
-        if (this.projectileSlowdownTicker > 0) {
-            this.projectileSlowdownTicker -= dt;
+        if (this.frozen) {
+            this.frozenTicker -= dt;
+
+            if (this.frozenTicker <= 0) {
+                this.frozenTicker = 0;
+                this.frozen = false;
+                this.setDirty();
+            }
         }
 
         //
@@ -3192,6 +3197,13 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
+    freeze(frozenOri: number, duration: number): void {
+        this.frozenTicker = duration;
+        this.frozen = true;
+        this.frozenOri = frozenOri;
+        this.setDirty();
+    }
+
     initLastBreath(): void {
         const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
             this,
@@ -3298,8 +3310,8 @@ export class Player extends BaseGameObject {
             this.speed += GameConfig.player.hasteSpeedBonus;
         }
 
-        if (this.projectileSlowdownTicker > 0) {
-            this.speed -= GameConfig.player.projectileHitPenalty;
+        if (this.frozen) {
+            this.speed -= GameConfig.player.frozenSpeedPenalty;
         }
 
         // decrease speed if shooting or popping adren or heals
