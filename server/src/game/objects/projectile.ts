@@ -183,10 +183,6 @@ export class Projectile extends BaseGameObject {
                 obj.__id !== this.playerId
             ) {
                 if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
-                    if (this.type == "snowball" || this.type == "potato") {
-                        obj.dropRandomLoot();
-                        obj.projectileSlowdownTicker = 0.5;
-                    }
                     this.explode();
                 }
             }

@@ -98,11 +98,25 @@ export class ExplosionBarn {
                             obj.__type === ObjectType.Obstacle
                         ) {
                             let damage = def.damage;
-                            if (
-                                obj.__type == ObjectType.Player &&
-                                obj.hasPerk("flak_jacket")
-                            ) {
-                                damage *= 0.1;
+
+                            if (obj.__type == ObjectType.Player) {
+                                if (obj.hasPerk("flak_jacket")) {
+                                    damage *= 0.1;
+                                }
+
+                                if (
+                                    explosion.type == "explosion_snowball" ||
+                                    explosion.type == "explosion_potato"
+                                ) {
+                                    const isSourceTeammate =
+                                        explosion.source &&
+                                        explosion.source.__type == ObjectType.Player &&
+                                        explosion.source.teamId == obj.teamId;
+                                    if (!isSourceTeammate) {
+                                        obj.dropRandomLoot();
+                                        obj.projectileSlowdownTicker = 0.5;
+                                    }
+                                }
                             }
 
                             if (dist > def.rad.min) {
