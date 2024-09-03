@@ -769,54 +769,6 @@ export class Player extends BaseGameObject {
         this.weapons = this.weaponManager.weapons;
         const defaultItems = GameConfig.player.defaultItems;
 
-        /**
-         * Checks if an item is present in the player's loadout
-         */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
-        if (isItemInLoadout(joinMsg.loadout.outfit, "outfit")) {
-            this.outfit = joinMsg.loadout.outfit;
-        } else {
-            this.outfit = defaultItems.outfit;
-        }
-
-        if (isItemInLoadout(joinMsg.loadout.melee, "melee")) {
-            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        }
-
-        const loadout = this.loadout;
-
-        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-            loadout.heal = joinMsg.loadout.heal;
-        }
-        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-            loadout.boost = joinMsg.loadout.boost;
-        }
-
-        const emotes = joinMsg.loadout.emotes;
-        for (let i = 0; i < emotes.length; i++) {
-            const emote = emotes[i];
-            if (i > GameConfig.EmoteSlot.Count) break;
-
-            if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                continue;
-            }
-
-            loadout.emotes[i] = emote;
-        }
-
-        // createCircle clones the position
-        // so set it manually to link both
-        this.collider = collider.createCircle(this.pos, this.rad);
-        this.collider.pos = this.pos;
-
         function assertType(type: string, category: string, acceptNoItem: boolean) {
             if (!type && acceptNoItem) return;
             const def = GameObjectDefs[type];
@@ -859,6 +811,63 @@ export class Player extends BaseGameObject {
             assertType(perk.type, "perk", false);
             this.addPerk(perk.type, perk.droppable);
         }
+
+        /**
+         * Checks if an item is present in the player's loadout
+         */
+        const isItemInLoadout = (item: string, category: string) => {
+            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
+
+            const def = GameObjectDefs[item];
+            if (!def || def.type !== category) return false;
+
+            return true;
+        };
+
+        if (
+            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
+            joinMsg.loadout.outfit !== "outfitBase"
+        ) {
+            this.outfit = joinMsg.loadout.outfit;
+        } else {
+            this.outfit = defaultItems.outfit;
+        }
+
+        if (
+            isItemInLoadout(joinMsg.loadout.melee, "melee") &&
+            joinMsg.loadout.melee != "fists"
+        ) {
+            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
+        } else {
+            this.weapons[GameConfig.WeaponSlot.Melee].type =
+                defaultItems.weapons[GameConfig.WeaponSlot.Melee].type;
+        }
+
+        const loadout = this.loadout;
+
+        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
+            loadout.heal = joinMsg.loadout.heal;
+        }
+        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
+            loadout.boost = joinMsg.loadout.boost;
+        }
+
+        const emotes = joinMsg.loadout.emotes;
+        for (let i = 0; i < emotes.length; i++) {
+            const emote = emotes[i];
+            if (i > GameConfig.EmoteSlot.Count) break;
+
+            if (emote === "" || !isItemInLoadout(emote, "emote")) {
+                continue;
+            }
+
+            loadout.emotes[i] = emote;
+        }
+
+        // createCircle clones the position
+        // so set it manually to link both
+        this.collider = collider.createCircle(this.pos, this.rad);
+        this.collider.pos = this.pos;
 
         this.scopeZoomRadius =
             GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"];
