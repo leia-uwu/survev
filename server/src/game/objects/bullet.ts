@@ -541,6 +541,9 @@ export class Bullet {
                     if (shouldFJReduction) {
                         multiplier *= 0.1;
                     }
+                    if (col.player!.hasPerk("steelskin")) {
+                        multiplier *= 0.5;
+                    }
 
                     this.bulletManager.damages.push({
                         obj: col.player!,
