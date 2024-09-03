@@ -104,10 +104,6 @@ export class ExplosionBarn {
                                     damage *= 0.1;
                                 }
 
-                                if (obj.hasPerk("steelskin")) {
-                                    damage *= 0.5;
-                                }
-
                                 if (
                                     explosion.type == "explosion_snowball" ||
                                     explosion.type == "explosion_potato"

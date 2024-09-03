@@ -1679,6 +1679,8 @@ export class Player extends BaseGameObject {
         ) {
             if (this.hasPerk("flak_jacket")) finalDamage *= 0.9;
 
+            if (this.hasPerk("steelskin")) finalDamage *= 0.5;
+
             let isHeadShot = false;
 
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
