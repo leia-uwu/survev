@@ -11,8 +11,9 @@ import { MenuModal } from "./menuModal";
 function createLoginOptions(
     parentElem: JQuery<HTMLElement>,
     linkAccount: boolean | undefined,
-    account: Account,
+    _account: Account,
     localization: Localization,
+    loginMethods: { method: string; linked: boolean }[],
 ) {
     const contentsElem = parentElem.find(".login-options-content");
     contentsElem.empty();
@@ -66,16 +67,11 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    // addLoginOption("twitch", account.profile.linkedTwitch, () => {
-    //     window.location.href = "/api/user/auth/twitch";
-    // });
-    // addLoginOption("discord", account.profile.linkedDiscord, () => {
-    //     window.location.href = "/api/user/auth/github";
-    // });
-    // TODO: clean up and make the login options     configurable
-    addLoginOption("github", account.profile.linkedDiscord, () => {
-        window.location.href = "/api/user/auth/github";
-    });
+    loginMethods.map(({ method, linked }) =>
+        addLoginOption(method, linked, () => {
+            window.location.href = `/api/user/auth/${method}`;
+        }),
+    );
 }
 
 export class ProfileUi {
@@ -421,7 +417,20 @@ export class ProfileUi {
             : device.mobile
               ? this.loginOptionsModalMobile
               : this.loginOptionsModal;
-        createLoginOptions(modal!.selector, opts.link, this.account, this.localization);
+
+        const loginMethods = [
+            { method: "github", linked: this.account.profile.linkedGithub },
+            // { method: "discord", linked: this.account.profile.linkedDiscord },
+            // { method: "twitch", linked: this.account.profile.linkedTwitch }
+        ];
+        createLoginOptions(
+            modal!.selector,
+            opts.link,
+            this.account,
+            this.localization,
+            loginMethods,
+        );
+
         modal!.show();
     }
 

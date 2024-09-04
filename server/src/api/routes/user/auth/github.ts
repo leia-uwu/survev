@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
-import { lucia, setUserCookie } from "../../../auth/lucia";
+import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
 
@@ -65,12 +65,12 @@ GithubRouter.get("/callback", async (c) => {
             auth_id: githubUser.id,
             id: userId,
             linked: true,
+            linkedGithub: true,
         });
         const session = await lucia.createSession(userId, {});
         c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
             append: true,
         });
-        console.log("reached", session.id, userId)
         return c.redirect("/");
     } catch (e) {
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {

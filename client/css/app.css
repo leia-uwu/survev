@@ -2492,7 +2492,7 @@ a:active {
 
 
 .btn-login-github>.login-button-name>.icon {
-  background-image: url(/img/icon_facebook_reverse.png);
+  background-image: url(/img/icon_github.svg);
 }
 
 .btn-login-google {
