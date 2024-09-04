@@ -21,11 +21,15 @@ export const usersTable = sqliteTable("users", {
     userCreated: integer("user_created", { mode: "timestamp" })
         .notNull()
         .default(sql`(current_timestamp)`),
+    lastUsernameChangeTime: integer("user_created", { mode: "timestamp" })
+        .notNull()
+        .default(sql`(current_timestamp)`),
     linkedGoogle: integer("linked_google", { mode: "boolean" }).notNull().default(false),
     linkedTwitch: integer("linked_twitch", { mode: "boolean" }).notNull().default(false),
     linkedDiscord: integer("linked_discord", { mode: "boolean" })
         .notNull()
         .default(false),
+    linkedGithub: integer("linked_github", { mode: "boolean" }).notNull().default(false),
     linked: integer("linked", { mode: "boolean" }).default(false),
     loadout: text("loadout", { mode: "json" })
         .notNull()

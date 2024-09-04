@@ -2,8 +2,14 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import type { Loadout } from "./zodSchemas";
 
-// Reuse the client helpers
 export const helpers = {
+    getTimeUntilNextUsernameChange: (lastChangeTime: Date) => {
+        const changeCooldown = 10 * 24 * 60 * 60 * 1000;
+        const currentTime = Date.now();
+        const timeSinceLastChange = currentTime - lastChangeTime.getTime();
+        return changeCooldown - timeSinceLastChange;
+    },
+    // reuse the one from the client
     validateLoadout: (userLoadout: Loadout) => {
         const getGameType = function (
             type: string,

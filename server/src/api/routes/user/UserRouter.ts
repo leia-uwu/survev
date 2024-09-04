@@ -13,26 +13,51 @@ import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
 export const UserRouter = new Hono<Context>();
 
 UserRouter.post("/profile", AuthMiddleware, async (c) => {
-    const user = c.get("user")!;
-    console.log({user})
-    const result = await db.query.usersTable.findFirst({
-        where: eq(usersTable.id, user.id),
-    });
-    if (!result) {
-        return c.json({ err: "" }, 200);
-    }
+    try {
+        const user = c.get("user")!;
+        const result = await db.query.usersTable.findFirst({
+            where: eq(usersTable.id, user.id),
+        });
+        if (!result) {
+            return c.json({ err: "" }, 200);
+        }
 
-    const { loadout, ...profile } = result;
-
-    return c.json<ProfileResponse>(
-        {
-            success: true,
-            // @ts-expect-error don't send the whole profile
-            profile,
+        const {
             loadout,
-        },
-        200,
-    );
+            slug,
+            linkedDiscord,
+            linkedGithub,
+            linkedTwitch,
+            linked,
+            username,
+            usernameSet,
+            lastUsernameChangeTime,
+        } = result;
+
+        const timeUntilNextChange =
+            helpers.getTimeUntilNextUsernameChange(lastUsernameChangeTime);
+
+        return c.json<ProfileResponse>(
+            {
+                success: true,
+                profile: {
+                    slug,
+                    linkedDiscord,
+                    linkedGithub,
+                    linkedTwitch,
+                    linked,
+                    username,
+                    usernameSet,
+                    usernameChangeTime: timeUntilNextChange,
+                },
+                loadout,
+                loadoutPriv: "",
+            },
+            200,
+        );
+    } catch (_err) {
+        return c.json({}, 500);
+    }
 });
 
 UserRouter.post(
@@ -48,21 +73,35 @@ UserRouter.post(
             const user = c.get("user")!;
             const { username } = c.req.valid("json");
 
-            const usernameAlreadyExist = await db.query.usersTable.findFirst({
+            const existingUser = await db.query.usersTable.findFirst({
+                where: eq(usersTable.id, user.id),
+            })!;
+
+            const timeUntilNextChange = helpers.getTimeUntilNextUsernameChange(
+                existingUser!.lastUsernameChangeTime,
+            );
+
+            if (timeUntilNextChange > 0) {
+                return c.text<UsernameErrorType>("change_time_not_expired", 200);
+            }
+
+            const isUsernameTaken = await db.query.usersTable.findFirst({
                 where: eq(usersTable.username, username),
             });
 
-            if (usernameAlreadyExist) {
+            if (isUsernameTaken) {
                 return c.text<UsernameErrorType>("taken", 200);
             }
 
+            const now = new Date();
+
             await db
                 .update(usersTable)
-                .set({ username, usernameSet: true })
+                .set({ username, usernameSet: true, lastUsernameChangeTime: now })
                 .where(eq(usersTable.id, user.id));
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
-        } catch {
+        } catch (_err) {
             return c.text<UsernameErrorType>("failed");
         }
     },
@@ -172,8 +211,20 @@ type ProfileResponse =
       }
     | {
           success: true;
-          profile: typeof usersTable.$inferSelect;
+          profile: Pick<
+              typeof usersTable.$inferSelect,
+              | "slug"
+              | "linkedDiscord"
+              | "linkedGithub"
+              | "linkedTwitch"
+              | "username"
+              | "usernameSet"
+              | "linked"
+          > & {
+              usernameChangeTime: number;
+          };
           loadout: Loadout;
+          loadoutPriv: string;
       };
 
 type UsernameErrorType = "failed" | "invalid" | "taken" | "change_time_not_expired";
