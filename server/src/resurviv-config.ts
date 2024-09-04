@@ -110,6 +110,7 @@ export const CustomConfig: DeepPartial<ConfigType> = {
                         droppable: false,
                     },
                 ],
+                
                 inventory: {
                     frag: 3,
                     smoke: 1,
