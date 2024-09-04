@@ -45,7 +45,18 @@ const serverDataConfig = {
         thisRegion: "eu",
     },
     as: {
-        // TODO: add as region here??
+         gameServer: {
+            apiServerUrl: "http://172.105.112.218",
+        },
+        regions: {
+            as: {
+                https: false,
+                address: "172.105.112.218:8001",
+                l10n: "index-asia",
+            },
+        },
+        thisRegion: "as",
+        
     },
 };
 
