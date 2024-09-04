@@ -10,31 +10,19 @@ import { MenuModal } from "./menuModal";
 
 function createLoginOptions(
     parentElem: JQuery<HTMLElement>,
-    linkAccount: boolean | undefined,
-    _account: Account,
     localization: Localization,
     loginMethods: { method: string; linked: boolean }[],
 ) {
     const contentsElem = parentElem.find(".login-options-content");
     contentsElem.empty();
-    if (linkAccount) {
-        contentsElem.append(
-            $("<div/>", {
-                class: "account-login-desc",
-            }).append(
-                $("<p/>", {
-                    html: localization.translate("index-link-account-to"),
-                }),
-            ),
-        );
-    }
+
     const buttonParentElem = $("<div/>", {
         class: "account-buttons",
     });
     contentsElem.append(buttonParentElem);
     const addLoginOption = function (
         method: string,
-        linked: boolean,
+        _linked: boolean,
         onClick: () => void,
     ) {
         const el = $("<div/>", {
@@ -55,14 +43,9 @@ function createLoginOptions(
                     }),
                 ),
         );
-        if (linkAccount && linked) {
-            el.addClass("btn-login-linked");
-            el.find("span.login-button-name").html('<div class="icon"></div>');
-        } else {
-            el.click((_e) => {
-                onClick();
-            });
-        }
+        el.click((_e) => {
+            onClick();
+        });
         buttonParentElem.append(el);
     };
 
@@ -297,7 +280,6 @@ export class ProfileUi {
             this.userSettingsModal!.hide();
             this.showLoginMenu({
                 modal: false,
-                link: true,
             });
             return false;
         });
@@ -404,11 +386,10 @@ export class ProfileUi {
         }
     }
 
-    showLoginMenu(opts: { modal?: boolean; link?: boolean }) {
+    showLoginMenu(opts: { modal?: boolean }) {
         opts = Object.assign(
             {
                 modal: false,
-                link: false,
             },
             opts,
         );
@@ -423,13 +404,7 @@ export class ProfileUi {
             // { method: "discord", linked: this.account.profile.linkedDiscord },
             // { method: "twitch", linked: this.account.profile.linkedTwitch }
         ];
-        createLoginOptions(
-            modal!.selector,
-            opts.link,
-            this.account,
-            this.localization,
-            loginMethods,
-        );
+        createLoginOptions(modal!.selector, this.localization, loginMethods);
 
         modal!.show();
     }
