@@ -1,11 +1,10 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
+import { isItemInLoadout } from "../../../shared/defs/gameObjects/unlockDefs";
 import { WeaponSlot } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import { GamePlugin } from "../game/pluginManager";
 
-const outfitsAllowedToDrop: string[] = ["outfitGhillie"];
-const gunsAllowedToDrop: string[] = ["sv98"];
 export default class DeathMatchPlugin extends GamePlugin {
     protected override initListeners(): void {
         this.on("gameCreated", (_data) => {});
@@ -32,7 +31,13 @@ export default class DeathMatchPlugin extends GamePlugin {
             data.player.scope = "1xscope";
             data.player.helmet = "";
             data.player.chest = "";
-            if (!outfitsAllowedToDrop.includes(data.player.outfit)) {
+
+            // don't drop the melee weapon if it's selected from the loadout
+            if (isItemInLoadout(data.player.weapons[WeaponSlot.Melee].type, "melee")) {
+                data.player.weapons[WeaponSlot.Melee].type = "fists";
+            }
+
+            if (isItemInLoadout(data.player.outfit, "outfit")) {
                 data.player.outfit = "outfitBase";
             }
 
@@ -40,14 +45,14 @@ export default class DeathMatchPlugin extends GamePlugin {
 
             {
                 const primary = data.player.weapons[WeaponSlot.Primary];
-                if (!gunsAllowedToDrop.includes(primary.type)) {
+                if ( isItemInLoadout(primary.type, "gun") ) {
                     primary.type = "";
                     primary.ammo = 0;
                     primary.cooldown = 0;
                 }
 
                 const secondary = data.player.weapons[WeaponSlot.Secondary];
-                if (!gunsAllowedToDrop.includes(secondary.type)) {
+                if ( isItemInLoadout(secondary.type, "gun") ) {
                     secondary.type = "";
                     secondary.ammo = 0;
                     secondary.cooldown = 0;
@@ -58,7 +63,7 @@ export default class DeathMatchPlugin extends GamePlugin {
             if (data.source?.__type === ObjectType.Player) {
                 const killer = data.source;
                 if (killer.inventory["frag"] == 0) {
-                    killer.weapons[ WeaponSlot.Throwable ].type = "frag";
+                    killer.weapons[WeaponSlot.Throwable].type = "frag";
                 }
 
                 killer.inventory["frag"] = Math.min(killer.inventory["frag"] + 3, 12);

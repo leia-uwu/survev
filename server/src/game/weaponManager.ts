@@ -473,7 +473,7 @@ export class WeaponManager {
             item = item.replace("_dual", "");
             this.player.dropLoot(item, 0);
         }
-        this.player.dropLoot(item, amountToDrop, true);
+        this.player.dropLoot(item, 0, true);
         this.player.weapsDirty = true;
         if (weapIdx === this.curWeapIdx) this.player.setDirty();
     }

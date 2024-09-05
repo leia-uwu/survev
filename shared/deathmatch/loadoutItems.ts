@@ -1,6 +1,5 @@
 export const allowedGuns = [
     //Pistol:
-    "ots38",
     "m9",
     "m9_dual",
     "hud-m9_dual",
@@ -12,21 +11,17 @@ export const allowedGuns = [
     "hud_glock_dual",
     "p30l",
     "p30l_dual",
-    "ot38",
-    "ot38_dual",
-    "hud-ot38_dual",
-    "ots38_dual",
-    "hud_ots38_dual",
+    // "ot38",
+    // "ot38_dual",
+    // "ots38_dual",
+    // "ots38",
     "deagle",
     "deagle_dual",
-    "hud_deagle_dual",
     "colt45",
     "colt45_dual",
-    "hud_colt45_dual",
     "m1911",
     "m1911_dual",
-    "hud_m1911_dual",
-
+    
     //Submachine Guns (SMG):
     "mp5",
     "mac10",
@@ -45,7 +40,7 @@ export const allowedGuns = [
     //Sniper Rifles:
     "mosin",
     "m39",
-    "garand",
+    // "garand",
     "svd",
     "vss",
     "scout_elite",

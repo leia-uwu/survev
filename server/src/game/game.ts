@@ -270,7 +270,7 @@ export class Game {
             case net.MsgType.DropItem: {
                 const dropMsg = new net.DropItemMsg();
                 dropMsg.deserialize(stream);
-                // player.customDropItem(dropMsg);
+                player.customDropItem(dropMsg);
                 break;
             }
             case net.MsgType.Spectate: {

@@ -1,4 +1,5 @@
 import { allowedGuns } from "../../deathmatch/loadoutItems";
+import { GameObjectDefs } from "../gameObjectDefs";
 import { CrosshairDefs } from "./crosshairDefs";
 import { HealEffectDefs } from "./healEffectDefs";
 import { PassDefs } from "./passDefs";
@@ -18,7 +19,12 @@ const allowedMeleeSkins = [
     "bowie_vintage",
     "bowie_frontier",
 ];
-export const privateOutfits = ["outfitGreenEyes", "outfitOwnr", "outfitShinyGold", "outfitPreacher"];
+export const privateOutfits = [
+    "outfitGreenEyes",
+    "outfitOwnr",
+    "outfitShinyGold",
+    "outfitPreacher",
+];
 
 const allowedOutfits = [
     "outfitBase",
@@ -201,6 +207,18 @@ const allowedEmotes = [
     "emote_logocloud",
     "emote_logotwins",
 ];
+
+/**
+ * Checks if an item is present in the player's loadout
+ */
+export const isItemInLoadout = (item: string, category: string) => {
+    if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
+
+    const def = GameObjectDefs[item];
+    if (!def || def.type !== category) return false;
+
+    return true;
+};
 
 export interface UnlockDef {
     readonly type: "unlock";
