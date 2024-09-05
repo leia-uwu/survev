@@ -1,13 +1,7 @@
 import type { MapDefs } from "../../shared/defs/mapDefs";
-import { GameConfig } from "../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
 import { CustomConfig } from "./resurviv-config";
-
-export enum TeamMode {
-    Solo = 1,
-    Duo = 2,
-    Squad = 4,
-}
 
 /**
  * Default server config

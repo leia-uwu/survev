@@ -5,7 +5,7 @@ import type {
     ObstacleDef,
     StructureDef,
 } from "../../../shared/defs/mapObjectsTyping";
-import { GameConfig } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { MsgStream, MsgType } from "../../../shared/net/net";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
@@ -251,7 +251,7 @@ export class GameMap {
 
         assert(mapDef, `Invalid map name: ${game.config.mapName}`);
 
-        const scale = (this.scale = game.teamMode > 2 ? "large" : "small");
+        const scale = (this.scale = game.teamMode > TeamMode.Duo ? "large" : "small");
 
         const mapConfig = mapDef.mapGen.map;
         this.width = mapConfig.baseWidth * mapConfig.scale[scale] + mapConfig.extension;
@@ -598,17 +598,9 @@ export class GameMap {
                 ori = this.getOriAndScale(customSpawnRule.type).ori;
                 pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
 
-                if (this.canSpawn(customSpawnRule.type, pos, ori)) {
-                    break;
-                }
-            }
-            if (pos && ori !== undefined && attempts < GameMap.MaxSpawnAttempts) {
+                if (!this.canSpawn(customSpawnRule.type, pos, ori)) continue;
                 this.genAuto(customSpawnRule.type, pos);
-            } else {
-                this.game.logger.warn(
-                    "Failed to generate custom spawn rule",
-                    customSpawnRule.type,
-                );
+                break;
             }
         }
 

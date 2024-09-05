@@ -1,7 +1,11 @@
 import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
-import type { RoomData } from "../../../shared/net/team";
+import type {
+    RoomData,
+    ServerToClientTeamMsg,
+    TeamStateMsg,
+} from "../../../shared/net/team";
 import { api } from "../api";
 import type { AudioManager } from "../audioManager";
 import type { ConfigManager } from "../config";
@@ -264,14 +268,18 @@ export class TeamMenu {
         }
     }
 
-    onMessage(type: string, data: any) {
+    onMessage<T extends ServerToClientTeamMsg["type"]>(
+        type: T,
+        data: ServerToClientTeamMsg["data"],
+    ) {
         switch (type) {
             case "state": {
+                let stateData = data as TeamStateMsg["data"];
                 this.joined = true;
                 const ourRoomData = this.roomData;
-                this.roomData = data.room;
-                this.players = data.players;
-                this.localPlayerId = data.localPlayerId;
+                this.roomData = stateData.room;
+                this.players = stateData.players;
+                this.localPlayerId = stateData.localPlayerId;
                 this.isLeader = this.getPlayerById(this.localPlayerId)!.isLeader;
 
                 // Override room properties with local values if we're
@@ -290,7 +298,7 @@ export class TeamMenu {
             }
             case "joinGame":
                 this.joiningGame = true;
-                this.joinGameCb(data);
+                this.joinGameCb(data as MatchData);
                 break;
             case "keepAlive":
                 break;
@@ -298,7 +306,7 @@ export class TeamMenu {
                 this.leave("kicked");
                 break;
             case "error":
-                this.leave(data.type);
+                this.leave((data as { type: string }).type);
         }
     }
 

@@ -3,7 +3,7 @@ import { platform } from "os";
 import NanoTimer from "nanotimer";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
-import { GameConfig } from "../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../shared/gameConfig";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
@@ -222,7 +222,7 @@ export class GameServer {
                 response.gameId = game.id;
 
                 const mode = Config.modes[body.gameModeIdx];
-                if (mode.teamMode > 1) {
+                if (mode.teamMode > TeamMode.Solo) {
                     let group: Group | undefined;
                     let hash: string;
                     let autoFill: boolean;

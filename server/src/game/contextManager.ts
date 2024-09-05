@@ -1,16 +1,18 @@
-import { GameConfig } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import type { PlayerStatus } from "../../../shared/net/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { util } from "../../../shared/utils/util";
 import { v2 } from "../../../shared/utils/v2";
-import { TeamMode } from "../config";
 import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
 enum ContextMode {
+    /** default solos, any map besides factions */
     Solo,
+    /** default duos or squads, any map besides factions */
     Team,
+    /** irrelevant to gamemode type, always the mode if faction map is selected */
     Faction,
 }
 
@@ -69,10 +71,19 @@ export class ContextManager {
     }
 
     isGameStarted(): boolean {
+        // return this._applyContext<boolean>({
+        //     [ContextMode.Solo]: () => this.aliveCount() > 1,
+        //     [ContextMode.Team]: () => this.aliveCount() > 1,
+        //     [ContextMode.Faction]: () => this.aliveCount() > 1,
+        // });
+        return this.aliveCount() > 1;
+    }
+
+    isContextModeSolo(): boolean {
         return this._applyContext<boolean>({
-            [ContextMode.Solo]: () => this.aliveCount() > 1,
-            [ContextMode.Team]: () => this.aliveCount() > 1,
-            [ContextMode.Faction]: () => this.aliveCount() > 1, //tbd
+            [ContextMode.Solo]: () => true,
+            [ContextMode.Team]: () => false,
+            [ContextMode.Faction]: () => false,
         });
     }
 
@@ -104,6 +115,17 @@ export class ContextManager {
                 [...this._game.groups.values()].map((g) => g.livingPlayers),
             [ContextMode.Faction]: () => this._game.teams.map((t) => t.livingPlayers),
         });
+    }
+
+    getSpectatablePlayers(player: Player): Player[] {
+        let playerFilter: (p: Player) => boolean;
+        if (this.getPlayerAlivePlayersContext(player).length != 0) {
+            playerFilter = (p: Player) => !p.disconnected && p.teamId == player.teamId;
+        } else {
+            playerFilter = (p: Player) => !p.disconnected;
+        }
+        //livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
+        return this._game.playerBarn.livingPlayers.filter(playerFilter);
     }
 
     getPlayerStatusPlayers(player: Player): Player[] | undefined {
@@ -156,13 +178,21 @@ export class ContextManager {
             );
     }
 
-    /** if the current context mode supports reviving, unrelated to individual players */
-    canRevive(): boolean {
-        return this._applyContext<boolean>({
-            [ContextMode.Solo]: () => false,
-            [ContextMode.Team]: () => true,
-            [ContextMode.Faction]: () => true,
-        });
+    /**
+     * by default, true if the current context mode supports reviving
+     *
+     * always true regardless of context mode with self revive
+     * @param playerReviving player that initializes the revive action
+     */
+    canRevive(playerReviving: Player): boolean {
+        return (
+            playerReviving.hasPerk("self_revive") ||
+            this._applyContext<boolean>({
+                [ContextMode.Solo]: () => false,
+                [ContextMode.Team]: () => true,
+                [ContextMode.Faction]: () => true,
+            })
+        );
     }
 
     isReviving(player: Player): boolean {
@@ -289,8 +319,11 @@ export class ContextManager {
 
                 const allDeadOrDisconnected = group.checkAllDeadOrDisconnected(player);
                 const allDowned = group.checkAllDowned(player);
+                const groupHasSelfRevive = group.livingPlayers.find((p) =>
+                    p.hasPerk("self_revive"),
+                );
 
-                if (allDeadOrDisconnected || allDowned) {
+                if (!groupHasSelfRevive && (allDeadOrDisconnected || allDowned)) {
                     group.allDeadOrDisconnected = true; // must set before any kill() calls so the gameovermsgs are accurate
                     player.kill(params);
                     if (allDowned) {

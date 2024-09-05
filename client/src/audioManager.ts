@@ -364,12 +364,6 @@ export class AudioManager {
         return this.setMute(!this.mute);
     }
 
-    setDelay(instance: any, duration: number) {
-        if (instance) {
-            instance.delay = duration;
-        }
-    }
-
     stopSound(instance: SoundHandle) {
         instance?.stop();
     }

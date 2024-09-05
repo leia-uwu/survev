@@ -342,6 +342,7 @@ export class TeamMenu {
 
                 response = {
                     type: "kicked",
+                    data: {},
                 };
                 this.sendResponse(response, pToKick);
                 //player is removed and new room state is sent when the socket is inevitably closed after the kick

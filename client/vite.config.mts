@@ -73,10 +73,12 @@ export default defineConfig(({ mode }) => {
                     enabled: true,
                 },
             }),
-            stripBlockPlugin({
-                start: "STRIP_FROM_PROD_CLIENT:START",
-                end: "STRIP_FROM_PROD_CLIENT:END",
-            }),
+            mode !== "development"
+                ? stripBlockPlugin({
+                      start: "STRIP_FROM_PROD_CLIENT:START",
+                      end: "STRIP_FROM_PROD_CLIENT:END",
+                  })
+                : undefined,
         ],
         json: {
             stringify: true,

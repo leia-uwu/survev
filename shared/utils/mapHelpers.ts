@@ -122,9 +122,4 @@ export const mapHelpers = {
         const col = collider.createAabbExtents(v2.create(0.0, 0.0), v2.mul(ext, 0.5));
         return collider.transform(col, pos, rot, scale) as AABB;
     },
-    nt: 0.8,
-    lt: 0.9,
-    validateSpriteAlpha: function (e: any, t: number) {
-        return e.sprite?.visible && e.sprite.alpha < t;
-    },
 };
