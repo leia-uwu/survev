@@ -74,7 +74,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 hut_03: 1, // scout hut
                 greenhouse_01: 1,
                 cache_01: 1,
-                cache_02: 100, // mosin tree
+                cache_02: 1, // mosin tree
                 cache_07: 1,
                 // bunker_structure_01: { odds: 0.05 },
                 bunker_structure_02: config.mapSize === "large" ? 1 : 0,
