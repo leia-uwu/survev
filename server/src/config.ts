@@ -37,7 +37,7 @@ export const Config = {
     thisRegion: "local",
 
     gameTps: 100,
-    netSyncTps: 33,
+    netSyncTps: 60,
 
     perfLogging: {
         enabled: true,

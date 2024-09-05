@@ -6,7 +6,7 @@ import { type AABB, type Circle, coldet } from "../../../../shared/utils/coldet"
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import type { River } from "../../../../shared/utils/river";
-import { assert, util } from "../../../../shared/utils/util";
+import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
@@ -188,7 +188,9 @@ export class Loot extends BaseGameObject {
         super(game, pos);
 
         const def = GameObjectDefs[type];
-        assert("lootImg" in def, `Invalid loot type ${type}`);
+        if (!("lootImg" in def)) {
+            throw new TypeError(`Invalid loot type ${type}`);
+        }
 
         this.layer = layer;
         this.type = type;

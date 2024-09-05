@@ -31,10 +31,9 @@ class ConfigTypeMap {
     }
 
     addType(type: string) {
-        assert(
-            this._typeToId[type] === undefined,
-            `Type ${type} has already been defined!`,
-        );
+        if (this._typeToId[type] !== undefined) {
+            throw new Error(`Type ${type} has already been defined!`);
+        }
         assert(this.nextId < this.maxId);
         this._typeToId[type] = this.nextId;
         this._idToType[this.nextId] = type;
@@ -43,7 +42,9 @@ class ConfigTypeMap {
 
     typeToId(type: string) {
         const id = this._typeToId[type];
-        assert(id !== undefined, `Invalid type ${type}`);
+        if (id === undefined) {
+            throw new ReferenceError(`Invalid type ${type}`);
+        }
         return id;
     }
 
@@ -69,10 +70,11 @@ function createTypeSerialization(
     const typeMap = new ConfigTypeMap(bitsPerType);
 
     const types = Object.keys(typeList);
-    assert(
-        types.length <= typeMap.maxId,
-        `${type} contains ${types.length} types, max ${typeMap.maxId}`,
-    );
+    if (types.length > typeMap.maxId) {
+        throw new RangeError(
+            `${type} contains ${types.length} types, max ${mapTypeSerialization.maxId}`,
+        );
+    }
     for (let i = 0; i < types.length; i++) {
         typeMap.addType(types[i]);
     }
@@ -106,10 +108,11 @@ export class BitStream extends bb.BitStream {
 
     writeFloat(f: number, min: number, max: number, bits: number) {
         assert(bits > 0 && bits < 31);
-        assert(
-            f >= min && f <= max,
-            `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`,
-        );
+        if (f < min || f > max) {
+            throw new RangeError(
+                `writeFloat: value out of range: ${f}, range: [${min}, ${max}]`,
+            );
+        }
         const range = (1 << bits) - 1;
         const x = math.clamp(f, min, max);
         const t = (x - min) / (max - min);

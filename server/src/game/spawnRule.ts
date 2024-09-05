@@ -42,13 +42,12 @@ export const SpawnRules = {
         );
 
         const mean = v2.div(pointsSum, points.length);
-        let normalizedMean = v2.normalize(mean);
+        const normalizedMean = v2.normalize(mean);
 
         if (math.eqAbs(mean.x, 0, 0.01) || math.eqAbs(mean.y, 0, 0.01)) {
             console.log("EDGE");
         }
-        let pos;
-        pos = v2.create(normalizedMean.x * -outerRadius, normalizedMean.y * -outerRadius);
+        let pos = v2.create(normalizedMean.x * -outerRadius, normalizedMean.y * -outerRadius);
         const variance = 20;
         const varianceValue = util.random(-variance, variance);
         pos = v2.rotate(pos, math.deg2rad(varianceValue));

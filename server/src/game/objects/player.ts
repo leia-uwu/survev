@@ -809,11 +809,12 @@ export class Player extends BaseGameObject {
         function assertType(type: string, category: string, acceptNoItem: boolean) {
             if (!type && acceptNoItem) return;
             const def = GameObjectDefs[type];
-            assert(def, `Invalid item type for ${category}: ${type}`);
-            assert(
-                def.type === category,
-                `Invalid type ${type}, expected ${def.type} item`,
-            );
+            if (!def) {
+                throw new TypeError(`Invalid item type for ${category}: ${type}`);
+            }
+            if (def.type !== category) {
+                throw new TypeError(`Invalid type ${type}, expected ${def.type} item`);
+            }
         }
 
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
@@ -1629,8 +1630,8 @@ export class Player extends BaseGameObject {
 
         const sourceIsPlayer = params.source?.__type === ObjectType.Player;
 
-        // teammates can't deal damage to each other
-        if (sourceIsPlayer && params.source !== this) {
+        // teammates can't deal damage to each other unless disconnected
+        if (sourceIsPlayer && params.source !== this && !this.disconnected) {
             if ((params.source as Player).groupId === this.groupId) {
                 return;
             }
@@ -1870,21 +1871,25 @@ export class Player extends BaseGameObject {
             const source = params.source;
             this.killedBy = source;
             if (source !== this) {
-                source.kills++;
+                if (this.groupId !== source.groupId) {
+                    source.kills++;
 
-                if (this.game.map.mapDef.gameMode.killLeaderEnabled) {
-                    const killLeader = this.game.playerBarn.killLeader;
-                    if (
-                        source.kills >= GameConfig.player.killLeaderMinKills &&
-                        source.kills > (killLeader?.kills ?? 0)
-                    ) {
-                        if (killLeader) {
-                            killLeader.role = "";
+                    if (this.game.map.mapDef.gameMode.killLeaderEnabled) {
+                        const killLeader = this.game.playerBarn.killLeader;
+                        if (
+                            source.kills >= GameConfig.player.killLeaderMinKills &&
+                            source.kills > (killLeader?.kills ?? 0)
+                        ) {
+                            if (killLeader) {
+                                killLeader.role = "";
+                            }
+                            source.promoteToRole("kill_leader");
                         }
-                        source.promoteToRole("kill_leader");
-                    }
-                    if (source.isKillLeader) {
-                        this.game.playerBarn.killLeaderDirty = true;
+                        if (source.isKillLeader) {
+                            this.game.playerBarn.killLeaderDirty = true;
+                        }
+                    } else {
+                        killMsg.killed = false;
                     }
                 }
 
@@ -2183,7 +2188,9 @@ export class Player extends BaseGameObject {
 
     useHealingItem(item: string): void {
         const itemDef = GameObjectDefs[item];
-        assert(itemDef.type === "heal", `Invalid heal item ${item}`);
+        if (itemDef.type !== "heal") {
+            throw new TypeError(`Invalid heal item ${item}`);
+        }
 
         if (
             !this.hasPerk("aoe_heal") &&

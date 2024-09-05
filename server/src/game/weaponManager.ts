@@ -684,10 +684,9 @@ export class WeaponManager {
             // Shoot a projectile if defined
             if (itemDef.projType) {
                 const projDef = GameObjectDefs[itemDef.projType];
-                assert(
-                    projDef.type === "throwable",
-                    `Invalid projectile type: ${itemDef.projType}`,
-                );
+                if (projDef.type !== "throwable") {
+                    throw new TypeError(`Invalid projectile type: ${itemDef.projType}`);
+                }
 
                 const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
                 this.player.game.projectileBarn.addProjectile(
@@ -856,18 +855,32 @@ export class WeaponManager {
                         hits.push({
                             obj: player,
                             pen: collision.pen,
-                            prio: player.teamId === this.player.teamId ? 2 : 0,
+                            prio: player.teamId === this.player.teamId ? 3 : 0,
                             pos: v2.copy(player.pos),
                             dir: collision.dir,
                         });
                     }
                 }
+            } else if (meleeDef.cleave && obj.__type === ObjectType.Projectile) {
+                const collision = coldet.intersectCircleCircle(
+                    coll.pos,
+                    coll.rad,
+                    obj.pos,
+                    obj.rad,
+                );
+                if (collision) {
+                    hits.push({
+                        obj: obj,
+                        pen: collision.pen,
+                        prio: 2,
+                        pos: v2.copy(obj.pos),
+                        dir: collision.dir,
+                    });
+                }
             }
         }
 
-        hits.sort((a, b) => {
-            return a.prio === b.prio ? b.pen - a.pen : a.prio - b.prio;
-        });
+        hits.sort((a, b) => (a.prio === b.prio ? b.pen - a.pen : a.prio - b.prio));
 
         let maxHits = hits.length;
         if (!meleeDef.cleave) maxHits = math.min(maxHits, 1);
@@ -876,23 +889,31 @@ export class WeaponManager {
             const hit = hits[i];
             const obj = hit.obj;
 
-            if (obj.__type === ObjectType.Obstacle) {
-                obj.damage({
-                    amount: meleeDef.damage * meleeDef.obstacleDamage,
-                    gameSourceType: this.activeWeapon,
-                    damageType: GameConfig.DamageType.Player,
-                    source: this.player,
-                    dir: hit.dir,
-                });
-                if (obj.interactable) obj.interact(this.player);
-            } else if (obj.__type === ObjectType.Player) {
-                obj.damage({
-                    amount: meleeDef.damage,
-                    gameSourceType: this.activeWeapon,
-                    damageType: GameConfig.DamageType.Player,
-                    source: this.player,
-                    dir: hit.dir,
-                });
+            switch (obj.__type) {
+                case ObjectType.Obstacle:
+                    obj.damage({
+                        amount: meleeDef.damage * meleeDef.obstacleDamage,
+                        gameSourceType: this.activeWeapon,
+                        damageType: GameConfig.DamageType.Player,
+                        source: this.player,
+                        dir: hit.dir,
+                    });
+                    if (obj.interactable) obj.interact(this.player);
+                    break;
+                case ObjectType.Player:
+                    obj.damage({
+                        amount: meleeDef.damage,
+                        gameSourceType: this.activeWeapon,
+                        damageType: GameConfig.DamageType.Player,
+                        source: this.player,
+                        dir: hit.dir,
+                    });
+                    break;
+                case ObjectType.Projectile:
+                    obj.vel = v2.mul(this.player.dir, 10 + meleeDef.damage ** 0.5);
+                    obj.dir = v2.normalizeSafe(obj.vel);
+                    obj.fuseTime--;
+                    break;
             }
         }
     }
@@ -906,10 +927,10 @@ export class WeaponManager {
         }
         this.player.cancelAction();
         const itemDef = GameObjectDefs[this.activeWeapon];
-        assert(
-            itemDef.type === "throwable",
-            `Invalid projectile type: ${this.activeWeapon}`,
-        );
+
+        if (itemDef.type !== "throwable") {
+            throw new TypeError(`Invalid projectile type: ${this.activeWeapon}`);
+        }
 
         this.cookingThrowable = true;
         this.cookTicker = 0;

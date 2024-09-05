@@ -16,6 +16,7 @@ import type { Game } from "../game";
 import type { DamageParams, GameObject } from "./gameObject";
 import type { Obstacle } from "./obstacle";
 import { Player } from "./player";
+import type { Projectile } from "./projectile";
 
 // NOTE: most of this code was copied from surviv client and bit heroes arena client
 // to get bullet collision the most accurate possible
@@ -167,6 +168,7 @@ export class Bullet {
     damageType: number;
     isShrapnel: boolean;
     skipCollision: boolean;
+    hitProjectiles: Projectile[] = [];
 
     constructor(
         public bulletManager: BulletBarn,
@@ -471,6 +473,23 @@ export class Bullet {
                 }
                 if (collision || panCollision) {
                     break;
+                }
+            } else if (
+                !this.isShrapnel &&
+                obj.__type === ObjectType.Projectile &&
+                !this.hitProjectiles.includes(obj)
+            ) {
+                const intersection = coldet.intersectSegmentCircle(
+                    posOld,
+                    this.pos,
+                    obj.pos,
+                    obj.rad,
+                );
+                if (intersection) {
+                    this.hitProjectiles.push(obj);
+                    obj.vel = v2.mul(this.dir, this.speed * 0.5);
+                    obj.dir = this.dir;
+                    obj.fuseTime -= this.damageMult;
                 }
             }
         }
