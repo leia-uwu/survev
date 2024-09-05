@@ -210,6 +210,7 @@ export class Gas {
                 break;
             }
             case GasMode.Moving: {
+                this.game.allowJoin = false;
                 this.waitTime = math.max(
                     GameConfig.gas.customZoneTime ??
                         this.waitTime - GameConfig.gas.waitTimeDecay,

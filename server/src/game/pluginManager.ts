@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
-import type { Player } from "./objects/player";
+import type { Emote, Player } from "./objects/player";
 
 interface PlayerDamageEvent extends DamageParams {
     player: Player;
@@ -13,6 +13,10 @@ export interface Events {
     playerJoin: Player;
     playerDamage: PlayerDamageEvent;
     playerKill: Omit<PlayerDamageEvent, "amount">;
+    teamPing: {
+        player: Player;
+        emote: Emote;
+    };
     gameCreated: Game;
 }
 

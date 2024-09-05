@@ -15,7 +15,10 @@ import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/me
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { privateOutfits, UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
+import {
+    isItemInLoadout,
+    privateOutfits,
+} from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
@@ -31,7 +34,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
-import { Game } from "../game";
+import type { Game } from "../game";
 import type { Group } from "../group";
 import type { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
@@ -152,15 +155,6 @@ export class PlayerBarn {
                 this.game.planeBarn.schedulePlanes();
             }
         }
-
-        // if (!this.game.allowJoin && !this.game.over) {
-        //     player.dead = true;
-        //     this.aliveCountDirty = false;
-        //     this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
-        //     setTimeout(() => {
-        //         player.spectating = this.players[0];
-        //     }, 50);
-        // }
 
         return player;
     }
@@ -821,21 +815,9 @@ export class Player extends BaseGameObject {
             this.addPerk(perk.type, perk.droppable);
         }
 
-        /**
-         * Checks if an item is present in the player's loadout
-         */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
         if (
             (isItemInLoadout(joinMsg.loadout.outfit, "outfit") ||
-            privateOutfits.includes(joinMsg.loadout.outfit)) &&
+                privateOutfits.includes(joinMsg.loadout.outfit)) &&
             joinMsg.loadout.outfit !== "outfitBase"
         ) {
             this.outfit = joinMsg.loadout.outfit;
@@ -1542,6 +1524,7 @@ export class Player extends BaseGameObject {
             const emotePlayer = game.objectRegister.getById(emote.playerId) as
                 | Player
                 | undefined;
+            this.game.pluginManager.emit("teamPing", { player, emote });
             if (emotePlayer) {
                 const seeNormalEmote =
                     !emote.isPing && player.visibleObjects.has(emotePlayer);
@@ -3014,9 +2997,11 @@ export class Player extends BaseGameObject {
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         switch (itemDef.type) {
             case "gun":
+                if (isItemInLoadout(dropMsg.item, "gun")) break;
                 this.weaponManager.dropGun(dropMsg.weapIdx);
                 break;
             case "melee":
+                if (isItemInLoadout(dropMsg.item, "melee")) break;
                 this.weaponManager.dropMelee();
                 break;
         }

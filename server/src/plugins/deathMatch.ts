@@ -45,14 +45,14 @@ export default class DeathMatchPlugin extends GamePlugin {
 
             {
                 const primary = data.player.weapons[WeaponSlot.Primary];
-                if ( isItemInLoadout(primary.type, "gun") ) {
+                if (isItemInLoadout(primary.type, "gun")) {
                     primary.type = "";
                     primary.ammo = 0;
                     primary.cooldown = 0;
                 }
 
                 const secondary = data.player.weapons[WeaponSlot.Secondary];
-                if ( isItemInLoadout(secondary.type, "gun") ) {
+                if (isItemInLoadout(secondary.type, "gun")) {
                     secondary.type = "";
                     secondary.ammo = 0;
                     secondary.cooldown = 0;

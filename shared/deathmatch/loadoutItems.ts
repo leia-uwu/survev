@@ -21,7 +21,7 @@ export const allowedGuns = [
     "colt45_dual",
     "m1911",
     "m1911_dual",
-    
+
     //Submachine Guns (SMG):
     "mp5",
     "mac10",
