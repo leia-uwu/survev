@@ -15,7 +15,7 @@ import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/me
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
+import { privateOutfits, UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
@@ -31,7 +31,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
-import type { Game } from "../game";
+import { Game } from "../game";
 import type { Group } from "../group";
 import type { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
@@ -834,7 +834,8 @@ export class Player extends BaseGameObject {
         };
 
         if (
-            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
+            (isItemInLoadout(joinMsg.loadout.outfit, "outfit") ||
+            privateOutfits.includes(joinMsg.loadout.outfit)) &&
             joinMsg.loadout.outfit !== "outfitBase"
         ) {
             this.outfit = joinMsg.loadout.outfit;
@@ -850,6 +851,27 @@ export class Player extends BaseGameObject {
         } else {
             this.weapons[GameConfig.WeaponSlot.Melee].type =
                 defaultItems.weapons[GameConfig.WeaponSlot.Melee].type;
+        }
+
+        if (isItemInLoadout(joinMsg.loadout.primary, "gun")) {
+            const slot = GameConfig.WeaponSlot.Primary;
+            this.weapons[slot].type = joinMsg.loadout.primary;
+            const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
+            this.weapons[slot].ammo = gunDef.maxClip;
+        }
+
+        if (isItemInLoadout(joinMsg.loadout.secondary, "gun")) {
+            const slot = GameConfig.WeaponSlot.Secondary;
+            this.weapons[slot].type = joinMsg.loadout.secondary;
+            const gunDef = GameObjectDefs[this.weapons[slot].type] as GunDef;
+            this.weapons[slot].ammo = gunDef.maxClip;
+        }
+
+        if (
+            this.weapons[GameConfig.WeaponSlot.Primary].type == "bugle" ||
+            this.weapons[GameConfig.WeaponSlot.Secondary].type == "bugle"
+        ) {
+            this.addPerk("inspiration", false);
         }
 
         const loadout = this.loadout;
@@ -1622,7 +1644,7 @@ export class Player extends BaseGameObject {
             case spectateMsg.specBegin:
                 const groupExistsOrAlive =
                     this.game.isTeamMode && this.group!.livingPlayers.length > 0;
-                if (groupExistsOrAlive) {
+                if (groupExistsOrAlive || !GameConfig.disableGroupSpectate) {
                     playerToSpec =
                         spectatablePlayers[
                             util.randomInt(0, spectatablePlayers.length - 1)
