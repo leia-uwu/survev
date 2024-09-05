@@ -51,7 +51,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                   (array, item) => {
                       let object: Record<string, number> = {};
                       for (const [key, value] of Object.entries(item)) {
-                          object[key] = (value * config.spawnDensity[config.mapSize]) / 100;
+                          object[key] =
+                              (value * config.spawnDensity[config.mapSize]) / 100;
                       }
                       array.push(object);
                       return array;
@@ -63,8 +64,8 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
             {
                 club_complex_01: 1,
                 // small is spawn count for solos and duos, large is spawn count for squads
-                warehouse_01: { odds: 0.5   },
-                house_red_01: config.mapSize === "large" ? 1 : { odds: 0.5   },
+                warehouse_01: { odds: 0.5 },
+                house_red_01: config.mapSize === "large" ? 1 : { odds: 0.5 },
                 // house_red_02: 1,
                 // barn_01: { small: 1, large: 3 },
                 // barn_02: 1,
@@ -73,7 +74,7 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 hut_03: 1, // scout hut
                 greenhouse_01: 1,
                 cache_01: 1,
-                cache_02: { odds: 0.1 }, // mosin tree
+                cache_02: 100, // mosin tree
                 cache_07: 1,
                 // bunker_structure_01: { odds: 0.05 },
                 bunker_structure_02: config.mapSize === "large" ? 1 : 0,
@@ -83,7 +84,9 @@ export const DeatchmatchMain: MapDef = util.mergeDeep(structuredClone(Main), {
                 // warehouse_complex_01: 1,
                 chest_01: 1,
                 chest_03: { odds: 0.2 },
-                // mil_crate_02: { odds: 0.25 },
+                mil_crate_02: 1,
+                mil_crate_03: 1,
+                stone_04: 1,
                 tree_02: 3,
                 teahouse_complex_01su: { odds: 0.5 },
                 // stone_04: 1,
@@ -110,9 +113,12 @@ DeatchmatchMain["lootTable"] = {
     tier_chrys_01: [{ name: "outfitImperial", count: 1, weight: 1 }],
     tier_chrys_02: [{ name: "katana", count: 1, weight: 1 }],
     tier_chrys_case: [
-        // { name: "helmet03_forest", count: 1, weight: 199 },
-        { name: "tier_katanas", count: 1, weight: 3 },
+        // { name: "tier_katanas", count: 1, weight: 3 },
         { name: "naginata", count: 1, weight: 1 },
+    ],
+    tier_police: [
+        { name: "saiga", count: 1, weight: 1 },
+        // { name: "flare_gun", count: 1, weight: 0.1 }
     ],
     tier_eye_02: [{ name: "stonehammer", count: 1, weight: 1 }],
     tier_eye_block: [
@@ -147,5 +153,15 @@ DeatchmatchMain["lootTable"] = {
     tier_airdrop_rare: [
         { name: "sv98", count: 1, weight: 1 },
         { name: "outfitGhillie", count: 1, weight: 1 },
+    ],
+    tier_throwables: [
+        { name: "frag", count: 2, weight: 1 },
+        { name: "smoke", count: 1, weight: 1 },
+        { name: "mirv", count: 2, weight: 0.05 },
+    ],
+    tier_hatchet: [
+        { name: "pan", count: 1, weight: 1 },
+        { name: "pkp", count: 1, weight: 1 },
+        { name: "m249", count: 1, weight: 1 },
     ],
 };

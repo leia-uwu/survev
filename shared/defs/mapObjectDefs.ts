@@ -9676,7 +9676,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     mil_crate_03: createCrate({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
-        loot: [autoLoot("ots38_dual", 1)],
+        loot: [
+            autoLoot("ots38", 1),
+            autoLoot("ots38", 1),
+            autoLoot("ots38", 1),
+            autoLoot("ots38", 1),
+        ],
         map: { display: false },
         terrain: { grass: true, beach: true },
         img: { sprite: "map-crate-mil-03.img" },
@@ -9970,7 +9975,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     pot_01: createBottle({}),
     pot_02: createBottle({
         img: { sprite: "map-pot-02.img" },
-        loot: [autoLoot("spas12", 1)],
+        loot: [autoLoot("m1014", 1)],
     }),
     pot_03: createBottle({ img: { sprite: "map-pot-03.img" } }),
     pot_03b: createBottle({
@@ -10548,7 +10553,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     tree_03: createTree({
         img: { tint: 11645361 },
-        loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
+        loot: [tierLoot("tier_surviv", 2, 3), autoLoot("garand", 1)],
     }),
     tree_03sv: createTree({
         map: { color: 4411673 },
