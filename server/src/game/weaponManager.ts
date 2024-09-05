@@ -97,7 +97,7 @@ export class WeaponManager {
                 //                  for two identical non-zero numerical deploy groups
                 curWeaponDef.deployGroup / nextWeaponDef.deployGroup === 1
             ) {
-                effectiveSwitchDelay = nextWeaponDef.switchDelay * 0.6;
+                effectiveSwitchDelay = nextWeaponDef.switchDelay * 0.4;
             }
 
             nextWeapon.cooldown = effectiveSwitchDelay;
