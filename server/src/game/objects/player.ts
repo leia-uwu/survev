@@ -1933,9 +1933,9 @@ export class Player extends BaseGameObject {
                 }
 
                 if (source.hasPerk("takedown")) {
-                    source.health += 25;
-                    source.boost += 25;
-                    source.giveHaste(GameConfig.HasteType.Takedown, 20);
+                    source.health += 15;
+                    source.boost += 15;
+                    source.giveHaste(GameConfig.HasteType.Takedown, 4);
                 }
             }
 
