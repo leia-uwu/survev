@@ -54,9 +54,6 @@ importers:
 
   server:
     dependencies:
-      bit-buffer:
-        specifier: ^0.2.5
-        version: 0.2.5
       nanotimer:
         specifier: ^0.3.15
         version: 0.3.15
@@ -77,11 +74,7 @@ importers:
         specifier: ^20.14.15
         version: 20.14.15
 
-  shared:
-    dependencies:
-      bit-buffer:
-        specifier: ^0.2.5
-        version: 0.2.5
+  shared: {}
 
 packages:
 

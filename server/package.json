@@ -10,7 +10,6 @@
     "dev:game": "ts-node-dev --respawn --rs --transpile-only src/gameServer.ts --game-server"
   },
   "dependencies": {
-    "bit-buffer": "^0.2.5",
     "nanotimer": "^0.3.15",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.4",

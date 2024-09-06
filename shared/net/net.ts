@@ -1,6 +1,6 @@
-import bb from "bit-buffer";
 import { GameObjectDefs } from "../defs/gameObjectDefs";
 import { MapObjectDefs } from "../defs/mapObjectDefs";
+import * as bb from "../lib/bitBuffer";
 import { math } from "../utils/math";
 import { assert } from "../utils/util";
 import type { Vec2 } from "../utils/v2";
