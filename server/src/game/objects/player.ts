@@ -781,13 +781,10 @@ export class Player extends BaseGameObject {
 
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             const weap = defaultItems.weapons[i];
-            if (!weap.type) continue;
-            assertType(weap.type, GameConfig.WeaponType[i], true);
-            this.weaponManager.setWeapon(
-                i,
-                weap.type ?? this.weapons[i].type,
-                weap.ammo ?? 0,
-            );
+            let type = weap.type || this.weapons[i].type;
+            if (!type) continue;
+            assertType(type, GameConfig.WeaponType[i], true);
+            this.weaponManager.setWeapon(i, type, weap.ammo ?? 0);
         }
 
         for (const key in GameConfig.bagSizes) {
@@ -838,9 +835,6 @@ export class Player extends BaseGameObject {
             joinMsg.loadout.melee != "fists"
         ) {
             this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        } else {
-            this.weapons[GameConfig.WeaponSlot.Melee].type =
-                defaultItems.weapons[GameConfig.WeaponSlot.Melee].type;
         }
 
         const loadout = this.loadout;

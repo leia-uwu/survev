@@ -111,7 +111,7 @@ export const GameConfig = {
     Input,
     EmoteSlot,
     WeaponSlot,
-    WeaponType: ["gun", "gun", "melee", "throwable"],
+    WeaponType: ["gun", "gun", "melee", "throwable"] as const,
     DamageType,
     Action,
     Anim,
