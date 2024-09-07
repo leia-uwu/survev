@@ -1,19 +1,17 @@
 {
-  "name": "Resurviv",
-  "short_name": "Resurviv",
-  "description": "",
-  "icons": [
-    {
-      "src": "img/icon_app.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "density": 3.0
-    }
-  ],
-  "categories": ["games"],
-  "start_url": ".",
-  "theme_color": "#80af49",
-  "background_color": "#80af49",
-  "display": "fullscreen",
-  "orientation": "landscape"
+    "name": "survev.io",
+    "short_name": "survev.io",
+    "icons": [
+      {
+        "src": "img/icon_app.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "density": 3.0
+      }
+    ],
+    "start_url": "index.html",
+    "theme_color": "#80af49",
+    "background_color": "#80af49",
+    "display": "fullscreen",
+    "orientation": "landscape"
 }
