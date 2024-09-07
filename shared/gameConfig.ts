@@ -201,7 +201,7 @@ export const GameConfig = {
                 "308sub": 0,
                 flare: 0,
                 "45acp": 0,
-                frag: 4,
+                frag: 0,
                 smoke: 0,
                 strobe: 0,
                 mirv: 0,
