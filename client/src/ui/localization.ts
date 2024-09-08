@@ -1,5 +1,5 @@
 import $ from "jquery";
-import english from "../../l10n/en.json";
+import english from "../../public/l10n/en.json";
 import { api } from "../api";
 import { device } from "../device";
 
