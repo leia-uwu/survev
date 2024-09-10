@@ -404,6 +404,11 @@ export class ProfileUi {
             // { method: "discord", linked: this.account.profile.linkedDiscord },
             // { method: "twitch", linked: this.account.profile.linkedTwitch }
         ];
+
+        if (import.meta.env.DEV) {
+            loginMethods.push({ method: "mock", linked: false });
+        }
+
         createLoginOptions(modal!.selector, this.localization, loginMethods);
 
         modal!.show();
