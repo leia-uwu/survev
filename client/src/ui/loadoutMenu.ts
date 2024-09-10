@@ -90,10 +90,9 @@ const sortTypes: Record<string, any> = {
     subcat: itemSort(sortSubcat),
 };
 
-interface Item {
+export interface Item {
     type: string;
     source: string;
-    ackd: number;
     timeAcquired: number;
     status?: ItemStatus;
 }

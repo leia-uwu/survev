@@ -2,6 +2,7 @@ import $ from "jquery";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
+import type { Item } from "./ui/loadoutMenu";
 import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
 
 type DataOrCallback =
@@ -60,7 +61,7 @@ export class Account {
 
     loadout = loadouts.defaultLoadout();
     loadoutPriv = "";
-    items: Array<{ type: string; status: ItemStatus }> = [];
+    items: Item[] = [];
     quests = [];
     questPriv = "";
     pass = {};
@@ -318,7 +319,7 @@ export class Account {
                     return x.type == itemTypes[i];
                 });
                 if (item) {
-                    item.status = Math.max(item.status, status);
+                    item.status = Math.max(item.status!, status);
                 }
             }
             this.emit("items", this.items);

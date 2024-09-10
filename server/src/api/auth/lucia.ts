@@ -1,9 +1,7 @@
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
-import type { Env } from "hono";
-import type { Context as HonoContext } from "hono";
-import { Lucia } from "lucia";
+import type { Env, Context as HonoContext } from "hono";
 import type { Session, User } from "lucia";
-import type { z } from "zod";
+import { Lucia } from "lucia";
 import { db } from "../db";
 import { sessionTable, usersTable } from "../db/schema";
 
@@ -24,18 +22,15 @@ export const lucia = new Lucia(adapter, {
     },
     getUserAttributes: (attributes) => {
         return {
-            githubId: attributes.id,
             username: attributes.username,
         };
     },
 });
 
-const t = usersTable.$inferSelect;
-
 declare module "lucia" {
     interface Register {
         Lucia: typeof lucia;
-        DatabaseUserAttributes: Pick<z.infer<typeof t>, "username" | "id">;
+        DatabaseUserAttributes: Pick<typeof usersTable.$inferSelect, "username" | "id">;
     }
 }
 

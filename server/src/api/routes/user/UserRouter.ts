@@ -3,12 +3,19 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
+import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
+import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
-import { usersTable } from "../../db/schema";
+import { itemsTable, usersTable } from "../../db/schema";
 import { helpers } from "../../helpers";
-import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
+import {
+    ItemStatus,
+    type Loadout,
+    loadoutSchema,
+    usernameSchema,
+} from "../../zodSchemas";
 
 export const UserRouter = new Hono<Context>();
 
@@ -18,9 +25,21 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
         const result = await db.query.usersTable.findFirst({
             where: eq(usersTable.id, user.id),
         });
+
         if (!result) {
             return c.json({ err: "" }, 200);
         }
+
+        // TODO: do this in a join
+        const items = await db
+            .select({
+                timeAcquired: itemsTable.timeAcquired,
+                type: itemsTable.type,
+                source: itemsTable.source,
+                status: itemsTable.status,
+            })
+            .from(itemsTable)
+            .where(eq(itemsTable.userId, user.id));
 
         const {
             loadout,
@@ -52,10 +71,12 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
                 },
                 loadout,
                 loadoutPriv: "",
+                items,
             },
             200,
         );
-    } catch (_err) {
+    } catch (err) {
+        console.error("Error fetching user profile:", err);
         return c.json({}, 500);
     }
 });
@@ -172,13 +193,52 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
     }
 });
 
-//
-// NOT IMPLEMENTED
-//
-UserRouter.post("/reset_stats", async (c) => {
-    return c.json({}, 200);
-});
+UserRouter.post(
+    "/set_item_status",
+    zValidator(
+        "json",
+        z.object({
+            itemTypes: z.array(z.string()),
+            status: z.nativeEnum(ItemStatus),
+        }),
+        (result, c) => {
+            if (!result.success) {
+                return c.json({}, 400);
+            }
+        },
+    ),
+    AuthMiddleware,
+    async (c) => {
+        try {
+            const user = c.get("user")!;
+            const { itemTypes, status } = c.req.valid("json");
 
+            const validOufits = new Set(Object.keys(OutfitDefs));
+            const validItemTypes = itemTypes.filter((item) => validOufits.has(item));
+
+            if (!validItemTypes.length) return c.json({}, 200);
+
+            await db
+                .update(itemsTable)
+                .set({
+                    status,
+                })
+                .where(
+                    and(
+                        eq(itemsTable.userId, user.id),
+                        inArray(itemsTable.type, validItemTypes),
+                    ),
+                );
+
+    return c.json({}, 200);
+        } catch (_err) {
+            return c.json({}, 500);
+        }
+    },
+);
+
+// is there a use for this besides unlocking skins on account creation?
+// if not delete it.
 UserRouter.post(
     "/unlock",
     zValidator(
@@ -192,14 +252,45 @@ UserRouter.post(
             }
         },
     ),
+    AuthMiddleware,
     async (c) => {
         try {
-            return c.json([], 200);
-        } catch (_e) {
+            const user = c.get("user")!;
+            const { unlockType } = c.req.valid("json");
+
+            if (!(unlockType in UnlockDefs)) {
+                return c.json([], 400);
+            }
+
+            const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
+            const data = outfitsToUnlock.map((outfit) => {
+                return {
+                    source: unlockType,
+                    type: outfit,
+                    userId: user.id,
+                };
+            });
+
+            const items = await db.insert(itemsTable).values(data).returning({
+                type: itemsTable.type,
+                timeAcquired: itemsTable.timeAcquired,
+                source: itemsTable.source,
+                status: itemsTable.status,
+            });
+
+            return c.json({ success: true, items }, 200);
+        } catch (err) {
             return c.json({}, 500);
         }
     },
 );
+
+//
+// NOT IMPLEMENTED
+//
+UserRouter.post("/reset_stats", async (c) => {
+    return c.json({}, 200);
+});
 
 //
 // TYPES
@@ -225,6 +316,13 @@ type ProfileResponse =
           };
           loadout: Loadout;
           loadoutPriv: string;
+          items: Pick<
+                typeof itemsTable.$inferSelect,
+                | "type"
+                | "status"
+                | "timeAcquired"
+                | "source"
+            >[];
       };
 
 type UsernameErrorType = "failed" | "invalid" | "taken" | "change_time_not_expired";

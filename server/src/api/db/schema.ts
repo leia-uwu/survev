@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { helpers } from "../helpers";
-import type { Loadout } from "../zodSchemas";
+import { ItemStatus, type Loadout } from "../zodSchemas";
 
 export const sessionTable = sqliteTable("session", {
     id: text("id").notNull().primaryKey(),
@@ -36,3 +36,21 @@ export const usersTable = sqliteTable("users", {
         .default(helpers.validateLoadout({} as Loadout))
         .$type<Loadout>(),
 });
+
+export const itemsTable = sqliteTable(
+    "items",
+    {
+        userId: text("user_id")
+            .notNull()
+            .references(() => usersTable.id, { onDelete: "cascade" }),
+        source: text("source").notNull(),
+        timeAcquired: integer("time_acquired", { mode: "timestamp" })
+            .notNull()
+            .default(sql`(current_timestamp)`),
+        type: text("type").notNull(),
+        status: integer("status").notNull().$type<ItemStatus>().default(ItemStatus.New),
+    },
+    (table) => ({
+        pk: primaryKey({ columns: [table.type, table.userId] }),
+    }),
+);
