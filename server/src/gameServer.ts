@@ -290,7 +290,8 @@ export class GameServer {
         try {
             game.handleMsg(message, data);
         } catch (e) {
-            game.logger.warn("Error parsing message:", e);
+            game.logger.warn("Error parsing message:");
+            console.error(e);
         }
     }
 
@@ -404,7 +405,7 @@ if (process.argv.includes("--game-server")) {
     });
 
     app.listen(Config.gameServer.host, Config.gameServer.port, () => {
-        server.logger.log(`Resurviv Game Server v${version}`);
+        server.logger.log(`Survev Game Server v${version}`);
         server.logger.log(
             `Listening on ${Config.gameServer.host}:${Config.gameServer.port}`,
         );

@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import { VitePWA } from "vite-plugin-pwa";
 import stripBlockPlugin from "vite-plugin-strip-block";
 import { Config } from "../server/src/config";
 
@@ -47,32 +46,6 @@ export default defineConfig(({ mode }) => {
             },
         },
         plugins: [
-            VitePWA({
-                registerType: "autoUpdate",
-                includeAssets: ["favicon.ico", "img/apple-touch-icon-180x180.png"],
-                manifest: {
-                    name: "Resurviv",
-                    short_name: "Resurviv",
-                    description: "Describe me daddy",
-                    background_color: "#80af49",
-                    theme_color: "#80af49",
-                    icons: [
-                        {
-                            src: "img/pwa-192x192.png",
-                            sizes: "192x192",
-                            type: "image/png",
-                        },
-                        {
-                            src: "img/pwa-512x512.png",
-                            sizes: "512x512",
-                            type: "image/png",
-                        },
-                    ],
-                },
-                devOptions: {
-                    enabled: true,
-                },
-            }),
             mode !== "development"
                 ? stripBlockPlugin({
                       start: "STRIP_FROM_PROD_CLIENT:START",

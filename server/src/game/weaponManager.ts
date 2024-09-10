@@ -155,7 +155,11 @@ export class WeaponManager {
     }> = [];
 
     get activeWeapon(): string {
-        return this.weapons[this.curWeapIdx].type;
+        // HACK: possible fix for client crash?
+        // active weapon seems to be undefined/empty string in the client
+        // idk why it also doesn't crash the server lol
+        // TODO: investigate this
+        return this.weapons[this.curWeapIdx].type || "fists";
     }
 
     constructor(player: Player) {
