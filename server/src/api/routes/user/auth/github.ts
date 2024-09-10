@@ -52,6 +52,8 @@ GithubRouter.get("/callback", async (c) => {
             where: eq(usersTable.auth_id, githubUser.id),
         });
 
+        setCookie(c, "app-data", "1");
+
         if (existingUser) {
             setUserCookie(existingUser.id, c);
             return c.redirect("/");

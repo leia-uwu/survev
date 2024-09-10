@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { and, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
+import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
 import type { Context } from "../..";
 import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
@@ -168,7 +169,7 @@ UserRouter.post(
 UserRouter.post("/logout", AuthMiddleware, async (c) => {
     try {
         const session = c.get("session")!;
-
+        deleteCookie(c, "app-data");
         await lucia.invalidateSession(session.id);
         c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
             append: true,

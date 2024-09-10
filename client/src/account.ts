@@ -2,6 +2,7 @@ import $ from "jquery";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
+import { helpers } from "./helpers";
 import type { Item } from "./ui/loadoutMenu";
 import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
 
@@ -146,10 +147,16 @@ export class Account {
         if (this.config.get("sessionCookie")) {
             this.setSessionCookies();
         }
-        // if (helpers.getCookie("app-data")) {
-        this.login();
-        // this.loadProfile();
-        // }
+        if (helpers.getCookie("app-data")) {
+            this.login();
+        } else {
+            this.emit("request", this);
+            this.emit("items", []);
+
+            const storedLoadout = this.config.get("loadout");
+            this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
+            this.emit("loadout", this.loadout);
+        }
     }
 
     setSessionCookies() {
@@ -187,10 +194,10 @@ export class Account {
     }
 
     login() {
-        // if (helpers.getCookie("app-data")) {
-        this.loadProfile();
-        this.getPass(true);
-        // }
+        if (helpers.getCookie("app-data")) {
+            this.loadProfile();
+            this.getPass(true);
+        }
     }
 
     logout() {
@@ -203,7 +210,6 @@ export class Account {
 
     loadProfile() {
         this.loggingIn = !this.loggedIn;
-        let _loadout = {};
         this.ajaxRequest("/api/user/profile", (err, data) => {
             const a = this.loggingIn;
             this.loggingIn = false;
@@ -233,10 +239,6 @@ export class Account {
             }
             this.emit("items", this.items);
         });
-
-        const storedLoadout = this.config.get("loadout");
-        this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
-        this.emit("loadout", this.loadout);
     }
 
     resetStats() {
@@ -289,6 +291,9 @@ export class Account {
         this.loadout = loadout;
         this.emit("loadout", this.loadout);
         this.config.set("loadout", loadout);
+
+        if ( !helpers.getCookie("app-data") ) return;
+
         this.ajaxRequest(
             "/api/user/loadout",
             {
