@@ -205,7 +205,6 @@ export class Account {
         this.loggingIn = !this.loggedIn;
         let _loadout = {};
         this.ajaxRequest("/api/user/profile", (err, data) => {
-            console.log(data);
             const a = this.loggingIn;
             this.loggingIn = false;
             this.loggedIn = false;

@@ -1,6 +1,6 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
-import { Config, ConfigType } from "./../config";
+import { Config, type ConfigType } from "./../config";
 import type { FindGameBody, FindGameResponse } from "./../gameServer";
 import { TeamMenu } from "./../teamMenu";
 import { Logger } from "./../utils/logger";
@@ -64,7 +64,7 @@ export class ApiServer {
 
     init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
         this.teamMenu.init(app, upgradeWebSocket);
-                    
+
         app.get("/api/site_info", (c) => {
             return c.json(this.getSiteInfo(), 200);
         });

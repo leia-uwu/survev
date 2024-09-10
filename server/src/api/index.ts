@@ -6,9 +6,9 @@ import { version } from "../../../package.json";
 import { ApiServer } from "../api/apiServer";
 import { Config } from "../config";
 import type { FindGameBody } from "../gameServer";
+import type { RegionData } from "./apiServer";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
-import { RegionData } from "./apiServer";
 
 export type Context = {
     Variables: {
@@ -20,6 +20,7 @@ export type Context = {
 const server = new ApiServer();
 const app = new Hono();
 const { upgradeWebSocket, websocket } = createBunWebSocket();
+
 // all api routes for now, this should be okey?
 app.use(
     "/api/*",

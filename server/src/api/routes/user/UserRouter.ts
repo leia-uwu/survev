@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
@@ -122,7 +122,8 @@ UserRouter.post(
                 .where(eq(usersTable.id, user.id));
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
-        } catch (_err) {
+        } catch (err) {
+            console.error("Error updating username", { error: err });
             return c.text<UsernameErrorType>("failed");
         }
     },
@@ -157,20 +158,26 @@ UserRouter.post(
                 },
                 200,
             );
-        } catch (_e) {
+        } catch (err) {
+            console.error("Error updating loadout", { error: err });
             return c.json({}, 500);
         }
     },
 );
 
 UserRouter.post("/logout", AuthMiddleware, async (c) => {
-    const session = c.get("session")!;
+    try {
+        const session = c.get("session")!;
 
-    await lucia.invalidateSession(session.id);
-    c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
-        append: true,
-    });
-    return c.redirect("/login");
+        await lucia.invalidateSession(session.id);
+        c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
+            append: true,
+        });
+        return c.redirect("/login");
+    } catch (err) {
+        console.error("Error logging out", { error: err });
+        return c.json({}, 500);
+    }
 });
 
 UserRouter.post("/delete", AuthMiddleware, async (c) => {
@@ -188,7 +195,8 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
         await db.delete(usersTable).where(eq(usersTable.id, user.id));
 
         return c.json({}, 200);
-    } catch {
+    } catch (err) {
+        console.error("Error deleting account", { error: err });
         return c.json({}, 500);
     }
 });
@@ -230,8 +238,9 @@ UserRouter.post(
                     ),
                 );
 
-    return c.json({}, 200);
-        } catch (_err) {
+            return c.json({}, 200);
+        } catch (err) {
+            console.error("Error setting item status", { error: err });
             return c.json({}, 500);
         }
     },
@@ -280,6 +289,7 @@ UserRouter.post(
 
             return c.json({ success: true, items }, 200);
         } catch (err) {
+            console.error("Error unlocking item", { error: err });
             return c.json({}, 500);
         }
     },
@@ -317,12 +327,9 @@ type ProfileResponse =
           loadout: Loadout;
           loadoutPriv: string;
           items: Pick<
-                typeof itemsTable.$inferSelect,
-                | "type"
-                | "status"
-                | "timeAcquired"
-                | "source"
-            >[];
+              typeof itemsTable.$inferSelect,
+              "type" | "status" | "timeAcquired" | "source"
+          >[];
       };
 
 type UsernameErrorType = "failed" | "invalid" | "taken" | "change_time_not_expired";

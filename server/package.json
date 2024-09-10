@@ -5,24 +5,23 @@
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
     "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
-    "dev": "pnpm dev:api && pnpm dev:game",
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\"",
     "dev:api": "bun run --watch src/api/index.ts",
     "dev:game": "ts-node-dev --respawn --rs --transpile-only src/gameServer.ts --game-server",
-    "db:generate": "bunx drizzle-kit generate --config=src/api/drizzle.config.ts",
+    "db:generate": "drizzle-kit generate --config=src/api/drizzle.config.ts",
     "db:migrate": "bun run ./src/api/db/migrate.ts",
-    "db:drop": "drizzle-kit drop  --config=src/api/drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=src/api/drizzle.config.ts",
     "db:seed": "bun run src/api/db/seed.ts",
     "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts"
   },
   "dependencies": {
-    "@hono/node-server": "^1.12.2",
     "@hono/zod-validator": "^0.2.2",
+    "arctic": "^1.9.2",
     "bit-buffer": "^0.2.5",
     "drizzle-orm": "^0.33.0",
     "hono": "^4.5.9",
+    "lucia": "^3.2.0",
     "nanotimer": "^0.3.15",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.4",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.43.0",
     "zod": "^3.23.8"
   },
@@ -32,8 +31,9 @@
     "@types/bun": "^1.1.8",
     "@types/nanotimer": "^0.3.2",
     "@types/node": "^20.14.15",
-    "arctic": "^1.9.2",
+    "concurrently": "^8.2.2",
     "drizzle-kit": "^0.24.2",
-    "lucia": "^3.2.0"
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.4"
   }
 }
