@@ -246,7 +246,6 @@ export class LoadoutMenu {
         account.addEventListener("request", this.onRequest.bind(this));
         account.addEventListener("loadout", this.onLoadout.bind(this));
         account.addEventListener("items", this.onItems.bind(this));
-        account.addEventListener("pass", this.onPass.bind(this));
     }
 
     init() {
@@ -458,23 +457,6 @@ export class LoadoutMenu {
             ) {
                 this.account.unlock("unlock_new_account");
             }
-        }
-    }
-
-    onPass(pass: UnlockDef) {
-        // Show/hide the social media buttons based on whether we have
-        // unlocked them
-        const unlocks = ["facebook", "instagram", "youtube", "twitter"];
-        for (let i = 0; i < unlocks.length; i++) {
-            const unlockType = unlocks[i];
-            const hasUnlock = !!pass.unlocks[unlockType as keyof typeof pass.unlocks];
-            const el = $(`.customize-social-unlock[data-lock-reason='${unlockType}']`);
-            el.css({
-                display: hasUnlock ? "none" : "inline-block",
-            });
-            el.off("click").on("click", () => {
-                this.account.setPassUnlock(unlockType);
-            });
         }
     }
 
