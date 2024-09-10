@@ -77,10 +77,6 @@ export class Account {
                 this.loadProfile();
             });
         };
-        window.unlock = (type) => {
-            console.log(`Unlocking ${type}`);
-            this.unlock(type);
-        };
         window.setQuest = (questType, idx = 0) => {
             this.ajaxRequest(
                 "/api/user/set_quest",
@@ -339,25 +335,6 @@ export class Account {
                 },
             );
         }
-    }
-
-    unlock(unlockType: string) {
-        return;
-        this.ajaxRequest(
-            "/api/user/unlock",
-            {
-                unlockType,
-            },
-            (e, r) => {
-                if (e || !r.success) {
-                    console.error("account", "unlock_error");
-                    this.emit("error", "server_error");
-                    return;
-                }
-                this.items = r.items;
-                this.emit("items", this.items);
-            },
-        );
     }
 
     getPass(_tryRefreshQuests?: boolean) {

@@ -3,9 +3,10 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
-import { lucia } from "../../../auth/lucia";
+import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
+import { setUserCookie } from "../../../auth/lucia";
 import { db } from "../../../db";
-import { usersTable } from "../../../db/schema";
+import { itemsTable, usersTable } from "../../../db/schema";
 
 export const github = new GitHub(
     process.env.GITHUB_CLIENT_ID!,
@@ -52,25 +53,18 @@ GithubRouter.get("/callback", async (c) => {
         });
 
         if (existingUser) {
-            const session = await lucia.createSession(existingUser.id, {});
-            c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
-                append: true,
-            });
+            setUserCookie(existingUser.id, c);
             return c.redirect("/");
         }
 
         const userId = generateId(15);
-        await db.insert(usersTable).values({
+        await createNewUser({
+            userId,
+            authId: githubUser.id,
             username: githubUser.login,
-            auth_id: githubUser.id,
-            id: userId,
-            linked: true,
-            linkedGithub: true,
         });
-        const session = await lucia.createSession(userId, {});
-        c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
-            append: true,
-        });
+
+        setUserCookie(userId, c);
         return c.redirect("/");
     } catch (e) {
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
@@ -80,3 +74,35 @@ GithubRouter.get("/callback", async (c) => {
         return c.body(null, 500);
     }
 });
+
+export async function createNewUser({
+    username,
+    authId,
+    userId,
+}: {
+    username: string;
+    authId: string;
+    userId: string;
+}) {
+    await db.insert(usersTable).values({
+        username: username,
+        auth_id: authId,
+        id: userId,
+        linked: true,
+        linkedGithub: true,
+    });
+
+    // unlock outfits on account creation;
+    const unlockType = "unlock_new_account";
+    const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
+    if (outfitsToUnlock.length) {
+        const data = outfitsToUnlock.map((outfit) => {
+            return {
+                source: unlockType,
+                type: outfit,
+                userId,
+            };
+        });
+        await db.insert(itemsTable).values(data);
+    }
+}

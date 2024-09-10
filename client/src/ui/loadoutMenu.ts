@@ -3,7 +3,6 @@ import $ from "jquery";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
-import type { UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
 import type { Account } from "../account";
@@ -445,18 +444,6 @@ export class LoadoutMenu {
         if (this.active) {
             this.tryBeginConfirmingItems();
             this.selectCat(this.selectedCatIdx);
-        }
-
-        // Request the default unlock if we don't have it yet
-        if (this.account.loggedIn) {
-            console.log(this.items);
-            if (
-                !this.items.find((x) => {
-                    return x.type == "unlock_new_account";
-                })
-            ) {
-                this.account.unlock("unlock_new_account");
-            }
         }
     }
 
