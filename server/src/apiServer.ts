@@ -202,7 +202,7 @@ if (process.argv.includes("--api-server")) {
     });
 
     app.listen(Config.apiServer.host, Config.apiServer.port, (): void => {
-        server.logger.log(`Resurviv API Server v${version}`);
+        server.logger.log(`Survev API Server v${version}`);
         server.logger.log(
             `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`,
         );

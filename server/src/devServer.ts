@@ -59,7 +59,7 @@ setInterval(() => {
 apiServer.init(app);
 
 app.listen(Config.devServer.host, Config.devServer.port, (): void => {
-    logger.log(`Resurviv Dev Server v${version}`);
+    logger.log(`Survev Dev Server v${version}`);
     logger.log(`Listening on ${Config.devServer.host}:${Config.devServer.port}`);
     logger.log("Press Ctrl+C to exit.");
     gameServer.init(app);

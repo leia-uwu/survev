@@ -50,21 +50,29 @@ export const Config = {
 const runningOnVite = process.argv.toString().includes("vite");
 const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
 
-const configPath = path.join(
-    __dirname,
-    isProduction ? "../../" : "",
-    "../../resurviv-config.json",
-);
+const configPath = path.join(__dirname, isProduction ? "../../" : "", "../../");
 
-if (fs.existsSync(configPath)) {
-    const localConfig = JSON.parse(fs.readFileSync(configPath).toString());
-    util.mergeDeep(Config, localConfig);
-} else {
-    console.log("Config file doesn't exist... creating");
-    fs.writeFileSync(configPath, JSON.stringify({}, null, 2));
+function loadConfig(fileName: string, create?: boolean) {
+    const path = `${configPath}${fileName}`;
+
+    let loaded = false;
+    if (fs.existsSync(path)) {
+        const localConfig = JSON.parse(fs.readFileSync(path).toString());
+        util.mergeDeep(Config, localConfig);
+        loaded = true;
+    } else if (create) {
+        console.log("Config file doesn't exist... creating");
+        fs.writeFileSync(path, JSON.stringify({}, null, 2));
+    }
+
+    util.mergeDeep(GameConfig, Config.gameConfig);
+    return loaded;
 }
 
-util.mergeDeep(GameConfig, Config.gameConfig);
+// try loading old config file first for backwards compatibility
+if (!loadConfig("resurviv-config.json")) {
+    loadConfig("survev-config.json", true);
+}
 
 type DeepPartial<T> = T extends object
     ? {
