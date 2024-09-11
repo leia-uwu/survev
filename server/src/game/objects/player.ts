@@ -755,6 +755,8 @@ export class Player extends BaseGameObject {
     // to disable auto pickup for some seconds after dropping something
     mobileDropTicker = 0;
 
+    obstacleOutfit?: Obstacle;
+
     constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: net.JoinMsg) {
         super(game, pos);
 
@@ -1101,28 +1103,23 @@ export class Player extends BaseGameObject {
 
             for (let j = 0; j < objs.length; j++) {
                 const obj = objs[j];
-                if (
-                    obj.__type === ObjectType.Obstacle &&
-                    obj.collidable &&
-                    util.sameLayer(obj.layer, this.layer) &&
-                    !obj.dead
-                ) {
-                    const collision = collider.intersectCircle(
-                        obj.collider,
+                if (obj.__type !== ObjectType.Obstacle) continue;
+                if (!obj.collidable) continue;
+                if (obj.dead) continue;
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+
+                const collision = collider.intersectCircle(
+                    obj.collider,
+                    this.pos,
+                    this.rad,
+                );
+                if (collision) {
+                    v2.set(
                         this.pos,
-                        this.rad,
+                        v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
-                    if (collision) {
-                        v2.set(
-                            this.pos,
-                            v2.add(
-                                this.pos,
-                                v2.mul(collision.dir, collision.pen + 0.001),
-                            ),
-                        );
-                        collided = true;
-                        break;
-                    }
+                    collided = true;
+                    break;
                 }
             }
         }
@@ -1324,6 +1321,16 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
             this.game.grid.updateObject(this);
+
+            //
+            // Halloween obstacle skin
+            //
+            if (this.obstacleOutfit) {
+                this.obstacleOutfit.pos = v2.copy(this.pos);
+                this.obstacleOutfit.updateCollider();
+                this.game.grid.updateObject(this.obstacleOutfit);
+                this.obstacleOutfit.setPartDirty();
+            }
         }
 
         //
@@ -2005,6 +2012,13 @@ export class Player extends BaseGameObject {
         this.addGameOverMsg();
 
         this.game.deadBodyBarn.addDeadBody(this.pos, this.__id, this.layer, params.dir);
+
+        //
+        // Kill outfit obstacle
+        //
+        if (this.obstacleOutfit) {
+            this.obstacleOutfit.kill(params);
+        }
 
         //
         // drop loot
@@ -2894,6 +2908,18 @@ export class Player extends BaseGameObject {
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
                 this.outfit = obj.type;
+
+                if (def.obstacleType) {
+                    if (this.obstacleOutfit) {
+                        this.obstacleOutfit.destroy();
+                    }
+
+                    this.obstacleOutfit = this.game.map.genOutfitObstacle(
+                        def.obstacleType,
+                        this,
+                    );
+                }
+
                 this.setDirty();
                 break;
             case "perk":

@@ -238,12 +238,11 @@ export class Loot extends BaseGameObject {
 
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
-            if (
-                obj.__type === ObjectType.Obstacle &&
-                obj.collidable &&
-                util.sameLayer(obj.layer, this.layer) &&
-                !obj.dead
-            ) {
+            if (obj.__type === ObjectType.Obstacle) {
+                if (!obj.collidable) continue;
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+                if (obj.dead) continue;
+
                 const collision = collider.intersectCircle(
                     obj.collider,
                     this.pos,

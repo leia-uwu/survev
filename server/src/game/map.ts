@@ -1285,6 +1285,26 @@ export class GameMap {
         return obstacle;
     }
 
+    genOutfitObstacle(type: string, player: Player) {
+        const def = MapObjectDefs[type] as ObstacleDef;
+
+        const obstacle = new Obstacle(
+            this.game,
+            player.pos,
+            type,
+            player.layer,
+            0,
+            def.scale.createMax,
+            undefined,
+            undefined,
+            true,
+        );
+        obstacle.skinPlayerId = player.__id;
+        this.game.objectRegister.register(obstacle);
+        this.obstacles.push(obstacle);
+        return obstacle;
+    }
+
     genBuilding(
         type: string,
         pos: Vec2,
