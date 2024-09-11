@@ -15,7 +15,7 @@ import { v2 } from "../../shared/utils/v2";
 import type { FindGameResponse } from "./gameServer";
 
 const config = {
-    address: "http://127.0.0.1:8000",
+    address: "http://127.0.0.1:8001",
     region: "local",
     gameModeIdx: 0,
     botCount: 79,
@@ -144,6 +144,8 @@ class Bot {
 
     objectCreator = new ObjectCreator();
 
+    data: string;
+
     constructor(id: number, res: FindGameResponse["res"][0]) {
         this.id = id;
 
@@ -151,6 +153,8 @@ class Bot {
         this.ws = new WebSocket(
             `${res.useHttps ? "wss" : "ws"}://${res.addrs[0]}/play?gameId=${res.gameId}`,
         );
+
+        this.data = res.data;
 
         this.ws.addEventListener("error", console.error);
 
@@ -280,6 +284,9 @@ class Bot {
             boost: "boost_basic",
             emotes: this.emotes,
         };
+
+        joinMsg.matchPriv = this.data;
+
         this.sendMsg(net.MsgType.Join, joinMsg);
     }
 
@@ -368,15 +375,16 @@ class Bot {
 void (async () => {
     for (let i = 1; i <= config.botCount; i++) {
         setTimeout(async () => {
-            const response = await (
+            const response = (await (
                 await fetch(`${config.address}/api/find_game`, {
                     method: "POST",
                     body: JSON.stringify({
                         region: config.region,
+                        autoFill: true,
                         gameModeIdx: config.gameModeIdx,
                     }),
                 })
-            ).json();
+            ).json()) as FindGameResponse;
 
             bots.add(new Bot(i, response.res[0]));
             if (i === config.botCount) allBotsJoined = true;
