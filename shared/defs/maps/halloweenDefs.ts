@@ -188,7 +188,7 @@ const mapDef = {
             },
         },
         customSpawnRules: {
-            locationSpawns: []
+            locationSpawns: [],
         },
         densitySpawns: [
             {
