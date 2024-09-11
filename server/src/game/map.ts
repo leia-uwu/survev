@@ -332,6 +332,7 @@ export class GameMap {
             for (let i = 0; i < objs.length; i++) {
                 const player = objs[i];
                 if (player.__type !== ObjectType.Player) continue;
+                if (player.dead) continue;
                 if (!util.sameLayer(player.layer, building.layer)) continue;
                 for (let j = 0; j < building.zoomRegions.length; j++) {
                     const region = building.zoomRegions[j];
