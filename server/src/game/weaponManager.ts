@@ -155,11 +155,7 @@ export class WeaponManager {
     }> = [];
 
     get activeWeapon(): string {
-        // HACK: possible fix for client crash?
-        // active weapon seems to be undefined/empty string in the client
-        // idk why it also doesn't crash the server lol
-        // TODO: investigate this
-        return this.weapons[this.curWeapIdx].type || "fists";
+        return this.weapons[this.curWeapIdx].type;
     }
 
     constructor(player: Player) {
@@ -477,7 +473,7 @@ export class WeaponManager {
 
         if (weaponDef.isDual) {
             item = item.replace("_dual", "");
-            this.player.dropLoot(item, 0);
+            this.player.dropLoot(item, 0, true);
         }
         this.player.dropLoot(item, amountToDrop, true);
         this.player.weapsDirty = true;

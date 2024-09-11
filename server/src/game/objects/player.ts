@@ -2798,7 +2798,11 @@ export class Player extends BaseGameObject {
                         gunType = obj.type;
                     }
                     if (gunType) {
-                        this.weaponManager.setWeapon(newGunIdx, gunType, 0);
+                        this.weaponManager.setWeapon(
+                            newGunIdx,
+                            gunType,
+                            freeGunSlot.isDualWield ? this.weapons[newGunIdx].ammo : 0,
+                        );
 
                         // if "preloaded" gun add ammo to inventory
                         if (obj.isPreloadedGun) {
