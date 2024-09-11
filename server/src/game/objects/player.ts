@@ -2017,13 +2017,19 @@ export class Player extends BaseGameObject {
             switch (def.type) {
                 case "gun":
                     this.weaponManager.dropGun(i);
+                    weap.type = "";
                     break;
                 case "melee":
                     if (def.noDropOnDeath || weap.type === "fists") break;
                     this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                    weap.type = "fists";
+                    break;
+                case "throwable":
+                    weap.type = "";
                     break;
             }
         }
+        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
         for (const item in GameConfig.bagSizes) {
             // const def = GameObjectDefs[item] as AmmoDef | HealDef;
