@@ -739,7 +739,7 @@ export class Player extends BaseGameObject {
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: GameConfig.defaultEmoteLoadout,
+        emotes: [...GameConfig.defaultEmoteLoadout],
     };
 
     damageTaken = 0;
