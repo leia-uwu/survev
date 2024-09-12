@@ -434,7 +434,7 @@ export class Obstacle extends BaseGameObject {
                     if (this.door.open) {
                         this.toggleDoor(player);
                     }
-                }, this.door.autoCloseDelay * 1000);
+                }, this.door.autoCloseDelay * 1000) as NodeJS.Timeout;
             }
 
             if (this.door.autoOpen && this.door.open) return;
