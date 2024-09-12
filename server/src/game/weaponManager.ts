@@ -291,6 +291,7 @@ export class WeaponManager {
                     if (this.bursts[i] <= 0) {
                         this.fireWeapon(this.offHand);
                         this.bursts.splice(i, 1);
+                        i--;
                     }
                 }
                 break;
@@ -317,6 +318,7 @@ export class WeaponManager {
             if (this.meleeAttacks[i] <= 0) {
                 this.meleeDamage();
                 this.meleeAttacks.splice(i, 1);
+                i--;
             }
         }
     }

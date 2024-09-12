@@ -154,6 +154,7 @@ export class GameServer {
             const game = this.games[i];
             if (game.stopped) {
                 this.games.splice(i, 1);
+                i--;
                 this.gamesById.delete(game.id);
                 continue;
             }

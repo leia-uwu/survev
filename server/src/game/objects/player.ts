@@ -168,6 +168,7 @@ export class PlayerBarn {
             scheduledRole.time -= dt;
             if (scheduledRole.time <= 0) {
                 this.scheduledRoles.splice(i, 1);
+                i--;
 
                 const fullAliveContext =
                     this.game.contextManager.getAlivePlayersContext();

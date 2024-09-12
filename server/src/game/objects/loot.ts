@@ -28,6 +28,7 @@ export class LootBarn {
             const loot = this.loots[i];
             if (loot.destroyed) {
                 this.loots.splice(i, 1);
+                i--;
                 continue;
             }
             loot.update(dt, collisions);
