@@ -2,9 +2,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
+    "start:api": "NODE_ENV=production bun run --enable-source-maps dist/server/src/api/index.js",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
-    "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
     "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\"",
     "dev:api": "bun run --watch src/api/index.ts",
     "dev:game": "ts-node-dev --respawn --rs --transpile-only src/gameServer.ts --game-server",
@@ -17,7 +16,6 @@
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",
     "arctic": "^1.9.2",
-    "bit-buffer": "^0.2.5",
     "drizzle-orm": "^0.33.0",
     "hono": "^4.5.9",
     "lucia": "^3.2.0",

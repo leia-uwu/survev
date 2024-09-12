@@ -370,7 +370,6 @@ if (process.argv.includes("--game-server")) {
         readPostedJSON(
             res,
             async (body: FindGameBody & { apiKey: string }) => {
-                console.log(body);
                 try {
                     if (aborted) return;
                     if (body.apiKey !== Config.apiKey) {

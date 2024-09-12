@@ -292,7 +292,7 @@ export class Account {
         this.emit("loadout", this.loadout);
         this.config.set("loadout", loadout);
 
-        if ( !helpers.getCookie("app-data") ) return;
+        if (!helpers.getCookie("app-data")) return;
 
         this.ajaxRequest(
             "/api/user/loadout",
