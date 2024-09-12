@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
                       }
                     : {}),
             },
-            GIT_VERSION,
+            GIT_VERSION: JSON.stringify(GIT_VERSION),
         },
         plugins: [
             mode !== "development"
