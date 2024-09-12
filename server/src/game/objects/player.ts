@@ -2745,9 +2745,11 @@ export class Player extends BaseGameObject {
                                 throwableList.includes(obj.type) &&
                                 !this.weapons[GameConfig.WeaponSlot.Throwable].type
                             ) {
-                                this.weapons[GameConfig.WeaponSlot.Throwable].type =
-                                    obj.type;
-                                this.weapsDirty = true;
+                                this.weaponManager.setWeapon(
+                                    GameConfig.WeaponSlot.Throwable,
+                                    obj.type,
+                                    0,
+                                );
                                 this.setDirty();
                             }
                         }
@@ -2769,8 +2771,6 @@ export class Player extends BaseGameObject {
             case "melee":
                 this.weaponManager.dropMelee();
                 this.weaponManager.setWeapon(GameConfig.WeaponSlot.Melee, obj.type, 0);
-                this.weapsDirty = true;
-                if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
                 break;
             case "gun":
                 {

@@ -5004,8 +5004,8 @@ input [type="image"]:focus {
   height: 10em;
   float: right;
   cursor: ns-resize;
-  background: /*url(./css/color-picker-h.png)*/
-    transparent no-repeat 50% 50%;
+  /*url(./css/color-picker-h.png)*/
+  background: transparent no-repeat 50% 50%;
   background-image: linear-gradient(
     to top,
     #f00 0%,
@@ -5050,8 +5050,8 @@ input [type="image"]:focus {
   height: 10em;
   float: left;
   margin-right: 1px;
-  background: /*url(./css/color-picker-sv.png)*/
-    transparent no-repeat 50% 50%;
+  /*url(./css/color-picker-sv.png)*/
+  background: transparent no-repeat 50% 50%;
   background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0)),
     linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
   background-size: 100% 100%;
