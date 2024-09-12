@@ -48,5 +48,10 @@
     "formatter": {
       "indentWidth": 2
     }
+  },
+  "css": {
+    "formatter": {
+      "indentWidth": 2
+    }
   }
 }
