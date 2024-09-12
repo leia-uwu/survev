@@ -8,6 +8,7 @@ import type { Localization } from "./ui/localization";
 
 interface Info {
     country: string;
+    gitRevision: string;
     modes: Array<{
         mapName: string;
         teamMode: TeamMode;

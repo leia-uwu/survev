@@ -52,6 +52,8 @@ declare global {
             readonly l10n: string;
         }
     >;
+
+    const GIT_VERSION: string;
 }
 
 declare module "pixi.js-legacy" {
