@@ -31,6 +31,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
+import { checkForBadWords } from "../../utils/serverHelpers";
 import type { Game } from "../game";
 import type { Group } from "../group";
 import type { Team } from "../team";
@@ -762,8 +763,8 @@ export class Player extends BaseGameObject {
 
         this.socketData = socketData;
 
-        this.name = joinMsg.name;
-        if (this.name.trim() === "") {
+        this.name = joinMsg.name.trim();
+        if (this.name === "" || checkForBadWords(this.name)) {
             this.name = "Player";
         }
         this.isMobile = joinMsg.isMobile;
