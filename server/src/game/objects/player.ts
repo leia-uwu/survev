@@ -664,7 +664,6 @@ export class Player extends BaseGameObject {
         }
         this.role = role;
         this.inventoryDirty = true;
-        this.weapsDirty = true;
         this.setDirty();
     }
 
@@ -2714,11 +2713,11 @@ export class Player extends BaseGameObject {
                                 if (throwableList.includes(obj.type)) {
                                     // fill empty slot with throwable, otherwise just add to inv
                                     if (this.inventory[obj.type] == 0) {
-                                        this.weapons[
-                                            GameConfig.WeaponSlot.Throwable
-                                        ].type = obj.type;
-                                        this.weapsDirty = true;
-                                        this.setDirty();
+                                        this.weaponManager.setWeapon(
+                                            GameConfig.WeaponSlot.Throwable,
+                                            obj.type,
+                                            0,
+                                        );
                                     }
                                 }
                                 break;

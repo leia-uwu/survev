@@ -133,11 +133,16 @@ export class WeaponManager {
 
     setWeapon(idx: number, type: string, ammo: number) {
         const weaponDef = GameObjectDefs[type];
-        assert(
-            weaponDef.type === "gun" ||
-                weaponDef.type === "melee" ||
-                weaponDef.type === "throwable",
-        );
+        const isMelee = idx === GameConfig.WeaponSlot.Melee;
+
+        // non melee weapons can be set to empty strings to clear the slot
+        if (!isMelee && type !== "") {
+            assert(
+                weaponDef.type === "gun" ||
+                    weaponDef.type === "melee" ||
+                    weaponDef.type === "throwable",
+            );
+        }
 
         // attempt to fix mysterious crash with active weapon being undefined
         if (idx === GameConfig.WeaponSlot.Melee && !type) {
@@ -147,7 +152,7 @@ export class WeaponManager {
         this.weapons[idx].type = type;
         this.weapons[idx].cooldown = 0;
         this.weapons[idx].ammo = ammo;
-        if (weaponDef.type === "gun") {
+        if (weaponDef?.type === "gun") {
             this.weapons[idx].recoilTime = weaponDef.recoilTime;
         }
 
