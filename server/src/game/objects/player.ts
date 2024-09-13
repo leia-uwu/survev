@@ -1074,8 +1074,6 @@ export class Player extends BaseGameObject {
         const movement = v2.create(0, 0);
 
         if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
-            this.posOld = v2.copy(this.pos);
-
             if (this.touchMoveActive && this.touchMoveLen) {
                 movement.x = this.touchMoveDir.x;
                 movement.y = this.touchMoveDir.y;
@@ -1092,15 +1090,21 @@ export class Player extends BaseGameObject {
                 }
             }
         }
+
+        this.posOld = v2.copy(this.pos);
+
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
 
-        v2.set(this.pos, v2.add(this.pos, v2.mul(movement, this.speed * dt)));
         let objs!: GameObject[];
 
-        for (let i = 0, collided = true; i < 5 && collided; i++) {
+        const steps = Math.round(math.max(this.speed * dt + 5, 5));
+
+        const speedToAdd = (this.speed / steps) * dt;
+        for (let i = 0; i < steps; i++) {
             objs = this.game.grid.intersectCollider(this.collider);
-            collided = false;
+
+            v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
 
             for (let j = 0; j < objs.length; j++) {
                 const obj = objs[j];
@@ -1119,7 +1123,6 @@ export class Player extends BaseGameObject {
                         this.pos,
                         v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
-                    collided = true;
                     break;
                 }
             }
