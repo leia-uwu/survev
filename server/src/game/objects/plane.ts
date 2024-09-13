@@ -77,38 +77,6 @@ export class PlaneBarn {
         }
     }
 
-    schedulePlanes() {
-        const planes = this.game.map.mapDef.gameConfig.planes.timings;
-
-        const getTime = (circleIdx: number, wait: number) => {
-            let total = 0;
-            let waitTime = GameConfig.gas.initWaitTime;
-            for (let i = 0; i < circleIdx; i++) {
-                waitTime = math.max(
-                    waitTime - GameConfig.gas.waitTimeDecay,
-                    GameConfig.gas.waitTimeMin,
-                );
-                total += waitTime;
-            }
-
-            let gasTime = GameConfig.gas.initGasTime;
-            for (let i = 0; i < circleIdx; i++) {
-                gasTime = math.max(
-                    gasTime - GameConfig.gas.gasTimeDecay,
-                    GameConfig.gas.gasTimeMin,
-                );
-                total += gasTime;
-            }
-
-            return total + wait;
-        };
-
-        for (const plane of planes) {
-            const time = getTime(plane.circleIdx, plane.wait);
-            this.schedulePlane(time, plane.options);
-        }
-    }
-
     schedulePlane(time: number, options: PlaneOptions) {
         this.scheduledPlanes.push({
             time,

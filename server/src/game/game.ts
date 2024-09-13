@@ -121,7 +121,7 @@ export class Game {
         this.grid = new Grid(this.map.width, this.map.height);
         this.objectRegister = new ObjectRegister(this.grid);
 
-        this.gas = new Gas(this.map);
+        this.gas = new Gas(this);
 
         this.contextManager = new ContextManager(this);
 

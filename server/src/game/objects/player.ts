@@ -150,7 +150,6 @@ export class PlayerBarn {
             this.game.started = this.game.contextManager.isGameStarted();
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
-                this.game.planeBarn.schedulePlanes();
             }
         }
 

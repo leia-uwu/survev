@@ -2,7 +2,7 @@ import { GameConfig, GasMode } from "../../../../shared/gameConfig";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import type { GameMap } from "../map";
+import type { Game } from "../game";
 
 interface StageData {
     mode: GasMode;
@@ -134,7 +134,7 @@ export class Gas {
     /**
      * Like stage but is incremented after gas goes through Waiting and Moving mode's
      */
-    circleIdx = 0;
+    circleIdx = -1;
 
     /**
      * Current gas stage damage
@@ -214,7 +214,8 @@ export class Gas {
 
     mapSize: number;
 
-    constructor(readonly map: GameMap) {
+    constructor(readonly game: Game) {
+        const map = game.map;
         this.mapSize = (map.width + map.height) / 2;
         this.posOld = v2.create(map.width / 2, map.height / 2);
         this.posNew = v2.copy(this.posOld);
@@ -225,8 +226,6 @@ export class Gas {
         this.radNew = this.currentRad = stage.rad * this.mapSize;
         this.duration = stage.duration;
         this.damage = stage.damage;
-
-        this.advanceGasStage();
     }
 
     update(dt: number) {
@@ -272,6 +271,8 @@ export class Gas {
         this.duration = stage.duration;
         this.damage = stage.damage;
 
+        const circleIdxOld = this.circleIdx;
+
         if (this.mode === GasMode.Waiting) {
             this.posOld = v2.copy(this.posNew);
 
@@ -284,15 +285,24 @@ export class Gas {
             this.posNew = math.v2Clamp(
                 this.posNew,
                 v2.create(rad, rad),
-                v2.create(this.map.width - rad, this.map.height - rad),
+                v2.create(this.game.map.width - rad, this.game.map.height - rad),
             );
 
             this.currentPos = this.posOld;
             this.currentRad = this.radOld;
+            this.circleIdx++;
         }
 
-        if (this.map.mapDef.gameConfig.roles) {
-            this.map.game.playerBarn.scheduleRoleAssignments();
+        if (this.circleIdx !== circleIdxOld) {
+            if (this.game.map.mapDef.gameConfig.roles) {
+                this.game.playerBarn.scheduleRoleAssignments();
+            }
+
+            for (const plane of this.game.map.mapDef.gameConfig.planes.timings) {
+                if (plane.circleIdx === this.circleIdx) {
+                    this.game.planeBarn.schedulePlane(plane.wait, plane.options);
+                }
+            }
         }
 
         this._gasTicker = 0;
