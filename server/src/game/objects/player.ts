@@ -3260,8 +3260,7 @@ export class Player extends BaseGameObject {
         }
 
         // if player is on water decrease speed
-        const isOnWater =
-            this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        const isOnWater = this.game.map.isOnWater(this.pos, this.layer);
         if (isOnWater) this.speed -= GameConfig.player.waterSpeedPenalty;
 
         // increase speed when adrenaline is above 50%

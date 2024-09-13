@@ -1630,4 +1630,80 @@ export class GameMap {
         }
         return groundSurface("water");
     }
+
+    // like getGroundSurface but optimized for water
+    isOnWater(pos: Vec2, layer: number) {
+        const objs = this.game.grid.intersectPos(pos);
+
+        // Check decals
+        for (let i = 0; i < objs.length; i++) {
+            const decal = objs[i];
+            if (decal.__type !== ObjectType.Decal) continue;
+            if (!decal.surface) {
+                continue;
+            }
+
+            if (
+                util.sameLayer(decal.layer, layer) &&
+                collider.intersectCircle(decal.collider!, pos, 0.0001)
+            ) {
+                return decal.surface === "water";
+            }
+        }
+
+        // Check buildings
+        let surface = null;
+        let zIdx = 0;
+        const onStairs = layer & 0x2;
+
+        for (let i = 0; i < objs.length; i++) {
+            const building = objs[i];
+            if (building.__type !== ObjectType.Building) continue;
+            if (building.zIdx < zIdx) {
+                continue;
+            }
+            // Prioritize layer0 building surfaces when on stairs
+            if (
+                (building.layer !== layer && !onStairs) ||
+                (building.layer === 1 && onStairs)
+            ) {
+                continue;
+            }
+            for (let j = 0; j < building.surfaces.length; j++) {
+                const s = building.surfaces[j];
+                for (let k = 0; k < s.colliders.length; k++) {
+                    const res = collider.intersectCircle(s.colliders[k], pos, 0.0001);
+                    if (res) {
+                        zIdx = building.zIdx;
+                        surface = s;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (surface) {
+            return surface.type === "water";
+        }
+
+        // Check rivers
+        if (layer !== 1) {
+            const { rivers } = this.terrain;
+            for (let i = 0; i < rivers.length; i++) {
+                const river = rivers[i];
+                if (
+                    coldet.testPointAabb(pos, river.aabb.min, river.aabb.max) &&
+                    math.pointInsidePolygon(pos, river.waterPoly)
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        if (math.pointInsidePolygon(pos, this.terrain.shore)) {
+            return false;
+        }
+
+        return true;
+    }
 }
