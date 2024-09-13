@@ -20,7 +20,7 @@ export class ProjectileBarn {
         for (let i = 0; i < this.projectiles.length; i++) {
             const proj = this.projectiles[i];
             if (proj.destroyed) {
-                this.projectiles.splice(i, 0);
+                this.projectiles.splice(i, 1);
                 i--;
                 continue;
             }
