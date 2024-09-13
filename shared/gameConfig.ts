@@ -119,17 +119,7 @@ export const GameConfig = {
     Plane,
     HasteType,
     gas: {
-        initWaitTime: 90,
-        waitTimeDecay: 15,
-        waitTimeMin: 10,
-        initGasTime: 30,
-        gasTimeDecay: 5,
-        gasTimeMin: 5,
-        initWidth: 0.75,
-        widthDecay: 0.5,
-        widthMin: 10,
         damageTickRate: 2,
-        damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22],
     },
     map: {
         gridSize: 16,
