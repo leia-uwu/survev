@@ -88,8 +88,6 @@ export class WeaponManager {
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
-                if (GameConfig.gun.customSwitchDelay)
-                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -563,7 +561,7 @@ export class WeaponManager {
             ? itemDef.dualOffset! * (offHand ? 1.0 : -1.0)
             : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));
-        const gunLen = GameConfig.gun.customBarrelLength ?? itemDef.barrelLength;
+        const gunLen = itemDef.barrelLength;
 
         // Compute gun pos clipping if there is an obstacle in the way
         // @NOTE: Add an extra 1.5 to account for shotgun shots being

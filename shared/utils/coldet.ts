@@ -60,7 +60,7 @@ export const coldet = {
         return { min, max };
     },
 
-    splitAabb(aabb: AABB, axis: Vec2) {
+    splitAabb(aabb: { min: Vec2; max: Vec2 }, axis: Vec2) {
         // Split aabb along centerpoint into two child aabbs.
         // This could be generalized into split-along-plane
         const e = v2.mul(v2.sub(aabb.max, aabb.min), 0.5);

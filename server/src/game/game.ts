@@ -1,5 +1,5 @@
 import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { GameConfig, TeamMode } from "../../../shared/gameConfig";
+import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { Config } from "../config";
 import type { GameSocketData } from "../gameServer";
@@ -204,9 +204,7 @@ export class Game {
     }
 
     canJoin(): boolean {
-        const gracePeriodTime = GameConfig.player.gracePeriodTime;
         return (
-            (gracePeriodTime == 0 || this.startedTime < gracePeriodTime) &&
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
             this.gas.stage < 2

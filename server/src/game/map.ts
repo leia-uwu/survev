@@ -17,13 +17,14 @@ import type { River } from "../../../shared/utils/river";
 import { type MapRiverData, generateTerrain } from "../../../shared/utils/terrainGen";
 import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import { Config } from "../config";
 import type { Game } from "./game";
 import type { Group } from "./group";
 import { Building } from "./objects/building";
 import { Obstacle } from "./objects/obstacle";
-import { Player } from "./objects/player";
+import type { Player } from "./objects/player";
 import { Structure } from "./objects/structure";
-import { SpawnRules } from "./spawnRule";
+import type { Team } from "./team";
 
 //
 // Helpers
@@ -229,7 +230,7 @@ export class GameMap {
     potatoMode: boolean;
     sniperMode: boolean;
 
-    factionModeSplitOri: 0 | 1 = 0;
+    factionModeSplitOri: 0 | 1 | 2 | 3 = 0;
 
     lakes: Array<{
         river: MapRiverData;
@@ -280,7 +281,7 @@ export class GameMap {
         this.sniperMode = !!this.mapDef.gameMode.sniperMode;
 
         if (this.factionMode) {
-            this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
+            this.factionModeSplitOri = util.randomInt(0, 3) as 0 | 1 | 2 | 3;
         }
 
         this.placeSpawns = [...this.mapDef.mapGen.customSpawnRules.placeSpawns];
@@ -439,10 +440,12 @@ export class GameMap {
             } else {
                 switch (this.factionModeSplitOri) {
                     case 0:
-                        start = v2.create(this.width, this.height / 2);
+                    case 2:
+                        start = v2.create(this.width / 2, this.height);
                         break;
                     case 1:
-                        start = v2.create(this.width / 2, this.height);
+                    case 3:
+                        start = v2.create(this.width, this.height / 2);
                 }
             }
 
@@ -1395,82 +1398,48 @@ export class GameMap {
         return structure;
     }
 
-    getSpawnPos(group?: Group) {
-        let loadedSpawnRuleFunc: () => Vec2;
-
-        switch (this.mapDef.gameMode.spawn.mode) {
-            case "center":
-                return SpawnRules.fixed(this.center);
-            case "fixed":
-                return SpawnRules.fixed(this.mapDef.gameMode.spawn.pos);
-            case "radius":
-                const radius = this.mapDef.gameMode.spawn.radius;
-                loadedSpawnRuleFunc = () => SpawnRules.radius(this.center, radius);
-                break;
-            case "random":
-                if (!group) {
-                    loadedSpawnRuleFunc = () =>
-                        SpawnRules.random(
-                            this.width,
-                            this.height,
-                            this.shoreInset,
-                            this.game.gas,
-                        );
-                } else {
-                    loadedSpawnRuleFunc =
-                        this._getGroupLoadedSpawnRuleFunc(group) ??
-                        (() =>
-                            SpawnRules.random(
-                                this.width,
-                                this.height,
-                                this.shoreInset,
-                                this.game.gas,
-                            ));
-                }
-                break;
-            case "donut":
-                const { innerRadius, outerRadius } = this.mapDef.gameMode.spawn;
-
-                if (!group) {
-                    const points = this.game.playerBarn.livingPlayers.map((p) =>
-                        v2.sub(p.pos, this.center),
-                    );
-                    loadedSpawnRuleFunc = () =>
-                        SpawnRules.donut(this.center, innerRadius, outerRadius, points);
-                } else {
-                    const enemyGroups = [...this.game.groups.values()].filter(
-                        (g) => g != group && !g.allDeadOrDisconnected,
-                    );
-                    const points = enemyGroups
-                        .map((g) => g.getAlivePlayers()[0])
-                        .map((p) => v2.sub(p.pos, this.center));
-                    loadedSpawnRuleFunc =
-                        this._getGroupLoadedSpawnRuleFunc(group) ??
-                        (() =>
-                            SpawnRules.donut(
-                                this.center,
-                                innerRadius,
-                                outerRadius,
-                                points,
-                            ));
-                }
-                break;
+    getSpawnPos(group?: Group, team?: Team): Vec2 {
+        if (Config.debug.spawnMode === "fixed") {
+            return v2.copy(Config.debug.spawnPos ?? this.center);
         }
-        return this.getRandomSpawnPos(loadedSpawnRuleFunc, group);
+
+        let getPos: () => Vec2;
+
+        if (!group?.players[0]) {
+            const spawnMin = v2.create(this.shoreInset, this.shoreInset);
+            const spawnMax = v2.create(
+                this.width - this.shoreInset,
+                this.height - this.shoreInset,
+            );
+            let spawnAabb: { min: Vec2; max: Vec2 } = collider.createAabb(
+                spawnMin,
+                spawnMax,
+            );
+
+            if (this.factionMode && team) {
+                const rad = math.oriToRad(this.factionModeSplitOri);
+                const vec = v2.create(Math.cos(rad), Math.sin(rad));
+                const idx = team.teamId - 1;
+                // split it 2 times to get 1/4 of the map
+                spawnAabb = coldet.splitAabb(coldet.splitAabb(spawnAabb, vec)[idx], vec)[
+                    idx
+                ];
+            }
+
+            getPos = () => {
+                return util.randomPointInAabb(spawnAabb);
+            };
+        } else {
+            const rad = GameConfig.player.teammateSpawnRadius;
+            const pos = group.players[0].pos;
+            getPos = () => {
+                return v2.add(pos, util.randomPointInCircle(rad));
+            };
+        }
+        return this.getRandomSpawnPos(getPos);
     }
 
-    /** if playing duos or squads and you aren't the first player on your team to join, should default to spawning around the first player to join
-     *  ignores custom spawn mode
-     */
-    private _getGroupLoadedSpawnRuleFunc(group: Group) {
-        const firstToJoin = group.players[0];
-        if (firstToJoin) {
-            const radius = GameConfig.player.teammateSpawnRadius;
-            return () => SpawnRules.radius(firstToJoin.pos, radius);
-        }
-    }
-
-    getRandomSpawnPos(getPos: () => Vec2, _group?: Group): Vec2 {
+    getRandomSpawnPos(getPos: () => Vec2, group?: Group, team?: Team): Vec2 {
         let attempts = 0;
         let collided = true;
 
@@ -1480,24 +1449,33 @@ export class GameMap {
             collided = false;
             v2.set(circle.pos, getPos());
 
-            if (this.getGroundSurface(circle.pos, 0).type === "water") {
+            if (this.game.gas.isOutSideSafeZone(circle.pos)) {
                 collided = true;
-                break;
+                continue;
+            }
+
+            if (this.isOnWater(circle.pos, 0)) {
+                collided = true;
+                continue;
             }
 
             const objs = this.game.grid.intersectCollider(circle);
 
-            for (const obj of objs) {
+            for (let i = 0; i < objs.length; i++) {
+                const obj = objs[i];
                 if (obj.layer !== 0) continue;
                 if (
-                    (obj instanceof Obstacle || obj instanceof Player) &&
+                    obj.__type === ObjectType.Obstacle &&
                     coldet.test(obj.collider, circle)
                 ) {
                     collided = true;
                     break;
                 }
 
-                if (obj instanceof Building || obj instanceof Structure) {
+                if (
+                    obj.__type === ObjectType.Building ||
+                    obj.__type === ObjectType.Structure
+                ) {
                     for (const bound of obj.mapObstacleBounds) {
                         if (coldet.test(bound, circle)) {
                             collided = true;
@@ -1508,26 +1486,18 @@ export class GameMap {
                 }
             }
 
-            if (collided) continue;
+            for (let i = 0; i < this.game.aliveCount; i++) {
+                const player = this.game.playerBarn.livingPlayers[i];
+                if (group && player.groupId === group.groupId) continue;
+                if (team && player.teamId === team?.teamId) continue;
 
-            //TODO: Below does not work properly, need to fix at some point
-
-            // for (let i = 0; i < this.game.aliveCount; i++) {
-            //     const player = this.game.playerBarn.livingPlayers[i];
-            //     if (
-            //         (!this.game.isTeamMode &&
-            //             v2.distance(circle.pos, player.pos) <
-            //                 GameConfig.player.minSpawnDistance) || // solo check
-            //         (this.game.isTeamMode &&
-            //             player.group!.groupId != group!.groupId &&
-            //             v2.distance(circle.pos, player.pos) <
-            //                 GameConfig.player.minSpawnDistance) //teams check
-            //     ) {
-            //         collided = true;
-            //         break;
-            //     }
-            // }
+                if (v2.distance(player.pos, circle.pos) < GameConfig.player.minSpawnRad) {
+                    collided = true;
+                    break;
+                }
+            }
         }
+
         return circle.pos;
     }
 

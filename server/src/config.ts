@@ -3,10 +3,12 @@ import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig, TeamMode } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
+import type { Vec2 } from "../../shared/utils/v2";
 
 /**
  * Default server config
  */
+
 export const Config = {
     devServer: {
         host: "127.0.0.1",
@@ -33,6 +35,10 @@ export const Config = {
     ],
 
     regions: {},
+
+    debug: {
+        spawnMode: "default",
+    },
 
     thisRegion: "local",
 
@@ -81,66 +87,72 @@ type DeepPartial<T> = T extends object
     : T;
 
 interface ServerConfig {
-    readonly host: string;
-    readonly port: number;
+    host: string;
+    port: number;
 
     /**
      * HTTPS/SSL options. Not used if running locally or with nginx.
      */
-    readonly ssl?: {
-        readonly keyFile: string;
-        readonly certFile: string;
+    ssl?: {
+        keyFile: string;
+        certFile: string;
     };
 }
 export interface ConfigType {
-    readonly devServer: ServerConfig;
+    devServer: ServerConfig;
 
-    readonly apiServer: ServerConfig;
-    readonly gameServer: ServerConfig & {
-        readonly apiServerUrl: string;
+    apiServer: ServerConfig;
+    gameServer: ServerConfig & {
+        apiServerUrl: string;
     };
     /**
      * API key used for game server and API server to communicate
      */
-    readonly apiKey: string;
+    apiKey: string;
 
-    readonly regions: Record<
+    regions: Record<
         string,
         {
-            readonly https: boolean;
-            readonly address: string;
-            readonly l10n: string;
+            https: boolean;
+            address: string;
+            l10n: string;
         }
     >;
 
-    readonly thisRegion: string;
+    thisRegion: string;
 
-    readonly modes: Array<{
-        readonly mapName: keyof typeof MapDefs;
-        readonly teamMode: TeamMode;
-        readonly enabled: boolean;
+    modes: Array<{
+        mapName: keyof typeof MapDefs;
+        teamMode: TeamMode;
+        enabled: boolean;
     }>;
 
     /**
      * Server tick rate
      */
-    readonly gameTps: number;
-    readonly netSyncTps: number;
+    gameTps: number;
+    netSyncTps: number;
 
     /**
      * Server logging
      */
-    readonly perfLogging: {
-        readonly enabled: boolean;
+    perfLogging: {
+        enabled: boolean;
         /**
          * Seconds between each game performance log
          */
-        readonly time: number;
+        time: number;
+    };
+
+    debug: {
+        spawnMode: "default" | "fixed";
+        // spawn pos for fixed, defaults to map center if not set
+        spawnPos?: Vec2;
     };
 
     /**
      * Game config overrides
      * @NOTE don't modify values used by client since this only applies to server
      */
-    readonly gameConfig: DeepPartial<typeof GameConfig>;
+    gameConfig: DeepPartial<typeof GameConfig>;
 }

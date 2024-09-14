@@ -319,6 +319,10 @@ export class Gas {
         return v2.distance(pos, this.currentPos) >= this.currentRad;
     }
 
+    isOutSideSafeZone(pos: Vec2) {
+        return v2.distance(pos, this.posNew) >= this.radNew;
+    }
+
     flush() {
         this.dirty = false;
         this.timeDirty = false;

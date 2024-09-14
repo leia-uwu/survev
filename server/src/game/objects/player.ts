@@ -114,7 +114,7 @@ export class PlayerBarn {
             }
         }
 
-        const pos: Vec2 = this.game.map.getSpawnPos(group);
+        const pos: Vec2 = this.game.map.getSpawnPos(group, team);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 
@@ -1073,21 +1073,19 @@ export class Player extends BaseGameObject {
         //
         const movement = v2.create(0, 0);
 
-        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
-            if (this.touchMoveActive && this.touchMoveLen) {
-                movement.x = this.touchMoveDir.x;
-                movement.y = this.touchMoveDir.y;
-            } else {
-                if (this.moveUp) movement.y++;
-                if (this.moveDown) movement.y--;
-                if (this.moveLeft) movement.x--;
-                if (this.moveRight) movement.x++;
+        if (this.touchMoveActive && this.touchMoveLen) {
+            movement.x = this.touchMoveDir.x;
+            movement.y = this.touchMoveDir.y;
+        } else {
+            if (this.moveUp) movement.y++;
+            if (this.moveDown) movement.y--;
+            if (this.moveLeft) movement.x--;
+            if (this.moveRight) movement.x++;
 
-                if (movement.x * movement.y !== 0) {
-                    // If the product is non-zero, then both of the components must be non-zero
-                    movement.x *= Math.SQRT1_2;
-                    movement.y *= Math.SQRT1_2;
-                }
+            if (movement.x * movement.y !== 0) {
+                // If the product is non-zero, then both of the components must be non-zero
+                movement.x *= Math.SQRT1_2;
+                movement.y *= Math.SQRT1_2;
             }
         }
 
@@ -1688,12 +1686,7 @@ export class Player extends BaseGameObject {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                const headshotBlacklist = GameConfig.gun.headshotBlacklist;
-                isHeadShot =
-                    !(headshotBlacklist.length == 1 && headshotBlacklist[0] == "all") &&
-                    !headshotBlacklist.includes(params.gameSourceType ?? "") &&
-                    gameSourceDef.headshotMult > 1 &&
-                    Math.random() < 0.15;
+                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
 
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
@@ -3253,10 +3246,8 @@ export class Player extends BaseGameObject {
             this.speed += weaponDef.speed.equip + speedBonus;
         }
 
-        const customShootingSpeed =
-            GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            this.speed += customShootingSpeed ?? weaponDef.speed.attack;
+            this.speed += weaponDef.speed.attack;
         }
 
         // if player is on water decrease speed
@@ -3279,7 +3270,7 @@ export class Player extends BaseGameObject {
         // decrease speed if shooting or popping adren or heals
         // field_medic perk doesn't slow you down while you heal
         if (
-            (this.shotSlowdownTimer > 0 && !customShootingSpeed) ||
+            this.shotSlowdownTimer > 0 ||
             (!this.hasPerk("field_medic") && this.actionType == GameConfig.Action.UseItem)
         ) {
             this.speed *= 0.5;
