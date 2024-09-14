@@ -331,13 +331,7 @@ export const coldet = {
         return null;
     },
 
-    intersectAabbCircle(
-        min: Vec2,
-        max: Vec2,
-        pos: Vec2,
-        rad: number,
-        _isPlayerCollision = false,
-    ) {
+    intersectAabbCircle(min: Vec2, max: Vec2, pos: Vec2, rad: number) {
         if (pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y) {
             const e = v2.mul(v2.sub(max, min), 0.5);
             const c = v2.add(min, e);
@@ -359,9 +353,7 @@ export const coldet = {
             math.clamp(pos.x, min.x, max.x),
             math.clamp(pos.y, min.y, max.y),
         );
-        let dir = v2.sub(pos, cpt);
-
-        dir = v2.sub(pos, cpt);
+        const dir = v2.sub(pos, cpt);
 
         const dstSqr = v2.lengthSqr(dir);
         if (dstSqr < rad * rad) {
