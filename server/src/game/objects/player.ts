@@ -2470,18 +2470,6 @@ export class Player extends BaseGameObject {
                 case GameConfig.Input.Reload:
                     this.weaponManager.tryReload();
                     break;
-                case GameConfig.Input.UseBandage:
-                    this.useHealingItem("bandage");
-                    break;
-                case GameConfig.Input.UseHealthKit:
-                    this.useHealingItem("healthkit");
-                    break;
-                case GameConfig.Input.UsePainkiller:
-                    this.useBoostItem("soda");
-                    break;
-                case GameConfig.Input.UseSoda:
-                    this.useBoostItem("painkiller");
-                    break;
                 case GameConfig.Input.Cancel:
                     this.cancelAction();
                     break;
