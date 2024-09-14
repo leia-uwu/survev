@@ -1486,12 +1486,36 @@ export class GameMap {
                 }
             }
 
-            for (let i = 0; i < this.game.aliveCount; i++) {
+            for (let i = 0; i < this.game.playerBarn.livingPlayers.length; i++) {
                 const player = this.game.playerBarn.livingPlayers[i];
                 if (group && player.groupId === group.groupId) continue;
-                if (team && player.teamId === team?.teamId) continue;
+                if (team && player.teamId === team.teamId) continue;
 
                 if (v2.distance(player.pos, circle.pos) < GameConfig.player.minSpawnRad) {
+                    collided = true;
+                    break;
+                }
+            }
+
+            // prevent players from spawning bellow airdrops or grenades
+
+            for (let i = 0; i < this.game.airdropBarn.airdrops.length; i++) {
+                const airdrop = this.game.airdropBarn.airdrops[i];
+                if (v2.distance(airdrop.pos, circle.pos) < 8) {
+                    collided = true;
+                    break;
+                }
+            }
+
+            for (let i = 0; i < this.game.projectileBarn.projectiles.length; i++) {
+                const projectile = this.game.projectileBarn.projectiles[i];
+                if (projectile.layer !== 0) continue;
+                const player = this.game.objectRegister.getById(projectile.playerId);
+                if (player?.__type !== ObjectType.Player) continue;
+                if (group && player.groupId === group.groupId) continue;
+                if (team && player.teamId === team.teamId) continue;
+
+                if (v2.distance(projectile.pos, circle.pos) < 16) {
                     collided = true;
                     break;
                 }
