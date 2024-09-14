@@ -1184,9 +1184,12 @@ export class Player extends BaseGameObject {
                 }
             }
 
-            const closestObstacle = this.getClosestObstacle();
-            if (closestObstacle && closestObstacle.isDoor && !closestObstacle.door.open) {
-                closestObstacle.interact(this);
+            const obstacles = this.getInteractableObstacles();
+            for (let i = 0; i < obstacles.length; i++) {
+                const obstacle = obstacles[i];
+                if (obstacle.isDoor && !obstacle.door.open) {
+                    obstacle.interact(this);
+                }
             }
         }
 
@@ -2434,10 +2437,10 @@ export class Player extends BaseGameObject {
                     break;
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
-                    const obstacle = this.getClosestObstacle();
+                    const obstacles = this.getInteractableObstacles();
                     const playerToRevive = this.getPlayerToRevive();
 
-                    const interactables = [loot, obstacle, playerToRevive];
+                    const interactables = [loot, ...obstacles, playerToRevive];
 
                     for (let i = 0; i < interactables.length; i++) {
                         const interactable = interactables[i];
@@ -2458,8 +2461,10 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.Use: {
-                    const obstacle = this.getClosestObstacle();
-                    if (obstacle) obstacle.interact(this);
+                    const obstacles = this.getInteractableObstacles();
+                    for (let i = 0; i < obstacles.length; i++) {
+                        obstacles[i].interact(this);
+                    }
                     break;
                 }
                 case GameConfig.Input.Reload:
@@ -2596,13 +2601,12 @@ export class Player extends BaseGameObject {
         return closestLoot;
     }
 
-    getClosestObstacle(): Obstacle | undefined {
+    getInteractableObstacles(): Obstacle[] {
         const objs = this.game.grid.intersectCollider(
             collider.createCircle(this.pos, this.rad + 5),
         );
 
-        let closestObj: Obstacle | undefined;
-        let closestPen = 0;
+        let obstacles: Array<{ pen: number; obstacle: Obstacle }> = [];
 
         for (let i = 0; i < objs.length; i++) {
             const obstacle = objs[i];
@@ -2614,14 +2618,16 @@ export class Player extends BaseGameObject {
                         this.pos,
                         obstacle.interactionRad + this.rad,
                     );
-                    if (res && res.pen >= closestPen) {
-                        closestObj = obstacle;
-                        closestPen = res.pen;
+                    if (res) {
+                        obstacles.push({
+                            pen: res.pen,
+                            obstacle,
+                        });
                     }
                 }
             }
         }
-        return closestObj;
+        return obstacles.sort((a, b) => a.pen - b.pen).map((o) => o.obstacle);
     }
 
     interactWith(obj: GameObject): void {
