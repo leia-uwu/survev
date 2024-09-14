@@ -95,6 +95,7 @@ export interface Item {
     source: string;
     timeAcquired: number;
     status?: ItemStatus;
+    ackd?: ItemStatus.Ackd;
 }
 interface ItemInfo {
     type: string;
@@ -416,8 +417,9 @@ export class LoadoutMenu {
         }
     }
 
-    onItems(items: unknown[]) {
-        this.items = loadout.getUserAvailableItems(items) as unknown as Item[];
+    onItems(items: Item[]) {
+        this.items = loadout.getUserAvailableItems(items) as Item[];
+        console.log(this.items);
         for (let i = 0; i < this.items.length; i++) {
             const item = this.items[i];
             if (

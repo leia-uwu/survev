@@ -3,6 +3,7 @@ import type { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import type { Crosshair } from "../crosshair";
 import { deepEqual } from "../lib/deepEqual";
+import type { Item } from "./loadoutMenu";
 
 export interface Loadout {
     player_icon: string;
@@ -127,13 +128,15 @@ const loadout = {
     modified: function (a: Loadout, b: Loadout) {
         return !deepEqual(a, b);
     },
-    getUserAvailableItems: function (heroItems: unknown[] = []) {
-        const items = [];
+    getUserAvailableItems: function (heroItems: Item[] = []) {
+        const processedItemTypes = new Set<string>();
+        const items: Item[] = [];
         // Add default items
         const unlockDefaultDef =
             GameObjectDefs.unlock_default as unknown as (typeof UnlockDefs)["unlock_default"];
         for (let i = 0; i < unlockDefaultDef.unlocks.length; i++) {
             const unlock = unlockDefaultDef.unlocks[i];
+            processedItemTypes.add(unlock);
             items.push({
                 type: unlock,
                 source: "unlock_default",
@@ -142,6 +145,9 @@ const loadout = {
             });
         }
         for (let i = 0; i < heroItems.length; i++) {
+            if (processedItemTypes.has(heroItems[i].type)) {
+                continue;
+            }
             items.push(heroItems[i]);
         }
         return items;
