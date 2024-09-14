@@ -1121,7 +1121,6 @@ export class Player extends BaseGameObject {
                         this.pos,
                         v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
-                    break;
                 }
             }
         }
