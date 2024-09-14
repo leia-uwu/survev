@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `linked_github` integer DEFAULT false NOT NULL;
