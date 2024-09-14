@@ -54,9 +54,7 @@ function computeColliders(type: string) {
         }
         case "structure": {
             if (def.mapObstacleBounds) {
-                for (let i = 0; i < def.mapObstacleBounds.length; i++) {
-                    colliders.ground.push(...def.mapObstacleBounds);
-                }
+                colliders.ground.push(...def.mapObstacleBounds);
             }
 
             for (let i = 0; i < def.layers.length; i++) {
@@ -85,10 +83,23 @@ function computeColliders(type: string) {
                 }
             }
 
+            if (def.bridgeLandBounds) {
+                for (let i = 0; i < def.bridgeLandBounds.length; i++) {
+                    colliders.ground.push(def.bridgeLandBounds[i]);
+                }
+            }
+            if (def.bridgeWaterBounds) {
+                for (let i = 0; i < def.bridgeWaterBounds.length; i++) {
+                    colliders.ground.push(def.bridgeWaterBounds[i]);
+                }
+            }
+
             break;
         }
         case "building": {
-            if (def.mapObstacleBounds) colliders.ground.push(...def.mapObstacleBounds);
+            if (def.mapObstacleBounds) {
+                colliders.ground.push(...def.mapObstacleBounds);
+            }
 
             for (const object of def.mapObjects ?? []) {
                 const type =
@@ -131,6 +142,18 @@ function computeColliders(type: string) {
                     colliders.ground.push(region.zoomOut);
                 }
             }
+
+            if (def.bridgeLandBounds) {
+                for (let i = 0; i < def.bridgeLandBounds.length; i++) {
+                    colliders.ground.push(def.bridgeLandBounds[i]);
+                }
+            }
+            if (def.bridgeWaterBounds) {
+                for (let i = 0; i < def.bridgeWaterBounds.length; i++) {
+                    colliders.ground.push(def.bridgeWaterBounds[i]);
+                }
+            }
+
             break;
         }
         case "loot_spawner": {
