@@ -233,7 +233,7 @@ export class GameServer {
                             return (
                                 (team ? sameTeamId : true) &&
                                 group.autoFill &&
-                                group.players.length < mode.teamMode
+                                (group.players.length + group.reservedSlots) < mode.teamMode
                             );
                         })[0];
                     }
@@ -241,6 +241,7 @@ export class GameServer {
                     if (group) {
                         hash = group.hash;
                         autoFill = group.autoFill;
+                        group.reservedSlots++;
                     } else {
                         hash = randomBytes(20).toString("hex");
                         autoFill = body.autoFill;

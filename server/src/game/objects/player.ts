@@ -105,8 +105,9 @@ export class PlayerBarn {
                 (gd) => gd.hash == joinMsg.matchPriv,
             )!;
             if (this.game.groups.has(groupData.hash)) {
-                //group already exists
+                // group already exists
                 group = this.game.groups.get(groupData.hash)!;
+                group.reservedSlots--;
                 team = group.players[0].team;
             } else {
                 group = this.game.addGroup(groupData.hash, groupData.autoFill);
