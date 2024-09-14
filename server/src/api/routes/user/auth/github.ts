@@ -6,7 +6,7 @@ import { generateId } from "lucia";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { setUserCookie } from "../../../auth/lucia";
 import { db } from "../../../db";
-import { itemsTable, usersTable } from "../../../db/schema";
+import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
 
 export const github = new GitHub(
     process.env.GITHUB_CLIENT_ID!,
@@ -61,9 +61,13 @@ GithubRouter.get("/callback", async (c) => {
 
         const userId = generateId(15);
         await createNewUser({
-            userId,
-            authId: githubUser.id,
+            id: userId,
+            auth_id: githubUser.id,
             username: githubUser.login,
+            linked: true,
+            linkedGithub: true,
+            // TODO: make sure this is unique and slugify it
+            slug: githubUser.login,
         });
 
         setUserCookie(userId, c);
@@ -77,22 +81,8 @@ GithubRouter.get("/callback", async (c) => {
     }
 });
 
-export async function createNewUser({
-    username,
-    authId,
-    userId,
-}: {
-    username: string;
-    authId: string;
-    userId: string;
-}) {
-    await db.insert(usersTable).values({
-        username: username,
-        auth_id: authId,
-        id: userId,
-        linked: true,
-        linkedGithub: true,
-    });
+export async function createNewUser(payload: UsersTable) {
+    await db.insert(usersTable).values(payload);
 
     // unlock outfits on account creation;
     const unlockType = "unlock_new_account";
@@ -102,7 +92,7 @@ export async function createNewUser({
             return {
                 source: unlockType,
                 type: outfit,
-                userId,
+                userId: payload.id,
             };
         });
         await db.insert(itemsTable).values(data);

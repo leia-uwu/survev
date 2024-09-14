@@ -1,4 +1,3 @@
-import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
@@ -11,17 +10,6 @@ import { createNewUser } from "./github";
 export const MockRouter = new Hono();
 
 MockRouter.get("/", async (c) => {
-    setCookie(c, "mock_oauth_state", "MOCK_STATE", {
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
-        maxAge: 60 * 10,
-        sameSite: "Lax",
-    });
-    return c.redirect("/api/user/auth/mock/callback");
-});
-
-MockRouter.get("/callback", async (c) => {
     try {
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.auth_id, "MOCK_USER_ID"),
@@ -36,18 +24,16 @@ MockRouter.get("/callback", async (c) => {
 
         const userId = generateId(15);
         await createNewUser({
-            userId,
-            authId: "MOCK_USER_ID",
+            id: userId,
+            auth_id: "MOCK_USER_ID",
             username: "MOCK_USER_ID",
+            linked: true,
+            slug: "MOCK_USER_ID",
         });
 
         setUserCookie(userId, c);
         return c.redirect("/");
-    } catch (e) {
-        if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-            // invalid code
-            return c.body(null, 400);
-        }
+    } catch (_err) {
         return c.body(null, 500);
     }
 });

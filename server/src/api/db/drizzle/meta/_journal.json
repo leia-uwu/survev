@@ -22,6 +22,27 @@
       "when": 1725965712327,
       "tag": "0002_brown_spitfire",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1726175524423,
+      "tag": "0003_heavy_tattoo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1726311763460,
+      "tag": "0004_naive_norman_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1726312105772,
+      "tag": "0005_bright_blade",
+      "breakpoints": true
     }
   ]
 }

@@ -6,6 +6,7 @@ import { generateId } from "lucia";
 import { setUserCookie } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
+import { createNewUser } from "./github";
 
 export const discord = new Discord(
     process.env.DISCORD_CLIENT_ID!,
@@ -64,12 +65,13 @@ DiscordRouter.get("/callback", async (c) => {
         }
 
         const userId = generateId(15);
-        await db.insert(usersTable).values({
+        await createNewUser({
             username: discordUser.username,
             auth_id: discordUser.id,
             id: userId,
             linked: true,
             linkedDiscord: true,
+            slug: discordUser.username,
         });
 
         await setUserCookie(userId, c);

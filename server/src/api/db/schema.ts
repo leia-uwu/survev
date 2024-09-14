@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { helpers } from "../helpers";
 import { ItemStatus, type Loadout } from "../zodSchemas";
 
@@ -14,7 +14,7 @@ export const sessionTable = sqliteTable("session", {
 export const usersTable = sqliteTable("users", {
     id: text("id").notNull().primaryKey(),
     auth_id: text("auth_id").notNull(),
-    slug: text("slug").notNull().default(""),
+    slug: text("slug").notNull().unique(),
     wins: integer("wins").notNull().default(0),
     username: text("username").notNull(),
     usernameSet: integer("username_set", { mode: "boolean" }).notNull().default(false),
@@ -30,27 +30,24 @@ export const usersTable = sqliteTable("users", {
         .notNull()
         .default(false),
     linkedGithub: integer("linked_github", { mode: "boolean" }).notNull().default(false),
-    linked: integer("linked", { mode: "boolean" }).default(false),
+    linked: integer("linked", { mode: "boolean" }).notNull().default(false),
     loadout: text("loadout", { mode: "json" })
         .notNull()
         .default(helpers.validateLoadout({} as Loadout))
         .$type<Loadout>(),
 });
 
-export const itemsTable = sqliteTable(
-    "items",
-    {
-        userId: text("user_id")
-            .notNull()
-            .references(() => usersTable.id, { onDelete: "cascade" }),
-        source: text("source").notNull(),
-        timeAcquired: integer("time_acquired", { mode: "timestamp" })
-            .notNull()
-            .default(sql`(current_timestamp)`),
-        type: text("type").notNull(),
-        status: integer("status").notNull().$type<ItemStatus>().default(ItemStatus.New),
-    },
-    (table) => ({
-        pk: primaryKey({ columns: [table.type, table.userId] }),
-    }),
-);
+export type UsersTable = typeof usersTable.$inferInsert;
+
+export const itemsTable = sqliteTable("items", {
+    id: integer("id").notNull().primaryKey({ autoIncrement: true }),
+    userId: text("user_id")
+        .notNull()
+        .references(() => usersTable.id, { onDelete: "cascade" }),
+    source: text("source").notNull(),
+    timeAcquired: integer("time_acquired", { mode: "timestamp" })
+        .notNull()
+        .default(sql`(current_timestamp)`),
+    type: text("type").notNull(),
+    status: integer("status").notNull().$type<ItemStatus>().default(ItemStatus.New),
+});
