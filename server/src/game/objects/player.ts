@@ -778,7 +778,7 @@ export class Player extends BaseGameObject {
             assert(def, `Invalid item type for ${category}: ${type}`);
             assert(
                 def.type === category,
-                `Invalid type ${type}, expected ${def.type} item`,
+                `Invalid type ${type}, expected ${category} item`,
             );
         }
 
