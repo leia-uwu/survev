@@ -42,8 +42,7 @@ app.post("/api/find_game", async (c) => {
         const body: FindGameBody = await c.req.json();
         const data = await server.findGame(body);
         return c.json(data, 200);
-    } catch (e) {
-        console.log({ e });
+    } catch (_e) {
         server.logger.warn("/api/find_game: Error retrieving body");
         return c.json(
             {

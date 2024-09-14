@@ -365,7 +365,7 @@ class Bot {
     }
 }
 
-void (async () => {
+void (() => {
     for (let i = 1; i <= config.botCount; i++) {
         setTimeout(async () => {
             const response = await (

@@ -132,7 +132,7 @@ UserRouter.post(
 
 UserRouter.post(
     "/loadout",
-    zValidator("json", z.object({ loadout: loadoutSchema }), async (result, c) => {
+    zValidator("json", z.object({ loadout: loadoutSchema }), (result, c) => {
         if (!result.success) {
             return c.json({}, 400);
         }
@@ -299,7 +299,7 @@ UserRouter.post(
 //
 // NOT IMPLEMENTED
 //
-UserRouter.post("/reset_stats", async (c) => {
+UserRouter.post("/reset_stats", (c) => {
     return c.json({}, 200);
 });
 
