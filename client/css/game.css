@@ -63,15 +63,13 @@ img {
   z-index: 10;
 }
 
-@media (min-width: 851px) and (max-height: 768px),
-(max-width: 1200px) {
+@media (min-width: 851px) and (max-height: 768px), (max-width: 1200px) {
   #ui-center {
     transform: translateX(-50%) translateY(-50%) scale(0.85);
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-center {
     pointer-events: all;
     transform: translateX(-50%) translateY(-50%) scale(0.85);
@@ -248,8 +246,7 @@ img {
   padding: 10px 15px;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-game-menu {
     height: initial;
     padding: 4px 10px;
@@ -270,8 +267,7 @@ img {
   position: relative;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-game-menu p {
     bottom: 0px;
     font-size: 12px;
@@ -291,16 +287,16 @@ img {
   position: relative;
 }
 
-.btns-game-double-row>.btn-game-container {
+.btns-game-double-row > .btn-game-container {
   position: relative;
   width: 100%;
 }
 
-.btns-game-double-row>.btn-game-container>.btn-double-row {
+.btns-game-double-row > .btn-game-container > .btn-double-row {
   display: inline-block;
 }
 
-.btns-game-double-row>div:not(:last-child) {
+.btns-game-double-row > div:not(:last-child) {
   margin-right: 2px;
 }
 
@@ -359,7 +355,7 @@ img {
   background-image: url(/img/gui/close.svg);
 }
 
-#btn-game-tabs>.btn-game-container>.btn-game-menu {
+#btn-game-tabs > .btn-game-container > .btn-game-menu {
   text-align: center;
   color: white;
   line-height: 36px;
@@ -372,7 +368,7 @@ img {
   flex: 1;
 }
 
-#btn-game-tabs>.btn-game-container>.btn-game-menu-selected {
+#btn-game-tabs > .btn-game-container > .btn-game-menu-selected {
   border: 2px solid !important;
   border-color: #00ff00 !important;
   background-color: rgba(0, 0, 0, 0.35);
@@ -414,11 +410,11 @@ img {
   height: 345px;
 }
 
-#ui-game-tab-keybinds>.btn-keybind-restore {
+#ui-game-tab-keybinds > .btn-keybind-restore {
   margin-top: 20px;
 }
 
-#ui-game-tab-keybinds>#ui-keybind-list {
+#ui-game-tab-keybinds > #ui-keybind-list {
   height: 295px;
   overflow-y: scroll;
   pointer-events: all;
@@ -763,8 +759,7 @@ img {
   top: 16px;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-reload-button-container {
     left: 162px;
     top: 3px;
@@ -786,8 +781,7 @@ img {
   width: 32px;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-reload-button {
     background-position: 4px 3px;
     background-size: 14px;
@@ -827,8 +821,7 @@ img {
   width: 42px;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-emote-button {
     background-size: 20px;
     border-radius: 14px;
@@ -866,36 +859,33 @@ img {
 }
 
 @media (max-width: 850px) and (max-height: 320px) {
-  .ui-slider-container>p {
+  .ui-slider-container > p {
     width: 75px;
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
-  .ui-slider-container>.slider-text {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
+  .ui-slider-container > .slider-text {
     margin-bottom: 0px;
   }
 }
 
 @media (max-width: 850px) and (max-height: 320px) {
-  .ui-slider-container>.slider {
+  .ui-slider-container > .slider {
     bottom: 3px;
     width: 85px;
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
-  .ui-slider-container>.slider::-webkit-slider-thumb {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
+  .ui-slider-container > .slider::-webkit-slider-thumb {
     width: 24px;
     height: 24px;
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
-  .ui-slider-container>.slider::-moz-range-thumb {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
+  .ui-slider-container > .slider::-moz-range-thumb {
     width: 24px;
     height: 24px;
   }
@@ -916,8 +906,7 @@ img {
   width: 264px;
 }
 
-@media (max-width: 1280px),
-(max-height: 768px) {
+@media (max-width: 1280px), (max-height: 768px) {
   #ui-stats-logo {
     background-size: 175px;
     height: 90px;
@@ -925,8 +914,7 @@ img {
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-stats-logo {
     background-size: 124px;
     bottom: 4px;
@@ -942,8 +930,7 @@ img {
   display: inline-block;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   .ui-scope {
     display: flex;
   }
@@ -1008,8 +995,8 @@ img {
 }
 
 /**
-     * ui-top-center
-     */
+ * ui-top-center
+ */
 #ui-top-center {
   position: absolute;
   color: #fff;
@@ -1073,8 +1060,8 @@ img {
 }
 
 /**
-     * ui-top-center-scopes
-     */
+ * ui-top-center-scopes
+ */
 #ui-top-center-scopes-wrapper {
   /* Taken from ui-top-center */
   position: absolute;
@@ -1090,8 +1077,7 @@ img {
   text-align: center;
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-top-center-scopes {
     transform: scale(0.85);
   }
@@ -1167,8 +1153,8 @@ img {
 }
 
 /**
-     * ui-team-pings and ui-emotes
-     */
+ * ui-team-pings and ui-emotes
+ */
 .ui-emote-wheel {
   z-index: 3;
   display: none;
@@ -1295,8 +1281,8 @@ img {
 }
 
 /**
-     * ui-team-indicators
-     */
+ * ui-team-indicators
+ */
 .ui-team-indicator {
   z-index: 2;
   display: none;
@@ -1347,8 +1333,8 @@ img {
 }
 
 /**
-     * ui-top-left
-     */
+ * ui-top-left
+ */
 #ui-top-left {
   position: absolute;
   color: #fff;
@@ -1358,8 +1344,7 @@ img {
   display: block;
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-top-left {
     transform-origin: top left;
     transform: scale(0.85);
@@ -1501,8 +1486,7 @@ img {
   top: 12px;
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-spectate-options-wrapper {
     transform: scale(0.85);
     transform-origin: top left;
@@ -1587,8 +1571,7 @@ img {
   display: inline-block;
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-leaderboard-wrapper {
     transform-origin: top right;
     transform: scale(0.85);
@@ -1673,8 +1656,7 @@ img {
   display: flex;
 }
 
-@media (min-width: 851px) and (max-height: 768px),
-(max-width: 1200px) {
+@media (min-width: 851px) and (max-height: 768px), (max-width: 1200px) {
   #ui-killfeed-wrapper {
     transform-origin: top right;
     transform: scale(0.85);
@@ -1775,7 +1757,7 @@ img {
   width: 35px;
 }
 
-.ui-ammo>.ui-loot-count {
+.ui-ammo > .ui-loot-count {
   position: absolute;
   font-size: 20px;
   font-weight: bold;
@@ -1788,11 +1770,11 @@ img {
   display: flex;
 }
 
-.ui-ammo-row>div:not(:last-child) {
+.ui-ammo-row > div:not(:last-child) {
   margin-right: 10px;
 }
 
-.ui-ammo>.ui-loot-image {
+.ui-ammo > .ui-loot-image {
   bottom: 0;
   height: 22px;
   margin-top: 5px;
@@ -1802,7 +1784,7 @@ img {
   width: 22px;
 }
 
-.ui-ammo>.ui-loot-overlay {
+.ui-ammo > .ui-loot-overlay {
   bottom: 0;
   height: 22px;
   margin-top: 5px;
@@ -1820,7 +1802,7 @@ img {
   margin-bottom: 32px;
 }
 
-.ui-medical>.ui-loot-image {
+.ui-medical > .ui-loot-image {
   position: absolute;
   height: 30px;
   width: 30px;
@@ -1882,7 +1864,7 @@ img {
   transform: scale(1.1);
 }
 
-.ui-loot>.ui-loot-count {
+.ui-loot > .ui-loot-count {
   position: absolute;
   font-size: 24px;
   font-weight: bold;
@@ -1891,8 +1873,7 @@ img {
   text-align: center;
 }
 
-@media (max-height: 864px),
-(max-width: 1024px) {
+@media (max-height: 864px), (max-width: 1024px) {
   .ui-right-center-desktop {
     top: 42%;
     transform-origin: right;
@@ -1917,8 +1898,8 @@ img {
 }
 
 /**
-     * ui-upper-center
-     */
+ * ui-upper-center
+ */
 #ui-upper-center {
   position: absolute;
   display: flex;
@@ -1939,8 +1920,8 @@ img {
 }
 
 /**
-     * ui-lower-center
-     */
+ * ui-lower-center
+ */
 #ui-lower-center {
   position: absolute;
   color: #fff;
@@ -1948,8 +1929,7 @@ img {
   left: 50%;
 }
 
-@media (min-width: 851px) and (max-height: 768px),
-(max-width: 1200px) {
+@media (min-width: 851px) and (max-height: 768px), (max-width: 1200px) {
   #ui-lower-center {
     transform-origin: left bottom;
     transform: scale(0.85);
@@ -2002,8 +1982,8 @@ img {
 }
 
 /**
-     * ui-bottom-left
-     */
+ * ui-bottom-left
+ */
 #ui-map-container {
   position: absolute;
   bottom: 52px;
@@ -2091,7 +2071,7 @@ img {
   bottom: 12px;
 }
 
-#ui-settings-container-desktop>.ui-settings-button {
+#ui-settings-container-desktop > .ui-settings-button {
   cursor: pointer;
 }
 
@@ -2149,8 +2129,8 @@ img {
 }
 
 /**
-     * ui-bottom-center-0
-     */
+ * ui-bottom-center-0
+ */
 #ui-bottom-center-0 {
   position: absolute;
   color: #fff;
@@ -2159,8 +2139,7 @@ img {
   transform: translateX(-50%);
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-bottom-center-0 {
     transform-origin: bottom;
     transform: translateX(-50%) scale(0.85);
@@ -2380,8 +2359,8 @@ img {
 }
 
 /**
-     * ui-bottom-center-1
-     */
+ * ui-bottom-center-1
+ */
 #ui-bottom-center-1 {
   z-index: 3;
   position: absolute;
@@ -2391,8 +2370,7 @@ img {
   transform: translateX(-50%);
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-bottom-center-1 {
     transform-origin: bottom;
     transform: translateX(-50%) scale(0.85);
@@ -2468,8 +2446,7 @@ img {
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-perk-message-wrapper {
     bottom: 78px;
     transform: scale(0.5);
@@ -2530,8 +2507,7 @@ img {
   right: 71%;
 }
 
-@media (max-height: 768px),
-(max-width: 1300px) {
+@media (max-height: 768px), (max-width: 1300px) {
   #ui-bottom-center-left {
     right: 73%;
     transform: scale(0.7);
@@ -2623,8 +2599,7 @@ img {
   left: 71%;
 }
 
-@media (max-height: 768px),
-(max-width: 1300px) {
+@media (max-height: 768px), (max-width: 1300px) {
   #ui-bottom-center-right {
     left: 73%;
     transform: scale(0.7);
@@ -2706,8 +2681,7 @@ img {
   z-index: 2;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   .ui-ability-cooldown {
     font-size: 20px;
   }
@@ -2739,8 +2713,7 @@ img {
   right: 12px;
 }
 
-@media (max-height: 768px),
-(max-width: 1200px) {
+@media (max-height: 768px), (max-width: 1200px) {
   #ui-bottom-right {
     transform-origin: bottom right;
     transform: scale(0.7);
@@ -2843,8 +2816,8 @@ img {
 }
 
 /**
-     * ui-stats, end game screen
-     */
+ * ui-stats, end game screen
+ */
 #ui-stats {
   display: none;
 }
@@ -2891,8 +2864,7 @@ img {
   }
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #ui-stats-contents-inner {
     margin-top: 0px;
   }
@@ -3047,7 +3019,7 @@ span.ui-stats-header-value {
   margin: auto;
 }
 
-.ui-stats-info>div {
+.ui-stats-info > div {
   padding: 8px;
   font-size: 18px;
   line-height: 12px;
@@ -3055,7 +3027,7 @@ span.ui-stats-header-value {
   font-weight: bold;
 }
 
-.ui-stats-info>div:first-child {
+.ui-stats-info > div:first-child {
   width: 55%;
   margin-right: 4px;
   text-align: right;
@@ -3132,7 +3104,6 @@ span.ui-stats-header-value {
   }
 }
 
-
 /* Tooltip container */
 .tooltip {
   position: relative;
@@ -3187,8 +3158,8 @@ span.ui-stats-header-value {
 }
 
 /**
-     * editor
-     */
+ * editor
+ */
 #ui-editor-top-center {
   position: absolute;
   color: #fff;
@@ -3282,16 +3253,15 @@ span.ui-stats-header-value {
   display: none;
 }
 
-@media (max-width: 850px),
-(max-width: 900px) and (min-resolution: 3dppx) {
+@media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   * {
     -webkit-touch-callout: none;
     user-select: none;
   }
 
   /**
- * ui-touches
- */
+   * ui-touches
+   */
   .ui-touch-down {
     display: none;
     position: fixed;
@@ -3388,8 +3358,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-top-center
-     */
+   * ui-top-center
+   */
   #ui-top-center {
     position: absolute;
     color: #fff;
@@ -3447,8 +3417,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-top-center-scopes
- */
+   * ui-top-center-scopes
+   */
   #ui-top-center-scopes-wrapper {
     position: absolute;
     color: #fff;
@@ -3526,8 +3496,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-team-pings and ui-emotes
-     */
+   * ui-team-pings and ui-emotes
+   */
   .ui-emote-wheel {
     z-index: 3;
     display: none;
@@ -3655,8 +3625,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-team-indicators
-     */
+   * ui-team-indicators
+   */
   .ui-team-indicator {
     z-index: 2;
     display: none;
@@ -3707,8 +3677,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-top-left
- */
+   * ui-top-left
+   */
   #ui-top-left {
     position: absolute;
     color: #fff;
@@ -3932,8 +3902,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-top-right
-     */
+   * ui-top-right
+   */
   #ui-top-right {
     position: absolute;
     color: #fff;
@@ -4052,8 +4022,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-right-center
- */
+   * ui-right-center
+   */
   #ui-ammo-interactive {
     position: absolute;
     right: 4px;
@@ -4061,7 +4031,7 @@ span.ui-stats-header-value {
     width: 90px;
   }
 
-  .ui-ammo>.ui-loot-image {
+  .ui-ammo > .ui-loot-image {
     position: absolute;
     height: 11px;
     width: 11px;
@@ -4069,7 +4039,7 @@ span.ui-stats-header-value {
     margin-top: 2px;
   }
 
-  .ui-ammo>.ui-loot-overlay {
+  .ui-ammo > .ui-loot-overlay {
     position: absolute;
     height: 11px;
     width: 11px;
@@ -4086,7 +4056,7 @@ span.ui-stats-header-value {
     margin-bottom: 5px;
   }
 
-  .ui-ammo>.ui-loot-count {
+  .ui-ammo > .ui-loot-count {
     position: absolute;
     font-size: 24px;
     font-weight: bold;
@@ -4099,7 +4069,7 @@ span.ui-stats-header-value {
     display: flex;
   }
 
-  .ui-ammo-row>div:not(:last-child) {
+  .ui-ammo-row > div:not(:last-child) {
     margin-right: 10px;
   }
 
@@ -4107,7 +4077,7 @@ span.ui-stats-header-value {
     opacity: 0 !important;
   }
 
-  #ui-ammo-interactive>.ui-ammo {
+  #ui-ammo-interactive > .ui-ammo {
     display: inline-block;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
@@ -4117,7 +4087,7 @@ span.ui-stats-header-value {
     margin-bottom: 2px;
   }
 
-  .ui-ammo>.ui-loot-count {
+  .ui-ammo > .ui-loot-count {
     position: absolute;
     font-size: 12px;
     font-weight: bold;
@@ -4135,7 +4105,7 @@ span.ui-stats-header-value {
     transform: translateX(-50%);
   }
 
-  #ui-medical-interactive>.ui-loot {
+  #ui-medical-interactive > .ui-loot {
     display: inline-block;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
@@ -4145,7 +4115,7 @@ span.ui-stats-header-value {
     margin-bottom: 2px;
   }
 
-  .ui-medical>.ui-loot-image {
+  .ui-medical > .ui-loot-image {
     position: absolute;
     height: 18px;
     width: 18px;
@@ -4155,7 +4125,7 @@ span.ui-stats-header-value {
     margin-top: 0px;
   }
 
-  .ui-medical>.ui-loot-count {
+  .ui-medical > .ui-loot-count {
     position: absolute;
     font-size: 16px;
     font-weight: bold;
@@ -4229,8 +4199,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-upper-center
- */
+   * ui-upper-center
+   */
   #ui-upper-center {
     position: absolute;
     display: flex;
@@ -4251,8 +4221,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-lower-center
-     */
+   * ui-lower-center
+   */
   #ui-lower-center {
     bottom: 44%;
     color: #fff;
@@ -4292,8 +4262,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-bottom-center-0
- */
+   * ui-bottom-center-0
+   */
   #ui-bottom-center-0 {
     position: absolute;
     color: #fff;
@@ -4303,8 +4273,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-equipped-ammo
- */
+   * ui-equipped-ammo
+   */
   #ui-equipped-ammo-wrapper {
     /* Taken from ui-bottom-center-0 */
     position: absolute;
@@ -4330,7 +4300,7 @@ span.ui-stats-header-value {
     text-shadow: 1px 1px #000000;
   }
 
-  #ui-bullet-counter>#ui-current-clip {
+  #ui-bullet-counter > #ui-current-clip {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
     font-size: 28px;
@@ -4344,7 +4314,7 @@ span.ui-stats-header-value {
     text-align: center;
   }
 
-  #ui-bullet-counter>#ui-remaining-ammo {
+  #ui-bullet-counter > #ui-remaining-ammo {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
     font-size: 16px;
@@ -4521,8 +4491,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-bottom-center-1
-     */
+   * ui-bottom-center-1
+   */
   #ui-bottom-center-1 {
     z-index: 3;
     position: absolute;
@@ -4554,8 +4524,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * ui-bottom-center-2
-     */
+   * ui-bottom-center-2
+   */
   #ui-bottom-center-2 {
     position: absolute;
     color: #fff;
@@ -4575,8 +4545,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-bottom-center-left
- */
+   * ui-bottom-center-left
+   */
   #ui-bottom-center-left {
     bottom: initial;
     color: #fff;
@@ -4591,8 +4561,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-bottom-center-right
- */
+   * ui-bottom-center-right
+   */
   #ui-bottom-center-right {
     bottom: initial;
     color: #fff;
@@ -4658,8 +4628,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-bottom-right
- */
+   * ui-bottom-right
+   */
   #ui-bottom-right {
     bottom: initial;
     color: #fff;
@@ -4770,8 +4740,8 @@ span.ui-stats-header-value {
   }
 
   /**
- * ui-stats, end game screen
- */
+   * ui-stats, end game screen
+   */
   #ui-stats-contents {
     border-radius: 5px;
     color: #fff;
@@ -4892,7 +4862,7 @@ span.ui-stats-header-value {
     margin: auto;
   }
 
-  .ui-stats-info>div {
+  .ui-stats-info > div {
     padding: 4px;
     font-size: 9px;
     line-height: 6px;
@@ -4900,7 +4870,7 @@ span.ui-stats-header-value {
     font-weight: bold;
   }
 
-  .ui-stats-info>div:first-child {
+  .ui-stats-info > div:first-child {
     width: 55%;
     margin-right: 4px;
     text-align: right;
@@ -5020,8 +4990,8 @@ span.ui-stats-header-value {
   }
 
   /**
-     * editor
-     */
+   * editor
+   */
   #ui-editor-top-center {
     position: absolute;
     color: #fff;
@@ -5125,9 +5095,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (max-height: 360px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px),
-(max-width: 850px) and (max-width: 640px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-width: 640px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px),
+  (max-width: 850px) and (max-width: 640px),
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-width: 640px) {
   #ui-top-center {
     transform-origin: top;
     transform: translateX(-50%) scale(0.85);
@@ -5135,9 +5105,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (max-height: 360px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px),
-(max-width: 850px) and (max-width: 640px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-width: 640px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px),
+  (max-width: 850px) and (max-width: 640px),
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-width: 640px) {
   #ui-bottom-center-0 {
     transform-origin: bottom;
     transform: translateX(-50%) scale(0.85);
@@ -5145,9 +5115,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (max-height: 360px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px),
-(max-width: 850px) and (max-width: 640px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-width: 640px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px),
+  (max-width: 850px) and (max-width: 640px),
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-width: 640px) {
   #ui-bottom-right {
     top: 200px;
     transform-origin: top right;
@@ -5156,7 +5126,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (max-width: 850px) and (orientation: landscape),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-width: 850px) and (orientation: landscape) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-width: 850px) and (
+    orientation: landscape
+  ) {
   .ui-stats-header-overview .ui-stats-header-left {
     position: fixed;
     top: -4px;
@@ -5171,7 +5143,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (max-height: 360px) and (max-width: 640px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px) and (max-width: 640px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-height: 360px) and (
+    max-width: 640px
+  ) {
   .ui-stats-ad-container {
     margin-top: 0px;
     transform: scale(0.6);
@@ -5179,7 +5153,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (max-width: 850px) and (max-height: 320px),
-(max-width: 900px) and (min-resolution: 3dppx) and (max-width: 850px) and (max-height: 320px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (max-width: 850px) and (
+    max-height: 320px
+  ) {
   .ui-stats-ad-container {
     position: fixed;
     right: 10px;
@@ -5190,7 +5166,7 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (orientation: portrait),
-(max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) {
   #ui-stats-contents {
     margin-top: 32px;
     margin-bottom: 16px;
@@ -5339,7 +5315,7 @@ span.ui-stats-header-value {
     margin-top: 4px;
   }
 
-  #ui-ammo-interactive>.ui-ammo {
+  #ui-ammo-interactive > .ui-ammo {
     display: block;
   }
 
@@ -5350,7 +5326,7 @@ span.ui-stats-header-value {
     transform: initial;
   }
 
-  #ui-medical-interactive>.ui-loot {
+  #ui-medical-interactive > .ui-loot {
     display: block;
   }
 
@@ -5374,22 +5350,22 @@ span.ui-stats-header-value {
     width: initial;
   }
 
-  #ui-bullet-counter>#ui-current-clip {
+  #ui-bullet-counter > #ui-current-clip {
     left: 50%;
   }
 
-  #ui-bullet-counter>#ui-remaining-ammo {
+  #ui-bullet-counter > #ui-remaining-ammo {
     left: initial;
     right: 0px;
     top: 36px;
   }
 
-  #ui-bullet-counter>#ui-reload-button-container {
+  #ui-bullet-counter > #ui-reload-button-container {
     left: 36px;
     top: 56px;
   }
 
-  #ui-reload-button-container>#ui-reload-button {
+  #ui-reload-button-container > #ui-reload-button {
     left: initial;
     right: 0px;
   }
@@ -5424,13 +5400,15 @@ span.ui-stats-header-value {
     top: 96px;
   }
 
-  #ui-ammo-interactive>.ui-ammo {
+  #ui-ammo-interactive > .ui-ammo {
     margin-bottom: 2px;
   }
 }
 
 @media (max-width: 850px) and (orientation: portrait) and (min-height: 668px),
-(max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) and (min-height: 668px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) and (
+    min-height: 668px
+  ) {
   #ui-stats-contents {
     margin-top: 32px;
   }
@@ -5470,7 +5448,9 @@ span.ui-stats-header-value {
 }
 
 @media (max-width: 850px) and (orientation: portrait) and (max-height: 667px),
-(max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) and (max-height: 667px) {
+  (max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) and (
+    max-height: 667px
+  ) {
   #ui-stats-contents {
     margin-top: 0px;
   }
@@ -5480,8 +5460,12 @@ span.ui-stats-header-value {
   }
 }
 
-@media (max-width: 850px) and (orientation: portrait) and (max-height: 568px) and (max-width: 375px),
-(max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) and (max-height: 568px) and (max-width: 375px) {
+@media (max-width: 850px) and (orientation: portrait) and (max-height: 568px) and (
+    max-width: 375px
+  ),
+  (max-width: 900px) and (min-resolution: 3dppx) and (orientation: portrait) and (
+    max-height: 568px
+  ) and (max-width: 375px) {
   #ui-bottom-center-right {
     left: 22px;
     transform: scale(0.8);

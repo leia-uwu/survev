@@ -1,6 +1,5 @@
-import type { AABB } from "./coldet";
 import { math } from "./math";
-import { v2 } from "./v2";
+import { type Vec2, v2 } from "./v2";
 
 /**
  * Custom function to not bundle nodejs assert polyfill with the client
@@ -63,11 +62,6 @@ export const util = {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
-    randomPointOnCircle(rad: number) {
-        const angle = util.random(0, 2 * Math.PI);
-        return v2.create(Math.cos(angle) * rad, Math.sin(angle) * rad);
-    },
-
     // Uniformly distributed random point within circle
     // Taken from https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
     randomPointInCircle(rad: number) {
@@ -85,7 +79,7 @@ export const util = {
         return pos;
     },
 
-    randomPointInAabb(aabb: AABB) {
+    randomPointInAabb(aabb: { min: Vec2; max: Vec2 }) {
         return v2.create(
             util.random(aabb.min.x, aabb.max.x),
             util.random(aabb.min.y, aabb.max.y),

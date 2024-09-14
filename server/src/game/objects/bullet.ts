@@ -80,6 +80,7 @@ export class BulletBarn {
 
             if (!bullet.alive || bullet.skipCollision || (bullet.player?.dead ?? false)) {
                 this.bullets.splice(i, 1);
+                i--;
 
                 if (bullet.onHitFx && !bullet.reflected) {
                     this.game.explosionBarn.addExplosion(

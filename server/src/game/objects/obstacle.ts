@@ -16,7 +16,7 @@ import { Player } from "./player";
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
     bounds: AABB;
-    collider: Collider;
+    collider!: Collider;
 
     mapObstacleBounds: Collider[];
 
@@ -78,7 +78,7 @@ export class Obstacle extends BaseGameObject {
     puzzlePiece?: string;
     parentBuildingId?: number;
     parentBuilding?: Building;
-    isSkin = false;
+    isSkin: boolean;
     skinPlayerId?: number;
 
     height: number;
@@ -108,6 +108,7 @@ export class Obstacle extends BaseGameObject {
         scale = 1,
         parentBuildingId?: number,
         puzzlePiece?: string,
+        isSkin?: boolean,
     ) {
         super(game, pos);
         this.type = type;
@@ -137,7 +138,8 @@ export class Obstacle extends BaseGameObject {
 
         this.height = def.height;
 
-        this.collidable = def.collidable ?? true;
+        this.isSkin = isSkin ?? false;
+        this.collidable = (def.collidable && !this.isSkin) ?? true;
         this.isWindow = def.isWindow ?? false;
         this.isWall = def.isWall ?? false;
 
@@ -147,7 +149,7 @@ export class Obstacle extends BaseGameObject {
         this.maxScale = scale;
         this.minScale = def.scale.destroy;
 
-        this.collider = collider.transform(def.collision, pos, this.rot, scale);
+        this.updateCollider();
 
         this.mapObstacleBounds = [this.collider];
 
@@ -244,6 +246,11 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
+    updateCollider() {
+        const def = MapObjectDefs[this.type] as ObstacleDef;
+        this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
+    }
+
     checkLayer(): void {
         // @hack this door shouldn't switch layers
         if (this.type === "saloon_door_secret" || this.type === "house_door_01") return;
@@ -269,6 +276,8 @@ export class Obstacle extends BaseGameObject {
     }
 
     damage(params: DamageParams): void {
+        if (this.isSkin) return;
+
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
@@ -300,12 +309,7 @@ export class Obstacle extends BaseGameObject {
             if (this.minScale < 1) {
                 this.scale =
                     this.healthT * (this.maxScale - this.minScale) + this.minScale;
-                this.collider = collider.transform(
-                    def.collision,
-                    this.pos,
-                    math.oriToRad(this.ori),
-                    this.scale,
-                );
+                this.updateCollider();
             }
 
             // need to send full object for obstacles with explosions

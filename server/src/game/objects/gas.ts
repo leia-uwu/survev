@@ -2,7 +2,119 @@ import { GameConfig, GasMode } from "../../../../shared/gameConfig";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import type { GameMap } from "../map";
+import type { Game } from "../game";
+
+interface StageData {
+    mode: GasMode;
+    duration: number;
+    rad: number;
+    damage: number;
+}
+
+const GasStages: StageData[] = [
+    {
+        mode: GasMode.Inactive,
+        duration: 0,
+        rad: 0.7425,
+        damage: 0,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 80,
+        rad: 0.45,
+        damage: 1.4,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 30,
+        rad: 0.45,
+        damage: 1.4,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 65,
+        rad: 0.3125,
+        damage: 2.2,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 25,
+        rad: 0.3125,
+        damage: 2.2,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 50,
+        rad: 0.2125,
+        damage: 3.5,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 20,
+        rad: 0.2125,
+        damage: 3.5,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 40,
+        rad: 0.1375,
+        damage: 7.5,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 15,
+        rad: 0.1375,
+        damage: 7.5,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 30,
+        rad: 0.075,
+        damage: 10,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 10,
+        rad: 0.075,
+        damage: 10,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 25,
+        rad: 0.045,
+        damage: 14,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 5,
+        rad: 0.045,
+        damage: 14,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 20,
+        rad: 0.0225,
+        damage: 22,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 6,
+        rad: 0.0225,
+        damage: 22,
+    },
+    {
+        mode: GasMode.Waiting,
+        duration: 15,
+        rad: 0,
+        damage: 22,
+    },
+    {
+        mode: GasMode.Moving,
+        duration: 15,
+        rad: 0,
+        damage: 22,
+    },
+];
 
 export class Gas {
     /**
@@ -20,38 +132,20 @@ export class Gas {
     stage = 0;
 
     /**
-     * -1 while game hasnt started yet since theres no circle, incremented to 0 on game start
+     * Like stage but is incremented after gas goes through Waiting and Moving mode's
      */
     circleIdx = -1;
 
     /**
      * Current gas stage damage
      */
-    damage = 0;
+    damage: number;
 
     /**
-     * Gets current gas duration
+     * Current gas duration
      * returns 0 if gas if inactive
-     * time the gas needs if gas is moving
-     * or time the gas needs to wait to trigger the next stage
      */
-    get duration() {
-        if (this.mode === GasMode.Inactive) return 0;
-        if (this.mode === GasMode.Moving) return this.gasTime;
-        return this.waitTime;
-    }
-
-    /**
-     * Gas wait time
-     * This is the time to wait when on waiting mode
-     */
-    waitTime: number = GameConfig.gas.initWaitTime;
-    /**
-     * Gas Time
-     * This is the time for the gas to move between one stage to another
-     * When on moving mode
-     */
-    gasTime: number = GameConfig.gas.initGasTime;
+    duration: number;
 
     /**
      * Old gas radius
@@ -114,30 +208,41 @@ export class Gas {
     timeDirty = true;
 
     private _damageTicker = 0;
+    private _running = false;
 
     doDamage = false;
 
-    constructor(readonly map: GameMap) {
-        const mapSize = (map.width + map.height) / 2;
+    mapSize: number;
 
-        this.radNew = this.radOld = this.currentRad = GameConfig.gas.initWidth * mapSize;
-
+    constructor(readonly game: Game) {
+        const map = game.map;
+        this.mapSize = (map.width + map.height) / 2;
         this.posOld = v2.create(map.width / 2, map.height / 2);
-
         this.posNew = v2.copy(this.posOld);
         this.currentPos = v2.copy(this.posOld);
+
+        const stage = this._getStageData();
+        this.radOld = 0.85 * this.mapSize;
+        this.radNew = this.currentRad = stage.rad * this.mapSize;
+        this.duration = stage.duration;
+        this.damage = stage.damage;
     }
 
     update(dt: number) {
-        if (this.gasT >= 1) {
-            this.advanceGasStage();
-        }
-
         this._gasTicker += dt;
 
-        if (this.mode != GasMode.Inactive) {
+        if (this._running) {
             this.gasT = math.clamp(this._gasTicker / this.duration, 0, 1);
             this.timeDirty = true;
+
+            if (this.mode === GasMode.Moving) {
+                this.currentPos = v2.lerp(this.gasT, this.posOld, this.posNew);
+                this.currentRad = math.lerp(this.gasT, this.radOld, this.radNew);
+            }
+
+            if (this.gasT >= 1) {
+                this.advanceGasStage();
+            }
         }
 
         this.doDamage = false;
@@ -147,91 +252,75 @@ export class Gas {
             this._damageTicker = 0;
             this.doDamage = true;
         }
-
-        if (this.mode === GasMode.Moving) {
-            this.currentPos = v2.lerp(this.gasT, this.posOld, this.posNew);
-            this.currentRad = math.lerp(this.gasT, this.radOld, this.radNew);
-        }
     }
 
     advanceGasStage() {
-        if (this.currentRad <= 0) {
+        this.stage++;
+        this._running = true;
+
+        const stage = this._getStageData();
+
+        if (!stage) {
+            this._running = false;
             return;
         }
-        if (this.mode !== GasMode.Waiting) {
-            this.radOld = this.currentRad;
 
-            if (this.radNew > 0) {
-                this.radNew = this.currentRad * GameConfig.gas.widthDecay;
+        this.mode = stage.mode;
+        this.radOld = this.currentRad;
+        this.radNew = stage.rad * this.mapSize;
+        this.duration = stage.duration;
+        this.damage = stage.damage;
 
-                if (this.radNew < GameConfig.gas.widthMin) {
-                    this.radNew = 0;
-                }
+        const circleIdxOld = this.circleIdx;
 
-                this.posOld = v2.copy(this.posNew);
+        if (this.mode === GasMode.Waiting) {
+            this.posOld = v2.copy(this.posNew);
 
-                this.posNew = v2.add(this.posOld, util.randomPointInCircle(this.radNew));
+            this.posNew = v2.add(
+                this.posNew,
+                util.randomPointInCircle(this.radOld - this.radNew),
+            );
 
-                const rad = this.radNew;
-                this.posNew = math.v2Clamp(
-                    this.posNew,
-                    v2.create(rad, rad),
-                    v2.create(this.map.width - rad, this.map.height - rad),
-                );
-            }
+            const rad = this.radNew * 0.75; // ensure at least 75% of the safe zone will be inside map bounds
+            this.posNew = math.v2Clamp(
+                this.posNew,
+                v2.create(rad, rad),
+                v2.create(this.game.map.width - rad, this.game.map.height - rad),
+            );
 
-            this.currentRad = this.radOld;
             this.currentPos = this.posOld;
+            this.currentRad = this.radOld;
+            this.circleIdx++;
         }
 
-        const oldCircleIdx = this.circleIdx;
-
-        switch (this.mode) {
-            case GasMode.Inactive: {
-                this.circleIdx++;
-                this.mode = GasMode.Waiting;
-                break;
+        if (this.circleIdx !== circleIdxOld) {
+            if (this.game.map.mapDef.gameConfig.roles) {
+                this.game.playerBarn.scheduleRoleAssignments();
             }
-            case GasMode.Waiting: {
-                this.mode = GasMode.Moving;
-                this.gasTime = math.max(
-                    this.gasTime - GameConfig.gas.gasTimeDecay,
-                    GameConfig.gas.gasTimeMin,
-                );
-                if (this.radNew > 0) {
-                    this.stage++;
+
+            for (const plane of this.game.map.mapDef.gameConfig.planes.timings) {
+                if (plane.circleIdx === this.circleIdx) {
+                    this.game.planeBarn.schedulePlane(plane.wait, plane.options);
                 }
-                break;
-            }
-            case GasMode.Moving: {
-                this.waitTime = math.max(
-                    this.waitTime - GameConfig.gas.waitTimeDecay,
-                    GameConfig.gas.waitTimeMin,
-                );
-                this.mode = GasMode.Waiting;
-                if (this.radNew > 0) {
-                    this.circleIdx++;
-                    this.stage++;
-                }
-                break;
             }
         }
 
-        if (this.map.mapDef.gameConfig.roles && oldCircleIdx != this.circleIdx) {
-            this.map.game.playerBarn.scheduleRoleAssignments();
-        }
-
-        this.damage =
-            GameConfig.gas.damage[
-                math.clamp(this.stage - 1, 0, GameConfig.gas.damage.length - 1)
-            ];
         this._gasTicker = 0;
+        this.gasT = 0;
         this.dirty = true;
         this.timeDirty = true;
     }
 
+    private _getStageData() {
+        return GasStages[this.stage];
+    }
+
     isInGas(pos: Vec2) {
         return v2.distance(pos, this.currentPos) >= this.currentRad;
+    }
+
+    isOutSideSafeZone(pos: Vec2) {
+        return v2.distance(pos, this.posNew) >= this.radNew;
     }
 
     flush() {

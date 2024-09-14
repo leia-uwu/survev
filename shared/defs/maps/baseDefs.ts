@@ -47,9 +47,6 @@ export const Main: MapDef = {
     gameMode: {
         maxPlayers: 80,
         killLeaderEnabled: true,
-        spawn: {
-            mode: "random",
-        },
     },
     gameConfig: {
         planes: {

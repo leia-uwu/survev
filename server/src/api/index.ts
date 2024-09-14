@@ -6,6 +6,7 @@ import { version } from "../../../package.json";
 import { ApiServer } from "../api/apiServer";
 import { Config } from "../config";
 import type { FindGameBody } from "../gameServer";
+import { GIT_VERSION } from "../utils/gitRevision";
 import type { RegionData } from "./apiServer";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
@@ -82,6 +83,6 @@ Bun.serve({
     port: Config.apiServer.port,
 });
 
-server.logger.log(`Resurviv API Server v${version}`);
+server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);
 server.logger.log(`Listening on ${Config.apiServer.host}:${Config.apiServer.port}`);
 server.logger.log("Press Ctrl+C to exit.");

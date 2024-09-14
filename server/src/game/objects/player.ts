@@ -31,6 +31,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
+import { checkForBadWords } from "../../utils/serverHelpers";
 import type { Game } from "../game";
 import type { Group } from "../group";
 import type { Team } from "../team";
@@ -104,15 +105,16 @@ export class PlayerBarn {
                 (gd) => gd.hash == joinMsg.matchPriv,
             )!;
             if (this.game.groups.has(groupData.hash)) {
-                //group already exists
+                // group already exists
                 group = this.game.groups.get(groupData.hash)!;
+                group.reservedSlots--;
                 team = group.players[0].team;
             } else {
                 group = this.game.addGroup(groupData.hash, groupData.autoFill);
             }
         }
 
-        const pos: Vec2 = this.game.map.getSpawnPos(group);
+        const pos: Vec2 = this.game.map.getSpawnPos(group, team);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 
@@ -149,7 +151,6 @@ export class PlayerBarn {
             this.game.started = this.game.contextManager.isGameStarted();
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
-                this.game.planeBarn.schedulePlanes();
             }
         }
 
@@ -167,6 +168,7 @@ export class PlayerBarn {
             scheduledRole.time -= dt;
             if (scheduledRole.time <= 0) {
                 this.scheduledRoles.splice(i, 1);
+                i--;
 
                 const fullAliveContext =
                     this.game.contextManager.getAlivePlayersContext();
@@ -663,7 +665,6 @@ export class Player extends BaseGameObject {
         }
         this.role = role;
         this.inventoryDirty = true;
-        this.weapsDirty = true;
         this.setDirty();
     }
 
@@ -739,7 +740,7 @@ export class Player extends BaseGameObject {
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: GameConfig.defaultEmoteLoadout,
+        emotes: [...GameConfig.defaultEmoteLoadout],
     };
 
     damageTaken = 0;
@@ -755,13 +756,15 @@ export class Player extends BaseGameObject {
     // to disable auto pickup for some seconds after dropping something
     mobileDropTicker = 0;
 
+    obstacleOutfit?: Obstacle;
+
     constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: net.JoinMsg) {
         super(game, pos);
 
         this.socketData = socketData;
 
-        this.name = joinMsg.name;
-        if (this.name.trim() === "") {
+        this.name = joinMsg.name.trim();
+        if (this.name === "" || checkForBadWords(this.name)) {
             this.name = "Player";
         }
         this.isMobile = joinMsg.isMobile;
@@ -1070,59 +1073,54 @@ export class Player extends BaseGameObject {
         //
         const movement = v2.create(0, 0);
 
-        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
-            this.posOld = v2.copy(this.pos);
+        if (this.touchMoveActive && this.touchMoveLen) {
+            movement.x = this.touchMoveDir.x;
+            movement.y = this.touchMoveDir.y;
+        } else {
+            if (this.moveUp) movement.y++;
+            if (this.moveDown) movement.y--;
+            if (this.moveLeft) movement.x--;
+            if (this.moveRight) movement.x++;
 
-            if (this.touchMoveActive && this.touchMoveLen) {
-                movement.x = this.touchMoveDir.x;
-                movement.y = this.touchMoveDir.y;
-            } else {
-                if (this.moveUp) movement.y++;
-                if (this.moveDown) movement.y--;
-                if (this.moveLeft) movement.x--;
-                if (this.moveRight) movement.x++;
-
-                if (movement.x * movement.y !== 0) {
-                    // If the product is non-zero, then both of the components must be non-zero
-                    movement.x *= Math.SQRT1_2;
-                    movement.y *= Math.SQRT1_2;
-                }
+            if (movement.x * movement.y !== 0) {
+                // If the product is non-zero, then both of the components must be non-zero
+                movement.x *= Math.SQRT1_2;
+                movement.y *= Math.SQRT1_2;
             }
         }
+
+        this.posOld = v2.copy(this.pos);
+
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
 
-        v2.set(this.pos, v2.add(this.pos, v2.mul(movement, this.speed * dt)));
         let objs!: GameObject[];
 
-        for (let i = 0, collided = true; i < 5 && collided; i++) {
+        const steps = Math.round(math.max(this.speed * dt + 5, 5));
+
+        const speedToAdd = (this.speed / steps) * dt;
+        for (let i = 0; i < steps; i++) {
             objs = this.game.grid.intersectCollider(this.collider);
-            collided = false;
+
+            v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
 
             for (let j = 0; j < objs.length; j++) {
                 const obj = objs[j];
-                if (
-                    obj.__type === ObjectType.Obstacle &&
-                    obj.collidable &&
-                    util.sameLayer(obj.layer, this.layer) &&
-                    !obj.dead
-                ) {
-                    const collision = collider.intersectCircle(
-                        obj.collider,
+                if (obj.__type !== ObjectType.Obstacle) continue;
+                if (!obj.collidable) continue;
+                if (obj.dead) continue;
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+
+                const collision = collider.intersectCircle(
+                    obj.collider,
+                    this.pos,
+                    this.rad,
+                );
+                if (collision) {
+                    v2.set(
                         this.pos,
-                        this.rad,
+                        v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
-                    if (collision) {
-                        v2.set(
-                            this.pos,
-                            v2.add(
-                                this.pos,
-                                v2.mul(collision.dir, collision.pen + 0.001),
-                            ),
-                        );
-                        collided = true;
-                        break;
-                    }
                 }
             }
         }
@@ -1186,9 +1184,12 @@ export class Player extends BaseGameObject {
                 }
             }
 
-            const closestObstacle = this.getClosestObstacle();
-            if (closestObstacle && closestObstacle.isDoor && !closestObstacle.door.open) {
-                closestObstacle.interact(this);
+            const obstacles = this.getInteractableObstacles();
+            for (let i = 0; i < obstacles.length; i++) {
+                const obstacle = obstacles[i];
+                if (obstacle.isDoor && !obstacle.door.open) {
+                    obstacle.interact(this);
+                }
             }
         }
 
@@ -1324,6 +1325,16 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
             this.game.grid.updateObject(this);
+
+            //
+            // Halloween obstacle skin
+            //
+            if (this.obstacleOutfit) {
+                this.obstacleOutfit.pos = v2.copy(this.pos);
+                this.obstacleOutfit.updateCollider();
+                this.game.grid.updateObject(this.obstacleOutfit);
+                this.obstacleOutfit.setPartDirty();
+            }
         }
 
         //
@@ -1677,12 +1688,7 @@ export class Player extends BaseGameObject {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                const headshotBlacklist = GameConfig.gun.headshotBlacklist;
-                isHeadShot =
-                    !(headshotBlacklist.length == 1 && headshotBlacklist[0] == "all") &&
-                    !headshotBlacklist.includes(params.gameSourceType ?? "") &&
-                    gameSourceDef.headshotMult > 1 &&
-                    Math.random() < 0.15;
+                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
 
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
@@ -2007,6 +2013,13 @@ export class Player extends BaseGameObject {
         this.game.deadBodyBarn.addDeadBody(this.pos, this.__id, this.layer, params.dir);
 
         //
+        // Kill outfit obstacle
+        //
+        if (this.obstacleOutfit) {
+            this.obstacleOutfit.kill(params);
+        }
+
+        //
         // drop loot
         //
 
@@ -2017,13 +2030,19 @@ export class Player extends BaseGameObject {
             switch (def.type) {
                 case "gun":
                     this.weaponManager.dropGun(i);
+                    weap.type = "";
                     break;
                 case "melee":
                     if (def.noDropOnDeath || weap.type === "fists") break;
                     this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                    weap.type = "fists";
+                    break;
+                case "throwable":
+                    weap.type = "";
                     break;
             }
         }
+        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
         for (const item in GameConfig.bagSizes) {
             // const def = GameObjectDefs[item] as AmmoDef | HealDef;
@@ -2418,10 +2437,10 @@ export class Player extends BaseGameObject {
                     break;
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
-                    const obstacle = this.getClosestObstacle();
+                    const obstacles = this.getInteractableObstacles();
                     const playerToRevive = this.getPlayerToRevive();
 
-                    const interactables = [loot, obstacle, playerToRevive];
+                    const interactables = [loot, ...obstacles, playerToRevive];
 
                     for (let i = 0; i < interactables.length; i++) {
                         const interactable = interactables[i];
@@ -2442,24 +2461,14 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.Use: {
-                    const obstacle = this.getClosestObstacle();
-                    if (obstacle) obstacle.interact(this);
+                    const obstacles = this.getInteractableObstacles();
+                    for (let i = 0; i < obstacles.length; i++) {
+                        obstacles[i].interact(this);
+                    }
                     break;
                 }
                 case GameConfig.Input.Reload:
                     this.weaponManager.tryReload();
-                    break;
-                case GameConfig.Input.UseBandage:
-                    this.useHealingItem("bandage");
-                    break;
-                case GameConfig.Input.UseHealthKit:
-                    this.useHealingItem("healthkit");
-                    break;
-                case GameConfig.Input.UsePainkiller:
-                    this.useBoostItem("soda");
-                    break;
-                case GameConfig.Input.UseSoda:
-                    this.useBoostItem("painkiller");
                     break;
                 case GameConfig.Input.Cancel:
                     this.cancelAction();
@@ -2580,13 +2589,12 @@ export class Player extends BaseGameObject {
         return closestLoot;
     }
 
-    getClosestObstacle(): Obstacle | undefined {
+    getInteractableObstacles(): Obstacle[] {
         const objs = this.game.grid.intersectCollider(
             collider.createCircle(this.pos, this.rad + 5),
         );
 
-        let closestObj: Obstacle | undefined;
-        let closestPen = 0;
+        let obstacles: Array<{ pen: number; obstacle: Obstacle }> = [];
 
         for (let i = 0; i < objs.length; i++) {
             const obstacle = objs[i];
@@ -2598,14 +2606,16 @@ export class Player extends BaseGameObject {
                         this.pos,
                         obstacle.interactionRad + this.rad,
                     );
-                    if (res && res.pen >= closestPen) {
-                        closestObj = obstacle;
-                        closestPen = res.pen;
+                    if (res) {
+                        obstacles.push({
+                            pen: res.pen,
+                            obstacle,
+                        });
                     }
                 }
             }
         }
-        return closestObj;
+        return obstacles.sort((a, b) => a.pen - b.pen).map((o) => o.obstacle);
     }
 
     interactWith(obj: GameObject): void {
@@ -2693,11 +2703,11 @@ export class Player extends BaseGameObject {
                                 if (throwableList.includes(obj.type)) {
                                     // fill empty slot with throwable, otherwise just add to inv
                                     if (this.inventory[obj.type] == 0) {
-                                        this.weapons[
-                                            GameConfig.WeaponSlot.Throwable
-                                        ].type = obj.type;
-                                        this.weapsDirty = true;
-                                        this.setDirty();
+                                        this.weaponManager.setWeapon(
+                                            GameConfig.WeaponSlot.Throwable,
+                                            obj.type,
+                                            0,
+                                        );
                                     }
                                 }
                                 break;
@@ -2724,9 +2734,11 @@ export class Player extends BaseGameObject {
                                 throwableList.includes(obj.type) &&
                                 !this.weapons[GameConfig.WeaponSlot.Throwable].type
                             ) {
-                                this.weapons[GameConfig.WeaponSlot.Throwable].type =
-                                    obj.type;
-                                this.weapsDirty = true;
+                                this.weaponManager.setWeapon(
+                                    GameConfig.WeaponSlot.Throwable,
+                                    obj.type,
+                                    0,
+                                );
                                 this.setDirty();
                             }
                         }
@@ -2748,8 +2760,6 @@ export class Player extends BaseGameObject {
             case "melee":
                 this.weaponManager.dropMelee();
                 this.weaponManager.setWeapon(GameConfig.WeaponSlot.Melee, obj.type, 0);
-                this.weapsDirty = true;
-                if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
                 break;
             case "gun":
                 {
@@ -2798,7 +2808,11 @@ export class Player extends BaseGameObject {
                         gunType = obj.type;
                     }
                     if (gunType) {
-                        this.weaponManager.setWeapon(newGunIdx, gunType, 0);
+                        this.weaponManager.setWeapon(
+                            newGunIdx,
+                            gunType,
+                            freeGunSlot.isDualWield ? this.weapons[newGunIdx].ammo : 0,
+                        );
 
                         // if "preloaded" gun add ammo to inventory
                         if (obj.isPreloadedGun) {
@@ -2884,6 +2898,18 @@ export class Player extends BaseGameObject {
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
                 this.outfit = obj.type;
+
+                if (def.obstacleType) {
+                    if (this.obstacleOutfit) {
+                        this.obstacleOutfit.destroy();
+                    }
+
+                    this.obstacleOutfit = this.game.map.genOutfitObstacle(
+                        def.obstacleType,
+                        this,
+                    );
+                }
+
                 this.setDirty();
                 break;
             case "perk":
@@ -3213,15 +3239,12 @@ export class Player extends BaseGameObject {
             this.speed += weaponDef.speed.equip + speedBonus;
         }
 
-        const customShootingSpeed =
-            GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            this.speed += customShootingSpeed ?? weaponDef.speed.attack;
+            this.speed += weaponDef.speed.attack;
         }
 
         // if player is on water decrease speed
-        const isOnWater =
-            this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        const isOnWater = this.game.map.isOnWater(this.pos, this.layer);
         if (isOnWater) this.speed -= GameConfig.player.waterSpeedPenalty;
 
         // increase speed when adrenaline is above 50%
@@ -3240,7 +3263,7 @@ export class Player extends BaseGameObject {
         // decrease speed if shooting or popping adren or heals
         // field_medic perk doesn't slow you down while you heal
         if (
-            (this.shotSlowdownTimer > 0 && !customShootingSpeed) ||
+            this.shotSlowdownTimer > 0 ||
             (!this.hasPerk("field_medic") && this.actionType == GameConfig.Action.UseItem)
         ) {
             this.speed *= 0.5;

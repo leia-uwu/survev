@@ -1,5 +1,6 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
+import { GIT_VERSION } from "../utils/gitRevision";
 import { Config, type ConfigType } from "./../config";
 import type { FindGameBody, FindGameResponse } from "./../gameServer";
 import { TeamMenu } from "./../teamMenu";
@@ -83,6 +84,7 @@ export class ApiServer {
             youtube: { name: "", link: "" },
             twitch: [],
             country: "US",
+            gitRevision: GIT_VERSION,
         };
 
         for (const region in this.regions) {

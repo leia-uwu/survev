@@ -119,17 +119,7 @@ export const GameConfig = {
     Plane,
     HasteType,
     gas: {
-        initWaitTime: 90,
-        waitTimeDecay: 15,
-        waitTimeMin: 10,
-        initGasTime: 30,
-        gasTimeDecay: 5,
-        gasTimeMin: 5,
-        initWidth: 0.75,
-        widthDecay: 0.5,
-        widthMin: 10,
         damageTickRate: 2,
-        damage: [1.4, 2.2, 3.5, 7.5, 10, 14, 22, 22, 22],
     },
     map: {
         gridSize: 16,
@@ -175,8 +165,7 @@ export const GameConfig = {
         medicReviveRange: 6,
         spectateDeadTimeout: 2,
         killLeaderMinKills: 3,
-        minSpawnDistance: 50, // minimum distance enemy players need to spawn from each other
-        gracePeriodTime: 0, // time from game start where players can't move
+        minSpawnRad: 25,
 
         /* STRIP_FROM_PROD_CLIENT:START */
         defaultItems: {
@@ -259,16 +248,6 @@ export const GameConfig = {
         reflectDistDecay: 1.5,
         height: 0.25,
         falloff: true,
-    },
-    gun: {
-        customSwitchDelay: undefined,
-        customBarrelLength: undefined,
-        customShootingSpeed: {
-            single: undefined,
-            auto: undefined,
-            burst: undefined,
-        } as Record<"auto" | "single" | "burst", number | undefined>,
-        headshotBlacklist: [] as string[],
     },
     projectile: {
         maxHeight: 5,

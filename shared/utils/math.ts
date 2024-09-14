@@ -61,9 +61,11 @@ export const math = {
         const t = math.clamp((v - a) / (b - a), 0.0, 1.0);
         return t * t * (3.0 - 2.0 * t);
     },
+
     easeOutElastic(e: number, t = 0.3) {
         return Math.pow(2, e * -10) * Math.sin(((e - t / 4) * (Math.PI * 2)) / t) + 1;
     },
+
     easeOutExpo(e: number) {
         if (e === 1) {
             return 1;
@@ -76,9 +78,11 @@ export const math = {
         }
         return Math.pow(2, (e - 1) * 10);
     },
+
     easeOutQuart(e: number) {
         return 1 - Math.pow(1 - e, 4);
     },
+
     remap(v: number, a: number, b: number, x: number, y: number) {
         const t = math.clamp((v - a) / (b - a), 0.0, 1.0);
         return math.lerp(t, x, y);

@@ -819,6 +819,8 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
         stacktrace,
         browser: navigator.userAgent,
         protocol: GameConfig.protocolVersion,
+        clientGitVersion: GIT_VERSION,
+        serverGitVersion: App.siteInfo.info.gitRevision,
     };
     const errStr = JSON.stringify(errObj);
 

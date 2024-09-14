@@ -13,9 +13,6 @@ export class DeadBodyBarn {
         for (let i = 0; i < this.deadBodies.length; i++) {
             const deadBody = this.deadBodies[i];
             deadBody.update(dt);
-            if (deadBody.__id === 0) {
-                this.deadBodies.splice(i, 1);
-            }
         }
     }
 

@@ -105,7 +105,7 @@ export const collider = {
 
         return pts;
     },
-    // @TODO: Ensure consistent pen dirs (ie towards 2nd arg)
+
     intersectCircle(col: Collider, pos: Vec2, rad: number) {
         if (col.type === collider.Type.Aabb) {
             return coldet.intersectAabbCircle(col.min, col.max, pos, rad);
@@ -117,7 +117,6 @@ export const collider = {
         if (col.type === collider.Type.Aabb) {
             return coldet.intersectAabbAabb(col.min, col.max, min, max);
         }
-        // @TODO: pen dir is reversed
         return coldet.intersectAabbCircle(min, max, col.pos, col.rad);
     },
 
