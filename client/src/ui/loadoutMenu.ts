@@ -419,7 +419,6 @@ export class LoadoutMenu {
 
     onItems(items: Item[]) {
         this.items = loadout.getUserAvailableItems(items) as Item[];
-        console.log(this.items);
         for (let i = 0; i < this.items.length; i++) {
             const item = this.items[i];
             if (
