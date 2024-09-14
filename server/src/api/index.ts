@@ -17,7 +17,7 @@ export type Context = {
     };
 };
 
-const server = new ApiServer();
+export const server = new ApiServer();
 const app = new Hono();
 const { upgradeWebSocket, websocket } = createBunWebSocket();
 

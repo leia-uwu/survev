@@ -3,7 +3,9 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
+import { server } from "../../..";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
+import { Config } from "../../../../config";
 import { setUserCookie } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
@@ -16,6 +18,12 @@ export const github = new GitHub(
 export const GithubRouter = new Hono();
 
 GithubRouter.get("/", async (c) => {
+    if (!Config.accountsEnabled) {
+        return c.json({ err: "Account-related features are disabled" }, 403);
+    }
+    if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+        return c.json({ err: "Missing GitHub credentials" }, 500);
+    }
     const state = generateState();
     const url = await github.createAuthorizationURL(state);
     setCookie(c, "github_oauth_state", state, {
@@ -73,11 +81,12 @@ GithubRouter.get("/callback", async (c) => {
         setUserCookie(userId, c);
         return c.redirect("/");
     } catch (e) {
+        server.logger.warn("/api/user/auth/github/callback: Failed to create user");
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
             // invalid code
-            return c.body(null, 400);
+            return c.json({}, 400);
         }
-        return c.body(null, 500);
+        return c.json({}, 500);
     }
 });
 

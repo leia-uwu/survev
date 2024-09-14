@@ -3,6 +3,8 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
+import { server } from "../../..";
+import { Config } from "../../../../config";
 import { setUserCookie } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
@@ -17,6 +19,12 @@ export const discord = new Discord(
 export const DiscordRouter = new Hono();
 
 DiscordRouter.get("/", async (c) => {
+    if (!Config.accountsEnabled) {
+        return c.json({ err: "Account-related features are disabled" }, 403);
+    }
+    if (!process.env.DISCORD_CLIENT_ID || !process.env.DISCORD_SECRET_ID) {
+        return c.json({ err: "Missing Discord credentials" }, 500);
+    }
     const state = generateState();
 
     const url = await discord.createAuthorizationURL(state, {
@@ -77,6 +85,7 @@ DiscordRouter.get("/callback", async (c) => {
         await setUserCookie(userId, c);
         return c.redirect("/");
     } catch (e) {
+        server.logger.warn("/api/user/auth/mock: Failed to create user");
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
             // invalid code
             return c.body(null, 400);

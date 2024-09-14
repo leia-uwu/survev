@@ -24,6 +24,8 @@ export const Config = {
         apiServerUrl: "http://127.0.0.1:8000",
     },
 
+    accountsEnabled: true,
+
     apiKey: "Kongregate Sucks",
 
     modes: [
@@ -111,6 +113,12 @@ export interface ConfigType {
     readonly gameServer: ServerConfig & {
         readonly apiServerUrl: string;
     };
+
+    /**
+     * used to hide/disable account-related features in both client and server.
+     */
+    readonly accountsEnabled: boolean;
+
     /**
      * API key used for game server and API server to communicate
      */
