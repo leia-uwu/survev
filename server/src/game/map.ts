@@ -174,17 +174,29 @@ export function getColliders(type: string) {
     return colliders;
 }
 
-function transformColliders(colls: GroundBunkerColliders, pos: Vec2, rot: number) {
+function transformColliders(
+    colls: GroundBunkerColliders,
+    pos: Vec2,
+    rot: number,
+    type: string,
+) {
     const newColls: GroundBunkerColliders = {
         ground: [],
         bunker: [],
     };
+
+    let scale = 1;
+    if (type === "building" || type === "structure") {
+        scale = 1.5;
+    }
+
     for (let i = 0; i < colls.ground.length; i++) {
-        newColls.ground.push(collider.transform(colls.ground[i], pos, rot, 1));
+        newColls.ground.push(collider.transform(colls.ground[i], pos, rot, scale));
     }
     for (let i = 0; i < colls.bunker.length; i++) {
-        newColls.bunker.push(collider.transform(colls.bunker[i], pos, rot, 1));
+        newColls.bunker.push(collider.transform(colls.bunker[i], pos, rot, scale));
     }
+
     return newColls;
 }
 
@@ -770,7 +782,7 @@ export class GameMap {
 
         const rot = math.oriToRad(ori);
 
-        const collsA = transformColliders(getColliders(type), pos, rot);
+        const collsA = transformColliders(getColliders(type), pos, rot, def.type);
 
         const boundCollider = collider.transform(
             mapHelpers.getBoundingCollider(type),
