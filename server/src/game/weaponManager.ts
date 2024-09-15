@@ -1019,7 +1019,7 @@ export class WeaponManager {
             this.player.__id,
             throwableType,
             pos,
-            1,
+            0.5,
             this.player.layer,
             vel,
             fuseTime,
