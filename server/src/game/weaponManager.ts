@@ -1047,9 +1047,7 @@ export class WeaponManager {
             }
 
             if (amount != 0) {
-                this.weapons[slot].type = type;
-                this.player.weapsDirty = true;
-                this.player.setDirty();
+                this.setWeapon(slot, type, 0);
                 return;
             }
         }

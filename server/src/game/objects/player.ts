@@ -2850,6 +2850,10 @@ export class Player extends BaseGameObject {
                         this.weaponManager.setCurWeapIndex(newGunIdx); // primary
                     }
 
+                    if (this.activeWeapon === "") {
+                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                    }
+
                     this.setDirty();
                 }
                 break;

@@ -1856,11 +1856,6 @@ export class Player implements AbstractObject {
 
         let idlePose = "fists";
 
-        if (!curWeapDef) {
-            console.error("Invalid active weapon:", this.netData.activeWeapon);
-            return idlePose;
-        }
-
         if (this.downed) {
             idlePose = "downed";
         } else if ("anim" in curWeapDef && curWeapDef.anim.idlePose) {
