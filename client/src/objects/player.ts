@@ -1853,30 +1853,34 @@ export class Player implements AbstractObject {
             | GunDef
             | MeleeDef
             | ThrowableDef;
+
         let idlePose = "fists";
-        idlePose = this.downed
-            ? "downed"
-            : (curWeapDef as MeleeDef).anim?.idlePose
-              ? (curWeapDef as MeleeDef).anim.idlePose
-              : curWeapDef.type == "gun"
-                ? curWeapDef.pistol
-                    ? curWeapDef.isDual
-                        ? "dualPistol"
-                        : "pistol"
-                    : curWeapDef.isBullpup
-                      ? "bullpup"
-                      : curWeapDef.isLauncher
-                        ? "launcher"
-                        : curWeapDef.isDual
-                          ? "dualRifle"
-                          : "rifle"
-                : curWeapDef.type == "throwable"
-                  ? "throwable"
-                  : "fists";
-        if (IdlePoses[idlePose]) {
+
+        if (!curWeapDef) {
+            console.error("Invalid active weapon:", this.netData.activeWeapon);
             return idlePose;
         }
-        return "fists";
+
+        if (this.downed) {
+            idlePose = "downed";
+        } else if ("anim" in curWeapDef && curWeapDef.anim.idlePose) {
+            idlePose = curWeapDef.anim.idlePose;
+        } else if (curWeapDef.type == "gun") {
+            if (curWeapDef.pistol) {
+                idlePose = curWeapDef.isDual ? "dualPistol" : "pistol";
+            } else if (curWeapDef.isBullpup) {
+                idlePose = "bullpup";
+            } else if (curWeapDef.isLauncher) {
+                idlePose = "launcher";
+            } else {
+                idlePose = curWeapDef.isDual ? "dualRifle" : "rifle";
+            }
+        } else if (curWeapDef.type == "throwable") {
+            idlePose = "throwable";
+        } else {
+            idlePose = "fists";
+        }
+        return IdlePoses[idlePose] ? idlePose : "fists";
     }
 
     selectAnim(type: Anim) {
