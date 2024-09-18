@@ -1,10 +1,9 @@
-import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { TeamMode } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { Config } from "../config";
-import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
 import { ContextManager } from "./contextManager";
+import type { ServerGameConfig } from "./gameManager";
 import { Grid } from "./grid";
 import { Group } from "./group";
 import { GameMap } from "./map";
@@ -22,11 +21,6 @@ import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
 import { Team } from "./team";
-
-export interface ServerGameConfig {
-    readonly mapName: keyof typeof MapDefs;
-    readonly teamMode: TeamMode;
-}
 
 export type GroupData = {
     hash: string;
@@ -106,7 +100,13 @@ export class Game {
     logger: Logger;
 
     start = Date.now();
-    constructor(id: string, config: ServerGameConfig) {
+
+    constructor(
+        id: string,
+        config: ServerGameConfig,
+        readonly sendSocketMsg: (id: string, data: ArrayBuffer) => void,
+        readonly closeSocket: (id: string) => void,
+    ) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
         this.logger.log("Creating");
@@ -228,22 +228,22 @@ export class Game {
         return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketData: GameSocketData): void {
+    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
         const msgStream = new net.MsgStream(buff);
         const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
 
-        const player = socketData.player;
+        const player = this.playerBarn.socketIdToPlayer.get(socketId);
 
         if (type === net.MsgType.Join && !player) {
             const joinMsg = new net.JoinMsg();
             joinMsg.deserialize(stream);
-            this.playerBarn.addPlayer(socketData, joinMsg);
+            this.playerBarn.addPlayer(socketId, joinMsg);
             return;
         }
 
         if (!player) {
-            socketData.closeSocket();
+            this.closeSocket(socketId);
             return;
         }
 
@@ -280,7 +280,18 @@ export class Game {
         }
     }
 
-    sendMsg(type: net.MsgType, msg: net.Msg) {
+    handleSocketClose(socketId: string): void {
+        const player = this.playerBarn.socketIdToPlayer.get(socketId);
+        if (!player) return;
+        this.logger.log(`"${player.name}" left`);
+        player.disconnected = true;
+        if (player.group) player.group.checkPlayers();
+        if (player.timeAlive < GameConfig.player.minActiveTime) {
+            player.game.playerBarn.removePlayer(player);
+        }
+    }
+
+    broadcastMsg(type: net.MsgType, msg: net.Msg) {
         this.msgsToSend.serializeMsg(type, msg);
     }
 
@@ -341,7 +352,7 @@ export class Game {
         this.allowJoin = false;
         for (const player of this.playerBarn.players) {
             if (!player.disconnected) {
-                player.socketData.closeSocket();
+                this.closeSocket(player.socketId);
             }
         }
         this.logger.log("Game Ended");

@@ -29,7 +29,6 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { checkForBadWords } from "../../utils/serverHelpers";
 import type { Game } from "../game";
@@ -63,6 +62,8 @@ export class PlayerBarn {
     groupIdAllocator = new IDAllocator(8);
     aliveCountDirty = false;
 
+    socketIdToPlayer = new Map<string, Player>();
+
     emotes: Emote[] = [];
 
     killLeaderDirty = false;
@@ -84,15 +85,15 @@ export class PlayerBarn {
         return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
-    addPlayer(socketData: GameSocketData, joinMsg: net.JoinMsg) {
+    addPlayer(socketId: string, joinMsg: net.JoinMsg) {
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
             disconnectMsg.reason = "index-invalid-protocol";
             const stream = new net.MsgStream(new ArrayBuffer(128));
             stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
-            socketData.sendMsg(stream.getBuffer());
+            this.game.sendSocketMsg(socketId, stream.getBuffer());
             setTimeout(() => {
-                socketData.closeSocket();
+                this.game.closeSocket(socketId);
             }, 1);
         }
 
@@ -120,7 +121,9 @@ export class PlayerBarn {
 
         const pos: Vec2 = this.game.map.getSpawnPos(group, team);
 
-        const player = new Player(this.game, pos, socketData, joinMsg);
+        const player = new Player(this.game, pos, socketId, joinMsg);
+
+        this.socketIdToPlayer.set(socketId, player);
 
         if (team && group) {
             team.addPlayer(player);
@@ -141,7 +144,6 @@ export class PlayerBarn {
 
         this.game.logger.log(`Player ${player.name} joined`);
 
-        socketData.player = player;
         this.newPlayers.push(player);
         this.game.objectRegister.register(player);
         this.players.push(player);
@@ -532,7 +534,7 @@ export class Player extends BaseGameObject {
         msg.role = role;
         msg.assigned = true;
         msg.playerId = this.__id;
-        this.game.sendMsg(net.MsgType.RoleAnnouncement, msg);
+        this.game.broadcastMsg(net.MsgType.RoleAnnouncement, msg);
     }
 
     handleKillLeaderRole(): void {
@@ -733,7 +735,7 @@ export class Player extends BaseGameObject {
         return MeleeDefs.pan.reflectSurface![type];
     }
 
-    socketData: GameSocketData;
+    socketId: string;
 
     ack = 0;
 
@@ -764,10 +766,10 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
-    constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: net.JoinMsg) {
+    constructor(game: Game, pos: Vec2, socketId: string, joinMsg: net.JoinMsg) {
         super(game, pos);
 
-        this.socketData = socketData;
+        this.socketId = socketId;
 
         this.name = joinMsg.name.trim();
         if (this.name === "" || checkForBadWords(this.name)) {
@@ -1873,7 +1875,7 @@ export class Player extends BaseGameObject {
             downedMsg.killCreditId = params.source.__id;
         }
 
-        this.game.sendMsg(net.MsgType.Kill, downedMsg);
+        this.game.broadcastMsg(net.MsgType.Kill, downedMsg);
     }
 
     private _assignNewSpectate() {
@@ -2038,7 +2040,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        this.game.sendMsg(net.MsgType.Kill, killMsg);
+        this.game.broadcastMsg(net.MsgType.Kill, killMsg);
 
         if (this.role && this.role !== "kill_leader") {
             const roleMsg = new net.RoleAnnouncementMsg();
@@ -2047,7 +2049,7 @@ export class Player extends BaseGameObject {
             roleMsg.killed = true;
             roleMsg.playerId = this.__id;
             roleMsg.killerId = params.source?.__id ?? 0;
-            this.game.sendMsg(net.MsgType.RoleAnnouncement, roleMsg);
+            this.game.broadcastMsg(net.MsgType.RoleAnnouncement, roleMsg);
         }
         if (this.isKillLeader) {
             this.game.playerBarn.killLeader = undefined;
@@ -2060,7 +2062,7 @@ export class Player extends BaseGameObject {
             roleMsg.killed = true;
             roleMsg.playerId = this.__id;
             roleMsg.killerId = params.source?.__id ?? 0;
-            this.game.sendMsg(net.MsgType.RoleAnnouncement, roleMsg);
+            this.game.broadcastMsg(net.MsgType.RoleAnnouncement, roleMsg);
 
             const newKillLeader = this.game.playerBarn.livingPlayers
                 .filter((p) => p.kills >= GameConfig.player.killLeaderMinKills)
@@ -3405,7 +3407,7 @@ export class Player extends BaseGameObject {
 
     sendData(buffer: ArrayBuffer | Uint8Array): void {
         try {
-            this.socketData.sendMsg(buffer);
+            this.game.sendSocketMsg(this.socketId, buffer);
         } catch (e) {
             this.game.logger.warn("Error sending packet. Details:", e);
         }
