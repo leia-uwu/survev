@@ -557,72 +557,6 @@ export class GameMap {
     generateObjects(): void {
         const mapDef = this.mapDef;
 
-        //
-        // Generate bridge on rivers
-        //
-        for (const river of this.terrain.rivers) {
-            if (river.looped) continue;
-            const width = river.waterWidth;
-
-            const maxBridges = {
-                medium: 4,
-                large: 3,
-                xlarge: 2,
-            };
-
-            let bridgeSize: keyof typeof maxBridges | undefined;
-            if (width < 9 && width > 4) {
-                bridgeSize = "medium";
-            } else if (width < 20 && width > 8) {
-                bridgeSize = "large";
-            } else if (width > 20) {
-                bridgeSize = "xlarge";
-            }
-            if (!bridgeSize) continue;
-            const bridgeType = mapDef.mapGen.bridgeTypes[bridgeSize];
-            if (!bridgeType) continue;
-
-            for (
-                let attempts = 0, bridgesGenerated = 0, max = maxBridges[bridgeSize];
-                attempts < 50 && bridgesGenerated < max;
-                attempts++
-            ) {
-                if (this.genBridge(bridgeType, river)) {
-                    bridgesGenerated++;
-                }
-            }
-        }
-
-        //
-        // generate river objects
-        //
-
-        if (this.riverDescs.length) {
-            for (const type in mapDef.mapGen.riverCabins) {
-                const count = mapDef.mapGen.riverCabins[type];
-                for (let i = 0; i < count; i++) {
-                    this.genRiverCabin(type);
-                }
-            }
-
-            const riverObjs = {
-                stone_03: 3,
-                bush_04: 1.2,
-            };
-            for (const type in riverObjs) {
-                for (const river of this.terrain.rivers) {
-                    const amount = math.min(
-                        river.waterWidth * riverObjs[type as keyof typeof riverObjs],
-                        30,
-                    );
-
-                    for (let i = 0; i < amount; i++) {
-                        this.genOnRiver(type, river);
-                    }
-                }
-            }
-        }
-
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
             let pos: Vec2 | undefined;
             let ori: number | undefined;
@@ -687,6 +621,72 @@ export class GameMap {
             // TODO: figure out density spawn amount algorithm
             const count = Math.round(densitySpawns[type] * 1.35);
             this.genFromMapDef(type, count);
+        }
+
+        //
+        // Generate bridge on rivers
+        //
+        for (const river of this.terrain.rivers) {
+            if (river.looped) continue;
+            const width = river.waterWidth;
+
+            const maxBridges = {
+                medium: 4,
+                large: 3,
+                xlarge: 2,
+            };
+
+            let bridgeSize: keyof typeof maxBridges | undefined;
+            if (width < 9 && width > 4) {
+                bridgeSize = "medium";
+            } else if (width < 20 && width > 8) {
+                bridgeSize = "large";
+            } else if (width > 20) {
+                bridgeSize = "xlarge";
+            }
+            if (!bridgeSize) continue;
+            const bridgeType = mapDef.mapGen.bridgeTypes[bridgeSize];
+            if (!bridgeType) continue;
+
+            for (
+                let attempts = 0, bridgesGenerated = 0, max = maxBridges[bridgeSize];
+                attempts < 50 && bridgesGenerated < max;
+                attempts++
+            ) {
+                if (this.genBridge(bridgeType, river)) {
+                    bridgesGenerated++;
+                }
+            }
+        }
+
+        //
+        // generate river objects
+        //
+
+        if (this.riverDescs.length) {
+            for (const type in mapDef.mapGen.riverCabins) {
+                const count = mapDef.mapGen.riverCabins[type];
+                for (let i = 0; i < count; i++) {
+                    this.genRiverCabin(type);
+                }
+            }
+
+            const riverObjs = {
+                stone_03: 3,
+                bush_04: 1.2,
+            };
+            for (const type in riverObjs) {
+                for (const river of this.terrain.rivers) {
+                    const amount = math.min(
+                        river.waterWidth * riverObjs[type as keyof typeof riverObjs],
+                        30,
+                    );
+
+                    for (let i = 0; i < amount; i++) {
+                        this.genOnRiver(type, river);
+                    }
+                }
+            }
         }
     }
 
@@ -833,15 +833,10 @@ export class GameMap {
                     ) as AABB;
 
                     // check all 4 corners of the AABB
-                    const points = [
-                        bound.min,
-                        bound.max,
-                        v2.create(bound.min.x, bound.max.y),
-                        v2.create(bound.max.x, bound.min.y),
-                    ];
+                    const points = collider.getPoints(bound);
 
                     for (let j = 0; j < points.length; j++) {
-                        if (this.getGroundSurface(points[j], 0).type === "water") {
+                        if (this.isOnWater(points[j], 0)) {
                             return false;
                         }
                     }
@@ -859,16 +854,10 @@ export class GameMap {
                     ) as AABB;
 
                     // check all 4 corners of the AABB
-                    const points = [
-                        bound.min,
-                        bound.max,
-                        v2.create(bound.min.x, bound.max.y),
-                        v2.create(bound.max.x, bound.min.y),
-                    ];
+                    const points = collider.getPoints(bound);
 
                     for (let j = 0; j < points.length; j++) {
-                        if (this.getGroundSurface(points[j], 0).type !== "water")
-                            return false;
+                        if (!this.isOnWater(points[j], 0)) return false;
                     }
                 }
             }
@@ -1123,26 +1112,30 @@ export class GameMap {
 
         const def = MapObjectDefs[type];
 
+        let rivers = this.terrain.rivers;
+        if (type === "bunker_structure_05") {
+            rivers = rivers.filter((r) => r.waterWidth > 8);
+            if (!rivers.length) return false;
+        }
+
         const getPosAndOri = () => {
             const oriAndScale = this.getOriAndScale(type);
             ori = oriAndScale.ori;
             scale = oriAndScale.scale;
 
-            river =
-                river ??
-                this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+            const finalRiver = river ?? rivers[util.randomInt(0, rivers.length - 1)];
             const t = util.random(0, 1);
-            let pos = river.spline.getPos(t);
+            let pos = finalRiver.spline.getPos(t);
 
             if (def.terrain?.nearbyRiver) {
                 const otherSide = Math.random() < 0.5;
 
-                const offset = river.waterWidth * 2 * (otherSide ? -1 : 1);
-                let norm = river.spline.getNormal(t);
+                const offset = finalRiver.waterWidth * 2 * (otherSide ? -1 : 1);
+                let norm = finalRiver.spline.getNormal(t);
                 v2.set(pos, v2.add(pos, v2.mul(norm, offset)));
 
-                const finalT = river.spline.getClosestTtoPoint(pos);
-                const finalNorm = river.spline.getNormal(finalT);
+                const finalT = finalRiver.spline.getClosestTtoPoint(pos);
+                const finalNorm = finalRiver.spline.getNormal(finalT);
 
                 const riverOri =
                     (math.radToOri(Math.atan2(finalNorm.y, finalNorm.x)) +
@@ -1150,9 +1143,13 @@ export class GameMap {
                     4;
                 ori = (def.terrain.nearbyRiver.facingOri + riverOri) % 4;
             } else {
-                const norm = river.spline.getNormal(t);
+                const norm = finalRiver.spline.getNormal(t);
                 ori = math.radToOri(Math.atan2(norm.y, norm.x));
             }
+            if (type === "bunker_structure_05") {
+                ori %= 2;
+            }
+
             return { pos, ori };
         };
 
@@ -1174,9 +1171,8 @@ export class GameMap {
     }
 
     genOnRiver(type: string, river?: River) {
-        river =
-            river ??
-            this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+        let rivers = this.terrain.rivers;
+        river = river ?? rivers[util.randomInt(0, rivers.length - 1)];
         const t = util.random(0, 1);
         const offset = util.random(0, river.waterWidth);
         const pos = v2.add(river.spline.getPos(t), v2.mul(v2.randomUnit(), offset));
