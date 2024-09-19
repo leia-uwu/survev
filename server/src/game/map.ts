@@ -127,6 +127,12 @@ function computeColliders(type: string) {
                 }
             }
 
+            if (def.mapGroundPatches) {
+                for (let i = 0; i < def.mapGroundPatches.length; i++) {
+                    colliders.ground.push(def.mapGroundPatches[i].bound);
+                }
+            }
+
             for (let i = 0; i < def.floor.surfaces.length; i++) {
                 const collisions = def.floor.surfaces[i].collision;
                 for (let j = 0; j < collisions.length; j++) {

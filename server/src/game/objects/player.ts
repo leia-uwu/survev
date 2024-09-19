@@ -2718,7 +2718,10 @@ export class Player extends BaseGameObject {
                                 break;
                             }
                             case "throwable": {
-                                if (throwableList.includes(obj.type) && !this.weapons[GameConfig.WeaponSlot.Throwable].type) {
+                                if (
+                                    throwableList.includes(obj.type) &&
+                                    !this.weapons[GameConfig.WeaponSlot.Throwable].type
+                                ) {
                                     // fill empty slot with throwable, otherwise just add to inv
                                     if (this.inventory[obj.type] == 0) {
                                         this.weaponManager.setWeapon(
