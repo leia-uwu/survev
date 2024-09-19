@@ -1904,6 +1904,10 @@ export class Player extends BaseGameObject {
             this.team.livingPlayers.splice(this.team.livingPlayers.indexOf(this), 1);
         }
 
+        if (this.weaponManager.cookingThrowable) {
+            this.weaponManager.throwThrowable();
+        }
+
         //
         // Send kill msg
         //
