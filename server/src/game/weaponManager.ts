@@ -53,6 +53,10 @@ export class WeaponManager {
      * @returns
      */
     setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
+        // if current slot is invalid and next too, switch to melee
+        if (!this.activeWeapon && !this.weapons[idx].type) {
+            idx = GameConfig.WeaponSlot.Melee;
+        }
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
         if (this.bursts.length) return;
@@ -160,7 +164,10 @@ export class WeaponManager {
 
         // more stuff to prevent crash
         if (!this.activeWeapon) {
-            this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+            const idx = this.weapons[this.lastWeaponIdx].type
+                ? this.lastWeaponIdx
+                : GameConfig.WeaponSlot.Melee;
+            this.setCurWeapIndex(idx);
         }
 
         this.player.weapsDirty = true;
@@ -950,8 +957,10 @@ export class WeaponManager {
     }
 
     throwThrowable(): void {
+        if (!this.cookingThrowable) return;
         this.cookingThrowable = false;
         const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
+        if (!throwableType) return;
         const throwableDef = GameObjectDefs[throwableType];
         assert(throwableDef.type === "throwable");
 
@@ -965,7 +974,6 @@ export class WeaponManager {
                   ) / 15
                 : 0;
 
-        const weapSlotId = GameConfig.WeaponSlot.Throwable;
         if (this.player.inventory[throwableType] > 0) {
             this.player.inventory[throwableType] -= 1;
 
@@ -974,9 +982,6 @@ export class WeaponManager {
             // if theres none switch to last weapon
             if (this.player.inventory[throwableType] == 0) {
                 this.showNextThrowable();
-                if (this.weapons[weapSlotId].type === "") {
-                    this.setCurWeapIndex(this.lastWeaponIdx);
-                }
             }
             this.player.weapsDirty = true;
             this.player.inventoryDirty = true;

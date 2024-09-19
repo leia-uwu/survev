@@ -877,6 +877,10 @@ export class Player extends BaseGameObject {
     visibleObjects = new Set<GameObject>();
 
     update(dt: number): void {
+        // HACK
+        if (!this.activeWeapon) {
+            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+        }
         if (this.dead) return;
         this.timeAlive += dt;
 
@@ -1364,6 +1368,11 @@ export class Player extends BaseGameObject {
         if (this.shotSlowdownTimer <= 0) {
             this.shotSlowdownTimer = 0;
         }
+
+        // HACK
+        if (!this.activeWeapon) {
+            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+        }
     }
 
     private _firstUpdate = true;
@@ -1624,13 +1633,22 @@ export class Player extends BaseGameObject {
                             util.randomInt(0, spectatablePlayers.length - 1)
                         ];
                 } else {
+                    let attempts = 0;
                     const getAliveKiller = (
                         killer: Player | undefined,
                     ): Player | undefined => {
+                        attempts++;
+                        if (attempts > 80) return undefined;
+
                         if (!killer) return undefined;
                         if (!killer.dead) return killer;
-                        if (killer.killedBy && killer.killedBy != this)
+                        if (
+                            killer.killedBy &&
+                            killer.killedBy != this &&
+                            killer.killedBy !== killer
+                        ) {
                             return getAliveKiller(killer.killedBy);
+                        }
 
                         return undefined;
                     };
@@ -3064,6 +3082,7 @@ export class Player extends BaseGameObject {
                 this.weaponManager.dropMelee();
                 break;
             case "throwable": {
+                if (this.weaponManager.cookingThrowable) return;
                 const inventoryCount = this.inventory[dropMsg.item];
 
                 if (inventoryCount === 0) return;
