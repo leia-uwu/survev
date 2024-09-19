@@ -85,6 +85,7 @@ const badWordsFilter = [
 ];
 
 export function checkForBadWords(name: string) {
+    name = name.toLowerCase();
     for (const regex of badWordsFilter) {
         if (name.match(regex)) return true;
     }
