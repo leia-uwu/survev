@@ -104,9 +104,13 @@ export class PlayerBarn {
             const groupData = this.game.groupDatas.find(
                 (gd) => gd.hash == joinMsg.matchPriv,
             )!;
-            if (this.game.groups.has(groupData.hash)) {
+            const selectedGroup = this.game.groups.get(groupData.hash);
+            if (
+                selectedGroup &&
+                selectedGroup.players.length < this.game.config.teamMode
+            ) {
                 // group already exists
-                group = this.game.groups.get(groupData.hash)!;
+                group = selectedGroup;
                 group.reservedSlots--;
                 team = group.players[0].team;
             } else {
