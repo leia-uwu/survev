@@ -1,5 +1,5 @@
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
-import type { Env, Context as HonoContext } from "hono";
+import type { Env } from "hono";
 import type { Session, User } from "lucia";
 import { Lucia } from "lucia";
 import { db } from "../db";
@@ -32,12 +32,4 @@ declare module "lucia" {
         Lucia: typeof lucia;
         DatabaseUserAttributes: Pick<typeof usersTable.$inferSelect, "username" | "id">;
     }
-}
-
-export async function setUserCookie(userId: string, c: HonoContext) {
-    const session = await lucia.createSession(userId, {});
-    c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
-        append: true,
-    });
-    return session;
 }

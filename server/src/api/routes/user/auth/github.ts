@@ -1,19 +1,28 @@
-import { GitHub, OAuth2RequestError, generateState } from "arctic";
-import { eq } from "drizzle-orm";
+import { GitHub, generateState } from "arctic";
 import { Hono } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
-import { generateId } from "lucia";
-import { server } from "../../..";
-import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
+import { setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { setUserCookie } from "../../../auth/lucia";
-import { db } from "../../../db";
-import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
+import { type OAuthProvider, handleOAuthCallback } from "./authUtils";
 
 export const github = new GitHub(
     process.env.GITHUB_CLIENT_ID!,
     process.env.GITHUB_CLIENT_SECRET!,
 );
+
+const stateCookieName = "github_oauth_state";
+
+const githubProvider: OAuthProvider = {
+    name: "Github",
+    validateAuthorizationCode: github.validateAuthorizationCode.bind(github),
+    getUserInfo: async (accessToken) => {
+        const response = await fetch("https://api.github.com/user", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const user = await response.json();
+        return { id: user.id, username: user.login };
+    },
+    stateCookieName,
+};
 
 export const GithubRouter = new Hono();
 
@@ -26,7 +35,7 @@ GithubRouter.get("/", async (c) => {
     }
     const state = generateState();
     const url = await github.createAuthorizationURL(state);
-    setCookie(c, "github_oauth_state", state, {
+    setCookie(c, stateCookieName, state, {
         path: "/",
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
@@ -36,74 +45,4 @@ GithubRouter.get("/", async (c) => {
     return c.redirect(url.toString());
 });
 
-GithubRouter.get("/callback", async (c) => {
-    const code = c.req.query("code")?.toString() ?? null;
-    const state = c.req.query("state")?.toString() ?? null;
-    const storedState = getCookie(c).github_oauth_state ?? null;
-    if (!code || !state || !storedState || state !== storedState) {
-        return c.body(null, 400);
-    }
-
-    try {
-        const tokens = await github.validateAuthorizationCode(code);
-        const githubUserResponse = await fetch("https://api.github.com/user", {
-            headers: {
-                Authorization: `Bearer ${tokens.accessToken}`,
-            },
-        });
-        const githubUser: {
-            id: string;
-            login: string;
-        } = await githubUserResponse.json();
-
-        const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.auth_id, githubUser.id),
-        });
-
-        setCookie(c, "app-data", "1");
-
-        if (existingUser) {
-            setUserCookie(existingUser.id, c);
-            return c.redirect("/");
-        }
-
-        const userId = generateId(15);
-        await createNewUser({
-            id: userId,
-            auth_id: githubUser.id,
-            username: githubUser.login,
-            linked: true,
-            linkedGithub: true,
-            // TODO: make sure this is unique and slugify it
-            slug: githubUser.login,
-        });
-
-        setUserCookie(userId, c);
-        return c.redirect("/");
-    } catch (e) {
-        server.logger.warn("/api/user/auth/github/callback: Failed to create user");
-        if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-            // invalid code
-            return c.json({}, 400);
-        }
-        return c.json({}, 500);
-    }
-});
-
-export async function createNewUser(payload: UsersTable) {
-    await db.insert(usersTable).values(payload);
-
-    // unlock outfits on account creation;
-    const unlockType = "unlock_new_account";
-    const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
-    if (outfitsToUnlock.length) {
-        const data = outfitsToUnlock.map((outfit) => {
-            return {
-                source: unlockType,
-                type: outfit,
-                userId: payload.id,
-            };
-        });
-        await db.insert(itemsTable).values(data);
-    }
-}
+GithubRouter.get("/callback", (c) => handleOAuthCallback(c, githubProvider));

@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { getCookie } from "hono/cookie";
+import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { lucia } from "./lucia";
 
 export const AuthMiddleware = async (c: Context, next: () => Promise<void>) => {
@@ -21,6 +21,7 @@ export const AuthMiddleware = async (c: Context, next: () => Promise<void>) => {
         c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
             append: true,
         });
+        deleteCookie(c, "app-data");
     }
     c.set("user", user);
     c.set("session", session);
