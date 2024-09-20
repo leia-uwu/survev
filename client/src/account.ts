@@ -1,10 +1,11 @@
 import $ from "jquery";
+import type { ItemStatus, Loadout } from "../../shared/utils/helpers";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { helpers } from "./helpers";
 import type { Item } from "./ui/loadoutMenu";
-import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
+import loadouts from "./ui/loadouts";
 
 type DataOrCallback =
     | Record<string, unknown>

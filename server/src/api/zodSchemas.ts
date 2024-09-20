@@ -21,10 +21,3 @@ export type Loadout = z.infer<typeof loadoutSchema>;
 export const usernameSchema = z.object({
     username: z.string().trim().min(1).max(Constants.PlayerNameMaxLen),
 });
-
-// TODO: share with the client
-export enum ItemStatus {
-    New,
-    Confirmed,
-    Ackd,
-}

@@ -2,7 +2,7 @@ import { Discord, generateState } from "arctic";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { handleOAuthCallback, type OAuthProvider } from "./authUtils";
+import { type OAuthProvider, handleOAuthCallback } from "./authUtils";
 
 export const discord = new Discord(
     process.env.DISCORD_CLIENT_ID!,

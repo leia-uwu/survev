@@ -2,11 +2,11 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { generateId } from "lucia";
-import { createNewUser, setUserCookie } from "./authUtils";
 import { server } from "../../..";
 import { Config } from "../../../../config";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
+import { createNewUser, setUserCookie } from "./authUtils";
 
 export const MockRouter = new Hono();
 

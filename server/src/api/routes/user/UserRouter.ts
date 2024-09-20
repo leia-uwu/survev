@@ -6,17 +6,14 @@ import { z } from "zod";
 import type { Context } from "../..";
 import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
+import { ItemStatus, validateLoadout } from "../../../../../shared/utils/helpers";
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { itemsTable, usersTable } from "../../db/schema";
 import { helpers } from "../../helpers";
-import {
-    ItemStatus,
-    type Loadout,
-    loadoutSchema,
-    usernameSchema,
-} from "../../zodSchemas";
+import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
+import { sanitizeSlug } from "./auth/authUtils";
 
 export const UserRouter = new Hono<Context>();
 
@@ -119,7 +116,12 @@ UserRouter.post(
 
             await db
                 .update(usersTable)
-                .set({ username, usernameSet: true, lastUsernameChangeTime: now })
+                .set({
+                    // update the slug as well?
+                    username: sanitizeSlug(username),
+                    usernameSet: true,
+                    lastUsernameChangeTime: now,
+                })
                 .where(eq(usersTable.id, user.id));
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
@@ -142,7 +144,7 @@ UserRouter.post(
         try {
             const user = c.get("user")!;
             const { loadout } = c.req.valid("json");
-            const validatedLoadout = helpers.validateLoadout(loadout);
+            const validatedLoadout = validateLoadout(loadout);
 
             await db
                 .update(usersTable)
@@ -222,8 +224,8 @@ UserRouter.post(
             const user = c.get("user")!;
             const { itemTypes, status } = c.req.valid("json");
 
-            const validOufits = new Set(Object.keys(OutfitDefs));
-            const validItemTypes = itemTypes.filter((item) => validOufits.has(item));
+            const validOutfits = new Set(Object.keys(OutfitDefs));
+            const validItemTypes = itemTypes.filter((item) => validOutfits.has(item));
 
             if (!validItemTypes.length) return c.json({}, 200);
 

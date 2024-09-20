@@ -20,7 +20,7 @@ CREATE TABLE `users` (
 	`auth_id` text NOT NULL,
 	`slug` text NOT NULL,
 	`wins` integer DEFAULT 0 NOT NULL,
-	`username` text NOT NULL,
+	`username` text DEFAULT '' NOT NULL,
 	`username_set` integer DEFAULT false NOT NULL,
 	`user_created` integer DEFAULT (current_timestamp) NOT NULL,
 	`linked_google` integer DEFAULT false NOT NULL,

@@ -4,12 +4,13 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
+import type { Crosshair, ItemStatus, Loadout } from "../../../shared/utils/helpers";
 import { util } from "../../../shared/utils/util";
 import type { Account } from "../account";
 import { crosshair } from "../crosshair";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import loadout, { type ItemStatus, type Loadout } from "./loadouts";
+import loadout from "./loadouts";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 import type { LoadoutDisplay } from "./opponentDisplay";
@@ -666,7 +667,7 @@ export class LoadoutMenu {
                 color: util.hexToInt(color),
                 size: Number(size.toFixed(2)),
                 stroke: Number(stroke.toFixed(2)),
-            };
+            } as unknown as Crosshair;
         } else {
             this.loadout[loadoutType as keyof Loadout] = this.selectedItem.type as any;
         }
@@ -1000,7 +1001,7 @@ export class LoadoutMenu {
                     color: 0xffffff,
                     size: 1,
                     stroke: 0,
-                };
+                } as unknown as Crosshair;
                 crosshair.setElemCrosshair(outerDiv, crosshairDef);
             }
 

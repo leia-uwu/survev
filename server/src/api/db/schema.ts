@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { helpers } from "../helpers";
-import { ItemStatus, type Loadout } from "../zodSchemas";
+import { ItemStatus, validateLoadout } from "../../../../shared/utils/helpers";
+import type { Loadout } from "../zodSchemas";
 
 export const sessionTable = sqliteTable("session", {
     id: text("id").notNull().primaryKey(),
@@ -16,7 +16,7 @@ export const usersTable = sqliteTable("users", {
     auth_id: text("auth_id").notNull(),
     slug: text("slug").notNull().unique(),
     wins: integer("wins").notNull().default(0),
-    username: text("username").notNull(),
+    username: text("username").notNull().default(""),
     usernameSet: integer("username_set", { mode: "boolean" }).notNull().default(false),
     userCreated: integer("user_created", { mode: "timestamp" })
         .notNull()
@@ -33,7 +33,7 @@ export const usersTable = sqliteTable("users", {
     linked: integer("linked", { mode: "boolean" }).notNull().default(false),
     loadout: text("loadout", { mode: "json" })
         .notNull()
-        .default(helpers.validateLoadout({} as Loadout))
+        .default(validateLoadout({} as Loadout))
         .$type<Loadout>(),
 });
 

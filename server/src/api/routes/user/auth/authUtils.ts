@@ -3,15 +3,17 @@ import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
+import slugify from "slugify";
 import { server } from "../../..";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
+import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
-import { checkForBadWords } from "../../../../utils/serverHelpers";
-import slugify from "slugify";
 
 export function sanitizeSlug(username: string) {
+    username = username.toLowerCase().trim();
+
     if (username === "" || checkForBadWords(username)) {
         username = `Player${generateId(6)}`;
     }
