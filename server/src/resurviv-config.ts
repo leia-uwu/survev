@@ -45,7 +45,7 @@ const serverDataConfig = {
         thisRegion: "eu",
     },
     as: {
-         gameServer: {
+        gameServer: {
             apiServerUrl: "http://172.105.112.218",
         },
         regions: {
@@ -56,7 +56,6 @@ const serverDataConfig = {
             },
         },
         thisRegion: "as",
-        
     },
 };
 
@@ -110,7 +109,7 @@ export const CustomConfig: DeepPartial<ConfigType> = {
                         droppable: false,
                     },
                 ],
-                
+
                 inventory: {
                     frag: 3,
                     smoke: 1,

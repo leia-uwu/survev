@@ -20,7 +20,7 @@ export default class DeathMatchPlugin extends GamePlugin {
             }
             if (data.outfit === "outfitNotEnough") {
                 data.helmet = "";
-                data.backpack = "backpack00"
+                data.backpack = "backpack00";
             }
         });
 

@@ -1,9 +1,10 @@
-import { v2 } from "../../../../shared/utils/v2";
+import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { Main } from "../../../../shared/defs/maps/baseDefs";
-import { util } from "../../../../shared/utils/util";
-import { THIS_REGION } from "../../resurviv-config";
-import { MapDef } from "../../../../shared/defs/mapDefs";
+import { Cobalt } from "../../../../shared/defs/maps/cobaltDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
+import { util } from "../../../../shared/utils/util";
+import { v2 } from "../../../../shared/utils/v2";
+import { THIS_REGION } from "../../resurviv-config";
 
 const switchToSmallMap = THIS_REGION === "eu" || THIS_REGION === "as";
 
@@ -14,7 +15,7 @@ const config = {
     spawnDensity: { large: 37, small: 27 },
 } as const;
 
-export const Resurviv_Cobalt: MapDef = util.mergeDeep(structuredClone(Main), {
+export const Resurviv_Cobalt: MapDef = util.mergeDeep(structuredClone(Cobalt), {
     mapId: 7,
     desc: {
         name: "Cobalt",
@@ -89,7 +90,8 @@ export const Resurviv_Cobalt: MapDef = util.mergeDeep(structuredClone(Main), {
                   (array, item) => {
                       let object: Record<string, number> = {};
                       for (const [key, value] of Object.entries(item)) {
-                          object[key] = (value * config.spawnDensity[config.mapSize]) / 100;
+                          object[key] =
+                              (value * config.spawnDensity[config.mapSize]) / 100;
                       }
                       array.push(object);
                       return array;
@@ -102,8 +104,8 @@ export const Resurviv_Cobalt: MapDef = util.mergeDeep(structuredClone(Main), {
                 club_complex_01: 1,
                 mansion_structure_01: 1,
                 // small is spawn count for solos and duos, large is spawn count for squads
-                warehouse_01: { odds: 0.5   },
-                house_red_01: config.mapSize === "large" ? 1 : { odds: 0.5   },
+                warehouse_01: { odds: 0.5 },
+                house_red_01: config.mapSize === "large" ? 1 : { odds: 0.5 },
                 // house_red_02: 1,
                 // barn_01: { small: 1, large: 3 },
                 // barn_02: 1,
@@ -199,4 +201,3 @@ Resurviv_Cobalt["lootTable"] = {
         { name: "splinter", count: 1, weight: 3 },
     ],
 };
-
