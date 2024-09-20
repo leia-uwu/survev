@@ -956,7 +956,7 @@ export class WeaponManager {
         );
     }
 
-    throwThrowable(): void {
+    throwThrowable(noSpeed?: boolean): void {
         if (!this.cookingThrowable) return;
         this.cookingThrowable = false;
         const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
@@ -966,7 +966,7 @@ export class WeaponManager {
 
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
-            this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+            this.curWeapIdx == GameConfig.WeaponSlot.Throwable && !noSpeed
                 ? math.clamp(
                       this.player.toMouseLen,
                       0,

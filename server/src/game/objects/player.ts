@@ -1905,7 +1905,7 @@ export class Player extends BaseGameObject {
         }
 
         if (this.weaponManager.cookingThrowable) {
-            this.weaponManager.throwThrowable();
+            this.weaponManager.throwThrowable(true);
         }
 
         //
@@ -2381,6 +2381,7 @@ export class Player extends BaseGameObject {
                     break;
                 case GameConfig.Input.EquipThrowable:
                     if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
+                        this.weaponManager.throwThrowable(true);
                         this.weaponManager.showNextThrowable();
                     } else {
                         this.weaponManager.setCurWeapIndex(
