@@ -32,8 +32,8 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { checkForBadWords } from "../../utils/serverHelpers";
 import type { Game } from "../game";
-import type { Group } from "../group";
-import type { Team } from "../team";
+import { Group } from "../group";
+import { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
@@ -76,6 +76,10 @@ export class PlayerBarn {
         time: number;
     }> = [];
 
+    teams: Team[] = [];
+    groups: Group[] = [];
+    groupsByHash = new Map<string, Group>();
+
     constructor(readonly game: Game) {}
 
     randomPlayer(player?: Player) {
@@ -86,6 +90,11 @@ export class PlayerBarn {
     }
 
     addPlayer(socketId: string, joinMsg: net.JoinMsg) {
+        if (!this.game.joinTokens.has(joinMsg.matchPriv)) {
+            this.game.closeSocket(socketId);
+            return;
+        }
+
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
             disconnectMsg.reason = "index-invalid-protocol";
@@ -97,25 +106,34 @@ export class PlayerBarn {
             }, 1);
         }
 
-        let team = this.game.getSmallestTeam();
+        let team = this.getSmallestTeam();
 
         let group: Group | undefined;
 
         if (this.game.isTeamMode) {
-            const groupData = this.game.groupDatas.find(
-                (gd) => gd.hash == joinMsg.matchPriv,
-            )!;
-            const selectedGroup = this.game.groups.get(groupData.hash);
-            if (
-                selectedGroup &&
-                selectedGroup.players.length < this.game.config.teamMode
-            ) {
-                // group already exists
-                group = selectedGroup;
-                group.reservedSlots--;
-                team = group.players[0].team;
+            const joinData = this.game.joinTokens.get(joinMsg.matchPriv)!;
+
+            group = this.groupsByHash.get(joinMsg.matchPriv);
+
+            if (!group && joinData.autoFill) {
+                group = this.groups.filter((group) => {
+                    const sameTeamId = team && team.teamId == group.players[0].teamId;
+                    return (
+                        (team ? sameTeamId : true) &&
+                        group.autoFill &&
+                        group.players.length < this.game.teamMode &&
+                        this.game.teamMode -
+                            (group.players.length + group.reservedSlots) >=
+                            joinData.playerCount
+                    );
+                })[0];
+                group.reservedSlots += joinData.playerCount;
+            }
+
+            if (!group) {
+                group = this.addGroup(joinMsg.matchPriv, joinData.autoFill);
             } else {
-                group = this.game.addGroup(groupData.hash, groupData.autoFill);
+                team = group.players[0].team;
             }
         }
 
@@ -203,9 +221,10 @@ export class PlayerBarn {
         player.destroy();
         if (player.group) {
             player.group.removePlayer(player);
-            //potential issue if dead teammates are still in game spectating
-            if (player.group.allDeadOrDisconnected) {
-                this.game.groups.delete(player.group.hash);
+
+            if (player.group.players.length <= 0) {
+                this.groups.splice(this.groups.indexOf(player.group), 1);
+                this.groupsByHash.delete(player.group.hash);
             }
         }
         if (this.game.isTeamMode)
@@ -267,6 +286,69 @@ export class PlayerBarn {
                 time: roleObj.wait,
             });
         }
+    }
+
+    isTeamGameOver(): boolean {
+        const groupAlives = [...this.groups.values()].filter(
+            (group) => !group.allDeadOrDisconnected,
+        );
+
+        if (groupAlives.length <= 1) {
+            true;
+        }
+
+        return false;
+    }
+
+    getAliveGroups(): Group[] {
+        return [...this.groups.values()].filter(
+            (group) => group.livingPlayers.length > 0,
+        );
+    }
+
+    getAliveTeams(): Team[] {
+        return this.teams.filter((team) => team.livingPlayers.length > 0);
+    }
+
+    getSmallestTeam() {
+        if (!this.game.map.factionMode) return undefined;
+
+        return this.teams.reduce((smallest, current) => {
+            if (current.livingPlayers.length < smallest.livingPlayers.length) {
+                return current;
+            }
+            return smallest;
+        }, this.teams[0]);
+    }
+
+    addTeam(teamId: number) {
+        const team = new Team(teamId);
+        this.teams.push(team);
+    }
+
+    addGroup(hash: string, autoFill: boolean) {
+        const groupId = this.groupIdAllocator.getNextId();
+        const group = new Group(hash, groupId, autoFill);
+        this.groups.push(group);
+        this.groupsByHash.set(hash, group);
+        return group;
+    }
+
+    nextTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(
+            (t) => !t.allDeadOrDisconnected,
+        );
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
+        return aliveTeams[newIndex];
+    }
+
+    prevTeam(currentTeam: Group) {
+        const aliveTeams = Array.from(this.groups.values()).filter(
+            (t) => !t.allDeadOrDisconnected,
+        );
+        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
+        return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
     }
 }
 
@@ -1910,7 +1992,7 @@ export class Player extends BaseGameObject {
         for (const spectator of this.spectators) {
             if (
                 this.game.isTeamMode &&
-                this.game.isTeamGameOver() &&
+                this.game.playerBarn.isTeamGameOver() &&
                 this.group!.players.includes(spectator)
             ) {
                 //inverted logic

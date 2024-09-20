@@ -5,7 +5,6 @@ import { Logger } from "../utils/logger";
 import { ContextManager } from "./contextManager";
 import type { ServerGameConfig } from "./gameManager";
 import { Grid } from "./grid";
-import { Group } from "./group";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
 import { BulletBarn } from "./objects/bullet";
@@ -20,7 +19,6 @@ import { Emote, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
-import { Team } from "./team";
 
 export type GroupData = {
     hash: string;
@@ -44,9 +42,7 @@ export class Game {
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
 
-    teams: Team[] = [];
-    groups = new Map<string, Group>();
-    groupDatas: GroupData[] = [];
+    joinTokens = new Map<string, { autoFill: boolean; playerCount: number }>();
 
     get aliveCount(): number {
         return this.playerBarn.livingPlayers.length;
@@ -54,21 +50,6 @@ export class Game {
 
     get trueAliveCount(): number {
         return this.playerBarn.livingPlayers.filter((p) => !p.disconnected).length;
-    }
-
-    get trueGroupsAliveCount(): number {
-        return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected)
-            .length;
-    }
-
-    getAliveGroups(): Group[] {
-        return [...this.groups.values()].filter(
-            (group) => group.livingPlayers.length > 0,
-        );
-    }
-
-    getAliveTeams(): Team[] {
-        return this.teams.filter((team) => team.livingPlayers.length > 0);
     }
 
     /**
@@ -127,7 +108,7 @@ export class Game {
 
         if (this.map.factionMode) {
             for (let i = 1; i <= this.map.mapDef.gameMode.factions!; i++) {
-                this.addTeam(i);
+                this.playerBarn.addTeam(i);
             }
         }
     }
@@ -203,29 +184,12 @@ export class Game {
         this.msgsToSend.stream.index = 0;
     }
 
-    canJoin(): boolean {
+    get canJoin(): boolean {
         return (
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
             this.gas.stage < 2
         );
-    }
-
-    nextTeam(currentTeam: Group) {
-        const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected,
-        );
-        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
-        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
-        return aliveTeams[newIndex];
-    }
-
-    prevTeam(currentTeam: Group) {
-        const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected,
-        );
-        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
-        return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
     }
 
     handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
@@ -295,17 +259,6 @@ export class Game {
         this.msgsToSend.serializeMsg(type, msg);
     }
 
-    /** if game over, return group that won */
-    isTeamGameOver(): Group | undefined {
-        const groupAlives = [...this.groups.values()].filter(
-            (group) => !group.allDeadOrDisconnected,
-        );
-
-        if (groupAlives.length <= 1) {
-            return groupAlives[0];
-        }
-    }
-
     checkGameOver(): void {
         if (this.over) return;
         const didGameEnd: boolean = this.contextManager.handleGameEnd();
@@ -317,33 +270,11 @@ export class Game {
         }
     }
 
-    getSmallestTeam() {
-        if (!this.map.factionMode) return undefined;
-
-        return this.teams.reduce((smallest, current) => {
-            if (current.livingPlayers.length < smallest.livingPlayers.length) {
-                return current;
-            }
-            return smallest;
-        }, this.teams[0]);
-    }
-
-    addTeam(teamId: number) {
-        const team = new Team(teamId);
-        this.teams.push(team);
-    }
-
-    addGroup(hash: string, autoFill: boolean) {
-        const groupId = this.playerBarn.groupIdAllocator.getNextId();
-        // let teamId = groupId;
-        if (this.map.factionMode) {
-            // teamId = util.randomInt(1, 2);
-            // teamId = util.randomInt(1, this.map.mapDef.gameMode.factions ?? 2);
-        }
-        const group = new Group(hash, groupId, autoFill);
-        // const group = new Group(hash, groupId, teamId, autoFill);
-        this.groups.set(hash, group);
-        return group;
+    addJoinToken(id: string, autoFill: boolean, playerCount: number) {
+        this.joinTokens.set(id, {
+            autoFill,
+            playerCount,
+        });
     }
 
     stop(): void {

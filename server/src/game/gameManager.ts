@@ -3,11 +3,10 @@ import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { TeamMode } from "../../../shared/gameConfig";
+import type { TeamMode } from "../../../shared/gameConfig";
 import { Config } from "../config";
 import type { FindGameBody, GameSocketData } from "../gameServer";
 import { Game } from "./game";
-import type { Group } from "./group";
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;
@@ -18,6 +17,7 @@ interface GameData {
     id: string;
     gameModeIdx: number;
     teamMode: TeamMode;
+    canJoin: boolean;
 }
 
 interface FindGameResponse {
@@ -136,66 +136,29 @@ export class SingleThreadGameManager implements GameManager {
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
-        const response = {
-            gameId: "",
-            data: "",
-        };
-
         let game = this.games
             .filter((game) => {
-                return game.canJoin() && game.gameModeIdx === body.gameModeIdx;
+                return game.canJoin && game.gameModeIdx === body.gameModeIdx;
             })
             .sort((a, b) => {
                 return a.startedTime - b.startedTime;
             })[0];
 
+        const mode = Config.modes[body.gameModeIdx];
         if (!game) {
-            const mode = Config.modes[body.gameModeIdx];
-
             game = await this.newGame({
                 teamMode: mode.teamMode,
                 mapName: mode.mapName,
             });
         }
 
-        response.gameId = game.id;
+        const id = randomBytes(20).toString("hex");
+        game.addJoinToken(id, body.autoFill, body.playerCount);
 
-        const mode = Config.modes[body.gameModeIdx];
-        if (mode.teamMode > TeamMode.Solo) {
-            let group: Group | undefined;
-            let hash: string;
-            let autoFill: boolean;
-
-            const team = game.getSmallestTeam();
-
-            if (body.autoFill) {
-                group = [...game.groups.values()].filter((group) => {
-                    const sameTeamId = team && team.teamId == group.players[0].teamId;
-                    return (
-                        (team ? sameTeamId : true) &&
-                        group.autoFill &&
-                        group.players.length + group.reservedSlots < mode.teamMode
-                    );
-                })[0];
-            }
-
-            if (group) {
-                hash = group.hash;
-                autoFill = group.autoFill;
-                group.reservedSlots++;
-            } else {
-                hash = randomBytes(20).toString("hex");
-                autoFill = body.autoFill;
-            }
-
-            response.data = hash;
-            game.groupDatas.push({
-                hash,
-                autoFill,
-            });
-        }
-
-        return response;
+        return {
+            gameId: game.id,
+            data: id,
+        };
     }
 
     onOpen(socketId: string, socket: WebSocket<GameSocketData>): void {

@@ -37,8 +37,8 @@ export class ContextManager {
     aliveCount(): number {
         return this._applyContext<number>({
             [ContextMode.Solo]: () => this._game.playerBarn.livingPlayers.length,
-            [ContextMode.Team]: () => this._game.getAliveGroups().length,
-            [ContextMode.Faction]: () => this._game.getAliveTeams().length, //tbd
+            [ContextMode.Team]: () => this._game.playerBarn.getAliveGroups().length,
+            [ContextMode.Faction]: () => this._game.playerBarn.getAliveTeams().length, //tbd
         });
     }
 
@@ -53,7 +53,7 @@ export class ContextManager {
             },
             [ContextMode.Team]: () => {
                 if (!this._game.started || this.aliveCount() > 1) return false;
-                const winner = this._game.getAliveGroups()[0];
+                const winner = this._game.playerBarn.getAliveGroups()[0];
                 for (const player of winner.getAlivePlayers()) {
                     player.addGameOverMsg(winner.groupId);
                 }
@@ -61,7 +61,7 @@ export class ContextManager {
             },
             [ContextMode.Faction]: () => {
                 if (!this._game.started || this.aliveCount() > 1) return false;
-                const winner = this._game.getAliveTeams()[0];
+                const winner = this._game.playerBarn.getAliveTeams()[0];
                 for (const player of winner.livingPlayers) {
                     player.addGameOverMsg(winner.teamId);
                 }
@@ -95,7 +95,7 @@ export class ContextManager {
                 const numFactions = this._game.map.mapDef.gameMode.factions;
                 if (!numFactions) return;
                 for (let i = 0; i < numFactions; i++) {
-                    aliveCounts.push(this._game.teams[i].livingPlayers.length);
+                    aliveCounts.push(this._game.playerBarn.teams[i].livingPlayers.length);
                 }
             },
         });
@@ -112,8 +112,9 @@ export class ContextManager {
         return this._applyContext<Player[][]>({
             [ContextMode.Solo]: () => [this._game.playerBarn.livingPlayers],
             [ContextMode.Team]: () =>
-                [...this._game.groups.values()].map((g) => g.livingPlayers),
-            [ContextMode.Faction]: () => this._game.teams.map((t) => t.livingPlayers),
+                this._game.playerBarn.groups.map((g) => g.livingPlayers),
+            [ContextMode.Faction]: () =>
+                this._game.playerBarn.teams.map((t) => t.livingPlayers),
         });
     }
 

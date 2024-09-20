@@ -19,9 +19,9 @@ export class Group {
     reservedSlots = 0;
 
     constructor(hash: string, groupId: number, autoFill: boolean) {
-        this.hash = hash;
         this.groupId = groupId;
         this.autoFill = autoFill;
+        this.hash = hash;
     }
 
     /**

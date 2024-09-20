@@ -1,6 +1,7 @@
 import { randomBytes } from "crypto";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
+import { math } from "../../shared/utils/math";
 import { Config } from "./config";
 import { type GameManager, SingleThreadGameManager } from "./game/gameManager";
 import { GIT_VERSION } from "./utils/gitRevision";
@@ -122,7 +123,16 @@ export class GameServer {
             };
         }
 
+        // sanitize the body
+        if (typeof body.gameModeIdx !== "number") {
+            body.gameModeIdx = 0;
+        }
+        if (typeof body.autoFill !== "boolean") {
+            body.autoFill = true;
+        }
+
         const mode = Config.modes[body.gameModeIdx];
+
         if (!mode || !mode.enabled) {
             return {
                 res: [
@@ -131,6 +141,12 @@ export class GameServer {
                     },
                 ],
             };
+        }
+
+        if (typeof body.playerCount !== "number") {
+            body.playerCount = mode.teamMode;
+        } else {
+            body.playerCount = math.clamp(body.playerCount ?? 1, 1, mode.teamMode);
         }
 
         const data = await this.manager.findGame(body);
