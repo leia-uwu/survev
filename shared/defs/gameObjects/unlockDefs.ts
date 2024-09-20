@@ -24,6 +24,7 @@ export const privateOutfits = [
     "outfitOwnr",
     "outfitShinyGold",
     "outfitPreacher",
+    "outfitNotEnough"
 ];
 
 const allowedOutfits = [

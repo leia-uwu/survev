@@ -2,6 +2,38 @@
   "loadout": [
     {
       "meta": {
+        "image": "loadout-0-100-3e7177d9.png",
+        "size": {
+          "w": 4096,
+          "h": 4096
+        },
+        "scale": 1
+      },
+      "frames": {
+        "player-base-outfitSpeedoSunburn.img": {
+          "frame": {
+            "x": 578,
+            "y": 1940,
+            "w": 134,
+            "h": 134
+          },
+          "rotated": false,
+          "trimmed": false,
+          "spriteSourceSize": {
+            "x": 0,
+            "y": 0,
+            "w": 134,
+            "h": 134
+          },
+          "sourceSize": {
+            "w": 134,
+            "h": 134
+          }
+        }
+      }
+    },
+    {
+      "meta": {
         "image": "loadout-0-100-71653988.png",
         "size": {
           "w": 4096,

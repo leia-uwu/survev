@@ -18,6 +18,10 @@ export default class DeathMatchPlugin extends GamePlugin {
                 data.chest = "";
                 data.helmet = "";
             }
+            if (data.outfit === "outfitNotEnough") {
+                data.helmet = "";
+                data.backpack = "backpack00"
+            }
         });
 
         this.on("playerKill", (data) => {
