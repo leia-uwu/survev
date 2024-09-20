@@ -99,7 +99,6 @@ export async function handleOAuthCallback(c: Context, provider: OAuthProvider) {
         server.logger.warn(
             `/api/user/auth/${provider.name.toLowerCase()}/callback: Failed to create user`,
         );
-        console.log(e);
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
             return c.body(null, 400);
         }

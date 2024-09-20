@@ -20,10 +20,8 @@ export const usersTable = sqliteTable("users", {
     usernameSet: integer("username_set", { mode: "boolean" }).notNull().default(false),
     userCreated: integer("user_created", { mode: "timestamp" })
         .notNull()
-        .default(sql`(current_timestamp)`),
-    lastUsernameChangeTime: integer("user_created", { mode: "timestamp" })
-        .notNull()
-        .default(sql`(current_timestamp)`),
+        .default(sql`(unixepoch())`),
+    lastUsernameChangeTime: integer("last_username_change_time", { mode: "timestamp" }),
     linkedGoogle: integer("linked_google", { mode: "boolean" }).notNull().default(false),
     linkedTwitch: integer("linked_twitch", { mode: "boolean" }).notNull().default(false),
     linkedDiscord: integer("linked_discord", { mode: "boolean" })
@@ -47,7 +45,7 @@ export const itemsTable = sqliteTable("items", {
     source: text("source").notNull(),
     timeAcquired: integer("time_acquired", { mode: "timestamp" })
         .notNull()
-        .default(sql`(current_timestamp)`),
+        .default(sql`(unixepoch())`),
     type: text("type").notNull(),
     status: integer("status").notNull().$type<ItemStatus>().default(ItemStatus.New),
 });

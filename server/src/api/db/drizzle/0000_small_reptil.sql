@@ -2,7 +2,7 @@ CREATE TABLE `items` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` text NOT NULL,
 	`source` text NOT NULL,
-	`time_acquired` integer DEFAULT (current_timestamp) NOT NULL,
+	`time_acquired` integer DEFAULT (unixepoch()) NOT NULL,
 	`type` text NOT NULL,
 	`status` integer DEFAULT 0 NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
@@ -22,7 +22,8 @@ CREATE TABLE `users` (
 	`wins` integer DEFAULT 0 NOT NULL,
 	`username` text DEFAULT '' NOT NULL,
 	`username_set` integer DEFAULT false NOT NULL,
-	`user_created` integer DEFAULT (current_timestamp) NOT NULL,
+	`user_created` integer DEFAULT (unixepoch()) NOT NULL,
+	`last_username_change_time` integer,
 	`linked_google` integer DEFAULT false NOT NULL,
 	`linked_twitch` integer DEFAULT false NOT NULL,
 	`linked_discord` integer DEFAULT false NOT NULL,
