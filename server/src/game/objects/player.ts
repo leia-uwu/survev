@@ -127,10 +127,12 @@ export class PlayerBarn {
                             joinData.playerCount
                     );
                 })[0];
-                group.reservedSlots += joinData.playerCount;
+                if (group) {
+                    group.reservedSlots += joinData.playerCount;
+                }
             }
 
-            if (!group) {
+            if (!group || (group && group.players.length > this.game.teamMode)) {
                 group = this.addGroup(joinMsg.matchPriv, joinData.autoFill);
             } else {
                 team = group.players[0].team;
