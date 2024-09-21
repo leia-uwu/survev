@@ -309,6 +309,8 @@ export class Gas {
         this.gasT = 0;
         this.dirty = true;
         this.timeDirty = true;
+
+        this.game.updateData();
     }
 
     private _getStageData() {

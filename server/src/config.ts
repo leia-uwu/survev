@@ -45,6 +45,8 @@ export const Config = {
     gameTps: 100,
     netSyncTps: 33,
 
+    processMode: process.env.NODE_ENV === "production" ? "multi" : "single",
+
     perfLogging: {
         enabled: true,
         time: 10,
@@ -132,6 +134,13 @@ export interface ConfigType {
      */
     gameTps: number;
     netSyncTps: number;
+
+    /**
+     * If games should all run in the same process
+     * Or spawn a new process for each game
+     * Defaults to single in development and multi in production
+     */
+    processMode: "single" | "multi";
 
     /**
      * Server logging

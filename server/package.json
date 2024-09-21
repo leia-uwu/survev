@@ -5,18 +5,18 @@
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
     "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
-    "dev": "ts-node-dev --respawn --rs --transpile-only src/devServer.ts",
-    "dev:api": "ts-node-dev --respawn --rs --transpile-only src/apiServer.ts --api-server",
-    "dev:game": "ts-node-dev --respawn --rs --transpile-only src/gameServer.ts --game-server"
+    "dev": "node -r ts-node/register --watch --watch-preserve-output src/devServer.ts",
+    "dev:api": "node -r ts-node/register --watch --watch-preserve-output src/apiServer.ts --api-server",
+    "dev:game": "node -r ts-node/register --watch --watch-preserve-output src/gameServer.ts --game-server"
   },
   "dependencies": {
     "nanotimer": "^0.3.15",
-    "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.2",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.48.0"
   },
   "devDependencies": {
     "@types/nanotimer": "^0.3.2",
-    "@types/node": "^20.16.5"
+    "@types/node": "^20.16.5",
+    "ts-node": "^10.9.2"
   }
 }

@@ -13,14 +13,17 @@ export interface ServerGameConfig {
     readonly teamMode: TeamMode;
 }
 
-interface GameData {
+export interface GameData {
     id: string;
     gameModeIdx: number;
     teamMode: TeamMode;
     canJoin: boolean;
+    aliveCount: number;
+    startedTime: number;
+    stopped: boolean;
 }
 
-interface FindGameResponse {
+export interface FindGameResponse {
     gameId: string;
     data: string;
 }
@@ -29,8 +32,6 @@ export abstract class GameManager {
     abstract sockets: Map<string, WebSocket<GameSocketData>>;
 
     abstract getPlayerCount(): number;
-
-    abstract newGame(params: ServerGameConfig): Promise<GameData>;
 
     abstract getById(id: string): GameData | undefined;
 

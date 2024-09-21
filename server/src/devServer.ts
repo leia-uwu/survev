@@ -3,7 +3,6 @@ import { version } from "../../package.json";
 import { util } from "../../shared/utils/util";
 import { ApiServer } from "./apiServer";
 import { Config } from "./config";
-import { SingleThreadGameManager } from "./game/gameManager";
 import { type FindGameBody, GameServer } from "./gameServer";
 import { GIT_VERSION } from "./utils/gitRevision";
 import { Logger } from "./utils/logger";
@@ -20,7 +19,7 @@ util.mergeDeep(Config, {
 });
 
 const logger = new Logger("Dev server");
-const gameServer = new GameServer(new SingleThreadGameManager());
+const gameServer = new GameServer();
 const apiServer = new ApiServer();
 
 const app = Config.devServer.ssl

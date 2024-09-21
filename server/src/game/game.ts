@@ -4,6 +4,7 @@ import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import { ContextManager } from "./contextManager";
 import type { ServerGameConfig } from "./gameManager";
+import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
@@ -87,6 +88,7 @@ export class Game {
         config: ServerGameConfig,
         readonly sendSocketMsg: (id: string, data: ArrayBuffer) => void,
         readonly closeSocket: (id: string) => void,
+        readonly sendData?: (data: UpdateDataMsg) => void,
     ) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
@@ -120,6 +122,8 @@ export class Game {
 
         this.allowJoin = true;
         this.logger.log(`Created in ${Date.now() - this.start} ms`);
+
+        this.updateData();
     }
 
     update(): void {
@@ -264,6 +268,7 @@ export class Game {
         const didGameEnd: boolean = this.contextManager.handleGameEnd();
         if (didGameEnd) {
             this.over = true;
+            this.updateData();
             setTimeout(() => {
                 this.stop();
             }, 750);
@@ -277,6 +282,19 @@ export class Game {
         });
     }
 
+    updateData() {
+        this.sendData?.({
+            type: ProcessMsgType.UpdateData,
+            id: this.id,
+            gameModeIdx: this.gameModeIdx,
+            teamMode: this.teamMode,
+            canJoin: this.canJoin,
+            aliveCount: this.aliveCount,
+            startedTime: this.startedTime,
+            stopped: this.stopped,
+        });
+    }
+
     stop(): void {
         if (this.stopped) return;
         this.stopped = true;
@@ -287,5 +305,6 @@ export class Game {
             }
         }
         this.logger.log("Game Ended");
+        this.updateData();
     }
 }

@@ -19,7 +19,9 @@ export function forbidden(res: HttpResponse): void {
 }
 
 export function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
-    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
+    res.cork(() => {
+        res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
+    });
 }
 
 /**

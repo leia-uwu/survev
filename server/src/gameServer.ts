@@ -3,7 +3,8 @@ import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
 import { math } from "../../shared/utils/math";
 import { Config } from "./config";
-import { type GameManager, SingleThreadGameManager } from "./game/gameManager";
+import { SingleThreadGameManager } from "./game/gameManager";
+import { GameProcessManager } from "./game/gameProcessManager";
 import { GIT_VERSION } from "./utils/gitRevision";
 import { Logger } from "./utils/logger";
 import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
@@ -42,7 +43,12 @@ export class GameServer {
     readonly region = Config.regions[Config.thisRegion];
     readonly regionId = Config.thisRegion;
 
-    constructor(readonly manager: GameManager) {}
+    readonly manager =
+        Config.processMode === "single"
+            ? new SingleThreadGameManager()
+            : new GameProcessManager();
+
+    constructor() {}
 
     init(app: TemplatedApp): void {
         setInterval(() => {
@@ -193,7 +199,7 @@ export class GameServer {
 }
 
 if (process.argv.includes("--game-server")) {
-    const server = new GameServer(new SingleThreadGameManager());
+    const server = new GameServer(new GameProcessManager());
 
     const app = Config.gameServer.ssl
         ? SSLApp({
@@ -214,6 +220,7 @@ if (process.argv.includes("--game-server")) {
             aborted = true;
         });
         cors(res);
+
         readPostedJSON(
             res,
             async (body: FindGameBody & { apiKey: string }) => {

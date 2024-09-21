@@ -180,6 +180,8 @@ export class PlayerBarn {
             }
         }
 
+        this.game.updateData();
+
         return player;
     }
 
@@ -233,6 +235,7 @@ export class PlayerBarn {
             this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
 
         this.game.checkGameOver();
+        this.game.updateData();
     }
 
     sendMsgs() {
@@ -2274,6 +2277,9 @@ export class Player extends BaseGameObject {
 
         // Check for game over
         this.game.checkGameOver();
+
+        // send data to parent process
+        this.game.updateData();
     }
 
     isReloading() {
