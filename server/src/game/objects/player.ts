@@ -3225,7 +3225,9 @@ export class Player extends BaseGameObject {
         if (weapon) {
             if (isThrowable) {
                 this.inventory[weapon] = math.max(this.inventory[weapon], ammo);
-            } else this.weaponManager.setWeapon(slot, weapon, ammo);
+            } else {
+                this.weaponManager.setWeapon(slot, weapon, ammo);
+            }
             const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
             emote.itemType = weapon;
             this.game.playerBarn.emotes.push(emote);
