@@ -1,7 +1,7 @@
 import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { GameConfig } from "../../../shared/gameConfig";
+import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
-import { Config, TeamMode } from "../config";
+import { Config } from "../config";
 import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
 import { ContextManager } from "./contextManager";
@@ -68,7 +68,9 @@ export class Game {
     }
 
     getAliveGroups(): Group[] {
-        return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected);
+        return [...this.groups.values()].filter(
+            (group) => group.livingPlayers.length > 0,
+        );
     }
 
     getAliveTeams(): Team[] {
@@ -119,7 +121,7 @@ export class Game {
         this.grid = new Grid(this.map.width, this.map.height);
         this.objectRegister = new ObjectRegister(this.grid);
 
-        this.gas = new Gas(this.map);
+        this.gas = new Gas(this);
 
         this.contextManager = new ContextManager(this);
 
@@ -202,9 +204,7 @@ export class Game {
     }
 
     canJoin(): boolean {
-        const gracePeriodTime = GameConfig.player.gracePeriodTime;
         return (
-            (gracePeriodTime == 0 || this.startedTime < gracePeriodTime) &&
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
             this.gas.stage < 2
@@ -257,6 +257,8 @@ export class Game {
             case net.MsgType.Emote: {
                 const emoteMsg = new net.EmoteMsg();
                 emoteMsg.deserialize(stream);
+
+                if (player.dead) break;
 
                 this.playerBarn.emotes.push(
                     new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing),

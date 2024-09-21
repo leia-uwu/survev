@@ -14,8 +14,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.30",
-    "vite": "^5.4.0",
-    "vite-plugin-pwa": "^0.20.1",
+    "vite": "^5.4.4",
     "vite-plugin-strip-block": "^1.0.1"
   }
 }

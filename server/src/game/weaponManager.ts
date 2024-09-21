@@ -53,6 +53,10 @@ export class WeaponManager {
      * @returns
      */
     setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
+        // if current slot is invalid and next too, switch to melee
+        if (!this.activeWeapon && !this.weapons[idx].type) {
+            idx = GameConfig.WeaponSlot.Melee;
+        }
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
         if (this.bursts.length) return;
@@ -88,8 +92,6 @@ export class WeaponManager {
             if (this.player.freeSwitchTimer < 0) {
                 effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
                 this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
-                if (GameConfig.gun.customSwitchDelay)
-                    effectiveSwitchDelay = GameConfig.gun.customSwitchDelay;
             }
 
             if (
@@ -133,17 +135,41 @@ export class WeaponManager {
 
     setWeapon(idx: number, type: string, ammo: number) {
         const weaponDef = GameObjectDefs[type];
-        assert(
-            weaponDef.type === "gun" ||
-                weaponDef.type === "melee" ||
-                weaponDef.type === "throwable",
-        );
+        const isMelee = idx === GameConfig.WeaponSlot.Melee;
+
+        // non melee weapons can be set to empty strings to clear the slot
+        if (!isMelee && type !== "") {
+            assert(
+                weaponDef.type === "gun" ||
+                    weaponDef.type === "melee" ||
+                    weaponDef.type === "throwable",
+            );
+        }
+
+        // attempt to fix mysterious crash with active weapon being undefined
+        if (idx === GameConfig.WeaponSlot.Melee && !type) {
+            type = "fists";
+        }
+
         this.weapons[idx].type = type;
         this.weapons[idx].cooldown = 0;
         this.weapons[idx].ammo = ammo;
-        if (weaponDef.type === "gun") {
+        if (weaponDef?.type === "gun") {
             this.weapons[idx].recoilTime = weaponDef.recoilTime;
         }
+
+        if (idx === this.curWeapIdx) {
+            this.player.setDirty();
+        }
+
+        // more stuff to prevent crash
+        if (!this.activeWeapon) {
+            const idx = this.weapons[this.lastWeaponIdx].type
+                ? this.lastWeaponIdx
+                : GameConfig.WeaponSlot.Melee;
+            this.setCurWeapIndex(idx);
+        }
+
         this.player.weapsDirty = true;
     }
 
@@ -219,7 +245,7 @@ export class WeaponManager {
 
         if (this.cookingThrowable) {
             this.cookTicker += dt;
-            if (this._curWeapIdx != GameConfig.WeaponSlot.Throwable) {
+            if (this.curWeapIdx != GameConfig.WeaponSlot.Throwable) {
                 this.throwThrowable();
                 return;
             }
@@ -270,6 +296,7 @@ export class WeaponManager {
                     if (this.bursts[i] <= 0) {
                         this.fireWeapon(this.offHand);
                         this.bursts.splice(i, 1);
+                        i--;
                     }
                 }
                 break;
@@ -296,6 +323,7 @@ export class WeaponManager {
             if (this.meleeAttacks[i] <= 0) {
                 this.meleeDamage();
                 this.meleeAttacks.splice(i, 1);
+                i--;
             }
         }
     }
@@ -349,7 +377,7 @@ export class WeaponManager {
 
         const conditions = [
             this.player.inventory[weaponDef.ammo] == undefined,
-            this.player.actionType == (GameConfig.Action.UseItem as number),
+            this.player.actionType == GameConfig.Action.UseItem,
             this.weapons[this.curWeapIdx].ammo >=
                 this.getTrueAmmoStats(weaponDef).trueMaxClip,
             this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
@@ -473,7 +501,7 @@ export class WeaponManager {
 
         if (weaponDef.isDual) {
             item = item.replace("_dual", "");
-            this.player.dropLoot(item, 0);
+            this.player.dropLoot(item, 0, true);
         }
         this.player.dropLoot(item, amountToDrop, true);
         this.player.weapsDirty = true;
@@ -484,10 +512,7 @@ export class WeaponManager {
         const slot = GameConfig.WeaponSlot.Melee;
         if (this.weapons[slot].type != "fists") {
             this.player.dropLoot(this.weapons[slot].type);
-            this.weapons[slot].type = "fists";
-            this.weapons[slot].ammo = 0;
-            this.weapons[slot].cooldown = 0;
-            this.player.weapsDirty = true;
+            this.setWeapon(slot, "fists", 0);
             if (slot === this.curWeapIdx) this.player.setDirty();
         }
     }
@@ -543,7 +568,7 @@ export class WeaponManager {
             ? itemDef.dualOffset! * (offHand ? 1.0 : -1.0)
             : itemDef.barrelOffset;
         const gunPos = v2.add(this.player.pos, v2.mul(v2.perp(direction), gunOff));
-        const gunLen = GameConfig.gun.customBarrelLength ?? itemDef.barrelLength;
+        const gunLen = itemDef.barrelLength;
 
         // Compute gun pos clipping if there is an obstacle in the way
         // @NOTE: Add an extra 1.5 to account for shotgun shots being
@@ -597,9 +622,11 @@ export class WeaponManager {
 
         const hasExplosive = this.player.hasPerk("explosive");
         const hasSplinter = this.player.hasPerk("splinter");
-        const shouldApplyChambered = this.player.hasPerk("chambered")
-            && itemDef.bulletCount === 1
-            && (weapon.ammo === 0 || weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
+        const shouldApplyChambered =
+            this.player.hasPerk("chambered") &&
+            itemDef.bulletCount === 1 &&
+            (weapon.ammo === 0 ||
+                weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
         // Movement spread
         let spread = itemDef.shotSpread ?? 0;
@@ -929,15 +956,17 @@ export class WeaponManager {
         );
     }
 
-    throwThrowable(): void {
+    throwThrowable(noSpeed?: boolean): void {
+        if (!this.cookingThrowable) return;
         this.cookingThrowable = false;
         const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
+        if (!throwableType) return;
         const throwableDef = GameObjectDefs[throwableType];
         assert(throwableDef.type === "throwable");
 
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
-            this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+            this.curWeapIdx == GameConfig.WeaponSlot.Throwable && !noSpeed
                 ? math.clamp(
                       this.player.toMouseLen,
                       0,
@@ -945,7 +974,6 @@ export class WeaponManager {
                   ) / 15
                 : 0;
 
-        const weapSlotId = GameConfig.WeaponSlot.Throwable;
         if (this.player.inventory[throwableType] > 0) {
             this.player.inventory[throwableType] -= 1;
 
@@ -954,9 +982,6 @@ export class WeaponManager {
             // if theres none switch to last weapon
             if (this.player.inventory[throwableType] == 0) {
                 this.showNextThrowable();
-                if (this.weapons[weapSlotId].type === "") {
-                    this.setCurWeapIndex(this.lastWeaponIdx);
-                }
             }
             this.player.weapsDirty = true;
             this.player.inventoryDirty = true;
@@ -999,7 +1024,7 @@ export class WeaponManager {
             this.player.__id,
             throwableType,
             pos,
-            1,
+            0.5,
             this.player.layer,
             vel,
             fuseTime,
@@ -1015,9 +1040,8 @@ export class WeaponManager {
      * only call this method after the inventory state has been updated accordingly, this function only changes the weaponManager.weapons' state
      */
     showNextThrowable(): void {
-        // TODO: use throwable def inventory order
         const slot = GameConfig.WeaponSlot.Throwable;
-        const startingIndex = throwableList.indexOf(this.weapons[3].type) + 1;
+        const startingIndex = throwableList.indexOf(this.weapons[slot].type) + 1;
         for (let i = startingIndex; i < startingIndex + throwableList.length; i++) {
             const arrayIndex = i % throwableList.length;
             const type = throwableList[arrayIndex];
@@ -1028,19 +1052,11 @@ export class WeaponManager {
             }
 
             if (amount != 0) {
-                this.weapons[slot].type = type;
-                this.player.weapsDirty = true;
-                this.player.setDirty();
+                this.setWeapon(slot, type, 0);
                 return;
             }
         }
 
-        this.weapons[slot].type = "";
-        this.weapons[slot].ammo = 0;
-        this.weapons[slot].cooldown = 0;
-        if (this.curWeapIdx === slot) {
-            // set weapon index to melee if run out of grenades
-            this.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-        }
+        this.setWeapon(slot, "", 0);
     }
 }

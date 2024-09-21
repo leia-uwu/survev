@@ -16,6 +16,7 @@ export class Group {
     players: Player[] = [];
     livingPlayers: Player[] = [];
     autoFill: boolean;
+    reservedSlots = 0;
 
     constructor(hash: string, groupId: number, autoFill: boolean) {
         this.hash = hash;
@@ -60,9 +61,7 @@ export class Group {
      * true if all ALIVE teammates besides the passed in player are downed
      */
     checkAllDowned(player: Player) {
-        const filteredPlayers = this.players.filter(
-            (p) => p != player && !p.dead && !p.hasPerk("self_revive"),
-        );
+        const filteredPlayers = this.players.filter((p) => p != player && !p.dead);
         if (filteredPlayers.length == 0) {
             // this is necessary since for some dumb reason every() on an empty array returns true????
             return false;

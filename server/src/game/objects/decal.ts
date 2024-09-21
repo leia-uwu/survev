@@ -21,6 +21,7 @@ export class DecalBarn {
             decal.lifeTime -= dt;
             if (decal.lifeTime <= 0) {
                 this.decals.splice(i, 1);
+                i--;
                 decal.destroy();
             }
         }

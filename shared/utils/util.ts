@@ -1,6 +1,5 @@
-import type { AABB } from "./coldet";
 import { math } from "./math";
-import { v2 } from "./v2";
+import { type Vec2, v2 } from "./v2";
 
 /**
  * Custom function to not bundle nodejs assert polyfill with the client
@@ -67,11 +66,6 @@ export const util = {
         return arr[Math.floor(Math.random() * arr.length)];
     },
 
-    randomPointOnCircle(rad: number) {
-        const angle = util.random(0, 2 * Math.PI);
-        return v2.create(Math.cos(angle) * rad, Math.sin(angle) * rad);
-    },
-
     // Uniformly distributed random point within circle
     // Taken from https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
     randomPointInCircle(rad: number) {
@@ -89,7 +83,7 @@ export const util = {
         return pos;
     },
 
-    randomPointInAabb(aabb: AABB) {
+    randomPointInAabb(aabb: { min: Vec2; max: Vec2 }) {
         return v2.create(
             util.random(aabb.min.x, aabb.max.x),
             util.random(aabb.min.y, aabb.max.y),
@@ -143,7 +137,7 @@ export const util = {
     },
 
     // Taken from: https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
-    hsvToRgb(h: any, s: number, v: number) {
+    hsvToRgb(h: number, s: number, v: number) {
         let r = 0;
         let g = 0;
         let b = 0;
@@ -152,11 +146,7 @@ export const util = {
         let p = 0;
         let q = 0;
         let t = 0;
-        if (arguments.length === 1) {
-            s = h.s;
-            v = h.v;
-            h = h.h;
-        }
+
         i = Math.floor(h * 6.0);
         f = h * 6.0 - i;
         p = v * (1.0 - s);
@@ -330,6 +320,10 @@ export const util = {
             arr[i] = arr[idx];
             arr[idx] = tmp;
         }
+    },
+
+    wrappedArrayIndex<T>(arr: T[], index: number): T {
+        return arr.at(index % arr.length) as T;
     },
 
     weightedRandom<T extends Object>(items: Array<T & { weight: number }>) {

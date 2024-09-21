@@ -124,7 +124,6 @@ export class Pass {
 
     onPass(pass: any, quests: any[], resetRefresh: boolean) {
         const refreshOffset = 5 * 1000;
-        const This = this;
         const newQuests = [];
         let questAnimCount = 0;
         for (let p = 0; p < quests.length; p++) {
@@ -148,7 +147,7 @@ export class Pass {
                         str: "",
                     },
                 } as (typeof this.quests)[number];
-                const curQuest = This.quests.find((x) => {
+                const curQuest = this.quests.find((x) => {
                     return x.data.idx == quest.data.idx && x.data.type == quest.data.type;
                 });
 
@@ -196,7 +195,7 @@ export class Pass {
                 // Initialize quest UI
                 const questDef = QuestDefs[quest.data.type];
                 const title =
-                    This.localization.translate(`${quest.data.type}`) || quest.data.type;
+                    this.localization.translate(`${quest.data.type}`) || quest.data.type;
                 const pct = (quest.current / quest.data.target) * 100;
                 quest.elems.main.css("display", "block");
                 quest.elems.desc.html(title);
@@ -223,7 +222,7 @@ export class Pass {
                     quest.elems.desc.removeClass("pass-quest-desc-icon");
                     quest.elems.desc.attr("style", "");
                 }
-                This.setQuestRefreshEnabled(quest);
+                this.setQuestRefreshEnabled(quest);
                 newQuests.push(quest);
             })(p);
         }
@@ -294,7 +293,6 @@ export class Pass {
     }
 
     setQuestRefreshEnabled(e: (typeof this.quests)[number]) {
-        const t = this;
         const r =
             (!e.data.rerolled && !e.data.complete) || e.refreshTime - Date.now() < 0;
         if (r != e.refreshEnabled || !e.refreshSet) {
@@ -307,7 +305,7 @@ export class Pass {
                 e.elems.refreshConfirm.on("click", () => {
                     e.elems.loading.css("display", "block");
                     e.elems.refreshPrompt.css("display", "none");
-                    t.account.refreshQuest(e.data.idx);
+                    this.account.refreshQuest(e.data.idx);
                 });
                 e.elems.refreshCancel.on("click", () => {
                     e.elems.refreshPrompt.css("display", "none");

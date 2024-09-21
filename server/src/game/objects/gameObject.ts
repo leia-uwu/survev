@@ -255,8 +255,6 @@ export abstract class BaseGameObject {
                     ) {
                         this.layer = 2;
                     }
-                }
-                if (collides) {
                     onStair = true;
                     finalStair = stair;
                     break;

@@ -1,17 +1,14 @@
 import $ from "jquery";
 import { MapDefs } from "../../shared/defs/mapDefs";
+import { TeamMode } from "../../shared/gameConfig";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
 import type { Localization } from "./ui/localization";
-export enum TeamMode {
-    Solo = 1,
-    Duo = 2,
-    Squad = 4,
-}
 
 interface Info {
     country: string;
+    gitRevision: string;
     modes: Array<{
         mapName: string;
         teamMode: TeamMode;

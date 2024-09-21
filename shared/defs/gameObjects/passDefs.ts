@@ -1,4 +1,4 @@
-interface PassDef {
+export interface PassDef {
     readonly type: "pass";
     xp: number[];
     items: Array<{

@@ -1,4 +1,4 @@
-interface HealEffectDef {
+export interface HealEffectDef {
     readonly type: "heal_effect" | "boost_effect";
     name: string;
     rarity: number;

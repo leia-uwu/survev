@@ -3,6 +3,7 @@ import { util } from "../utils/util";
 import { v2 } from "../utils/v2";
 import type {
     BuildingDef,
+    LootSpawnDef,
     MapObjectDef,
     ObstacleDef,
     StructureDef,
@@ -14,12 +15,7 @@ import type {
 // } : T;
 
 // Helpers
-function tierLoot(
-    tier: string,
-    min: number,
-    max: number,
-    props?: ObstacleDef["loot"][number]["props"],
-) {
+function tierLoot(tier: string, min: number, max: number, props?: LootSpawnDef["props"]) {
     props = props || {};
     return {
         tier,

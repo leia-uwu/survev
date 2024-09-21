@@ -1,7 +1,11 @@
 import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
-import type { RoomData } from "../../../shared/net/team";
+import type {
+    RoomData,
+    ServerToClientTeamMsg,
+    TeamStateMsg,
+} from "../../../shared/net/team";
 import { api } from "../api";
 import type { AudioManager } from "../audioManager";
 import type { ConfigManager } from "../config";
@@ -122,9 +126,18 @@ export class TeamMenu {
                     },
                 },
             );
-            const r = $("#team-url").html();
-            helpers.copyTextToClipboard(r);
+            let codeToCopy = $("#team-url").html();
+            // if running on an iframe
+            if (window !== window.top) {
+                codeToCopy = this.roomData.roomUrl.substring(1);
+            }
+            helpers.copyTextToClipboard(codeToCopy);
         });
+
+        if (window !== window.top) {
+            $("#team-desc-text").hide();
+        }
+
         if (!device.mobile) {
             // Hide invite link
             this.hideUrl = false;
@@ -264,14 +277,18 @@ export class TeamMenu {
         }
     }
 
-    onMessage(type: string, data: any) {
+    onMessage<T extends ServerToClientTeamMsg["type"]>(
+        type: T,
+        data: ServerToClientTeamMsg["data"],
+    ) {
         switch (type) {
             case "state": {
+                let stateData = data as TeamStateMsg["data"];
                 this.joined = true;
                 const ourRoomData = this.roomData;
-                this.roomData = data.room;
-                this.players = data.players;
-                this.localPlayerId = data.localPlayerId;
+                this.roomData = stateData.room;
+                this.players = stateData.players;
+                this.localPlayerId = stateData.localPlayerId;
                 this.isLeader = this.getPlayerById(this.localPlayerId)!.isLeader;
 
                 // Override room properties with local values if we're
@@ -290,7 +307,7 @@ export class TeamMenu {
             }
             case "joinGame":
                 this.joiningGame = true;
-                this.joinGameCb(data);
+                this.joinGameCb(data as MatchData);
                 break;
             case "keepAlive":
                 break;
@@ -298,7 +315,7 @@ export class TeamMenu {
                 this.leave("kicked");
                 break;
             case "error":
-                this.leave(data.type);
+                this.leave((data as { type: string }).type);
         }
     }
 
@@ -430,7 +447,7 @@ export class TeamMenu {
 
             // Invite link
             if (this.roomData.roomUrl) {
-                const roomUrl = `${window.location.origin}/${this.roomData.roomUrl}`;
+                const roomUrl = `${window.location.href.replace(this.roomData.roomUrl, "")}${this.roomData.roomUrl}`;
                 const roomCode = this.roomData.roomUrl.substring(1);
 
                 $("#team-url").html(roomUrl);

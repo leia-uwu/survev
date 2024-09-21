@@ -35,6 +35,8 @@ export interface GunDef {
         borderTint: number;
         scale: number;
         innerScale?: number;
+        rot?: number;
+        mirror?: boolean;
     };
     worldImg: {
         sprite: string;

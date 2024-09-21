@@ -15,7 +15,7 @@ class PhysicsParticle {
     pos!: Vec2;
     vel!: Vec2;
     layer!: number;
-    particle: any;
+    particle!: Particle;
     ticker!: number;
     colCount!: number;
 

@@ -5,6 +5,12 @@
     <meta charset='UTF-8'>
     <title>survev.io - 2d battle royale game</title>
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="survev.io">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="application-name" content="survev.io">
     <meta name="description" content="Like games such as Player Unknown's Battlegrounds (PUBG), Fortnite or Apex Legends? Play this free 2d battle royale io game in your browser!">
     <meta property="og:description" content="Like games such as Player Unknown's Battlegrounds (PUBG), Fortnite or Apex Legends? Play this free 2d battle royale io game in your browser!">
     <meta name="keywords" content="survev, resurviv, survivio, surviv, 2d battle royale, io, battle royale browser game, 2d battlegrounds, battlegrounds, battleroyale, battle, royale, browser game, br, survival, game, web game, multiplayer">
@@ -12,13 +18,13 @@
     <meta property="og:title" content="survev.io">
     <meta property="og:url" content="https://survev.io/">
     <meta property="og:site_name" content="survev.io">
-    <meta content="https://raw.githubusercontent.com/leia-uwu/resurviv/master/client/public/img/title.png" property="og:image">
+    <meta content="https://survev.io/img/survev_title.png" property="og:image">
     <link rel="canonical" href="https://survev.io" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon-180x180.png">
+    <link rel="apple-touch-icon-precomposed" href="img/icon_app.png">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="mask-icon" href="img/maskable-icon-512x512.png" color="#FFFFFF">
-    <meta name="theme-color" content="#80af49">
     <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700" rel="stylesheet">
+    
     <link href="css/app.css" rel="stylesheet">
     <link href="css/game.css" rel="stylesheet">
     </head>
@@ -368,7 +374,6 @@
             </div>
           </div>
         </div>
-        <div id="ui-fps-counter" style="color: white; font-family: monospace;"></div>
         <div id='ui-kill-leader-container'>
           <div id='ui-kill-leader-wrapper' class='js-ui-map-hidden js-ui-hud-show hide-on-mobile'>
             <div id='ui-kill-leader-name'>Waiting for new leader</div>
@@ -775,24 +780,32 @@
             </div>
             <div id='left-column' class='menu-column'>
               <div id='ad-block-left'>
-                <div class='ad-block-med-rect'>
-                  <h3 class='news-header'>About survev</h3>
-                  <p>Survev.io is an open source recreation of a hit web game "surviv.io" that has been permanently shut down.</p>
-                  <p>Our goal is to immortalize it by getting the recreation as close as possible to the last canonical version of the game.</p>
-                  <p>We do not consider any updates after the Kongregate acquisition canonical, so those will not be a part of the project.</p>
+                <div class='surviv-shirts'>
+                  <a href='https://discord.gg/6uRdCdkTPt' target="_blank"></a>
+                </div>
+                <!--
+                <div class='adblock-plea'>
+                  <span>Please consider supporting us by disabling your adblocker.</span>
+                </div>
+                -->
+                <div class='ad-block-med-rect' id='surviv-io_300x250'>
                 </div>
               </div>
-              <!-- <div id='social-share-block-wrapper'>
+              <div id='social-share-block-wrapper'>
                 <div id='social-share-block' class='menu-block'>
                   <div class='btn-social-wrapper'>
-                    <a href='https://facebook.com/resurviv' target='_blank' class='btn-social btn-darken btn-facebook'></a>
-                    <a href='https://twitter.com/resurviv' target='_blank' class='btn-social btn-darken btn-twitter'></a>
-                    <a href='https://www.instagram.com/resurviv/' target='_blank' class='btn-social btn-darken btn-instagram'></a>
-                    <a href='https://discord.gg/resurviv' target='_blank' class='btn-social btn-darken btn-discord'></a>
-                    <a href='https://www.youtube.com/c/resurviv?sub_confirmation=1' target='_blank' class='btn-social btn-darken btn-youtube'></a>
+                    <!-- 
+                    <a href='https://facebook.com/survev' target='_blank' class='btn-social btn-darken btn-facebook'></a>
+                    <a href='https://twitter.com/survev' target='_blank' class='btn-social btn-darken btn-twitter'></a>
+                    <a href='https://www.instagram.com/survev/' target='_blank' class='btn-social btn-darken btn-instagram'></a>
+                    -->
+                    <a href='https://discord.gg/6uRdCdkTPt' target='_blank' class='btn-social btn-darken btn-discord'></a>
+                    <!--
+                    <a href='https://www.youtube.com/c/survev?sub_confirmation=1' target='_blank' class='btn-social btn-darken btn-youtube'></a>
+                    -->
                   </div>
                 </div>
-              </div> -->
+              </div>
             </div>
             <div id='start-menu' class='menu-column menu-block'>
               <div class='play-loading-outer'>
@@ -1046,7 +1059,12 @@
           </div>
         </div>
         <div id="start-bottom-middle">
+          <a href='changelogRec.html' target="_blank" class="footer-after">ver 0.0.13</a>
+          <a href="changelog.html" target="_blank" data-l10n="index-proxy-sites">original changelog</a>
+          <!--
           <a href='changelog.html' target="_blank" class="footer-after">ver 0.8.82</a>
+          <a href="proxy.txt" target="_blank" data-l10n="index-proxy-sites">proxy sites</a>
+          -->
         </div>
         <div id='start-bottom-right-wrapper'>
           <div id='start-bottom-right'>
@@ -1267,16 +1285,20 @@
             </div>
             <div class='modal-divider'></div>
             <!-- <div class='btn-social-wrapper'>
-              <a href='https://facebook.com/resurviv' target='_blank' class='btn-social btn-darken btn-facebook'></a>
-              <a href='https://twitter.com/resurviv' target='_blank' class='btn-social btn-darken btn-twitter'></a>
-              <a href='https://www.instagram.com/resurviv/' target='_blank' class='btn-social btn-darken btn-instagram'></a>
-              <a href='https://discord.gg/resurviv' target='_blank' class='btn-social btn-darken btn-discord'></a>
-              <a href='https://www.youtube.com/c/resurviv?sub_confirmation=1' target='_blank' class='btn-social btn-darken btn-youtube'></a>
+              <a href='https://facebook.com/survev' target='_blank' class='btn-social btn-darken btn-facebook'></a>
+              <a href='https://twitter.com/survev' target='_blank' class='btn-social btn-darken btn-twitter'></a>
+              <a href='https://www.instagram.com/survev/' target='_blank' class='btn-social btn-darken btn-instagram'></a>
+              <a href='https://discord.gg/survev' target='_blank' class='btn-social btn-darken btn-discord'></a>
+              <a href='https://www.youtube.com/c/survev?sub_confirmation=1' target='_blank' class='btn-social btn-darken btn-youtube'></a>
             </div> -->
             <div class='modal-divider'></div>
             <div id='modal-hamburger-bottom'>
+              <a href='changelogRec.html' class="footer-after">ver 0.0.13</a>
+              <!--
               <a href='changelog.html' class="footer-after">ver 0.8.82</a>
+              <a href='#' class="btn-cookie-settings footer-after">cookie settings</a>
               <a href='privacy.txt' target="_blank" class="footer-after">privacy</a>
+              -->
               <a href='attribution.txt' target="_blank">attributions</a>
             </div>
           </div>

@@ -55,7 +55,7 @@ export interface TeamStateMsg {
  */
 export interface TeamKeepAliveMsg {
     readonly type: "keepAlive";
-    data: Record<string, unknown>;
+    data: {};
 }
 
 /**
@@ -63,6 +63,7 @@ export interface TeamKeepAliveMsg {
  */
 export interface TeamKickedMsg {
     readonly type: "kicked";
+    data: {};
 }
 
 export interface TeamErrorMsg {

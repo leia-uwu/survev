@@ -28,16 +28,20 @@ interface TerrainSpawnDef {
     };
 }
 
+export interface LootSpawnDef {
+    tier?: string;
+    min?: number;
+    max?: number;
+    props?: {
+        preloadGuns?: boolean;
+    };
+    type?: string;
+    count?: number;
+}
+
 export interface LootSpawnerDef {
     readonly type: "loot_spawner";
-    loot: Array<{
-        tier?: string;
-        min?: number;
-        max?: number;
-        props: Record<string, any>;
-        type?: string;
-        count?: number;
-    }>;
+    loot: Array<LootSpawnDef>;
     terrain?: TerrainSpawnDef;
 }
 
