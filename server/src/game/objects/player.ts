@@ -5,19 +5,18 @@ import {
     type BoostDef,
     type ChestDef,
     GEAR_TYPES,
-    GearDefs,
     type HealDef,
     type HelmetDef,
     SCOPE_LEVELS,
     type ScopeDef,
 } from "../../../../shared/defs/gameObjects/gearDefs";
-import { GunDefs, type GunDef } from "../../../../shared/defs/gameObjects/gunDefs";
+import { type GunDef, GunDefs } from "../../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import {
-    ThrowableDefs,
     type ThrowableDef,
+    ThrowableDefs,
 } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
@@ -1548,7 +1547,12 @@ export class Player extends BaseGameObject {
                 const seePing =
                     (emote.isPing || emote.itemType) && (partOfGroup || isTeamLeader);
                 // HACK: Potato mode forces players to send potato emotes
-                if (this.game.map.potatoMode && !emote.isPing && emote.type !== "emote_loot") emote.type = "emote_potato"
+                if (
+                    this.game.map.potatoMode &&
+                    !emote.isPing &&
+                    emote.type !== "emote_loot"
+                )
+                    emote.type = "emote_potato";
                 if (seeNormalEmote || seePing) {
                     updateMsg.emotes.push(emote);
                 }
@@ -3143,22 +3147,28 @@ export class Player extends BaseGameObject {
         }
     }
 
-    static toAllowedPotatoModeList(arr: [string, GunDef | MeleeDef | ThrowableDef][], quality = false) {
+    static toAllowedPotatoModeList(
+        arr: [string, GunDef | MeleeDef | ThrowableDef][],
+        quality = false,
+    ) {
         return arr
             .filter(([_, def]) => {
-              if (quality) return !def.noPotatoSwap && def.quality === 1;
-              return !def.noPotatoSwap;
+                if (quality) return !def.noPotatoSwap && def.quality === 1;
+                return !def.noPotatoSwap;
             })
             .map(([idString, _]) => idString);
     }
     static allowedPotatoModeWeapons = Object.freeze({
-      guns: Player.toAllowedPotatoModeList(Object.entries(GunDefs)),
-      guns_rare: Player.toAllowedPotatoModeList(Object.entries(GunDefs), true),
-      melees: Player.toAllowedPotatoModeList(Object.entries(MeleeDefs)),
-      melees_rare: Player.toAllowedPotatoModeList(Object.entries(MeleeDefs), true),
-      throwables: Player.toAllowedPotatoModeList(Object.entries(ThrowableDefs)),
-      throwables_rare: Player.toAllowedPotatoModeList(Object.entries(ThrowableDefs), true)
-    })
+        guns: Player.toAllowedPotatoModeList(Object.entries(GunDefs)),
+        guns_rare: Player.toAllowedPotatoModeList(Object.entries(GunDefs), true),
+        melees: Player.toAllowedPotatoModeList(Object.entries(MeleeDefs)),
+        melees_rare: Player.toAllowedPotatoModeList(Object.entries(MeleeDefs), true),
+        throwables: Player.toAllowedPotatoModeList(Object.entries(ThrowableDefs)),
+        throwables_rare: Player.toAllowedPotatoModeList(
+            Object.entries(ThrowableDefs),
+            true,
+        ),
+    });
 
     potatoModeWeaponSwitch(weaponType: string | undefined) {
         const slot = this.weapons.findIndex((w) => w.type === weaponType);
@@ -3171,7 +3181,11 @@ export class Player extends BaseGameObject {
 
         switch (GameConfig.WeaponType[slot]) {
             case "gun":
-                weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "guns_rare" : "guns"]);
+                weapon = util.pickRandomInArr(
+                    Player.allowedPotatoModeWeapons[
+                        this.hasPerk("rare_potato") ? "guns_rare" : "guns"
+                    ],
+                );
                 const gunDef = GunDefs[weapon];
 
                 ammo = gunDef.maxClip;
@@ -3184,14 +3198,25 @@ export class Player extends BaseGameObject {
 
                 break;
             case "melee":
-                weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "melees_rare" : "melees"]);
+                weapon = util.pickRandomInArr(
+                    Player.allowedPotatoModeWeapons[
+                        this.hasPerk("rare_potato") ? "melees_rare" : "melees"
+                    ],
+                );
                 break;
             case "throwable":
-                weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "throwables_rare" : "throwables"]);
-                const throwableDef = ThrowableDefs[weapon];
+                weapon = util.pickRandomInArr(
+                    Player.allowedPotatoModeWeapons[
+                        this.hasPerk("rare_potato") ? "throwables_rare" : "throwables"
+                    ],
+                );
 
-                ammo = math.max(this.inventory[weapon],
-                    Math.ceil(GameConfig.bagSizes[weapon][this.getGearLevel(this.backpack)] / 2));
+                ammo = math.max(
+                    this.inventory[weapon],
+                    Math.ceil(
+                        GameConfig.bagSizes[weapon][this.getGearLevel(this.backpack)] / 2,
+                    ),
+                );
 
                 isThrowable = true;
                 break;
@@ -3200,8 +3225,7 @@ export class Player extends BaseGameObject {
         if (weapon) {
             if (isThrowable) {
                 this.inventory[weapon] = math.max(this.inventory[weapon], ammo);
-            } else
-                this.weaponManager.setWeapon(slot, weapon, ammo);
+            } else this.weaponManager.setWeapon(slot, weapon, ammo);
             const emote = new Emote(this.playerId, this.pos, "emote_loot", false);
             emote.itemType = weapon;
             this.game.playerBarn.emotes.push(emote);
@@ -3215,7 +3239,11 @@ export class Player extends BaseGameObject {
     clampInventory() {
         for (const type of Object.keys(this.inventory)) {
             if (!GameConfig.bagSizes[type]) continue;
-            this.inventory[type] = math.clamp(this.inventory[type], 0, GameConfig.bagSizes[type][this.getGearLevel(this.backpack)]);
+            this.inventory[type] = math.clamp(
+                this.inventory[type],
+                0,
+                GameConfig.bagSizes[type][this.getGearLevel(this.backpack)],
+            );
         }
     }
 

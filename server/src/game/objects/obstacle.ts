@@ -1,6 +1,4 @@
 import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
-import { GunDefs } from "../../../../shared/defs/gameObjects/gunDefs";
-import { MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
 import { DamageType, GameConfig } from "../../../../shared/gameConfig";
