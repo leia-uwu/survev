@@ -878,13 +878,16 @@ export class Player extends BaseGameObject {
         this.weaponManager.showNextThrowable();
     }
 
+    override serializeFull(): void {
+        this.weaponManager.preventEmptyWeapon();
+        super.serializeFull();
+    }
+
     visibleObjects = new Set<GameObject>();
 
     update(dt: number): void {
-        // HACK
-        if (!this.activeWeapon) {
-            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-        }
+        this.weaponManager.preventEmptyWeapon();
+
         if (this.dead) return;
         this.timeAlive += dt;
 
@@ -1373,10 +1376,7 @@ export class Player extends BaseGameObject {
             this.shotSlowdownTimer = 0;
         }
 
-        // HACK
-        if (!this.activeWeapon) {
-            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-        }
+        this.weaponManager.preventEmptyWeapon();
     }
 
     private _firstUpdate = true;
@@ -2561,6 +2561,8 @@ export class Player extends BaseGameObject {
             }
         }
 
+        this.weaponManager.preventEmptyWeapon();
+
         //no exceptions for any perks or roles
         if (this.downed) return;
 
@@ -2994,6 +2996,8 @@ export class Player extends BaseGameObject {
             type: net.MsgType.Pickup,
             msg: pickupMsg,
         });
+
+        this.weaponManager.preventEmptyWeapon();
     }
 
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
@@ -3112,6 +3116,7 @@ export class Player extends BaseGameObject {
                 }
                 this.inventoryDirty = true;
                 this.weapsDirty = true;
+                this.weaponManager.preventEmptyWeapon();
                 break;
             }
             case "perk": {

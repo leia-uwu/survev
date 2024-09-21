@@ -323,7 +323,7 @@ export class Player implements AbstractObject {
         backpack: "",
         helmet: "",
         chest: "",
-        activeWeapon: "",
+        activeWeapon: "fists",
         layer: 0,
         dead: false,
         downed: false,
