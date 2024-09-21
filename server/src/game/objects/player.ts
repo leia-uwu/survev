@@ -4,6 +4,7 @@ import {
     type BoostDef,
     type ChestDef,
     GEAR_TYPES,
+    GearDefs,
     type HealDef,
     type HelmetDef,
     SCOPE_LEVELS,
@@ -3121,7 +3122,8 @@ export class Player extends BaseGameObject {
                 weapon = util.pickRandomInArr(Player.allowedPotatoModeWeapons[this.hasPerk("rare_potato") ? "throwables_rare" : "throwables"]);
                 const throwableDef = ThrowableDefs[weapon];
 
-                ammo = throwableDef.quality === 1 ? 1 : 3;
+                ammo = math.max(this.inventory[weapon],
+                    Math.ceil(GameConfig.bagSizes[weapon][this.getGearLevel(this.backpack)] / 2));
 
                 isThrowable = true;
                 break;
