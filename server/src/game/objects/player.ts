@@ -1813,6 +1813,8 @@ export class Player extends BaseGameObject {
         this.shootHold = false;
         this.cancelAction();
 
+        this.weaponManager.throwThrowable();
+
         //
         // Send downed msg
         //
