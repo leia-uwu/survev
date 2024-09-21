@@ -57,6 +57,12 @@ export interface AddJoinTokenMsg {
     playerCount: number;
 }
 
+/**
+ * Used for server to send websocket msgs to game
+ * And game to send websocket msgs to clients
+ * msgs is an array to batch all msgs created in the same game net tick
+ * into the same send call
+ */
 export interface SocketMsgsMsg {
     type: ProcessMsgType.SocketMsg;
     msgs: Array<{
@@ -65,6 +71,10 @@ export interface SocketMsgsMsg {
     }>;
 }
 
+/**
+ * Sent by the server to the game when the socket is closed
+ * Or by the game to the server when the game wants to close the socket
+ */
 export interface SocketCloseMsg {
     type: ProcessMsgType.SocketClose;
     socketId: string;
@@ -318,6 +328,8 @@ export class GameProcessManager implements GameManager {
             });
         }
 
+        // if the game is not running
+        // wait for it to be created to send the find game response
         if (game.stopped) {
             return new Promise((resolve) => {
                 game.onCreatedCbs.push((game) => {

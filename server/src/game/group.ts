@@ -5,13 +5,6 @@ import type { Player } from "./objects/player";
 export class Group {
     hash: string;
     groupId: number;
-    /**
-     * Faction mode team ID.
-     * Same as group id when not in faction mode.
-     * 0 is no team
-     * 1 is red
-     * 2 is blue
-     */
     allDeadOrDisconnected = true; //only set to false when first player is added to the group
     players: Player[] = [];
     livingPlayers: Player[] = [];
@@ -19,9 +12,9 @@ export class Group {
     reservedSlots = 0;
 
     constructor(hash: string, groupId: number, autoFill: boolean) {
+        this.hash = hash;
         this.groupId = groupId;
         this.autoFill = autoFill;
-        this.hash = hash;
     }
 
     /**
