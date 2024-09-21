@@ -5,9 +5,9 @@
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
     "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
-    "dev": "node -r ts-node/register --watch --watch-preserve-output src/devServer.ts",
-    "dev:api": "node -r ts-node/register --watch --watch-preserve-output src/apiServer.ts --api-server",
-    "dev:game": "node -r ts-node/register --watch --watch-preserve-output src/gameServer.ts --game-server"
+    "dev": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/devServer.ts",
+    "dev:api": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/apiServer.ts --api-server",
+    "dev:game": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server"
   },
   "dependencies": {
     "nanotimer": "^0.3.15",

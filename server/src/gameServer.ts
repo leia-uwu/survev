@@ -199,7 +199,7 @@ export class GameServer {
 }
 
 if (process.argv.includes("--game-server")) {
-    const server = new GameServer(new GameProcessManager());
+    const server = new GameServer();
 
     const app = Config.gameServer.ssl
         ? SSLApp({
