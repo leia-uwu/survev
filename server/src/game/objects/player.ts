@@ -1887,8 +1887,11 @@ export class Player extends BaseGameObject {
         this.dead = true;
         this.boost = 0;
         this.actionType = GameConfig.Action.None;
+        this.actionSeq++;
         this.hasteType = GameConfig.HasteType.None;
+        this.hasteSeq++;
         this.animType = GameConfig.Anim.None;
+        this.animSeq++;
         this.setDirty();
 
         this.shootHold = false;
