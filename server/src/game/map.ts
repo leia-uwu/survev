@@ -807,9 +807,6 @@ export class GameMap {
 
             const obj = objs[i] as Obstacle | Building | Structure;
             if (checkCollision(collsA, obj.mapObstacleBounds, obj.layer)) {
-                if (type.includes("cabin")) {
-                    console.log(obj.type);
-                }
                 return false;
             }
         }
