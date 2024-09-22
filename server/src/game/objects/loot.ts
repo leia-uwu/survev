@@ -12,6 +12,13 @@ import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 import type { Player } from "./player";
 
+// velocity drag applied every tick
+const LOOT_DRAG = 3;
+// how much loot pushes each other every tick
+const LOOT_PUSH_FORCE = 10;
+// explosion push force multiplier
+export const EXPLOSION_LOOT_PUSH_FORCE = 6;
+
 type LootTierItem = MapDef["lootTable"][string][number];
 
 export class LootBarn {
@@ -223,17 +230,8 @@ export class Loot extends BaseGameObject {
 
         this.oldPos = v2.copy(this.pos);
 
-        const calculateSafeDisplacement = (): Vec2 => {
-            let displacement = v2.mul(this.vel, dt);
-            if (v2.lengthSqr(displacement) >= 10) {
-                displacement = v2.normalizeSafe(displacement);
-            }
-
-            return displacement;
-        };
-
-        v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
-        this.vel = v2.mul(this.vel, 1 / (1 + dt * 4));
+        v2.set(this.pos, v2.add(this.pos, v2.mul(this.vel, dt)));
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * LOOT_DRAG));
 
         let objs = this.game.grid.intersectCollider(this.collider);
 
@@ -270,20 +268,8 @@ export class Loot extends BaseGameObject {
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
 
-                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.06));
-                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.06));
-                const vRelativeVelocity = v2.create(
-                    this.vel.x - obj.vel.x,
-                    this.vel.y - obj.vel.y,
-                );
-
-                const speed =
-                    (vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y) *
-                    0.6;
-                if (speed < 0) continue;
-
-                this.push(res.dir, -speed);
-                obj.push(res.dir, speed);
+                this.vel = v2.sub(this.vel, v2.mul(res.dir, LOOT_PUSH_FORCE * dt));
+                obj.vel = v2.add(obj.vel, v2.mul(res.dir, LOOT_PUSH_FORCE * dt));
             }
         }
 

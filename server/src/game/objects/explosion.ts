@@ -8,6 +8,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import type { GameObject } from "./gameObject";
+import { EXPLOSION_LOOT_PUSH_FORCE } from "./loot";
 
 export class ExplosionBarn {
     explosions: Explosion[] = [];
@@ -132,7 +133,7 @@ export class ExplosionBarn {
                         if (obj.__type === ObjectType.Loot) {
                             obj.push(
                                 v2.normalize(v2.sub(obj.pos, explosion.pos)),
-                                (def.rad.max - dist) * 4,
+                                (def.rad.max - dist) * EXPLOSION_LOOT_PUSH_FORCE,
                             );
                         }
                     }
