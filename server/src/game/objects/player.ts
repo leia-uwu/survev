@@ -878,13 +878,16 @@ export class Player extends BaseGameObject {
         this.weaponManager.showNextThrowable();
     }
 
+    override serializeFull(): void {
+        this.weaponManager.preventEmptyWeapon();
+        super.serializeFull();
+    }
+
     visibleObjects = new Set<GameObject>();
 
     update(dt: number): void {
-        // HACK
-        if (!this.activeWeapon) {
-            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-        }
+        this.weaponManager.preventEmptyWeapon();
+
         if (this.dead) return;
         this.timeAlive += dt;
 
@@ -1373,10 +1376,7 @@ export class Player extends BaseGameObject {
             this.shotSlowdownTimer = 0;
         }
 
-        // HACK
-        if (!this.activeWeapon) {
-            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-        }
+        this.weaponManager.preventEmptyWeapon();
     }
 
     private _firstUpdate = true;
@@ -1813,6 +1813,8 @@ export class Player extends BaseGameObject {
         this.shootHold = false;
         this.cancelAction();
 
+        this.weaponManager.throwThrowable();
+
         //
         // Send downed msg
         //
@@ -1885,8 +1887,11 @@ export class Player extends BaseGameObject {
         this.dead = true;
         this.boost = 0;
         this.actionType = GameConfig.Action.None;
+        this.actionSeq++;
         this.hasteType = GameConfig.HasteType.None;
+        this.hasteSeq++;
         this.animType = GameConfig.Anim.None;
+        this.animSeq++;
         this.setDirty();
 
         this.shootHold = false;
@@ -1905,7 +1910,7 @@ export class Player extends BaseGameObject {
         }
 
         if (this.weaponManager.cookingThrowable) {
-            this.weaponManager.throwThrowable();
+            this.weaponManager.throwThrowable(true);
         }
 
         //
@@ -2381,6 +2386,7 @@ export class Player extends BaseGameObject {
                     break;
                 case GameConfig.Input.EquipThrowable:
                     if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
+                        this.weaponManager.throwThrowable(true);
                         this.weaponManager.showNextThrowable();
                     } else {
                         this.weaponManager.setCurWeapIndex(
@@ -2557,6 +2563,8 @@ export class Player extends BaseGameObject {
                 }
             }
         }
+
+        this.weaponManager.preventEmptyWeapon();
 
         //no exceptions for any perks or roles
         if (this.downed) return;
@@ -2991,6 +2999,8 @@ export class Player extends BaseGameObject {
             type: net.MsgType.Pickup,
             msg: pickupMsg,
         });
+
+        this.weaponManager.preventEmptyWeapon();
     }
 
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
@@ -3109,6 +3119,7 @@ export class Player extends BaseGameObject {
                 }
                 this.inventoryDirty = true;
                 this.weapsDirty = true;
+                this.weaponManager.preventEmptyWeapon();
                 break;
             }
             case "perk": {

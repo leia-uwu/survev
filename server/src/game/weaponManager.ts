@@ -54,12 +54,20 @@ export class WeaponManager {
      */
     setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
         // if current slot is invalid and next too, switch to melee
+        let forceMeleeSwitch = false;
         if (!this.activeWeapon && !this.weapons[idx].type) {
             idx = GameConfig.WeaponSlot.Melee;
+
+            if (!this.weapons[idx].type) {
+                this.weapons[idx].type = "fists";
+                this.weapons[idx].cooldown = 0;
+            }
+            forceMeleeSwitch = true;
         }
+
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
-        if (this.bursts.length) return;
+        if (this.bursts.length && !forceMeleeSwitch) return;
 
         this.player.cancelAnim();
 
@@ -146,11 +154,6 @@ export class WeaponManager {
             );
         }
 
-        // attempt to fix mysterious crash with active weapon being undefined
-        if (idx === GameConfig.WeaponSlot.Melee && !type) {
-            type = "fists";
-        }
-
         this.weapons[idx].type = type;
         this.weapons[idx].cooldown = 0;
         this.weapons[idx].ammo = ammo;
@@ -162,15 +165,25 @@ export class WeaponManager {
             this.player.setDirty();
         }
 
-        // more stuff to prevent crash
-        if (!this.activeWeapon) {
-            const idx = this.weapons[this.lastWeaponIdx].type
-                ? this.lastWeaponIdx
-                : GameConfig.WeaponSlot.Melee;
-            this.setCurWeapIndex(idx);
-        }
+        this.preventEmptyWeapon();
 
         this.player.weapsDirty = true;
+    }
+
+    preventEmptyWeapon() {
+        const meleeIdx = GameConfig.WeaponSlot.Melee;
+        if (!this.weapons[meleeIdx].type) {
+            this.weapons[meleeIdx].type = "fists";
+            this.weapons[meleeIdx].cooldown = 0;
+
+            if (this.curWeapIdx === meleeIdx) {
+                this.player.setDirty();
+            }
+        }
+
+        if (!this.activeWeapon) {
+            this.setCurWeapIndex(meleeIdx);
+        }
     }
 
     weapons: Array<{
@@ -506,6 +519,8 @@ export class WeaponManager {
         this.player.dropLoot(item, amountToDrop, true);
         this.player.weapsDirty = true;
         if (weapIdx === this.curWeapIdx) this.player.setDirty();
+
+        this.preventEmptyWeapon();
     }
 
     dropMelee(): void {
@@ -515,6 +530,7 @@ export class WeaponManager {
             this.setWeapon(slot, "fists", 0);
             if (slot === this.curWeapIdx) this.player.setDirty();
         }
+        this.preventEmptyWeapon();
     }
 
     isBulletSaturated(): boolean {
@@ -956,7 +972,7 @@ export class WeaponManager {
         );
     }
 
-    throwThrowable(): void {
+    throwThrowable(noSpeed?: boolean): void {
         if (!this.cookingThrowable) return;
         this.cookingThrowable = false;
         const throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
@@ -966,7 +982,7 @@ export class WeaponManager {
 
         //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
         const throwStr =
-            this.curWeapIdx == GameConfig.WeaponSlot.Throwable
+            this.curWeapIdx == GameConfig.WeaponSlot.Throwable && !noSpeed
                 ? math.clamp(
                       this.player.toMouseLen,
                       0,
