@@ -1244,8 +1244,9 @@ export class Player extends BaseGameObject {
 
                     if (
                         zoomRegion.zoomIn &&
-                        coldet.testPointAabb(
-                            this.pos,
+                        coldet.testCircleAabb(
+                            this.collider.pos,
+                            this.collider.rad,
                             zoomRegion.zoomIn.min,
                             zoomRegion.zoomIn.max,
                         )
@@ -1260,8 +1261,9 @@ export class Player extends BaseGameObject {
 
                     if (
                         zoomRegion.zoomOut &&
-                        coldet.testPointAabb(
-                            this.pos,
+                        coldet.testCircleAabb(
+                            this.collider.pos,
+                            this.collider.rad,
                             zoomRegion.zoomOut.min,
                             zoomRegion.zoomOut.max,
                         )
