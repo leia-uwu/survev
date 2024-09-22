@@ -598,6 +598,9 @@ export class GameMap {
         }
 
         if (this.riverDescs.length) {
+            //
+            // Generate river cabins
+            //
             for (const type in mapDef.mapGen.riverCabins) {
                 const count = mapDef.mapGen.riverCabins[type];
                 for (let i = 0; i < count; i++) {
@@ -605,6 +608,9 @@ export class GameMap {
                 }
             }
 
+            //
+            // Generate river rocks and bushes
+            //
             const riverObjs = {
                 stone_03: 3,
                 bush_04: 1.2,
@@ -618,6 +624,42 @@ export class GameMap {
 
                     for (let i = 0; i < amount; i++) {
                         this.genOnRiver(type, river);
+                    }
+                }
+            }
+
+            //
+            // Generate bridges
+            //
+            for (const river of this.terrain.rivers) {
+                if (river.looped) continue;
+                const width = river.waterWidth;
+
+                const maxBridges = {
+                    medium: 4,
+                    large: 3,
+                    xlarge: 2,
+                };
+
+                let bridgeSize: keyof typeof maxBridges | undefined;
+                if (width < 9 && width > 4) {
+                    bridgeSize = "medium";
+                } else if (width < 20 && width > 8) {
+                    bridgeSize = "large";
+                } else if (width > 20) {
+                    bridgeSize = "xlarge";
+                }
+                if (!bridgeSize) continue;
+                const bridgeType = mapDef.mapGen.bridgeTypes[bridgeSize];
+                if (!bridgeType) continue;
+
+                for (
+                    let attempts = 0, bridgesGenerated = 0, max = maxBridges[bridgeSize];
+                    attempts < 50 && bridgesGenerated < max;
+                    attempts++
+                ) {
+                    if (this.genBridge(bridgeType, river)) {
+                        bridgesGenerated++;
                     }
                 }
             }
@@ -667,42 +709,6 @@ export class GameMap {
             // TODO: figure out density spawn amount algorithm
             const count = Math.round(densitySpawns[type] * 1.35);
             this.genFromMapDef(type, count);
-        }
-
-        //
-        // Generate bridge on rivers
-        //
-        for (const river of this.terrain.rivers) {
-            if (river.looped) continue;
-            const width = river.waterWidth;
-
-            const maxBridges = {
-                medium: 4,
-                large: 3,
-                xlarge: 2,
-            };
-
-            let bridgeSize: keyof typeof maxBridges | undefined;
-            if (width < 9 && width > 4) {
-                bridgeSize = "medium";
-            } else if (width < 20 && width > 8) {
-                bridgeSize = "large";
-            } else if (width > 20) {
-                bridgeSize = "xlarge";
-            }
-            if (!bridgeSize) continue;
-            const bridgeType = mapDef.mapGen.bridgeTypes[bridgeSize];
-            if (!bridgeType) continue;
-
-            for (
-                let attempts = 0, bridgesGenerated = 0, max = maxBridges[bridgeSize];
-                attempts < 50 && bridgesGenerated < max;
-                attempts++
-            ) {
-                if (this.genBridge(bridgeType, river)) {
-                    bridgesGenerated++;
-                }
-            }
         }
     }
 
