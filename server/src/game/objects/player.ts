@@ -120,6 +120,7 @@ export class PlayerBarn {
                     const sameTeamId = team && team.teamId == group.players[0].teamId;
                     return (
                         (team ? sameTeamId : true) &&
+                        !group.allDeadOrDisconnected &&
                         group.autoFill &&
                         group.players.length < this.game.teamMode &&
                         this.game.teamMode -
