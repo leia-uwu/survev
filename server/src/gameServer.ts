@@ -1,9 +1,11 @@
 import { randomBytes } from "crypto";
+import { readFileSync } from "fs";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
 import { GameConfig, TeamMode } from "../../shared/gameConfig";
+import { InputMsg, MsgStream, MsgType } from "../../shared/net/net";
 import { Config } from "./config";
 import { Game, type ServerGameConfig } from "./game/game";
 import type { Group } from "./game/group";
@@ -40,7 +42,36 @@ export interface GameSocketData {
     sendMsg: (msg: ArrayBuffer | Uint8Array) => void;
     closeSocket: () => void;
     player?: Player;
+    packetIdx: number;
+    paused: boolean;
 }
+
+const file = process.argv[2];
+const data = JSON.parse(readFileSync(file) as unknown as string);
+
+function base64ToArrayBuffer(base64: string) {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer as ArrayBuffer;
+}
+
+const recordings: Array<ArrayBuffer[]> = [];
+for (const entrie of data.log.entries) {
+    if (!entrie.request.url.includes("/play")) continue;
+
+    const rec = [];
+    for (const msg of entrie._webSocketMessages ?? []) {
+        if (msg.type === "send") continue;
+        rec.push(base64ToArrayBuffer(msg.data));
+    }
+    recordings.push(rec);
+}
+
+console.log(recordings.length);
+const record = recordings[1];
 
 export class GameServer {
     readonly logger = new Logger("GameServer");
@@ -49,6 +80,8 @@ export class GameServer {
 
     readonly region = Config.regions[Config.thisRegion];
     readonly regionId = Config.thisRegion;
+
+    sockets: GameSocketData[] = [];
 
     init(app: TemplatedApp): void {
         setInterval(() => {
@@ -105,6 +138,8 @@ export class GameServer {
                     res.upgrade(
                         {
                             gameID,
+                            packetIdx: 0,
+                            paused: false,
                         },
                         req.getHeader("sec-websocket-key"),
                         req.getHeader("sec-websocket-protocol"),
@@ -150,21 +185,26 @@ export class GameServer {
     }
 
     update(): void {
-        for (let i = 0; i < this.games.length; i++) {
-            const game = this.games[i];
-            if (game.stopped) {
-                this.games.splice(i, 1);
-                i--;
-                this.gamesById.delete(game.id);
-                continue;
-            }
-            game.update();
-        }
+        // for (let i = 0; i < this.games.length; i++) {
+        //     const game = this.games[i];
+        //     if (game.stopped) {
+        //         this.games.splice(i, 1);
+        //         i--;
+        //         this.gamesById.delete(game.id);
+        //         continue;
+        //     }
+        //     game.update();
+        // }
     }
 
     netSync(): void {
-        for (let i = 0; i < this.games.length; i++) {
-            this.games[i].netSync();
+        // for (let i = 0; i < this.games.length; i++) {
+        //     this.games[i].netSync();
+        // }
+        for (const socket of this.sockets) {
+            if (socket.paused) return;
+            socket.sendMsg(record[socket.packetIdx]);
+            socket.packetIdx++;
         }
     }
 
@@ -278,6 +318,8 @@ export class GameServer {
     }
 
     onOpen(data: GameSocketData): void {
+        this.sockets.push(data);
+        return;
         const game = this.gamesById.get(data.gameID);
         if (game === undefined) {
             data.closeSocket();
@@ -285,6 +327,19 @@ export class GameServer {
     }
 
     onMessage(data: GameSocketData, message: ArrayBuffer | Buffer) {
+        const msgStream = new MsgStream(message);
+        const type = msgStream.deserializeMsgType();
+        const stream = msgStream.stream;
+
+        if (type === MsgType.Input) {
+            const msg = new InputMsg();
+            msg.deserialize(stream);
+            if (msg.shootStart) {
+                data.paused = !data.paused;
+            }
+        }
+
+        return;
         const game = this.gamesById.get(data.gameID);
         if (!game) {
             data.closeSocket();

@@ -86,6 +86,10 @@ export class Loot implements AbstractObject {
         }
 
         if (isNew) {
+            console.log(this.type, this.pos.x, this.pos.y);
+        }
+
+        if (isNew) {
             const itemDef = GameObjectDefs[this.type] as LootDef;
             this.ticker = 0;
 
