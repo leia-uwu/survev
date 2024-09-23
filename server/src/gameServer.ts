@@ -44,6 +44,7 @@ export interface GameSocketData {
     player?: Player;
     packetIdx: number;
     paused: boolean;
+    fastFoward: boolean;
 }
 
 const file = process.argv[2];
@@ -203,8 +204,10 @@ export class GameServer {
         // }
         for (const socket of this.sockets) {
             if (socket.paused) return;
-            socket.sendMsg(record[socket.packetIdx]);
-            socket.packetIdx++;
+            for (let i = 0; i < (socket.fastFoward ? 5 : 1); i++) {
+                socket.sendMsg(record[socket.packetIdx]);
+                socket.packetIdx++;
+            }
         }
     }
 
@@ -337,6 +340,7 @@ export class GameServer {
             if (msg.shootStart) {
                 data.paused = !data.paused;
             }
+            data.fastFoward = msg.moveRight;
         }
 
         return;
