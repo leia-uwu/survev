@@ -249,6 +249,7 @@ export class Obstacle extends BaseGameObject {
     updateCollider() {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
+        this.game.grid.updateObject(this);
     }
 
     checkLayer(): void {
@@ -301,22 +302,23 @@ export class Obstacle extends BaseGameObject {
         }
 
         this.health -= params.amount!;
+        this.health = math.max(0, this.health);
+
+        this.healthT = math.clamp(this.health / this.maxHealth, 0, 1);
+
+        if (this.minScale < 1) {
+            this.scale = math.lerp(this.healthT, this.minScale, this.maxScale);
+            this.updateCollider();
+        }
+
+        // need to send full object for obstacles with explosions
+        // so smoke particles work on the client
+        // since they depend on healthT
+        if (def.explosion) this.setDirty();
+        else this.setPartDirty();
 
         if (this.health <= 0) {
             this.kill(params);
-        } else {
-            this.healthT = this.health / this.maxHealth;
-            if (this.minScale < 1) {
-                this.scale =
-                    this.healthT * (this.maxScale - this.minScale) + this.minScale;
-                this.updateCollider();
-            }
-
-            // need to send full object for obstacles with explosions
-            // so smoke particles work on the client
-            // since they depend on healthT
-            if (def.explosion) this.setDirty();
-            else this.setPartDirty();
         }
     }
 

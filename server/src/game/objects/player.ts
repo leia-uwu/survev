@@ -1345,7 +1345,6 @@ export class Player extends BaseGameObject {
             if (this.obstacleOutfit) {
                 this.obstacleOutfit.pos = v2.copy(this.pos);
                 this.obstacleOutfit.updateCollider();
-                this.game.grid.updateObject(this.obstacleOutfit);
                 this.obstacleOutfit.setPartDirty();
             }
         }
