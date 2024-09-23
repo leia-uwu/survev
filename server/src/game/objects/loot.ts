@@ -264,9 +264,9 @@ export class Loot extends BaseGameObject {
 
                 const res = coldet.intersectCircleCircle(
                     this.pos,
-                    this.collider.rad,
+                    this.collider.rad * 1.25,
                     obj.pos,
-                    obj.collider.rad,
+                    obj.collider.rad * 1.25,
                 );
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
