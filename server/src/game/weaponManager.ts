@@ -171,6 +171,17 @@ export class WeaponManager {
     }
 
     preventEmptyWeapon() {
+        if (!this.activeWeapon) {
+            console.error(
+                "Invalid active weapon; current weapon idx:",
+                this.curWeapIdx,
+                "last idx",
+                this.lastWeaponIdx,
+                "weapons:",
+                this.weapons,
+            );
+        }
+
         const meleeIdx = GameConfig.WeaponSlot.Melee;
         if (!this.weapons[meleeIdx].type) {
             this.weapons[meleeIdx].type = "fists";
