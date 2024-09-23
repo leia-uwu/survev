@@ -354,31 +354,27 @@ export class Obstacle extends BaseGameObject {
                     const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier!);
 
                     for (const item of items) {
-                        const dir = v2.randomUnit();
-                        const def = GameObjectDefs[item.name];
                         this.game.lootBarn.addLoot(
                             item.name,
-                            v2.add(lootPos, v2.mul(dir, 0.2)),
+                            v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
                             this.layer,
                             item.count,
                             undefined,
-                            def.type == "gun" ? 0 : undefined,
-                            dir,
+                            undefined, // undefined to use default push speed value
+                            params.dir,
                             lootTierOrItem.props?.preloadGuns,
                         );
                     }
                 }
             } else {
-                const dir = v2.randomUnit();
-                const def = GameObjectDefs[lootTierOrItem.type!];
                 this.game.lootBarn.addLoot(
                     lootTierOrItem.type!,
-                    v2.add(lootPos, v2.mul(dir, 0.2)),
+                    v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
                     this.layer,
                     lootTierOrItem.count!,
                     undefined,
-                    def.type == "gun" ? 0 : undefined,
-                    dir,
+                    undefined,
+                    params.dir,
                     lootTierOrItem.props?.preloadGuns,
                 );
             }

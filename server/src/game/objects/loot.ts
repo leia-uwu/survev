@@ -15,9 +15,12 @@ import type { Player } from "./player";
 // velocity drag applied every tick
 const LOOT_DRAG = 3;
 // how much loot pushes each other every tick
-const LOOT_PUSH_FORCE = 10;
+const LOOT_PUSH_FORCE = 8;
 // explosion push force multiplier
 export const EXPLOSION_LOOT_PUSH_FORCE = 6;
+
+const AMMO_OFFSET_X = 1.35;
+const AMMO_OFFSET_Y = -0.3;
 
 type LootTierItem = MapDef["lootTable"][string][number];
 
@@ -92,11 +95,11 @@ export class LootBarn {
             const leftAmmo = new Loot(
                 this.game,
                 def.ammo,
-                v2.add(pos, v2.create(-0.8, -0.3)),
+                v2.add(pos, v2.create(-AMMO_OFFSET_X, AMMO_OFFSET_Y)),
                 layer,
                 halfAmmo,
-                2,
-                v2.create(-1.3, -0.4),
+                pushSpeed,
+                dir,
             );
             this._addLoot(leftAmmo);
 
@@ -104,11 +107,11 @@ export class LootBarn {
                 const rightAmmo = new Loot(
                     this.game,
                     def.ammo,
-                    v2.add(pos, v2.create(0.8, -0.3)),
+                    v2.add(pos, v2.create(AMMO_OFFSET_X, AMMO_OFFSET_Y)),
                     layer,
                     ammoCount - halfAmmo,
-                    2,
-                    v2.create(1.3, -0.4),
+                    pushSpeed,
+                    dir,
                 );
                 this._addLoot(rightAmmo);
             }
@@ -190,7 +193,7 @@ export class Loot extends BaseGameObject {
         pos: Vec2,
         layer: number,
         count: number,
-        pushSpeed = 2,
+        pushSpeed = 4,
         dir?: Vec2,
     ) {
         super(game, pos);
@@ -226,7 +229,7 @@ export class Loot extends BaseGameObject {
             Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
 
-        if (!moving) return;
+        if (!moving && !this.isOld) return;
 
         this.oldPos = v2.copy(this.pos);
 
