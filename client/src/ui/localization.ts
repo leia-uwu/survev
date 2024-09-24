@@ -1,5 +1,5 @@
 import $ from "jquery";
-import english from "../../public/l10n/en.json";
+import english from "../en.json";
 import { device } from "../device";
 
 function downloadFile(
