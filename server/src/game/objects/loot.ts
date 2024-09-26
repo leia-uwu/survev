@@ -15,7 +15,7 @@ import type { Player } from "./player";
 // velocity drag applied every tick
 const LOOT_DRAG = 3;
 // how much loot pushes each other every tick
-const LOOT_PUSH_FORCE = 8;
+const LOOT_PUSH_FORCE = 6;
 // explosion push force multiplier
 export const EXPLOSION_LOOT_PUSH_FORCE = 6;
 
@@ -226,7 +226,8 @@ export class Loot extends BaseGameObject {
         } else this.ticks++;
         const moving =
             !this.isOld ||
-            Math.abs(this.vel.x) > 0.001 || Math.abs(this.vel.y) > 0.001 ||
+            Math.abs(this.vel.x) > 0.001 ||
+            Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
 
         if (!moving) return;
@@ -271,8 +272,9 @@ export class Loot extends BaseGameObject {
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
 
-                this.vel = v2.sub(this.vel, v2.mul(res.dir, LOOT_PUSH_FORCE * dt));
-                obj.vel = v2.add(obj.vel, v2.mul(res.dir, LOOT_PUSH_FORCE * dt));
+                const force = (res.pen / 2) * LOOT_PUSH_FORCE * dt;
+                this.vel = v2.sub(this.vel, v2.mul(res.dir, force));
+                obj.vel = v2.add(obj.vel, v2.mul(res.dir, force));
             }
         }
 
