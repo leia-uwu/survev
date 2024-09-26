@@ -225,11 +225,11 @@ export class Loot extends BaseGameObject {
             this.setDirty();
         } else this.ticks++;
         const moving =
-            Math.abs(this.vel.x) > 0.001 ||
-            Math.abs(this.vel.y) > 0.001 ||
+            !this.isOld ||
+            Math.abs(this.vel.x) > 0.001 || Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
 
-        if (!moving && !this.isOld) return;
+        if (!moving) return;
 
         this.oldPos = v2.copy(this.pos);
 

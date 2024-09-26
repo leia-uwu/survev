@@ -383,10 +383,14 @@ export class GameMap {
 
             building.occupied = false;
 
-            const objs = this.game.grid.intersectCollider(building.emitterBounds);
+            const livingPlayers = this.game.playerBarn.livingPlayers;
+            const players =
+                livingPlayers.length < 20
+                    ? livingPlayers
+                    : this.game.grid.intersectCollider(building.emitterBounds);
 
-            for (let i = 0; i < objs.length; i++) {
-                const player = objs[i];
+            for (let i = 0; i < players.length; i++) {
+                const player = players[i];
                 if (player.__type !== ObjectType.Player) continue;
                 if (player.dead) continue;
                 if (!util.sameLayer(player.layer, building.layer)) continue;
@@ -1197,6 +1201,7 @@ export class GameMap {
 
     genOnRiver(type: string, river?: River) {
         let rivers = this.terrain.rivers;
+        if (!rivers.length) return;
         river = river ?? rivers[util.randomInt(0, rivers.length - 1)];
         const t = util.random(0, 1);
         const offset = util.random(0, river.waterWidth);
