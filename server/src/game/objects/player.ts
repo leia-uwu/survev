@@ -889,7 +889,12 @@ export class Player extends BaseGameObject {
                 this.weapons,
             );
             this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
-            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+            this.weaponManager.setCurWeapIndex(
+                GameConfig.WeaponSlot.Melee,
+                undefined,
+                undefined,
+                true,
+            );
         }
         super.serializeFull();
     }

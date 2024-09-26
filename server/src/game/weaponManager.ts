@@ -52,9 +52,13 @@ export class WeaponManager {
      * @param shouldReload will attempt automatic reload at 0 ammo if true
      * @returns
      */
-    setCurWeapIndex(idx: number, cancelAction = true, cancelSlowdown = true): void {
+    setCurWeapIndex(
+        idx: number,
+        cancelAction = true,
+        cancelSlowdown = true,
+        forceSwitch = false,
+    ): void {
         // if current slot is invalid and next too, switch to melee
-        let forceMeleeSwitch = false;
         if (!this.activeWeapon && !this.weapons[idx].type) {
             idx = WeaponSlot.Melee;
 
@@ -62,12 +66,12 @@ export class WeaponManager {
                 this.weapons[idx].type = "fists";
                 this.weapons[idx].cooldown = 0;
             }
-            forceMeleeSwitch = true;
+            forceSwitch = true;
         }
 
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
-        if (this.bursts.length && !forceMeleeSwitch) return;
+        if (this.bursts.length && !forceSwitch) return;
 
         this.player.cancelAnim();
 
