@@ -16,6 +16,7 @@ export class Group {
     players: Player[] = [];
     livingPlayers: Player[] = [];
     autoFill: boolean;
+    reservedSlots = 0;
 
     constructor(hash: string, groupId: number, autoFill: boolean) {
         this.hash = hash;

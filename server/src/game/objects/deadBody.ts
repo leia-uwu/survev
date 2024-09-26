@@ -13,9 +13,6 @@ export class DeadBodyBarn {
         for (let i = 0; i < this.deadBodies.length; i++) {
             const deadBody = this.deadBodies[i];
             deadBody.update(dt);
-            if (deadBody.__id === 0) {
-                this.deadBodies.splice(i, 1);
-            }
         }
     }
 
@@ -41,7 +38,7 @@ export class DeadBody extends BaseGameObject {
         super(game, pos);
         this.layer = layer;
         this.playerId = playerId;
-        this.vel = v2.mul(dir, 8);
+        this.vel = v2.mul(dir, 10);
         this.oldPos = v2.copy(this.pos);
     }
 
@@ -55,21 +52,11 @@ export class DeadBody extends BaseGameObject {
 
         this.oldPos = v2.copy(this.pos);
 
-        const halfDt = dt / 2;
-
-        const calculateSafeDisplacement = (): Vec2 => {
-            let displacement = v2.mul(this.vel, halfDt);
-            if (v2.lengthSqr(displacement) >= 1) {
-                displacement = v2.normalizeSafe(displacement);
-            }
-
-            return displacement;
-        };
-
-        this.pos = v2.add(this.pos, calculateSafeDisplacement());
         this.vel = v2.mul(this.vel, 0.95);
 
-        this.pos = v2.add(this.pos, calculateSafeDisplacement());
+        v2.set(this.pos, v2.add(this.pos, v2.mul(this.vel, dt)));
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * 3));
+
         this.game.map.clampToMapBounds(this.pos);
 
         const originalLayer = this.layer;

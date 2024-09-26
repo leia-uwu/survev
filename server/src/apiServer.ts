@@ -3,6 +3,7 @@ import { version } from "../../package.json";
 import { Config, type ConfigType } from "./config";
 import type { FindGameBody, FindGameResponse } from "./gameServer";
 import { TeamMenu } from "./teamMenu";
+import { GIT_VERSION } from "./utils/gitRevision";
 import { Logger } from "./utils/logger";
 import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
 
@@ -93,6 +94,7 @@ export class ApiServer {
             youtube: { name: "", link: "" },
             twitch: [],
             country: "US",
+            gitRevision: GIT_VERSION,
         };
 
         for (const region in this.regions) {
@@ -202,7 +204,7 @@ if (process.argv.includes("--api-server")) {
     });
 
     app.listen(Config.apiServer.host, Config.apiServer.port, (): void => {
-        server.logger.log(`Resurviv API Server v${version}`);
+        server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);
         server.logger.log(
             `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`,
         );

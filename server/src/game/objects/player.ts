@@ -31,6 +31,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { GameSocketData } from "../../gameServer";
 import { IDAllocator } from "../../utils/IDAllocator";
+import { checkForBadWords } from "../../utils/serverHelpers";
 import type { Game } from "../game";
 import type { Group } from "../group";
 import type { Team } from "../team";
@@ -103,16 +104,21 @@ export class PlayerBarn {
             const groupData = this.game.groupDatas.find(
                 (gd) => gd.hash == joinMsg.matchPriv,
             )!;
-            if (this.game.groups.has(groupData.hash)) {
-                //group already exists
-                group = this.game.groups.get(groupData.hash)!;
+            const selectedGroup = this.game.groups.get(groupData.hash);
+            if (
+                selectedGroup &&
+                selectedGroup.players.length < this.game.config.teamMode
+            ) {
+                // group already exists
+                group = selectedGroup;
+                group.reservedSlots--;
                 team = group.players[0].team;
             } else {
                 group = this.game.addGroup(groupData.hash, groupData.autoFill);
             }
         }
 
-        const pos: Vec2 = this.game.map.getSpawnPos(group);
+        const pos: Vec2 = this.game.map.getSpawnPos(group, team);
 
         const player = new Player(this.game, pos, socketData, joinMsg);
 
@@ -149,7 +155,6 @@ export class PlayerBarn {
             this.game.started = this.game.contextManager.isGameStarted();
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
-                this.game.planeBarn.schedulePlanes();
             }
         }
 
@@ -167,6 +172,7 @@ export class PlayerBarn {
             scheduledRole.time -= dt;
             if (scheduledRole.time <= 0) {
                 this.scheduledRoles.splice(i, 1);
+                i--;
 
                 const fullAliveContext =
                     this.game.contextManager.getAlivePlayersContext();
@@ -665,7 +671,6 @@ export class Player extends BaseGameObject {
         }
         this.role = role;
         this.inventoryDirty = true;
-        this.weapsDirty = true;
         this.setDirty();
     }
 
@@ -741,7 +746,7 @@ export class Player extends BaseGameObject {
     loadout = {
         heal: "heal_basic",
         boost: "boost_basic",
-        emotes: GameConfig.defaultEmoteLoadout,
+        emotes: [...GameConfig.defaultEmoteLoadout],
     };
 
     damageTaken = 0;
@@ -757,13 +762,15 @@ export class Player extends BaseGameObject {
     // to disable auto pickup for some seconds after dropping something
     mobileDropTicker = 0;
 
+    obstacleOutfit?: Obstacle;
+
     constructor(game: Game, pos: Vec2, socketData: GameSocketData, joinMsg: net.JoinMsg) {
         super(game, pos);
 
         this.socketData = socketData;
 
-        this.name = joinMsg.name;
-        if (this.name.trim() === "") {
+        this.name = joinMsg.name.trim();
+        if (this.name === "" || checkForBadWords(this.name)) {
             this.name = "Player";
         }
         this.isMobile = joinMsg.isMobile;
@@ -777,19 +784,16 @@ export class Player extends BaseGameObject {
             assert(def, `Invalid item type for ${category}: ${type}`);
             assert(
                 def.type === category,
-                `Invalid type ${type}, expected ${def.type} item`,
+                `Invalid type ${type}, expected ${category} item`,
             );
         }
 
         for (let i = 0; i < GameConfig.WeaponSlot.Count; i++) {
             const weap = defaultItems.weapons[i];
-            if (!weap.type) continue;
-            assertType(weap.type, GameConfig.WeaponType[i], true);
-            this.weaponManager.setWeapon(
-                i,
-                weap.type ?? this.weapons[i].type,
-                weap.ammo ?? 0,
-            );
+            let type = weap.type || this.weapons[i].type;
+            if (!type) continue;
+            assertType(type, GameConfig.WeaponType[i], true);
+            this.weaponManager.setWeapon(i, type, weap.ammo ?? 0);
         }
 
         for (const key in GameConfig.bagSizes) {
@@ -840,9 +844,6 @@ export class Player extends BaseGameObject {
             joinMsg.loadout.melee != "fists"
         ) {
             this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        } else {
-            this.weapons[GameConfig.WeaponSlot.Melee].type =
-                defaultItems.weapons[GameConfig.WeaponSlot.Melee].type;
         }
 
         const loadout = this.loadout;
@@ -877,6 +878,27 @@ export class Player extends BaseGameObject {
         this.zoom = this.scopeZoomRadius[this.scope];
 
         this.weaponManager.showNextThrowable();
+    }
+
+    override serializeFull(): void {
+        if (!this.activeWeapon) {
+            console.error(
+                "Invalid active weapon, curIdx:",
+                this.curWeapIdx,
+                "lastIdx:",
+                this.weaponManager.lastWeaponIdx,
+                "weaps:",
+                this.weapons,
+            );
+            this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
+            this.weaponManager.setCurWeapIndex(
+                GameConfig.WeaponSlot.Melee,
+                undefined,
+                undefined,
+                true,
+            );
+        }
+        super.serializeFull();
     }
 
     visibleObjects = new Set<GameObject>();
@@ -1091,62 +1113,59 @@ export class Player extends BaseGameObject {
         //
         const movement = v2.create(0, 0);
 
-        if (this.game.startedTime >= GameConfig.player.gracePeriodTime) {
-            this.posOld = v2.copy(this.pos);
+        if (this.touchMoveActive && this.touchMoveLen) {
+            movement.x = this.touchMoveDir.x;
+            movement.y = this.touchMoveDir.y;
+        } else {
+            if (this.moveUp) movement.y++;
+            if (this.moveDown) movement.y--;
+            if (this.moveLeft) movement.x--;
+            if (this.moveRight) movement.x++;
 
-            if (this.touchMoveActive && this.touchMoveLen) {
-                movement.x = this.touchMoveDir.x;
-                movement.y = this.touchMoveDir.y;
-            } else {
-                if (this.moveUp) movement.y++;
-                if (this.moveDown) movement.y--;
-                if (this.moveLeft) movement.x--;
-                if (this.moveRight) movement.x++;
-
-                if (movement.x * movement.y !== 0) {
-                    // If the product is non-zero, then both of the components must be non-zero
-                    movement.x *= Math.SQRT1_2;
-                    movement.y *= Math.SQRT1_2;
-                }
+            if (movement.x * movement.y !== 0) {
+                // If the product is non-zero, then both of the components must be non-zero
+                movement.x *= Math.SQRT1_2;
+                movement.y *= Math.SQRT1_2;
             }
         }
+
+        this.posOld = v2.copy(this.pos);
+
         this.recalculateSpeed();
         this.moveVel = v2.mul(movement, this.speed);
 
-        v2.set(this.pos, v2.add(this.pos, v2.mul(movement, this.speed * dt)));
         let objs!: GameObject[];
 
-        for (let i = 0, collided = true; i < 5 && collided; i++) {
+        const steps = Math.round(math.max(this.speed * dt + 5, 5));
+
+        const speedToAdd = (this.speed / steps) * dt;
+        for (let i = 0; i < steps; i++) {
             objs = this.game.grid.intersectCollider(this.collider);
-            collided = false;
+
+            v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
 
             for (let j = 0; j < objs.length; j++) {
                 const obj = objs[j];
-                if (
-                    obj.__type === ObjectType.Obstacle &&
-                    obj.collidable &&
-                    util.sameLayer(obj.layer, this.layer) &&
-                    !obj.dead
-                ) {
-                    const collision = collider.intersectCircle(
-                        obj.collider,
+                if (obj.__type !== ObjectType.Obstacle) continue;
+                if (!obj.collidable) continue;
+                if (obj.dead) continue;
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+
+                const collision = collider.intersectCircle(
+                    obj.collider,
+                    this.pos,
+                    this.rad,
+                );
+                if (collision) {
+                    v2.set(
                         this.pos,
-                        this.rad,
+                        v2.add(this.pos, v2.mul(collision.dir, collision.pen + 0.001)),
                     );
-                    if (collision) {
-                        v2.set(
-                            this.pos,
-                            v2.add(
-                                this.pos,
-                                v2.mul(collision.dir, collision.pen + 0.001),
-                            ),
-                        );
-                        collided = true;
-                        break;
-                    }
                 }
             }
         }
+
+        this.pickupTicker -= dt;
 
         //
         // Mobile auto interaction
@@ -1161,8 +1180,9 @@ export class Player extends BaseGameObject {
                     case "gun":
                         const freeSlot = this.getFreeGunSlot(closestLoot);
                         if (
-                            freeSlot.availSlot > 0 &&
-                            !this.weapons[freeSlot.availSlot].type
+                            freeSlot.slot &&
+                            freeSlot.slot !== this.curWeapIdx &&
+                            !this.weapons[freeSlot.slot].type
                         ) {
                             this.pickupLoot(closestLoot);
                         }
@@ -1207,9 +1227,12 @@ export class Player extends BaseGameObject {
                 }
             }
 
-            const closestObstacle = this.getClosestObstacle();
-            if (closestObstacle && closestObstacle.isDoor && !closestObstacle.door.open) {
-                closestObstacle.interact(this);
+            const obstacles = this.getInteractableObstacles();
+            for (let i = 0; i < obstacles.length; i++) {
+                const obstacle = obstacles[i];
+                if (obstacle.isDoor && !obstacle.door.open) {
+                    obstacle.interact(this);
+                }
             }
         }
 
@@ -1253,8 +1276,9 @@ export class Player extends BaseGameObject {
 
                     if (
                         zoomRegion.zoomIn &&
-                        coldet.testPointAabb(
-                            this.pos,
+                        coldet.testCircleAabb(
+                            this.collider.pos,
+                            this.collider.rad,
                             zoomRegion.zoomIn.min,
                             zoomRegion.zoomIn.max,
                         )
@@ -1269,8 +1293,9 @@ export class Player extends BaseGameObject {
 
                     if (
                         zoomRegion.zoomOut &&
-                        coldet.testPointAabb(
-                            this.pos,
+                        coldet.testCircleAabb(
+                            this.collider.pos,
+                            this.collider.rad,
                             zoomRegion.zoomOut.min,
                             zoomRegion.zoomOut.max,
                         )
@@ -1345,6 +1370,15 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
             this.game.grid.updateObject(this);
+
+            //
+            // Halloween obstacle skin
+            //
+            if (this.obstacleOutfit) {
+                this.obstacleOutfit.pos = v2.copy(this.pos);
+                this.obstacleOutfit.updateCollider();
+                this.obstacleOutfit.setPartDirty();
+            }
         }
 
         //
@@ -1634,13 +1668,22 @@ export class Player extends BaseGameObject {
                             util.randomInt(0, spectatablePlayers.length - 1)
                         ];
                 } else {
+                    let attempts = 0;
                     const getAliveKiller = (
                         killer: Player | undefined,
                     ): Player | undefined => {
+                        attempts++;
+                        if (attempts > 80) return undefined;
+
                         if (!killer) return undefined;
                         if (!killer.dead) return killer;
-                        if (killer.killedBy && killer.killedBy != this)
+                        if (
+                            killer.killedBy &&
+                            killer.killedBy != this &&
+                            killer.killedBy !== killer
+                        ) {
                             return getAliveKiller(killer.killedBy);
+                        }
 
                         return undefined;
                     };
@@ -1700,12 +1743,7 @@ export class Player extends BaseGameObject {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                const headshotBlacklist = GameConfig.gun.headshotBlacklist;
-                isHeadShot =
-                    !(headshotBlacklist.length == 1 && headshotBlacklist[0] == "all") &&
-                    !headshotBlacklist.includes(params.gameSourceType ?? "") &&
-                    gameSourceDef.headshotMult > 1 &&
-                    Math.random() < 0.15;
+                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
 
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
@@ -1808,6 +1846,8 @@ export class Player extends BaseGameObject {
         this.shootHold = false;
         this.cancelAction();
 
+        this.weaponManager.throwThrowable();
+
         //
         // Send downed msg
         //
@@ -1880,8 +1920,11 @@ export class Player extends BaseGameObject {
         this.dead = true;
         this.boost = 0;
         this.actionType = GameConfig.Action.None;
+        this.actionSeq++;
         this.hasteType = GameConfig.HasteType.None;
+        this.hasteSeq++;
         this.animType = GameConfig.Anim.None;
+        this.animSeq++;
         this.setDirty();
 
         this.shootHold = false;
@@ -1897,6 +1940,10 @@ export class Player extends BaseGameObject {
         }
         if (this.team) {
             this.team.livingPlayers.splice(this.team.livingPlayers.indexOf(this), 1);
+        }
+
+        if (this.weaponManager.cookingThrowable) {
+            this.weaponManager.throwThrowable(true);
         }
 
         //
@@ -2030,6 +2077,13 @@ export class Player extends BaseGameObject {
         this.game.deadBodyBarn.addDeadBody(this.pos, this.__id, this.layer, params.dir);
 
         //
+        // Kill outfit obstacle
+        //
+        if (this.obstacleOutfit) {
+            this.obstacleOutfit.kill(params);
+        }
+
+        //
         // drop loot
         //
 
@@ -2040,13 +2094,19 @@ export class Player extends BaseGameObject {
             switch (def.type) {
                 case "gun":
                     this.weaponManager.dropGun(i);
+                    weap.type = "";
                     break;
                 case "melee":
                     if (def.noDropOnDeath || weap.type === "fists") break;
                     this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1);
+                    weap.type = "fists";
+                    break;
+                case "throwable":
+                    weap.type = "";
                     break;
             }
         }
+        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
         for (const item in GameConfig.bagSizes) {
             // const def = GameObjectDefs[item] as AmmoDef | HealDef;
@@ -2359,6 +2419,7 @@ export class Player extends BaseGameObject {
                     break;
                 case GameConfig.Input.EquipThrowable:
                     if (this.curWeapIdx === GameConfig.WeaponSlot.Throwable) {
+                        this.weaponManager.throwThrowable(true);
                         this.weaponManager.showNextThrowable();
                     } else {
                         this.weaponManager.setCurWeapIndex(
@@ -2441,10 +2502,10 @@ export class Player extends BaseGameObject {
                     break;
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
-                    const obstacle = this.getClosestObstacle();
+                    const obstacles = this.getInteractableObstacles();
                     const playerToRevive = this.getPlayerToRevive();
 
-                    const interactables = [loot, obstacle, playerToRevive];
+                    const interactables = [loot, ...obstacles, playerToRevive];
 
                     for (let i = 0; i < interactables.length; i++) {
                         const interactable = interactables[i];
@@ -2465,24 +2526,14 @@ export class Player extends BaseGameObject {
                     break;
                 }
                 case GameConfig.Input.Use: {
-                    const obstacle = this.getClosestObstacle();
-                    if (obstacle) obstacle.interact(this);
+                    const obstacles = this.getInteractableObstacles();
+                    for (let i = 0; i < obstacles.length; i++) {
+                        obstacles[i].interact(this);
+                    }
                     break;
                 }
                 case GameConfig.Input.Reload:
                     this.weaponManager.tryReload();
-                    break;
-                case GameConfig.Input.UseBandage:
-                    this.useHealingItem("bandage");
-                    break;
-                case GameConfig.Input.UseHealthKit:
-                    this.useHealingItem("healthkit");
-                    break;
-                case GameConfig.Input.UsePainkiller:
-                    this.useBoostItem("soda");
-                    break;
-                case GameConfig.Input.UseSoda:
-                    this.useBoostItem("painkiller");
                     break;
                 case GameConfig.Input.Cancel:
                     this.cancelAction();
@@ -2603,13 +2654,12 @@ export class Player extends BaseGameObject {
         return closestLoot;
     }
 
-    getClosestObstacle(): Obstacle | undefined {
+    getInteractableObstacles(): Obstacle[] {
         const objs = this.game.grid.intersectCollider(
             collider.createCircle(this.pos, this.rad + 5),
         );
 
-        let closestObj: Obstacle | undefined;
-        let closestPen = 0;
+        let obstacles: Array<{ pen: number; obstacle: Obstacle }> = [];
 
         for (let i = 0; i < objs.length; i++) {
             const obstacle = objs[i];
@@ -2621,14 +2671,16 @@ export class Player extends BaseGameObject {
                         this.pos,
                         obstacle.interactionRad + this.rad,
                     );
-                    if (res && res.pen >= closestPen) {
-                        closestObj = obstacle;
-                        closestPen = res.pen;
+                    if (res) {
+                        obstacles.push({
+                            pen: res.pen,
+                            obstacle,
+                        });
                     }
                 }
             }
         }
-        return closestObj;
+        return obstacles.sort((a, b) => a.pen - b.pen).map((o) => o.obstacle);
     }
 
     interactWith(obj: GameObject): void {
@@ -2643,42 +2695,56 @@ export class Player extends BaseGameObject {
     }
 
     getFreeGunSlot(obj: Loot) {
-        let availSlot = -1;
-        let cause = net.PickupMsgType.Success;
-        let indexOf = -1;
-        let isDualWield = false;
         const gunSlots = [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary];
+
+        // first loop to find dual wieldable guns
         for (const slot of gunSlots) {
             const slotDef = GameObjectDefs[this.weapons[slot].type] as GunDef | undefined;
-            const dualWield =
-                slotDef?.dualWieldType && obj.type === this.weapons[slot].type;
-            if (this.weapons[slot].type === obj.type) {
-                indexOf = slot;
-            }
-            if (this.weapons[slot].type === "" || dualWield) {
-                availSlot = slot;
-                isDualWield = dualWield || false;
-                break;
-            }
-            if (
-                this.weapons[slot].type === obj.type &&
-                !dualWield &&
-                (slot as number) == gunSlots.length - 1
-            ) {
-                cause = net.PickupMsgType.AlreadyOwned;
-                break;
+
+            if (slotDef?.dualWieldType && obj.type === this.weapons[slot].type) {
+                return {
+                    slot,
+                    isDual: true,
+                    cause: net.PickupMsgType.Success,
+                };
             }
         }
+
+        // second loop to find empty slots
+        for (const slot of gunSlots) {
+            if (this.weapons[slot].type === "") {
+                return {
+                    slot,
+                    isDual: false,
+                    cause: net.PickupMsgType.Success,
+                };
+            }
+        }
+
+        // if none are found use active weapon if its a gun
+        if (GameConfig.WeaponType[this.curWeapIdx] === "gun") {
+            return {
+                slot: this.curWeapIdx,
+                isDual: false,
+                cause:
+                    this.activeWeapon === obj.type
+                        ? net.PickupMsgType.AlreadyOwned
+                        : net.PickupMsgType.Success,
+            };
+        }
+
         return {
-            availSlot,
-            isDualWield,
-            cause,
-            indexOf,
+            slot: null,
+            isDual: false,
+            cause: net.PickupMsgType.Full,
         };
     }
 
+    pickupTicker = 0;
     pickupLoot(obj: Loot) {
         if (obj.destroyed) return;
+        if (this.pickupTicker > 0) return;
+        this.pickupTicker = 0.1;
         const def = GameObjectDefs[obj.type];
 
         let amountLeft = 0;
@@ -2713,14 +2779,17 @@ export class Player extends BaseGameObject {
                                 break;
                             }
                             case "throwable": {
-                                if (throwableList.includes(obj.type)) {
+                                if (
+                                    throwableList.includes(obj.type) &&
+                                    !this.weapons[GameConfig.WeaponSlot.Throwable].type
+                                ) {
                                     // fill empty slot with throwable, otherwise just add to inv
                                     if (this.inventory[obj.type] == 0) {
-                                        this.weapons[
-                                            GameConfig.WeaponSlot.Throwable
-                                        ].type = obj.type;
-                                        this.weapsDirty = true;
-                                        this.setDirty();
+                                        this.weaponManager.setWeapon(
+                                            GameConfig.WeaponSlot.Throwable,
+                                            obj.type,
+                                            0,
+                                        );
                                     }
                                 }
                                 break;
@@ -2747,9 +2816,11 @@ export class Player extends BaseGameObject {
                                 throwableList.includes(obj.type) &&
                                 !this.weapons[GameConfig.WeaponSlot.Throwable].type
                             ) {
-                                this.weapons[GameConfig.WeaponSlot.Throwable].type =
-                                    obj.type;
-                                this.weapsDirty = true;
+                                this.weaponManager.setWeapon(
+                                    GameConfig.WeaponSlot.Throwable,
+                                    obj.type,
+                                    0,
+                                );
                                 this.setDirty();
                             }
                         }
@@ -2771,8 +2842,6 @@ export class Player extends BaseGameObject {
             case "melee":
                 this.weaponManager.dropMelee();
                 this.weaponManager.setWeapon(GameConfig.WeaponSlot.Melee, obj.type, 0);
-                this.weapsDirty = true;
-                if (this.curWeapIdx === GameConfig.WeaponSlot.Melee) this.setDirty();
                 break;
             case "gun":
                 {
@@ -2781,85 +2850,70 @@ export class Player extends BaseGameObject {
 
                     const freeGunSlot = this.getFreeGunSlot(obj);
                     pickupMsg.type = freeGunSlot.cause;
-                    let newGunIdx = freeGunSlot.availSlot;
+                    let newGunIdx = freeGunSlot.slot;
 
-                    let gunType: string | undefined = undefined;
-                    let reload = false;
+                    if (newGunIdx === null) {
+                        this.pickupTicker = 0;
+                        return;
+                    }
 
-                    if (freeGunSlot.availSlot == -1) {
-                        newGunIdx = this.curWeapIdx;
-                        if (
-                            this.curWeapIdx in
-                                [
-                                    GameConfig.WeaponSlot.Primary,
-                                    GameConfig.WeaponSlot.Secondary,
-                                ] &&
-                            obj.type != this.weapons[this.curWeapIdx].type
-                        ) {
-                            const gunToDropDef = GameObjectDefs[
-                                this.activeWeapon
-                            ] as GunDef;
-                            if (gunToDropDef.noDrop) return;
+                    const oldWeapDef = GameObjectDefs[this.weapons[newGunIdx].type] as
+                        | GunDef
+                        | undefined;
+                    if (oldWeapDef && oldWeapDef.noDrop) {
+                        this.pickupTicker = 0;
+                        return;
+                    }
 
-                            this.weaponManager.dropGun(this.curWeapIdx, false);
-                            gunType = obj.type;
-                            reload = true;
+                    this.pickupTicker = 0.2;
+
+                    let gunType = obj.type;
+
+                    if (def.dualWieldType && freeGunSlot.isDual) {
+                        gunType = def.dualWieldType;
+                    }
+
+                    this.weaponManager.replaceGun(newGunIdx, gunType);
+
+                    // if "preloaded" gun add ammo to inventory
+                    if (obj.isPreloadedGun) {
+                        const ammoAmount = def.ammoSpawnCount;
+                        const ammoType = def.ammo;
+                        const backpackLevel = this.getGearLevel(this.backpack);
+                        const bagSpace = GameConfig.bagSizes[ammoType]
+                            ? GameConfig.bagSizes[ammoType][backpackLevel]
+                            : 0;
+                        if (this.inventory[ammoType] + ammoAmount <= bagSpace) {
+                            this.inventory[ammoType] += ammoAmount;
+                            this.inventoryDirty = true;
                         } else {
-                            removeLoot = false;
-                            pickupMsg.type = net.PickupMsgType.Full;
-                        }
-                    } else if (freeGunSlot.isDualWield) {
-                        gunType = def.dualWieldType!;
-                        if (
-                            freeGunSlot.availSlot === this.curWeapIdx &&
-                            (this.isReloading() ||
-                                !this.weapons[freeGunSlot.availSlot].ammo)
-                        ) {
-                            reload = true;
-                        }
-                    } else {
-                        gunType = obj.type;
-                    }
-                    if (gunType) {
-                        this.weaponManager.setWeapon(newGunIdx, gunType, 0);
+                            // spawn new loot object to animate the pickup rejection
+                            const spaceLeft = bagSpace - this.inventory[ammoType];
+                            const amountToAdd = spaceLeft;
+                            this.inventory[ammoType] += amountToAdd;
+                            this.inventoryDirty = true;
 
-                        // if "preloaded" gun add ammo to inventory
-                        if (obj.isPreloadedGun) {
-                            const ammoAmount = def.ammoSpawnCount;
-                            const ammoType = def.ammo;
-                            const backpackLevel = this.getGearLevel(this.backpack);
-                            const bagSpace = GameConfig.bagSizes[ammoType]
-                                ? GameConfig.bagSizes[ammoType][backpackLevel]
-                                : 0;
-                            if (this.inventory[ammoType] + ammoAmount <= bagSpace) {
-                                this.inventory[ammoType] += ammoAmount;
-                                this.inventoryDirty = true;
-                            } else {
-                                // spawn new loot object to animate the pickup rejection
-                                const spaceLeft = bagSpace - this.inventory[ammoType];
-                                const amountToAdd = spaceLeft;
-                                this.inventory[ammoType] += amountToAdd;
-                                this.inventoryDirty = true;
-
-                                const amountLeft = ammoAmount - amountToAdd;
-                                this.dropLoot(ammoType, amountLeft);
-                            }
+                            const amountLeft = ammoAmount - amountToAdd;
+                            this.dropLoot(ammoType, amountLeft);
                         }
                     }
-                    if (reload) {
+
+                    if (
+                        newGunIdx === this.curWeapIdx &&
+                        this.weapons[newGunIdx].ammo <= 0
+                    ) {
                         this.cancelAction();
-                        this.weaponManager.tryReload();
+                        this.weaponManager.scheduleReload(def.switchDelay);
                     }
 
                     // always select primary slot if melee or secondary is selected
                     if (
-                        this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
-                        this.curWeapIdx === GameConfig.WeaponSlot.Secondary
+                        !freeGunSlot.isDual &&
+                        (this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
+                            this.curWeapIdx === GameConfig.WeaponSlot.Secondary)
                     ) {
                         this.weaponManager.setCurWeapIndex(newGunIdx); // primary
                     }
-
-                    this.setDirty();
                 }
                 break;
             case "helmet":
@@ -2907,6 +2961,18 @@ export class Player extends BaseGameObject {
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
                 this.outfit = obj.type;
+
+                if (def.obstacleType) {
+                    if (this.obstacleOutfit) {
+                        this.obstacleOutfit.destroy();
+                    }
+
+                    this.obstacleOutfit = this.game.map.genOutfitObstacle(
+                        def.obstacleType,
+                        this,
+                    );
+                }
+
                 this.setDirty();
                 break;
             case "perk":
@@ -3100,6 +3166,7 @@ export class Player extends BaseGameObject {
                 this.weaponManager.dropMelee();
                 break;
             case "throwable": {
+                if (this.weaponManager.cookingThrowable) return;
                 const inventoryCount = this.inventory[dropMsg.item];
 
                 if (inventoryCount === 0) return;
@@ -3286,15 +3353,12 @@ export class Player extends BaseGameObject {
             this.speed += weaponDef.speed.equip + speedBonus;
         }
 
-        const customShootingSpeed =
-            GameConfig.gun.customShootingSpeed[(weaponDef as GunDef).fireMode];
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
-            this.speed += customShootingSpeed ?? weaponDef.speed.attack;
+            this.speed += weaponDef.speed.attack;
         }
 
         // if player is on water decrease speed
-        const isOnWater =
-            this.game.map.getGroundSurface(this.pos, this.layer).type === "water";
+        const isOnWater = this.game.map.isOnWater(this.pos, this.layer);
         if (isOnWater) this.speed -= GameConfig.player.waterSpeedPenalty;
 
         // increase speed when adrenaline is above 50%
@@ -3317,7 +3381,7 @@ export class Player extends BaseGameObject {
         // decrease speed if shooting or popping adren or heals
         // field_medic perk doesn't slow you down while you heal
         if (
-            (this.shotSlowdownTimer > 0 && !customShootingSpeed) ||
+            this.shotSlowdownTimer > 0 ||
             (!this.hasPerk("field_medic") && this.actionType == GameConfig.Action.UseItem)
         ) {
             this.speed *= 0.5;

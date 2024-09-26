@@ -1,7 +1,6 @@
 {
-  "name": "Resurviv",
-  "short_name": "Resurviv",
-  "description": "",
+  "name": "survev.io",
+  "short_name": "survev.io",
   "icons": [
     {
       "src": "img/icon_app.png",
@@ -10,8 +9,7 @@
       "density": 3.0
     }
   ],
-  "categories": ["games"],
-  "start_url": ".",
+  "start_url": "index.html",
   "theme_color": "#80af49",
   "background_color": "#80af49",
   "display": "fullscreen",

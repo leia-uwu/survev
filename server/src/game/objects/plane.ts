@@ -8,7 +8,7 @@ import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
-import { util } from "../../../../shared/utils/util";
+import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 
@@ -23,10 +23,13 @@ const AIRDROP_PLANE_SPAWN_DIST = GameConfig.airdrop.planeVel * 15;
 
 type PlaneOptions = MapDef["gameConfig"]["planes"]["timings"][number]["options"];
 
+const MAX_ID = 255;
+
 export class PlaneBarn {
     planes: Plane[] = [];
 
-    freeIds: number[] = Array.from({ length: 256 }, (_, i) => i);
+    freeIds: number[] = [];
+    idNext = 1;
 
     planeBounds = collider.createAabb(v2.create(-512, -512), v2.create(1536, 1536));
 
@@ -50,6 +53,7 @@ export class PlaneBarn {
                 plane.actionComplete
             ) {
                 this.planes.splice(i, 1);
+                i--;
                 this.freeIds.push(plane.id);
             }
         }
@@ -59,6 +63,7 @@ export class PlaneBarn {
             scheduledPlane.time -= dt;
             if (scheduledPlane.time <= 0) {
                 this.scheduledPlanes.splice(i, 1);
+                i--;
 
                 switch (scheduledPlane.options.type) {
                     case GameConfig.Plane.Airdrop: {
@@ -75,38 +80,6 @@ export class PlaneBarn {
         }
     }
 
-    schedulePlanes() {
-        const planes = this.game.map.mapDef.gameConfig.planes.timings;
-
-        const getTime = (circleIdx: number, wait: number) => {
-            let total = 0;
-            let waitTime = GameConfig.gas.initWaitTime;
-            for (let i = 0; i < circleIdx; i++) {
-                waitTime = math.max(
-                    waitTime - GameConfig.gas.waitTimeDecay,
-                    GameConfig.gas.waitTimeMin,
-                );
-                total += waitTime;
-            }
-
-            let gasTime = GameConfig.gas.initGasTime;
-            for (let i = 0; i < circleIdx; i++) {
-                gasTime = math.max(
-                    gasTime - GameConfig.gas.gasTimeDecay,
-                    GameConfig.gas.gasTimeMin,
-                );
-                total += gasTime;
-            }
-
-            return total + wait;
-        };
-
-        for (const plane of planes) {
-            const time = getTime(plane.circleIdx, plane.wait);
-            this.schedulePlane(time, plane.options);
-        }
-    }
-
     schedulePlane(time: number, options: PlaneOptions) {
         this.scheduledPlanes.push({
             time,
@@ -115,7 +88,17 @@ export class PlaneBarn {
     }
 
     addAirdrop(pos: Vec2) {
-        const id = this.freeIds.pop();
+        let id = 1;
+        if (this.idNext < MAX_ID) {
+            id = this.idNext++;
+        } else {
+            if (this.freeIds.length > 0) {
+                id = this.freeIds.shift()!;
+            } else {
+                assert(false, `Ran out of plane ids`);
+            }
+        }
+
         if (!id) {
             this.game.logger.warn("Plane Barn: ran out of IDs");
             return;

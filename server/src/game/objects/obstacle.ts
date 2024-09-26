@@ -16,7 +16,7 @@ import { Player } from "./player";
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
     bounds: AABB;
-    collider: Collider;
+    collider!: Collider;
 
     mapObstacleBounds: Collider[];
 
@@ -78,7 +78,7 @@ export class Obstacle extends BaseGameObject {
     puzzlePiece?: string;
     parentBuildingId?: number;
     parentBuilding?: Building;
-    isSkin = false;
+    isSkin: boolean;
     skinPlayerId?: number;
 
     height: number;
@@ -108,6 +108,7 @@ export class Obstacle extends BaseGameObject {
         scale = 1,
         parentBuildingId?: number,
         puzzlePiece?: string,
+        isSkin?: boolean,
     ) {
         super(game, pos);
         this.type = type;
@@ -137,7 +138,8 @@ export class Obstacle extends BaseGameObject {
 
         this.height = def.height;
 
-        this.collidable = def.collidable ?? true;
+        this.isSkin = isSkin ?? false;
+        this.collidable = (def.collidable && !this.isSkin) ?? true;
         this.isWindow = def.isWindow ?? false;
         this.isWall = def.isWall ?? false;
 
@@ -147,7 +149,7 @@ export class Obstacle extends BaseGameObject {
         this.maxScale = scale;
         this.minScale = def.scale.destroy;
 
-        this.collider = collider.transform(def.collision, pos, this.rot, scale);
+        this.updateCollider();
 
         this.mapObstacleBounds = [this.collider];
 
@@ -244,6 +246,12 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
+    updateCollider() {
+        const def = MapObjectDefs[this.type] as ObstacleDef;
+        this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
+        this.game.grid.updateObject(this);
+    }
+
     checkLayer(): void {
         // @hack this door shouldn't switch layers
         if (this.type === "saloon_door_secret" || this.type === "house_door_01") return;
@@ -269,6 +277,8 @@ export class Obstacle extends BaseGameObject {
     }
 
     damage(params: DamageParams): void {
+        if (this.isSkin) return;
+
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
@@ -292,27 +302,23 @@ export class Obstacle extends BaseGameObject {
         }
 
         this.health -= params.amount!;
+        this.health = math.max(0, this.health);
+
+        this.healthT = math.clamp(this.health / this.maxHealth, 0, 1);
+
+        if (this.minScale < 1) {
+            this.scale = math.lerp(this.healthT, this.minScale, this.maxScale);
+            this.updateCollider();
+        }
+
+        // need to send full object for obstacles with explosions
+        // so smoke particles work on the client
+        // since they depend on healthT
+        if (def.explosion) this.setDirty();
+        else this.setPartDirty();
 
         if (this.health <= 0) {
             this.kill(params);
-        } else {
-            this.healthT = this.health / this.maxHealth;
-            if (this.minScale < 1) {
-                this.scale =
-                    this.healthT * (this.maxScale - this.minScale) + this.minScale;
-                this.collider = collider.transform(
-                    def.collision,
-                    this.pos,
-                    math.oriToRad(this.ori),
-                    this.scale,
-                );
-            }
-
-            // need to send full object for obstacles with explosions
-            // so smoke particles work on the client
-            // since they depend on healthT
-            if (def.explosion) this.setDirty();
-            else this.setPartDirty();
         }
     }
 
@@ -350,31 +356,27 @@ export class Obstacle extends BaseGameObject {
                     const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier!);
 
                     for (const item of items) {
-                        const dir = v2.randomUnit();
-                        const def = GameObjectDefs[item.name];
                         this.game.lootBarn.addLoot(
                             item.name,
-                            v2.add(lootPos, v2.mul(dir, 0.2)),
+                            v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
                             this.layer,
                             item.count,
                             undefined,
-                            def.type == "gun" ? 0 : undefined,
-                            dir,
+                            undefined, // undefined to use default push speed value
+                            params.dir,
                             lootTierOrItem.props?.preloadGuns,
                         );
                     }
                 }
             } else {
-                const dir = v2.randomUnit();
-                const def = GameObjectDefs[lootTierOrItem.type!];
                 this.game.lootBarn.addLoot(
                     lootTierOrItem.type!,
-                    v2.add(lootPos, v2.mul(dir, 0.2)),
+                    v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
                     this.layer,
                     lootTierOrItem.count!,
                     undefined,
-                    def.type == "gun" ? 0 : undefined,
-                    dir,
+                    undefined,
+                    params.dir,
                     lootTierOrItem.props?.preloadGuns,
                 );
             }

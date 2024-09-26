@@ -4,6 +4,7 @@ import { util } from "../../shared/utils/util";
 import { ApiServer } from "./apiServer";
 import { Config } from "./config";
 import { type FindGameBody, GameServer } from "./gameServer";
+import { GIT_VERSION } from "./utils/gitRevision";
 import { Logger } from "./utils/logger";
 import { readPostedJSON, returnJson } from "./utils/serverHelpers";
 
@@ -59,7 +60,7 @@ setInterval(() => {
 apiServer.init(app);
 
 app.listen(Config.devServer.host, Config.devServer.port, (): void => {
-    logger.log(`Resurviv Dev Server v${version}`);
+    logger.log(`Survev Dev Server v${version} - GIT ${GIT_VERSION}`);
     logger.log(`Listening on ${Config.devServer.host}:${Config.devServer.port}`);
     logger.log("Press Ctrl+C to exit.");
     gameServer.init(app);

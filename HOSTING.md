@@ -1,8 +1,8 @@
-# Hosting your own Resurviv server
-Looking to host your own Resurviv server to mess around or play against friends? This is the place for you.
+# Hosting your own survev server
+Looking to host your own survev server to mess around or play against friends? This is the place for you.
 
 ## Prerequisites
-Before diving into the setup instructions, make sure you have the correct tools for the job. Hosting a dedicated Resurviv server requires two things:
+Before diving into the setup instructions, make sure you have the correct tools for the job. Hosting a dedicated survev server requires two things:
  * SSH access to a VPS (or some other form of dedicated hosting)
  * The ability to open ports on said machine
 
@@ -42,7 +42,7 @@ For security reasons, you cannot view your password as you type it. Type in the 
 If you see a notice notifying you of the machine you have just logged into, congratulations! You have succesfully SSH'd into your server.
 
 ### Dependencies
-[Resurviv](https://github.com/leia-uwu/resurviv.git) requires a few dependencies:
+[Survev](https://github.com/leia-uwu/survev.git) requires a few dependencies:
  * [Git](https://git-scm.com)
  * [NGINX](https://nginx.org)
  * [Node.js](https://nodejs.org)
@@ -73,8 +73,8 @@ npm i -g pnpm
 Next, move into `/opt`, clone the repository and traverse into it:
 ```sh
 cd /opt
-git clone https://github.com/leia-uwu/resurviv.git
-cd resurviv
+git clone https://github.com/leia-uwu/survev.git
+cd survev
 ```
 
 Install the necessary dependencies:
@@ -94,7 +94,7 @@ openssl rand -base64 32
 Configure server:
 
 ```sh
-nano resurviv-config.json
+nano survev-config.json
 ```
 And populate it with the following content:
 ```json
@@ -129,17 +129,17 @@ Example config file:
 {
     "apiKey": "j0wo7RY0pYgD6W2mEy2wLa7VE4olUPD1r2hZma8FU6o=",
     "gameServer": {
-        "apiServerUrl": "https://resurviv.io"
+        "apiServerUrl": "https://survev.io"
     },
     "regions": {
         "na": {
             "https": true,
-            "address": "na.resurviv.io:8001",
+            "address": "na.survev.io:8001",
             "l10n": "index-north-america"
         },
         "eu": {
             "https": true,
-            "address": "eu.resurviv.io:8001",
+            "address": "eu.survev.io:8001",
             "l10n": "index-europe"
         }
     },
@@ -162,7 +162,7 @@ If you are only hosting a game server you can skip this.
 
 Make sure the build directory has the proper permissions:
 ```sh
-sudo chown -R www-data:www-data /opt/resurviv/client/dist
+sudo chown -R www-data:www-data /opt/survev/client/dist
 ```
 
 First, remove the default file:
@@ -173,7 +173,7 @@ sudo rm /etc/nginx/sites-available/default
 
 Create a new file:
 ```sh
-nano /etc/nginx/sites-available/resurviv.conf
+nano /etc/nginx/sites-available/survev.conf
 ```
 
 And populate it with the following content:
@@ -186,7 +186,7 @@ server {
 
     # Client build
     location / {
-        root /opt/resurviv/client/dist;
+        root /opt/survev/client/dist;
     }
 
     # API server
@@ -225,7 +225,7 @@ Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
 
 To enable the configuration:
 ```sh
-sudo ln -s /etc/nginx/sites-available/resurviv.conf /etc/nginx/sites-enabled/resurviv.conf
+sudo ln -s /etc/nginx/sites-available/survev.conf /etc/nginx/sites-enabled/survev.conf
 sudo systemctl restart nginx
 ```
 
@@ -236,17 +236,17 @@ which will ensure our application starts at boot and won't terminate if we end o
 If you are only hosting a game server, skip the API server part.
 
 ```sh
-sudo nano /etc/systemd/system/resurviv-game.service
+sudo nano /etc/systemd/system/survev-game.service
 ```
 
 And populate it with the following content:
 ```ini
 [Unit]
-Description=Resurviv dedicated game server.
+Description=survev dedicated game server.
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/resurviv/server
+WorkingDirectory=/opt/survev/server
 ExecStart=/usr/bin/pnpm start:game
 Restart=on-failure
 
@@ -258,23 +258,23 @@ Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
 
 Enable the unit:
 ```sh
-sudo systemctl enable --now resurviv-game
+sudo systemctl enable --now survev-game
 ```
 
 Now do the same for the API server if applicable:
 
 ```sh
-sudo nano /etc/systemd/system/resurviv-api.service
+sudo nano /etc/systemd/system/survev-api.service
 ```
 
 And populate it with the following content:
 ```ini
 [Unit]
-Description=Resurviv dedicated API server.
+Description=survev dedicated API server.
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/resurviv/server
+WorkingDirectory=/opt/survev/server
 ExecStart=/usr/bin/pnpm start:api
 Restart=on-failure
 
@@ -285,7 +285,7 @@ Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
 
 Enable the unit:
 ```sh
-sudo systemctl enable --now resurviv-api
+sudo systemctl enable --now survev-api
 ```
 
 If you've done everything correctly, you should be able to access the server at `http://youriphere` (ex: `http://1.1.1.1`).

@@ -47,9 +47,6 @@ export const Main: MapDef = {
     gameMode: {
         maxPlayers: 80,
         killLeaderEnabled: true,
-        spawn: {
-            mode: "random",
-        },
     },
     gameConfig: {
         planes: {
@@ -129,7 +126,7 @@ export const Main: MapDef = {
             { name: "2xscope", count: 1, weight: 24 },
             { name: "4xscope", count: 1, weight: 5 },
             { name: "8xscope", count: 1, weight: 1 }, // ?
-            { name: "15xscope", count: 1, weight: 0.1 }, // ?
+            { name: "15xscope", count: 1, weight: 0.02 }, // ?
         ],
         tier_armor: [
             { name: "helmet01", count: 1, weight: 9 }, // !
@@ -178,7 +175,7 @@ export const Main: MapDef = {
         tier_scopes_sniper: [
             { name: "4xscope", count: 1, weight: 5 }, // ?
             { name: "8xscope", count: 1, weight: 1 }, // ?
-            { name: "15xscope", count: 1, weight: 0.1 }, // ?
+            { name: "15xscope", count: 1, weight: 0.02 }, // ?
         ],
         tier_mansion_floor: [{ name: "outfitCasanova", count: 1, weight: 1 }],
         tier_vault_floor: [{ name: "outfitJester", count: 1, weight: 1 }],
@@ -335,6 +332,7 @@ export const Main: MapDef = {
             { name: "outfitCamo", count: 1, weight: 0.1 }, // ?
             { name: "outfitGhillie", count: 1, weight: 0.01 }, // ?
         ],
+        tier_islander_outfit: [{ name: "outfitIslander", count: 1, weight: 1 }],
         tier_imperial_outfit: [{ name: "outfitImperial", count: 1, weight: 1 }],
         tier_pineapple_outfit: [{ name: "outfitPineapple", count: 1, weight: 1 }],
         tier_tarkhany_outfit: [{ name: "outfitTarkhany", count: 1, weight: 1 }],
@@ -359,11 +357,16 @@ export const Main: MapDef = {
         tier_airdrop_rare: [
             { name: "garand", count: 1, weight: 6 },
             { name: "awc", count: 1, weight: 3 },
-            { name: "pkp", count: 1, weight: 3 },
+            { name: "pkp", count: 1, weight: 0.08 },
             { name: "m249", count: 1, weight: 0.1 },
             { name: "m4a1", count: 1, weight: 4 },
             { name: "scorpion", count: 1, weight: 5 }, // ?
             { name: "ots38_dual", count: 1, weight: 4.5 },
+        ],
+        tier_airdrop_mythic: [
+            { name: "scarssr", count: 1, weight: 1 }, // ?
+            { name: "usas", count: 1, weight: 1 }, // ?
+            { name: "p30l_dual", count: 1, weight: 1 }, // ?
         ],
         tier_airdrop_ammo: [
             { name: "9mm", count: 30, weight: 3 },
@@ -394,7 +397,7 @@ export const Main: MapDef = {
             { name: "", count: 1, weight: 24 }, // ?
             { name: "4xscope", count: 1, weight: 5 }, // ?
             { name: "8xscope", count: 1, weight: 1 }, // ?
-            { name: "15xscope", count: 1, weight: 0.1 }, // ?
+            { name: "15xscope", count: 1, weight: 0.02 }, // ?
         ],
         tier_katanas: [
             { name: "katana", count: 1, weight: 4 }, // ?

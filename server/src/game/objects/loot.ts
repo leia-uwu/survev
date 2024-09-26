@@ -12,6 +12,16 @@ import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 import type { Player } from "./player";
 
+// velocity drag applied every tick
+const LOOT_DRAG = 3;
+// how much loot pushes each other every tick
+const LOOT_PUSH_FORCE = 6;
+// explosion push force multiplier
+export const EXPLOSION_LOOT_PUSH_FORCE = 6;
+
+const AMMO_OFFSET_X = 1.35;
+const AMMO_OFFSET_Y = -0.3;
+
 type LootTierItem = MapDef["lootTable"][string][number];
 
 export class LootBarn {
@@ -28,6 +38,7 @@ export class LootBarn {
             const loot = this.loots[i];
             if (loot.destroyed) {
                 this.loots.splice(i, 1);
+                i--;
                 continue;
             }
             loot.update(dt, collisions);
@@ -84,11 +95,11 @@ export class LootBarn {
             const leftAmmo = new Loot(
                 this.game,
                 def.ammo,
-                v2.add(pos, v2.create(-0.8, -0.3)),
+                v2.add(pos, v2.create(-AMMO_OFFSET_X, AMMO_OFFSET_Y)),
                 layer,
                 halfAmmo,
-                2,
-                v2.create(-1.3, -0.4),
+                pushSpeed,
+                dir,
             );
             this._addLoot(leftAmmo);
 
@@ -96,11 +107,11 @@ export class LootBarn {
                 const rightAmmo = new Loot(
                     this.game,
                     def.ammo,
-                    v2.add(pos, v2.create(0.8, -0.3)),
+                    v2.add(pos, v2.create(AMMO_OFFSET_X, AMMO_OFFSET_Y)),
                     layer,
                     ammoCount - halfAmmo,
-                    2,
-                    v2.create(1.3, -0.4),
+                    pushSpeed,
+                    dir,
                 );
                 this._addLoot(rightAmmo);
             }
@@ -182,7 +193,7 @@ export class Loot extends BaseGameObject {
         pos: Vec2,
         layer: number,
         count: number,
-        pushSpeed = 2,
+        pushSpeed = 4,
         dir?: Vec2,
     ) {
         super(game, pos);
@@ -214,6 +225,7 @@ export class Loot extends BaseGameObject {
             this.setDirty();
         } else this.ticks++;
         const moving =
+            !this.isOld ||
             Math.abs(this.vel.x) > 0.001 ||
             Math.abs(this.vel.y) > 0.001 ||
             !v2.eq(this.oldPos, this.pos);
@@ -222,28 +234,18 @@ export class Loot extends BaseGameObject {
 
         this.oldPos = v2.copy(this.pos);
 
-        const calculateSafeDisplacement = (): Vec2 => {
-            let displacement = v2.mul(this.vel, dt);
-            if (v2.lengthSqr(displacement) >= 10) {
-                displacement = v2.normalizeSafe(displacement);
-            }
-
-            return displacement;
-        };
-
-        v2.set(this.pos, v2.add(this.pos, calculateSafeDisplacement()));
-        this.vel = v2.mul(this.vel, 1 / (1 + dt * 4));
+        v2.set(this.pos, v2.add(this.pos, v2.mul(this.vel, dt)));
+        this.vel = v2.mul(this.vel, 1 / (1 + dt * LOOT_DRAG));
 
         let objs = this.game.grid.intersectCollider(this.collider);
 
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
-            if (
-                obj.__type === ObjectType.Obstacle &&
-                obj.collidable &&
-                util.sameLayer(obj.layer, this.layer) &&
-                !obj.dead
-            ) {
+            if (obj.__type === ObjectType.Obstacle) {
+                if (!obj.collidable) continue;
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+                if (obj.dead) continue;
+
                 const collision = collider.intersectCircle(
                     obj.collider,
                     this.pos,
@@ -263,27 +265,16 @@ export class Loot extends BaseGameObject {
 
                 const res = coldet.intersectCircleCircle(
                     this.pos,
-                    this.collider.rad,
+                    this.collider.rad * 1.25,
                     obj.pos,
-                    obj.collider.rad,
+                    obj.collider.rad * 1.25,
                 );
                 if (!res) continue;
                 collisions[hash1] = collisions[hash2] = true;
 
-                this.vel = v2.sub(this.vel, v2.mul(res.dir, 0.06));
-                obj.vel = v2.sub(obj.vel, v2.mul(res.dir, -0.06));
-                const vRelativeVelocity = v2.create(
-                    this.vel.x - obj.vel.x,
-                    this.vel.y - obj.vel.y,
-                );
-
-                const speed =
-                    (vRelativeVelocity.x * res.dir.x + vRelativeVelocity.y * res.dir.y) *
-                    0.6;
-                if (speed < 0) continue;
-
-                this.push(res.dir, -speed);
-                obj.push(res.dir, speed);
+                const force = (res.pen / 2) * LOOT_PUSH_FORCE * dt;
+                this.vel = v2.sub(this.vel, v2.mul(res.dir, force));
+                obj.vel = v2.add(obj.vel, v2.mul(res.dir, force));
             }
         }
 
