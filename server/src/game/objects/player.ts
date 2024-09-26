@@ -878,6 +878,22 @@ export class Player extends BaseGameObject {
         this.weaponManager.showNextThrowable();
     }
 
+    override serializeFull(): void {
+        if (!this.activeWeapon) {
+            console.error(
+                "Invalid active weapon, curIdx:",
+                this.curWeapIdx,
+                "lastIdx:",
+                this.weaponManager.lastWeaponIdx,
+                "weaps:",
+                this.weapons,
+            );
+            this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
+            this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+        }
+        super.serializeFull();
+    }
+
     visibleObjects = new Set<GameObject>();
 
     update(dt: number): void {
