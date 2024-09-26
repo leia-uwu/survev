@@ -878,16 +878,9 @@ export class Player extends BaseGameObject {
         this.weaponManager.showNextThrowable();
     }
 
-    override serializeFull(): void {
-        this.weaponManager.preventEmptyWeapon();
-        super.serializeFull();
-    }
-
     visibleObjects = new Set<GameObject>();
 
     update(dt: number): void {
-        this.weaponManager.preventEmptyWeapon();
-
         if (this.dead) return;
         this.timeAlive += dt;
 
@@ -1149,8 +1142,9 @@ export class Player extends BaseGameObject {
                     case "gun":
                         const freeSlot = this.getFreeGunSlot(closestLoot);
                         if (
-                            freeSlot.availSlot > 0 &&
-                            !this.weapons[freeSlot.availSlot].type
+                            freeSlot.slot &&
+                            freeSlot.slot !== this.curWeapIdx &&
+                            !this.weapons[freeSlot.slot].type
                         ) {
                             this.pickupLoot(closestLoot);
                         }
@@ -1376,8 +1370,6 @@ export class Player extends BaseGameObject {
         if (this.shotSlowdownTimer <= 0) {
             this.shotSlowdownTimer = 0;
         }
-
-        this.weaponManager.preventEmptyWeapon();
     }
 
     private _firstUpdate = true;
@@ -2565,8 +2557,6 @@ export class Player extends BaseGameObject {
             }
         }
 
-        this.weaponManager.preventEmptyWeapon();
-
         //no exceptions for any perks or roles
         if (this.downed) return;
 
@@ -2665,37 +2655,48 @@ export class Player extends BaseGameObject {
     }
 
     getFreeGunSlot(obj: Loot) {
-        let availSlot = -1;
-        let cause = net.PickupMsgType.Success;
-        let indexOf = -1;
-        let isDualWield = false;
         const gunSlots = [GameConfig.WeaponSlot.Primary, GameConfig.WeaponSlot.Secondary];
+
+        // first loop to find dual wieldable guns
         for (const slot of gunSlots) {
             const slotDef = GameObjectDefs[this.weapons[slot].type] as GunDef | undefined;
-            const dualWield =
-                slotDef?.dualWieldType && obj.type === this.weapons[slot].type;
-            if (this.weapons[slot].type === obj.type) {
-                indexOf = slot;
-            }
-            if (this.weapons[slot].type === "" || dualWield) {
-                availSlot = slot;
-                isDualWield = dualWield || false;
-                break;
-            }
-            if (
-                this.weapons[slot].type === obj.type &&
-                !dualWield &&
-                (slot as number) == gunSlots.length - 1
-            ) {
-                cause = net.PickupMsgType.AlreadyOwned;
-                break;
+
+            if (slotDef?.dualWieldType && obj.type === this.weapons[slot].type) {
+                return {
+                    slot,
+                    isDual: true,
+                    cause: net.PickupMsgType.Success,
+                };
             }
         }
+
+        // second loop to find empty slots
+        for (const slot of gunSlots) {
+            if (this.weapons[slot].type === "") {
+                return {
+                    slot,
+                    isDual: false,
+                    cause: net.PickupMsgType.Success,
+                };
+            }
+        }
+
+        // if none are found use active weapon if its a gun
+        if (GameConfig.WeaponType[this.curWeapIdx] === "gun") {
+            return {
+                slot: this.curWeapIdx,
+                isDual: false,
+                cause:
+                    this.activeWeapon === obj.type
+                        ? net.PickupMsgType.AlreadyOwned
+                        : net.PickupMsgType.Success,
+            };
+        }
+
         return {
-            availSlot,
-            isDualWield,
-            cause,
-            indexOf,
+            slot: null,
+            isDual: false,
+            cause: net.PickupMsgType.Full,
         };
     }
 
@@ -2806,93 +2807,66 @@ export class Player extends BaseGameObject {
 
                     const freeGunSlot = this.getFreeGunSlot(obj);
                     pickupMsg.type = freeGunSlot.cause;
-                    let newGunIdx = freeGunSlot.availSlot;
+                    let newGunIdx = freeGunSlot.slot;
 
-                    let gunType: string | undefined = undefined;
-                    let reload = false;
+                    if (newGunIdx === null) {
+                        return;
+                    }
 
-                    if (freeGunSlot.availSlot == -1) {
-                        newGunIdx = this.curWeapIdx;
-                        if (
-                            this.curWeapIdx in
-                                [
-                                    GameConfig.WeaponSlot.Primary,
-                                    GameConfig.WeaponSlot.Secondary,
-                                ] &&
-                            obj.type != this.weapons[this.curWeapIdx].type
-                        ) {
-                            const gunToDropDef = GameObjectDefs[
-                                this.activeWeapon
-                            ] as GunDef;
-                            if (gunToDropDef.noDrop) return;
+                    const oldWeapDef = GameObjectDefs[this.weapons[newGunIdx].type] as
+                        | GunDef
+                        | undefined;
+                    if (oldWeapDef && oldWeapDef.noDrop) {
+                        return;
+                    }
 
-                            this.weaponManager.dropGun(this.curWeapIdx, false);
-                            gunType = obj.type;
-                            reload = true;
+                    let gunType = obj.type;
+
+                    if (def.dualWieldType && freeGunSlot.isDual) {
+                        gunType = def.dualWieldType;
+                    }
+
+                    this.weaponManager.replaceGun(newGunIdx, gunType);
+
+                    // if "preloaded" gun add ammo to inventory
+                    if (obj.isPreloadedGun) {
+                        const ammoAmount = def.ammoSpawnCount;
+                        const ammoType = def.ammo;
+                        const backpackLevel = this.getGearLevel(this.backpack);
+                        const bagSpace = GameConfig.bagSizes[ammoType]
+                            ? GameConfig.bagSizes[ammoType][backpackLevel]
+                            : 0;
+                        if (this.inventory[ammoType] + ammoAmount <= bagSpace) {
+                            this.inventory[ammoType] += ammoAmount;
+                            this.inventoryDirty = true;
                         } else {
-                            removeLoot = false;
-                            pickupMsg.type = net.PickupMsgType.Full;
-                        }
-                    } else if (freeGunSlot.isDualWield) {
-                        gunType = def.dualWieldType!;
-                        if (
-                            freeGunSlot.availSlot === this.curWeapIdx &&
-                            (this.isReloading() ||
-                                !this.weapons[freeGunSlot.availSlot].ammo)
-                        ) {
-                            reload = true;
-                        }
-                    } else {
-                        gunType = obj.type;
-                    }
-                    if (gunType) {
-                        this.weaponManager.setWeapon(
-                            newGunIdx,
-                            gunType,
-                            freeGunSlot.isDualWield ? this.weapons[newGunIdx].ammo : 0,
-                        );
+                            // spawn new loot object to animate the pickup rejection
+                            const spaceLeft = bagSpace - this.inventory[ammoType];
+                            const amountToAdd = spaceLeft;
+                            this.inventory[ammoType] += amountToAdd;
+                            this.inventoryDirty = true;
 
-                        // if "preloaded" gun add ammo to inventory
-                        if (obj.isPreloadedGun) {
-                            const ammoAmount = def.ammoSpawnCount;
-                            const ammoType = def.ammo;
-                            const backpackLevel = this.getGearLevel(this.backpack);
-                            const bagSpace = GameConfig.bagSizes[ammoType]
-                                ? GameConfig.bagSizes[ammoType][backpackLevel]
-                                : 0;
-                            if (this.inventory[ammoType] + ammoAmount <= bagSpace) {
-                                this.inventory[ammoType] += ammoAmount;
-                                this.inventoryDirty = true;
-                            } else {
-                                // spawn new loot object to animate the pickup rejection
-                                const spaceLeft = bagSpace - this.inventory[ammoType];
-                                const amountToAdd = spaceLeft;
-                                this.inventory[ammoType] += amountToAdd;
-                                this.inventoryDirty = true;
-
-                                const amountLeft = ammoAmount - amountToAdd;
-                                this.dropLoot(ammoType, amountLeft);
-                            }
+                            const amountLeft = ammoAmount - amountToAdd;
+                            this.dropLoot(ammoType, amountLeft);
                         }
                     }
-                    if (reload) {
+
+                    if (
+                        newGunIdx === this.curWeapIdx &&
+                        this.weapons[newGunIdx].ammo <= 0
+                    ) {
                         this.cancelAction();
-                        this.weaponManager.tryReload();
+                        this.weaponManager.scheduleReload(def.switchDelay);
                     }
 
                     // always select primary slot if melee or secondary is selected
                     if (
-                        this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
-                        this.curWeapIdx === GameConfig.WeaponSlot.Secondary
+                        !freeGunSlot.isDual &&
+                        (this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
+                            this.curWeapIdx === GameConfig.WeaponSlot.Secondary)
                     ) {
                         this.weaponManager.setCurWeapIndex(newGunIdx); // primary
                     }
-
-                    if (this.activeWeapon === "") {
-                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
-                    }
-
-                    this.setDirty();
                 }
                 break;
             case "helmet":
@@ -3000,8 +2974,6 @@ export class Player extends BaseGameObject {
             type: net.MsgType.Pickup,
             msg: pickupMsg,
         });
-
-        this.weaponManager.preventEmptyWeapon();
     }
 
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
@@ -3120,7 +3092,6 @@ export class Player extends BaseGameObject {
                 }
                 this.inventoryDirty = true;
                 this.weapsDirty = true;
-                this.weaponManager.preventEmptyWeapon();
                 break;
             }
             case "perk": {
