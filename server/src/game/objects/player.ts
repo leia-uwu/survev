@@ -1129,6 +1129,8 @@ export class Player extends BaseGameObject {
             }
         }
 
+        this.pickupTicker -= dt;
+
         //
         // Mobile auto interaction
         //
@@ -2700,8 +2702,11 @@ export class Player extends BaseGameObject {
         };
     }
 
+    pickupTicker = 0;
     pickupLoot(obj: Loot) {
         if (obj.destroyed) return;
+        if (this.pickupTicker > 0) return;
+        this.pickupTicker = 0.1;
         const def = GameObjectDefs[obj.type];
 
         let amountLeft = 0;
@@ -2810,6 +2815,7 @@ export class Player extends BaseGameObject {
                     let newGunIdx = freeGunSlot.slot;
 
                     if (newGunIdx === null) {
+                        this.pickupTicker = 0;
                         return;
                     }
 
@@ -2817,8 +2823,11 @@ export class Player extends BaseGameObject {
                         | GunDef
                         | undefined;
                     if (oldWeapDef && oldWeapDef.noDrop) {
+                        this.pickupTicker = 0;
                         return;
                     }
+
+                    this.pickupTicker = 0.2;
 
                     let gunType = obj.type;
 
