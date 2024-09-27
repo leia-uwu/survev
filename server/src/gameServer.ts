@@ -171,7 +171,7 @@ export class GameServer {
 
     async fetchApiServer(route: string, body: object) {
         const url = `${Config.gameServer.apiServerUrl}/${route}`;
-        const data = fetch(url, {
+        fetch(url, {
             body: JSON.stringify({
                 ...body,
                 apiKey: Config.apiKey,
@@ -180,21 +180,19 @@ export class GameServer {
             headers: {
                 "Content-type": "application/json",
             },
-        }).catch(console.error);
-        return data;
+        }).catch((error) => {
+            this.logger.warn(`Failed to fetch "${url}" error:`);
+            console.error(error);
+        });
     }
 
     sendData() {
-        try {
-            this.fetchApiServer("api/update_region", {
-                data: {
-                    playerCount: this.manager.getPlayerCount(),
-                },
-                regionId: Config.thisRegion,
-            });
-        } catch (error) {
-            this.logger.warn("Failed to send game data to api server, error: ", error);
-        }
+        this.fetchApiServer("api/update_region", {
+            data: {
+                playerCount: this.manager.getPlayerCount(),
+            },
+            regionId: Config.thisRegion,
+        });
     }
 }
 
@@ -231,8 +229,10 @@ if (process.argv.includes("--game-server")) {
                         return;
                     }
                     returnJson(res, await server.findGame(body));
-                } catch (err) {
-                    console.error("Find game error:", err);
+                } catch (error) {
+                    server.logger.warn("API find_game error:");
+                    console.error(error);
+                    console.error(error);
                     if (aborted) return;
                     returnJson(res, {
                         res: [

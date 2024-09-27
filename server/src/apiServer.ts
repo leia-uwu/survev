@@ -213,7 +213,6 @@ if (process.argv.includes("--api-server")) {
             `Listening on ${Config.apiServer.host}:${Config.apiServer.port}`,
         );
         server.logger.log("Press Ctrl+C to exit.");
-        0;
     });
 
     setInterval(() => {
