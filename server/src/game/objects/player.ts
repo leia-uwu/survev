@@ -1331,7 +1331,7 @@ export class Player extends BaseGameObject {
         if (this.insideZoomRegion) {
             finalZoom = zoomRegionZoom;
         }
-        if (insideSmoke) {
+        if (insideSmoke || this.downed) {
             finalZoom = lowestZoom;
         }
         this.zoom = finalZoom;
