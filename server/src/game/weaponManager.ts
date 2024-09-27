@@ -977,29 +977,49 @@ export class WeaponManager {
     throwThrowable(noSpeed?: boolean): void {
         if (!this.cookingThrowable) return;
         this.cookingThrowable = false;
-        const throwableType = this.weapons[WeaponSlot.Throwable].type;
-        if (!throwableType) return;
-        const throwableDef = GameObjectDefs[throwableType];
+
+        //need to store this incase throwableType gets replaced with its "heavy" variant like snowball => snowball_heavy
+        //used to manage inventory since snowball_heavy isnt stored in inventory, when it's thrown you decrement "snowball" from inv
+        const oldThrowableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
+
+        let throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
+        let throwableDef = GameObjectDefs[throwableType];
         assert(throwableDef.type === "throwable");
 
-        //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
-        const throwStr =
-            this.curWeapIdx == WeaponSlot.Throwable && !noSpeed
-                ? math.clamp(
-                      this.player.toMouseLen,
-                      0,
-                      GameConfig.player.throwableMaxMouseDist * 1.8,
-                  ) / 15
-                : 0;
+        if (throwableDef.heavyType && throwableDef.changeTime) {
+            if (this.cookTicker >= throwableDef.changeTime) {
+                throwableType = throwableDef.heavyType;
+                throwableDef = GameObjectDefs[throwableType] as ThrowableDef;
+            }
+        }
+        assert(throwableDef.type === "throwable");
 
-        if (this.player.inventory[throwableType] > 0) {
-            this.player.inventory[throwableType] -= 1;
+        let multiplier: number;
+        if (throwableDef.forceMaxThrowDistance) {
+            multiplier = 1;
+        } else if (this.curWeapIdx != GameConfig.WeaponSlot.Throwable || noSpeed) {
+            //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
+            multiplier = 0;
+        } else {
+            //default throw strength algorithm, just based on mouse distance from player
+            multiplier =
+                math.clamp(
+                    this.player.toMouseLen,
+                    0,
+                    GameConfig.player.throwableMaxMouseDist * 1.8,
+                ) / 15;
+        }
+
+        const throwStr = multiplier * throwableDef.throwPhysics.speed;
+
+        if (this.player.inventory[oldThrowableType] > 0) {
+            this.player.inventory[oldThrowableType] -= 1;
 
             // if throwable count drops below 0
             // show the next throwable
             // the function will handle switching to last weapon
             // if no more throwables
-            if (this.player.inventory[throwableType] == 0) {
+            if (this.player.inventory[oldThrowableType] == 0) {
                 this.showNextThrowable();
             }
             this.player.weapsDirty = true;
@@ -1027,12 +1047,11 @@ export class WeaponManager {
             dir = v2.normalizeSafe(v2.sub(aimTarget, pos), v2.create(1.0, 0.0));
         }
 
-        const throwPhysicsSpeed = throwableDef.throwPhysics.speed;
-
         // Incorporate some of the player motion into projectile velocity
         const vel = v2.add(
             v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult),
-            v2.mul(dir, throwPhysicsSpeed * throwStr),
+            //player mouse position is irrelevant for max throwing distance
+            v2.mul(dir, throwStr),
         );
 
         const fuseTime = math.max(

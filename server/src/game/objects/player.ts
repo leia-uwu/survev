@@ -503,6 +503,8 @@ export class Player extends BaseGameObject {
 
     wearingPan = false;
     healEffect = false;
+    //if hit by snowball or potato, slowed down for "x" seconds
+    frozenTicker = 0;
     frozen = false;
     frozenOri = 0;
 
@@ -1028,6 +1030,19 @@ export class Player extends BaseGameObject {
                 this.animSeq++;
                 this.setDirty();
                 this._animCb?.();
+            }
+        }
+
+        //
+        // Projectile slowdown logic
+        //
+        if (this.frozen) {
+            this.frozenTicker -= dt;
+
+            if (this.frozenTicker <= 0) {
+                this.frozenTicker = 0;
+                this.frozen = false;
+                this.setDirty();
             }
         }
 
@@ -1719,11 +1734,19 @@ export class Player extends BaseGameObject {
             params.damageType !== GameConfig.DamageType.Bleeding &&
             params.damageType !== GameConfig.DamageType.Airdrop
         ) {
-            if (this.hasPerk("flak_jacket")) finalDamage *= 0.9;
+            const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
+
+            if (this.hasPerk("flak_jacket")) {
+                const isExplosion =
+                    gameSourceDef &&
+                    (gameSourceDef.type === "explosion" ||
+                        (gameSourceDef.type === "bullet" && gameSourceDef.shrapnel));
+                finalDamage *= isExplosion ? 0.1 : 0.9;
+            }
+
+            if (this.hasPerk("steelskin")) finalDamage *= 0.5;
 
             let isHeadShot = false;
-
-            const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (gameSourceDef && "headshotMult" in gameSourceDef) {
                 isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
@@ -3006,6 +3029,49 @@ export class Player extends BaseGameObject {
         });
     }
 
+    // in original game, only called on snowball or potato collision
+    dropRandomLoot(): void {
+        // all possible droppable loot held by the player
+        //4 categories: inventory, weapons, armor, perks
+        const playerLootTypes: string[] = [];
+
+        for (const [type, count] of Object.entries(this.inventory)) {
+            if (count == 0) continue;
+            if (type == "1xscope") continue;
+            playerLootTypes.push(type);
+        }
+
+        for (let i = 0; i < this.weapons.length; i++) {
+            if (GameConfig.WeaponType[i] == "throwable") continue;
+            const weapon = this.weapons[i];
+            if (!weapon.type) continue;
+            if (weapon.type == "fists") continue;
+            playerLootTypes.push(weapon.type);
+        }
+
+        for (let i = 0; i < this.perks.length; i++) {
+            const perk = this.perks[i];
+            if (!perk.droppable) continue;
+            playerLootTypes.push(perk.type);
+        }
+
+        for (const armor of [this.helmet, this.chest] as const) {
+            if (!armor) continue;
+            if ((GameObjectDefs[armor] as ChestDef | HelmetDef).noDrop) continue;
+            playerLootTypes.push(armor);
+        }
+
+        if (playerLootTypes.length == 0) return;
+
+        const item = playerLootTypes[util.randomInt(0, playerLootTypes.length - 1)];
+        const weapIdx = this.weapons.findIndex((w) => w.type == item);
+
+        const dropMsg = new net.DropItemMsg();
+        dropMsg.item = item;
+        dropMsg.weapIdx = weapIdx;
+        this.dropItem(dropMsg);
+    }
+
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
         this.mobileDropTicker = 3;
         this.game.lootBarn.addLoot(
@@ -3204,6 +3270,13 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
+    freeze(frozenOri: number, duration: number): void {
+        this.frozenTicker = duration;
+        this.frozen = true;
+        this.frozenOri = frozenOri;
+        this.setDirty();
+    }
+
     initLastBreath(): void {
         const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
             this,
@@ -3305,6 +3378,10 @@ export class Player extends BaseGameObject {
 
         if (this.hasteType != GameConfig.HasteType.None) {
             this.speed += GameConfig.player.hasteSpeedBonus;
+        }
+
+        if (this.frozen) {
+            this.speed -= GameConfig.player.frozenSpeedPenalty;
         }
 
         // decrease speed if shooting or popping adren or heals

@@ -17,151 +17,163 @@ export class ExplosionBarn {
     constructor(readonly game: Game) {}
 
     update() {
-        const game = this.game;
         for (let i = 0; i < this.explosions.length; i++) {
-            const explosion = this.explosions[i];
-            const def = GameObjectDefs[explosion.type] as ExplosionDef;
-
-            if (def.decalType) {
-                this.game.decalBarn.addDecal(
-                    def.decalType,
-                    explosion.pos,
-                    explosion.layer,
-                    0,
-                    1,
-                );
-            }
-
-            if (explosion.type === "explosion_smoke") {
-                this.game.smokeBarn.addEmitter(explosion.pos, explosion.layer);
-                continue;
-            }
-
-            const coll = collider.createCircle(explosion.pos, explosion.rad);
-
-            // List of all near objects
-            const objects = game.grid.intersectCollider(coll);
-            const damagedObjects = new Map<number, boolean>();
-
-            for (let angle = -Math.PI; angle < Math.PI; angle += 0.1) {
-                // All objects that collided with this line
-                const lineCollisions: Array<{
-                    obj: GameObject;
-                    pos: Vec2;
-                    distance: number;
-                    dir: Vec2;
-                }> = [];
-
-                const lineEnd = v2.add(
-                    explosion.pos,
-                    v2.rotate(v2.create(explosion.rad, 0), angle),
-                );
-
-                for (const obj of objects) {
-                    if (!util.sameLayer(obj.layer, explosion.layer)) continue;
-                    if ((obj as { dead?: boolean }).dead) continue;
-                    if (obj.__type === ObjectType.Obstacle && obj.height <= 0.25)
-                        continue;
-                    if (
-                        obj.__type === ObjectType.Player ||
-                        obj.__type === ObjectType.Obstacle ||
-                        obj.__type === ObjectType.Loot
-                    ) {
-                        // check if the object hitbox collides with a line from the explosion center to the explosion max distance
-                        const intersection = collider.intersectSegment(
-                            obj.collider,
-                            explosion.pos,
-                            lineEnd,
-                        );
-                        if (intersection) {
-                            lineCollisions.push({
-                                pos: intersection.point,
-                                obj,
-                                distance: v2.distance(explosion.pos, intersection.point),
-                                dir: v2.neg(v2.normalize(v2.sub(explosion.pos, obj.pos))),
-                            });
-                        }
-                    }
-                }
-
-                // sort by closest to the explosion center to prevent damaging objects through walls
-                lineCollisions.sort((a, b) => a.distance - b.distance);
-
-                for (const collision of lineCollisions) {
-                    const obj = collision.obj;
-
-                    if (!damagedObjects.has(obj.__id)) {
-                        damagedObjects.set(obj.__id, true);
-                        const dist = collision.distance;
-
-                        if (
-                            obj.__type === ObjectType.Player ||
-                            obj.__type === ObjectType.Obstacle
-                        ) {
-                            let damage = def.damage;
-                            if (
-                                obj.__type == ObjectType.Player &&
-                                obj.hasPerk("flak_jacket")
-                            ) {
-                                damage *= 0.1;
-                            }
-
-                            if (dist > def.rad.min) {
-                                damage = math.remap(
-                                    dist,
-                                    def.rad.min,
-                                    def.rad.max,
-                                    damage,
-                                    0,
-                                );
-                            }
-
-                            if (obj.__type === ObjectType.Obstacle) {
-                                damage *= def.obstacleDamage;
-                            }
-
-                            obj.damage({
-                                amount: damage,
-                                gameSourceType: explosion.gameSourceType,
-                                mapSourceType: explosion.mapSourceType,
-                                source: explosion.source,
-                                damageType: explosion.damageType,
-                                dir: collision.dir,
-                            });
-                        }
-
-                        if (obj.__type === ObjectType.Loot) {
-                            obj.push(
-                                v2.normalize(v2.sub(obj.pos, explosion.pos)),
-                                (def.rad.max - dist) * EXPLOSION_LOOT_PUSH_FORCE,
-                            );
-                        }
-                    }
-
-                    if (obj.__type === ObjectType.Obstacle && obj.collidable) break;
-                }
-            }
-
-            const bulletDef = GameObjectDefs[def.shrapnelType];
-            if (bulletDef && bulletDef.type === "bullet") {
-                for (let i = 0, count = def.shrapnelCount ?? 0; i < count; i++) {
-                    game.bulletBarn.fireBullet({
-                        bulletType: def.shrapnelType,
-                        pos: explosion.pos,
-                        layer: explosion.layer,
-                        damageType: explosion.damageType,
-                        playerId: explosion.source?.__id ?? 0,
-                        shotFx: false,
-                        damageMult: 1,
-                        varianceT: Math.random(),
-                        gameSourceType: explosion.gameSourceType,
-                        mapSourceType: explosion.mapSourceType,
-                        dir: v2.randomUnit(),
-                    });
-                }
-            }
+            this.explode(this.explosions[i]);
         }
         this.explosions.length = 0;
+    }
+
+    explode(explosion: Explosion) {
+        const def = GameObjectDefs[explosion.type] as ExplosionDef;
+
+        if (def.decalType) {
+            this.game.decalBarn.addDecal(
+                def.decalType,
+                explosion.pos,
+                explosion.layer,
+                0,
+                1,
+            );
+        }
+
+        if (explosion.type === "explosion_smoke") {
+            this.game.smokeBarn.addEmitter(explosion.pos, explosion.layer);
+            return;
+        }
+
+        const coll = collider.createCircle(explosion.pos, explosion.rad);
+
+        // List of all near objects
+        const objects = this.game.grid.intersectCollider(coll);
+        const damagedObjects = new Map<number, boolean>();
+
+        for (let angle = -Math.PI; angle < Math.PI; angle += 0.1) {
+            // All objects that collided with this line
+            const lineCollisions: Array<{
+                obj: GameObject;
+                pos: Vec2;
+                distance: number;
+                dir: Vec2;
+            }> = [];
+
+            const lineEnd = v2.add(
+                explosion.pos,
+                v2.rotate(v2.create(explosion.rad, 0), angle),
+            );
+
+            for (const obj of objects) {
+                if (!util.sameLayer(obj.layer, explosion.layer)) continue;
+                if ((obj as { dead?: boolean }).dead) continue;
+                if (obj.__type === ObjectType.Obstacle && obj.height <= 0.25) continue;
+                if (
+                    obj.__type === ObjectType.Player ||
+                    obj.__type === ObjectType.Obstacle ||
+                    obj.__type === ObjectType.Loot
+                ) {
+                    // check if the object hitbox collides with a line from the explosion center to the explosion max distance
+                    const intersection = collider.intersectSegment(
+                        obj.collider,
+                        explosion.pos,
+                        lineEnd,
+                    );
+                    if (intersection) {
+                        lineCollisions.push({
+                            pos: intersection.point,
+                            obj,
+                            distance: v2.distance(explosion.pos, intersection.point),
+                            dir: v2.neg(v2.normalize(v2.sub(explosion.pos, obj.pos))),
+                        });
+                    }
+                }
+            }
+
+            // sort by closest to the explosion center to prevent damaging objects through walls
+            lineCollisions.sort((a, b) => a.distance - b.distance);
+
+            for (const collision of lineCollisions) {
+                const obj = collision.obj;
+
+                if (damagedObjects.has(obj.__id)) continue;
+                damagedObjects.set(obj.__id, true);
+                const dist = collision.distance;
+
+                if (obj.__type === ObjectType.Loot) {
+                    obj.push(
+                        v2.normalize(v2.sub(obj.pos, explosion.pos)),
+                        (def.rad.max - dist) * EXPLOSION_LOOT_PUSH_FORCE,
+                    );
+                    continue;
+                }
+
+                if (
+                    obj.__type !== ObjectType.Player &&
+                    obj.__type !== ObjectType.Obstacle
+                ) {
+                    continue;
+                }
+
+                let damage = def.damage;
+
+                if (dist > def.rad.min) {
+                    damage = math.remap(dist, def.rad.min, def.rad.max, damage, 0);
+                }
+
+                if (obj.__type == ObjectType.Player) {
+                    if (def.freezeAmount && def.freezeDuration) {
+                        const isSourceTeammate =
+                            explosion.source &&
+                            explosion.source.__type == ObjectType.Player &&
+                            explosion.source.teamId == obj.teamId;
+                        if (!isSourceTeammate) {
+                            obj.dropRandomLoot();
+
+                            const playerRot = Math.atan2(obj.dir.y, obj.dir.x);
+                            const collRot = -Math.atan2(collision.dir.y, collision.dir.x);
+
+                            const ori =
+                                (math.radToOri(playerRot) + math.radToOri(collRot) + 2) %
+                                4;
+
+                            obj.freeze(ori, def.freezeDuration);
+                        }
+                    }
+                }
+
+                if (obj.__type === ObjectType.Obstacle) {
+                    damage *= def.obstacleDamage;
+                }
+
+                obj.damage({
+                    amount: damage,
+                    gameSourceType: explosion.gameSourceType,
+                    mapSourceType: explosion.mapSourceType,
+                    source: explosion.source,
+                    damageType: explosion.damageType,
+                    dir: collision.dir,
+                });
+
+                if (obj.__type === ObjectType.Obstacle && obj.collidable) break;
+            }
+        }
+
+        const bulletDef = GameObjectDefs[def.shrapnelType];
+        if (bulletDef && bulletDef.type === "bullet") {
+            for (let i = 0, count = def.shrapnelCount ?? 0; i < count; i++) {
+                this.game.bulletBarn.fireBullet({
+                    bulletType: def.shrapnelType,
+                    pos: explosion.pos,
+                    layer: explosion.layer,
+                    damageType: explosion.damageType,
+                    playerId: explosion.source?.__id ?? 0,
+                    shotFx: false,
+                    damageMult: 1,
+                    varianceT: Math.random(),
+                    gameSourceType: explosion.gameSourceType,
+                    mapSourceType: explosion.mapSourceType,
+                    dir: v2.randomUnit(),
+                });
+            }
+        }
     }
 
     flush() {
