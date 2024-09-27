@@ -1715,7 +1715,10 @@ export class Player extends BaseGameObject {
 
         // teammates can't deal damage to each other
         if (sourceIsPlayer && params.source !== this) {
-            if ((params.source as Player).groupId === this.groupId) {
+            if (
+                (params.source as Player).groupId === this.groupId &&
+                !this.disconnected
+            ) {
                 return;
             }
             if (
