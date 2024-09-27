@@ -11,6 +11,8 @@ class Region {
     data: ConfigType["regions"][string];
     playerCount = 0;
 
+    lastUpdateTime = Date.now();
+
     constructor(readonly id: string) {
         this.data = Config.regions[this.id];
     }
@@ -113,6 +115,7 @@ export class ApiServer {
     updateRegion(regionId: string, regionData: RegionData) {
         const region = this.regions[regionId];
         region.playerCount = regionData.playerCount;
+        region.lastUpdateTime = Date.now();
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
@@ -179,6 +182,7 @@ if (process.argv.includes("--api-server")) {
         cors(res);
         res.end();
     });
+
     app.post("/api/update_region", (res) => {
         cors(res);
         let aborted = false;
@@ -211,4 +215,16 @@ if (process.argv.includes("--api-server")) {
         server.logger.log("Press Ctrl+C to exit.");
         0;
     });
+
+    setInterval(() => {
+        for (const regionId in server.regions) {
+            const region = server.regions[regionId];
+            if (Date.now() - region.lastUpdateTime > 60000) {
+                server.logger.warn(
+                    `Region ${regionId} has not sent player count in more than 60 seconds`,
+                );
+                region.playerCount = 0;
+            }
+        }
+    }, 60000);
 }
