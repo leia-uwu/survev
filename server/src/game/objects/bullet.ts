@@ -532,15 +532,10 @@ export class Bullet {
                 if (!shooterDead) {
                     const isHighValueTarget =
                         this.player?.hasPerk("targeting") && col.player!.perks.length;
-                    const shouldFJReduction =
-                        this.isShrapnel && col.player!.hasPerk("flak_jacket");
 
                     let multiplier = 1;
                     if (isHighValueTarget) {
                         multiplier *= 1.25;
-                    }
-                    if (shouldFJReduction) {
-                        multiplier *= 0.1;
                     }
 
                     this.bulletManager.damages.push({

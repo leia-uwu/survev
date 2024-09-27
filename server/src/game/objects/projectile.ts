@@ -181,6 +181,7 @@ export class Projectile extends BaseGameObject {
             } else if (
                 obj.__type === ObjectType.Player &&
                 def.playerCollision &&
+                !obj.dead &&
                 obj.__id !== this.playerId
             ) {
                 if (coldet.testCircleCircle(this.pos, this.rad, obj.pos, obj.rad)) {
