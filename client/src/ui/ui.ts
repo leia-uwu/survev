@@ -1763,10 +1763,12 @@ export class UiManager {
         for (const k in displayStats) {
             if (displayStats.hasOwnProperty(k)) {
                 const text = displayStats[k as keyof typeof displayStats];
-                const stat =
+                let stat =
                     k == "timeAlive"
                         ? humanizeTime(stats[k])
                         : stats[k as keyof typeof displayStats];
+                if (typeof stat == "number" && k == "damageTaken") stat = Math.max(stat, 100);
+
                 const html = `<tr><td class="ui-spectate-stats-category">${text}</td><td class="ui-spectate-stats-value">${stat}</td></tr>`;
                 this.spectateModeStatsData.append(html);
             }
