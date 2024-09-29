@@ -170,7 +170,7 @@ export class UiManager {
     interactionElems = $("#ui-interaction-press, #ui-interaction");
     interactionTouched = false;
 
-    reloadElems = $("#ui-current-clip, #ui-remaining-ammo #ui-reload-button-container");
+    reloadElems = $("#ui-current-clip, #ui-remaining-ammo, #ui-reload-button-container");
 
     reloadTouched = false;
 
