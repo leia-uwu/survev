@@ -102,11 +102,9 @@ class GameProcess implements GameData {
 
     manager: GameProcessManager;
 
-    onCreatedCbs: Array<(_game: typeof this) => void> = [];
+    onCreatedCbs: Array<(_proc: typeof this) => void> = [];
 
     lastMsgTime = Date.now();
-
-    killed = false;
 
     stoppedTime = Date.now();
 
@@ -204,8 +202,8 @@ class GameProcess implements GameData {
 export class GameProcessManager implements GameManager {
     readonly sockets = new Map<string, WebSocket<GameSocketData>>();
 
-    readonly gamesById = new Map<string, GameProcess>();
-    readonly games: GameProcess[] = [];
+    readonly processById = new Map<string, GameProcess>();
+    readonly processes: GameProcess[] = [];
 
     readonly logger = new Logger("Game Process Manager");
 
@@ -213,105 +211,104 @@ export class GameProcessManager implements GameManager {
         this.newGame(Config.modes[0]);
 
         process.on("beforeExit", () => {
-            for (const game of this.games) {
-                game.process.kill();
+            for (const gameProc of this.processes) {
+                gameProc.process.kill();
             }
         });
 
         setInterval(() => {
-            for (const game of this.games) {
-                game.send({
+            for (const gameProc of this.processes) {
+                gameProc.send({
                     type: ProcessMsgType.KeepAlive,
                 });
 
-                if (Date.now() - game.lastMsgTime > 10000) {
+                if (Date.now() - gameProc.lastMsgTime > 10000) {
                     this.logger.log(
-                        `Game ${game.id} did not send a message in more 10 seconds, killing`,
+                        `Game ${gameProc.id} did not send a message in more 10 seconds, killing`,
                     );
-                    this.killGame(game);
-                } else if (game.stopped && Date.now() - game.stoppedTime > 60000) {
+                    this.killProcess(gameProc);
+                } else if (
+                    gameProc.stopped &&
+                    Date.now() - gameProc.stoppedTime > 60000
+                ) {
                     this.logger.log(
-                        `Game ${game.id} stopped more than a minute ago, killing`,
+                        `Game ${gameProc.id} stopped more than a minute ago, killing`,
                     );
-                    this.killGame(game);
+                    this.killProcess(gameProc);
                 }
             }
-        }, 2);
+        }, 5000);
     }
 
     getPlayerCount(): number {
-        return this.games.reduce((a, b) => {
+        return this.processes.reduce((a, b) => {
             return a + b.aliveCount;
         }, 0);
     }
 
     async newGame(config: ServerGameConfig): Promise<GameProcess> {
-        let game: GameProcess | undefined;
+        let gameProc: GameProcess | undefined;
 
-        for (let i = 0; i < this.games.length; i++) {
-            const proc = this.games[i];
-            if (proc.stopped) {
-                game = proc;
+        for (let i = 0; i < this.processes.length; i++) {
+            const p = this.processes[i];
+            if (p.stopped) {
+                gameProc = p;
                 break;
             }
         }
 
-        if (!game) {
-            game = new GameProcess(this);
-            this.games.push(game);
+        if (!gameProc) {
+            gameProc = new GameProcess(this);
+            this.processes.push(gameProc);
 
-            game.process.on("exit", () => {
-                this.killGame(game!);
+            gameProc.process.on("exit", () => {
+                this.killProcess(gameProc!);
             });
-            game.process.on("close", () => {
-                this.killGame(game!);
+            gameProc.process.on("close", () => {
+                this.killProcess(gameProc!);
             });
-            game.process.on("disconnect", () => {
-                this.killGame(game!);
+            gameProc.process.on("disconnect", () => {
+                this.killProcess(gameProc!);
             });
         } else {
-            this.gamesById.delete(game.id);
+            this.processById.delete(gameProc.id);
         }
 
         const id = randomBytes(20).toString("hex");
 
-        this.gamesById.set(id, game);
+        this.processById.set(id, gameProc);
 
-        game.id = id;
+        gameProc.id = id;
 
-        game.create(id, config);
+        gameProc.create(id, config);
 
-        return game;
+        return gameProc;
     }
 
-    killGame(game: GameProcess): void {
+    killProcess(gameProc: GameProcess): void {
         // send SIGTERM, if still hasn't terminated after 5 seconds, send SIGKILL >:3
-        game.process.kill();
+        gameProc.process.kill();
         setTimeout(() => {
-            if (!game.process.killed) {
-                game.process.kill("SIGKILL");
+            if (!gameProc.process.killed) {
+                gameProc.process.kill("SIGKILL");
             }
         }, 5000);
 
-        const idx = this.games.indexOf(game);
+        const idx = this.processes.indexOf(gameProc);
         if (idx !== -1) {
-            this.games.splice(idx, 1);
+            this.processes.splice(idx, 1);
         }
-        this.gamesById.delete(game.id);
-        game.killed = true;
+        this.processById.delete(gameProc.id);
     }
 
     getById(id: string): GameData | undefined {
-        return this.gamesById.get(id);
+        return this.processById.get(id);
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
-        let game = this.games
+        let game = this.processes
             .filter((proc) => {
-                return (
-                    proc.gameModeIdx === body.gameModeIdx &&
-                    (proc.canJoin || proc.stopped)
-                );
+                return proc.gameModeIdx === body.gameModeIdx && proc.canJoin;
             })
             .sort((a, b) => {
                 return a.startedTime - b.startedTime;
@@ -352,8 +349,8 @@ export class GameProcessManager implements GameManager {
 
     onOpen(socketId: string, socket: WebSocket<GameSocketData>): void {
         const data = socket.getUserData();
-        const game = this.gamesById.get(data.gameId);
-        if (game === undefined) {
+        const proc = this.processById.get(data.gameId);
+        if (proc === undefined) {
             socket.close();
             return;
         }
@@ -363,13 +360,13 @@ export class GameProcessManager implements GameManager {
     onMsg(socketId: string, msg: ArrayBuffer): void {
         const data = this.sockets.get(socketId)?.getUserData();
         if (!data) return;
-        this.gamesById.get(data.gameId)?.handleMsg(msg, socketId);
+        this.processById.get(data.gameId)?.handleMsg(msg, socketId);
     }
 
     onClose(socketId: string) {
         const data = this.sockets.get(socketId)?.getUserData();
         if (!data) return;
-        this.gamesById.get(data.gameId)?.handleSocketClose(socketId);
+        this.processById.get(data.gameId)?.handleSocketClose(socketId);
         this.sockets.delete(socketId);
     }
 }

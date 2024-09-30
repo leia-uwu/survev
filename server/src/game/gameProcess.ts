@@ -44,6 +44,9 @@ process.on("message", async (msg: ProcessMsg) => {
             },
             (msg) => {
                 sendMsg(msg);
+                if (msg.stopped) {
+                    game = undefined;
+                }
             },
         );
 
