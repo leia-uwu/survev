@@ -354,6 +354,12 @@ export class PlayerBarn {
         const currentTeamIndex = aliveTeams.indexOf(currentTeam);
         return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
     }
+
+    getPlayerWithHighestKills(): Player | undefined {
+        return this.game.playerBarn.livingPlayers
+            .filter((p) => p.kills >= GameConfig.player.killLeaderMinKills)
+            .sort((a, b) => b.kills - a.kills)[0];
+    }
 }
 
 export class Player extends BaseGameObject {
@@ -2059,26 +2065,14 @@ export class Player extends BaseGameObject {
             if (source !== this) {
                 source.kills++;
 
-                if (this.game.map.mapDef.gameMode.killLeaderEnabled) {
-                    const killLeader = this.game.playerBarn.killLeader;
-                    if (
-                        source.kills >= GameConfig.player.killLeaderMinKills &&
-                        source.kills > (killLeader?.kills ?? 0)
-                    ) {
-                        if (killLeader) {
-                            killLeader.role = "";
-                        }
-                        source.promoteToRole("kill_leader");
-                    }
-                    if (source.isKillLeader) {
-                        this.game.playerBarn.killLeaderDirty = true;
-                    }
+                if (source.isKillLeader) {
+                    this.game.playerBarn.killLeaderDirty = true;
                 }
 
                 if (source.hasPerk("takedown")) {
                     source.health += 25;
                     source.boost += 25;
-                    source.giveHaste(GameConfig.HasteType.Takedown, 20);
+                    source.giveHaste(GameConfig.HasteType.Takedown, 3);
                 }
             }
 
@@ -2137,11 +2131,8 @@ export class Player extends BaseGameObject {
             roleMsg.killerId = params.source?.__id ?? 0;
             this.game.broadcastMsg(net.MsgType.RoleAnnouncement, roleMsg);
         }
-        if (this.isKillLeader) {
-            this.game.playerBarn.killLeader = undefined;
-            this.game.playerBarn.killLeaderDirty = true;
-            this.isKillLeader = false;
 
+        if (this.isKillLeader) {
             const roleMsg = new net.RoleAnnouncementMsg();
             roleMsg.role = "kill_leader";
             roleMsg.assigned = false;
@@ -2149,13 +2140,36 @@ export class Player extends BaseGameObject {
             roleMsg.playerId = this.__id;
             roleMsg.killerId = params.source?.__id ?? 0;
             this.game.broadcastMsg(net.MsgType.RoleAnnouncement, roleMsg);
+        }
 
-            const newKillLeader = this.game.playerBarn.livingPlayers
-                .filter((p) => p.kills >= GameConfig.player.killLeaderMinKills)
-                .sort((a, b) => a.kills - b.kills)[0];
-            if (newKillLeader) {
-                newKillLeader.promoteToRole("kill_leader");
+        if (this.game.map.mapDef.gameMode.killLeaderEnabled) {
+            const killLeader = this.game.playerBarn.killLeader;
+
+            let killLeaderKills = 0;
+
+            if (killLeader && !killLeader.dead) {
+                killLeaderKills = killLeader.kills;
             }
+
+            const newKillLeader = this.game.playerBarn.getPlayerWithHighestKills();
+            if (
+                killLeader !== newKillLeader &&
+                params.source &&
+                newKillLeader === params.source &&
+                newKillLeader.kills > killLeaderKills
+            ) {
+                if (killLeader) {
+                    killLeader.role = "";
+                }
+
+                params.source.promoteToRole("kill_leader");
+            }
+        }
+
+        if (this.isKillLeader) {
+            this.game.playerBarn.killLeader = undefined;
+            this.game.playerBarn.killLeaderDirty = true;
+            this.isKillLeader = false;
         }
 
         this.game.pluginManager.emit("playerKill", { ...params, player: this });
