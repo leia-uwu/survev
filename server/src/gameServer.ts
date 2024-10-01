@@ -206,8 +206,6 @@ if (process.argv.includes("--game-server")) {
           })
         : App();
 
-    server.init(app);
-
     app.options("/api/find_game", (res) => {
         cors(res);
         res.end();
@@ -231,7 +229,6 @@ if (process.argv.includes("--game-server")) {
                     returnJson(res, await server.findGame(body));
                 } catch (error) {
                     server.logger.warn("API find_game error:");
-                    console.error(error);
                     console.error(error);
                     if (aborted) return;
                     returnJson(res, {
