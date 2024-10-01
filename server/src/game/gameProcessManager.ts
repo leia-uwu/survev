@@ -1,6 +1,7 @@
 import { type ChildProcess, fork } from "child_process";
 import { randomBytes } from "crypto";
 import type { WebSocket } from "uWebSockets.js";
+import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
 import { Config } from "../config";
 import type { FindGameBody, GameSocketData } from "../gameServer";
@@ -108,6 +109,8 @@ class GameProcess implements GameData {
 
     stoppedTime = Date.now();
 
+    avaliableSlots = 0;
+
     constructor(manager: GameProcessManager, id: string, config: ServerGameConfig) {
         this.manager = manager;
         this.process = fork(path, args, {
@@ -173,6 +176,9 @@ class GameProcess implements GameData {
         this.id = id;
         this.teamMode = config.teamMode;
         this.mapName = config.mapName;
+
+        const mapDef = MapDefs[this.mapName as keyof typeof MapDefs] as MapDef;
+        this.avaliableSlots = mapDef.gameMode.maxPlayers;
     }
 
     addJoinToken(token: string, autoFill: boolean, playerCount: number) {
@@ -182,6 +188,7 @@ class GameProcess implements GameData {
             autoFill,
             playerCount,
         });
+        this.avaliableSlots--;
     }
 
     handleMsg(data: ArrayBuffer, socketId: string) {
@@ -316,7 +323,11 @@ export class GameProcessManager implements GameManager {
 
         let game = this.processes
             .filter((proc) => {
-                return proc.teamMode === mode.teamMode && proc.mapName === mode.mapName;
+                return (
+                    proc.avaliableSlots > 0 &&
+                    proc.teamMode === mode.teamMode &&
+                    proc.mapName === mode.mapName
+                );
             })
             .sort((a, b) => {
                 return a.startedTime - b.startedTime;
