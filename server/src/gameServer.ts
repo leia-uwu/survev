@@ -150,7 +150,7 @@ export class GameServer {
         }
 
         if (typeof body.playerCount !== "number") {
-            body.playerCount = mode.teamMode;
+            body.playerCount = 1;
         } else {
             body.playerCount = math.clamp(body.playerCount ?? 1, 1, mode.teamMode);
         }

@@ -93,8 +93,8 @@ class GameProcess implements GameData {
     process: ChildProcess;
 
     canJoin = true;
-    gameModeIdx = 0;
     teamMode: TeamMode = 1;
+    mapName = "";
     id = "";
     aliveCount = 0;
     startedTime = 0;
@@ -108,7 +108,7 @@ class GameProcess implements GameData {
 
     stoppedTime = Date.now();
 
-    constructor(manager: GameProcessManager) {
+    constructor(manager: GameProcessManager, id: string, config: ServerGameConfig) {
         this.manager = manager;
         this.process = fork(path, args, {
             serialization: "advanced",
@@ -129,8 +129,8 @@ class GameProcess implements GameData {
                     break;
                 case ProcessMsgType.UpdateData:
                     this.canJoin = msg.canJoin;
-                    this.gameModeIdx = msg.gameModeIdx;
                     this.teamMode = msg.teamMode;
+                    this.mapName = msg.mapName;
                     if (this.id !== msg.id) {
                         this.manager.processById.delete(this.id);
                         this.id = msg.id;
@@ -156,6 +156,8 @@ class GameProcess implements GameData {
                     break;
             }
         });
+
+        this.create(id, config);
     }
 
     send(msg: ProcessMsg) {
@@ -168,6 +170,9 @@ class GameProcess implements GameData {
             id,
             config,
         });
+        this.id = id;
+        this.teamMode = config.teamMode;
+        this.mapName = config.mapName;
     }
 
     addJoinToken(token: string, autoFill: boolean, playerCount: number) {
@@ -261,8 +266,10 @@ export class GameProcessManager implements GameManager {
             }
         }
 
+        const id = randomBytes(20).toString("hex");
         if (!gameProc) {
-            gameProc = new GameProcess(this);
+            gameProc = new GameProcess(this, id, config);
+
             this.processes.push(gameProc);
 
             gameProc.process.on("exit", () => {
@@ -276,15 +283,10 @@ export class GameProcessManager implements GameManager {
             });
         } else {
             this.processById.delete(gameProc.id);
+            gameProc.create(id, config);
         }
 
-        const id = randomBytes(20).toString("hex");
-
         this.processById.set(id, gameProc);
-
-        gameProc.id = id;
-
-        gameProc.create(id, config);
 
         return gameProc;
     }
@@ -310,15 +312,15 @@ export class GameProcessManager implements GameManager {
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
+        const mode = Config.modes[body.gameModeIdx];
+
         let game = this.processes
             .filter((proc) => {
-                return proc.gameModeIdx === body.gameModeIdx && proc.canJoin;
+                return proc.teamMode === mode.teamMode && proc.mapName === mode.mapName;
             })
             .sort((a, b) => {
                 return a.startedTime - b.startedTime;
             })[0];
-
-        const mode = Config.modes[body.gameModeIdx];
 
         const joinToken = randomBytes(20).toString("hex");
 

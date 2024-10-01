@@ -420,6 +420,7 @@ void (async () => {
                         region: config.region,
                         autoFill: true,
                         gameModeIdx: config.gameModeIdx,
+                        playerCount: 1,
                     }),
                 })
             ).json()) as FindGameResponse;

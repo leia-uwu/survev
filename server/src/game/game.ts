@@ -2,8 +2,8 @@ import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
-import { ContextManager } from "./contextManager";
 import type { ServerGameConfig } from "./gameManager";
+import { GameModeManager } from "./gameModeManager";
 import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
 import { GameMap } from "./map";
@@ -34,11 +34,11 @@ export class Game {
     startedTime = 0;
     id: string;
     teamMode: TeamMode;
-    gameModeIdx: number;
+    mapName: string;
     isTeamMode: boolean;
     config: ServerGameConfig;
     pluginManager = new PluginManager(this);
-    contextManager: ContextManager;
+    modeManager: GameModeManager;
 
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
@@ -97,7 +97,7 @@ export class Game {
         this.config = config;
 
         this.teamMode = config.teamMode;
-        this.gameModeIdx = Math.floor(this.teamMode / 2);
+        this.mapName = config.mapName;
         this.isTeamMode = this.teamMode !== TeamMode.Solo;
 
         this.map = new GameMap(this);
@@ -106,7 +106,7 @@ export class Game {
 
         this.gas = new Gas(this);
 
-        this.contextManager = new ContextManager(this);
+        this.modeManager = new GameModeManager(this);
 
         if (this.map.factionMode) {
             for (let i = 1; i <= this.map.mapDef.gameMode.factions!; i++) {
@@ -253,7 +253,7 @@ export class Game {
         if (!player) return;
         this.logger.log(`"${player.name}" left`);
         player.disconnected = true;
-        if (player.group) player.group.checkPlayers();
+        player.group?.checkPlayers();
         if (player.timeAlive < GameConfig.player.minActiveTime) {
             player.game.playerBarn.removePlayer(player);
         }
@@ -265,7 +265,7 @@ export class Game {
 
     checkGameOver(): void {
         if (this.over) return;
-        const didGameEnd: boolean = this.contextManager.handleGameEnd();
+        const didGameEnd: boolean = this.modeManager.handleGameEnd();
         if (didGameEnd) {
             this.over = true;
             this.updateData();
@@ -286,8 +286,8 @@ export class Game {
         this.sendData?.({
             type: ProcessMsgType.UpdateData,
             id: this.id,
-            gameModeIdx: this.gameModeIdx,
             teamMode: this.teamMode,
+            mapName: this.mapName,
             canJoin: this.canJoin,
             aliveCount: this.aliveCount,
             startedTime: this.startedTime,

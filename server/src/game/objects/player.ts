@@ -116,20 +116,18 @@ export class PlayerBarn {
             group = this.groupsByHash.get(joinMsg.matchPriv);
 
             if (!group && joinData.autoFill) {
-                group = this.groups.filter((group) => {
+                group = this.groups.find((group) => {
                     const sameTeamId = team && team.teamId == group.players[0].teamId;
                     return (
                         (team ? sameTeamId : true) &&
-                        !group.allDeadOrDisconnected &&
                         group.autoFill &&
-                        group.players.length < this.game.teamMode &&
-                        this.game.teamMode -
-                            (group.players.length + group.reservedSlots) >=
-                            joinData.playerCount
+                        group.avaliableSlots >= joinData.playerCount &&
+                        group.players.length < this.game.teamMode
                     );
-                })[0];
+                });
+
                 if (group) {
-                    group.reservedSlots += joinData.playerCount;
+                    group.avaliableSlots -= joinData.playerCount;
                 }
             }
 
@@ -169,13 +167,14 @@ export class PlayerBarn {
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
-        if (!this.game.contextManager.isContextModeSolo())
+        if (!this.game.modeManager.isSolo) {
             this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+        }
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
 
         if (!this.game.started) {
-            this.game.started = this.game.contextManager.isGameStarted();
+            this.game.started = this.game.modeManager.isGameStarted();
             if (this.game.started) {
                 this.game.gas.advanceGasStage();
             }
@@ -199,8 +198,7 @@ export class PlayerBarn {
                 this.scheduledRoles.splice(i, 1);
                 i--;
 
-                const fullAliveContext =
-                    this.game.contextManager.getAlivePlayersContext();
+                const fullAliveContext = this.game.modeManager.getAlivePlayersContext();
                 for (let i = 0; i < fullAliveContext.length; i++) {
                     const promotablePlayers = fullAliveContext[i].filter((p) => !p.role);
                     if (promotablePlayers.length == 0) continue;
@@ -334,7 +332,7 @@ export class PlayerBarn {
 
     addGroup(hash: string, autoFill: boolean) {
         const groupId = this.groupIdAllocator.getNextId();
-        const group = new Group(hash, groupId, autoFill);
+        const group = new Group(hash, groupId, autoFill, this.game.teamMode);
         this.groups.push(group);
         this.groupsByHash.set(hash, group);
         return group;
@@ -665,6 +663,7 @@ export class Player extends BaseGameObject {
             case "grenadier":
                 break;
             case "medic":
+                // TODO: this should be based on aoe_heal perk not role
                 this.game.playerBarn.medics.push(this);
                 break;
         }
@@ -1016,8 +1015,8 @@ export class Player extends BaseGameObject {
         // Action logic
         //
         if (
-            this.game.contextManager.isReviving(this) ||
-            this.game.contextManager.isBeingRevived(this)
+            this.game.modeManager.isReviving(this) ||
+            this.game.modeManager.isBeingRevived(this)
         ) {
             if (
                 this.playerBeingRevived &&
@@ -1525,7 +1524,7 @@ export class Player extends BaseGameObject {
 
         if (playerBarn.aliveCountDirty || this._firstUpdate) {
             const aliveMsg = new net.AliveCountsMsg();
-            this.game.contextManager.updateAliveCounts(aliveMsg.teamAliveCounts);
+            this.game.modeManager.updateAliveCounts(aliveMsg.teamAliveCounts);
             msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
         }
 
@@ -1629,7 +1628,7 @@ export class Player extends BaseGameObject {
                 net.getPlayerStatusUpdateRate(this.game.map.factionMode)
         ) {
             updateMsg.playerStatus.players =
-                this.game.contextManager.getPlayerStatuses(player);
+                this.game.modeManager.getPlayerStatuses(player);
             updateMsg.playerStatusDirty = true;
             player.playerStatusTicker = 0;
         }
@@ -1746,7 +1745,7 @@ export class Player extends BaseGameObject {
     }
 
     spectate(spectateMsg: net.SpectateMsg): void {
-        const spectatablePlayers = this.game.contextManager.getSpectatablePlayers(this);
+        const spectatablePlayers = this.game.modeManager.getSpectatablePlayers(this);
         let playerToSpec: Player | undefined;
         switch (true) {
             case spectateMsg.specBegin:
@@ -1880,7 +1879,7 @@ export class Player extends BaseGameObject {
             if (!this.downed && this.hasPerk("self_revive")) {
                 this.down(params);
             } else {
-                this.game.contextManager.handlePlayerDeath(this, params);
+                this.game.modeManager.handlePlayerDeath(this, params);
             }
         }
     }
@@ -1896,9 +1895,9 @@ export class Player extends BaseGameObject {
             stats = this.group.players;
         }
 
-        const aliveCount = this.game.contextManager.aliveCount();
+        const aliveCount = this.game.modeManager.aliveCount();
 
-        if (this.game.contextManager.showStatsMsg(targetPlayer)) {
+        if (this.game.modeManager.showStatsMsg(targetPlayer)) {
             for (const stat of stats) {
                 const statsMsg = new net.PlayerStatsMsg();
                 statsMsg.playerStats = stat;
@@ -1977,7 +1976,7 @@ export class Player extends BaseGameObject {
                     ? this.killedBy
                     : this.game.playerBarn.randomPlayer();
         } else if (this.group) {
-            if (!this.group.checkAllDeadOrDisconnected(this)) {
+            if (!this.group.checkAllDead(this)) {
                 // team alive
                 player = this.group.randomPlayer(this);
             } else {
@@ -1985,7 +1984,7 @@ export class Player extends BaseGameObject {
                 if (
                     this.killedBy &&
                     this.killedBy != this &&
-                    this.group.checkAllDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                    this.group.checkAllDead(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
                 ) {
                     player = this.killedBy;
                 } else {
@@ -2033,10 +2032,9 @@ export class Player extends BaseGameObject {
             this.game.playerBarn.livingPlayers.indexOf(this),
             1,
         );
-        if (this.group) {
-            this.group.livingPlayers.splice(this.group.livingPlayers.indexOf(this), 1);
-            this.group.checkPlayers();
-        }
+
+        this.group?.checkPlayers();
+
         if (this.team) {
             this.team.livingPlayers.splice(this.team.livingPlayers.indexOf(this), 1);
         }
@@ -2296,7 +2294,7 @@ export class Player extends BaseGameObject {
             // action in progress
             return;
         }
-        if (!this.game.contextManager.canRevive(this)) {
+        if (!this.game.modeManager.canRevive(this)) {
             return;
         }
 
@@ -2364,7 +2362,8 @@ export class Player extends BaseGameObject {
                 : GameConfig.player.medicHealRange;
 
         return (
-            medic.teamId == this.teamId &&
+            this.game.modeManager.getIdContext(medic) ==
+                this.game.modeManager.getIdContext(this) &&
             !!util.sameLayer(medic.layer, this.layer) &&
             v2.lengthSqr(v2.sub(medic.pos, this.pos)) <= effectRange * effectRange
         );
@@ -2471,7 +2470,7 @@ export class Player extends BaseGameObject {
                 //cancel inputs can only be accepted if player is reviving (themselves)
                 //otherwise it doesnt make sense for a player to be able to cancel another player's revive
                 (input == GameConfig.Input.Cancel &&
-                    this.game.contextManager.isReviving(this));
+                    this.game.modeManager.isReviving(this));
 
             return this.hasPerk("self_revive") && isAcceptedInput;
         }
@@ -3374,7 +3373,7 @@ export class Player extends BaseGameObject {
     }
 
     initLastBreath(): void {
-        const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
+        const affectedPlayers = this.game.modeManager.getNearbyAlivePlayersContext(
             this,
             60,
         );
@@ -3392,7 +3391,7 @@ export class Player extends BaseGameObject {
         this.bugleTickerActive = true;
         this._bugleTicker = 8;
 
-        const affectedPlayers = this.game.contextManager.getNearbyAlivePlayersContext(
+        const affectedPlayers = this.game.modeManager.getNearbyAlivePlayersContext(
             this,
             60,
         );

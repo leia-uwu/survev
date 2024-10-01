@@ -15,8 +15,8 @@ export interface ServerGameConfig {
 
 export interface GameData {
     id: string;
-    gameModeIdx: number;
     teamMode: TeamMode;
+    mapName: string;
     canJoin: boolean;
     aliveCount: number;
     startedTime: number;
@@ -137,9 +137,15 @@ export class SingleThreadGameManager implements GameManager {
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
+        const config = Config.modes[body.gameModeIdx];
+
         let game = this.games
             .filter((game) => {
-                return game.canJoin && game.gameModeIdx === body.gameModeIdx;
+                return (
+                    game.canJoin &&
+                    game.teamMode === config.teamMode &&
+                    game.mapName === config.mapName
+                );
             })
             .sort((a, b) => {
                 return a.startedTime - b.startedTime;
