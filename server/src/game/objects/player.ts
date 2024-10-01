@@ -3511,10 +3511,6 @@ export class Player extends BaseGameObject {
     }
 
     sendData(buffer: ArrayBuffer | Uint8Array): void {
-        try {
-            this.game.sendSocketMsg(this.socketId, buffer);
-        } catch (e) {
-            this.game.logger.warn("Error sending packet. Details:", e);
-        }
+        this.game.sendSocketMsg(this.socketId, buffer);
     }
 }

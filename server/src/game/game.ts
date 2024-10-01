@@ -1,7 +1,5 @@
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
-import { assert } from "../../../shared/utils/util";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import type { ServerGameConfig } from "./gameManager";

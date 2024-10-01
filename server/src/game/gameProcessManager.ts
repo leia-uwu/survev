@@ -382,8 +382,8 @@ export class GameProcessManager implements GameManager {
 
     onClose(socketId: string) {
         const data = this.sockets.get(socketId)?.getUserData();
+        this.sockets.delete(socketId);
         if (!data) return;
         this.processById.get(data.gameId)?.handleSocketClose(socketId);
-        this.sockets.delete(socketId);
     }
 }
