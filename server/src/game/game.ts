@@ -1,5 +1,7 @@
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import { assert } from "../../../shared/utils/util";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import type { ServerGameConfig } from "./gameManager";
@@ -196,17 +198,74 @@ export class Game {
         );
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+    deserializeMsg(buff: ArrayBuffer): {
+        type: net.MsgType;
+        msg: net.AbstractMsg | undefined;
+    } {
         const msgStream = new net.MsgStream(buff);
-        const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
+
+        const type = msgStream.deserializeMsgType();
+
+        let msg:
+            | net.JoinMsg
+            | net.InputMsg
+            | net.EmoteMsg
+            | net.DropItemMsg
+            | net.PerkModeRoleSelectMsg
+            | undefined = undefined;
+
+        switch (type) {
+            case net.MsgType.Join: {
+                msg = new net.JoinMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case net.MsgType.Input: {
+                msg = new net.InputMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case net.MsgType.Emote:
+                msg = new net.EmoteMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.DropItem:
+                msg = new net.DropItemMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.PerkModeRoleSelect:
+                msg = new net.PerkModeRoleSelectMsg();
+                msg.deserialize(stream);
+                break;
+        }
+
+        return {
+            type,
+            msg,
+        };
+    }
+
+    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+        if (!(buff instanceof ArrayBuffer)) return;
 
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
 
+        let msg: net.AbstractMsg | undefined = undefined;
+        let type = net.MsgType.None;
+
+        try {
+            const deserialized = this.deserializeMsg(buff);
+            msg = deserialized.msg;
+            type = deserialized.type;
+        } catch (err) {
+            this.logger.warn("Failed to deserialize msg: ");
+            console.error(err);
+            return;
+        }
+
         if (type === net.MsgType.Join && !player) {
-            const joinMsg = new net.JoinMsg();
-            joinMsg.deserialize(stream);
-            this.playerBarn.addPlayer(socketId, joinMsg);
+            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg);
             return;
         }
 
@@ -217,14 +276,11 @@ export class Game {
 
         switch (type) {
             case net.MsgType.Input: {
-                const inputMsg = new net.InputMsg();
-                inputMsg.deserialize(stream);
-                player.handleInput(inputMsg);
+                player.handleInput(msg as net.InputMsg);
                 break;
             }
             case net.MsgType.Emote: {
-                const emoteMsg = new net.EmoteMsg();
-                emoteMsg.deserialize(stream);
+                const emoteMsg = msg as net.EmoteMsg;
 
                 if (player.dead) break;
 
@@ -234,14 +290,12 @@ export class Game {
                 break;
             }
             case net.MsgType.DropItem: {
-                const dropMsg = new net.DropItemMsg();
-                dropMsg.deserialize(stream);
+                const dropMsg = msg as net.DropItemMsg;
                 player.dropItem(dropMsg);
                 break;
             }
             case net.MsgType.Spectate: {
-                const spectateMsg = new net.SpectateMsg();
-                spectateMsg.deserialize(stream);
+                const spectateMsg = msg as net.SpectateMsg;
                 player.spectate(spectateMsg);
                 break;
             }

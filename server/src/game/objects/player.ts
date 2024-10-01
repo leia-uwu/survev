@@ -168,7 +168,7 @@ export class PlayerBarn {
         this.players.push(player);
         this.livingPlayers.push(player);
         if (!this.game.modeManager.isSolo) {
-            this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+            this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         }
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
@@ -230,8 +230,9 @@ export class PlayerBarn {
                 this.groupsByHash.delete(player.group.hash);
             }
         }
-        if (this.game.isTeamMode)
-            this.livingPlayers = this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+        if (this.game.isTeamMode) {
+            this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+        }
 
         this.game.checkGameOver();
         this.game.updateData();
@@ -1982,7 +1983,7 @@ export class Player extends BaseGameObject {
                     ? this.killedBy
                     : this.game.playerBarn.randomPlayer();
         } else if (this.group) {
-            if (!this.group.checkAllDead(this)) {
+            if (!this.group.checkAllDeadOrDisconnected(this)) {
                 // team alive
                 player = this.group.randomPlayer(this);
             } else {
@@ -1990,7 +1991,7 @@ export class Player extends BaseGameObject {
                 if (
                     this.killedBy &&
                     this.killedBy != this &&
-                    this.group.checkAllDead(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
+                    this.group.checkAllDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
                 ) {
                     player = this.killedBy;
                 } else {

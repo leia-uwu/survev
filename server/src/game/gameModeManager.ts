@@ -287,7 +287,8 @@ export class GameModeManager {
                         return;
                     }
 
-                    const allDeadOrDisconnected = group.checkAllDead(player);
+                    const allDeadOrDisconnected =
+                        group.checkAllDeadOrDisconnected(player);
                     const allDowned = group.checkAllDowned(player);
                     const groupHasSelfRevive = group.livingPlayers.find((p) =>
                         p.hasPerk("self_revive"),
