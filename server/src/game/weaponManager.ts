@@ -727,6 +727,7 @@ export class WeaponManager {
                 trailThick: shouldApplyChambered,
                 reflectCount: 0,
                 splinter: hasSplinter,
+                lastShot: weapon.ammo <= 0,
                 // reflectObjId: this.player.linkedObstacleId,
                 onHitFx: hasExplosive ? "explosion_rounds" : undefined,
             };
