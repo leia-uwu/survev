@@ -131,7 +131,11 @@ class GameProcess implements GameData {
                     this.canJoin = msg.canJoin;
                     this.gameModeIdx = msg.gameModeIdx;
                     this.teamMode = msg.teamMode;
-                    this.id = msg.id;
+                    if (this.id !== msg.id) {
+                        this.manager.processById.delete(this.id);
+                        this.id = msg.id;
+                        this.manager.processById.set(this.id, this);
+                    }
                     this.aliveCount = msg.aliveCount;
                     this.startedTime = msg.startedTime;
                     this.stopped = msg.stopped;
