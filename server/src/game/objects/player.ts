@@ -1,5 +1,5 @@
 import { GameObjectDefs, type LootDef } from "../../../../shared/defs/gameObjectDefs";
-import type { EmoteDef } from "../../../../shared/defs/gameObjects/emoteDefs";
+import { type EmoteDef, EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
 import {
     type BackpackDef,
     type BoostDef,
@@ -13,6 +13,7 @@ import {
 import type { GunDef } from "../../../../shared/defs/gameObjects/gunDefs";
 import { type MeleeDef, MeleeDefs } from "../../../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
+import { PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
 import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
@@ -613,6 +614,9 @@ export class Player extends BaseGameObject {
     role = "";
     isKillLeader = false;
 
+    // "Gabby Ghost" perk random emojis
+    chattyTicker = 0;
+
     promoteToRole(role: string) {
         if (!GameObjectDefs[role]) return;
 
@@ -770,27 +774,30 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
-    perks: Array<{ type: string; droppable: boolean }> = [];
+    perks: Array<{ type: string; droppable: boolean; replaceOnDeath?: string }> = [];
 
     perkTypes: string[] = [];
 
-    addPerk(type: string, droppable = false) {
+    addPerk(type: string, droppable = false, replaceOnDeath?: string) {
         this.perks.push({
             type,
             droppable,
+            replaceOnDeath,
         });
         this.perkTypes.push(type);
 
-        if (type == "leadership") {
-            this.boost = 100;
-            this.scale += 0.25;
-        } else if (type == "steelskin") {
-            this.scale += 0.4;
-        } else if (type == "flak_jacket") {
-            this.scale += 0.2;
-        } else if (type == "small_arms") {
-            this.scale -= 0.25;
+        if (type === "trick_m9") {
+            const ammo = this.weaponManager.getTrueAmmoStats(
+                GameObjectDefs["m9_cursed"] as GunDef,
+            );
+            this.weaponManager.setWeapon(
+                GameConfig.WeaponSlot.Secondary,
+                "m9_cursed",
+                ammo.trueMaxClip,
+            );
         }
+
+        this.recalculateScale();
     }
 
     removePerk(type: string): void {
@@ -798,15 +805,16 @@ export class Player extends BaseGameObject {
         this.perks.splice(idx, 1);
         this.perkTypes.splice(this.perkTypes.indexOf(type), 1);
 
-        if (type == "leadership") {
-            this.scale -= 0.25;
-        } else if (type == "steelskin") {
-            this.scale -= 0.4;
-        } else if (type == "flak_jacket") {
-            this.scale -= 0.2;
-        } else if (type == "small_arms") {
-            this.scale += 0.25;
+        if (type === "trick_m9") {
+            const slot = this.weapons.findIndex((weap) => {
+                return weap.type === "m9_cursed";
+            });
+            if (slot !== -1) {
+                this.weaponManager.setWeapon(slot, "", 0);
+            }
         }
+
+        this.recalculateScale();
     }
 
     get hasPerks(): boolean {
@@ -1032,19 +1040,50 @@ export class Player extends BaseGameObject {
             ) {
                 this.cancelAction();
             }
-        } else if (this.downed) {
-            this.bleedTicker += dt;
-            if (this.bleedTicker >= GameConfig.player.bleedTickRate) {
-                const bleedDamageMult = this.game.map.mapDef.gameConfig.bleedDamageMult;
-                const multiplier =
-                    bleedDamageMult != 1 ? this.downedCount * bleedDamageMult : 1;
-                this.damage({
-                    amount: this.game.map.mapDef.gameConfig.bleedDamage * multiplier,
-                    damageType: GameConfig.DamageType.Bleeding,
-                    dir: this.dir,
-                });
-                this.bleedTicker = 0;
-            }
+        }
+
+        // Take bleeding damage
+        this.bleedTicker -= dt;
+        if (
+            ((this.downed && this.actionType == GameConfig.Action.None) ||
+                this.hasPerk("trick_drain")) &&
+            this.bleedTicker < 0
+        ) {
+            const hasDrain = this.hasPerk("trick_drain");
+            this.bleedTicker = hasDrain
+                ? GameConfig.player.bleedTickRate * 3
+                : GameConfig.player.bleedTickRate;
+
+            const mapConfig = this.game.map.mapDef.gameConfig;
+
+            const bleedDamageMult = mapConfig.bleedDamageMult;
+
+            const multiplier =
+                bleedDamageMult != 1 ? this.downedCount * bleedDamageMult : 1;
+
+            let damage = hasDrain ? 1 : mapConfig.bleedDamage * multiplier;
+            this.damage({
+                amount: damage,
+                damageType: GameConfig.DamageType.Bleeding,
+                dir: this.dir,
+            });
+        }
+
+        this.chattyTicker -= dt;
+
+        if (this.hasPerk("trick_chatty") && this.chattyTicker < 0) {
+            this.chattyTicker = util.random(5, 15);
+
+            const emotes = Object.keys(EmotesDefs);
+
+            this.game.playerBarn.emotes.push(
+                new Emote(
+                    this.__id,
+                    this.pos,
+                    emotes[Math.floor(Math.random() * emotes.length)],
+                    false,
+                ),
+            );
         }
 
         if (this.game.gas.doDamage && this.game.gas.isInGas(this.pos)) {
@@ -1166,7 +1205,7 @@ export class Player extends BaseGameObject {
                 this.lastBreathActive = false;
                 this._lastBreathTicker = 0;
 
-                this.scale -= 0.2;
+                this.recalculateScale();
             }
         }
 
@@ -1855,10 +1894,16 @@ export class Player extends BaseGameObject {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (this.hasPerk("flak_jacket")) {
-                finalDamage *= params.isExplosion ? 0.1 : 0.9;
+                finalDamage -=
+                    finalDamage *
+                    (params.isExplosion
+                        ? PerkProperties.flak_jacket.explosionDamageReduction
+                        : PerkProperties.flak_jacket.damageReduction);
             }
 
-            if (this.hasPerk("steelskin")) finalDamage *= 0.5;
+            if (this.hasPerk("steelskin")) {
+                finalDamage -= finalDamage * PerkProperties.steelskin.damageReduction;
+            }
 
             let isHeadShot = false;
 
@@ -2268,8 +2313,13 @@ export class Player extends BaseGameObject {
 
         for (let i = this.perks.length - 1; i >= 0; i--) {
             const perk = this.perks[i];
-            if (perk.droppable) {
-                this.game.lootBarn.addLoot(perk.type, this.pos, this.layer, 1);
+            if (perk.droppable || perk.replaceOnDeath) {
+                this.game.lootBarn.addLoot(
+                    perk.replaceOnDeath || perk.type,
+                    this.pos,
+                    this.layer,
+                    1,
+                );
             }
         }
         this.perks.length = 0;
@@ -3137,20 +3187,49 @@ export class Player extends BaseGameObject {
                 this.setDirty();
                 break;
             case "perk":
+                let type = obj.type;
+
+                const isMistery = type === "halloween_mystery";
+
+                if (isMistery) {
+                    type = this.game.lootBarn.getLootTable(
+                        "tier_halloween_mystery_perks",
+                    )[0].name;
+                }
+
+                pickupMsg.item = type;
+
                 if (this.hasPerk(obj.type)) {
                     amountLeft = 1;
                     pickupMsg.type = net.PickupMsgType.AlreadyEquipped;
                     break;
                 }
 
-                const perkSlotType = this.perks.find((p) => p.droppable)?.type;
+                const emoteType = `emote_${type}`;
+                if (GameObjectDefs[`emote_${type}`]) {
+                    this.game.playerBarn.emotes.push(
+                        new Emote(this.__id, this.pos, emoteType, false),
+                    );
+                }
+
+                const perkSlotType = this.perks.find(
+                    (p) => p.droppable || p.replaceOnDeath === "halloween_mystery",
+                )?.type;
                 if (perkSlotType) {
                     amountLeft = 1;
-                    lootToAdd = perkSlotType;
+                    lootToAdd = isMistery ? "" : perkSlotType;
                     this.removePerk(perkSlotType);
-                    this.addPerk(obj.type, true);
+                    this.addPerk(
+                        type,
+                        !isMistery,
+                        isMistery ? "halloween_mystery" : undefined,
+                    );
                 } else {
-                    this.addPerk(obj.type, true);
+                    this.addPerk(
+                        type,
+                        !isMistery,
+                        isMistery ? "halloween_mystery" : undefined,
+                    );
                 }
                 this.setDirty();
                 break;
@@ -3466,8 +3545,8 @@ export class Player extends BaseGameObject {
             player.lastBreathActive = true;
             player._lastBreathTicker = 5;
 
-            player.scale += 0.2;
             player.giveHaste(GameConfig.HasteType.Inspire, 5);
+            this.recalculateScale();
         }
     }
 
@@ -3505,6 +3584,27 @@ export class Player extends BaseGameObject {
         this.animSeq++;
         this._animTicker = 0;
         this.setDirty();
+    }
+
+    recalculateScale() {
+        let scale = 1;
+        for (let i = 0; i < this.perks.length; i++) {
+            const perk = this.perks[i].type;
+            const perkProps = PerkProperties[perk as keyof typeof PerkProperties];
+            if (typeof perkProps === "object" && "scale" in perkProps) {
+                scale += perkProps.scale as number;
+            }
+        }
+
+        if (this.lastBreathActive) {
+            scale += PerkProperties.final_bugle.scaleOnDeath;
+        }
+
+        this.scale = math.clamp(
+            scale,
+            net.Constants.PlayerMinScale,
+            net.Constants.PlayerMaxScale,
+        );
     }
 
     recalculateSpeed(): void {

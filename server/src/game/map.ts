@@ -733,7 +733,7 @@ export class GameMap {
             } else if (def.terrain?.beach) {
                 this.genOnBeach(type);
             } else {
-                console.log(`Unknown map spawn rules for ${type}`);
+                this.genOnGrass(type);
             }
         }
     }

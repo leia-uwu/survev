@@ -72,6 +72,7 @@ export class PlaneBarn {
                                 this.game.gas.posNew,
                                 util.randomPointInCircle(this.game.gas.radNew),
                             ),
+                            scheduledPlane.options.airdropType,
                         );
                         break;
                     }
@@ -87,7 +88,7 @@ export class PlaneBarn {
         });
     }
 
-    addAirdrop(pos: Vec2) {
+    addAirdrop(pos: Vec2, type?: string) {
         let id = 1;
         if (this.idNext < MAX_ID) {
             id = this.idNext++;
@@ -104,9 +105,7 @@ export class PlaneBarn {
             return;
         }
 
-        const type = util.weightedRandom(
-            this.game.map.mapDef.gameConfig.planes.crates,
-        ).name;
+        type ||= util.weightedRandom(this.game.map.mapDef.gameConfig.planes.crates).name;
 
         const def = MapObjectDefs[type] as ObstacleDef;
 

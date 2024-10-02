@@ -112,7 +112,10 @@ const mapDef = {
                 {
                     circleIdx: 3,
                     wait: 2,
-                    options: { type: GameConfig.Plane.Airdrop },
+                    options: {
+                        type: GameConfig.Plane.Airdrop,
+                        airdropType: "airdrop_crate_02h",
+                    },
                 },
             ],
             crates: [
@@ -168,6 +171,29 @@ const mapDef = {
             { name: "", count: 1, weight: 18 },
             { name: "4xscope", count: 1, weight: 0 },
         ],
+        tier_outfits: [
+            { name: "outfitBarrel", count: 1, weight: 1 },
+            { name: "outfitWoodBarrel", count: 1, weight: 1 },
+            { name: "outfitStone", count: 1, weight: 1 },
+            { name: "outfitTree", count: 1, weight: 1 },
+            { name: "outfitStump", count: 1, weight: 1 },
+            { name: "outfitBush", count: 1, weight: 1 },
+            { name: "outfitLeafPile", count: 1, weight: 1 },
+            { name: "outfitCrate", count: 1, weight: 1 },
+            { name: "outfitTable", count: 1, weight: 1 },
+            { name: "outfitSoviet", count: 1, weight: 1 },
+            { name: "outfitOven", count: 1, weight: 1 },
+            { name: "outfitRefrigerator", count: 1, weight: 1 },
+            { name: "outfitVending", count: 1, weight: 1 },
+            { name: "outfitPumpkin", count: 1, weight: 1 },
+            { name: "outfitWoodpile", count: 1, weight: 1 },
+            { name: "outfitToilet", count: 1, weight: 1 },
+            { name: "outfitBushRiver", count: 1, weight: 1 },
+            { name: "outfitCrab", count: 1, weight: 1 },
+            { name: "outfitStumpAxe", count: 1, weight: 1 },
+        ],
+        // seems to be unused? so adding this to suppress the warning
+        tier_pumpkin_candy: [{ name: "", weight: 1, count: 1 }],
     },
     mapGen: {
         map: {

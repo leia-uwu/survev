@@ -1,3 +1,40 @@
+export const PerkProperties = {
+    leadership: {
+        scale: 0.25,
+    },
+    steelskin: {
+        scale: 0.4,
+        damageReduction: 0.5,
+    },
+    flak_jacket: {
+        scale: 0.2,
+        damageReduction: 0.1,
+        explosionDamageReduction: 0.9,
+    },
+    smallArms: {
+        scale: -0.25,
+    },
+    splinter: {
+        mainDamageMulti: 0.6,
+        splitsDamageMulti: 0.45,
+    },
+    trick_size: {
+        scale: 0.25,
+    },
+    final_bugle: {
+        scaleOnDeath: 0.2,
+    },
+    // map of ammo type to perk that boosts that ammo
+    ammoBonuses: {
+        "9mm": ["treat_9mm", "bonus_9mm"],
+        "762mm": ["treat_762"],
+        "556mm": ["treat_556"],
+        "12gauge": ["treat_12g"],
+        "45acp": ["bonus_45"],
+    } as Record<string, string[]>,
+    ammoBonusDamageMulti: 1.08,
+};
+
 export interface PerkDef {
     readonly type: "perk";
     name: string;

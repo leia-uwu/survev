@@ -107,6 +107,7 @@ export interface MapDef {
                     airstrikeZoneRad?: number;
                     wait?: number;
                     delay?: number;
+                    airdropType?: string;
                 };
             }>;
             crates: Array<{

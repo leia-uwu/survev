@@ -1,6 +1,7 @@
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
+import { PerkProperties } from "../../../shared/defs/gameObjects/perkDefs";
 import {
     type ThrowableDef,
     ThrowableDefs,
@@ -379,11 +380,10 @@ export class WeaponManager {
         const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         const conditions = [
-            this.player.inventory[weaponDef.ammo] == undefined,
             this.player.actionType == GameConfig.Action.UseItem,
             this.weapons[this.curWeapIdx].ammo >=
                 this.getTrueAmmoStats(weaponDef).trueMaxClip,
-            this.player.inventory[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef),
+            !this.player.inventory[weaponDef.ammo] && !this.isInfinite(weaponDef),
             this.curWeapIdx == WeaponSlot.Melee ||
                 this.curWeapIdx == WeaponSlot.Throwable,
         ];
@@ -504,6 +504,10 @@ export class WeaponManager {
     }
 
     dropGun(weapIdx: number): void {
+        const def = GameObjectDefs[this.weapons[weapIdx].type] as GunDef | undefined;
+        if (def && def.noDrop) {
+            return;
+        }
         this._dropGun(weapIdx);
         this.setWeapon(weapIdx, "", 0);
     }
@@ -531,13 +535,27 @@ export class WeaponManager {
         }
     }
 
-    isBulletSaturated(): boolean {
+    isBulletSaturated(ammo: string): boolean {
         if (this.player.lastBreathActive) {
             return true;
         }
+        // avoid other checks if player has no perks
+        if (!this.player.perks.length) return false;
 
-        const perks = ["bonus_assault"]; //add rest later, im lazy rn
-        return perks.some((p) => this.player.hasPerk(p));
+        const perks = ["bonus_assault", "treat_super"];
+        if (perks.some((p) => this.player.hasPerk(p))) {
+            return true;
+        }
+
+        if (PerkProperties.ammoBonuses[ammo]) {
+            for (const perk of this.player.perks) {
+                if (PerkProperties.ammoBonuses[ammo].includes(perk.type)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     offHand = false;
@@ -634,6 +652,9 @@ export class WeaponManager {
             }
         }
 
+        //
+        // Perks
+        //
         const hasExplosive = this.player.hasPerk("explosive");
         const hasSplinter = this.player.hasPerk("splinter");
         const shouldApplyChambered =
@@ -642,7 +663,27 @@ export class WeaponManager {
             (weapon.ammo === 0 ||
                 weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
+        let damageMult = 1;
+        if (this.player.hasPerk("splinter")) {
+            damageMult *= PerkProperties.splinter.mainDamageMulti;
+        }
+
+        const saturated = this.isBulletSaturated(itemDef.ammo);
+        if (saturated) {
+            damageMult *= PerkProperties.ammoBonusDamageMulti;
+        }
+
+        if (this.player.lastBreathActive) {
+            damageMult *= 1.08;
+        }
+
+        if (shouldApplyChambered) {
+            damageMult *= 1.25;
+        }
+
+        //
         // Movement spread
+        //
         let spread = itemDef.shotSpread ?? 0;
         const travel = v2.sub(this.player.pos, this.player.posOld);
         if (v2.length(travel) > 0.01) {
@@ -689,20 +730,11 @@ export class WeaponManager {
                     toBltLen = t - 0.1;
                 }
             }
+
             const shotPos = v2.add(gunPos, v2.mul(toBlt, toBltLen));
             let distance = Number.MAX_VALUE;
             if (itemDef.toMouseHit) {
                 distance = math.max(toMouseLen - gunLen, 0.0);
-            }
-            let damageMult = 1;
-            if (this.player.hasPerk("splinter")) {
-                damageMult *= 0.6;
-            } else if (this.player.hasPerk("bonus_assault")) {
-                damageMult *= 1.08;
-            } else if (this.player.lastBreathActive) {
-                damageMult *= 1.08;
-            } else if (shouldApplyChambered) {
-                damageMult *= 1.25;
             }
 
             const params: BulletParams = {
@@ -718,15 +750,16 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: offHand,
-                trailSaturated: this.isBulletSaturated() || shouldApplyChambered,
+                trailSaturated: saturated,
                 trailSmall: false,
                 trailThick: shouldApplyChambered,
                 reflectCount: 0,
                 splinter: hasSplinter,
                 lastShot: weapon.ammo <= 0,
-                // reflectObjId: this.player.linkedObstacleId,
+                reflectObjId: this.player.obstacleOutfit?.__id,
                 onHitFx: hasExplosive ? "explosion_rounds" : undefined,
             };
+
             this.player.game.bulletBarn.fireBullet(params);
 
             // Shoot a projectile if defined
@@ -765,7 +798,7 @@ export class WeaponManager {
                     sParams.lastShot = false;
                     sParams.shotFx = false;
                     sParams.trailSmall = true;
-                    sParams.damageMult *= 0.45;
+                    sParams.damageMult *= PerkProperties.splinter.splitsDamageMulti;
 
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }

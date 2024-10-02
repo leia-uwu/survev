@@ -184,7 +184,7 @@ export class Bullet {
         this.startPos = v2.copy(params.pos);
         this.bulletType = params.bulletType;
         this.reflectCount = params.reflectCount ?? 0;
-        this.reflectObjId = params.reflectObjId ?? -1;
+        this.reflectObjId = params.reflectObjId ?? 0;
         this.lastShot = params.lastShot ?? false;
         this.speed = bulletDef.speed * variance;
         this.onHitFx = bulletDef.onHit ?? params.onHitFx;
@@ -359,7 +359,7 @@ export class Bullet {
                     obj.dead ||
                     !util.sameLayer(obj.layer, this.layer) ||
                     obj.height < GameConfig.bullet.height ||
-                    (this.reflectCount > 0 && obj.__id === this.reflectObjId)
+                    obj.__id === this.reflectObjId
                 ) {
                     continue;
                 }

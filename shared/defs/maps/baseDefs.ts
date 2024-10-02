@@ -409,6 +409,48 @@ export const Main: MapDef = {
             { name: "vector45", count: 1, weight: 1 },
             { name: "mkg45", count: 1, weight: 1 },
         ],
+        tier_pumpkin_perks: [{ name: "halloween_mystery", count: 1, weight: 1 }],
+        tier_xp_uncommon: [
+            { name: "xp_book_tallow", count: 1, weight: 1 },
+            { name: "xp_book_greene", count: 1, weight: 1 },
+            { name: "xp_book_parma", count: 1, weight: 1 },
+            { name: "xp_book_nevelskoy", count: 1, weight: 1 },
+            { name: "xp_book_rinzo", count: 1, weight: 1 },
+            { name: "xp_book_kuga", count: 1, weight: 1 },
+        ],
+        tier_xp_rare: [
+            { name: "xp_glasses", count: 1, weight: 0.1 },
+            { name: "xp_compass", count: 1, weight: 0.1 },
+            { name: "xp_stump", count: 1, weight: 0.1 },
+            { name: "xp_bone", count: 1, weight: 0.1 },
+        ],
+        tier_xp_mythic: [{ name: "xp_donut", count: 1, weight: 0.01 }],
+        // xp and halloween perks guessed with no base on real data!
+        tier_fruit_xp: [
+            { name: "", count: 1, weight: 40 },
+            { name: "tier_xp_uncommon", count: 1, weight: 1 },
+            { name: "tier_xp_rare", count: 1, weight: 0.1 },
+            { name: "tier_xp_mythic", count: 1, weight: 0.001 },
+        ],
+        tier_airdrop_xp: [
+            { name: "", count: 1, weight: 15 },
+            { name: "tier_xp_uncommon", count: 1, weight: 1 },
+            { name: "tier_xp_rare", count: 1, weight: 0.1 },
+            { name: "tier_xp_mythic", count: 1, weight: 0.001 },
+        ],
+        tier_halloween_mystery_perks: [
+            { name: "trick_nothing", count: 1, weight: 1 },
+            { name: "trick_size", count: 1, weight: 1 },
+            { name: "trick_m9", count: 1, weight: 1 },
+            { name: "trick_chatty", count: 1, weight: 1 },
+            { name: "trick_drain", count: 1, weight: 1 },
+
+            { name: "treat_9mm", count: 1, weight: 1 },
+            { name: "treat_12g", count: 1, weight: 1 },
+            { name: "treat_556", count: 1, weight: 1 },
+            { name: "treat_762", count: 1, weight: 1 },
+            { name: "treat_super", count: 1, weight: 0.1 },
+        ],
     },
     mapGen: {
         map: {
