@@ -2519,6 +2519,10 @@ export class Player extends BaseGameObject {
         }
         this.toMouseLen = msg.toMouseLen;
 
+        // HACK? client for some reason sends Interact followed by Cancel on mobile
+        // so we ignore the cancel request when reviving a player
+        let ignoreCancel = false;
+
         for (let i = 0; i < msg.inputs.length; i++) {
             const input = msg.inputs[i];
             if (!this.shouldAcceptInput(input)) continue;
@@ -2628,6 +2632,7 @@ export class Player extends BaseGameObject {
                         if (!interactable) continue;
                         if (interactable.__type === ObjectType.Player) {
                             this.revive(playerToRevive);
+                            ignoreCancel = true;
                         } else {
                             this.interactWith(interactable);
                         }
@@ -2652,6 +2657,9 @@ export class Player extends BaseGameObject {
                     this.weaponManager.tryReload();
                     break;
                 case GameConfig.Input.Cancel:
+                    if (ignoreCancel) {
+                        break;
+                    }
                     this.cancelAction();
                     break;
                 case GameConfig.Input.EquipNextScope: {
