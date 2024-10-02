@@ -324,6 +324,7 @@ export class GameProcessManager implements GameManager {
         let game = this.processes
             .filter((proc) => {
                 return (
+                    proc.canJoin &&
                     proc.avaliableSlots > 0 &&
                     proc.teamMode === mode.teamMode &&
                     proc.mapName === mode.mapName
