@@ -401,6 +401,7 @@ export class ProfileUi {
 
         const loginMethods = [
             { method: "github", linked: this.account.profile.linkedGithub },
+            // { method: "google", linked: this.account.profile.linkedGoogle },
             // { method: "discord", linked: this.account.profile.linkedDiscord },
             // { method: "twitch", linked: this.account.profile.linkedTwitch }
         ];

@@ -55,6 +55,7 @@ export class Account {
         linkedTwitch: false,
         linkedDiscord: false,
         linkedGithub: false,
+        linkedGoogle: false,
         usernameSet: false,
         username: "",
         slug: "",
