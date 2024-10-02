@@ -54,5 +54,10 @@
     "formatter": {
       "indentWidth": 2
     }
+  },
+  "files": {
+    "ignore": [
+      "src/**/*.tsx"
+    ]
   }
 }

@@ -2,6 +2,7 @@ import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
 import type { MeleeDef } from "../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../shared/defs/gameObjects/outfitDefs";
+import { MapDefs } from "../../shared/defs/mapDefs";
 import * as net from "../../shared/net/net";
 import { device } from "./device";
 const truncateCanvas = document.createElement("canvas");
@@ -29,6 +30,37 @@ export const helpers = {
             }
         }
         return "";
+    },
+    getGameModes: function () {
+        const gameModes: {
+            mapId: number;
+            desc: {
+                buttonCss: string;
+                icon: string;
+                name: string;
+            };
+        }[] = [];
+
+        // Gather unique mapIds and assosciated map descriptions from the list of maps
+        const mapKeys = Object.keys(MapDefs);
+        for (let i = 0; i < mapKeys.length; i++) {
+            const mapKey = mapKeys[i];
+            const mapDef = MapDefs[mapKey as unknown as keyof typeof MapDefs];
+            if (
+                !gameModes.find((x) => {
+                    return x.mapId == mapDef.mapId;
+                })
+            ) {
+                gameModes.push({
+                    mapId: mapDef.mapId,
+                    desc: mapDef.desc,
+                });
+            }
+        }
+        gameModes.sort((a, b) => {
+            return a.mapId - b.mapId;
+        });
+        return gameModes;
     },
     sanitizeNameInput: function (input: string) {
         let name = input.trim();

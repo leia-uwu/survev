@@ -48,6 +48,10 @@ export default defineConfig(({ mode }) => {
             },
             GIT_VERSION: JSON.stringify(GIT_VERSION),
         },
+        esbuild: {
+            jsxFactory: "h",
+            jsxFragment: "Fragment",
+        },
         plugins: [
             mode !== "development"
                 ? stripBlockPlugin({

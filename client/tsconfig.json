@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "lib": ["DOM", "ESNext"],
     "target": "ESNext",
     "module": "ESNext",
@@ -12,9 +13,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "allowJs": true,
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
     "strict": true,
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "../shared/", "global.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.tsx", "../shared/", "global.d.ts"]
 }

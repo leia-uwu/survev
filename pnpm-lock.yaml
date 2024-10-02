@@ -35,9 +35,15 @@ importers:
       jquery:
         specifier: ^3.7.1
         version: 3.7.1
+      jsx-dom:
+        specifier: ^8.1.5
+        version: 8.1.5
       pixi.js-legacy:
         specifier: ^7.4.2
         version: 7.4.2(vwgtc5milyk4u22qnicuqfvytu)
+      slugify:
+        specifier: ^1.6.6
+        version: 1.6.6
     devDependencies:
       '@types/jquery':
         specifier: ^3.5.30
