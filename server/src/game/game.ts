@@ -210,6 +210,7 @@ export class Game {
             | net.InputMsg
             | net.EmoteMsg
             | net.DropItemMsg
+            | net.SpectateMsg
             | net.PerkModeRoleSelectMsg
             | undefined = undefined;
 
@@ -230,6 +231,10 @@ export class Game {
                 break;
             case net.MsgType.DropItem:
                 msg = new net.DropItemMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.Spectate:
+                msg = new net.SpectateMsg();
                 msg.deserialize(stream);
                 break;
             case net.MsgType.PerkModeRoleSelect:
@@ -261,6 +266,8 @@ export class Game {
             console.error(err);
             return;
         }
+
+        if (!msg) return;
 
         if (type === net.MsgType.Join && !player) {
             this.playerBarn.addPlayer(socketId, msg as net.JoinMsg);
