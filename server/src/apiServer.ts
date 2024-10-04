@@ -71,6 +71,9 @@ export class ApiServer {
 
         app.get("/api/site_info", (res) => {
             cors(res);
+            res.onAborted(() => {
+                res.aborted = true;
+            });
             returnJson(res, this.getSiteInfo());
         });
         app.options("/api/user/profile", (res) => {
@@ -150,23 +153,22 @@ if (process.argv.includes("--api-server")) {
     });
     app.post("/api/find_game", async (res) => {
         cors(res);
-        let aborted = false;
         res.onAborted(() => {
-            aborted = true;
+            res.aborted = true;
         });
         readPostedJSON(
             res,
             async (body: FindGameBody) => {
                 const data = await server.findGame(body);
-                if (aborted) return;
+                if (res.aborted) return;
                 res.cork(() => {
-                    if (aborted) return;
+                    if (res.aborted) return;
                     returnJson(res, data);
                 });
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
-                if (aborted) return;
+                if (res.aborted) return;
                 returnJson(res, {
                     res: [
                         {
@@ -185,9 +187,8 @@ if (process.argv.includes("--api-server")) {
 
     app.post("/api/update_region", (res) => {
         cors(res);
-        let aborted = false;
         res.onAborted(() => {
-            aborted = true;
+            res.aborted = true;
         });
         readPostedJSON(
             res,
@@ -196,7 +197,7 @@ if (process.argv.includes("--api-server")) {
                 regionId: string;
                 data: RegionData;
             }) => {
-                if (aborted) return;
+                if (res.aborted) return;
                 if (body.apiKey !== Config.apiKey || !(body.regionId in server.regions)) {
                     forbidden(res);
                     return;

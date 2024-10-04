@@ -5,6 +5,7 @@ import type { HttpResponse } from "uWebSockets.js";
  * @param res The response sent by the server.
  */
 export function cors(res: HttpResponse): void {
+    if (res.aborted) return;
     res.writeHeader("Access-Control-Allow-Origin", "*")
         .writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         .writeHeader(
@@ -20,6 +21,7 @@ export function forbidden(res: HttpResponse): void {
 
 export function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
     res.cork(() => {
+        if (res.aborted) return;
         res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
     });
 }
