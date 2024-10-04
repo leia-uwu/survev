@@ -142,20 +142,25 @@ class GameProcess implements GameData {
                     this.aliveCount = msg.aliveCount;
                     this.startedTime = msg.startedTime;
                     this.stopped = msg.stopped;
-                    if (!this.stopped) {
+                    if (this.stopped) {
                         this.stoppedTime = Date.now();
                     }
                     break;
                 case ProcessMsgType.SocketMsg:
                     for (let i = 0; i < msg.msgs.length; i++) {
                         const socketMsg = msg.msgs[i];
-                        this.manager.sockets
-                            .get(socketMsg.socketId)
-                            ?.send(socketMsg.data, true, false);
+                        const socket = this.manager.sockets.get(socketMsg.socketId);
+
+                        if (!socket) continue;
+                        if (socket.getUserData().closed) continue;
+                        socket.send(socketMsg.data, true, false);
                     }
                     break;
                 case ProcessMsgType.SocketClose:
-                    this.manager.sockets.get(msg.socketId)?.close();
+                    const socket = this.manager.sockets.get(msg.socketId);
+                    if (socket && !socket.getUserData().closed) {
+                        socket.close();
+                    }
                     break;
             }
         });
@@ -164,6 +169,7 @@ class GameProcess implements GameData {
     }
 
     send(msg: ProcessMsg) {
+        if (this.process.killed || !this.process.channel) return;
         this.process.send(msg);
     }
 
@@ -299,6 +305,13 @@ export class GameProcessManager implements GameManager {
     }
 
     killProcess(gameProc: GameProcess): void {
+        for (const [, socket] of this.sockets) {
+            const data = socket.getUserData();
+            if (data.closed) continue;
+            if (data.gameId !== gameProc.id) continue;
+            socket.close();
+        }
+
         // send SIGTERM, if still hasn't terminated after 5 seconds, send SIGKILL >:3
         gameProc.process.kill();
         setTimeout(() => {

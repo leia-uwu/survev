@@ -35,6 +35,7 @@ export type FindGameResponse = {
 export interface GameSocketData {
     gameId: string;
     id: string;
+    closed: boolean;
 }
 
 export class GameServer {
@@ -82,6 +83,7 @@ export class GameServer {
                     {
                         gameId,
                         id: socketId,
+                        closed: false,
                     },
                     req.getHeader("sec-websocket-key"),
                     req.getHeader("sec-websocket-protocol"),
@@ -112,6 +114,7 @@ export class GameServer {
              * @param socket The socket being closed.
              */
             close(socket: WebSocket<GameSocketData>) {
+                socket.getUserData().closed = true;
                 server.manager.onClose(socket.getUserData().id);
             },
         });

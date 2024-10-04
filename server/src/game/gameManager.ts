@@ -123,7 +123,10 @@ export class SingleThreadGameManager implements GameManager {
                 this.sockets.get(id)?.send(data, true, false);
             },
             (id) => {
-                this.sockets.get(id)?.close();
+                const socket = this.sockets.get(id);
+                if (socket && !socket.getUserData().closed) {
+                    socket.close();
+                }
             },
         );
         await game.init();
