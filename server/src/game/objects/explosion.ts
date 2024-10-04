@@ -10,6 +10,13 @@ import type { Game } from "../game";
 import type { GameObject } from "./gameObject";
 import { EXPLOSION_LOOT_PUSH_FORCE } from "./loot";
 
+interface LineCollision {
+    obj: GameObject;
+    pos: Vec2;
+    distance: number;
+    dir: Vec2;
+}
+
 export class ExplosionBarn {
     explosions: Explosion[] = [];
     newExplosions: Explosion[] = [];
@@ -49,12 +56,7 @@ export class ExplosionBarn {
 
         for (let angle = -Math.PI; angle < Math.PI; angle += 0.1) {
             // All objects that collided with this line
-            const lineCollisions: Array<{
-                obj: GameObject;
-                pos: Vec2;
-                distance: number;
-                dir: Vec2;
-            }> = [];
+            const lineCollisions: Array<LineCollision> = [];
 
             const lineEnd = v2.add(
                 explosion.pos,
@@ -93,64 +95,10 @@ export class ExplosionBarn {
             for (const collision of lineCollisions) {
                 const obj = collision.obj;
 
-                if (damagedObjects.has(obj.__id)) continue;
-                damagedObjects.set(obj.__id, true);
-                const dist = collision.distance;
-
-                if (obj.__type === ObjectType.Loot) {
-                    obj.push(
-                        v2.normalize(v2.sub(obj.pos, explosion.pos)),
-                        (def.rad.max - dist) * EXPLOSION_LOOT_PUSH_FORCE,
-                    );
-                    continue;
+                if (!damagedObjects.has(obj.__id)) {
+                    damagedObjects.set(obj.__id, true);
+                    this.damageObject(explosion, collision);
                 }
-
-                if (
-                    obj.__type !== ObjectType.Player &&
-                    obj.__type !== ObjectType.Obstacle
-                ) {
-                    continue;
-                }
-
-                let damage = def.damage;
-
-                if (dist > def.rad.min) {
-                    damage = math.remap(dist, def.rad.min, def.rad.max, damage, 0);
-                }
-
-                if (obj.__type == ObjectType.Player) {
-                    if (def.freezeAmount && def.freezeDuration) {
-                        const isSourceTeammate =
-                            explosion.source &&
-                            explosion.source.__type == ObjectType.Player &&
-                            explosion.source.teamId == obj.teamId;
-                        if (!isSourceTeammate) {
-                            obj.dropRandomLoot();
-
-                            const playerRot = Math.atan2(obj.dir.y, obj.dir.x);
-                            const collRot = -Math.atan2(collision.dir.y, collision.dir.x);
-
-                            const ori =
-                                (math.radToOri(playerRot) + math.radToOri(collRot) + 2) %
-                                4;
-
-                            obj.freeze(ori, def.freezeDuration);
-                        }
-                    }
-                }
-
-                if (obj.__type === ObjectType.Obstacle) {
-                    damage *= def.obstacleDamage;
-                }
-
-                obj.damage({
-                    amount: damage,
-                    gameSourceType: explosion.gameSourceType,
-                    mapSourceType: explosion.mapSourceType,
-                    source: explosion.source,
-                    damageType: explosion.damageType,
-                    dir: collision.dir,
-                });
 
                 if (obj.__type === ObjectType.Obstacle && obj.collidable) break;
             }
@@ -174,6 +122,63 @@ export class ExplosionBarn {
                 });
             }
         }
+    }
+
+    damageObject(explosion: Explosion, collision: LineCollision) {
+        const dist = collision.distance;
+        const obj = collision.obj;
+        const def = GameObjectDefs[explosion.type] as ExplosionDef;
+
+        if (obj.__type === ObjectType.Loot) {
+            obj.push(
+                v2.normalize(v2.sub(obj.pos, explosion.pos)),
+                (def.rad.max - dist) * EXPLOSION_LOOT_PUSH_FORCE,
+            );
+            return;
+        }
+
+        if (obj.__type !== ObjectType.Player && obj.__type !== ObjectType.Obstacle) {
+            return;
+        }
+
+        let damage = def.damage;
+
+        if (dist > def.rad.min) {
+            damage = math.remap(dist, def.rad.min, def.rad.max, damage, 0);
+        }
+
+        if (obj.__type == ObjectType.Player) {
+            if (def.freezeAmount && def.freezeDuration) {
+                const isSourceTeammate =
+                    explosion.source &&
+                    explosion.source.__type == ObjectType.Player &&
+                    explosion.source.teamId == obj.teamId;
+                if (!isSourceTeammate) {
+                    obj.dropRandomLoot();
+
+                    const playerRot = Math.atan2(obj.dir.y, obj.dir.x);
+                    const collRot = -Math.atan2(collision.dir.y, collision.dir.x);
+
+                    const ori =
+                        (math.radToOri(playerRot) + math.radToOri(collRot) + 2) % 4;
+
+                    obj.freeze(ori, def.freezeDuration);
+                }
+            }
+        }
+
+        if (obj.__type === ObjectType.Obstacle) {
+            damage *= def.obstacleDamage;
+        }
+
+        obj.damage({
+            amount: damage,
+            gameSourceType: explosion.gameSourceType,
+            mapSourceType: explosion.mapSourceType,
+            source: explosion.source,
+            damageType: explosion.damageType,
+            dir: collision.dir,
+        });
     }
 
     flush() {
