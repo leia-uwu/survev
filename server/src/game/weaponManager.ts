@@ -167,10 +167,10 @@ export class WeaponManager {
 
         if (idx === this.curWeapIdx) {
             this.player.setDirty();
+        }
 
-            if (!this.activeWeapon) {
-                this.setCurWeapIndex(WeaponSlot.Melee);
-            }
+        if (!this.activeWeapon) {
+            this.setCurWeapIndex(WeaponSlot.Melee, undefined, undefined, true);
         }
 
         this.player.weapsDirty = true;
@@ -505,10 +505,6 @@ export class WeaponManager {
 
     dropGun(weapIdx: number): void {
         this._dropGun(weapIdx);
-        if (weapIdx === this.curWeapIdx) {
-            this.setCurWeapIndex(WeaponSlot.Melee);
-            this.player.setDirty();
-        }
         this.setWeapon(weapIdx, "", 0);
     }
 
