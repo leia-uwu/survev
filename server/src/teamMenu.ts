@@ -8,8 +8,10 @@ import type {
     TeamStateMsg,
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
+import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./apiServer";
 import { Config } from "./config";
+import { checkForBadWords } from "./utils/serverHelpers";
 
 export interface TeamSocketData {
     sendMsg: (response: string) => void;
@@ -216,19 +218,82 @@ export class TeamMenu {
         }
     }
 
+    cleanUserName(name: string): string {
+        if (!name || typeof name !== "string") return "Player";
+        name = name.trim();
+        if (checkForBadWords(name) || !name || name.length > 16) {
+            return "Player";
+        }
+        return name;
+    }
+
+    validateMsg(msg: ClientToServerTeamMsg) {
+        assert(typeof msg.type === "string");
+
+        function validateRoomData(data: RoomData) {
+            assert(typeof data.roomUrl === "string");
+            assert(typeof data.region === "string");
+            assert(typeof data.autoFill === "boolean");
+            assert(typeof data.gameModeIdx === "number");
+        }
+
+        switch (msg.type) {
+            case "create": {
+                assert(typeof msg.data === "object");
+                assert(typeof msg.data.playerData === "object");
+                assert(typeof msg.data.roomData === "object");
+                validateRoomData(msg.data.roomData);
+                break;
+            }
+            case "join": {
+                assert(typeof msg.data === "object");
+                assert(typeof msg.data.roomUrl === "string");
+                assert(typeof msg.data.playerData === "object");
+                break;
+            }
+            case "changeName": {
+                assert(typeof msg.data === "object");
+                break;
+            }
+            case "setRoomProps": {
+                assert(typeof msg.data === "object");
+                validateRoomData(msg.data);
+                break;
+            }
+            case "kick": {
+                assert(typeof msg.data === "object");
+                assert(typeof msg.data.playerId === "number");
+                break;
+            }
+            case "playGame": {
+                assert(typeof msg.data === "object");
+                assert(typeof msg.data.region === "string");
+                assert(Array.isArray(msg.data.zones));
+                assert(msg.data.zones.length < 5);
+                for (const zone of msg.data.zones) {
+                    assert(typeof zone === "string");
+                }
+                break;
+            }
+        }
+    }
+
     async handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData) {
-        const parsedMessage: ClientToServerTeamMsg = JSON.parse(
-            new TextDecoder().decode(message),
-        );
+        let parsedMessage: ClientToServerTeamMsg;
+        try {
+            parsedMessage = JSON.parse(new TextDecoder().decode(message));
+            this.validateMsg(parsedMessage);
+        } catch {
+            localPlayerData.closeSocket();
+            return;
+        }
+
         const type = parsedMessage.type;
         let response: ServerToClientTeamMsg;
 
         switch (type) {
             case "create": {
-                const name =
-                    parsedMessage.data.playerData.name != ""
-                        ? parsedMessage.data.playerData.name
-                        : "Player";
+                const name = this.cleanUserName(parsedMessage.data.playerData.name);
 
                 const player: RoomPlayer = {
                     name,
@@ -263,6 +328,9 @@ export class TeamMenu {
                 break;
             }
             case "join": {
+                if (typeof parsedMessage.data !== "object") return;
+                if (typeof parsedMessage.data.roomUrl !== "string") return;
+
                 const roomUrl = `#${parsedMessage.data.roomUrl}`;
                 const room = this.rooms.get(roomUrl);
                 // join fail if room doesnt exist or if room is already full
@@ -277,8 +345,7 @@ export class TeamMenu {
                     break;
                 }
 
-                let name = parsedMessage.data.playerData.name;
-                name = name != "" ? name : "Player";
+                const name = this.cleanUserName(parsedMessage.data.playerData.name);
 
                 const player = {
                     name,
@@ -295,7 +362,7 @@ export class TeamMenu {
                 break;
             }
             case "changeName": {
-                const newName = parsedMessage.data.name;
+                const newName = this.cleanUserName(parsedMessage.data.name);
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
                     (p) => p.socketData === localPlayerData,
