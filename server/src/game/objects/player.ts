@@ -2278,6 +2278,7 @@ export class Player extends BaseGameObject {
             if (
                 obj.__type === ObjectType.Building &&
                 obj.goreRegion &&
+                util.sameLayer(this.layer, obj.layer) &&
                 coldet.testCircleAabb(
                     this.pos,
                     this.rad,
