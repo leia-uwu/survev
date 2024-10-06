@@ -546,6 +546,7 @@ export class Bullet {
                         damageType: this.damageType,
                         amount: multiplier * finalDamage,
                         dir: this.dir,
+                        isExplosion: this.isShrapnel,
                     });
                 }
                 hit = col.collidable;

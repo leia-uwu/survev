@@ -38,6 +38,7 @@ export interface DamageParams {
     gameSourceType?: string;
     mapSourceType?: string;
     source?: GameObject;
+    isExplosion?: boolean;
 }
 
 const MAX_ID = 65535;

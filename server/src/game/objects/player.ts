@@ -1836,11 +1836,7 @@ export class Player extends BaseGameObject {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
 
             if (this.hasPerk("flak_jacket")) {
-                const isExplosion =
-                    gameSourceDef &&
-                    (gameSourceDef.type === "explosion" ||
-                        (gameSourceDef.type === "bullet" && gameSourceDef.shrapnel));
-                finalDamage *= isExplosion ? 0.1 : 0.9;
+                finalDamage *= params.isExplosion ? 0.1 : 0.9;
             }
 
             if (this.hasPerk("steelskin")) finalDamage *= 0.5;

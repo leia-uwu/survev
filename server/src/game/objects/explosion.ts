@@ -178,6 +178,7 @@ export class ExplosionBarn {
             source: explosion.source,
             damageType: explosion.damageType,
             dir: collision.dir,
+            isExplosion: true,
         });
     }
 
