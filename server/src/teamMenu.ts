@@ -328,9 +328,6 @@ export class TeamMenu {
                 break;
             }
             case "join": {
-                if (typeof parsedMessage.data !== "object") return;
-                if (typeof parsedMessage.data.roomUrl !== "string") return;
-
                 const roomUrl = `#${parsedMessage.data.roomUrl}`;
                 const room = this.rooms.get(roomUrl);
                 // join fail if room doesnt exist or if room is already full
