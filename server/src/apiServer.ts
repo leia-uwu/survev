@@ -168,14 +168,6 @@ if (process.argv.includes("--api-server")) {
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
-                if (res.aborted) return;
-                returnJson(res, {
-                    res: [
-                        {
-                            err: "Error retriving body",
-                        },
-                    ],
-                });
             },
         );
     });

@@ -184,8 +184,7 @@ export class GameServer {
                 "Content-type": "application/json",
             },
         }).catch((error) => {
-            this.logger.warn(`Failed to fetch "${url}" error:`);
-            console.error(error);
+            this.logger.warn(`Failed to fetch "${url}" error:`, error);
         });
     }
 
@@ -230,28 +229,11 @@ if (process.argv.includes("--game-server")) {
                     }
                     returnJson(res, await server.findGame(body));
                 } catch (error) {
-                    server.logger.warn("API find_game error:");
-                    console.error(error);
-                    if (res.aborted) return;
-                    returnJson(res, {
-                        res: [
-                            {
-                                err: "Failed finding game",
-                            },
-                        ],
-                    });
+                    server.logger.warn("API find_game error: ", error);
                 }
             },
             () => {
                 server.logger.warn("/api/find_game: Error retrieving body");
-                if (res.aborted) return;
-                returnJson(res, {
-                    res: [
-                        {
-                            err: "Error retriving body",
-                        },
-                    ],
-                });
             },
         );
     });

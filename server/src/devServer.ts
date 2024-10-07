@@ -40,13 +40,6 @@ app.post("/api/find_game", async (res) => {
         },
         () => {
             logger.warn("/api/find_game: Error retrieving body");
-            returnJson(res, {
-                res: [
-                    {
-                        err: "Error retriving body",
-                    },
-                ],
-            });
         },
     );
 });
