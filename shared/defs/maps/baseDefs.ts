@@ -473,7 +473,7 @@ export const Main: MapDef = {
             xlarge: "",
         },
         riverCabins: {
-            cabin_01: 3,
+            cabin_01: 0, //3
         },
         customSpawnRules: {
             locationSpawns: [
@@ -488,15 +488,15 @@ export const Main: MapDef = {
         },
         densitySpawns: [
             {
-                stone_01: 350,
+                stone_01: 200,
                 barrel_01: 76,
-                silo_01: 8,
+                silo_01: 2,
                 crate_01: 50,
                 crate_02: 4,
                 crate_03: 8,
                 bush_01: 78,
                 cache_06: 12,
-                tree_01: 320,
+                tree_01: 280, 
                 hedgehog_01: 24,
                 container_01: 5,
                 container_02: 5,

@@ -1,5 +1,4 @@
 import { DeatchmatchMain } from "../../server/src/deathmatch/maps/main";
-import { Resurviv_Cobalt } from "../../server/src/deathmatch/maps/resurviv-cobalt";
 import type { Vec2 } from "../utils/v2";
 import { Cobalt } from "./maps/cobaltDefs";
 import { Desert } from "./maps/desertDefs";
@@ -12,14 +11,13 @@ import { PotatoSpring } from "./maps/potatoSpringDefs";
 import { Savannah } from "./maps/savannahDefs";
 import { Snow } from "./maps/snowDefs";
 import { Turkey } from "./maps/turkeyDefs";
-import { Woods } from "./maps/woodsDefs";
+import { Woods } from "../../server/src/deathmatch/maps/woods";
 import { WoodsSnow } from "./maps/woodsSnowDefs";
 import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 
 export const MapDefs = {
     main: DeatchmatchMain,
-    Resurviv_cobalt: Resurviv_Cobalt,
     main_spring: MainSpring,
     main_summer: MainSummer,
     desert: Desert,

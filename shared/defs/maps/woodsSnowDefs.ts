@@ -1,6 +1,6 @@
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
-import { Woods } from "./woodsDefs";
+import { Woods } from "../../../server/src/deathmatch/maps/woods";
 
 const mapDef = {
     assets: {

@@ -402,6 +402,7 @@ export class GameMap {
                 center,
             });
         }
+        
 
         //
         // Generate rivers
@@ -567,8 +568,8 @@ export class GameMap {
             }
 
             const riverObjs = {
-                stone_03: 3,
-                bush_04: 1.2,
+                stone_03: 0.3,
+                bush_04: 0.1,
             };
             for (const type in riverObjs) {
                 for (const river of this.terrain.rivers) {
