@@ -1,9 +1,15 @@
 import { defineConfig } from "vite";
 import stripBlockPlugin from "vite-plugin-strip-block";
+import { version } from "../package.json";
 import { Config } from "../server/src/config";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
 
 export default defineConfig(({ mode }) => {
+    process.env = {
+        ...process.env,
+        VITE_GAME_VERSION: version,
+    };
+
     const regions = {
         ...Config.regions,
         ...(mode === "development"
