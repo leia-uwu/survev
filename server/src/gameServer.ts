@@ -118,6 +118,16 @@ export class GameServer {
                 server.manager.onClose(socket.getUserData().id);
             },
         });
+
+        // ping test
+        app.ws("/ptc", {
+            idleTimeout: 30,
+            maxPayloadLength: 16,
+
+            message(socket: WebSocket<never>, message) {
+                socket.send(message, true, false);
+            },
+        });
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {

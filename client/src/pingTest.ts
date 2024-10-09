@@ -1,12 +1,18 @@
-const testUrls: Array<Record<"region" | "zone" | "url", string>> = [];
+declare const PING_TEST_URLS: Array<{
+    region: string;
+    zone: string;
+    url: string;
+    https: boolean;
+}>;
 
 export class PingTest {
     ptcDataBuf = new ArrayBuffer(1);
-    tests = testUrls.map((config) => {
+    tests = PING_TEST_URLS.map((config) => {
         return {
             region: config.region,
             zone: config.zone,
             url: config.url,
+            https: config.https,
             ping: 9999,
             active: false,
             complete: false,
@@ -68,7 +74,7 @@ export class PingTest {
                 return "continue";
             }
             if (!test.ws) {
-                const ws = new WebSocket(`wss://${test.url}/ptc`);
+                const ws = new WebSocket(`ws${test.https ? "s" : ""}://${test.url}/ptc`);
                 ws.binaryType = "arraybuffer";
                 ws.onopen = function () {};
                 ws.onmessage = function (_msg) {
@@ -132,8 +138,8 @@ export class PingTest {
 
     getRegionList() {
         const regions: string[] = [];
-        for (let i = 0; i < testUrls.length; i++) {
-            const region = testUrls[i].region;
+        for (let i = 0; i < PING_TEST_URLS.length; i++) {
+            const region = PING_TEST_URLS[i].region;
             if (!regions.includes(region)) {
                 regions.push(region);
             }

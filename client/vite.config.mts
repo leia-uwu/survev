@@ -4,6 +4,19 @@ import { Config } from "../server/src/config";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
 
 export default defineConfig(({ mode }) => {
+    const regions = {
+        ...Config.regions,
+        ...(mode === "development"
+            ? {
+                  local: {
+                      https: false,
+                      address: `${Config.devServer.host}:${Config.devServer.port}`,
+                      l10n: "index-local",
+                  },
+              }
+            : {}),
+    };
+
     return {
         base: "",
         build: {
@@ -33,19 +46,16 @@ export default defineConfig(({ mode }) => {
             extensions: [".js", ".ts"],
         },
         define: {
-            GAME_REGIONS: {
-                ...Config.regions,
-                ...(mode === "development"
-                    ? {
-                          local: {
-                              https: false,
-                              address: `${Config.devServer.host}:${Config.devServer.port}`,
-                              l10n: "index-local",
-                          },
-                      }
-                    : {}),
-            },
+            GAME_REGIONS: regions,
             GIT_VERSION: JSON.stringify(GIT_VERSION),
+            PING_TEST_URLS: Object.entries(regions).map(([key, data]) => {
+                return {
+                    region: key,
+                    zone: key,
+                    url: data.address,
+                    https: data.https,
+                };
+            }),
         },
         plugins: [
             mode !== "development"
