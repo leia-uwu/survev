@@ -16,7 +16,7 @@ import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
 import { PlaneBarn } from "./objects/plane";
-import { Emote, PlayerBarn } from "./objects/player";
+import { PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
@@ -285,23 +285,15 @@ export class Game {
                 break;
             }
             case net.MsgType.Emote: {
-                const emoteMsg = msg as net.EmoteMsg;
-
-                if (player.dead) break;
-
-                this.playerBarn.emotes.push(
-                    new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing),
-                );
+                player.emoteFromMsg(msg as net.EmoteMsg);
                 break;
             }
             case net.MsgType.DropItem: {
-                const dropMsg = msg as net.DropItemMsg;
-                player.dropItem(dropMsg);
+                player.dropItem(msg as net.DropItemMsg);
                 break;
             }
             case net.MsgType.Spectate: {
-                const spectateMsg = msg as net.SpectateMsg;
-                player.spectate(spectateMsg);
+                player.spectate(msg as net.SpectateMsg);
                 break;
             }
         }

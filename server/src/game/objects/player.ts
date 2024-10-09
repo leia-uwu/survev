@@ -40,19 +40,12 @@ import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject
 import type { Loot } from "./loot";
 import type { Obstacle } from "./obstacle";
 
-export class Emote {
+interface Emote {
     playerId: number;
     pos: Vec2;
     type: string;
     isPing: boolean;
-    itemType = "";
-
-    constructor(playerId: number, pos: Vec2, type: string, isPing: boolean) {
-        this.playerId = playerId;
-        this.pos = pos;
-        this.type = type;
-        this.isPing = isPing;
-    }
+    itemType: string;
 }
 
 export class PlayerBarn {
@@ -361,6 +354,16 @@ export class PlayerBarn {
         return this.game.playerBarn.livingPlayers
             .filter((p) => p.kills >= GameConfig.player.killLeaderMinKills)
             .sort((a, b) => b.kills - a.kills)[0];
+    }
+
+    addEmote(playerId: number, pos: Vec2, type: string, isPing: boolean, itemType = "") {
+        this.emotes.push({
+            playerId,
+            pos,
+            type,
+            isPing,
+            itemType,
+        });
     }
 }
 
@@ -1076,13 +1079,11 @@ export class Player extends BaseGameObject {
 
             const emotes = Object.keys(EmotesDefs);
 
-            this.game.playerBarn.emotes.push(
-                new Emote(
-                    this.__id,
-                    this.pos,
-                    emotes[Math.floor(Math.random() * emotes.length)],
-                    false,
-                ),
+            this.game.playerBarn.addEmote(
+                this.__id,
+                this.pos,
+                emotes[Math.floor(Math.random() * emotes.length)],
+                false,
             );
         }
 
@@ -2327,13 +2328,11 @@ export class Player extends BaseGameObject {
 
         // death emote
         if (this.loadout.emotes[GameConfig.EmoteSlot.Death] != "") {
-            this.game.playerBarn.emotes.push(
-                new Emote(
-                    this.__id,
-                    this.pos,
-                    this.loadout.emotes[GameConfig.EmoteSlot.Death],
-                    false,
-                ),
+            this.game.playerBarn.addEmote(
+                this.__id,
+                this.pos,
+                this.loadout.emotes[GameConfig.EmoteSlot.Death],
+                false,
             );
         }
 
@@ -3206,9 +3205,7 @@ export class Player extends BaseGameObject {
 
                 const emoteType = `emote_${type}`;
                 if (GameObjectDefs[`emote_${type}`]) {
-                    this.game.playerBarn.emotes.push(
-                        new Emote(this.__id, this.pos, emoteType, false),
-                    );
+                    this.game.playerBarn.addEmote(this.__id, this.pos, emoteType, false);
                 }
 
                 const perkSlotType = this.perks.find(
@@ -3463,6 +3460,39 @@ export class Player extends BaseGameObject {
                 true,
             );
         }
+    }
+
+    emoteFromMsg(msg: net.EmoteMsg) {
+        if (this.dead) return;
+
+        const emoteMsg = msg as net.EmoteMsg;
+
+        const emoteIdx = this.loadout.emotes.indexOf(emoteMsg.type);
+        const emoteDef = GameObjectDefs[emoteMsg.type];
+
+        if (emoteMsg.isPing) {
+            if (emoteDef.type !== "ping") {
+                return;
+            }
+            if (emoteDef.mapEvent) {
+                return;
+            }
+        } else {
+            if (emoteDef.type !== "emote") {
+                return;
+            }
+
+            if (!emoteDef.teamOnly && (emoteIdx < 0 || emoteIdx > 3)) {
+                return;
+            }
+        }
+
+        this.game.playerBarn.addEmote(
+            this.__id,
+            emoteMsg.pos,
+            emoteMsg.type,
+            emoteMsg.isPing,
+        );
     }
 
     isOnOtherSide(door: Obstacle): boolean {
