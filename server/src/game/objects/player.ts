@@ -3173,11 +3173,10 @@ export class Player extends BaseGameObject {
                 pickupMsg.type = net.PickupMsgType.Success;
                 this.outfit = obj.type;
 
-                if (def.obstacleType) {
-                    if (this.obstacleOutfit) {
-                        this.obstacleOutfit.destroy();
-                    }
+                this.obstacleOutfit?.destroy();
+                this.obstacleOutfit = undefined;
 
+                if (def.obstacleType) {
                     this.obstacleOutfit = this.game.map.genOutfitObstacle(
                         def.obstacleType,
                         this,

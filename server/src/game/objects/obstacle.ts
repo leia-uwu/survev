@@ -329,7 +329,7 @@ export class Obstacle extends BaseGameObject {
         this.setDirty();
 
         if (def.destroyType) {
-            this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
+            this.game.map.genAuto(def.destroyType, this.pos, this.layer, this.ori);
         }
 
         const lootPos = v2.copy(this.pos);
