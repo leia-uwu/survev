@@ -672,16 +672,31 @@ export class GameMap {
         // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
         const fixedSpawns = mapDef.mapGen.fixedSpawns[0];
         const importantSpawns = mapDef.mapGen.importantSpawns;
-        const types = Object.keys(fixedSpawns).sort((a, b) => {
-            const includesA = importantSpawns.includes(a);
-            const includesB = importantSpawns.includes(b);
+        const types = Object.keys(fixedSpawns)
+            .sort((a, b) => {
+                const boundsA = collider.toAabb(mapHelpers.getBoundingCollider(a));
+                const boundsB = collider.toAabb(mapHelpers.getBoundingCollider(b));
 
-            if (includesA && includesB) return 0;
-            if (includesA) return -1;
-            if (includesB) return 1;
+                const widthA = boundsA.max.x - boundsA.min.x;
+                const heightA = boundsA.max.y - boundsA.min.y;
+                const sizeA = widthA + heightA / 2;
 
-            return 1;
-        });
+                const widthB = boundsB.max.x - boundsB.min.x;
+                const heightB = boundsB.max.y - boundsB.min.y;
+                const sizeB = widthB + heightB / 2;
+
+                return sizeA > sizeB ? -1 : 1;
+            })
+            .sort((a, b) => {
+                const includesA = importantSpawns.includes(a);
+                const includesB = importantSpawns.includes(b);
+
+                if (includesA && includesB) return 0;
+                if (includesA) return -1;
+                if (includesB) return 1;
+
+                return 1;
+            });
 
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
