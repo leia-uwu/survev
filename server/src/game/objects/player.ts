@@ -1267,12 +1267,17 @@ export class Player extends BaseGameObject {
 
         this.posOld = v2.copy(this.pos);
 
-        this.recalculateSpeed();
+        let steps: number;
+        if (movement.x !== 0 || movement.y !== 0) {
+            this.recalculateSpeed();
+            steps = Math.round(math.max(this.speed * dt + 5, 5));
+        } else {
+            this.speed = 0;
+            steps = 1;
+        }
         this.moveVel = v2.mul(movement, this.speed);
 
         let objs!: GameObject[];
-
-        const steps = Math.round(math.max(this.speed * dt + 5, 5));
 
         const speedToAdd = (this.speed / steps) * dt;
         for (let i = 0; i < steps; i++) {
