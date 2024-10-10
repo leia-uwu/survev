@@ -66,7 +66,7 @@ export class Airdrop extends BaseGameObject {
         this.fallT = math.remap(this.fallTime, 0, GameConfig.airdrop.fallTime, 1, 0);
 
         this.fallT = math.clamp(this.fallT, 0, 1);
-        this.setPartDirty();
+
         if (this.fallT === 1) {
             this.landed = true;
             this.setDirty();
@@ -101,6 +101,11 @@ export class Airdrop extends BaseGameObject {
             }
 
             this.game.map.genObstacle(this.obstacleType, this.pos, 0);
+        } else {
+            // airdrops parachute fallT only needs to be sent once to clients
+            // but still need to be serialized for new clients that will get them into their FOV
+            // so just serialize instead of setting to dirty
+            this.serializePartial();
         }
     }
 }
