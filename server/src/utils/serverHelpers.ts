@@ -80,12 +80,12 @@ export function readPostedJSON<T>(
 
 // credits: https://github.com/Blank-Cheque/Slurs
 const badWordsFilter = [
-    /(s[a4]nd)?n[ila4o10íĩî|][gq]{1,2}(l[e3]t|[e3]r|[a4]|n[o0]g)?s?/,
-    /f[a@4](g{1,2}|qq)([e3il1o0]t{1,2}(ry|r[i1líĩî|]e)?)?/,
+    /(s[a4]nd)?n[ila4o10íĩî|!][gq]{1,2}(l[e3]t|[e3]r|[a4]|n[o0]g)?s?/,
+    /f[a@4](g{1,2}|qq)([e3i1líĩî|!o0]t{1,2}(ry|r[i1líĩî|!]e)?)?/,
     /k[il1y]k[e3](ry|rie)?s?/,
-    /tr[a4]n{1,2}([i1líĩî|][e3]|y|[e3]r)s?/,
+    /tr[a4]n{1,2}([i1líĩî|!][e3]|y|[e3]r)s?/,
     /c[o0]{2}ns?/,
-    /ch[i1líĩî|]nks?/,
+    /ch[i1líĩî|!]nks?/,
 ];
 
 export function checkForBadWords(name: string) {
