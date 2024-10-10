@@ -73,11 +73,12 @@ export class Airdrop extends BaseGameObject {
 
             const objs = this.game.grid.intersectCollider(this.crateCollision);
             for (const obj of objs) {
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+
                 if (
                     (obj.__type === ObjectType.Player ||
                         obj.__type === ObjectType.Obstacle) &&
-                    coldet.test(obj.collider, this.crateCollision) &&
-                    util.sameLayer(obj.layer, 0)
+                    coldet.test(obj.collider, this.crateCollision)
                 ) {
                     obj.damage({
                         amount: obj.__type === ObjectType.Player ? 100 : 1e10,
@@ -97,6 +98,12 @@ export class Airdrop extends BaseGameObject {
                             break;
                         }
                     }
+                } else if (
+                    obj.__type === ObjectType.Loot &&
+                    coldet.test(obj.collider, this.crateCollision)
+                ) {
+                    // just push randomly to wake up the loot
+                    obj.push(v2.randomUnit(), 1);
                 }
             }
 
