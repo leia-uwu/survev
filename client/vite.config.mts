@@ -4,10 +4,40 @@ import { version } from "../package.json";
 import { Config } from "../server/src/config";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
 
+export const SplashThemes = {
+    main: {
+        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
+        SPLASH_BG: "/img/main_splash.png",
+    },
+    easter: {
+        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
+        SPLASH_BG: "/img/main_splash_easter.png",
+    },
+    halloween: {
+        MENU_MUSIC: "audio/ambient/menu_music_02.mp3",
+        SPLASH_BG: "/img/main_splash_halloween.png",
+    },
+    faction: {
+        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
+        SPLASH_BG: "/img/main_splash_0_7_0.png",
+    },
+    snow: {
+        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
+        SPLASH_BG: "/img/main_splash_0_6_10.png",
+    },
+    spring: {
+        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
+        SPLASH_BG: "/img/main_splash_7_3.png",
+    },
+};
+
+const selectedTheme = SplashThemes["faction"];
+
 export default defineConfig(({ mode }) => {
     process.env = {
         ...process.env,
         VITE_GAME_VERSION: version,
+        VITE_BACKGROUND_IMG: selectedTheme.SPLASH_BG,
     };
 
     const regions = {
@@ -62,6 +92,7 @@ export default defineConfig(({ mode }) => {
                     https: data.https,
                 };
             }),
+            MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
         },
         plugins: [
             mode !== "development"
