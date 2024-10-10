@@ -1,5 +1,6 @@
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import { v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import type { ServerGameConfig } from "./gameManager";
@@ -305,6 +306,9 @@ export class Game {
         this.logger.log(`"${player.name}" left`);
         player.disconnected = true;
         player.group?.checkPlayers();
+        player.spectating = undefined;
+        player.dir = v2.create(0, 0);
+        player.setPartDirty();
         if (player.timeAlive < GameConfig.player.minActiveTime) {
             player.game.playerBarn.removePlayer(player);
         }
