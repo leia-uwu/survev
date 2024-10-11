@@ -31,7 +31,7 @@ export const SplashThemes = {
     },
 };
 
-const selectedTheme = SplashThemes["faction"];
+const selectedTheme = SplashThemes["main"];
 
 export default defineConfig(({ mode }) => {
     process.env = {
