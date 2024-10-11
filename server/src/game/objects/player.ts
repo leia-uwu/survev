@@ -2622,13 +2622,14 @@ export class Player extends BaseGameObject {
                         const curIdx = this.curWeapIdx;
 
                         for (
-                            let i = curIdx;
+                            let i = curIdx - 1;
                             i < curIdx + GameConfig.WeaponSlot.Count;
                             i++
                         ) {
                             const idx = math.mod(i, GameConfig.WeaponSlot.Count);
                             if (this.weapons[idx].type) {
                                 this.weaponManager.setCurWeapIndex(idx);
+                                break;
                             }
                         }
                     }
@@ -2638,13 +2639,14 @@ export class Player extends BaseGameObject {
                         const curIdx = this.curWeapIdx;
 
                         for (
-                            let i = curIdx;
+                            let i = curIdx + 1;
                             i > curIdx - GameConfig.WeaponSlot.Count;
                             i--
                         ) {
                             const idx = math.mod(i, GameConfig.WeaponSlot.Count);
                             if (this.weapons[idx].type) {
                                 this.weaponManager.setCurWeapIndex(idx);
+                                break;
                             }
                         }
                     }
