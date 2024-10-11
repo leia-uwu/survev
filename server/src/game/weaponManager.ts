@@ -621,7 +621,7 @@ export class WeaponManager {
 
             if (
                 obj.dead ||
-                (!obj.collidable && obj.isWall) ||
+                !obj.collidable ||
                 !util.sameLayer(obj.layer, bulletLayer) ||
                 obj.height < GameConfig.bullet.height
             ) {
