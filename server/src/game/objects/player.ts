@@ -445,6 +445,15 @@ export class Player extends BaseGameObject {
         this._health = math.clamp(this._health, 0, GameConfig.player.health);
         this.healthDirty = true;
         this.setGroupStatuses();
+
+        if (this.obstacleOutfit) {
+            const healthT = math.clamp(this._health / 100, 0, 1);
+
+            if (!math.eqAbs(this.obstacleOutfit.healthT, healthT, 0.01)) {
+                this.obstacleOutfit.healthT = healthT;
+                this.obstacleOutfit.setDirty();
+            }
+        }
     }
 
     private _boost: number = 0;
