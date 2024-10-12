@@ -2590,7 +2590,7 @@ export class Player extends BaseGameObject {
         this.moveDown = msg.moveDown;
         this.portrait = msg.portrait;
         this.touchMoveActive = msg.touchMoveActive;
-        this.touchMoveDir = msg.touchMoveDir;
+        this.touchMoveDir = v2.normalizeSafe(msg.touchMoveDir);
         this.touchMoveLen = msg.touchMoveLen;
 
         if (msg.shootStart) {
