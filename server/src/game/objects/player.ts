@@ -3651,6 +3651,7 @@ export class Player extends BaseGameObject {
             net.Constants.PlayerMinScale,
             net.Constants.PlayerMaxScale,
         );
+        this.collider.rad = this.rad;
     }
 
     recalculateSpeed(): void {
