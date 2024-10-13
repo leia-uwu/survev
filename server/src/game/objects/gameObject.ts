@@ -237,25 +237,28 @@ export abstract class BaseGameObject {
                 );
 
                 if (collides) {
-                    if (
-                        coldet.testCircleAabb(
-                            this.pos,
-                            rad,
-                            stair.downAabb.min,
-                            stair.downAabb.max,
-                        )
-                    ) {
+                    const downCollision = coldet.intersectAabbCircle(
+                        stair.downAabb.min,
+                        stair.downAabb.max,
+                        this.pos,
+                        rad,
+                    );
+
+                    const upCollision = coldet.intersectAabbCircle(
+                        stair.upAabb.min,
+                        stair.upAabb.max,
+                        this.pos,
+                        rad,
+                    );
+
+                    if (upCollision && downCollision) {
+                        this.layer = upCollision.pen > downCollision.pen ? 2 : 3;
+                    } else if (downCollision) {
                         this.layer = 3;
-                    } else if (
-                        coldet.testCircleAabb(
-                            this.pos,
-                            rad,
-                            stair.upAabb.min,
-                            stair.upAabb.max,
-                        )
-                    ) {
+                    } else if (upCollision) {
                         this.layer = 2;
                     }
+
                     onStair = true;
                     finalStair = stair;
                     break;

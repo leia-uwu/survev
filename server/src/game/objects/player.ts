@@ -994,6 +994,7 @@ export class Player extends BaseGameObject {
         this.zoom = this.scopeZoomRadius[this.scope];
 
         this.weaponManager.showNextThrowable();
+        this.recalculateScale();
     }
 
     override serializeFull(): void {
@@ -1412,7 +1413,6 @@ export class Player extends BaseGameObject {
         let finalZoom = this.scopeZoomRadius[this.scope];
         let lowestZoom = this.scopeZoomRadius["1xscope"];
 
-        let layer = this.layer > 2 ? 0 : this.layer;
         this.indoors = false;
 
         let zoomRegionZoom = lowestZoom;
@@ -1422,9 +1422,7 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type === ObjectType.Building) {
-                if (!util.sameLayer(layer, obj.layer)) continue;
-
-                if (obj.healRegions) {
+                if (obj.healRegions && util.sameLayer(this.layer, obj.layer)) {
                     const healRegion = obj.healRegions.find((hr) => {
                         return coldet.testPointAabb(
                             this.pos,
@@ -1439,6 +1437,9 @@ export class Player extends BaseGameObject {
                 }
 
                 if (obj.ceilingDead) continue;
+
+                // only check if layer is the same when not on stairs!
+                if (this.layer < 2 && this.layer !== obj.layer) continue;
 
                 for (let i = 0; i < obj.zoomRegions.length; i++) {
                     const zoomRegion = obj.zoomRegions[i];
