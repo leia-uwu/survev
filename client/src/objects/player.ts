@@ -2076,6 +2076,7 @@ export class Player implements AbstractObject {
                             this.pos,
                             meleeDir,
                             meleeDist,
+                            // FIXME: change to GameConfig.player.meleeHeight to fix collision
                             1,
                             this.layer,
                             false,
