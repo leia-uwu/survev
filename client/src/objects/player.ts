@@ -2048,17 +2048,17 @@ export class Player implements AbstractObject {
 
             // Obstacles
             const obstacles = animCtx.map?.obstaclePool.getPool()!;
-            for (let n = 0; n < obstacles.length; n++) {
-                const l = obstacles[n];
+            for (let i = 0; i < obstacles.length; i++) {
+                const obstacle = obstacles[i];
                 if (
-                    !!l.active &&
-                    !l.dead &&
-                    !l.isSkin &&
-                    l.height >= GameConfig.player.meleeHeight &&
-                    util.sameLayer(l.layer, this.layer & 1)
+                    !!obstacle.active &&
+                    !obstacle.dead &&
+                    !obstacle.isSkin &&
+                    obstacle.height >= GameConfig.player.meleeHeight &&
+                    util.sameLayer(obstacle.layer, this.layer & 1)
                 ) {
                     let res = collider.intersectCircle(
-                        l.collider,
+                        obstacle.collider,
                         meleeCol.pos,
                         meleeCol.rad,
                     );
@@ -2068,7 +2068,7 @@ export class Player implements AbstractObject {
                     // @ts-expect-error wallcheck not defined on meleeDefs
                     if (meleeDef.cleave || meleeDef.wallCheck) {
                         const meleeDir = v2.normalizeSafe(
-                            v2.sub(l.pos, this.pos),
+                            v2.sub(obstacle.pos, this.pos),
                             v2.create(1, 0),
                         );
                         const wallCheck = collisionHelpers.intersectSegment(
@@ -2080,12 +2080,12 @@ export class Player implements AbstractObject {
                             this.layer,
                             false,
                         );
-                        if (wallCheck && wallCheck.id !== l.__id) {
+                        if (wallCheck && wallCheck.id !== obstacle.__id) {
                             res = null;
                         }
                     }
                     if (res) {
-                        const def = MapObjectDefs[l.type] as ObstacleDef;
+                        const def = MapObjectDefs[obstacle.type] as ObstacleDef;
                         const closestPt = v2.add(
                             meleeCol.pos,
                             v2.mul(v2.neg(res.dir), meleeCol.rad - res.pen),

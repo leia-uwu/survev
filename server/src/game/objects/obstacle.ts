@@ -17,6 +17,8 @@ export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
     bounds: AABB;
     collider!: Collider;
+    // just to cope with shared client function typing
+    active = true;
 
     mapObstacleBounds: Collider[];
 

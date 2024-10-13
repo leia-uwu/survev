@@ -857,12 +857,10 @@ export class WeaponManager {
             if (obj.__type === ObjectType.Obstacle) {
                 const obstacle = obj;
                 if (
-                    !(
-                        obstacle.dead ||
-                        obstacle.isSkin ||
-                        obstacle.height < GameConfig.player.meleeHeight
-                    ) &&
-                    util.sameLayer(obstacle.layer, 1 & this.player.layer)
+                    !obstacle.dead &&
+                    !obstacle.isSkin &&
+                    obstacle.height >= GameConfig.player.meleeHeight &&
+                    util.sameLayer(obstacle.layer, this.player.layer & 1)
                 ) {
                     let collision = collider.intersectCircle(
                         obstacle.collider,
@@ -875,7 +873,7 @@ export class WeaponManager {
                             v2.sub(obstacle.pos, this.player.pos),
                             v2.create(1, 0),
                         );
-                        const intersectedObstacle = collisionHelpers.intersectSegment(
+                        const wallCheck = collisionHelpers.intersectSegment(
                             obstacles,
                             this.player.pos,
                             normalized,
@@ -884,9 +882,9 @@ export class WeaponManager {
                             this.player.layer,
                             false,
                         );
-                        intersectedObstacle &&
-                            intersectedObstacle.id !== obstacle.__id &&
-                            (collision = null);
+                        if (wallCheck && wallCheck.id !== obstacle.__id) {
+                            collision = null;
+                        }
                     }
                     if (collision) {
                         const pos = v2.add(
