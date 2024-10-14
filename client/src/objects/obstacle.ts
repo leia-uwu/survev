@@ -447,7 +447,7 @@ export class Obstacle implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, debug: DebugOptions, _layer: number) {
+    render(camera: Camera, debug: DebugOptions, layer: number) {
         const pos = this.isDoor ? this.door.interpPos : this.pos;
         const rot = this.isDoor ? this.door.interpRot : this.rot;
         const scale = this.scale;
@@ -476,7 +476,7 @@ export class Obstacle implements AbstractObject {
             this.door.casingSprite.visible = !this.dead;
         }
 
-        if (device.debug && debug.obstacles) {
+        if (device.debug && debug.obstacles && util.sameLayer(layer, this.layer)) {
             debugLines.addCollider(this.collider, 0xff0000, 0);
         }
     }
