@@ -894,6 +894,16 @@ export class Player extends BaseGameObject {
         this.weapons = this.weaponManager.weapons;
         const defaultItems = GameConfig.player.defaultItems;
 
+        // createCircle clones the position
+        // so set it manually to link both
+        this.collider = collider.createCircle(this.pos, this.rad);
+        this.collider.pos = this.pos;
+
+        this.scopeZoomRadius =
+            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"];
+
+        this.zoom = this.scopeZoomRadius[this.scope];
+
         function assertType(type: string, category: string, acceptNoItem: boolean) {
             if (!type && acceptNoItem) return;
             const def = GameObjectDefs[type];
@@ -982,16 +992,6 @@ export class Player extends BaseGameObject {
 
             loadout.emotes[i] = emote;
         }
-
-        // createCircle clones the position
-        // so set it manually to link both
-        this.collider = collider.createCircle(this.pos, this.rad);
-        this.collider.pos = this.pos;
-
-        this.scopeZoomRadius =
-            GameConfig.scopeZoomRadius[this.isMobile ? "mobile" : "desktop"];
-
-        this.zoom = this.scopeZoomRadius[this.scope];
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
