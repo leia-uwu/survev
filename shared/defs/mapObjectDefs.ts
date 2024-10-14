@@ -8369,8 +8369,3302 @@ const MaterialDefs = {
         },
     },
 };
+function createMetalBox(params) {
+    const kMetalBoxDef = {
+        type: "obstacle",
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.8 },
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.0, 1.0)),
+        height: 0.5,
+        collidable: true,
+        destructible: true,
+        explosion: "explosion_barrel",
+        health: 250.0,
+        hitParticle: "barrelChip",
+        explodeParticle: "depositBoxGreyBreak",
+        reflectBullets: true,
+        loot: [],
+        map: { display: false },
+        terrain: { grass: false, beach: true },
+        img: {
+            sprite: "map-power-box-01.img",
+            residue: "",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 10,
+        },
+        sound: {
+            bullet: "wall_bullet",
+            punch: "metal_punch",
+            explode: "deposit_box_break_01",
+            enter: "none",
+        },
+    };
+    return util.mergeDeep(kMetalBoxDef, params || {});
+}
+function createShip(params) {
+    const kBankDef = {
+        type: "building",
+        map: {
+            display: true,
+            shapes: [
+                //Ship Big part
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(14.0, 6.5),
+                        v2.create(7.5, 6),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(10.0, 3.2),
+                        v2.create(7.5, 6),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-25.0, 2.0),
+                        v2.create(32, 11),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-62.0, 2.0),
+                        v2.create(10, 9),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-78.0, 2.0),
+                        v2.create(7, 7),
+                    ),
+                    color: 0x1e2420,
+                },
 
+                //Containers big part map
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-44.8, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-39.2, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-31.5, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-25.9, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-14.7, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-9.1, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-1.4, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(4.2, 2.1),
+                        v2.create(2.75, 6.0),
+                    ),
+                    color: 0x29414e,
+                },
+
+                //Ship small part
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(69.0, 2.0),
+                        v2.create(10, 9),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(50.5, 2.0),
+                        v2.create(9.5, 11),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(38.0, 0.5),
+                        v2.create(3.2, 9),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(32.2, -3.5),
+                        v2.create(3, 5),
+                    ),
+                    color: 0x1e2420,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(28.0, -6.7),
+                        v2.create(2.2, 2),
+                    ),
+                    color: 0x1e2420,
+                },
+
+                //Containers small part map
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(48.0, 5.0),
+                        v2.create(7.0, 2.5),
+                    ),
+                    color: 0x29414e,
+                },
+            ],
+        },
+        terrain: {
+            waterEdge: {
+                dir: v2.create(0.0, 1.0),
+                distMin: -70,
+                distMax: -10.0,
+            },
+        },
+        ori: 1,
+        zIdx: 1,
+        floor: {
+            surfaces: [
+                //Ship Big part
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(-25.0, 2.0),
+                            v2.create(32, 11),
+                        ),
+                    ],
+                },
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(-62.0, 2.0),
+                            v2.create(10, 9),
+                        ),
+                    ],
+                },
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(-78.0, 2.0),
+                            v2.create(7, 7),
+                        ),
+                    ],
+                },
+
+                //Ship Small part
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(69.0, 2.0),
+                            v2.create(10, 9),
+                        ),
+                    ],
+                },
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(50.5, 2.0),
+                            v2.create(9.5, 11),
+                        ),
+                    ],
+                },
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(v2.create(38.0, 0.5), v2.create(3, 9)),
+                    ],
+                },
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(32.2, -3.5),
+                            v2.create(3, 5),
+                        ),
+                    ],
+                },
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(28.0, -6.7),
+                            v2.create(2.2, 2),
+                        ),
+                    ],
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "ship_floor.img",
+                    pos: v2.create(0.0, 0.0),
+                    scale: 0.7,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                },
+            ],
+        },
+        ceiling: {
+            zoomRegions: [
+                {
+                    zoomIn: collider.createAabbExtents(
+                        v2.create(-65.2, 2.0),
+                        v2.create(3.5, 2.6),
+                    ),
+                },
+                {
+                    zoomIn: collider.createAabbExtents(
+                        v2.create(46.0, -6.2),
+                        v2.create(7.2, 2.0),
+                    ),
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "ship-stairs-roof-01.img",
+                    pos: v2.create(-65.2, 2.0),
+                    zIdx: 0,
+                    scale: 0.55,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                },
+                {
+                    sprite: "ship-stairs-roof-02.img",
+                    pos: v2.create(46.0, -6.2),
+                    scale: 0.55,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                },
+            ],
+            vision: {
+                dist: 2.3,
+                width: 2.0,
+                linger: 0.5,
+                fadeRate: 6.0,
+            },
+        },
+        mapObjects: [
+            //SMALL PART
+            //Walls
+            {
+                type: "metal_wall_ship_04",
+                pos: v2.create(79.0, 2.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_05",
+                pos: v2.create(69.5, 10.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_05",
+                pos: v2.create(69.5, -6.55),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_09",
+                pos: v2.create(59.7, 11.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_09",
+                pos: v2.create(59.6, -7.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_04",
+                pos: v2.create(50.5, 12.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(41.2, 11.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_11",
+                pos: v2.create(38.2, 9.7),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(35.2, 8.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(34.53, 6.15),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_13",
+                pos: v2.create(33.6, 3.95),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(31.8, 1.8),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(30.5, 0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_13",
+                pos: v2.create(29.6, -2.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(28.0, -4.34),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_13",
+                pos: v2.create(26.2, -6.45),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_15",
+                pos: v2.create(43.0, -8.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Stairs walls small part
+            {
+                type: "metal_wall_ship_18",
+                pos: v2.create(45.0, -4.7),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_18",
+                pos: v2.create(45.0, -7.7),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_19",
+                pos: v2.create(39.0, -6.2),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //Small part ship furniture
+            {
+                type: "crate_01",
+                pos: v2.create(68.0, 4.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(58.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(74.0, 0.0),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(74.0, 3.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_side",
+                pos: v2.create(35.5, 3.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "crate_ship_metal",
+                pos: v2.create(60.2, 2.0),
+                scale: 1.0,
+                ori: 2,
+            },
+            {
+                type: "crate_ship_metal_big",
+                pos: v2.create(63.4, 2.2),
+                scale: 1.0,
+                ori: 2,
+            },
+            {
+                type: "broken_container_01",
+                pos: v2.create(48.0, 5.0),
+                scale: 0.9,
+                ori: 0,
+            },
+
+            //BIG PART
+            //Walls
+            {
+                type: "metal_wall_ship_03",
+                pos: v2.create(-85.5, 2.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "metal_wall_ship_07",
+                pos: v2.create(-79, 9.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_07",
+                pos: v2.create(-79, -5.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_08",
+                pos: v2.create(-72.0, 10.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_08",
+                pos: v2.create(-72.0, -6.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_06",
+                pos: v2.create(-63.8, 11.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_06",
+                pos: v2.create(-63.8, -7.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_01",
+                pos: v2.create(-12.7, 12.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_14",
+                pos: v2.create(-25.3, -8.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Stairs walls big part
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(-62.2, 2.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_11",
+                pos: v2.create(-65.2, 4.1),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_11",
+                pos: v2.create(-65.2, -0.1),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Big part ship furniture
+            //Containers
+            {
+                type: "container_07_ship",
+                pos: v2.create(-44.8, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(-39.2, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "container_07_ship",
+                pos: v2.create(-31.5, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(-25.9, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "container_07_ship",
+                pos: v2.create(-14.7, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(-9.1, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "container_07_ship",
+                pos: v2.create(-1.4, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(4.2, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //Wood crates
+            {
+                type: "crate_01",
+                pos: v2.create(-21.6, 6.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(-21.6, 3.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(-21.6, 0.5),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            {
+                type: "crate_01",
+                pos: v2.create(-70.0, -5.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(-67.0, -5.5),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            //Stair tower
+            {
+                type: "stair_tower",
+                pos: v2.create(-61.0, 2.0),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            //Barrels
+            {
+                type: "barrel_01",
+                pos: v2.create(14.0, 10.7),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            {
+                type: "barrel_01",
+                pos: v2.create(-81.3, 3.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-81.3, 0.5),
+                scale: 0.6,
+                ori: 2,
+            },
+
+            {
+                type: "crate_ship_metal",
+                pos: v2.create(-83.7, 1.8),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //Cranes
+            {
+                type: "metal_crane",
+                pos: v2.create(-39.1, -1.8),
+                scale: 1.0,
+                ori: 2,
+            },
+            {
+                type: "metal_crane",
+                pos: v2.create(-1.7, 5.6),
+                scale: 1.0,
+                ori: 0,
+            },
+        ],
+    };
+    return util.mergeDeep(kBankDef, params || {});
+}
+function createStairTower(params) {
+    const kStairTower = {
+        type: "obstacle",
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.8 },
+        collision: collider.createCircle(v2.create(0.0, 0.0), 5.0),
+        height: 20,
+        collidable: true,
+        destructible: false,
+        health: 999.0,
+        hitParticle: "barrelChip",
+        reflectBullets: true,
+        loot: [],
+        map: { display: false },
+        terrain: { grass: false, beach: true },
+        img: {
+            sprite: "ship-stairs-tower.img",
+            residue: "",
+            scale: 0.9,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 50,
+        },
+        sound: {
+            bullet: "wall_bullet",
+            punch: "metal_punch",
+            explode: "",
+            enter: "none",
+        },
+    };
+    return util.mergeDeep(kStairTower, params || {});
+}
+function createMetalCrane(params) {
+    const kMetalBoxDef = {
+        type: "obstacle",
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.8 },
+        collision: collider.createAabbExtents(v2.create(10.0, 0.0), v2.create(1.2, 1.2)),
+        height: 20,
+        collidable: true,
+        destructible: false,
+        health: 999.0,
+        hitParticle: "barrelChip",
+        reflectBullets: true,
+        loot: [],
+        map: { display: false },
+        terrain: { grass: false, beach: true },
+        img: {
+            sprite: "crane.img",
+            residue: "",
+            scale: 0.6,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 50,
+        },
+        sound: {
+            bullet: "wall_bullet",
+            punch: "metal_punch",
+            explode: "",
+            enter: "none",
+        },
+    };
+    return util.mergeDeep(kMetalBoxDef, params || {});
+}
+function createMetalBarrel(params) {
+    const kBarrelDef = {
+        type: "obstacle",
+        obstacleType: "barrel",
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.6 },
+        collision: collider.createCircle(v2.create(0.0, 0.0), 1.75),
+        height: 0.5,
+        collidable: true,
+        destructible: true,
+        explosion: "explosion_barrel",
+        health: 150.0,
+        hitParticle: "barrelChip",
+        explodeParticle: "barrelBreak",
+        reflectBullets: true,
+        loot: [],
+        map: { display: true, color: 0x626262, scale: 1.0 },
+        terrain: { grass: true, beach: true },
+        img: {
+            sprite: "map-barrel-01.img",
+            scale: 0.4,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 10,
+        },
+        sound: {
+            bullet: "barrel_bullet",
+            punch: "barrel_bullet",
+            explode: "barrel_break_01",
+            enter: "none",
+        },
+    };
+    return util.mergeDeep(kBarrelDef, params || {});
+}
+
+function createDinner(params) {
+    const kBankDef = {
+        type: "building",
+        map: {
+            display: true,
+            shapes: [
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(-15, 10.0),
+                        v2.create(15.0, 20.0),
+                    ),
+                    color: 0xa93c25,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(15, 10.0),
+                        v2.create(15.0, 20.0),
+                    ),
+                    color: 0xc7372e,
+                },
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(0.0, -20.0),
+                        v2.create(30.0, 10.0),
+                    ),
+                    color: 0x6e6e6e,
+                },
+            ],
+        },
+        terrain: {
+            grass: true,
+            beach: false,
+        },
+        ori: 0,
+        zIdx: 1,
+        floor: {
+            surfaces: [
+                {
+                    type: "tile",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(0.0, 10.0),
+                            v2.create(30.0, 20.0),
+                        ),
+                    ],
+                },
+
+                {
+                    type: "asphalt",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(-20.3, -21.2),
+                            v2.create(10.3, 10.0),
+                        ),
+
+                        collider.createAabbExtents(
+                            v2.create(20.3, -21.2),
+                            v2.create(10.3, 10.0),
+                        ),
+
+                        collider.createAabbExtents(
+                            v2.create(0.0, -21.2),
+                            v2.create(5.0, 10.0),
+                        ),
+
+                        collider.createAabbExtents(
+                            v2.create(-7.5, -28.8),
+                            v2.create(2.5, 2.5),
+                        ),
+
+                        collider.createAabbExtents(
+                            v2.create(7.5, -28.8),
+                            v2.create(2.5, 2.5),
+                        ),
+                    ],
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "dinner_main_floor.img",
+                    pos: v2.create(0.0, 0.0),
+                    scale: 0.5,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                },
+            ],
+        },
+        ceiling: {
+            zoomRegions: [
+                {
+                    zoomIn: collider.createAabbExtents(
+                        v2.create(0.0, 10.0),
+                        v2.create(30.0, 20.0),
+                    ),
+                },
+            ],
+            vision: {
+                dist: 5.5,
+                width: 2.75,
+                linger: 0.5,
+                fadeRate: 6.0,
+            },
+            imgs: [
+                {
+                    sprite: "dinner-ceiling-01.img",
+                    scale: 0.5,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                    pos: v2.create(0.0, 9.0),
+                },
+            ],
+        },
+        mapObjects: [
+            //DOORS
+            {
+                type: "dinner_back_door",
+                pos: v2.create(19.7, 28.8),
+                scale: 1.04,
+                ori: 1,
+            },
+
+            {
+                type: "dinner_back_door",
+                pos: v2.create(10, 28.8),
+                scale: 1.04,
+                ori: 3,
+            },
+
+            {
+                type: "dinner_toiler_door",
+                pos: v2.create(-25.4, 23.3),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "dinner_toiler_door",
+                pos: v2.create(-20.5, 23.3),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "dinner_bathroom_main_door",
+                pos: v2.create(-20.5, 16.3),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Left
+            {
+                type: "concrete_wallDinner_ext_1",
+                pos: v2.create(-30.0, 20.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "dinner_window",
+                pos: v2.create(-30, 10),
+                scale: 1.1,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_2",
+                pos: v2.create(-30.0, 6.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "dinner_door",
+                pos: v2.create(-30.0, -1.2),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_3",
+                pos: v2.create(-30.0, -6.2),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_4",
+                pos: v2.create(-25.0, -11),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //DOWN
+
+            {
+                type: "concrete_wallDinner_ext_5",
+                pos: v2.create(-9.0, -11),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_5",
+                pos: v2.create(9.0, -11),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "large_window",
+                pos: v2.create(-16.8, -11.2),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "dinner_door",
+                pos: v2.create(-5, -11),
+                scale: 1.0,
+                ori: 3,
+            },
+
+            {
+                type: "dinner_door",
+                pos: v2.create(5, -11),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "large_window",
+                pos: v2.create(16.8, -11.2),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //RIGHT
+
+            {
+                type: "concrete_wallDinner_ext_1",
+                pos: v2.create(30.0, 20.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "dinner_window",
+                pos: v2.create(30, 10),
+                scale: 1.1,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_2",
+                pos: v2.create(30.0, 6.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "dinner_door",
+                pos: v2.create(30.0, -1.2),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_3",
+                pos: v2.create(30.0, -6.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "concrete_wallDinner_ext_4",
+                pos: v2.create(25.0, -11),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            ////Furniture dinner
+            {
+                type: "dinner_chair",
+                pos: v2.create(17.5, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(14.0, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(10.5, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(7.0, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(3.5, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(0.0, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(-3.5, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(-7.0, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(-10.5, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(-14.0, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_chair",
+                pos: v2.create(-17.5, 5.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_counter",
+                pos: v2.create(0.0, 7.6),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "jukebox",
+                pos: v2.create(25.4, -9.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table",
+                pos: v2.create(16.3, -6.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table",
+                pos: v2.create(8.9, -6.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table",
+                pos: v2.create(-8.8, -6.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table",
+                pos: v2.create(-16.3, -6.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "food_trash_station",
+                pos: v2.create(-25.0, -9.3),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table_small",
+                pos: v2.create(-28.0, 9.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table_small",
+                pos: v2.create(28.0, 10.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_table_small",
+                pos: v2.create(25.0, 21.8),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "dinner_microvawe_table",
+                pos: v2.create(11.5, 14.8),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_coffee_table",
+                pos: v2.create(-11.5, 14.8),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_sinks",
+                pos: v2.create(-18.25, 22.6),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_extractor",
+                pos: v2.create(-12.27, 27.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_fridge",
+                pos: v2.create(-2.7, 26.4),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_minicounter",
+                pos: v2.create(1.8, 27.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_stove",
+                pos: v2.create(5.8, 17.9),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_warehouse",
+                pos: v2.create(10.8, 20.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_01",
+                pos: v2.create(16.0, 17.9),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_02",
+                pos: v2.create(18.4, 18.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_03",
+                pos: v2.create(18.4, 20.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_04",
+                pos: v2.create(18.4, 22.8),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "toilet_dinner",
+                pos: v2.create(-27.5, 26.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "toilet_dinner_dirty",
+                pos: v2.create(-22.5, 26.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "sink_01",
+                pos: v2.create(-27.0, 17.7),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //TOP
+
+            {
+                type: "concrete_wallDinner_ext_6",
+                pos: v2.create(-1.0, 29.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_10",
+                pos: v2.create(-24.0, 29.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_10",
+                pos: v2.create(-20.0, 22.8),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_7",
+                pos: v2.create(-25.0, 26.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_8",
+                pos: v2.create(25.0, 29.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_8",
+                pos: v2.create(25.0, 24.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_9",
+                pos: v2.create(20.0, 20.6),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_9",
+                pos: v2.create(9.5, 20.6),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_11",
+                pos: v2.create(11.5, 16.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_11",
+                pos: v2.create(-11.5, 16.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "concrete_wallDinner_ext_12",
+                pos: v2.create(-27.5, 16.3),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "dinner_window",
+                pos: v2.create(-14.8, 29),
+                scale: 1.1,
+                ori: 1,
+            },
+        ],
+    };
+    return util.mergeDeep(kBankDef, params || {});
+}
+function createDinnerBasement(params) {
+    const kBankDef = {
+        type: "building",
+        map: {
+            display: true,
+            shapes: [
+                {
+                    collider: collider.createAabbExtents(
+                        v2.create(0.0, 0.0),
+                        v2.create(15.0, 9.5),
+                    ),
+                    color: 0xff0000,
+                },
+            ],
+        },
+        terrain: {
+            grass: true,
+            beach: false,
+        },
+        ori: 0,
+        zIdx: 2,
+        floor: {
+            surfaces: [
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(0.0, 0.0),
+                            v2.create(15.0, 9.5),
+                        ),
+                    ],
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "dinner_basement.img",
+                    pos: v2.create(0.0, 0.0),
+                    scale: 0.5,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                },
+            ],
+        },
+        ceiling: {
+            zoomRegions: [
+                {
+                    zoomIn: collider.createAabbExtents(
+                        v2.create(-10.0, 0.0),
+                        v2.create(5.0, 10.0),
+                    ),
+                },
+                {
+                    zoomOut: collider.createAabbExtents(
+                        v2.create(0.0, 0.0),
+                        v2.create(15.0, 10.0),
+                    ),
+                },
+            ],
+            vision: {
+                dist: 7.25,
+                width: 2.75,
+                linger: 0.5,
+                fadeRate: 6.0,
+            },
+
+            imgs: [
+                {
+                    sprite: "freezer_roof.img",
+                    scale: 0.5,
+                    alpha: 1.0,
+                    pos: v2.create(-10.0, 0.0),
+                    tint: 0xffffff,
+                },
+            ],
+        },
+
+        mapObjects: [
+            {
+                type: "dinner_basement_door",
+                pos: v2.create(14.6, 5.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Left
+
+            {
+                type: "basement_wallDinner_ext_1",
+                pos: v2.create(-15, 0.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "basement_wallDinner_ext_2",
+                pos: v2.create(0.0, 10),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "basement_wallDinner_ext_1",
+                pos: v2.create(15, 0.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "basement_wallDinner_ext_2",
+                pos: v2.create(0.0, -10),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "basement_wallDinner_ext_3",
+                pos: v2.create(-5.0, -7.6),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "basement_wallDinner_ext_3",
+                pos: v2.create(-5.0, 7.6),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "basement_wallDinner_ext_3",
+                pos: v2.create(4.8, 7.3),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "basement_wallDinner_ext_4",
+                pos: v2.create(7.3, 5.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "freezer_door",
+                pos: v2.create(-4.9, 5.0),
+                scale: 1.0,
+                ori: 2,
+            },
+
+            {
+                type: "freezer_door",
+                pos: v2.create(-4.9, -5.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "ice_wall",
+                pos: v2.create(-4.5, 0.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            //Outside freezer
+            //Crates
+            {
+                type: "crate_01",
+                pos: v2.create(2.5, -0.7),
+                scale: 0.7,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(6.0, -0.7),
+                scale: 0.7,
+                ori: 0,
+            },
+
+            //Boxes
+            {
+                type: "dinner_box_03",
+                pos: v2.create(13.4, -4.4),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_02",
+                pos: v2.create(13.0, -6.4),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "dinner_box_04",
+                pos: v2.create(13.0, -8.4),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "dinner_box_03",
+                pos: v2.create(10.6, -8.4),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_03",
+                pos: v2.create(8.6, -8.4),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_box_01",
+                pos: v2.create(6.3, -8.4),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //Couch
+            {
+                type: "dinner_couch_01",
+                pos: v2.create(2.1, 8.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_couch_02",
+                pos: v2.create(-0.8, 7.8),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "dinner_couch_03",
+                pos: v2.create(-3.2, 7.7),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //Inside freezer
+            {
+                type: "metal_crate_small",
+                pos: v2.create(-10.0, 0.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "frozen_crate",
+                pos: v2.create(-10.0, 4.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "frozen_crate",
+                pos: v2.create(-10.0, -4.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "basement_freezer_wall_01",
+                pos: v2.create(-10.0, -9.1),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "basement_freezer_wall_01",
+                pos: v2.create(-10.0, 9.1),
+                scale: 1.0,
+                ori: 1,
+            },
+        ],
+    };
+    return util.mergeDeep(kBankDef, params || {});
+}
+function createSink(params) {
+    const kToiletDef = {
+        type: "obstacle",
+        obstacleType: "sink",
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.8 },
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.5, 1.0)),
+        height: 0.5,
+        collidable: true,
+        destructible: true,
+        health: 100.0,
+        reflectBullets: false,
+        hitParticle: "whiteChip",
+        explodeParticle: "toiletBreak",
+        loot: [tierLoot("tier_toilet", 2, 3)],
+        map: { display: false, color: 0xb3b3b3, scale: 1.0 },
+        img: {
+            sprite: "sink-01.img",
+            residue: "map-toilet-res-01.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 10,
+        },
+        sound: {
+            bullet: "toilet_porc_bullet",
+            punch: "toilet_porc_bullet",
+            explode: "toilet_break_01",
+            enter: "none",
+        },
+        terrain: { grass: true, beach: false },
+    };
+    return util.mergeDeep(kToiletDef, params || {});
+}
+function createChair(params) {
+    const kTableDef = {
+        type: "obstacle",
+        obstacleType: "furniture",
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.75 },
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.6, 0.6)),
+        height: 0.5,
+        collidable: true,
+        destructible: true,
+        health: 80.0,
+        hitParticle: "woodChip",
+        explodeParticle: "woodPlank",
+        reflectBullets: false,
+        loot: [tierLoot("tier_bha_obstacles", 0.65, 1.5)],
+        map: { display: false, color: 0x663300, scale: 0.875 },
+        terrain: { grass: true, beach: true },
+        img: {
+            sprite: "dinner_chair.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+        sound: {
+            bullet: "wood_prop_bullet",
+            punch: "wood_prop_bullet",
+            explode: "crate_break_01",
+            enter: "none",
+        },
+    };
+    return util.mergeDeep(kTableDef, params || {});
+}
 export const MapObjectDefs: Record<string, MapObjectDef> = {
+    frozen_crate: createCrate({
+        health: 180.0,
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.65, 1.65)),
+        loot: [tierLoot("tier_world", 3, 5), tierLoot("tier_guns", 1, 0.75)],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "frozen_crate.img" },
+        sound: { explode: "crate_break_01" },
+        armorPlated: true,
+    }),
+    basement_freezer_wall_01: createWall({
+        material: "metal",
+        extents: v2.create(0.8, 5),
+    }),
+    ice_wall: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 5.0),
+        hitParticle: "tanChip",
+        img: wallImg("frozen_door.img", 0xffffff, 1.0, 1000),
+        health: 1000.0,
+        armorPlated: true,
+        destructible: true,
+    }),
+    metal_crate_small: createCrate({
+        health: 175.0,
+        armorPlated: true,
+        hitParticle: "greenChip",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.1, 1.8)),
+        loot: [
+            tierLoot("tier_world", 3, 5),
+            tierLoot("tier_guns", 1, 1), // TODO change loot candystore
+        ],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "dinner-freezer-crate-01.img", residue: "none" },
+        sound: { bullet: "ammo_crate_bullet", punch: "ammo_crate_bullet" },
+    }),
+    food_trash_station: createCrate({
+        health: 200.0,
+        reflectBullets: true,
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+        loot: [tierLoot("tier_melee", 1, 1), tierLoot("tier_surviv", 1, 1)],
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(4.0, 1.5)),
+        img: { sprite: "food-trash-station.img" },
+    }),
+    dinner_microvawe_table: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(9.0, 1.1)),
+        img: { sprite: "dinner-microwavetable.img" },
+    }),
+    dinner_coffee_table: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(9.0, 1.1)),
+        img: { sprite: "dinner-coffeetable.img", scale: 0.5 },
+    }),
+    dinner_sinks: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.3, 6.0)),
+        img: { sprite: "dinner-sinks.img", scale: 0.5 },
+    }),
+    dinner_extractor: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(7.3, 1.3)),
+        img: { sprite: "dinner-extractor.img" },
+    }),
+    dinner_fridge: createMetalBox({
+        obstacleType: "furniture",
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(2.1, 2.0)),
+        img: { sprite: "dinner-fridge.img" },
+    }),
+    dinner_minicounter: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(2.3, 1.2)),
+        img: { sprite: "dinner-minicounter.img" },
+    }),
+    dinner_stove: createMetalBox({
+        obstacleType: "furniture",
+        loot: [tierLoot("tier_surviv", 0, 1)],
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(3.2, 1.2)),
+        img: { sprite: "dinner-stove.img" },
+    }),
+    dinner_counter: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(20.6, 1.2)),
+        loot: [tierLoot("tier_surviv", 1, 1)],
+        health: 150.0,
+        collidable: true,
+        img: {
+            sprite: "dinner-counter.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_table: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(3.9, 4.9)),
+        loot: [
+            tierLoot("tier_surviv", 0, 1),
+            tierLoot("tier_katanas", 1, 0.5),
+            tierLoot("tier_guns", 1, 1),
+        ],
+        health: 150.0,
+        collidable: true,
+        img: {
+            sprite: "dinner-table.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_couch_01: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.5, 1.0)),
+        loot: [tierLoot("tier_katanas", 1, 0.5), tierLoot("tier_guns", 1, 1)],
+        health: 80.0,
+        collidable: true,
+        img: {
+            sprite: "dinner-couch-01.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_couch_02: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.0, 1.5)),
+        loot: [tierLoot("tier_katanas", 1, 0.5), tierLoot("tier_guns", 1, 1)],
+        health: 80.0,
+        collidable: true,
+        img: {
+            sprite: "dinner-couch-02.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_couch_03: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.0, 1.5)),
+        loot: [tierLoot("tier_katanas", 1, 0.5), tierLoot("tier_guns", 1, 1)],
+        health: 80.0,
+        collidable: true,
+        img: {
+            sprite: "dinner-couch-03.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_table_small: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.5, 3.8)),
+        loot: [tierLoot("tier_katanas", 1, 0.5), tierLoot("tier_guns", 1, 1)],
+        health: 120.0,
+        collidable: true,
+        img: {
+            sprite: "dinner-table-small.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    jukebox: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(3.6, 1.6)),
+        health: 140.0,
+        collidable: true,
+        img: {
+            sprite: "jukebox.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_warehouse: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.8, 3.9)),
+        loot: [tierLoot("tier_surviv", 0, 2), tierLoot("tier_melee", 0, 1)],
+        health: 100.0,
+        collidable: true,
+        img: {
+            sprite: "dinner_warehouse.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_box_01: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.9, 1.0)),
+        loot: [tierLoot("tier_surviv", 0, 2)],
+        health: 60.0,
+        collidable: true,
+        img: {
+            sprite: "dinner_box_01.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_box_02: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.9, 1.3)),
+        loot: [tierLoot("tier_surviv", 1, 3)],
+        health: 60.0,
+        collidable: true,
+        img: {
+            sprite: "dinner_box_02.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_box_03: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.9, 1.0)),
+        loot: [tierLoot("tier_surviv", 0, 2)],
+        health: 60.0,
+        collidable: true,
+        img: {
+            sprite: "dinner_box_03.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_box_04: createTable({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.9, 1.3)),
+        loot: [tierLoot("tier_surviv", 0, 3)],
+        health: 60.0,
+        collidable: true,
+        img: {
+            sprite: "dinner_box_04.img",
+            residue: "map-table-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 60,
+        },
+    }),
+    dinner_chair: createChair({}),
+    toilet_dinner: createToilet({
+        img: { sprite: "toilet-dinner.img" },
+        loot: [tierLoot("tier_toilet", 2, 3)],
+    }),
+    toilet_dinner_dirty: createToilet({
+        img: { sprite: "toilet-dinner-dirty.img" },
+        loot: [tierLoot("tier_toilet", 2, 3)],
+    }),
+    dinner_door: createDoor({
+        material: "wood",
+        hinge: v2.create(0.0, 2.3),
+        extents: v2.create(0.3, 2.9),
+        img: {
+            sprite: "dinner_door.img", // tint: 0x303542
+        },
+    }),
+    dinner_back_door: createDoor({
+        material: "metal",
+        hinge: v2.create(0.0, 2.3),
+        extents: v2.create(0.3, 2.4),
+        img: {
+            sprite: "back_door_dinner.img", // tint: 0x303542
+        },
+    }),
+    dinner_bathroom_main_door: createDoor({
+        material: "wood",
+        hinge: v2.create(0.0, 2.3),
+        extents: v2.create(0.3, 2.2),
+        img: {
+            sprite: "bathroom_main_door_dinner.img", // tint: 0x303542
+        },
+    }),
+    dinner_toiler_door: createDoor({
+        material: "wood",
+        hinge: v2.create(0.0, 2.3),
+        extents: v2.create(0.3, 2.1),
+        img: {
+            sprite: "toilet_door_dinner.img", // tint: 0x303542
+        },
+    }),
+    dinner_basement_door: createDoor({
+        material: "wood",
+        hinge: v2.create(0.0, 2.0),
+        extents: v2.create(0.3, 2.0),
+        img: {
+            sprite: "basement_door.img", // tint: 0x303542
+        },
+    }),
+    freezer_door: createDoor({
+        material: "metal",
+        hinge: v2.create(0.0, 2.5),
+        extents: v2.create(0.3, 2.5),
+        img: {
+            sprite: "freeze_door.img", // tint: 0x303542
+        },
+        health: 800.0,
+        destructible: false,
+    }),
+    dinner_window: createWindow({
+        img: {
+            sprite: "window_dinner.img",
+            residue: "none",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 10,
+        },
+        destroyType: "window_broken_dinner",
+    }),
+    large_window: createWindow({
+        img: {
+            sprite: "large_window.img",
+            residue: "none",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0xffffff,
+            zIdx: 10,
+        },
+        destroyType: "window_broken_large",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.4, 4.2)),
+    }),
+    window_broken_large: createLowWall({
+        img: {
+            sprite: "large-window-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0x440000,
+            zIdx: 10,
+        },
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(0.4, 4.2)),
+    }),
+    window_broken_dinner: createLowWall({
+        img: {
+            sprite: "window-dinner-res.img",
+            scale: 0.5,
+            alpha: 1.0,
+            tint: 0x440000,
+            zIdx: 10,
+        },
+    }),
+    dinner_n_basement: {
+        type: "structure",
+        terrain: {
+            grass: true,
+            beach: false,
+        },
+        ori: 0,
+        mapObstacleBounds: [
+            collider.createAabbExtents(v2.create(0.5, 5.0), v2.create(40.5, 40.5)),
+        ],
+        layers: [
+            {
+                type: "dinner_01",
+                pos: v2.create(0.0, 0.0),
+                ori: 0,
+            },
+            {
+                type: "dinner_basement",
+                pos: v2.create(15.0, 19.0),
+                ori: 0,
+            },
+        ],
+        stairs: [
+            {
+                collision: collider.createAabbExtents(
+                    v2.create(26, 26),
+                    v2.create(3.0, 2.2),
+                ),
+                downDir: v2.create(1.0, 0.0),
+            },
+        ],
+        mask: [collider.createAabbExtents(v2.create(15.0, 25.0), v2.create(16.0, 18.0))],
+    },
+    concrete_wallDinner_ext_1: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 8.2),
+    }),
+    concrete_wallDinner_ext_2: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 2),
+    }),
+    concrete_wallDinner_ext_3: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 5.3),
+    }),
+    concrete_wallDinner_ext_4: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 4.5),
+    }),
+    concrete_wallDinner_ext_5: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 3.7),
+    }),
+    concrete_wallDinner_ext_6: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 11),
+    }),
+    concrete_wallDinner_ext_7: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 3.2),
+    }),
+    concrete_wallDinner_ext_8: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 5.3),
+    }),
+    concrete_wallDinner_ext_9: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 3.7),
+    }),
+    concrete_wallDinner_ext_10: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 6.6),
+    }),
+    concrete_wallDinner_ext_11: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 9),
+    }),
+    concrete_wallDinner_ext_12: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 2.5),
+    }),
+    basement_wallDinner_ext_1: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 9.5),
+    }),
+    basement_wallDinner_ext_2: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 15),
+    }),
+    basement_wallDinner_ext_3: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 2.8),
+    }),
+    basement_wallDinner_ext_4: createWall({
+        material: "concrete",
+        extents: v2.create(0.5, 3),
+    }),
+    dinner_01: createDinner({}),
+    dinner_basement: createDinnerBasement({}),
+    sink_01: createSink({}),
+    ship_01: createShip({}),
+    ship_02: createShip({
+        zIdx: 0,
+        floor: {
+            surfaces: [
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(-49.0, 2.0),
+                            v2.create(40.0, 11.0),
+                        ),
+                        collider.createAabbExtents(
+                            v2.create(-5.5, -4.0),
+                            v2.create(11.0, 6.0),
+                        ),
+                        collider.createAabbExtents(
+                            v2.create(59.0, 2.0),
+                            v2.create(20.0, 11.0),
+                        ),
+                    ],
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "ship_inside.img",
+                    pos: v2.create(0.3, 0.2),
+                    scale: 0.7,
+                    alpha: 1.0,
+                    tint: 0xffffff,
+                },
+            ],
+        },
+
+        ceiling: {
+            zoomRegions: [
+                {
+                    zoomIn: collider.createAabbExtents(
+                        v2.create(-4.0, 2.0),
+                        v2.create(83.0, 11.0),
+                    ),
+                },
+            ],
+        },
+        mapObjects: [
+            //SMALL PART
+            //Walls
+            {
+                type: "metal_wall_ship_04",
+                pos: v2.create(79.0, 2.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_05",
+                pos: v2.create(69.5, 10.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_05",
+                pos: v2.create(69.5, -6.55),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_09",
+                pos: v2.create(59.7, 11.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_09",
+                pos: v2.create(59.6, -7.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_04",
+                pos: v2.create(50.5, 12.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(41.2, 11.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_11",
+                pos: v2.create(38.2, 9.7),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(35.2, 8.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(34.53, 6.15),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(29.6, -2.1),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(28.3, -4.34),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_13",
+                pos: v2.create(26.2, -6.45),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_15",
+                pos: v2.create(43.0, -8.7),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Stairs wall small part
+            {
+                type: "metal_wall_ship_18",
+                pos: v2.create(44.9, -4.7),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_18",
+                pos: v2.create(44.9, -7.7),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_19",
+                pos: v2.create(50.8, -6.2),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //Small part ship furniture
+            //
+            {
+                type: "metal_barrel_side",
+                pos: v2.create(31.0, -7.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(58.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            //
+            {
+                type: "container_09_ship",
+                pos: v2.create(42.5, 3.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_08_ship",
+                pos: v2.create(52.5, 2.9),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_09_ship",
+                pos: v2.create(63.0, 3.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(75.0, 8.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(75.0, 6.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(75.0, 3.5),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(75.0, 1.0),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(75.0, -1.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(75.0, -4.0),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(77.5, 7.0),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(77.5, 4.5),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(77.5, 2.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(77.5, -0.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_03",
+                pos: v2.create(77.5, -3.0),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            //BRIGE walls
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(26.0, -0.2),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(23.3, -0.9),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(21.8, -2.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(20.3, -1.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(18.6, -0.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_17",
+                pos: v2.create(27.3, 6.2),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //BIG PART
+            //Walls
+            {
+                type: "metal_wall_ship_03",
+                pos: v2.create(-85.5, 2.0),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            {
+                type: "metal_wall_ship_07",
+                pos: v2.create(-79, 9.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_07",
+                pos: v2.create(-79, -5.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_08",
+                pos: v2.create(-72.0, 10.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_08",
+                pos: v2.create(-72.0, -6.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_06",
+                pos: v2.create(-63.8, 11.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_06",
+                pos: v2.create(-63.8, -7.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_01",
+                pos: v2.create(-12.7, 12.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_14",
+                pos: v2.create(-25.3, -8.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(5.0, -7.7),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(7.1, -7.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(9.9, -5.9),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(11.2, -4.5),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(12.6, -2.6),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(14.2, -0.5),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            {
+                type: "metal_wall_ship_12",
+                pos: v2.create(20.9, 7.2),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(23.0, 8.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_10",
+                pos: v2.create(26.0, 9.3),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(28.3, 11.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Stairs walls big part
+            {
+                type: "metal_wall_ship_16",
+                pos: v2.create(-68.2, 2.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "metal_wall_ship_11",
+                pos: v2.create(-65.2, 4.1),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "metal_wall_ship_11",
+                pos: v2.create(-65.2, -0.1),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //Big part ship furniture
+            {
+                type: "barrel_01",
+                pos: v2.create(-82.0, 5.5),
+                scale: 0.6,
+                ori: 2,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-80.6, 2.9),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-83.0, 3.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-80.6, 0.3),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-83.0, 0.3),
+                scale: 0.6,
+                ori: 3,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-82.0, -2.0),
+                scale: 0.6,
+                ori: 1,
+            },
+
+            //
+            {
+                type: "crate_01",
+                pos: v2.create(-70.5, 2.8),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_side",
+                pos: v2.create(-64.0, -6.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(-46.0, 3.0),
+                scale: 1.0,
+                ori: 1,
+            },
+
+            //
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-54.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-51.5, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-49.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-46.5, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-44.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-41.5, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-39.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-36.5, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-34.0, 11.0),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-34.0, 9.0),
+                scale: 0.6,
+                ori: 0,
+            },
+
+            //
+            {
+                type: "crate_ship_metal_red",
+                pos: v2.create(-38.0, 8.5),
+                scale: 1.0,
+                ori: 3,
+            },
+            {
+                type: "crate_ship_metal",
+                pos: v2.create(-38.5, -5.4),
+                scale: 1.0,
+                ori: 2,
+            },
+            {
+                type: "crate_ship_metal",
+                pos: v2.create(-36.0, -5.4),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //
+            {
+                type: "container_07_ship",
+                pos: v2.create(-27.0, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(-21.5, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "container_07_ship",
+                pos: v2.create(-16.0, -0.5),
+                scale: 1.0,
+                ori: 0,
+            },
+
+            //
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-11.5, -0.2),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-11.5, -2.5),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-9.0, -2.5),
+                scale: 0.6,
+                ori: 2,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-6.7, -2.5),
+                scale: 0.6,
+                ori: 1,
+            },
+
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-6.7, 4.0),
+                scale: 0.6,
+                ori: 1,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-6.7, 6.5),
+                scale: 0.6,
+                ori: 3,
+            },
+            {
+                type: "metal_barrel_02",
+                pos: v2.create(-9.0, 6.5),
+                scale: 0.6,
+                ori: 3,
+            },
+
+            //
+            {
+                type: "crate_ship_metal_red",
+                pos: v2.create(-4.0, 5.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: "crate_ship_metal",
+                pos: v2.create(-1.0, 3.0),
+                scale: 1.0,
+                ori: 2,
+            },
+
+            //
+            {
+                type: "crate_01",
+                pos: v2.create(14.0, 10.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(17.0, 10.5),
+                scale: 0.6,
+                ori: 0,
+            },
+            {
+                type: "crate_01",
+                pos: v2.create(20.0, 10.5),
+                scale: 0.6,
+                ori: 0,
+            },
+        ],
+    }),
+    broken_container_01: {
+        type: "building",
+        map: { display: false, color: 0x29414e, scale: 1.0 },
+        terrain: { grass: true, beach: true, riverShore: true },
+        zIdx: 1,
+        floor: {
+            surfaces: [
+                {
+                    type: "container",
+                    collision: [
+                        collider.createAabbExtents(
+                            v2.create(0.0, 0.0),
+                            v2.create(7.0, 2.5),
+                        ),
+                    ],
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "none",
+                    scale: 0.5,
+                    alpha: 1.0,
+                    tint: 0x29414e,
+                },
+            ],
+        },
+        ceiling: {
+            zoomRegions: [
+                {
+                    /* zoomIn: collider.createAabbExtents(
+                    v2.create(0.0, 0.0), v2.create(0.0, 0.0)
+                ) */ zoomOut: collider.createAabbExtents(
+                        v2.create(0.0, 0.0),
+                        v2.create(7.0, 2.5),
+                    ), //* /
+                },
+            ],
+            imgs: [
+                {
+                    sprite: "broken-container-01.img",
+                    scale: 0.7,
+                    alpha: 1.0,
+                    tint: 0x29414e,
+                },
+            ],
+        },
+        mapObjects: [
+            {
+                type: "broken_container_wall_top",
+                pos: v2.create(7.4, 0.0),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "broken_container_wall_side_short",
+                pos: v2.create(2.7, 2.1),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "broken_container_wall_side_long",
+                pos: v2.create(0.0, -2.1),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "broken_container_wall_bottom",
+                pos: v2.create(-7.4, -1.1),
+                scale: 1.0,
+                ori: 1,
+            },
+            {
+                type: "loot_tier_2",
+                pos: v2.create(0.0, 0.0),
+                scale: 1.0,
+                ori: 0,
+            },
+            {
+                type: randomObstacleType({ loot_tier_1: 2, "": 1 }),
+                pos: v2.create(0.0, 0.05),
+                scale: 1.0,
+                ori: 0,
+            },
+        ],
+    },
+    broken_container_wall_top: createWall({
+        material: "metal",
+        extents: v2.create(2.5, 0.4),
+    }),
+    broken_container_wall_side_long: createWall({
+        material: "metal",
+        extents: v2.create(0.4, 7.7),
+    }),
+    broken_container_wall_side_short: createWall({
+        material: "metal",
+        extents: v2.create(0.4, 5.0),
+    }),
+    broken_container_wall_bottom: createWall({
+        material: "metal",
+        extents: v2.create(1.4, 0.4),
+    }),
+    metal_crane: createMetalCrane({}),
+    stair_tower: createStairTower({}),
+    container_07_ship: createMetalBox({
+        type: "obstacle",
+        collision: collider.createAabbExtents(v2.create(0.0, 2.4), v2.create(2.75, 6.0)),
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.5 },
+        reflectBullets: true,
+        height: 80.0,
+        zIdx: 50,
+        collidable: true,
+        destructible: false,
+        map: { display: false },
+        terrain: { grass: false, beach: true },
+        img: {
+            sprite: "map-building-container-ceiling-05.img",
+            zIdx: 50,
+            tint: 0x29414e,
+        },
+        sound: {
+            bullet: "metal_bullet",
+            punch: "metal_punch",
+            explode: "none",
+            enter: "none",
+        },
+    }),
+    container_08_ship: createMetalBox({
+        type: "obstacle",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(5.8, 3.6)),
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.5 },
+        reflectBullets: true,
+        height: 80.0,
+        zIdx: 50,
+        collidable: true,
+        destructible: false,
+        map: { display: false },
+        terrain: { grass: false, beach: true },
+        img: {
+            sprite: "container-ship-01.img",
+            scale: 0.7,
+            zIdx: 50,
+            tint: 0xffffff,
+        },
+        sound: {
+            bullet: "metal_bullet",
+            punch: "metal_punch",
+            explode: "none",
+            enter: "none",
+        },
+    }),
+    container_09_ship: createMetalBox({
+        type: "obstacle",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(2.5, 3.5)),
+        scale: { createMin: 1.0, createMax: 1.0, destroy: 0.5 },
+        reflectBullets: true,
+        height: 80.0,
+        zIdx: 50,
+        collidable: true,
+        destructible: false,
+        map: { display: false },
+        terrain: { grass: false, beach: true },
+        img: {
+            sprite: "container-ship-02.img",
+            scale: 0.7,
+            zIdx: 50,
+            tint: 0xffffff,
+        },
+        sound: {
+            bullet: "metal_bullet",
+            punch: "metal_punch",
+            explode: "none",
+            enter: "none",
+        },
+    }),
+    crate_ship_metal: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        hitParticle: "barrelChip",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.1, 2.7)),
+        loot: [
+            tierLoot("tier_world", 3, 5), // TODO change loot candystore
+        ],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "metal-crate-ship-01.img", residue: "none" },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+    }),
+    crate_ship_metal_red: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        hitParticle: "barrelChip",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.1, 2.7)),
+        loot: [
+            tierLoot("tier_world", 3, 5),
+            tierLoot("tier_guns", 1, 1), // TODO change loot candystore
+        ],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "metal-crate-ship-02.img", residue: "none" },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+    }),
+    crate_ship_metal_big: createCrate({
+        health: 300.0,
+        reflectBullets: true,
+        destructible: false,
+        hitParticle: "barrelChip",
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.6, 4.8)),
+        loot: [
+            tierLoot("tier_world", 3, 5), // TODO change loot candystore
+        ],
+        map: { display: false },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "crate-metal-ship-big.img", residue: "none", scale: 0.7 },
+        sound: {
+            bullet: "wall_bullet",
+            explode: "deposit_box_break_01",
+            punch: "metal_punch",
+        },
+        explodeParticle: "airdropCrate02",
+    }),
+
+    metal_barrel_02: createMetalBarrel({
+        collision: collider.createCircle(v2.create(0.15, 0.15), 1.75),
+        img: {
+            sprite: "metal-barrel-02.img",
+            residue: "map-case-hatchet-res-01.img",
+            scale: 0.83,
+        },
+    }),
+    metal_barrel_03: createMetalBarrel({
+        collision: collider.createCircle(v2.create(0.0, 0.0), 1.5),
+        img: {
+            sprite: "metal-barrel-03.img",
+            residue: "map-case-hatchet-res-01.img",
+            scale: 1.1,
+        },
+    }),
+    metal_barrel_side: createMetalBarrel({
+        collision: collider.createAabbExtents(v2.create(0.0, 0.0), v2.create(1.0, 1.6)),
+        img: {
+            sprite: "metal-barrel-side-01.img",
+            residue: "map-case-hatchet-res-01.img",
+            scale: 0.7,
+        },
+    }),
+    ship_2_levels: {
+        type: "structure",
+        terrain: {
+            waterEdge: {
+                dir: v2.create(0.0, 1.0),
+                distMin: -20,
+                distMax: -10.0,
+            },
+        },
+        mapObstacleBounds: [
+            collider.createAabbExtents(v2.create(0.0, 5.0), v2.create(7.5, 12.5)),
+        ],
+        layers: [
+            {
+                type: "ship_01",
+                pos: v2.create(0.0, 0.0),
+                ori: 0,
+            },
+            {
+                type: "ship_02",
+                pos: v2.create(0.0, 0.0),
+                ori: 0,
+            },
+        ],
+        stairs: [
+            {
+                collision: collider.createAabbExtents(
+                    v2.create(-65.2, 2.1),
+                    v2.create(2.0, 1.7),
+                ),
+                downDir: v2.create(1.0, 0.0),
+            },
+            {
+                collision: collider.createAabbExtents(
+                    v2.create(44.8, -6.2),
+                    v2.create(5.0, 1.2),
+                ),
+                downDir: v2.create(-1.0, 0.0),
+            },
+        ],
+        mask: [collider.createAabbExtents(v2.create(-3.0, 2.0), v2.create(83.0, 11.0))],
+    },
+    metal_wall_ship_01: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 43.7),
+    }),
+    metal_wall_ship_02: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 8),
+    }),
+    metal_wall_ship_03: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 7.4),
+    }),
+    metal_wall_ship_04: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 9),
+    }),
+    metal_wall_ship_05: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 10),
+    }),
+    metal_wall_ship_06: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 8.2),
+    }),
+    metal_wall_ship_07: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 6.5),
+    }),
+    metal_wall_ship_08: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 1.65),
+    }),
+    metal_wall_ship_09: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 1.48),
+    }),
+    metal_wall_ship_10: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 1.78),
+    }),
+    metal_wall_ship_11: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 3.5),
+    }),
+    metal_wall_ship_12: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 1.2),
+    }),
+    metal_wall_ship_13: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 2.65),
+    }),
+    metal_wall_ship_14: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 31.0),
+    }),
+    metal_wall_ship_15: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 17.0),
+    }),
+    metal_wall_ship_16: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 2.61),
+    }),
+    metal_wall_ship_17: createWall({
+        material: "metal",
+        extents: v2.create(0.5, 5.34),
+    }),
+    metal_wall_ship_18: createWall({
+        material: "metal",
+        extents: v2.create(0.3, 6.2),
+    }),
+    metal_wall_ship_19: createWall({
+        material: "metal",
+        extents: v2.create(0.3, 1.8),
+    }),
     barrel_01: createBarrel({}),
     barrel_01b: createBarrel({
         img: { tint: 13224393 },
