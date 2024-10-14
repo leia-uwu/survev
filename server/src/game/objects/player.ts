@@ -1422,7 +1422,11 @@ export class Player extends BaseGameObject {
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type === ObjectType.Building) {
-                if (obj.healRegions && util.sameLayer(this.layer, obj.layer)) {
+                if (
+                    !this.downed &&
+                    obj.healRegions &&
+                    util.sameLayer(this.layer, obj.layer)
+                ) {
                     const healRegion = obj.healRegions.find((hr) => {
                         return coldet.testPointAabb(
                             this.pos,
