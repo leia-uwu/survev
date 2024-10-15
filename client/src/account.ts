@@ -53,10 +53,6 @@ export class Account {
     loggingIn = false;
     loggedIn = false;
     profile = {
-        linkedTwitch: false,
-        linkedDiscord: false,
-        linkedGithub: false,
-        linkedGoogle: false,
         usernameSet: false,
         username: "",
         slug: "",

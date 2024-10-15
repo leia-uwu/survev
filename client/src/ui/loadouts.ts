@@ -45,11 +45,9 @@ const loadout = {
         return !deepEqual(a, b);
     },
     getUserAvailableItems: function (heroItems: Item[] = []) {
-        const processedItemTypes = new Set<string>();
         const items: Item[] = [];
         for (let i = 0; i < heroItems.length; i++) {
             const item = heroItems[i];
-            processedItemTypes.add(item.type);
             items.push(item);
         }
         // Add default items
@@ -57,10 +55,6 @@ const loadout = {
             GameObjectDefs.unlock_default as unknown as (typeof UnlockDefs)["unlock_default"];
         for (let i = 0; i < unlockDefaultDef.unlocks.length; i++) {
             const unlock = unlockDefaultDef.unlocks[i];
-
-            if (processedItemTypes.has(unlock)) {
-                continue;
-            }
 
             items.push({
                 type: unlock,

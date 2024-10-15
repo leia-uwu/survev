@@ -35,9 +35,6 @@ importers:
       jquery:
         specifier: ^3.7.1
         version: 3.7.1
-      jsx-dom:
-        specifier: ^8.1.5
-        version: 8.1.5
       pixi.js-legacy:
         specifier: ^7.4.2
         version: 7.4.2(vwgtc5milyk4u22qnicuqfvytu)
@@ -1638,7 +1635,6 @@ packages:
 
   libsql@0.4.5:
     resolution: {integrity: sha512-sorTJV6PNt94Wap27Sai5gtVLIea4Otb2LUiAUyr3p6BPOScGMKGt5F1b5X/XgkNtcsDKeX5qfeBDj+PdShclQ==}
-    cpu: [x64, arm64, wasm32]
     os: [darwin, linux, win32]
 
   lodash@4.17.21:
