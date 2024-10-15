@@ -1152,6 +1152,7 @@ export class Game {
                 if (!msg.started) {
                     this.uiManager.setWaitingForPlayers(true);
                 }
+                this.uiManager.removeAds();
                 if (this.victoryMusic) {
                     this.victoryMusic.stop();
                     this.victoryMusic = null;

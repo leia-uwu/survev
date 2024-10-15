@@ -40,6 +40,12 @@ export const Config = {
         spawnMode: "default",
     },
 
+    client: {
+        AIP_ID: undefined,
+        AIP_PLACEMENT_ID: undefined,
+        theme: "main",
+    },
+
     thisRegion: "local",
 
     gameTps: 100,
@@ -151,6 +157,13 @@ export interface ConfigType {
          * Seconds between each game performance log
          */
         time: number;
+    };
+
+    client: {
+        // adin play IDs
+        AIP_ID: string | undefined;
+        AIP_PLACEMENT_ID: string | undefined;
+        theme: "main" | "easter" | "halloween" | "faction" | "snow" | "spring";
     };
 
     debug: {

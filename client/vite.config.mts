@@ -31,13 +31,39 @@ export const SplashThemes = {
     },
 };
 
-const selectedTheme = SplashThemes["main"];
+const selectedTheme = SplashThemes[Config.client.theme];
+
+const AdsVars = {
+    VITE_ADIN_PLAY_SCRIPT: `
+    <script async src="//api.adinplay.com/libs/aiptag/pub/SNP/${Config.client.AIP_ID}/tag.min.js"></script>
+    <script>
+        window.aiptag = window.aiptag || { cmd: [] };
+        aiptag.cmd.display = aiptag.cmd.display || [];
+        // CMP tool settings
+        aiptag.cmp = {
+            show: true,
+            position: "centered", // centered, bottom
+            button: false,
+            buttonText: "Privacy settings",
+            buttonPosition: "bottom-left", // bottom-left, bottom-right, top-left, top-right
+        };
+    </script>
+    `,
+    VITE_AIP_PLACEMENT_ID: Config.client.AIP_PLACEMENT_ID,
+};
+
+if (!Config.client.AIP_ID) {
+    for (const key in AdsVars) {
+        AdsVars[key] = "";
+    }
+}
 
 export default defineConfig(({ mode }) => {
     process.env = {
         ...process.env,
         VITE_GAME_VERSION: version,
         VITE_BACKGROUND_IMG: selectedTheme.SPLASH_BG,
+        ...AdsVars,
     };
 
     const regions = {
@@ -93,6 +119,7 @@ export default defineConfig(({ mode }) => {
                 };
             }),
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
+            AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
         },
         plugins: [
             mode !== "development"
