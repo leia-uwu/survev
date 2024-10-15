@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Open Source Surviv.io Server",
   "scripts": {
-    "dev:server": "cd server && pnpm dev",
+    "dev:api": "cd server && pnpm dev:api",
+    "dev:game": "cd server && pnpm dev:game",
     "dev:client": "cd client && pnpm dev",
     "lint": "biome check --write",
     "lint:ci": "biome check"

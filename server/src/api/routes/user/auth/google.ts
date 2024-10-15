@@ -1,13 +1,13 @@
-import { generateCodeVerifier, generateState, Google, OAuth2RequestError } from "arctic";
+import { Google, OAuth2RequestError, generateCodeVerifier, generateState } from "arctic";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
-import { Config } from "../../../../config";
-import { createNewUser, sanitizeSlug, setUserCookie } from "./authUtils";
 import { generateId } from "lucia";
 import { server } from "../../..";
+import { Config } from "../../../../config";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
-import { eq } from "drizzle-orm";
+import { createNewUser, sanitizeSlug, setUserCookie } from "./authUtils";
 
 const google = new Google(
     process.env.GOOGLE_CLIENT_ID!,

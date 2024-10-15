@@ -56,8 +56,6 @@
     }
   },
   "files": {
-    "ignore": [
-      "src/**/*.tsx"
-    ]
+    "ignore": ["src/**/*.tsx"]
   }
 }

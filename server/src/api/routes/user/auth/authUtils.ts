@@ -6,10 +6,17 @@ import { generateId } from "lucia";
 import slugify from "slugify";
 import { server } from "../../..";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
+import { TeamMode } from "../../../../../../shared/gameConfig";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
-import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
+import {
+    type UsersStatsTable,
+    type UsersTable,
+    itemsTable,
+    userStatsTable,
+    usersTable,
+} from "../../../db/schema";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();

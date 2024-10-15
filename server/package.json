@@ -11,7 +11,8 @@
     "db:migrate": "bun run ./src/api/db/migrate.ts",
     "db:push": "drizzle-kit push --config=src/api/drizzle.config.ts",
     "db:seed": "bun run src/api/db/seed.ts",
-    "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts"
+    "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts",
+    "db:wipe": "rm -rf src/api/db/drizzle && rm game.db"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",

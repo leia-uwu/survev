@@ -16,6 +16,7 @@ export const usersTable = sqliteTable("users", {
     auth_id: text("auth_id").notNull(),
     slug: text("slug").notNull().unique(),
     wins: integer("wins").notNull().default(0),
+    banned: integer("banned", { mode: "boolean" }).notNull().default(false),
     username: text("username").notNull().default(""),
     usernameSet: integer("username_set", { mode: "boolean" }).notNull().default(false),
     userCreated: integer("user_created", { mode: "timestamp" })
