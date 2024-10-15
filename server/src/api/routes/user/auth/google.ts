@@ -7,12 +7,12 @@ import { server } from "../../..";
 import { Config } from "../../../../config";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
-import { createNewUser, sanitizeSlug, setUserCookie } from "./authUtils";
+import { createNewUser, getRedirectUri, sanitizeSlug, setUserCookie } from "./authUtils";
 
 const google = new Google(
     process.env.GOOGLE_CLIENT_ID!,
     process.env.GOOGLE_SECRET_ID!,
-    process.env.REDIRECT_URI!,
+    getRedirectUri("google"),
 );
 
 const stateCookieName = "google_oauth_state";

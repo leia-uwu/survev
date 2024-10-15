@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { ItemStatus, validateLoadout } from "../../../../shared/utils/helpers";
 import type { Loadout } from "../zodSchemas";
 
@@ -32,15 +32,20 @@ export const usersTable = sqliteTable("users", {
 
 export type UsersTable = typeof usersTable.$inferInsert;
 
-export const itemsTable = sqliteTable("items", {
-    id: integer("id").notNull().primaryKey({ autoIncrement: true }),
-    userId: text("user_id")
-        .notNull()
-        .references(() => usersTable.id, { onDelete: "cascade" }),
-    source: text("source").notNull(),
-    timeAcquired: integer("time_acquired", { mode: "timestamp" })
-        .notNull()
-        .default(sql`(unixepoch())`),
-    type: text("type").notNull(),
-    status: integer("status").notNull().$type<ItemStatus>().default(ItemStatus.New),
-});
+export const itemsTable = sqliteTable(
+    "items",
+    {
+        userId: text("user_id")
+            .notNull()
+            .references(() => usersTable.id, { onDelete: "cascade" }),
+        source: text("source").notNull(),
+        timeAcquired: integer("time_acquired", { mode: "timestamp" })
+            .notNull()
+            .default(sql`(unixepoch())`),
+        type: text("type").notNull(),
+        status: integer("status").notNull().$type<ItemStatus>().default(ItemStatus.New),
+    },
+    (table) => ({
+        primaryKey: primaryKey({ columns: [table.userId, table.type] }),
+    }),
+);

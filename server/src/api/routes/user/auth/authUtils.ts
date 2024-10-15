@@ -1,22 +1,11 @@
-import { OAuth2RequestError } from "arctic";
-import { eq } from "drizzle-orm";
 import type { Context } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import slugify from "slugify";
-import { server } from "../../..";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
-import { TeamMode } from "../../../../../../shared/gameConfig";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
-import {
-    type UsersStatsTable,
-    type UsersTable,
-    itemsTable,
-    userStatsTable,
-    usersTable,
-} from "../../../db/schema";
+import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
@@ -57,58 +46,28 @@ export async function createNewUser(payload: UsersTable) {
     }
 }
 
-export type OAuthProvider = {
-    name: string;
-    validateAuthorizationCode: (code: string) => Promise<{ accessToken: string }>;
-    getUserInfo: (accessToken: string) => Promise<{ id: string; username: string }>;
-    stateCookieName: string;
-};
+export function getRedirectUri(method: string) {
+    const isProduction = process.env.NODE_ENV === "production";
 
-export async function handleOAuthCallback(c: Context, provider: OAuthProvider) {
-    const code = c.req.query("code")?.toString() ?? null;
-    const state = c.req.query("state")?.toString() ?? null;
-    const storedState = getCookie(c)[provider.stateCookieName] ?? null;
-
-    if (!code || !state || !storedState || state !== storedState) {
-        return c.body(null, 400);
+    if (isProduction && !process.env.BASE_URL) {
+        throw new Error("BASE_URL is not defined.");
     }
 
-    try {
-        const tokens = await provider.validateAuthorizationCode(code);
-        const user = await provider.getUserInfo(tokens.accessToken);
+    const baseUrl = isProduction
+        ? process.env.BASE_URL!
+        : // uh don't hardcode me
+          `http://localhost:3000`;
 
-        const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.auth_id, user.id),
-        });
+    return `${baseUrl}/api/user/auth/${method}/callback`;
+}
 
-        setCookie(c, "app-data", "1");
+export const dayInMs = 24 * 60 * 60 * 1000;
+export const cooldownPeriod = 10 * dayInMs;
 
-        if (existingUser) {
-            await setUserCookie(existingUser.id, c);
-            return c.redirect("/");
-        }
+export function getTimeUntilNextUsernameChange(lastChangeTime: Date | null) {
+    if (!(lastChangeTime instanceof Date)) return 0;
 
-        const slug = sanitizeSlug(user.username);
-
-        const userId = generateId(15);
-        await createNewUser({
-            id: userId,
-            auth_id: user.id,
-            linked: true,
-            [`linked${provider.name}`]: true,
-            username: slug,
-            slug,
-        });
-
-        await setUserCookie(userId, c);
-        return c.redirect("/");
-    } catch (e) {
-        server.logger.warn(
-            `/api/user/auth/${provider.name.toLowerCase()}/callback: Failed to create user`,
-        );
-        if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-            return c.body(null, 400);
-        }
-        return c.body(null, 500);
-    }
+    const currentTime = Date.now();
+    const timeSinceLastChange = currentTime - new Date(lastChangeTime).getTime();
+    return cooldownPeriod - timeSinceLastChange;
 }

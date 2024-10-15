@@ -11,9 +11,8 @@ import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { itemsTable, usersTable } from "../../db/schema";
-import { helpers } from "../../helpers";
 import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
-import { sanitizeSlug } from "./auth/authUtils";
+import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 
 export const UserRouter = new Hono<Context>();
 
@@ -39,29 +38,17 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             .from(itemsTable)
             .where(eq(itemsTable.userId, user.id));
 
-        const {
-            loadout,
-            slug,
-            linkedDiscord,
-            linkedGithub,
-            linkedTwitch,
-            linked,
-            username,
-            usernameSet,
-            lastUsernameChangeTime,
-        } = result;
+        const { loadout, slug, linked, username, usernameSet, lastUsernameChangeTime } =
+            result;
 
         const timeUntilNextChange =
-            helpers.getTimeUntilNextUsernameChange(lastUsernameChangeTime);
+            getTimeUntilNextUsernameChange(lastUsernameChangeTime);
 
         return c.json<ProfileResponse>(
             {
                 success: true,
                 profile: {
                     slug,
-                    linkedDiscord,
-                    linkedGithub,
-                    linkedTwitch,
                     linked,
                     username,
                     usernameSet,
@@ -96,7 +83,7 @@ UserRouter.post(
                 where: eq(usersTable.id, user.id),
             })!;
 
-            const timeUntilNextChange = helpers.getTimeUntilNextUsernameChange(
+            const timeUntilNextChange = getTimeUntilNextUsernameChange(
                 existingUser!.lastUsernameChangeTime,
             );
 
@@ -317,13 +304,7 @@ type ProfileResponse =
           success: true;
           profile: Pick<
               typeof usersTable.$inferSelect,
-              | "slug"
-              | "linkedDiscord"
-              | "linkedGithub"
-              | "linkedTwitch"
-              | "username"
-              | "usernameSet"
-              | "linked"
+              "slug" | "username" | "usernameSet" | "linked"
           > & {
               usernameChangeTime: number;
           };

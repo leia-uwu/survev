@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { cooldownPeriod, dayInMs, helpers } from "../helpers";
-
-const { getTimeUntilNextUsernameChange } = helpers;
+import {
+    cooldownPeriod,
+    dayInMs,
+    getTimeUntilNextUsernameChange,
+} from "../routes/user/auth/authUtils";
 
 describe("getTimeUntilNextUsernameChange", () => {
     test("should return 0 when lastUsernameChange is null", () => {

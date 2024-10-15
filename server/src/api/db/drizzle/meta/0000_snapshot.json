@@ -1,19 +1,12 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "a78bac62-c730-4941-a18a-118dde1aed8c",
+  "id": "5cd54ace-6cda-4a45-9c7f-48869b68a1e9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "items": {
       "name": "items",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
         "user_id": {
           "name": "user_id",
           "type": "text",
@@ -64,7 +57,12 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "items_user_id_type_pk": {
+          "columns": ["user_id", "type"],
+          "name": "items_user_id_type_pk"
+        }
+      },
       "uniqueConstraints": {}
     },
     "session": {
@@ -139,6 +137,14 @@
           "autoincrement": false,
           "default": 0
         },
+        "banned": {
+          "name": "banned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
         "username": {
           "name": "username",
           "type": "text",
@@ -169,38 +175,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "linked_google": {
-          "name": "linked_google",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "linked_twitch": {
-          "name": "linked_twitch",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "linked_discord": {
-          "name": "linked_discord",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "linked_github": {
-          "name": "linked_github",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
         },
         "linked": {
           "name": "linked",

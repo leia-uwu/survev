@@ -11,6 +11,11 @@ export const AuthMiddleware = async (c: Context, next: () => Promise<void>) => {
         return c.body(null, 401);
     }
     const { session, user } = await lucia.validateSession(sessionId);
+
+    if (!user) {
+        return c.body(null, 401);
+    }
+
     if (session && session.fresh) {
         // use `header()` instead of `setCookie()` to avoid TS errors
         c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
