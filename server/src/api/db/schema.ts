@@ -23,12 +23,6 @@ export const usersTable = sqliteTable("users", {
         .notNull()
         .default(sql`(unixepoch())`),
     lastUsernameChangeTime: integer("last_username_change_time", { mode: "timestamp" }),
-    linkedGoogle: integer("linked_google", { mode: "boolean" }).notNull().default(false),
-    linkedTwitch: integer("linked_twitch", { mode: "boolean" }).notNull().default(false),
-    linkedDiscord: integer("linked_discord", { mode: "boolean" })
-        .notNull()
-        .default(false),
-    linkedGithub: integer("linked_github", { mode: "boolean" }).notNull().default(false),
     linked: integer("linked", { mode: "boolean" }).notNull().default(false),
     loadout: text("loadout", { mode: "json" })
         .notNull()

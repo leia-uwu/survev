@@ -91,7 +91,6 @@ GoogleRouter.get("/callback", async (c) => {
             id: userId,
             auth_id: id,
             linked: true,
-            linkedGoogle: true,
             username: slug,
             slug,
         });

@@ -11,7 +11,7 @@ import { MenuModal } from "./menuModal";
 function createLoginOptions(
     parentElem: JQuery<HTMLElement>,
     localization: Localization,
-    loginMethods: { method: string; linked: boolean }[],
+    loginMethods: string[],
 ) {
     const contentsElem = parentElem.find(".login-options-content");
     contentsElem.empty();
@@ -20,11 +20,7 @@ function createLoginOptions(
         class: "account-buttons",
     });
     contentsElem.append(buttonParentElem);
-    const addLoginOption = function (
-        method: string,
-        _linked: boolean,
-        onClick: () => void,
-    ) {
+    const addLoginOption = function (method: string, onClick: () => void) {
         const el = $("<div/>", {
             class: `menu-option btn-darken btn-standard btn-login-${method}`,
         });
@@ -50,8 +46,8 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    loginMethods.map(({ method, linked }) =>
-        addLoginOption(method, linked, () => {
+    loginMethods.map((method) =>
+        addLoginOption(method, () => {
             window.location.href = `/api/user/auth/${method}`;
         }),
     );
@@ -399,15 +395,10 @@ export class ProfileUi {
               ? this.loginOptionsModalMobile
               : this.loginOptionsModal;
 
-        const loginMethods = [
-            { method: "github", linked: this.account.profile.linkedGithub },
-            // { method: "google", linked: this.account.profile.linkedGoogle },
-            // { method: "discord", linked: this.account.profile.linkedDiscord },
-            // { method: "twitch", linked: this.account.profile.linkedTwitch }
-        ];
+        const loginMethods = ["google", "discord"];
 
         if (import.meta.env.DEV) {
-            loginMethods.push({ method: "mock", linked: false });
+            loginMethods.push("mock");
         }
 
         createLoginOptions(modal!.selector, this.localization, loginMethods);
