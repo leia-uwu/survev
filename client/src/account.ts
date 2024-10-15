@@ -6,6 +6,7 @@ import type { ConfigManager } from "./config";
 import { helpers } from "./helpers";
 import type { Item } from "./ui/loadoutMenu";
 import loadouts from "./ui/loadouts";
+import loadout from "./ui/loadouts";
 
 type DataOrCallback =
     | Record<string, unknown>
@@ -208,6 +209,8 @@ export class Account {
         this.ajaxRequest("/api/user/logout", (_e, _t) => {
             window.location.reload();
         });
+        // reset local config
+        this.setLoadout(loadout.defaultLoadout());
     }
 
     loadProfile() {
@@ -228,7 +231,7 @@ export class Account {
                 this.profile = data.profile;
                 this.loadoutPriv = data.loadoutPriv;
                 this.items = data.items;
-                this.emit("loadout", data.loadout);
+                this.loadout = data.loadout;
                 const profile = this.config.get("profile") || { slug: "" };
                 profile.slug = data.profile.slug;
                 this.config.set("profile", profile);
