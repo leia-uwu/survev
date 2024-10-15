@@ -102,11 +102,10 @@ export class WeaponManager {
 
             effectiveSwitchDelay = swappingToGun ? nextWeaponDef.switchDelay : 0;
 
-            // fix the gaem
-            // if (this.player.freeSwitchTimer < 0) {
-            //    effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
-            //    this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
-            // }
+            if (this.player.freeSwitchTimer < 0) {
+                effectiveSwitchDelay = GameConfig.player.baseSwitchDelay;
+                this.player.freeSwitchTimer = GameConfig.player.freeSwitchCooldown;
+            }
 
             if (
                 swappingToGun &&
