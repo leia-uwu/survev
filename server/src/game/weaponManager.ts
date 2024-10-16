@@ -83,6 +83,8 @@ export class WeaponManager {
         this.meleeAttacks.length = 0;
         this.scheduledReload = false;
 
+        this.player.recoilTicker = 0;
+
         const curWeapon = this.weapons[this.curWeapIdx];
         const nextWeapon = this.weapons[idx];
         let effectiveSwitchDelay = 0;
@@ -216,6 +218,8 @@ export class WeaponManager {
         }
 
         player.freeSwitchTimer -= dt;
+
+        player.recoilTicker += dt;
 
         for (let i = 0; i < this.weapons.length; i++) {
             this.weapons[i].cooldown -= dt;
