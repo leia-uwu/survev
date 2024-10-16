@@ -1277,13 +1277,7 @@ export class UiManager {
 
     removeAds() {
         if (!window.aiptag) return;
-        let ads = [];
-        ads = device.mobile
-            ? ["300x250", "728x90", "300x250_mobile_2"]
-            : ["300x250", "728x90", "300x250_2"];
-        if (!device.mobile) {
-            ads.push("300x600");
-        }
+        const ads = ["300x250", "728x90", "300x250_2"];
         for (let i = 0; i < ads.length; i++) {
             const ad = ads[i];
             window.aiptag.cmd.display.push(() => {
@@ -1294,15 +1288,7 @@ export class UiManager {
 
     refreshMainPageAds() {
         if (!window.aiptag) return;
-        let ads = [];
-        if (device.mobile) {
-            ads = ["300x250"];
-            if (device.tablet) {
-                ads.push("728x90");
-            }
-        } else {
-            ads = ["300x250", "728x90"];
-        }
+        const ads = ["728x90"];
         for (let i = 0; i < ads.length; i++) {
             const ad = ads[i];
             window.aiptag.cmd.display.push(() => {
@@ -1761,19 +1747,12 @@ export class UiManager {
         if (!window.aiptag) return;
         let delay = Math.max(time - 150, 0);
         setTimeout(() => {
-            const bannerAd = $(
-                device.mobile
-                    ? "#ui-stats-ad-container-mobile"
-                    : "#ui-stats-ad-container-desktop",
-            );
+            const bannerAd = $("#ui-stats-ad-container-desktop");
             bannerAd.css("display", "inline-block");
-            let ad = device.mobile ? "300x250_mobile_2" : "300x250_2";
 
-            if (ad) {
-                window.aiptag!.cmd.display.push(() => {
-                    window.aipDisplayTag!.display(`${AIP_PLACEMENT_ID}_${ad}`);
-                });
-            }
+            window.aiptag!.cmd.display.push(() => {
+                window.aipDisplayTag!.display(`${AIP_PLACEMENT_ID}_300x250_2`);
+            });
 
             ui2.hideKillMessage();
         }, delay);
