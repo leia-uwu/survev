@@ -23,6 +23,10 @@ const app = new Hono();
 const { upgradeWebSocket, websocket } = createBunWebSocket();
 
 // all api routes for now, this should be okey?
+//
+// pretty sure its ok, maybe if we add private APIs for like a management dashboard
+// we could use like /private/
+// - Leia
 app.use(
     "/api/*",
     cors({
@@ -86,3 +90,16 @@ Bun.serve({
 server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);
 server.logger.log(`Listening on ${Config.apiServer.host}:${Config.apiServer.port}`);
 server.logger.log("Press Ctrl+C to exit.");
+
+// reset player count to 0 if region seems to be down
+setInterval(() => {
+    for (const regionId in server.regions) {
+        const region = server.regions[regionId];
+        if (Date.now() - region.lastUpdateTime > 60000) {
+            server.logger.warn(
+                `Region ${regionId} has not sent player count in more than 60 seconds`,
+            );
+            region.playerCount = 0;
+        }
+    }
+}, 60000);

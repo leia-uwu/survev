@@ -14,5 +14,8 @@
     "skipLibCheck": true
   },
   "exclude": ["node_modules"],
-  "include": ["src", "../shared"]
+  "include": ["src", "../shared"],
+  "ts-node": {
+    "transpileOnly": true
+  }
 }

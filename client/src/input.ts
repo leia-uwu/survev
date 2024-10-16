@@ -240,6 +240,7 @@ export class InputHandler {
     // Touch
     onTouchShared(event: globalThis.TouchEvent, type: TouchEvent) {
         if (event.target == this.touchElem || type != TouchEvent.Start) {
+            /* This apparently does nothing and just spams the console with errors
             if (
                 event.target == this.touchElem &&
                 event.cancelable &&
@@ -247,6 +248,7 @@ export class InputHandler {
             ) {
                 event.preventDefault();
             }
+            */
             const time = event.timeStamp || performance.now();
             for (let i = 0; i < event.changedTouches.length; i++) {
                 const osTouch = event.changedTouches[i];

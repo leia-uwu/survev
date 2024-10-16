@@ -1,6 +1,6 @@
 import $ from "jquery";
-import english from "../../public/l10n/en.json";
 import { device } from "../device";
+import english from "../en.json";
 
 function downloadFile(
     file: string,

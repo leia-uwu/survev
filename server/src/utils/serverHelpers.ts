@@ -5,6 +5,7 @@ import type { HttpResponse } from "uWebSockets.js";
  * @param res The response sent by the server.
  */
 export function cors(res: HttpResponse): void {
+    if (res.aborted) return;
     res.writeHeader("Access-Control-Allow-Origin", "*")
         .writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         .writeHeader(
@@ -19,7 +20,10 @@ export function forbidden(res: HttpResponse): void {
 }
 
 export function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
-    res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
+    res.cork(() => {
+        if (res.aborted) return;
+        res.writeHeader("Content-Type", "application/json").end(JSON.stringify(data));
+    });
 }
 
 /**
@@ -76,15 +80,16 @@ export function readPostedJSON<T>(
 
 // credits: https://github.com/Blank-Cheque/Slurs
 const badWordsFilter = [
-    /(s[a4]nd)?n[ila4o10][gq]{1,2}(l[e3]t|[e3]r|[a4]|n[o0]g)?s?/,
-    /f[a@4](g{1,2}|qq)([e3il1o0]t{1,2}(ry|r[i1l]e)?)?/,
+    /(s[a4]nd)?n[ila4o10íĩî|!][gq]{1,2}(l[e3]t|[e3]r|[a4]|n[o0]g)?s?/,
+    /f[a@4](g{1,2}|qq)([e3i1líĩî|!o0]t{1,2}(ry|r[i1líĩî|!]e)?)?/,
     /k[il1y]k[e3](ry|rie)?s?/,
-    /tr[a4]n{1,2}([i1l][e3]|y|[e3]r)s?/,
+    /tr[a4]n{1,2}([i1líĩî|!][e3]|y|[e3]r)s?/,
     /c[o0]{2}ns?/,
-    /ch[i1l]nks?/,
+    /ch[i1líĩî|!]nks?/,
 ];
 
 export function checkForBadWords(name: string) {
+    name = name.toLowerCase();
     for (const regex of badWordsFilter) {
         if (name.match(regex)) return true;
     }

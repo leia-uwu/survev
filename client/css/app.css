@@ -140,7 +140,6 @@ a:active {
 }
 
 #background {
-  background-image: url(/img/main_splash.png);
   background-repeat: no-repeat;
   background-size: cover;
   bottom: 0;

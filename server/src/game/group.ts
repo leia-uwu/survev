@@ -5,23 +5,17 @@ import type { Player } from "./objects/player";
 export class Group {
     hash: string;
     groupId: number;
-    /**
-     * Faction mode team ID.
-     * Same as group id when not in faction mode.
-     * 0 is no team
-     * 1 is red
-     * 2 is blue
-     */
     allDeadOrDisconnected = true; //only set to false when first player is added to the group
     players: Player[] = [];
     livingPlayers: Player[] = [];
     autoFill: boolean;
-    reservedSlots = 0;
+    avaliableSlots: number;
 
-    constructor(hash: string, groupId: number, autoFill: boolean) {
+    constructor(hash: string, groupId: number, autoFill: boolean, maxPlayers: number) {
         this.hash = hash;
         this.groupId = groupId;
         this.autoFill = autoFill;
+        this.avaliableSlots = maxPlayers;
     }
 
     /**
@@ -49,10 +43,10 @@ export class Group {
         this.players.push(player);
         this.livingPlayers.push(player);
         this.allDeadOrDisconnected = false;
+        this.checkPlayers();
     }
 
     removePlayer(player: Player) {
-        this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
         this.players.splice(this.players.indexOf(player), 1);
         this.checkPlayers();
     }
@@ -74,17 +68,10 @@ export class Group {
      * also if player is solo queuing, all teammates are "dead" by default
      */
     checkAllDeadOrDisconnected(player: Player) {
-        // TODO: potentially replace with allDead?
-        if (this.players.length == 1 && this.players[0] == player) {
-            return true;
-        }
-
-        const filteredPlayers = this.players.filter((p) => p != player);
-        if (filteredPlayers.length == 0) {
-            // this is necessary since for some dumb reason every() on an empty array returns true????
-            return false;
-        }
-        return filteredPlayers.every((p) => p.dead || p.disconnected);
+        const alivePlayers = this.players.filter(
+            (p) => (!p.dead || !p.disconnected) && p !== player,
+        );
+        return alivePlayers.length <= 0;
     }
 
     /**
@@ -102,7 +89,7 @@ export class Group {
     }
 
     checkPlayers(): void {
-        if (this.allDeadOrDisconnected) return;
+        this.livingPlayers = this.players.filter((p) => !p.dead);
         this.allDeadOrDisconnected = this.players.every((p) => p.dead || p.disconnected);
     }
 

@@ -28,6 +28,16 @@ declare global {
         mobile?: boolean;
         webkitAudioContext?: AudioContext;
         CP: any;
+
+        aiptag?: {
+            cmd: {
+                display: Array<() => void>;
+            };
+        };
+        aipDisplayTag?: {
+            display(string: string): void;
+            destroy(string: string): void;
+        };
     }
 
     interface Document {
@@ -53,6 +63,7 @@ declare global {
     >;
 
     const GIT_VERSION: string;
+    const AIP_PLACEMENT_ID: string;
 }
 
 declare module "pixi.js-legacy" {

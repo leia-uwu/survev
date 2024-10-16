@@ -9,7 +9,6 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { MapObjectDefs } from "../../..//../shared/defs/mapObjectDefs";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
-import { Emote } from "./player";
 
 export class AirdropBarn {
     airdrops: Airdrop[] = [];
@@ -19,7 +18,7 @@ export class AirdropBarn {
     addAirdrop(pos: Vec2, type: string) {
         const airdrop = new Airdrop(this.game, pos, type);
         this.airdrops.push(airdrop);
-        this.game.playerBarn.emotes.push(new Emote(0, pos, "ping_airdrop", true));
+        this.game.playerBarn.addEmote(0, pos, "ping_airdrop", true);
         this.game.objectRegister.register(airdrop);
     }
 
@@ -67,18 +66,19 @@ export class Airdrop extends BaseGameObject {
         this.fallT = math.remap(this.fallTime, 0, GameConfig.airdrop.fallTime, 1, 0);
 
         this.fallT = math.clamp(this.fallT, 0, 1);
-        this.setPartDirty();
+
         if (this.fallT === 1) {
             this.landed = true;
             this.setDirty();
 
             const objs = this.game.grid.intersectCollider(this.crateCollision);
             for (const obj of objs) {
+                if (!util.sameLayer(obj.layer, this.layer)) continue;
+
                 if (
                     (obj.__type === ObjectType.Player ||
                         obj.__type === ObjectType.Obstacle) &&
-                    coldet.test(obj.collider, this.crateCollision) &&
-                    util.sameLayer(obj.layer, 0)
+                    coldet.test(obj.collider, this.crateCollision)
                 ) {
                     obj.damage({
                         amount: obj.__type === ObjectType.Player ? 100 : 1e10,
@@ -98,10 +98,21 @@ export class Airdrop extends BaseGameObject {
                             break;
                         }
                     }
+                } else if (
+                    obj.__type === ObjectType.Loot &&
+                    coldet.test(obj.collider, this.crateCollision)
+                ) {
+                    // just push randomly to wake up the loot
+                    obj.push(v2.randomUnit(), 1);
                 }
             }
 
             this.game.map.genObstacle(this.obstacleType, this.pos, 0);
+        } else {
+            // airdrops parachute fallT only needs to be sent once to clients
+            // but still need to be serialized for new clients that will get them into their FOV
+            // so just serialize instead of setting to dirty
+            this.serializePartial();
         }
     }
 }

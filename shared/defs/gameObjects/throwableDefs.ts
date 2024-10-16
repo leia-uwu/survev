@@ -50,6 +50,7 @@ export interface ThrowableDef {
     strikeDelay?: number;
     freezeOnImpact?: boolean;
     heavyType?: string;
+    changeTime?: number; //after changeTime has elapsed, throwable is changed to its "heavyType" variant
     forceMaxThrowDistance?: boolean;
     emoteId?: number;
     noPotatoSwap?: boolean;
@@ -428,6 +429,8 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         type: "throwable",
         quality: 0,
         explosionType: "explosion_snowball",
+        heavyType: "snowball_heavy",
+        changeTime: 5,
         inventoryOrder: 0,
         cookable: true,
         noPotatoSwap: true,
@@ -499,7 +502,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         forceMaxThrowDistance: true,
         explodeOnImpact: true,
         playerCollision: true,
-        fuseTime: 5,
+        fuseTime: 9999,
         aimDistance: 32,
         rad: 1.25,
         throwPhysics: {
@@ -539,6 +542,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         explosionType: "explosion_potato",
         freezeOnImpact: true,
         heavyType: "potato_heavy",
+        changeTime: 5,
         inventoryOrder: 0,
         cookable: true,
         forceMaxThrowDistance: true,
@@ -610,7 +614,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         forceMaxThrowDistance: true,
         explodeOnImpact: true,
         playerCollision: true,
-        fuseTime: 5,
+        fuseTime: 9999,
         aimDistance: 32,
         rad: 1.25,
         throwPhysics: {

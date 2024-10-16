@@ -1,12 +1,12 @@
-import type { MapDefs } from "../../../shared/defs/mapDefs";
-import { TeamMode } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import { v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
-import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
-import { ContextManager } from "./contextManager";
+import type { ServerGameConfig } from "./gameManager";
+import { GameModeManager } from "./gameModeManager";
+import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
-import { Group } from "./group";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
 import { BulletBarn } from "./objects/bullet";
@@ -17,16 +17,10 @@ import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
 import { PlaneBarn } from "./objects/plane";
-import { Emote, PlayerBarn } from "./objects/player";
+import { PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
-import { Team } from "./team";
-
-export interface ServerGameConfig {
-    readonly mapName: keyof typeof MapDefs;
-    readonly teamMode: TeamMode;
-}
 
 export type GroupData = {
     hash: string;
@@ -41,18 +35,16 @@ export class Game {
     startedTime = 0;
     id: string;
     teamMode: TeamMode;
-    gameModeIdx: number;
+    mapName: string;
     isTeamMode: boolean;
     config: ServerGameConfig;
     pluginManager = new PluginManager(this);
-    contextManager: ContextManager;
+    modeManager: GameModeManager;
 
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
 
-    teams: Team[] = [];
-    groups = new Map<string, Group>();
-    groupDatas: GroupData[] = [];
+    joinTokens = new Map<string, { autoFill: boolean; playerCount: number }>();
 
     get aliveCount(): number {
         return this.playerBarn.livingPlayers.length;
@@ -60,21 +52,6 @@ export class Game {
 
     get trueAliveCount(): number {
         return this.playerBarn.livingPlayers.filter((p) => !p.disconnected).length;
-    }
-
-    get trueGroupsAliveCount(): number {
-        return [...this.groups.values()].filter((group) => !group.allDeadOrDisconnected)
-            .length;
-    }
-
-    getAliveGroups(): Group[] {
-        return [...this.groups.values()].filter(
-            (group) => group.livingPlayers.length > 0,
-        );
-    }
-
-    getAliveTeams(): Team[] {
-        return this.teams.filter((team) => team.livingPlayers.length > 0);
     }
 
     /**
@@ -106,7 +83,14 @@ export class Game {
     logger: Logger;
 
     start = Date.now();
-    constructor(id: string, config: ServerGameConfig) {
+
+    constructor(
+        id: string,
+        config: ServerGameConfig,
+        readonly sendSocketMsg: (id: string, data: ArrayBuffer) => void,
+        readonly closeSocket: (id: string) => void,
+        readonly sendData?: (data: UpdateDataMsg) => void,
+    ) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
         this.logger.log("Creating");
@@ -114,7 +98,7 @@ export class Game {
         this.config = config;
 
         this.teamMode = config.teamMode;
-        this.gameModeIdx = Math.floor(this.teamMode / 2);
+        this.mapName = config.mapName;
         this.isTeamMode = this.teamMode !== TeamMode.Solo;
 
         this.map = new GameMap(this);
@@ -123,11 +107,11 @@ export class Game {
 
         this.gas = new Gas(this);
 
-        this.contextManager = new ContextManager(this);
+        this.modeManager = new GameModeManager(this);
 
         if (this.map.factionMode) {
             for (let i = 1; i <= this.map.mapDef.gameMode.factions!; i++) {
-                this.addTeam(i);
+                this.playerBarn.addTeam(i);
             }
         }
     }
@@ -139,6 +123,8 @@ export class Game {
 
         this.allowJoin = true;
         this.logger.log(`Created in ${Date.now() - this.start} ms`);
+
+        this.updateData();
     }
 
     update(): void {
@@ -203,7 +189,7 @@ export class Game {
         this.msgsToSend.stream.index = 0;
     }
 
-    canJoin(): boolean {
+    get canJoin(): boolean {
         return (
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
@@ -211,128 +197,157 @@ export class Game {
         );
     }
 
-    nextTeam(currentTeam: Group) {
-        const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected,
-        );
-        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
-        const newIndex = (currentTeamIndex + 1) % aliveTeams.length;
-        return aliveTeams[newIndex];
-    }
-
-    prevTeam(currentTeam: Group) {
-        const aliveTeams = Array.from(this.groups.values()).filter(
-            (t) => !t.allDeadOrDisconnected,
-        );
-        const currentTeamIndex = aliveTeams.indexOf(currentTeam);
-        return aliveTeams.at(currentTeamIndex - 1) ?? currentTeam;
-    }
-
-    handleMsg(buff: ArrayBuffer | Buffer, socketData: GameSocketData): void {
+    deserializeMsg(buff: ArrayBuffer): {
+        type: net.MsgType;
+        msg: net.AbstractMsg | undefined;
+    } {
         const msgStream = new net.MsgStream(buff);
-        const type = msgStream.deserializeMsgType();
         const stream = msgStream.stream;
 
-        const player = socketData.player;
+        const type = msgStream.deserializeMsgType();
+
+        let msg:
+            | net.JoinMsg
+            | net.InputMsg
+            | net.EmoteMsg
+            | net.DropItemMsg
+            | net.SpectateMsg
+            | net.PerkModeRoleSelectMsg
+            | undefined = undefined;
+
+        switch (type) {
+            case net.MsgType.Join: {
+                msg = new net.JoinMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case net.MsgType.Input: {
+                msg = new net.InputMsg();
+                msg.deserialize(stream);
+                break;
+            }
+            case net.MsgType.Emote:
+                msg = new net.EmoteMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.DropItem:
+                msg = new net.DropItemMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.Spectate:
+                msg = new net.SpectateMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.PerkModeRoleSelect:
+                msg = new net.PerkModeRoleSelectMsg();
+                msg.deserialize(stream);
+                break;
+        }
+
+        return {
+            type,
+            msg,
+        };
+    }
+
+    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+        if (!(buff instanceof ArrayBuffer)) return;
+
+        const player = this.playerBarn.socketIdToPlayer.get(socketId);
+
+        let msg: net.AbstractMsg | undefined = undefined;
+        let type = net.MsgType.None;
+
+        try {
+            const deserialized = this.deserializeMsg(buff);
+            msg = deserialized.msg;
+            type = deserialized.type;
+        } catch (err) {
+            this.logger.warn("Failed to deserialize msg: ");
+            console.error(err);
+            return;
+        }
+
+        if (!msg) return;
 
         if (type === net.MsgType.Join && !player) {
-            const joinMsg = new net.JoinMsg();
-            joinMsg.deserialize(stream);
-            this.playerBarn.addPlayer(socketData, joinMsg);
+            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg);
             return;
         }
 
         if (!player) {
-            socketData.closeSocket();
+            this.closeSocket(socketId);
             return;
         }
 
         switch (type) {
             case net.MsgType.Input: {
-                const inputMsg = new net.InputMsg();
-                inputMsg.deserialize(stream);
-                player.handleInput(inputMsg);
+                player.handleInput(msg as net.InputMsg);
                 break;
             }
             case net.MsgType.Emote: {
-                const emoteMsg = new net.EmoteMsg();
-                emoteMsg.deserialize(stream);
-
-                if (player.dead) break;
-
-                this.playerBarn.emotes.push(
-                    new Emote(player.__id, emoteMsg.pos, emoteMsg.type, emoteMsg.isPing),
-                );
+                player.emoteFromMsg(msg as net.EmoteMsg);
                 break;
             }
             case net.MsgType.DropItem: {
-                const dropMsg = new net.DropItemMsg();
-                dropMsg.deserialize(stream);
-                player.dropItem(dropMsg);
+                player.dropItem(msg as net.DropItemMsg);
                 break;
             }
             case net.MsgType.Spectate: {
-                const spectateMsg = new net.SpectateMsg();
-                spectateMsg.deserialize(stream);
-                player.spectate(spectateMsg);
+                player.spectate(msg as net.SpectateMsg);
                 break;
             }
         }
     }
 
-    sendMsg(type: net.MsgType, msg: net.Msg) {
-        this.msgsToSend.serializeMsg(type, msg);
+    handleSocketClose(socketId: string): void {
+        const player = this.playerBarn.socketIdToPlayer.get(socketId);
+        if (!player) return;
+        this.logger.log(`"${player.name}" left`);
+        player.disconnected = true;
+        player.group?.checkPlayers();
+        player.spectating = undefined;
+        player.dir = v2.create(0, 0);
+        player.setPartDirty();
+        if (player.timeAlive < GameConfig.player.minActiveTime) {
+            player.game.playerBarn.removePlayer(player);
+        }
     }
 
-    /** if game over, return group that won */
-    isTeamGameOver(): Group | undefined {
-        const groupAlives = [...this.groups.values()].filter(
-            (group) => !group.allDeadOrDisconnected,
-        );
-
-        if (groupAlives.length <= 1) {
-            return groupAlives[0];
-        }
+    broadcastMsg(type: net.MsgType, msg: net.Msg) {
+        this.msgsToSend.serializeMsg(type, msg);
     }
 
     checkGameOver(): void {
         if (this.over) return;
-        const didGameEnd: boolean = this.contextManager.handleGameEnd();
+        const didGameEnd: boolean = this.modeManager.handleGameEnd();
         if (didGameEnd) {
             this.over = true;
+            this.updateData();
             setTimeout(() => {
                 this.stop();
             }, 750);
         }
     }
 
-    getSmallestTeam() {
-        if (!this.map.factionMode) return undefined;
-
-        return this.teams.reduce((smallest, current) => {
-            if (current.livingPlayers.length < smallest.livingPlayers.length) {
-                return current;
-            }
-            return smallest;
-        }, this.teams[0]);
+    addJoinToken(id: string, autoFill: boolean, playerCount: number) {
+        this.joinTokens.set(id, {
+            autoFill,
+            playerCount,
+        });
     }
 
-    addTeam(teamId: number) {
-        const team = new Team(teamId);
-        this.teams.push(team);
-    }
-
-    addGroup(hash: string, autoFill: boolean) {
-        const groupId = this.playerBarn.groupIdAllocator.getNextId();
-        // let teamId = groupId;
-        if (this.map.factionMode) {
-            // teamId = util.randomInt(1, 2);
-            // teamId = util.randomInt(1, this.map.mapDef.gameMode.factions ?? 2);
-        }
-        const group = new Group(hash, groupId, autoFill);
-        // const group = new Group(hash, groupId, teamId, autoFill);
-        this.groups.set(hash, group);
-        return group;
+    updateData() {
+        this.sendData?.({
+            type: ProcessMsgType.UpdateData,
+            id: this.id,
+            teamMode: this.teamMode,
+            mapName: this.mapName,
+            canJoin: this.canJoin,
+            aliveCount: this.aliveCount,
+            startedTime: this.startedTime,
+            stopped: this.stopped,
+        });
     }
 
     stop(): void {
@@ -341,9 +356,10 @@ export class Game {
         this.allowJoin = false;
         for (const player of this.playerBarn.players) {
             if (!player.disconnected) {
-                player.socketData.closeSocket();
+                this.closeSocket(player.socketId);
             }
         }
         this.logger.log("Game Ended");
+        this.updateData();
     }
 }

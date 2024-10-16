@@ -1,6 +1,6 @@
 {
   "name": "survev",
-  "version": "0.0.1",
+  "version": "0.0.14",
   "description": "Open Source Surviv.io Server",
   "scripts": {
     "dev:api": "cd server && pnpm dev:api",

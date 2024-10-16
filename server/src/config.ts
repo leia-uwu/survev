@@ -42,10 +42,18 @@ export const Config = {
         spawnMode: "default",
     },
 
+    client: {
+        AIP_ID: undefined,
+        AIP_PLACEMENT_ID: undefined,
+        theme: "main",
+    },
+
     thisRegion: "local",
 
     gameTps: 100,
     netSyncTps: 33,
+
+    processMode: process.env.NODE_ENV === "production" ? "multi" : "single",
 
     perfLogging: {
         enabled: true,
@@ -154,6 +162,13 @@ export interface ConfigType {
     netSyncTps: number;
 
     /**
+     * If games should all run in the same process
+     * Or spawn a new process for each game
+     * Defaults to single in development and multi in production
+     */
+    processMode: "single" | "multi";
+
+    /**
      * Server logging
      */
     perfLogging: {
@@ -162,6 +177,13 @@ export interface ConfigType {
          * Seconds between each game performance log
          */
         time: number;
+    };
+
+    client: {
+        // adin play IDs
+        AIP_ID: string | undefined;
+        AIP_PLACEMENT_ID: string | undefined;
+        theme: "main" | "easter" | "halloween" | "faction" | "snow" | "spring";
     };
 
     debug: {

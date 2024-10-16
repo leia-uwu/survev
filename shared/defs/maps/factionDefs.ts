@@ -123,7 +123,7 @@ const mapDef = {
                 },
                 {
                     circleIdx: 2,
-                    wait: 24,
+                    wait: 30,
                     options: {
                         type: GameConfig.Plane.Airstrike,
                         numPlanes: [
@@ -158,7 +158,7 @@ const mapDef = {
                 },
                 {
                     circleIdx: 4,
-                    wait: 18,
+                    wait: 21,
                     options: {
                         type: GameConfig.Plane.Airstrike,
                         numPlanes: [
@@ -194,7 +194,7 @@ const mapDef = {
                 {
                     role: "leader",
                     circleIdx: 0,
-                    wait: 5,
+                    wait: 50,
                 },
                 {
                     role: () =>
@@ -205,17 +205,17 @@ const mapDef = {
                             { type: "grenadier", weight: 1 },
                         ]).type,
                     circleIdx: 0,
-                    wait: 10,
+                    wait: 54,
                 },
                 {
                     role: "medic",
                     circleIdx: 0,
-                    wait: 15,
+                    wait: 58,
                 },
                 {
                     role: "bugler",
                     circleIdx: 0,
-                    wait: 20,
+                    wait: 62,
                 },
             ],
         },

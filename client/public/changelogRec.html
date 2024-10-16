@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>html, body { background: white; color: black; }</style>
+  </head>
+  <body>
+    <script>
+     try {
+       var config = JSON.parse(localStorage.getItem("surviv_config"));
+       if (config.webview) {
+         var a = document.createElement("a");
+         var text = document.createTextNode("Go back");
+         a.appendChild(document.createTextNode("Go back"));
+         a.title = "Go back";
+         a.href = "javascript:history.back()";
+         document.body.appendChild(a);
+       }
+     } catch (e) { }
+    </script>
+    <pre style="word-wrap: break-word; white-space: pre-wrap;"># Changelog
+
+## [Unreleased]
+- Better loot physics.
+- Better river generation.
+- More gamemodes.
+
+## [0.0.14] - October 2, 2024
+- Heavily optimized server performance.
+- Fixed various client and server crashing issues.
+- Fixed various team lobby issues.
+- Fixed an issue where cabins would not spawn.
+- Fixed an issue with switching throwables.
+- Fixed an issue where a special skin would not spawn in the scout hut.
+- Fixed an issue where the game would sometimes pick kill leader incorrectly.
+- Fixed an issue with M1 Garand not playing the last shot sound.
+- Fixed an issue with obstacle residues not scaling properly.
+- Fixed various mobile controls issues.
+
+## [0.0.13] - September 19, 2024
+- Added changelog file.
+- Map generation improvements.
+- Fixed an issue with throwables crashing the server.
+- Fixed an issue with client and server crashing.
+- Fixed an issue with throwables being thrown too high.
+- Fixed an issue where players could join full teams.
+
+## [0.0.12] - September 15, 2024
+- Added a name filter.
+- Adjusted airdrop timings.
+- Adjusted red zone timings and sizes.
+- Fixed an issue with client and server crashing.
+- Fixed an issue with opening multiple doors at once.
+- Fixed an issue with going through walls.
+- Fixed an issue with spawning near enemy players.
+- Fixed an issue with spawning inside the gas.
+- Fixed an issue where the cabin smoke would sometimes not stop.
+- Fixed an issue where death emotes would be random when not set.
+
+## [0.0.11] - September 10, 2024
+- Come join the Discord server!
+
+## [0.0.1] - August 17, 2024
+- First early access release.
+    </pre>
+  </body>
+</html>

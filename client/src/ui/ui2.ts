@@ -524,7 +524,7 @@ export class UiManager2 {
                     item.touchOsId = e.changedTouches[0].identifier;
                 }
             });
-            setEventListener("click", item.div, (_e) => {
+            setEventListener("touchend", item.div, (_e) => {
                 if (
                     new Date().getTime() - item.actionTime < touchHoldDuration &&
                     item.actionQueued &&

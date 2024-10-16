@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang='en'>
   <head>
+    %VITE_ADIN_PLAY_SCRIPT%
     <!-- Meta Properties -->
     <meta charset='UTF-8'>
     <title>survev.io - 2d battle royale game</title>
@@ -24,9 +25,15 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700" rel="stylesheet">
-    
+
     <link href="css/app.css" rel="stylesheet">
     <link href="css/game.css" rel="stylesheet">
+
+    <style type="text/css">
+      #background {
+        background-image: url(%VITE_BACKGROUND_IMG%);
+      }
+    </style>
     </head>
   <body>
     <div id='preroll-wrapper'>
@@ -603,11 +610,11 @@
             <div id='ui-stats-logo'></div>
           </div>
           <div id='ui-stats-ad-container-desktop' class='ui-stats-ad-container'>
-            <div id='surviv-io_300x250_2'></div>
+            <div id='%VITE_AIP_PLACEMENT_ID%_300x250_2'></div>
           </div>
-          <div id='ui-stats-ad-container-mobile' class='ui-stats-ad-container'>
-            <div id='surviv-io_300x250_mobile_2'></div>
-          </div>
+          <!-- <div id='ui-stats-ad-container-mobile' class='ui-stats-ad-container'>
+            <div id='%VITE_AIP_PLACEMENT_ID%_300x250_mobile_2'></div>
+          </div> -->
         </div>
       </div>
 
@@ -786,13 +793,15 @@
                   <span>Please consider supporting us by disabling your adblocker.</span>
                 </div>
                 -->
-                <div class='ad-block-med-rect' id='surviv-io_300x250'>
+                <!--
+                <div class='ad-block-med-rect' id='%VITE_AIP_PLACEMENT_ID%_300x250'>
                 </div>
+                -->
               </div>
               <div id='social-share-block-wrapper'>
                 <div id='social-share-block' class='menu-block'>
                   <div class='btn-social-wrapper'>
-                    <!-- 
+                    <!--
                     <a href='https://facebook.com/survev' target='_blank' class='btn-social btn-darken btn-facebook'></a>
                     <a href='https://twitter.com/survev' target='_blank' class='btn-social btn-darken btn-twitter'></a>
                     <a href='https://www.instagram.com/survev/' target='_blank' class='btn-social btn-darken btn-instagram'></a>
@@ -1050,6 +1059,12 @@
               </div>
             </div>
           </div>
+          <div class="ad-block-leaderboard-bottom" id="%VITE_AIP_PLACEMENT_ID%_728x90"></div>
+          <script>
+            if (window.aiptag) {
+              window.aiptag.cmd.display.push(function() { aipDisplayTag.display("%VITE_AIP_PLACEMENT_ID%_728x90"); });
+            }
+          </script>
         </div>
         <div id='start-bottom-left'>
           <div id='mobile-settings-front'>
@@ -1057,7 +1072,12 @@
           </div>
         </div>
         <div id="start-bottom-middle">
+          <a href='changelogRec.html' target="_blank" class="footer-after">ver %VITE_GAME_VERSION%</a>
+          <a href="changelog.html" target="_blank" data-l10n="index-proxy-sites">original changelog</a>
+          <!--
           <a href='changelog.html' target="_blank" class="footer-after">ver 0.8.82</a>
+          <a href="proxy.txt" target="_blank" data-l10n="index-proxy-sites">proxy sites</a>
+          -->
         </div>
         <div id='start-bottom-right-wrapper'>
           <div id='start-bottom-right'>
@@ -1108,7 +1128,7 @@
       </div>
       <!-- Loadouts -->
       <div id='modal-customize' class='modal'>
-        <div class='ad-block-loadouts-left hide-on-mobile' id='surviv-io_300x600'></div>
+        <!-- <div class='ad-block-loadouts-left hide-on-mobile' id='%VITE_AIP_PLACEMENT_ID%_300x600'></div> -->
         <div id='modal-customize-wrapper' class='modal-close'>
           <div id='modal-content-left' class='modal-content-shadow'>
             <div id='modal-customize-cat-title'></div>
@@ -1286,8 +1306,12 @@
             </div> -->
             <div class='modal-divider'></div>
             <div id='modal-hamburger-bottom'>
+              <a href='changelogRec.html' class="footer-after">ver %VITE_GAME_VERSION%</a>
+              <!--
               <a href='changelog.html' class="footer-after">ver 0.8.82</a>
+              <a href='#' class="btn-cookie-settings footer-after">cookie settings</a>
               <a href='privacy.txt' target="_blank" class="footer-after">privacy</a>
+              -->
               <a href='attribution.txt' target="_blank">attributions</a>
             </div>
           </div>

@@ -10,6 +10,8 @@ export class Region {
     data: ConfigType["regions"][string];
     playerCount = 0;
 
+    lastUpdateTime = Date.now();
+
     constructor(readonly id: string) {
         this.data = Config.regions[this.id];
     }
@@ -103,6 +105,7 @@ export class ApiServer {
     updateRegion(regionId: string, regionData: RegionData) {
         const region = this.regions[regionId];
         region.playerCount = regionData.playerCount;
+        region.lastUpdateTime = Date.now();
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {

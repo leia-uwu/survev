@@ -17,6 +17,8 @@ export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
     bounds: AABB;
     collider!: Collider;
+    // just to cope with shared client function typing
+    active = true;
 
     mapObstacleBounds: Collider[];
 
@@ -249,6 +251,7 @@ export class Obstacle extends BaseGameObject {
     updateCollider() {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
+        this.game.grid.updateObject(this);
     }
 
     checkLayer(): void {
@@ -301,22 +304,23 @@ export class Obstacle extends BaseGameObject {
         }
 
         this.health -= params.amount!;
+        this.health = math.max(0, this.health);
+
+        this.healthT = math.clamp(this.health / this.maxHealth, 0, 1);
+
+        if (this.minScale < 1) {
+            this.scale = math.lerp(this.healthT, this.minScale, this.maxScale);
+            this.updateCollider();
+        }
+
+        // need to send full object for obstacles with explosions
+        // so smoke particles work on the client
+        // since they depend on healthT
+        if (def.explosion) this.setDirty();
+        else this.setPartDirty();
 
         if (this.health <= 0) {
             this.kill(params);
-        } else {
-            this.healthT = this.health / this.maxHealth;
-            if (this.minScale < 1) {
-                this.scale =
-                    this.healthT * (this.maxScale - this.minScale) + this.minScale;
-                this.updateCollider();
-            }
-
-            // need to send full object for obstacles with explosions
-            // so smoke particles work on the client
-            // since they depend on healthT
-            if (def.explosion) this.setDirty();
-            else this.setPartDirty();
         }
     }
 
@@ -327,7 +331,7 @@ export class Obstacle extends BaseGameObject {
         this.setDirty();
 
         if (def.destroyType) {
-            this.game.map.genObstacle(def.destroyType, this.pos, this.layer, this.ori);
+            this.game.map.genAuto(def.destroyType, this.pos, this.layer, this.ori);
         }
 
         const lootPos = v2.copy(this.pos);
@@ -354,31 +358,27 @@ export class Obstacle extends BaseGameObject {
                     const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier!);
 
                     for (const item of items) {
-                        const dir = v2.randomUnit();
-                        const def = GameObjectDefs[item.name];
                         this.game.lootBarn.addLoot(
                             item.name,
-                            v2.add(lootPos, v2.mul(dir, 0.2)),
+                            v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
                             this.layer,
                             item.count,
                             undefined,
-                            def.type == "gun" ? 0 : undefined,
-                            dir,
+                            undefined, // undefined to use default push speed value
+                            params.dir,
                             lootTierOrItem.props?.preloadGuns,
                         );
                     }
                 }
             } else {
-                const dir = v2.randomUnit();
-                const def = GameObjectDefs[lootTierOrItem.type!];
                 this.game.lootBarn.addLoot(
                     lootTierOrItem.type!,
-                    v2.add(lootPos, v2.mul(dir, 0.2)),
+                    v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
                     this.layer,
                     lootTierOrItem.count!,
                     undefined,
-                    def.type == "gun" ? 0 : undefined,
-                    dir,
+                    undefined,
+                    params.dir,
                     lootTierOrItem.props?.preloadGuns,
                 );
             }

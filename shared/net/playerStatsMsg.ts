@@ -15,8 +15,10 @@ export class PlayerStatsMsg implements AbstractMsg {
         s.writeUint16(this.playerStats.timeAlive);
         s.writeUint8(this.playerStats.kills);
         s.writeUint8(this.playerStats.dead as unknown as number);
-        s.writeUint16(this.playerStats.damageDealt);
-        s.writeUint16(this.playerStats.damageTaken);
+        // writing integers will just strip the decimal digits instead of rounding
+        // so without rounding 99.9999... will become 99 instead of 100
+        s.writeUint16(Math.round(this.playerStats.damageDealt));
+        s.writeUint16(Math.round(this.playerStats.damageTaken));
     }
 
     deserialize(s: BitStream) {
