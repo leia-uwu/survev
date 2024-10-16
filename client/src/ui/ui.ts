@@ -1277,7 +1277,7 @@ export class UiManager {
 
     removeAds() {
         if (!window.aiptag) return;
-        const ads = ["300x250", "728x90", "300x250_2"];
+        const ads = ["728x90", "300x250_2"];
         for (let i = 0; i < ads.length; i++) {
             const ad = ads[i];
             window.aiptag.cmd.display.push(() => {
