@@ -87,7 +87,7 @@ export class Game {
     constructor(
         id: string,
         config: ServerGameConfig,
-        readonly sendSocketMsg: (id: string, data: ArrayBuffer) => void,
+        readonly sendSocketMsg: (id: string, data: Uint8Array) => void,
         readonly closeSocket: (id: string) => void,
         readonly sendData?: (data: UpdateDataMsg) => void,
     ) {
@@ -250,7 +250,7 @@ export class Game {
         };
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+    handleMsg(buff: ArrayBuffer, socketId: string): void {
         if (!(buff instanceof ArrayBuffer)) return;
 
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
