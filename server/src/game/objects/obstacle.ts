@@ -400,6 +400,12 @@ export class Obstacle extends BaseGameObject {
             );
         }
 
+        if (def.swapWeaponOnDestroy && params.source instanceof Player) {
+            const player = params.source as Player;
+
+            player.potatoModeWeaponSwitch(params.gameSourceType);
+        }
+
         this.parentBuilding?.obstacleDestroyed(this);
 
         if (this.isWall) {
