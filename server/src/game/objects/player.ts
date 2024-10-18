@@ -2592,7 +2592,7 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
             this.dirOld = v2.copy(this.dir);
-            this.dir = msg.toMouseDir;
+            this.dir = v2.normalizeSafe(msg.toMouseDir);
         }
         this.shootHold = msg.shootHold;
 
