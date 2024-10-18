@@ -228,6 +228,8 @@ export class PlayerBarn {
             this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         }
 
+        player.obstacleOutfit?.destroy();
+
         this.game.checkGameOver();
         this.game.updateData();
     }
@@ -1534,6 +1536,11 @@ export class Player extends BaseGameObject {
         }
         if (this.layer !== originalLayer) {
             this.setDirty();
+
+            if (this.obstacleOutfit) {
+                this.obstacleOutfit.layer = this.layer;
+                this.obstacleOutfit.setDirty();
+            }
         }
 
         //
