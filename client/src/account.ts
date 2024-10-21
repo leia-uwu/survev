@@ -48,6 +48,23 @@ function ajaxRequest(
         });
 }
 
+export type Quest = {
+    idx: number;
+    type: string;
+    timeAcquired: number;
+    progress: number;
+    target: number;
+    complete: boolean;
+    rerolled: boolean;
+    timeToRefresh: number;
+};
+export type PassType = {
+    type: string;
+    level: number;
+    xp: number;
+    newItems: unknown;
+};
+
 export class Account {
     events: Record<string, Array<(...args: any[]) => void>> = {};
     requestsInFlight = 0;
@@ -63,9 +80,9 @@ export class Account {
     loadout = loadouts.defaultLoadout();
     loadoutPriv = "";
     items: Item[] = [];
-    quests = [];
+    quests: Quest[] = [];
     questPriv = "";
-    pass = {};
+    pass: Record<string, PassType> = {};
 
     constructor(public config: ConfigManager) {
         window.login = () => {
@@ -87,7 +104,7 @@ export class Account {
                     idx,
                 },
                 (_e, _t) => {
-                    this.getPass();
+                    this.getPass(false);
                 },
             );
         };
@@ -344,36 +361,33 @@ export class Account {
         }
     }
 
-    getPass(_tryRefreshQuests?: boolean) {
-        /* const This = this;
-            this.ajaxRequest(
-                "/api/user/get_pass",
-                {
-                    tryRefreshQuests
-                },
-                (err, res) => {
-                    This.pass = {};
-                    This.quests = [];
-                    This.questPriv = "";
-                    if (err || !res.success) {
-                        console.error(
-                            "account",
-                            "get_pass_error"
-                        );
-                    } else {
-                        This.pass = res.pass || {};
-                        This.quests = res.quests || [];
-                        This.questPriv = res.questPriv || "";
-                        This.quests.sort((a, b) => {
-                            return a.idx - b.idx;
-                        });
-                        This.emit("pass", This.pass, This.quests, true);
-                        if (This.pass.newItems) {
-                            This.loadProfile();
-                        }
+    getPass(tryRefreshQuests: boolean) {
+        return;
+        this.ajaxRequest(
+            "/api/user/get_pass",
+            {
+                tryRefreshQuests,
+            },
+            (err, res) => {
+                this.pass = {};
+                this.quests = [];
+                this.questPriv = "";
+                if (err || !res.success) {
+                    errorLogManager.storeGeneric("account", "get_pass_error");
+                } else {
+                    this.pass = res.pass || {};
+                    this.quests = res.quests || [];
+                    this.questPriv = res.questPriv || "";
+                    this.quests.sort((a, b) => {
+                        return a.idx - b.idx;
+                    });
+                    this.emit("pass", this.pass, this.quests, true);
+                    if (this.pass.newItems) {
+                        this.loadProfile();
                     }
                 }
-            ); */
+            },
+        );
     }
 
     setPassUnlock(unlockType: string) {

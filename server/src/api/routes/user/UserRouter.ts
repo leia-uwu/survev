@@ -318,6 +318,24 @@ UserRouter.post("/reset_stats", (c) => {
     return c.json({}, 200);
 });
 
+UserRouter.post(
+    "/get_pass",
+    zValidator(
+        "json",
+        z.object({
+            tryRefreshQuests: z.boolean(),
+        }),
+        (result, c) => {
+            if (!result.success) {
+                return c.json({}, 400);
+            }
+        },
+    ),
+    (c) => {
+        return c.json({ success: true }, 200);
+    },
+);
+
 //
 // TYPES
 //
