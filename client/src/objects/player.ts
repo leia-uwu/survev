@@ -2643,7 +2643,7 @@ export class PlayerBarn {
     updateGroupStatus(groupId: number, groupStatus: { players: GroupStatus[] }) {
         const info = this.getGroupInfo(groupId);
         if (info.playerIds.length != groupStatus.players.length) {
-            console.error("PlayerIds and groupStatus.players out of sync");
+            errorLogManager.logError("PlayerIds and groupStatus.players out of sync");
             return;
         }
         for (let i = 0; i < info.playerIds.length; i++) {

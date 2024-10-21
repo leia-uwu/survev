@@ -118,6 +118,7 @@ export class Creator {
         if (obj) {
             obj.updateData(data, false, false, ctx);
         } else {
+            errorLogManager.storeGeneric("objectPoolErr", "updateObjPart");
             console.error("updateObjPart, missing object", id);
         }
     }

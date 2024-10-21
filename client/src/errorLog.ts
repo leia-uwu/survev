@@ -32,6 +32,8 @@ class ErrorLog {
               }
             | { error: string },
     ) {
+        console.error(loc, data);
+
         if (!this.enabled) return;
 
         this.requests++;
@@ -54,7 +56,6 @@ class ErrorLog {
     }
 
     storeGeneric(parent: string, child: unknown) {
-        console.error(parent, child);
         if (this.sample()) {
             this.store("storeGeneric", {
                 parent: parent,
