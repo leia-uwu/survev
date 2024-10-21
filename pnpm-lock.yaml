@@ -103,9 +103,9 @@ importers:
       drizzle-kit:
         specifier: ^0.24.2
         version: 0.24.2
-      ts-node-dev:
-        specifier: ^2.0.0
-        version: 2.0.0(@types/node@20.16.5)(typescript@5.6.2)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.16.5)(typescript@5.6.2)
       typescript:
         specifier: ^5.6.2
         version: 5.6.2
@@ -1635,6 +1635,7 @@ packages:
 
   libsql@0.4.5:
     resolution: {integrity: sha512-sorTJV6PNt94Wap27Sai5gtVLIea4Otb2LUiAUyr3p6BPOScGMKGt5F1b5X/XgkNtcsDKeX5qfeBDj+PdShclQ==}
+    cpu: [x64, arm64, wasm32]
     os: [darwin, linux, win32]
 
   lodash@4.17.21:
