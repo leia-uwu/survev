@@ -1,13 +1,3 @@
-CREATE TABLE `items` (
-	`user_id` text NOT NULL,
-	`source` text NOT NULL,
-	`time_acquired` integer DEFAULT (unixepoch()) NOT NULL,
-	`type` text NOT NULL,
-	`status` integer DEFAULT 0 NOT NULL,
-	PRIMARY KEY(`user_id`, `type`),
-	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
@@ -26,7 +16,8 @@ CREATE TABLE `users` (
 	`user_created` integer DEFAULT (unixepoch()) NOT NULL,
 	`last_username_change_time` integer,
 	`linked` integer DEFAULT false NOT NULL,
-	`loadout` text DEFAULT '{"outfit":"outfitBase","melee":"fists","heal":"heal_basic","boost":"boost_basic","player_icon":"","crosshair":{"type":"crosshair_default","color":16777215,"size":"1.00","stroke":"0.00"},"emotes":["emote_happyface","emote_thumbsup","emote_surviv","emote_sadface","",""]}' NOT NULL
+	`loadout` text DEFAULT '{"outfit":"outfitBase","melee":"fists","heal":"heal_basic","boost":"boost_basic","player_icon":"","crosshair":{"type":"crosshair_default","color":16777215,"size":"1.00","stroke":"0.00"},"emotes":["emote_happyface","emote_thumbsup","emote_surviv","emote_sadface","",""]}' NOT NULL,
+	`items` text DEFAULT '[]' NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_slug_unique` ON `users` (`slug`);

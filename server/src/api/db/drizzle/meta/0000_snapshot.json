@@ -1,70 +1,9 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5cd54ace-6cda-4a45-9c7f-48869b68a1e9",
+  "id": "6769f375-e9b1-4143-954e-a98e302db574",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "items": {
-      "name": "items",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "source": {
-          "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "time_acquired": {
-          "name": "time_acquired",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "items_user_id_users_id_fk": {
-          "name": "items_user_id_users_id_fk",
-          "tableFrom": "items",
-          "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "items_user_id_type_pk": {
-          "columns": ["user_id", "type"],
-          "name": "items_user_id_type_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
     "session": {
       "name": "session",
       "columns": {
@@ -191,6 +130,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'{\"outfit\":\"outfitBase\",\"melee\":\"fists\",\"heal\":\"heal_basic\",\"boost\":\"boost_basic\",\"player_icon\":\"\",\"crosshair\":{\"type\":\"crosshair_default\",\"color\":16777215,\"size\":\"1.00\",\"stroke\":\"0.00\"},\"emotes\":[\"emote_happyface\",\"emote_thumbsup\",\"emote_surviv\",\"emote_sadface\",\"\",\"\"]}'"
+        },
+        "items": {
+          "name": "items",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
         }
       },
       "indexes": {

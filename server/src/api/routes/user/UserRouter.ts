@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { and, eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { ItemStatus, validateLoadout } from "../../../../../shared/utils/helpers
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
-import { itemsTable, usersTable } from "../../db/schema";
+import { usersTable } from "../../db/schema";
 import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 
@@ -27,19 +27,15 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             return c.json({ err: "" }, 200);
         }
 
-        // TODO: do this in a join
-        const items = await db
-            .select({
-                timeAcquired: itemsTable.timeAcquired,
-                type: itemsTable.type,
-                source: itemsTable.source,
-                status: itemsTable.status,
-            })
-            .from(itemsTable)
-            .where(eq(itemsTable.userId, user.id));
-
-        const { loadout, slug, linked, username, usernameSet, lastUsernameChangeTime } =
-            result;
+        const {
+            loadout,
+            slug,
+            linked,
+            username,
+            usernameSet,
+            lastUsernameChangeTime,
+            items,
+        } = result;
 
         const timeUntilNextChange =
             getTimeUntilNextUsernameChange(lastUsernameChangeTime);
@@ -216,17 +212,25 @@ UserRouter.post(
 
             if (!validItemTypes.length) return c.json({}, 200);
 
+            const [{ items }] = await db
+                .select({ items: usersTable.items })
+                .from(usersTable)
+                .where(eq(usersTable.id, user.id))
+                .limit(1);
+
+            const updatedItems = items.map((item) => {
+                if (itemTypes.includes(item.type)) {
+                    item.status = status;
+                }
+                return item;
+            });
+
             await db
-                .update(itemsTable)
+                .update(usersTable)
                 .set({
-                    status,
+                    items: updatedItems,
                 })
-                .where(
-                    and(
-                        eq(itemsTable.userId, user.id),
-                        inArray(itemsTable.type, validItemTypes),
-                    ),
-                );
+                .where(eq(usersTable.id, user.id));
 
             return c.json({}, 200);
         } catch (err) {
@@ -237,7 +241,7 @@ UserRouter.post(
 );
 
 // is there a use for this besides unlocking skins on account creation?
-// if not delete it.
+// if not delete it, or make it admin only.
 UserRouter.post(
     "/unlock",
     zValidator(
@@ -251,33 +255,55 @@ UserRouter.post(
             }
         },
     ),
-    AuthMiddleware,
     async (c) => {
         try {
-            const user = c.get("user")!;
+            if (process.env.NODE_ENV === "production") return;
             const { unlockType } = c.req.valid("json");
 
             if (!(unlockType in UnlockDefs)) {
                 return c.json([], 400);
             }
 
+            const timeAcquired = new Date();
             const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
-            const data = outfitsToUnlock.map((outfit) => {
-                return {
-                    source: unlockType,
-                    type: outfit,
-                    userId: user.id,
-                };
-            });
 
-            const items = await db.insert(itemsTable).values(data).returning({
-                type: itemsTable.type,
-                timeAcquired: itemsTable.timeAcquired,
-                source: itemsTable.source,
-                status: itemsTable.status,
-            });
+            const result = await db
+                .select({ items: usersTable.items })
+                .from(usersTable)
+                .where(eq(usersTable.auth_id, "MOCK_USER_ID"))
+                .limit(1);
 
-            return c.json({ success: true, items }, 200);
+            if (!result.length) {
+                return c.json({ err: "No items found for this user." }, 404);
+            }
+
+            const [{ items }] = result;
+
+            // Remove duplicates
+            const unlockedItemTypes = new Set(items.map(({ type }) => type));
+            const itemsToUnlock: Item[] = outfitsToUnlock
+                .filter((type) => !unlockedItemTypes.has(type))
+                .map((outfit) => {
+                    return {
+                        source: unlockType,
+                        type: outfit,
+                        status: ItemStatus.New,
+                        timeAcquired,
+                    };
+                });
+            const updatedItems = items.concat(itemsToUnlock);
+
+            const retunedItems = await db
+                .update(usersTable)
+                .set({
+                    items: updatedItems,
+                })
+                .where(eq(usersTable.auth_id, "MOCK_USER_ID"))
+                .returning({
+                    items: usersTable.items,
+                });
+
+            return c.json({ success: true, items: retunedItems }, 200);
         } catch (err) {
             console.error("Error unlocking item", { error: err });
             return c.json({}, 500);
@@ -295,6 +321,13 @@ UserRouter.post("/reset_stats", (c) => {
 //
 // TYPES
 //
+export type Item = {
+    type: string;
+    status: ItemStatus;
+    timeAcquired: Date;
+    source: string;
+};
+
 type ProfileResponse =
     | {
           banned: true;
@@ -310,10 +343,7 @@ type ProfileResponse =
           };
           loadout: Loadout;
           loadoutPriv: string;
-          items: Pick<
-              typeof itemsTable.$inferSelect,
-              "type" | "status" | "timeAcquired" | "source"
-          >[];
+          items: Item[];
       };
 
 type UsernameErrorType = "failed" | "invalid" | "taken" | "change_time_not_expired";

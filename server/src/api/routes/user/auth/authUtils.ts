@@ -1,11 +1,14 @@
+import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { generateId } from "lucia";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
+import { ItemStatus } from "../../../../../../shared/utils/helpers";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
-import { type UsersTable, itemsTable, usersTable } from "../../../db/schema";
+import { type UsersTable, usersTable } from "../../../db/schema";
+import type { Item } from "../UserRouter";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
@@ -35,14 +38,17 @@ export async function createNewUser(payload: UsersTable) {
     const unlockType = "unlock_new_account";
     const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
     if (outfitsToUnlock.length) {
-        const data = outfitsToUnlock.map((outfit) => {
+        const timeAcquired = new Date();
+        const items: Item[] = outfitsToUnlock.map((outfit) => {
             return {
                 source: unlockType,
                 type: outfit,
-                userId: payload.id,
+                timeAcquired,
+                status: ItemStatus.New,
             };
         });
-        await db.insert(itemsTable).values(data);
+
+        await db.update(usersTable).set({ items }).where(eq(usersTable.id, payload.id));
     }
 }
 
