@@ -3,6 +3,7 @@ import type { ItemStatus, Loadout } from "../../shared/utils/helpers";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
+import { errorLogManager } from "./errorLog";
 import { helpers } from "./helpers";
 import type { Item } from "./ui/loadoutMenu";
 import loadouts from "./ui/loadouts";
@@ -219,7 +220,7 @@ export class Account {
             this.loadoutPriv = "";
             this.items = [];
             if (err) {
-                console.error("account", "load_profile_error");
+                errorLogManager.storeGeneric("account", "load_profile_error");
             } else if (data.banned) {
                 this.emit("error", "account_banned", data.reason);
             } else if (data.success) {
@@ -245,7 +246,7 @@ export class Account {
     resetStats() {
         this.ajaxRequest("/api/user/reset_stats", (t, _r) => {
             if (t) {
-                console.error("account", "reset_stats_error");
+                errorLogManager.storeGeneric("account", "reset_stats_error");
                 this.emit("error", "server_error");
             }
         });
@@ -254,7 +255,7 @@ export class Account {
     deleteAccount() {
         this.ajaxRequest("/api/user/delete", (err, _res) => {
             if (err) {
-                console.error("account", "delete_error");
+                errorLogManager.storeGeneric("account", "delete_error");
                 this.emit("error", "server_error");
                 return;
             }
@@ -272,7 +273,7 @@ export class Account {
             },
             (err, res) => {
                 if (err) {
-                    console.error("account", "set_username_error");
+                    errorLogManager.storeGeneric("account", "set_username_error");
                     callback(err);
                     return;
                 }
@@ -302,7 +303,7 @@ export class Account {
             },
             (err, res) => {
                 if (err) {
-                    console.error("account", "set_loadout_error");
+                    errorLogManager.storeGeneric("account", "set_loadout_error");
                     this.emit("error", "server_error");
                 }
                 if (err || !res.loadout) {
@@ -336,7 +337,7 @@ export class Account {
                 },
                 (err, _res) => {
                     if (err) {
-                        console.error("account", "set_item_status_error");
+                        errorLogManager.storeGeneric("account", "set_item_status_error");
                     }
                 },
             );
@@ -383,7 +384,7 @@ export class Account {
             },
             (err, res) => {
                 if (err || !res.success) {
-                    console.error("account", "set_pass_unlock_error");
+                    errorLogManager.storeGeneric("account", "set_pass_unlock_error");
                 } else {
                     this.getPass(false);
                 }
@@ -399,7 +400,7 @@ export class Account {
             },
             (err, res) => {
                 if (err) {
-                    console.error("account", "refresh_quest_error");
+                    errorLogManager.storeGeneric("account", "refresh_quest_error");
                     return;
                 }
                 if (res.success) {

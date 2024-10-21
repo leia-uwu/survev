@@ -9,6 +9,7 @@ import { api } from "./api";
 import { AudioManager } from "./audioManager";
 import { ConfigManager, type ConfigType } from "./config";
 import { device } from "./device";
+import { errorLogManager } from "./errorLog";
 import { Game } from "./game";
 import { helpers } from "./helpers";
 import { InputHandler } from "./input";
@@ -531,6 +532,7 @@ class Application {
             // Wait some maximum amount of time for pending account requests
             const timeout = setTimeout(() => {
                 runOnce();
+                errorLogManager.storeGeneric("account", "wait_timeout");
             }, 2500);
             const runOnce = () => {
                 cb();
@@ -827,7 +829,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     // Don't report the same error multiple times
     if (!reportedErrors.includes(errStr)) {
         reportedErrors.push(errStr);
-        console.error("windowOnError", errStr);
+        errorLogManager.logWindowOnError(errStr);
     }
 };
 

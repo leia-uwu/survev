@@ -5,6 +5,7 @@ import {
     type ObjectsPartialData,
 } from "../../../shared/net/objectSerializeFns";
 import { assert } from "../../../shared/utils/util";
+import { errorLogManager } from "../errorLog";
 import type { Ctx } from "../game";
 
 import type { AbstractObject } from "./player";
@@ -85,7 +86,8 @@ export class Creator {
                 ids: Object.keys(this.idToObj),
                 stream: s._view._view,
             };
-            console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
+            errorLogManager.logError(`getTypeById${JSON.stringify(err)}`);
+            errorLogManager.storeGeneric("objectPoolErr", "getTypeById");
             return ObjectType.Invalid;
         }
         return obj.__type;
@@ -124,6 +126,7 @@ export class Creator {
         const obj = this.getObjById(id);
         if (obj === undefined) {
             console.error("deleteObj, missing object", id);
+            errorLogManager.storeGeneric("objectPoolErr", "deleteObj");
         } else {
             this.types[obj.__type].free(obj);
             delete this.idToObj[id];
