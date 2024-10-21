@@ -121,6 +121,10 @@ export default defineConfig(({ mode }) => {
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
             AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
         },
+        esbuild: {
+            jsxFactory: "h",
+            jsxFragment: "Fragment",
+        },
         plugins: [
             mode !== "development"
                 ? stripBlockPlugin({
@@ -138,12 +142,12 @@ export default defineConfig(({ mode }) => {
             host: "0.0.0.0",
             proxy: {
                 "/api": {
-                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
                 },
                 "/team_v2": {
-                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
                     ws: true,
