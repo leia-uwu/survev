@@ -1659,9 +1659,10 @@ export class Player extends BaseGameObject {
             player = this;
         } else if (this.spectating.dead) {
             // was spectating someone but they died so find new player to spectate
-            player = this.spectating.killedBy
-                ? this.spectating.killedBy
-                : playerBarn.randomPlayer();
+            player =
+                this.spectating.killedBy && !this.spectating.killedBy.dead
+                    ? this.spectating.killedBy
+                    : playerBarn.randomPlayer();
             if (player === this) {
                 player = playerBarn.randomPlayer();
             }
