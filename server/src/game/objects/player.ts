@@ -2658,37 +2658,23 @@ export class Player extends BaseGameObject {
                     }
                     break;
                 case GameConfig.Input.EquipPrevWeap:
-                    {
-                        const curIdx = this.curWeapIdx;
-
-                        for (
-                            let i = curIdx - 1;
-                            i < curIdx + GameConfig.WeaponSlot.Count;
-                            i++
-                        ) {
-                            const idx = math.mod(i, GameConfig.WeaponSlot.Count);
-                            if (this.weapons[idx].type) {
-                                this.weaponManager.setCurWeapIndex(idx);
-                                break;
-                            }
-                        }
-                    }
-                    break;
                 case GameConfig.Input.EquipNextWeap:
                     {
-                        const curIdx = this.curWeapIdx;
+                        function absMod(a: number, n: number): number {
+                            return a >= 0 ? a % n : ((a % n) + n) % n;
+                        }
 
-                        for (
-                            let i = curIdx + 1;
-                            i > curIdx - GameConfig.WeaponSlot.Count;
-                            i--
-                        ) {
-                            const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                        const toAdd = input === GameConfig.Input.EquipNextWeap ? 1 : -1;
+
+                        let iterations = 0;
+                        let idx = this.curWeapIdx;
+                        while (iterations < GameConfig.WeaponSlot.Count * 2) {
+                            idx = absMod(idx + toAdd, GameConfig.WeaponSlot.Count);
                             if (this.weapons[idx].type) {
-                                this.weaponManager.setCurWeapIndex(idx);
                                 break;
                             }
                         }
+                        this.weaponManager.setCurWeapIndex(idx);
                     }
                     break;
                 case GameConfig.Input.EquipLastWeap:
