@@ -5,7 +5,14 @@ import type { FindGameBody, FindGameResponse } from "./gameServer";
 import { TeamMenu } from "./teamMenu";
 import { GIT_VERSION } from "./utils/gitRevision";
 import { Logger } from "./utils/logger";
-import { cors, forbidden, readPostedJSON, returnJson } from "./utils/serverHelpers";
+import {
+    HTTPRateLimit,
+    cors,
+    forbidden,
+    getIp,
+    readPostedJSON,
+    returnJson,
+} from "./utils/serverHelpers";
 
 class Region {
     data: ConfigType["regions"][string];
@@ -151,11 +158,27 @@ if (process.argv.includes("--api-server")) {
         cors(res);
         res.end();
     });
+
+    const findGameRateLimit = new HTTPRateLimit(5, 3000);
+
     app.post("/api/find_game", async (res) => {
         cors(res);
         res.onAborted(() => {
             res.aborted = true;
         });
+
+        if (findGameRateLimit.isRateLimited(getIp(res))) {
+            res.writeStatus("429 Too Many Requests");
+            returnJson(res, {
+                res: [
+                    {
+                        err: "you are being rate limited",
+                    },
+                ],
+            });
+            return;
+        }
+
         readPostedJSON(
             res,
             async (body: FindGameBody) => {

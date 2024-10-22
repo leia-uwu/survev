@@ -424,6 +424,10 @@ void (async () => {
                     }),
                 })
             ).json()) as FindGameResponse;
+            if ("err" in response.res[0]) {
+                console.log("Failed finding game, err:", response.res[0].err);
+                return;
+            }
 
             bots.add(new Bot(i, response.res[0]));
             if (i === config.botCount) allBotsJoined = true;

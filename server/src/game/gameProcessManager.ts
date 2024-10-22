@@ -304,6 +304,12 @@ export class GameProcessManager implements GameManager {
         return gameProc;
     }
 
+    commitProcessGenocide() {
+        for (const proc of this.processes) {
+            this.killProcess(proc);
+        }
+    }
+
     killProcess(gameProc: GameProcess): void {
         for (const [, socket] of this.sockets) {
             const data = socket.getUserData();
