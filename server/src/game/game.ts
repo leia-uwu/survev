@@ -22,10 +22,18 @@ import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
 
-export type GroupData = {
+export interface GroupData {
     hash: string;
     autoFill: boolean;
-};
+}
+
+export interface JoinTokenData {
+    autoFill: boolean;
+    playerCount: number;
+    avaliableUses: number;
+    expiresAt: number;
+    groupHashToJoin: string;
+}
 
 export class Game {
     started = false;
@@ -44,7 +52,7 @@ export class Game {
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
 
-    joinTokens = new Map<string, { autoFill: boolean; playerCount: number }>();
+    joinTokens = new Map<string, JoinTokenData>();
 
     get aliveCount(): number {
         return this.playerBarn.livingPlayers.length;
@@ -334,6 +342,9 @@ export class Game {
         this.joinTokens.set(id, {
             autoFill,
             playerCount,
+            avaliableUses: playerCount,
+            expiresAt: Date.now() + 15000,
+            groupHashToJoin: "",
         });
     }
 

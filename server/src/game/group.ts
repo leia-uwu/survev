@@ -9,13 +9,19 @@ export class Group {
     players: Player[] = [];
     livingPlayers: Player[] = [];
     autoFill: boolean;
-    avaliableSlots: number;
+
+    maxPlayers: number;
+    reservedSlots = 0;
+
+    canJoin(players: number) {
+        return this.maxPlayers - this.reservedSlots - players >= 0;
+    }
 
     constructor(hash: string, groupId: number, autoFill: boolean, maxPlayers: number) {
         this.hash = hash;
         this.groupId = groupId;
         this.autoFill = autoFill;
-        this.avaliableSlots = maxPlayers;
+        this.maxPlayers = maxPlayers;
     }
 
     /**

@@ -32,7 +32,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { checkForBadWords } from "../../utils/serverHelpers";
-import type { Game } from "../game";
+import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
@@ -84,10 +84,16 @@ export class PlayerBarn {
     }
 
     addPlayer(socketId: string, joinMsg: net.JoinMsg) {
-        if (!this.game.joinTokens.has(joinMsg.matchPriv)) {
+        const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
+
+        if (!joinData || joinData.expiresAt < Date.now() || joinData.avaliableUses <= 0) {
             this.game.closeSocket(socketId);
+            if (joinData) {
+                this.game.joinTokens.delete(joinMsg.matchPriv);
+            }
             return;
         }
+        joinData.avaliableUses -= 1;
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
@@ -105,31 +111,8 @@ export class PlayerBarn {
         let group: Group | undefined;
 
         if (this.game.isTeamMode) {
-            const joinData = this.game.joinTokens.get(joinMsg.matchPriv)!;
-
-            group = this.groupsByHash.get(joinMsg.matchPriv);
-
-            if (!group && joinData.autoFill) {
-                group = this.groups.find((group) => {
-                    const sameTeamId = team && team.teamId == group.players[0].teamId;
-                    return (
-                        (team ? sameTeamId : true) &&
-                        group.autoFill &&
-                        group.avaliableSlots >= joinData.playerCount &&
-                        group.players.length < this.game.teamMode
-                    );
-                });
-
-                if (group) {
-                    group.avaliableSlots -= joinData.playerCount;
-                }
-            }
-
-            if (!group || (group && group.players.length > this.game.teamMode)) {
-                group = this.addGroup(joinMsg.matchPriv, joinData.autoFill);
-            } else {
-                team = group.players[0].team;
-            }
+            group = this.findFreeGroup(joinData, team);
+            assert(group);
         }
 
         const pos: Vec2 = this.game.map.getSpawnPos(group, team);
@@ -327,7 +310,43 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    addGroup(hash: string, autoFill: boolean) {
+    findFreeGroup(joinData: JoinTokenData, team?: Team): Group {
+        let group = this.groupsByHash.get(joinData.groupHashToJoin);
+
+        if (!group && joinData.autoFill) {
+            group = this.groups.find((group) => {
+                const sameTeamId = team && team.teamId == group.players[0].teamId;
+                return (
+                    (team ? sameTeamId : true) &&
+                    group.autoFill &&
+                    group.canJoin(joinData.playerCount)
+                );
+            });
+        }
+
+        // second condition should never happen
+        // but keeping it just in case
+        // since more than 4 players in a group crashes the client
+        if (!group || group.players.length >= this.game.teamMode) {
+            group = this.addGroup(joinData.autoFill);
+        }
+
+        // only reserve slots on the first time this join token is used
+        // since the playerCount counts for other people from the team menu
+        // using the same token
+        if (group.hash !== joinData.groupHashToJoin) {
+            group.reservedSlots += joinData.playerCount;
+        }
+
+        joinData.groupHashToJoin = group.hash;
+
+        return group;
+    }
+
+    addGroup(autoFill: boolean) {
+        // not using nodejs crypto because i want it to run in the browser too
+        // and doesn't need to be cryptographically secure lol
+        const hash = Math.random().toString(16).slice(2);
         const groupId = this.groupIdAllocator.getNextId();
         const group = new Group(hash, groupId, autoFill, this.game.teamMode);
         this.groups.push(group);
