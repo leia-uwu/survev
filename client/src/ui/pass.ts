@@ -4,7 +4,7 @@ import type { EmoteDef } from "../../../shared/defs/gameObjects/emoteDefs";
 import { PassDefs } from "../../../shared/defs/gameObjects/passDefs";
 import { QuestDefs } from "../../../shared/defs/gameObjects/questDefs";
 import { math } from "../../../shared/utils/math";
-import type { Account } from "../account";
+import type { Account, PassType, Quest } from "../account";
 import { helpers } from "../helpers";
 import type { LoadoutMenu } from "./loadoutMenu";
 import type { Localization } from "./localization";
@@ -52,14 +52,7 @@ export class Pass {
     };
 
     quests: Array<{
-        data: {
-            idx: number;
-            type: string;
-            complete: boolean;
-            progress: number;
-            target: number;
-            rerolled: boolean;
-        };
+        data: Quest;
         start: number;
         current: number;
         ticker: number;
@@ -122,7 +115,7 @@ export class Pass {
         );
     }
 
-    onPass(pass: any, quests: any[], resetRefresh: boolean) {
+    onPass(pass: PassType, quests: Quest[], resetRefresh: boolean) {
         const refreshOffset = 5 * 1000;
         const newQuests = [];
         let questAnimCount = 0;
