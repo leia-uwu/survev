@@ -142,7 +142,14 @@ export class ResourceManager {
             spritesheets: [],
         };
 
-        const atlasDefs = spritesheetDefs[this.textureRes] || spritesheetDefs.low;
+        let atlasDefs = spritesheetDefs[this.textureRes] || spritesheetDefs.low;
+
+        // HACK: force high res for non normal mode atlases
+        // until we generate the atlases for those
+        if (!MapDefs.main.assets.atlases.includes(name)) {
+            atlasDefs = spritesheetDefs.high;
+        }
+
         const atlasDef = atlasDefs[name];
         for (let i = 0; i < atlasDef.length; i++) {
             const atlas = loadSpritesheet(this.renderer, atlasDef[i]);
