@@ -45,7 +45,7 @@ export const Main: MapDef = {
         },
     },
     gameMode: {
-        maxPlayers: 80,
+        maxPlayers: 800,
         killLeaderEnabled: true,
     },
     gameConfig: {
