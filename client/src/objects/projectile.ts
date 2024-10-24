@@ -20,6 +20,13 @@ import type { Obstacle } from "./obstacle";
 import type { ParticleBarn } from "./particles";
 import type { AbstractObject, Player } from "./player";
 
+const halloweenSpriteMap: Record<string, string> = {
+    "proj-frag-nopin-01.img": "proj-frag-nopin-02.img",
+    "proj-frag-nopin-nolever-01.img": "proj-frag-nopin-nolever-02.img",
+    "proj-frag-pin-01.img": "proj-frag-pin-02.img",
+    "proj-mirv-mini-01.img": "proj-mirv-mini-02.img",
+};
+
 class Projectile implements AbstractObject {
     __id!: number;
     __type!: ObjectType.Projectile;
@@ -125,7 +132,12 @@ class Projectile implements AbstractObject {
             }
 
             // Setup sprite
-            this.sprite.texture = PIXI.Texture.from(imgDef.sprite);
+            let sprite = imgDef.sprite;
+            // @HACK: halloween sprites
+            if (ctx.map.mapDef.gameMode.spookyKillSounds) {
+                sprite = halloweenSpriteMap[sprite] || sprite;
+            }
+            this.sprite.texture = PIXI.Texture.from(sprite);
             this.sprite.tint = imgDef.tint;
             this.sprite.alpha = 1;
 
