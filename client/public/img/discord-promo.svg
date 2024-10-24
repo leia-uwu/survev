@@ -1,94 +1,77 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="500.000000pt" height="500.000000pt" viewBox="0 0 500.000000 500.000000"
+ preserveAspectRatio="xMidYMid meet">
 
-<svg
-   width="300"
-   height="250"
-   viewBox="0 0 79.374998 66.145833"
-   version="1.1"
-   id="svg1"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
-   sodipodi:docname="discord-promo.svg"
-   xml:space="preserve"
-   inkscape:export-filename="discord-promo.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
-     id="namedview1"
-     pagecolor="#505050"
-     bordercolor="#ffffff"
-     borderopacity="1"
-     inkscape:showpageshadow="0"
-     inkscape:pageopacity="0"
-     inkscape:pagecheckerboard="1"
-     inkscape:deskcolor="#505050"
-     inkscape:document-units="px"
-     inkscape:zoom="2"
-     inkscape:cx="107"
-     inkscape:cy="130"
-     inkscape:window-width="2560"
-     inkscape:window-height="1560"
-     inkscape:window-x="-12"
-     inkscape:window-y="-12"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" /><defs
-     id="defs1"><linearGradient
-       id="linearGradient8"
-       inkscape:collect="always"><stop
-         style="stop-color:#7289da;stop-opacity:1;"
-         offset="0.2007772"
-         id="stop8" /><stop
-         style="stop-color:#11143b;stop-opacity:1;"
-         offset="1"
-         id="stop9" /></linearGradient><radialGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient8"
-       id="radialGradient9"
-       cx="47.832207"
-       cy="44.702724"
-       fx="47.832207"
-       fy="44.702724"
-       r="39.686985"
-       gradientTransform="matrix(1.2203741,-1.2203742,1.2360349,1.2360349,-73.608562,42.673767)"
-       gradientUnits="userSpaceOnUse" /></defs><g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"><rect
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46667px;line-height:1;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:url(#radialGradient9);fill-opacity:1;stroke:#000000;stroke-width:0.52916666;stroke-linejoin:miter;stroke-dasharray:none;paint-order:normal"
-       id="rect7"
-       width="78.844803"
-       height="65.617706"
-       x="0.26561686"
-       y="0.2635498" /><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46667px;line-height:1;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.264583;font-variation-settings:'wght' 600"
-       x="39.782562"
-       y="11.728485"
-       id="text1"><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666957px;line-height:1;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.264583;font-variation-settings:'wght' 600"
-         x="39.782562"
-         y="11.728485"
-         id="tspan2">Join the official</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46666957px;line-height:1;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, @wght=600';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.264583;font-variation-settings:'wght' 600"
-         x="39.782562"
-         y="20.195156"
-         id="tspan4">survev.io discord!</tspan></text><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;line-height:1;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
-       x="39.782562"
-       y="59.882595"
-       id="text6"><tspan
-         sodipodi:role="line"
-         id="tspan7"
-         x="39.782562"
-         y="59.882595">(Click this banner or the button below it)</tspan></text><path
-       fill="#ffffff"
-       d="m 51.363537,27.769607 a 27.820937,27.820937 0 0 0 -6.940021,-2.135187 19.065875,19.065875 0 0 0 -0.889,1.807104 25.8445,25.8445 0 0 0 -7.702021,0 19.147896,19.147896 0 0 0 -0.889,-1.807104 28.016729,28.016729 0 0 0 -6.945312,2.140479 c -4.392083,6.498167 -5.582708,12.834937 -4.987396,19.08175 v 0 a 27.974395,27.974395 0 0 0 8.511646,4.273021 20.558125,20.558125 0 0 0 1.822979,-2.939521 18.102791,18.102791 0 0 1 -2.870729,-1.370542 c 0.240771,-0.174625 0.47625,-0.354541 0.703792,-0.529166 a 19.994562,19.994562 0 0 0 17.017999,0 c 0.230188,0.187854 0.465667,0.36777 0.703792,0.529166 a 18.171583,18.171583 0 0 1 -2.876021,1.373188 20.372916,20.372916 0 0 0 1.822979,2.936875 27.847395,27.847395 0 0 0 8.516937,-4.270375 v 0 c 0.6985,-7.244292 -1.19327,-13.522854 -5.000624,-19.089688 z M 34.099474,43.014899 c -1.658937,0 -3.029479,-1.505479 -3.029479,-3.357563 0,-1.852083 1.322917,-3.370791 3.024188,-3.370791 1.70127,0 3.061229,1.518708 3.032125,3.370791 -0.0291,1.852084 -1.336146,3.357563 -3.026834,3.357563 z m 11.176,0 c -1.661583,0 -3.026833,-1.505479 -3.026833,-3.357563 0,-1.852083 1.322917,-3.370791 3.026833,-3.370791 1.703917,0 3.053292,1.518708 3.024188,3.370791 -0.02911,1.852084 -1.3335,3.357563 -3.024188,3.357563 z"
-       id="path1"
-       style="stroke-width:0.264583" /></g></svg>
+<g transform="translate(0.000000,500.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M0 2500 l0 -2500 2500 0 2500 0 0 2500 0 2500 -2500 0 -2500 0 0
+-2500z m2544 1389 l26 -20 0 -188 0 -187 93 -83 c50 -46 97 -85 103 -88 7 -2
+76 28 154 67 l142 71 29 -27 c23 -22 29 -37 29 -69 l0 -40 -135 -68 -135 -67
+0 -280 0 -280 135 -67 135 -68 0 -40 c0 -32 -6 -47 -29 -69 l-29 -27 -142 71
+c-78 39 -146 70 -151 68 -5 -2 -51 -41 -103 -88 l-95 -85 -1 -187 0 -187 -26
+-20 c-34 -27 -64 -27 -98 0 l-26 20 0 187 0 187 -95 85 c-52 47 -99 86 -104
+88 -5 2 -73 -29 -151 -68 l-142 -71 -29 27 c-23 22 -29 37 -29 69 l0 40 135
+68 135 67 0 280 0 280 -135 67 -135 68 0 40 c0 32 6 47 29 69 l29 27 142 -71
+c78 -39 147 -69 154 -67 6 3 53 42 104 88 l92 83 0 187 0 188 26 20 c15 12 37
+21 49 21 12 0 34 -9 49 -21z m-454 -2142 c51 -18 72 -61 78 -168 l5 -89 -52 0
+-51 0 0 79 c0 87 -12 111 -55 111 -44 0 -55 -24 -55 -119 0 -102 6 -112 87
+-131 95 -22 123 -71 122 -215 -1 -147 -33 -189 -146 -189 -124 -1 -157 38
+-158 184 l0 85 45 0 45 0 5 -87 c3 -47 8 -89 11 -92 3 -3 19 -9 36 -12 50 -10
+63 13 63 109 0 100 -11 120 -76 136 -116 29 -139 70 -132 230 3 82 8 106 24
+128 24 33 72 52 129 52 22 0 56 -5 75 -12z m400 -5 c51 -25 70 -70 70 -169 l0
+-83 -50 0 -50 0 0 85 c0 73 -3 86 -19 95 -29 15 -49 12 -71 -10 -19 -19 -20
+-33 -20 -270 0 -237 1 -251 20 -270 11 -11 29 -20 40 -20 11 0 29 9 40 20 17
+17 20 33 20 101 l0 80 48 -3 47 -3 -2 -93 c-3 -130 -30 -167 -132 -179 -73 -8
+-133 16 -157 65 -16 33 -18 67 -19 302 0 249 1 267 20 300 26 44 76 70 135 70
+25 0 61 -8 80 -18z m402 -6 c49 -32 53 -60 53 -346 0 -289 -2 -303 -58 -344
+-41 -30 -153 -30 -194 0 -53 39 -55 53 -55 344 0 305 4 326 70 354 46 20 148
+16 184 -8z m-1340 -24 l33 -32 3 -278 c2 -264 1 -279 -18 -310 -29 -47 -73
+-62 -185 -62 l-95 0 0 361 0 361 115 -4 c114 -3 115 -3 147 -36z m228 -322 l0
+-360 -50 0 -50 0 0 360 0 360 50 0 50 0 0 -360z m1488 340 c50 -31 62 -71 62
+-210 0 -128 -11 -176 -48 -201 -19 -14 -19 -16 14 -129 52 -181 53 -162 -8
+-158 l-52 3 -31 125 c-27 110 -34 125 -53 128 -22 3 -22 2 -22 -127 l0 -131
+-50 0 -50 0 0 360 0 360 103 0 c85 0 108 -3 135 -20z m380 0 c57 -35 62 -61
+61 -337 0 -270 -5 -302 -52 -337 -24 -18 -46 -22 -143 -24 l-114 -4 0 361 0
+361 108 0 c90 0 112 -3 140 -20z m-1958 -888 c51 -25 70 -70 70 -169 l0 -83
+-45 0 -45 0 0 75 c0 81 -18 115 -60 115 -42 0 -60 -34 -59 -112 1 -104 4 -109
+90 -138 57 -19 78 -32 95 -57 43 -64 39 -261 -7 -309 -29 -31 -91 -48 -148
+-40 -93 13 -121 57 -121 191 l0 85 45 0 45 0 0 -80 c0 -67 3 -83 20 -100 25
+-25 55 -25 80 0 16 16 20 32 19 88 -2 109 -4 113 -88 142 -86 29 -110 54 -122
+127 -9 54 -2 161 13 211 19 63 141 93 218 54z m418 -34 l-3 -43 -78 0 -77 0 0
+-112 0 -113 75 0 75 0 0 -45 0 -45 -75 0 -75 0 0 -115 0 -114 78 -3 77 -3 3
+-42 3 -43 -130 0 -131 0 0 360 0 360 131 0 130 0 -3 -42z m300 22 c53 -33 64
+-73 60 -224 -3 -136 -3 -134 -52 -201 -8 -11 8 -81 60 -258 5 -16 0 -18 -47
+-15 l-53 3 -31 125 c-27 110 -34 125 -53 128 -22 3 -22 2 -22 -127 l0 -131
+-50 0 -50 0 0 360 0 360 103 0 c85 0 108 -3 135 -20z m240 -172 c12 -106 25
+-238 28 -293 6 -114 11 -145 23 -145 4 0 11 55 15 123 6 107 36 381 51 475 6
+31 7 32 56 32 l50 0 -6 -32 c-7 -45 -85 -662 -85 -677 0 -7 -28 -11 -84 -11
+l-83 0 -7 68 c-3 37 -24 199 -44 360 l-38 292 50 0 51 0 23 -192z m542 146 l0
+-45 -77 2 -78 2 -3 -111 -3 -112 76 0 75 0 0 -45 0 -45 -75 0 -75 0 0 -115 0
+-115 80 0 80 0 0 -45 0 -45 -130 0 -130 0 0 360 0 360 130 0 130 0 0 -46z
+m295 32 c56 -24 69 -62 70 -206 0 -143 -5 -167 -40 -203 l-26 -25 39 -136 40
+-136 -53 0 -53 0 -32 130 c-31 124 -34 130 -57 130 l-26 0 5 -130 5 -130 -49
+0 -48 0 0 360 0 360 95 0 c60 0 108 -5 130 -14z"/>
+<path d="M2390 3269 c-99 -91 -100 -92 -100 -138 l0 -46 122 122 c105 105 120
+124 109 137 -8 9 -17 16 -22 16 -5 0 -54 -41 -109 -91z"/>
+<path d="M2467 3052 l-178 -178 3 -52 3 -52 203 203 203 203 -29 27 -28 27
+-177 -178z"/>
+<path d="M2516 2781 l-179 -179 79 -75 79 -74 102 95 103 95 0 159 c0 87 -1
+158 -3 158 -1 0 -83 -81 -181 -179z"/>
+<path d="M2750 1660 c-19 -19 -20 -33 -20 -270 0 -237 1 -251 20 -270 11 -11
+29 -20 40 -20 11 0 29 9 40 20 19 19 20 33 20 273 0 233 -1 255 -18 270 -25
+23 -58 21 -82 -3z"/>
+<path d="M1386 1663 c-3 -4 -6 -127 -6 -275 l0 -268 44 0 c71 0 71 0 71 271 0
+199 -2 241 -15 252 -16 15 -84 29 -94 20z"/>
+<path d="M3130 1526 l0 -146 38 0 c21 0 43 5 50 12 17 17 17 242 0 256 -7 6
+-30 13 -50 17 l-38 7 0 -146z"/>
+<path d="M3506 1663 c-3 -4 -6 -127 -6 -275 l0 -268 43 0 c24 0 48 5 55 12 18
+18 17 502 0 515 -16 12 -84 24 -92 16z"/>
+<path d="M2270 625 l0 -145 38 0 c21 0 43 5 50 12 17 17 17 242 0 256 -7 5
+-30 13 -50 16 l-38 6 0 -145z"/>
+<path d="M3356 762 c-3 -3 -6 -68 -6 -144 l0 -138 39 0 c63 0 71 15 71 139 0
+70 -4 113 -12 124 -13 16 -81 31 -92 19z"/>
+</g>
+</svg>
