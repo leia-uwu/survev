@@ -587,7 +587,21 @@ export class Player extends BaseGameObject {
 
     spectators = new Set<Player>();
 
-    outfit: string;
+    outfit = "outfitBase";
+
+    setOutfit(outfit: string) {
+        if (this.outfit === outfit) return;
+        this.outfit = outfit;
+        const def = GameObjectDefs[outfit] as OutfitDef;
+        this.obstacleOutfit?.destroy();
+        this.obstacleOutfit = undefined;
+
+        if (def.obstacleType) {
+            this.obstacleOutfit = this.game.map.genOutfitObstacle(def.obstacleType, this);
+        }
+        this.setDirty();
+    }
+
     /** "backpack00" is no backpack, "backpack03" is the max level backpack */
     backpack: string;
     /** "" is no helmet, "helmet03" is the max level helmet */
@@ -725,10 +739,10 @@ export class Player extends BaseGameObject {
             //outfit
             const newOutfit = def.defaultItems.outfit;
             if (newOutfit instanceof Function) {
-                this.outfit = newOutfit(clampedTeamId);
+                this.setOutfit(newOutfit(clampedTeamId));
             } else {
                 //string
-                if (newOutfit) this.outfit = newOutfit;
+                if (newOutfit) this.setOutfit(newOutfit);
             }
 
             //armor
@@ -981,9 +995,9 @@ export class Player extends BaseGameObject {
             isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
             joinMsg.loadout.outfit !== "outfitBase"
         ) {
-            this.outfit = joinMsg.loadout.outfit;
+            this.setOutfit(joinMsg.loadout.outfit);
         } else {
-            this.outfit = defaultItems.outfit;
+            this.setOutfit(defaultItems.outfit);
         }
 
         if (
@@ -3204,19 +3218,7 @@ export class Player extends BaseGameObject {
                 amountLeft = 1;
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
-                this.outfit = obj.type;
-
-                this.obstacleOutfit?.destroy();
-                this.obstacleOutfit = undefined;
-
-                if (def.obstacleType) {
-                    this.obstacleOutfit = this.game.map.genOutfitObstacle(
-                        def.obstacleType,
-                        this,
-                    );
-                }
-
-                this.setDirty();
+                this.setOutfit(obj.type);
                 break;
             case "perk":
                 let type = obj.type;
