@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "nanotimer": "^0.3.15",
-    "typescript": "^5.6.2",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.48.0"
+    "typescript": "^5.6.3",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.49.0"
   },
   "devDependencies": {
     "@types/nanotimer": "^0.3.2",
-    "@types/node": "^20.16.5",
+    "@types/node": "^20.17.1",
     "ts-node": "^10.9.2"
   }
 }
