@@ -428,15 +428,19 @@ export const Main: MapDef = {
         // xp and halloween perks guessed with no base on real data!
         tier_fruit_xp: [
             { name: "", count: 1, weight: 40 },
+            /* commented until we have a pass so the xp artifacts do something
             { name: "tier_xp_uncommon", count: 1, weight: 1 },
             { name: "tier_xp_rare", count: 1, weight: 0.1 },
             { name: "tier_xp_mythic", count: 1, weight: 0.001 },
+            */
         ],
         tier_airdrop_xp: [
             { name: "", count: 1, weight: 15 },
+            /*
             { name: "tier_xp_uncommon", count: 1, weight: 1 },
             { name: "tier_xp_rare", count: 1, weight: 0.1 },
             { name: "tier_xp_mythic", count: 1, weight: 0.001 },
+            */
         ],
         tier_halloween_mystery_perks: [
             { name: "trick_nothing", count: 1, weight: 1 },
