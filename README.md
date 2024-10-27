@@ -5,10 +5,6 @@ Our goal is to immortalize it by getting the recreation as close as possible to 
 
 We do not consider any updates after the Kongregate acquisition canonical, so those will not be a part of the project.
 
-### This is work in progress and not fully ready for production.
-
-### [TODO LIST AND PROGRESS](./TODO.md)
-
 ## Running locally
 
 start client development server with `pnpm dev:client`
