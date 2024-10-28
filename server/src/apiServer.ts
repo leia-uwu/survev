@@ -218,6 +218,10 @@ if (process.argv.includes("--api-server")) {
                     return;
                 }
                 server.updateRegion(body.regionId, body.data);
+                res.cork(() => {
+                    if (res.aborted) return;
+                    res.end();
+                });
             },
             () => {},
         );
