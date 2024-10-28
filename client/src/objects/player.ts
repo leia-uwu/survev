@@ -52,6 +52,7 @@ import type { InputBinds } from "./../inputBinds";
 import { Pool } from "./objectPool";
 import type { Obstacle } from "./obstacle";
 import type { Emitter, ParticleBarn } from "./particles";
+import { halloweenSpriteMap } from "./projectile";
 import { createCasingParticle } from "./shot";
 
 const submergeMaskScaleFactor = 0.1;
@@ -1545,7 +1546,13 @@ export class Player implements AbstractObject {
                 },
             ) {
                 if (t.sprite && t.sprite != "none") {
-                    e.texture = PIXI.Texture.from(t.sprite);
+                    // Setup sprite
+                    let sprite = t.sprite;
+                    // @HACK: halloween sprites
+                    if (map.mapDef.gameMode.spookyKillSounds) {
+                        sprite = halloweenSpriteMap[sprite] || sprite;
+                    }
+                    e.texture = PIXI.Texture.from(sprite);
                     e.position.set(t.pos?.x, t.pos?.y);
                     e.scale.set(t.scale, t.scale);
                     e.rotation = Math.PI * 0.5;

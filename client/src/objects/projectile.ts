@@ -20,7 +20,7 @@ import type { Obstacle } from "./obstacle";
 import type { ParticleBarn } from "./particles";
 import type { AbstractObject, Player } from "./player";
 
-const halloweenSpriteMap: Record<string, string> = {
+export const halloweenSpriteMap: Record<string, string> = {
     "proj-frag-nopin-01.img": "proj-frag-nopin-02.img",
     "proj-frag-nopin-nolever-01.img": "proj-frag-nopin-nolever-02.img",
     "proj-frag-pin-01.img": "proj-frag-pin-02.img",
