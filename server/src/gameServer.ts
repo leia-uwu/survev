@@ -335,6 +335,6 @@ if (process.argv.includes("--game-server")) {
 
         setInterval(() => {
             server.sendData();
-        }, 10 * 1000);
+        }, 10 * 3000);
     });
 }
