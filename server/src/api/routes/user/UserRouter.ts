@@ -36,14 +36,14 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             lastUsernameChangeTime,
             items,
             banned,
-            banReason
+            banReason,
         } = result;
 
-        if ( banned ) {
+        if (banned) {
             return c.json<ProfileResponse>({
                 banned: true,
                 reason: banReason,
-            })
+            });
         }
 
         const timeUntilNextChange =
