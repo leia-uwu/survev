@@ -70,7 +70,6 @@ export const Config = {
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
-
 if (!isProduction) {
     util.mergeDeep(Config, {
         regions: {

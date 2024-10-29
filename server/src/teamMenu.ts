@@ -27,7 +27,7 @@ export interface TeamSocketData {
 }
 
 interface RoomPlayer extends TeamMenuPlayer {
-    socket: WSContext<TeamSocketData>
+    socket: WSContext<TeamSocketData>;
 }
 
 export interface Room {
@@ -70,24 +70,26 @@ function randomString(len: number) {
 export class TeamMenu {
     rooms = new Map<string, Room>();
 
-    constructor(public server: ApiServer) { }
+    constructor(public server: ApiServer) {}
 
-    init(app: Hono, upgradeWebSocket: UpgradeWebSocket<TeamSocketData>) {
+    init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
         const teamMenu = this;
 
         const httpRateLimit = new HTTPRateLimit(1, 2000);
         const wsRateLimit = new WebSocketRateLimit(5, 1000, 10);
 
-        console.log(upgradeWebSocket.toString())
-
         app.get(
             "/team_v2",
-            upgradeWebSocket((c) => {
+            (upgradeWebSocket as UpgradeWebSocket<TeamSocketData>)((c) => {
                 const info = getConnInfo(c);
                 const ip = info.remote.address;
 
                 let closeOnOpen = false;
-                if (!ip || httpRateLimit.isRateLimited(ip) || wsRateLimit.isIpRateLimited(ip)) {
+                if (
+                    !ip ||
+                    httpRateLimit.isRateLimited(ip) ||
+                    wsRateLimit.isIpRateLimited(ip)
+                ) {
                     closeOnOpen = true;
                 }
 
@@ -96,7 +98,7 @@ export class TeamMenu {
                     onOpen(_evt, ws: WSContext<TeamSocketData>) {
                         const userData = {
                             ip,
-                            rateLimit: {}
+                            rateLimit: {},
                         } as TeamSocketData;
                         ws.raw = userData;
                         if (closeOnOpen) {
@@ -120,8 +122,8 @@ export class TeamMenu {
                         }
                         wsRateLimit.ipDisconnected(userData.ip);
                     },
-                }
-            })
+                };
+            }),
         );
     }
 
@@ -178,7 +180,10 @@ export class TeamMenu {
     /**
      * @param socket player to send the response to
      */
-    sendResponse(response: ServerToClientTeamMsg, socket: WSContext<TeamSocketData>): void {
+    sendResponse(
+        response: ServerToClientTeamMsg,
+        socket: WSContext<TeamSocketData>,
+    ): void {
         socket.send(JSON.stringify(response));
     }
 
@@ -307,7 +312,7 @@ export class TeamMenu {
                     isLeader: true,
                     inGame: false,
                     playerId: 0,
-                    socket: ws
+                    socket: ws,
                 };
 
                 if (!Config.modes[1].enabled && !Config.modes[2].enabled) {
@@ -356,7 +361,7 @@ export class TeamMenu {
                     isLeader: false,
                     inGame: false,
                     playerId: room.players.length,
-                    socket: ws
+                    socket: ws,
                 } as RoomPlayer;
                 room.players.push(player);
 
@@ -368,9 +373,7 @@ export class TeamMenu {
             case "changeName": {
                 const newName = this.cleanUserName(parsedMessage.data.name);
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socket === ws,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 player.name = newName;
 
                 this.sendRoomState(room);
@@ -379,9 +382,7 @@ export class TeamMenu {
             case "setRoomProps": {
                 const newRoomData = parsedMessage.data;
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socket === ws,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 if (!player.isLeader) {
                     return;
                 }
@@ -399,9 +400,7 @@ export class TeamMenu {
             }
             case "kick": {
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socket === ws,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 if (!player.isLeader) {
                     return;
                 }
@@ -431,9 +430,7 @@ export class TeamMenu {
             case "playGame": {
                 // this message can only ever be sent by the leader
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socket === ws,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
 
                 if (!player.isLeader) {
                     return;
@@ -478,9 +475,7 @@ export class TeamMenu {
             case "gameComplete": {
                 // doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socket === ws,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 player.inGame = false;
                 room.roomData.findingGame = false;
 
