@@ -159,7 +159,7 @@ UserRouter.post("/logout", AuthMiddleware, async (c) => {
         c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
             append: true,
         });
-        return c.redirect("/login");
+        return c.json({}, 200);
     } catch (err) {
         console.error("Error logging out", { error: err });
         return c.json({}, 500);
