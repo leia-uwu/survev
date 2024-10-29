@@ -32,7 +32,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { checkForBadWords } from "../../utils/serverHelpers";
-import type { Game } from "../game";
+import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
@@ -84,10 +84,16 @@ export class PlayerBarn {
     }
 
     addPlayer(socketId: string, joinMsg: net.JoinMsg) {
-        if (!this.game.joinTokens.has(joinMsg.matchPriv)) {
+        const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
+
+        if (!joinData || joinData.expiresAt < Date.now() || joinData.avaliableUses <= 0) {
             this.game.closeSocket(socketId);
+            if (joinData) {
+                this.game.joinTokens.delete(joinMsg.matchPriv);
+            }
             return;
         }
+        joinData.avaliableUses -= 1;
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
@@ -105,31 +111,8 @@ export class PlayerBarn {
         let group: Group | undefined;
 
         if (this.game.isTeamMode) {
-            const joinData = this.game.joinTokens.get(joinMsg.matchPriv)!;
-
-            group = this.groupsByHash.get(joinMsg.matchPriv);
-
-            if (!group && joinData.autoFill) {
-                group = this.groups.find((group) => {
-                    const sameTeamId = team && team.teamId == group.players[0].teamId;
-                    return (
-                        (team ? sameTeamId : true) &&
-                        group.autoFill &&
-                        group.avaliableSlots >= joinData.playerCount &&
-                        group.players.length < this.game.teamMode
-                    );
-                });
-
-                if (group) {
-                    group.avaliableSlots -= joinData.playerCount;
-                }
-            }
-
-            if (!group || (group && group.players.length > this.game.teamMode)) {
-                group = this.addGroup(joinMsg.matchPriv, joinData.autoFill);
-            } else {
-                team = group.players[0].team;
-            }
+            group = this.findFreeGroup(joinData, team);
+            assert(group);
         }
 
         const pos: Vec2 = this.game.map.getSpawnPos(group, team);
@@ -228,6 +211,8 @@ export class PlayerBarn {
             this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         }
 
+        player.obstacleOutfit?.destroy();
+
         this.game.checkGameOver();
         this.game.updateData();
     }
@@ -325,7 +310,43 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    addGroup(hash: string, autoFill: boolean) {
+    findFreeGroup(joinData: JoinTokenData, team?: Team): Group {
+        let group = this.groupsByHash.get(joinData.groupHashToJoin);
+
+        if (!group && joinData.autoFill) {
+            group = this.groups.find((group) => {
+                const sameTeamId = team && team.teamId == group.players[0].teamId;
+                return (
+                    (team ? sameTeamId : true) &&
+                    group.autoFill &&
+                    group.canJoin(joinData.playerCount)
+                );
+            });
+        }
+
+        // second condition should never happen
+        // but keeping it just in case
+        // since more than 4 players in a group crashes the client
+        if (!group || group.players.length >= this.game.teamMode) {
+            group = this.addGroup(joinData.autoFill);
+        }
+
+        // only reserve slots on the first time this join token is used
+        // since the playerCount counts for other people from the team menu
+        // using the same token
+        if (group.hash !== joinData.groupHashToJoin) {
+            group.reservedSlots += joinData.playerCount;
+        }
+
+        joinData.groupHashToJoin = group.hash;
+
+        return group;
+    }
+
+    addGroup(autoFill: boolean) {
+        // not using nodejs crypto because i want it to run in the browser too
+        // and doesn't need to be cryptographically secure lol
+        const hash = Math.random().toString(16).slice(2);
         const groupId = this.groupIdAllocator.getNextId();
         const group = new Group(hash, groupId, autoFill, this.game.teamMode);
         this.groups.push(group);
@@ -566,7 +587,21 @@ export class Player extends BaseGameObject {
 
     spectators = new Set<Player>();
 
-    outfit: string;
+    outfit = "outfitBase";
+
+    setOutfit(outfit: string) {
+        if (this.outfit === outfit) return;
+        this.outfit = outfit;
+        const def = GameObjectDefs[outfit] as OutfitDef;
+        this.obstacleOutfit?.destroy();
+        this.obstacleOutfit = undefined;
+
+        if (def.obstacleType) {
+            this.obstacleOutfit = this.game.map.genOutfitObstacle(def.obstacleType, this);
+        }
+        this.setDirty();
+    }
+
     /** "backpack00" is no backpack, "backpack03" is the max level backpack */
     backpack: string;
     /** "" is no helmet, "helmet03" is the max level helmet */
@@ -704,10 +739,10 @@ export class Player extends BaseGameObject {
             //outfit
             const newOutfit = def.defaultItems.outfit;
             if (newOutfit instanceof Function) {
-                this.outfit = newOutfit(clampedTeamId);
+                this.setOutfit(newOutfit(clampedTeamId));
             } else {
                 //string
-                if (newOutfit) this.outfit = newOutfit;
+                if (newOutfit) this.setOutfit(newOutfit);
             }
 
             //armor
@@ -960,9 +995,9 @@ export class Player extends BaseGameObject {
             isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
             joinMsg.loadout.outfit !== "outfitBase"
         ) {
-            this.outfit = joinMsg.loadout.outfit;
+            this.setOutfit(joinMsg.loadout.outfit);
         } else {
-            this.outfit = defaultItems.outfit;
+            this.setOutfit(defaultItems.outfit);
         }
 
         if (
@@ -1534,6 +1569,11 @@ export class Player extends BaseGameObject {
         }
         if (this.layer !== originalLayer) {
             this.setDirty();
+
+            if (this.obstacleOutfit) {
+                this.obstacleOutfit.layer = this.layer;
+                this.obstacleOutfit.setDirty();
+            }
         }
 
         //
@@ -1633,9 +1673,10 @@ export class Player extends BaseGameObject {
             player = this;
         } else if (this.spectating.dead) {
             // was spectating someone but they died so find new player to spectate
-            player = this.spectating.killedBy
-                ? this.spectating.killedBy
-                : playerBarn.randomPlayer();
+            player =
+                this.spectating.killedBy && !this.spectating.killedBy.dead
+                    ? this.spectating.killedBy
+                    : playerBarn.randomPlayer();
             if (player === this) {
                 player = playerBarn.randomPlayer();
             }
@@ -2585,7 +2626,7 @@ export class Player extends BaseGameObject {
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
             this.dirOld = v2.copy(this.dir);
-            this.dir = msg.toMouseDir;
+            this.dir = v2.normalizeSafe(msg.toMouseDir);
         }
         this.shootHold = msg.shootHold;
 
@@ -2632,37 +2673,23 @@ export class Player extends BaseGameObject {
                     }
                     break;
                 case GameConfig.Input.EquipPrevWeap:
-                    {
-                        const curIdx = this.curWeapIdx;
-
-                        for (
-                            let i = curIdx - 1;
-                            i < curIdx + GameConfig.WeaponSlot.Count;
-                            i++
-                        ) {
-                            const idx = math.mod(i, GameConfig.WeaponSlot.Count);
-                            if (this.weapons[idx].type) {
-                                this.weaponManager.setCurWeapIndex(idx);
-                                break;
-                            }
-                        }
-                    }
-                    break;
                 case GameConfig.Input.EquipNextWeap:
                     {
-                        const curIdx = this.curWeapIdx;
+                        function absMod(a: number, n: number): number {
+                            return a >= 0 ? a % n : ((a % n) + n) % n;
+                        }
 
-                        for (
-                            let i = curIdx + 1;
-                            i > curIdx - GameConfig.WeaponSlot.Count;
-                            i--
-                        ) {
-                            const idx = math.mod(i, GameConfig.WeaponSlot.Count);
+                        const toAdd = input === GameConfig.Input.EquipNextWeap ? 1 : -1;
+
+                        let iterations = 0;
+                        let idx = this.curWeapIdx;
+                        while (iterations < GameConfig.WeaponSlot.Count * 2) {
+                            idx = absMod(idx + toAdd, GameConfig.WeaponSlot.Count);
                             if (this.weapons[idx].type) {
-                                this.weaponManager.setCurWeapIndex(idx);
                                 break;
                             }
                         }
+                        this.weaponManager.setCurWeapIndex(idx);
                     }
                     break;
                 case GameConfig.Input.EquipLastWeap:
@@ -3191,19 +3218,7 @@ export class Player extends BaseGameObject {
                 amountLeft = 1;
                 lootToAdd = this.outfit;
                 pickupMsg.type = net.PickupMsgType.Success;
-                this.outfit = obj.type;
-
-                this.obstacleOutfit?.destroy();
-                this.obstacleOutfit = undefined;
-
-                if (def.obstacleType) {
-                    this.obstacleOutfit = this.game.map.genOutfitObstacle(
-                        def.obstacleType,
-                        this,
-                    );
-                }
-
-                this.setDirty();
+                this.setOutfit(obj.type);
                 break;
             case "perk":
                 let type = obj.type;

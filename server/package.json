@@ -18,22 +18,22 @@
     "@hono/zod-validator": "^0.2.2",
     "arctic": "^1.9.2",
     "drizzle-orm": "^0.33.0",
-    "hono": "^4.5.9",
-    "lucia": "^3.2.0",
+    "hono": "^4.6.7",
+    "lucia": "^3.2.2",
     "nanotimer": "^0.3.15",
     "slugify": "^1.6.6",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.48.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.49.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@libsql/client": "^0.10.0",
     "@lucia-auth/adapter-drizzle": "^1.1.0",
-    "@types/bun": "^1.1.8",
+    "@types/bun": "^1.1.12",
     "@types/nanotimer": "^0.3.2",
-    "@types/node": "^20.16.5",
+    "@types/node": "^20.17.2",
     "concurrently": "^8.2.2",
     "drizzle-kit": "^0.24.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

@@ -5,10 +5,15 @@ import { GameConfig, TeamMode } from "../../shared/gameConfig";
 import { util } from "../../shared/utils/util";
 import type { Vec2 } from "../../shared/utils/v2";
 
-/**
- * Default server config
- */
+const isProduction = process.env["NODE_ENV"] === "production";
 
+// WARNING: THIS IS THE DEFAULT CONFIG
+// YOU SHOULD MODIFY survev-config.json FILE INSTEAD FOR LOCAL CHANGES
+// TO AVOID MERGE CONFLICTS AND PUSHING IT TO GIT
+
+/**
+ * Default config
+ */
 export const Config = {
     devServer: {
         host: "127.0.0.1",
@@ -42,6 +47,8 @@ export const Config = {
         spawnMode: "default",
     },
 
+    rateLimitsEnabled: isProduction,
+
     client: {
         AIP_ID: undefined,
         AIP_PLACEMENT_ID: undefined,
@@ -53,7 +60,7 @@ export const Config = {
     gameTps: 100,
     netSyncTps: 33,
 
-    processMode: process.env.NODE_ENV === "production" ? "multi" : "single",
+    processMode: isProduction ? "multi" : "single",
 
     perfLogging: {
         enabled: true,
@@ -63,8 +70,6 @@ export const Config = {
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
-const runningOnVite = process.argv.toString().includes("vite");
-const isProduction = process.env["NODE_ENV"] === "production" && !runningOnVite;
 
 if (!isProduction) {
     util.mergeDeep(Config, {
@@ -78,7 +83,12 @@ if (!isProduction) {
     });
 }
 
-const configPath = path.join(__dirname, isProduction ? "../../" : "", "../../");
+const runningOnVite = process.argv.toString().includes("vite");
+const configPath = path.join(
+    __dirname,
+    isProduction && !runningOnVite ? "../../" : "",
+    "../../",
+);
 
 function loadConfig(fileName: string, create?: boolean) {
     const path = `${configPath}${fileName}`;
@@ -120,6 +130,7 @@ interface ServerConfig {
         certFile: string;
     };
 }
+
 export interface ConfigType {
     devServer: ServerConfig;
 
@@ -178,6 +189,8 @@ export interface ConfigType {
          */
         time: number;
     };
+
+    rateLimitsEnabled: boolean;
 
     client: {
         // adin play IDs

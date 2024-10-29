@@ -1,6 +1,6 @@
 {
   "name": "survev",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Open Source Surviv.io Server",
   "scripts": {
     "dev:api": "cd server && pnpm dev:api",
@@ -16,9 +16,8 @@
   "author": "Leia",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@biomejs/biome": "1.9.0",
-    "@types/node": "^20.16.5",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.6.2"
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^20.17.2",
+    "typescript": "^5.6.3"
   }
 }

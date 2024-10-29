@@ -330,6 +330,9 @@ export class Obstacle extends BaseGameObject {
         this.dead = true;
         this.setDirty();
 
+        this.scale = this.minScale;
+        this.updateCollider();
+
         if (def.destroyType) {
             this.game.map.genAuto(def.destroyType, this.pos, this.layer, this.ori);
         }

@@ -121,8 +121,10 @@ export class Game {
     seq!: number;
     seqInFlight!: boolean;
     seqSendTime!: number;
-    pings!: unknown[];
+    pings!: number[];
     debugPingTime!: number;
+    lastUpdateTime!: number;
+    updateIntervals!: number[];
 
     constructor(
         public pixi: PIXI.Application,
@@ -338,6 +340,8 @@ export class Game {
         this.seqInFlight = false;
         this.seqSendTime = 0;
         this.pings = [];
+        this.updateIntervals = [];
+        this.lastUpdateTime = 0;
         this.debugPingTime = 0;
 
         // Process config
@@ -912,6 +916,55 @@ export class Game {
         }
         this.emoteBarn.newEmotes = [];
 
+        const now = Date.now();
+        if (now > this.debugPingTime) {
+            this.debugPingTime = now + 20000;
+            function format(str: string, len: number) {
+                return (" ".repeat(len) + str).slice(-len);
+            }
+            const pings = this.pings.sort((a, b) => {
+                return a - b;
+            });
+            const pLen = pings.length;
+            if (pLen > 0) {
+                const med = pings[Math.floor(pLen * 0.5)];
+                const p95 = pings[Math.floor(pLen * 0.95)];
+                const max = pings[pLen - 1];
+                console.log(
+                    "Ping     min:",
+                    format(pings[0].toFixed(2), 7),
+                    "med:",
+                    format(med.toFixed(2), 7),
+                    "p95:",
+                    format(p95.toFixed(2), 7),
+                    "max:",
+                    format(max.toFixed(2), 7),
+                );
+            }
+            this.pings = [];
+
+            const intervals = this.updateIntervals.sort((a, b) => {
+                return a - b;
+            });
+            const inteLen = intervals.length;
+            if (inteLen > 0) {
+                const med = intervals[Math.floor(inteLen * 0.5)];
+                const p95 = intervals[Math.floor(inteLen * 0.95)];
+                const max = intervals[inteLen - 1];
+                console.log(
+                    "Interval min:",
+                    format(intervals[0].toFixed(2), 7),
+                    "med:",
+                    format(med.toFixed(2), 7),
+                    "p95:",
+                    format(p95.toFixed(2), 7),
+                    "max:",
+                    format(max.toFixed(2), 7),
+                );
+            }
+            this.updateIntervals = [];
+        }
+
         this.render(dt, debug);
     }
 
@@ -1131,11 +1184,18 @@ export class Game {
         }
 
         // Latency determination
+        const now = Date.now();
         this.updateRecvCount++;
         if (msg.ack == this.seq && this.seqInFlight) {
             this.seqInFlight = false;
-            // const ping = Date.now() - this.seqSendTime;
+            const ping = now - this.seqSendTime;
+            this.pings.push(ping);
         }
+        if (this.lastUpdateTime > 0) {
+            const interval = now - this.lastUpdateTime;
+            this.updateIntervals.push(interval);
+        }
+        this.lastUpdateTime = now;
     }
 
     // Socket functions

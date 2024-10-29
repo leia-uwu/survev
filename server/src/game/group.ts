@@ -9,13 +9,19 @@ export class Group {
     players: Player[] = [];
     livingPlayers: Player[] = [];
     autoFill: boolean;
-    avaliableSlots: number;
+
+    maxPlayers: number;
+    reservedSlots = 0;
+
+    canJoin(players: number) {
+        return this.maxPlayers - this.reservedSlots - players >= 0;
+    }
 
     constructor(hash: string, groupId: number, autoFill: boolean, maxPlayers: number) {
         this.hash = hash;
         this.groupId = groupId;
         this.autoFill = autoFill;
-        this.avaliableSlots = maxPlayers;
+        this.maxPlayers = maxPlayers;
     }
 
     /**
@@ -55,12 +61,14 @@ export class Group {
      * true if all ALIVE teammates besides the passed in player are downed
      */
     checkAllDowned(player: Player) {
-        const filteredPlayers = this.players.filter((p) => p != player && !p.dead);
-        if (filteredPlayers.length == 0) {
-            // this is necessary since for some dumb reason every() on an empty array returns true????
+        for (const p of this.players) {
+            if (p === player) continue;
+            if (p.downed) continue;
+            if (p.dead) continue;
+            if (p.disconnected) continue;
             return false;
         }
-        return filteredPlayers.every((p) => p.downed);
+        return true;
     }
 
     /**

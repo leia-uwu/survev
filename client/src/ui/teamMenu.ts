@@ -447,7 +447,7 @@ export class TeamMenu {
 
             // Invite link
             if (this.roomData.roomUrl) {
-                const roomUrl = `${window.location.href.replace(this.roomData.roomUrl, "")}${this.roomData.roomUrl}`;
+                const roomUrl = `${window.location.href.replace(window.location.hash, "")}${this.roomData.roomUrl}`;
                 const roomCode = this.roomData.roomUrl.substring(1);
 
                 $("#team-url").html(roomUrl);
