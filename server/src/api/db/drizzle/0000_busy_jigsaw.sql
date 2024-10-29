@@ -11,6 +11,7 @@ CREATE TABLE `users` (
 	`slug` text NOT NULL,
 	`wins` integer DEFAULT 0 NOT NULL,
 	`banned` integer DEFAULT false NOT NULL,
+	`ban_reason` text DEFAULT '' NOT NULL,
 	`username` text DEFAULT '' NOT NULL,
 	`username_set` integer DEFAULT false NOT NULL,
 	`user_created` integer DEFAULT (unixepoch()) NOT NULL,

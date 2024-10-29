@@ -65,7 +65,7 @@ DiscordRouter.get("/callback", async (c) => {
         } = await discordUserResponse.json();
 
         const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.auth_id, discordUser.id),
+            where: eq(usersTable.authId, discordUser.id),
         });
 
         setCookie(c, "app-data", "1");
@@ -80,7 +80,7 @@ DiscordRouter.get("/callback", async (c) => {
         const userId = generateId(15);
         await createNewUser({
             id: userId,
-            auth_id: discordUser.id,
+            authId: discordUser.id,
             linked: true,
             username: slug,
             slug,

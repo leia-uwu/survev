@@ -74,7 +74,7 @@ GoogleRouter.get("/callback", async (c) => {
         const { sub: id, name: username } = await response.json();
 
         const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.auth_id, id),
+            where: eq(usersTable.authId, id),
         });
 
         setCookie(c, "app-data", "1");
@@ -89,7 +89,7 @@ GoogleRouter.get("/callback", async (c) => {
         const userId = generateId(15);
         await createNewUser({
             id: userId,
-            auth_id: id,
+            authId: id,
             linked: true,
             username: slug,
             slug,

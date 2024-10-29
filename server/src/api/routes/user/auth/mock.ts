@@ -16,7 +16,7 @@ MockRouter.get("/", async (c) => {
     }
     try {
         const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.auth_id, "MOCK_USER_ID"),
+            where: eq(usersTable.authId, "MOCK_USER_ID"),
         });
 
         setCookie(c, "app-data", "1");
@@ -29,7 +29,7 @@ MockRouter.get("/", async (c) => {
         const userId = generateId(15);
         await createNewUser({
             id: userId,
-            auth_id: "MOCK_USER_ID",
+            authId: "MOCK_USER_ID",
             username: "MOCK_USER_ID",
             linked: true,
             slug: "MOCK_USER_ID",

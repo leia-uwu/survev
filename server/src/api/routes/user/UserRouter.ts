@@ -24,7 +24,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
         });
 
         if (!result) {
-            return c.json({ err: "" }, 200);
+            return c.json({ err: "User profile not found" }, 404);
         }
 
         const {
@@ -35,7 +35,16 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             usernameSet,
             lastUsernameChangeTime,
             items,
+            banned,
+            banReason
         } = result;
+
+        if ( banned ) {
+            return c.json<ProfileResponse>({
+                banned: true,
+                reason: banReason,
+            })
+        }
 
         const timeUntilNextChange =
             getTimeUntilNextUsernameChange(lastUsernameChangeTime);
@@ -270,7 +279,7 @@ UserRouter.post(
             const result = await db
                 .select({ items: usersTable.items })
                 .from(usersTable)
-                .where(eq(usersTable.auth_id, "MOCK_USER_ID"))
+                .where(eq(usersTable.authId, "MOCK_USER_ID"))
                 .limit(1);
 
             if (!result.length) {
@@ -298,7 +307,7 @@ UserRouter.post(
                 .set({
                     items: updatedItems,
                 })
-                .where(eq(usersTable.auth_id, "MOCK_USER_ID"))
+                .where(eq(usersTable.authId, "MOCK_USER_ID"))
                 .returning({
                     items: usersTable.items,
                 });
@@ -348,11 +357,11 @@ export type Item = {
 
 type ProfileResponse =
     | {
-          banned: true;
+          readonly banned: true;
           reason: string;
       }
     | {
-          success: true;
+          readonly success: true;
           profile: Pick<
               typeof usersTable.$inferSelect,
               "slug" | "username" | "usernameSet" | "linked"

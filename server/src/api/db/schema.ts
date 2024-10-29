@@ -14,10 +14,11 @@ export const sessionTable = sqliteTable("session", {
 
 export const usersTable = sqliteTable("users", {
     id: text("id").notNull().primaryKey(),
-    auth_id: text("auth_id").notNull(),
+    authId: text("auth_id").notNull(),
     slug: text("slug").notNull().unique(),
     wins: integer("wins").notNull().default(0),
     banned: integer("banned", { mode: "boolean" }).notNull().default(false),
+    banReason: text("ban_reason").notNull().default(""),
     username: text("username").notNull().default(""),
     usernameSet: integer("username_set", { mode: "boolean" }).notNull().default(false),
     userCreated: integer("user_created", { mode: "timestamp" })
