@@ -61,7 +61,7 @@ GoogleRouter.get("/callback", async (c) => {
     const storedCodeVerifier = getCookie(c)[codeVerifierCookieName];
 
     if (!code || !state || !storedCodeVerifier || !storedState || state !== storedState) {
-        return c.body(null, 400);
+        return c.json({}, 400);
     }
 
     try {
@@ -101,8 +101,8 @@ GoogleRouter.get("/callback", async (c) => {
         server.logger.warn(`/api/user/auth/google/callback: Failed to create user`);
         console.log({ err: e });
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-            return c.body(null, 400);
+            return c.json({}, 400);
         }
-        return c.body(null, 500);
+        return c.json({}, 500);
     }
 });

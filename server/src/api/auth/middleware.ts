@@ -8,12 +8,12 @@ export const AuthMiddleware = async (c: Context, next: () => Promise<void>) => {
     if (!sessionId) {
         c.set("user", null);
         c.set("session", null);
-        return c.body(null, 401);
+        return c.json({}, 401);
     }
     const { session, user } = await lucia.validateSession(sessionId);
 
     if (!user) {
-        return c.body(null, 401);
+        return c.json({}, 401);
     }
 
     if (session && session.fresh) {

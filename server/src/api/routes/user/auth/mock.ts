@@ -39,6 +39,6 @@ MockRouter.get("/", async (c) => {
         return c.redirect("/");
     } catch (_err) {
         server.logger.warn("/api/user/auth/mock: Failed to create user");
-        return c.body(null, 500);
+        return c.json({}, 500);
     }
 });

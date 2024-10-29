@@ -47,7 +47,7 @@ DiscordRouter.get("/callback", async (c) => {
     const state = c.req.query("state")?.toString() ?? null;
     const storedState = getCookie(c)[stateCookieName] ?? null;
     if (!code || !state || !storedState || state !== storedState) {
-        return c.body(null, 400);
+        return c.json({}, 400);
     }
 
     try {
@@ -92,8 +92,8 @@ DiscordRouter.get("/callback", async (c) => {
         server.logger.warn("/api/user/auth/mock: Failed to create user");
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
             // invalid code
-            return c.body(null, 400);
+            return c.json({}, 400);
         }
-        return c.body(null, 500);
+        return c.json({}, 500);
     }
 });
