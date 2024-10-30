@@ -338,7 +338,7 @@ a:active {
 }
 
 .surviv-shirts {
-  background-image: url(/img/discord-promo.png);
+  background-image: url(/img/survev-kofi.png);
 }
 
 /*
@@ -453,6 +453,12 @@ a:active {
   background-image: url(/img/icon_instagram.png);
   background-color: #d93175;
   box-shadow: inset 0 -4px #9b2354;
+}
+
+.btn-kofi {
+  background-image: url(/img/icon_kofi.png);
+  background-color: #ff6433;
+  box-shadow: inset 0 -4px #be4926;
 }
 
 .btn-darken:hover,
