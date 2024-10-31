@@ -27,7 +27,7 @@ declare const MENU_MUSIC: string;
 const Sounds: Record<string, Record<string, SoundDef>> = {
     players: {
         m9_01: {
-            path: "audio/guns/m9_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -44,7 +44,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m93r_01: {
-            path: "audio/guns/m93r_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -61,7 +61,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         glock_01: {
-            path: "audio/guns/glock_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -78,7 +78,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         p30l_01: {
-            path: "audio/guns/p30l_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1.2,
             maxInstances: 5,
         },
@@ -95,7 +95,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1.5,
         },
         m1911_01: {
-            path: "audio/guns/m1911_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -112,7 +112,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         ot38_01: {
-            path: "audio/guns/ot38_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -129,12 +129,12 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         ots38_01: {
-            path: "audio/guns/ots38_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
         colt45_01: {
-            path: "audio/guns/colt45_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
         },
         colt45_reload_01: {
@@ -150,7 +150,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         deagle_01: {
-            path: "audio/guns/deagle_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -167,7 +167,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         flare_gun_01: {
-            path: "audio/guns/flare_gun_01.mp3",
+            path: "audio/guns/peow_03.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -180,7 +180,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         ak47_01: {
-            path: "audio/guns/ak47_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -193,7 +193,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         an94_01: {
-            path: "audio/guns/an94_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -206,7 +206,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         groza_01: {
-            path: "audio/guns/groza_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 0.95,
             maxInstances: 5,
         },
@@ -219,12 +219,12 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1.1,
         },
         grozas_01: {
-            path: "audio/guns/grozas_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 0.95,
             maxInstances: 5,
         },
         scar_01: {
-            path: "audio/guns/scar_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -237,12 +237,12 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         scarssr_01: {
-            path: "audio/guns/scarssr_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
         dp28_01: {
-            path: "audio/guns/dp28_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -255,7 +255,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         bar_01: {
-            path: "audio/guns/bar_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -268,7 +268,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         pkp_01: {
-            path: "audio/guns/pkp_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -281,7 +281,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m870_01: {
-            path: "audio/guns/m870_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -298,7 +298,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         spas12_01: {
-            path: "audio/guns/spas12_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -315,7 +315,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         mp220_01: {
-            path: "audio/guns/mp220_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -328,7 +328,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         saiga_01: {
-            path: "audio/guns/saiga_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -341,7 +341,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         usas_01: {
-            path: "audio/guns/usas_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -354,7 +354,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m1100_01: {
-            path: "audio/guns/m1100_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -367,7 +367,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m1014_01: {
-            path: "audio/guns/m1014_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -380,7 +380,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m39_01: {
-            path: "audio/guns/m39_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -393,7 +393,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         svd_01: {
-            path: "audio/guns/svd_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -406,12 +406,12 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         garand_01: {
-            path: "audio/guns/garand_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
         garand_02: {
-            path: "audio/guns/garand_02.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -424,7 +424,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m1a1_01: {
-            path: "audio/guns/m1a1_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -437,7 +437,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         mp5_01: {
-            path: "audio/guns/mp5_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -450,7 +450,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         mac10_01: {
-            path: "audio/guns/mac10_01.mp3",
+            path: "audio/guns/peow_02.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -463,7 +463,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         ump9_01: {
-            path: "audio/guns/ump9_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -476,12 +476,12 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         vector_01: {
-            path: "audio/guns/vector_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
         vector_02: {
-            path: "audio/guns/vector_02.mp3",
+            path: "audio/guns/peow_02.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -494,7 +494,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         scorpion_01: {
-            path: "audio/guns/scorpion_01.mp3",
+            path: "audio/guns/peow_01.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -507,7 +507,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         vss_01: {
-            path: "audio/guns/vss_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -520,7 +520,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         famas_01: {
-            path: "audio/guns/famas_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -533,7 +533,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         hk416_01: {
-            path: "audio/guns/hk416_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -546,7 +546,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m4a1_01: {
-            path: "audio/guns/m4a1_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -559,7 +559,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         mk12_01: {
-            path: "audio/guns/mk12_01.mp3",
+            path: "audio/guns/peow_03.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -572,7 +572,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         l86_01: {
-            path: "audio/guns/l86_01.mp3",
+            path: "audio/guns/peow_02.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -585,7 +585,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         m249_01: {
-            path: "audio/guns/m249_01.mp3",
+            path: "audio/guns/peow_01.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -598,7 +598,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1.5,
         },
         qbb97_01: {
-            path: "audio/guns/qbb97_01.mp3",
+            path: "audio/guns/peow_03.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -611,7 +611,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         scout_01: {
-            path: "audio/guns/scout_01.mp3",
+            path: "audio/guns/peow_02.mp3",
             volume: 2,
             maxInstances: 5,
         },
@@ -628,7 +628,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1.2,
         },
         model94_01: {
-            path: "audio/guns/model94_01.mp3",
+            path: "audio/guns/peow_03.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -641,7 +641,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         mkg45_01: {
-            path: "audio/guns/mkg45_01.mp3",
+            path: "audio/guns/peow_02.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -654,7 +654,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1.25,
         },
         blr_01: {
-            path: "audio/guns/blr_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1.5,
             maxInstances: 5,
         },
@@ -667,7 +667,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         mosin_01: {
-            path: "audio/guns/mosin_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -688,7 +688,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         sv98_01: {
-            path: "audio/guns/sv98_01.mp3",
+            path: "audio/guns/peow_04.mp3",
             volume: 1,
             maxInstances: 5,
         },
@@ -705,7 +705,7 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             volume: 1,
         },
         awc_01: {
-            path: "audio/guns/awc_01.mp3",
+            path: "audio/guns/peow_05.mp3",
             volume: 1,
             maxInstances: 5,
         },
