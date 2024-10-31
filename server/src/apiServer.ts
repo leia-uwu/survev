@@ -167,17 +167,17 @@ if (process.argv.includes("--api-server")) {
             res.aborted = true;
         });
 
-        if (findGameRateLimit.isRateLimited(getIp(res))) {
-            res.writeStatus("429 Too Many Requests");
-            returnJson(res, {
-                res: [
-                    {
-                        err: "you are being rate limited",
-                    },
-                ],
-            });
-            return;
-        }
+        // if (findGameRateLimit.isRateLimited(getIp(res))) {
+        //     res.writeStatus("429 Too Many Requests");
+        //     returnJson(res, {
+        //         res: [
+        //             {
+        //                 err: "you are being rate limited",
+        //             },
+        //         ],
+        //     });
+        //     return;
+        // }
 
         readPostedJSON(
             res,
