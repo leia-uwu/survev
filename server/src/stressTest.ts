@@ -16,11 +16,11 @@ import { v2 } from "../../shared/utils/v2";
 import type { FindGameResponse } from "./gameServer";
 
 const config = {
-    address: "http://surviv.wf",
-    region: "na",
+    address: "http://127.0.0.1:8001",
+    region: "local",
     gameModeIdx: 0,
-    botCount: 60,
-    joinDelay: 1000,
+    botCount: 79,
+    joinDelay: 100,
 };
 
 //
