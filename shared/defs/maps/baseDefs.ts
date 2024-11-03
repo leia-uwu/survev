@@ -428,15 +428,19 @@ export const Main: MapDef = {
         // xp and halloween perks guessed with no base on real data!
         tier_fruit_xp: [
             { name: "", count: 1, weight: 40 },
+            /* commented until we have a pass so the xp artifacts do something
             { name: "tier_xp_uncommon", count: 1, weight: 1 },
             { name: "tier_xp_rare", count: 1, weight: 0.1 },
             { name: "tier_xp_mythic", count: 1, weight: 0.001 },
+            */
         ],
         tier_airdrop_xp: [
             { name: "", count: 1, weight: 15 },
+            /*
             { name: "tier_xp_uncommon", count: 1, weight: 1 },
             { name: "tier_xp_rare", count: 1, weight: 0.1 },
             { name: "tier_xp_mythic", count: 1, weight: 0.001 },
+            */
         ],
         tier_halloween_mystery_perks: [
             { name: "trick_nothing", count: 1, weight: 1 },
@@ -454,8 +458,8 @@ export const Main: MapDef = {
     },
     mapGen: {
         map: {
-            baseWidth: 115,
-            baseHeight: 115,
+            baseWidth: 330,
+            baseHeight: 330,
             scale: { small: 1.1875, large: 1.28125 },
             extension: 112,
             shoreInset: 48,
@@ -464,12 +468,53 @@ export const Main: MapDef = {
                 lakes: [],
                 weights: [
                     { weight: 0.1, widths: [4] },
+                    { weight: 0.15, widths: [8] },
+                    { weight: 0.25, widths: [8, 4] },
+                    { weight: 0.21, widths: [16] },
+                    { weight: 0.09, widths: [16, 8] },
+                    { weight: 0.2, widths: [16, 8, 4] },
+                    {
+                        weight: 1e-4,
+                        widths: [16, 16, 8, 6, 4],
+                    },
                 ],
                 smoothness: 0.45,
                 masks: [],
             },
         },
         places: [
+            {
+                name: "The Killpit",
+                pos: v2.create(0.53, 0.64),
+            },
+            {
+                name: "Sweatbath",
+                pos: v2.create(0.84, 0.18),
+            },
+            {
+                name: "Tarkhany",
+                pos: v2.create(0.15, 0.11),
+            },
+            {
+                name: "Ytyk-Kyuyol",
+                pos: v2.create(0.25, 0.42),
+            },
+            {
+                name: "Todesfelde",
+                pos: v2.create(0.81, 0.85),
+            },
+            {
+                name: "Pineapple",
+                pos: v2.create(0.21, 0.79),
+            },
+            {
+                name: "Fowl Forest",
+                pos: v2.create(0.73, 0.47),
+            },
+            {
+                name: "Ranchito Pollo",
+                pos: v2.create(0.53, 0.25),
+            },
         ],
         bridgeTypes: {
             medium: "bridge_md_structure_01",
@@ -481,33 +526,33 @@ export const Main: MapDef = {
         },
         customSpawnRules: {
             locationSpawns: [
-                // {
-                //     type: "club_complex_01",
-                //     pos: v2.create(0.5, 0.5),
-                //     rad: 150,
-                //     retryOnFailure: true,
-                // },
+                {
+                    type: "club_complex_01",
+                    pos: v2.create(0.5, 0.5),
+                    rad: 150,
+                    retryOnFailure: true,
+                },
             ],
-            placeSpawns: ["warehouse_01", "house_red_01", "barn_01"],
+            placeSpawns: ["warehouse_01", "house_red_01", "house_red_02", "barn_01"],
         },
         densitySpawns: [
             {
-                stone_01: 10,
-                barrel_01: 10,
-                silo_01: 1,
+                stone_01: 350,
+                barrel_01: 76,
+                silo_01: 8,
                 crate_01: 50,
                 crate_02: 4,
                 crate_03: 8,
-                bush_01: 14,
+                bush_01: 78,
                 cache_06: 12,
-                tree_01: 30,
-                hedgehog_01: 7,
-                container_01: 3,
-                container_02: 2,
+                tree_01: 320,
+                hedgehog_01: 24,
+                container_01: 5,
+                container_02: 5,
                 container_03: 5,
                 container_04: 5,
-                shack_01: 5,
-                outhouse_01: 0,
+                shack_01: 7,
+                outhouse_01: 5,
                 loot_tier_1: 24,
                 loot_tier_beach: 4,
             },
@@ -515,9 +560,9 @@ export const Main: MapDef = {
         fixedSpawns: [
             {
                 // small is spawn count for solos and duos, large is spawn count for squads
-                warehouse_01: 0,
-                house_red_01: { small: 0, large: 0 },
-                house_red_02: { small: 0, large: 0 },
+                warehouse_01: 2,
+                house_red_01: { small: 3, large: 4 },
+                house_red_02: { small: 3, large: 4 },
                 barn_01: { small: 1, large: 3 },
                 barn_02: 1,
                 hut_01: 3,
@@ -525,36 +570,36 @@ export const Main: MapDef = {
                 hut_03: 1, // scout hut
                 shack_03a: 2,
                 shack_03b: { small: 2, large: 3 },
-                greenhouse_01: 0,
+                greenhouse_01: 1,
                 cache_01: 1,
-                cache_02: 5, // mosin tree
+                cache_02: 1, // mosin tree
                 cache_07: 1,
                 bunker_structure_01: { odds: 0.05 },
                 bunker_structure_02: 1,
                 bunker_structure_03: 1,
                 bunker_structure_04: 1,
                 bunker_structure_05: 1,
-                warehouse_complex_01: 0,
+                warehouse_complex_01: 1,
                 chest_01: 1,
                 chest_03: { odds: 0.2 },
                 mil_crate_02: { odds: 0.25 },
                 tree_02: 3,
                 teahouse_complex_01su: {
-                    small: 0,
+                    small: 1,
                     large: 2,
                 },
                 stone_04: 1,
-                club_complex_01: 0,
+                club_complex_01: 1,
             },
         ],
         randomSpawns: [
             {
                 spawns: ["mansion_structure_01", "police_01", "bank_01"],
-                choose: 0,
+                choose: 2,
             },
         ],
         spawnReplacements: [{}],
-        importantSpawns: [],
+        importantSpawns: ["club_complex_01"],
     },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
