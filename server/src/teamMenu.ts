@@ -1,4 +1,6 @@
-import type { TemplatedApp, WebSocket } from "uWebSockets.js";
+import type { Hono } from "hono";
+import { getConnInfo } from "hono/bun";
+import type { UpgradeWebSocket, WSContext } from "hono/ws";
 import type {
     ClientToServerTeamMsg,
     RoomData,
@@ -9,25 +11,23 @@ import type {
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
 import { assert } from "../../shared/utils/util";
-import type { ApiServer } from "./apiServer";
+import type { ApiServer } from "./api/apiServer";
 import { Config } from "./config";
 import {
     HTTPRateLimit,
     WebSocketRateLimit,
     checkForBadWords,
-    getIp,
 } from "./utils/serverHelpers";
 
 export interface TeamSocketData {
-    sendMsg: (response: string) => void;
-    closeSocket: () => void;
     roomUrl: string;
     rateLimit: Record<symbol, number>;
     ip: string;
+    closeOnOpen: boolean;
 }
 
 interface RoomPlayer extends TeamMenuPlayer {
-    socketData: TeamSocketData;
+    socket: WSContext<TeamSocketData>;
 }
 
 export interface Room {
@@ -72,79 +72,59 @@ export class TeamMenu {
 
     constructor(public server: ApiServer) {}
 
-    init(app: TemplatedApp) {
+    init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
         const teamMenu = this;
 
         const httpRateLimit = new HTTPRateLimit(1, 2000);
         const wsRateLimit = new WebSocketRateLimit(5, 1000, 10);
 
-        app.ws("/team_v2", {
-            idleTimeout: 30,
-            /**
-             * Upgrade the connection to WebSocket.
-             */
-            upgrade(res, req, context) {
-                res.onAborted((): void => {});
+        app.get(
+            "/team_v2",
+            (upgradeWebSocket as UpgradeWebSocket<TeamSocketData>)((c) => {
+                const info = getConnInfo(c);
+                const ip = info.remote.address;
 
-                const ip = getIp(res);
-
-                if (httpRateLimit.isRateLimited(ip) || wsRateLimit.isIpRateLimited(ip)) {
-                    res.writeStatus("429 Too Many Requests");
-                    res.write("429 Too Many Requests");
-                    res.end();
-                    return;
+                let closeOnOpen = false;
+                if (
+                    !ip ||
+                    httpRateLimit.isRateLimited(ip) ||
+                    wsRateLimit.isIpRateLimited(ip)
+                ) {
+                    closeOnOpen = true;
                 }
-                wsRateLimit.ipConnected(ip);
 
-                res.upgrade(
-                    {
-                        rateLimit: {},
-                        ip,
+                wsRateLimit.ipConnected(ip!);
+                return {
+                    onOpen(_evt, ws: WSContext<TeamSocketData>) {
+                        const userData = {
+                            ip,
+                            rateLimit: {},
+                        } as TeamSocketData;
+                        ws.raw = userData;
+                        if (closeOnOpen) {
+                            ws.close();
+                        }
                     },
-                    req.getHeader("sec-websocket-key"),
-                    req.getHeader("sec-websocket-protocol"),
-                    req.getHeader("sec-websocket-extensions"),
-                    context,
-                );
-            },
-
-            /**
-             * Handle opening of the socket.
-             * @param socket The socket being opened.
-             */
-            open(socket: WebSocket<TeamSocketData>) {
-                socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
-                socket.getUserData().closeSocket = () => socket.close();
-            },
-
-            /**
-             * Handle messages coming from the socket.
-             * @param socket The socket in question.
-             * @param message The message to handle.
-             */
-            message(socket: WebSocket<TeamSocketData>, message) {
-                if (wsRateLimit.isRateLimited(socket.getUserData().rateLimit)) {
-                    socket.close();
-                    return;
-                }
-                teamMenu.handleMsg(message, socket.getUserData());
-            },
-
-            /**
-             * Handle closing of the socket.
-             * Called if player hits the leave button or if there's an error joining/creating a team
-             * @param socket The socket being closed.
-             */
-            close(socket: WebSocket<TeamSocketData>) {
-                const userData = socket.getUserData();
-                const room = teamMenu.rooms.get(userData.roomUrl);
-                if (room) {
-                    teamMenu.removePlayer(userData);
-                    teamMenu.sendRoomState(room);
-                }
-                wsRateLimit.ipDisconnected(userData.ip);
-            },
-        });
+                    onMessage(event, ws: WSContext<TeamSocketData>) {
+                        const userData = ws.raw!;
+                        if (wsRateLimit.isRateLimited(userData.rateLimit)) {
+                            ws.close();
+                            return;
+                        }
+                        teamMenu.handleMsg(event.data as string, ws);
+                    },
+                    onClose: (_event, ws: WSContext<TeamSocketData>) => {
+                        const userData = ws.raw!;
+                        const room = teamMenu.rooms.get(userData.roomUrl);
+                        if (room) {
+                            teamMenu.removePlayer(ws);
+                            teamMenu.sendRoomState(room);
+                        }
+                        wsRateLimit.ipDisconnected(userData.ip);
+                    },
+                };
+            }),
+        );
     }
 
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
@@ -176,15 +156,15 @@ export class TeamMenu {
     /**
      * removes player from all necessary data structures (room, idToSocketSend map, id allocator)
      */
-    removePlayer(playerContainer: TeamSocketData): void {
-        const room = this.rooms.get(playerContainer.roomUrl)!;
+    removePlayer(ws: WSContext<TeamSocketData>): void {
+        const room = this.rooms.get(ws.raw!.roomUrl)!;
 
-        const pToRemove = room.players.find((p) => p.socketData === playerContainer)!;
+        const pToRemove = room.players.find((p) => p.socket === ws)!;
         const pToRemoveIndex = room.players.indexOf(pToRemove);
         room.players.splice(pToRemoveIndex, 1);
 
         if (room.players.length == 0) {
-            this.rooms.delete(playerContainer.roomUrl);
+            this.rooms.delete(ws.raw!.roomUrl);
             return;
         }
 
@@ -198,10 +178,13 @@ export class TeamMenu {
     }
 
     /**
-     * @param player player to send the response to
+     * @param socket player to send the response to
      */
-    sendResponse(response: ServerToClientTeamMsg, player: RoomPlayer): void {
-        player.socketData.sendMsg(JSON.stringify(response));
+    sendResponse(
+        response: ServerToClientTeamMsg,
+        socket: WSContext<TeamSocketData>,
+    ): void {
+        socket.send(JSON.stringify(response));
     }
 
     /**
@@ -209,7 +192,7 @@ export class TeamMenu {
      */
     sendResponses(response: ServerToClientTeamMsg, players: RoomPlayer[]): void {
         for (const player of players) {
-            this.sendResponse(response, player);
+            this.sendResponse(response, player.socket);
         }
     }
 
@@ -242,7 +225,7 @@ export class TeamMenu {
                 },
             };
 
-            player.socketData.sendMsg(JSON.stringify(msg));
+            player.socket.send(JSON.stringify(msg));
         }
     }
 
@@ -306,13 +289,14 @@ export class TeamMenu {
         }
     }
 
-    async handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData) {
+    async handleMsg(message: string, ws: WSContext<TeamSocketData>) {
+        const localPlayerData = ws.raw!;
         let parsedMessage: ClientToServerTeamMsg;
         try {
-            parsedMessage = JSON.parse(new TextDecoder().decode(message));
+            parsedMessage = JSON.parse(message);
             this.validateMsg(parsedMessage);
         } catch {
-            localPlayerData.closeSocket();
+            ws.close();
             return;
         }
 
@@ -328,12 +312,12 @@ export class TeamMenu {
                     isLeader: true,
                     inGame: false,
                     playerId: 0,
-                    socketData: localPlayerData,
+                    socket: ws,
                 };
 
                 if (!Config.modes[1].enabled && !Config.modes[2].enabled) {
                     response = teamErrorMsg("create_failed");
-                    this.sendResponse(response, player);
+                    this.sendResponse(response, ws);
                     break;
                 }
 
@@ -348,7 +332,7 @@ export class TeamMenu {
                 const room = this.addRoom(roomUrl, parsedMessage.data.roomData, player);
                 if (!room) {
                     response = teamErrorMsg("create_failed");
-                    this.sendResponse(response, player);
+                    this.sendResponse(response, ws);
                     break;
                 }
 
@@ -361,12 +345,12 @@ export class TeamMenu {
                 // join fail if room doesnt exist or if room is already full
                 if (!room) {
                     response = teamErrorMsg("join_failed");
-                    localPlayerData.sendMsg(JSON.stringify(response));
+                    ws.send(JSON.stringify(response));
                     break;
                 }
                 if (room.roomData.maxPlayers == room.players.length) {
                     response = teamErrorMsg("join_full");
-                    localPlayerData.sendMsg(JSON.stringify(response));
+                    ws.send(JSON.stringify(response));
                     break;
                 }
 
@@ -377,7 +361,7 @@ export class TeamMenu {
                     isLeader: false,
                     inGame: false,
                     playerId: room.players.length,
-                    socketData: localPlayerData,
+                    socket: ws,
                 } as RoomPlayer;
                 room.players.push(player);
 
@@ -389,9 +373,7 @@ export class TeamMenu {
             case "changeName": {
                 const newName = this.cleanUserName(parsedMessage.data.name);
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socketData === localPlayerData,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 player.name = newName;
 
                 this.sendRoomState(room);
@@ -400,9 +382,7 @@ export class TeamMenu {
             case "setRoomProps": {
                 const newRoomData = parsedMessage.data;
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socketData === localPlayerData,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 if (!player.isLeader) {
                     return;
                 }
@@ -420,9 +400,7 @@ export class TeamMenu {
             }
             case "kick": {
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socketData === localPlayerData,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 if (!player.isLeader) {
                     return;
                 }
@@ -435,7 +413,7 @@ export class TeamMenu {
                     type: "kicked",
                     data: {},
                 };
-                this.sendResponse(response, pToKick);
+                this.sendResponse(response, pToKick.socket);
                 //player is removed and new room state is sent when the socket is inevitably closed after the kick
                 break;
             }
@@ -452,9 +430,7 @@ export class TeamMenu {
             case "playGame": {
                 // this message can only ever be sent by the leader
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socketData === localPlayerData,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
 
                 if (!player.isLeader) {
                     return;
@@ -477,7 +453,7 @@ export class TeamMenu {
 
                 if ("err" in playData) {
                     response = teamErrorMsg("find_game_error");
-                    this.sendResponse(response, player);
+                    this.sendResponse(response, player.socket);
                     return;
                 }
 
@@ -499,9 +475,7 @@ export class TeamMenu {
             case "gameComplete": {
                 // doesn't necessarily mean game is over, sent when player leaves game and returns to team menu
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
-                const player = room.players.find(
-                    (p) => p.socketData === localPlayerData,
-                )!;
+                const player = room.players.find((p) => p.socket === ws)!;
                 player.inGame = false;
                 room.roomData.findingGame = false;
 

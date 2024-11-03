@@ -31,6 +31,8 @@ export const Config = {
         apiServerUrl: "http://127.0.0.1:8000",
     },
 
+    accountsEnabled: true,
+
     apiKey: "Kongregate Sucks",
 
     modes: [
@@ -68,8 +70,19 @@ export const Config = {
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
-const runningOnVite = process.argv.toString().includes("vite");
+if (!isProduction) {
+    util.mergeDeep(Config, {
+        regions: {
+            local: {
+                https: false,
+                address: `${Config.devServer.host}:${Config.devServer.port}`,
+                l10n: "index-local",
+            },
+        },
+    });
+}
 
+const runningOnVite = process.argv.toString().includes("vite");
 const configPath = path.join(
     __dirname,
     isProduction && !runningOnVite ? "../../" : "",
@@ -124,6 +137,12 @@ export interface ConfigType {
     gameServer: ServerConfig & {
         apiServerUrl: string;
     };
+
+    /**
+     * used to hide/disable account-related features in both client and server.
+     */
+    readonly accountsEnabled: boolean;
+
     /**
      * API key used for game server and API server to communicate
      */
