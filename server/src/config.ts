@@ -34,9 +34,9 @@ export const Config = {
     apiKey: "Kongregate Sucks",
 
     modes: [
-        { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
-        { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
-        { mapName: "main", teamMode: TeamMode.Squad, enabled: true },
+        { mapName: "snow", teamMode: TeamMode.Solo, enabled: true },
+        { mapName: "snow", teamMode: TeamMode.Duo, enabled: true },
+        { mapName: "snow", teamMode: TeamMode.Squad, enabled: true },
     ],
 
     regions: {},
@@ -50,7 +50,7 @@ export const Config = {
     client: {
         AIP_ID: undefined,
         AIP_PLACEMENT_ID: undefined,
-        theme: "main",
+        theme: "snow",
     },
 
     thisRegion: "local",

@@ -9437,7 +9437,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     } as unknown as Partial<ObstacleDef>),
     airdrop_crate_01x: createAirdrop({
         button: {
-            useImg: "map-crate-13x.img",
+            useImg: "map-airdrop-02x.img",
             useParticle: "airdropCrate01x",
             sound: { on: "airdrop_open_01", off: "" },
         },
@@ -9450,12 +9450,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02x: createAirdrop({
         button: {
-            useImg: "map-crate-13x.img",
+            useImg: "map-airdrop-02x.img",
             useParticle: "airdropCrate01x",
             sound: { on: "airdrop_open_01", off: "" },
         },
         img: {
-            sprite: "map-airdrop-02x.img",
+            sprite: "map-airdrop-01x.img",
             residue: "none",
         },
         destroyType: "crate_11",
@@ -9676,7 +9676,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     mil_crate_03: createCrate({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
-        loot: [autoLoot("ots38_dual", 1)],
+        loot: [
+            autoLoot("ots38_dual", 1),
+            // TODO remove after pass
+            autoLoot("outfitWhite", 1),
+        ],
         map: { display: false },
         terrain: { grass: true, beach: true },
         img: { sprite: "map-crate-mil-03.img" },
