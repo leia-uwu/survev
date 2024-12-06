@@ -1,7 +1,8 @@
 {
+  "name": "@survev/server",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "bun --bun tsc",
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
     "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
@@ -12,11 +13,11 @@
   "dependencies": {
     "nanotimer": "^0.3.15",
     "typescript": "^5.6.3",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.49.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.51.0"
   },
   "devDependencies": {
     "@types/nanotimer": "^0.3.2",
-    "@types/node": "^20.17.1",
+    "@types/node": "^22.10.1",
     "ts-node": "^10.9.2"
   }
 }

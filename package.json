@@ -3,20 +3,24 @@
   "version": "0.0.15",
   "description": "Open Source Surviv.io Server",
   "scripts": {
-    "dev:server": "cd server && pnpm dev",
-    "dev:client": "cd client && pnpm dev",
-    "lint": "biome check --write",
-    "lint:ci": "biome check"
+    "dev:server": "cd server && bun dev",
+    "dev:client": "cd client && bun dev",
+    "lint": "bun --bun biome check --write",
+    "lint:ci": "bun --bun biome check"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=20.0.0"
   },
   "author": "Leia",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^20.17.1",
-    "typescript": "^5.6.3"
-  }
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  },
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ]
 }
