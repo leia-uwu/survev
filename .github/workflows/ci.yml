@@ -8,29 +8,29 @@ permissions:
   contents: write
 
 jobs:
-  bun:
-    name: Bun
+  nodejs:
+    name: Node.js
     runs-on: ubuntu-latest
-    concurrency: ci-bun-${{ github.ref }}
+    concurrency: ci-nodejs-${{ github.ref }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version: latest
+          version: latest
 
       - name: Install Packages
-        run: bun install
+        run: pnpm install
 
       - name: Build Server
-        run: bun run build
+        run: pnpm run build
         working-directory: ./server
 
       - name: Build Server
-        run: bun run build
+        run: pnpm run build
         working-directory: ./client
   lint:
     name: Lint
