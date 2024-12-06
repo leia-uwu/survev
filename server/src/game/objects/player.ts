@@ -2730,7 +2730,7 @@ export class Player extends BaseGameObject {
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
                     const obstacles = this.getInteractableObstacles();
-                    const playerToRevive = this.getPlayerToRevive();
+                    const playerToRevive = this.downed && !this.hasPerk("self_revive") ? undefined : this.getPlayerToRevive();
 
                     const interactables = [loot, ...obstacles, playerToRevive];
 
