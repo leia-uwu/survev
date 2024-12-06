@@ -3158,11 +3158,10 @@ export class Player extends BaseGameObject {
                         this.weaponManager.scheduleReload(def.switchDelay);
                     }
 
-                    // always select primary slot if melee or secondary is selected
+                    // always select primary slot if melee is selected
                     if (
                         !freeGunSlot.isDual &&
-                        (this.curWeapIdx === GameConfig.WeaponSlot.Melee ||
-                            this.curWeapIdx === GameConfig.WeaponSlot.Secondary)
+                        this.curWeapIdx === GameConfig.WeaponSlot.Melee
                     ) {
                         this.weaponManager.setCurWeapIndex(newGunIdx); // primary
                     }
