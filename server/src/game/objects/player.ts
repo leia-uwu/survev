@@ -2605,10 +2605,10 @@ export class Player extends BaseGameObject {
 
     shouldAcceptInput(input: number): boolean {
         return this.downed
-            ?
-                (input === GameConfig.Input.Revive && this.hasPerk("self_revive")) || // Players can revive themselves if they have the self-revive perk.
-                (input === GameConfig.Input.Cancel && this.game.modeManager.isReviving(this)) || // Players can cancel their own revives (if they are reviving themself, which is only true if they have the perk).
-                input === GameConfig.Input.Interact // Players can interact with obstacles while downed.
+            ? (input === GameConfig.Input.Revive && this.hasPerk("self_revive")) || // Players can revive themselves if they have the self-revive perk.
+                  (input === GameConfig.Input.Cancel &&
+                      this.game.modeManager.isReviving(this)) || // Players can cancel their own revives (if they are reviving themself, which is only true if they have the perk).
+                  input === GameConfig.Input.Interact // Players can interact with obstacles while downed.
             : true;
     }
 
