@@ -2,7 +2,7 @@
   "name": "@survev/server",
   "private": true,
   "scripts": {
-    "build": "bun --bun tsc",
+    "build": "tsc",
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
     "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",

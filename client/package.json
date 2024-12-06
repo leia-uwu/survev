@@ -2,7 +2,7 @@
   "name": "@survev/client",
   "private": true,
   "scripts": {
-    "build": "bun --bun tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build",
     "dev": "vite dev",
     "preview": "vite preview"
   },
