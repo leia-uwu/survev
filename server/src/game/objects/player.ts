@@ -2604,18 +2604,12 @@ export class Player extends BaseGameObject {
     toMouseLen = 0;
 
     shouldAcceptInput(input: number): boolean {
-        if (this.downed) {
-            const isAcceptedInput =
-                [GameConfig.Input.Interact, GameConfig.Input.Revive].includes(input) ||
-                //cancel inputs can only be accepted if player is reviving (themselves)
-                //otherwise it doesnt make sense for a player to be able to cancel another player's revive
-                (input == GameConfig.Input.Cancel &&
-                    this.game.modeManager.isReviving(this));
-
-            return this.hasPerk("self_revive") && isAcceptedInput;
-        }
-
-        return true;
+        return this.downed
+            ?
+                (input === GameConfig.Input.Revive && this.hasPerk("self_revive")) || // Players can revive themselves if they have the self-revive perk.
+                (input === GameConfig.Input.Cancel && this.game.modeManager.isReviving(this)) || // Players can cancel their own revives (if they are reviving themself, which is only true if they have the perk).
+                input === GameConfig.Input.Interact // Players can interact with obstacles while downed.
+            : true;
     }
 
     handleInput(msg: net.InputMsg): void {
