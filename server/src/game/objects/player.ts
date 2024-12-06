@@ -842,7 +842,7 @@ export class Player extends BaseGameObject {
                 "m9_cursed",
                 ammo.trueMaxClip,
             );
-        }
+        } else if (type === "leadership") this.boost = 100;
 
         this.recalculateScale();
     }
