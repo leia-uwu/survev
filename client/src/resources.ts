@@ -108,6 +108,12 @@ export class ResourceManager {
         this.textureRes = selectTextureRes(this.renderer, this.config);
         // @ts-expect-error private field L
         renderer.prepare.limiter.maxItemsPerFrame = 1;
+
+        // TODO REMOVE THIS
+        PIXI.Assets.load({
+            src: "./img/map/map-plane-01x.svg",
+            alias: "map-plane-01x.img"
+        });
     }
 
     isAtlasLoaded(name: Atlas) {
