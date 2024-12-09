@@ -10,10 +10,11 @@ import type { Account } from "../account";
 import { crosshair } from "../crosshair";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import loadout, { type ItemStatus, type Loadout } from "./loadouts";
+import type { Crosshair, ItemStatus, Loadout } from "../../../shared/utils/helpers";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 import type { LoadoutDisplay } from "./opponentDisplay";
+import loadout from "./loadouts";
 
 function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
     const emoteSlotToDomId = {
@@ -91,12 +92,12 @@ const sortTypes: Record<string, any> = {
     subcat: itemSort(sortSubcat),
 };
 
-interface Item {
+export interface Item {
     type: string;
     source: string;
-    ackd: number;
     timeAcquired: number;
     status?: ItemStatus;
+    ackd?: ItemStatus.Ackd;
 }
 interface ItemInfo {
     type: string;
@@ -419,8 +420,8 @@ export class LoadoutMenu {
         }
     }
 
-    onItems(items: unknown[]) {
-        this.items = loadout.getUserAvailableItems(items) as unknown as Item[];
+    onItems(items: Item[]) {
+        this.items = loadout.getUserAvailableItems(items) as Item[];
         for (let i = 0; i < this.items.length; i++) {
             const item = this.items[i];
             if (
@@ -446,17 +447,6 @@ export class LoadoutMenu {
         if (this.active) {
             this.tryBeginConfirmingItems();
             this.selectCat(this.selectedCatIdx);
-        }
-
-        // Request the default unlock if we don't have it yet
-        if (this.account.loggedIn) {
-            if (
-                !this.items.find((x) => {
-                    return x.type == "unlock_new_account";
-                })
-            ) {
-                this.account.unlock("unlock_new_account");
-            }
         }
     }
 
@@ -696,7 +686,7 @@ export class LoadoutMenu {
                 color: util.hexToInt(color),
                 size: Number(size.toFixed(2)),
                 stroke: Number(stroke.toFixed(2)),
-            };
+            } as unknown as Crosshair;
         } else {
             this.loadout[loadoutType as keyof Loadout] = this.selectedItem.type as any;
         }
@@ -1030,7 +1020,7 @@ export class LoadoutMenu {
                     color: 0xffffff,
                     size: 1,
                     stroke: 0,
-                };
+                } as unknown as Crosshair;
                 crosshair.setElemCrosshair(outerDiv, crosshairDef);
             }
 

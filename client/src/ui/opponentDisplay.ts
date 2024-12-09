@@ -23,7 +23,8 @@ import { type Player, PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Renderer } from "../renderer";
 import type { LocalDataWithDirty } from "./../../../shared/net/updateMsg";
-import loadouts, { type Loadout } from "./loadouts";
+import type { Loadout } from "../../../shared/utils/helpers";
+import loadouts from "./loadouts";
 
 export class LoadoutDisplay {
     active = false;

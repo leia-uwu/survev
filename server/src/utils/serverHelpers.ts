@@ -2,6 +2,7 @@ import { isIP } from "net";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
+import { Context } from "hono";
 
 /**
  * Apply CORS headers to a response.
@@ -16,6 +17,15 @@ export function cors(res: HttpResponse): void {
             "origin, content-type, accept, x-requested-with",
         )
         .writeHeader("Access-Control-Max-Age", "3600");
+}
+
+export function getHonoIp(c: Context) {
+  const ip = c.req.header('x-forwarded-for') || 
+             c.req.header('x-real-ip') || 
+             c.req.raw.headers.get('remote-addr') || 
+             c.env?.incoming?.socket?.remoteAddress
+
+  return ip || ''
 }
 
 export function forbidden(res: HttpResponse): void {

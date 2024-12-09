@@ -25,6 +25,7 @@ import { Pass } from "./ui/pass";
 import { ProfileUi } from "./ui/profileUi";
 import { TeamMenu } from "./ui/teamMenu";
 import { loadStaticDomImages } from "./ui/ui2";
+import { errorLogManager } from "./errorLogs";
 
 export interface MatchData {
     zone: string;
@@ -531,6 +532,7 @@ class Application {
             // Wait some maximum amount of time for pending account requests
             const timeout = setTimeout(() => {
                 runOnce();
+                errorLogManager.storeGeneric("account", "wait_timeout");
             }, 2500);
             const runOnce = () => {
                 cb();
@@ -668,6 +670,9 @@ class Application {
             return;
         }
         const hosts = matchData.hosts || [];
+        console.log(
+          {matchData}
+        )
         const urls: string[] = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(
@@ -827,7 +832,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     // Don't report the same error multiple times
     if (!reportedErrors.includes(errStr)) {
         reportedErrors.push(errStr);
-        console.error("windowOnError", errStr);
+        errorLogManager.logWindowOnError(errStr);
     }
 };
 

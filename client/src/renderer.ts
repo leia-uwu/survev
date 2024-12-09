@@ -3,6 +3,7 @@ import { v2 } from "../../shared/utils/v2";
 import type { Camera } from "./camera";
 import type { Game } from "./game";
 import type { Map } from "./map";
+import { errorLogManager } from "./errorLogs";
 
 //
 // Helpers
@@ -76,7 +77,7 @@ export class Renderer {
                 zOrd,
                 zIdx,
             });
-            console.error(str);
+            errorLogManager.logError(str);
         }
         if (obj.__layerIdx === undefined) {
             obj.__layerIdx = -1;

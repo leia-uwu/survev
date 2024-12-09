@@ -2,7 +2,11 @@ import $ from "jquery";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
-import loadouts, { type ItemStatus, type Loadout } from "./ui/loadouts";
+import type { ItemStatus, Loadout } from "../../shared/utils/helpers";
+import { errorLogManager } from "./errorLogs";
+import { helpers } from "./helpers";
+import type { Item } from "./ui/loadoutMenu";
+import loadouts from "./ui/loadouts";
 
 type DataOrCallback =
     | Record<string, unknown>
@@ -43,6 +47,23 @@ function ajaxRequest(
         });
 }
 
+export type Quest = {
+  idx: number;
+  type: string;
+  timeAcquired: number;
+  progress: number;
+  target: number;
+  complete: boolean;
+  rerolled: boolean;
+  timeToRefresh: number;
+};
+export type PassType = {
+  type: string;
+  level: number;
+  xp: number;
+  newItems: unknown;
+};
+
 export class Account {
     events: Record<string, Array<(...args: any[]) => void>> = {};
     requestsInFlight = 0;
@@ -59,10 +80,10 @@ export class Account {
 
     loadout = loadouts.defaultLoadout();
     loadoutPriv = "";
-    items: Array<{ type: string; status: ItemStatus }> = [];
-    quests = [];
+    items: Item[] = [];
+    quests: Quest[] = [];
     questPriv = "";
-    pass = {};
+    pass: Record<string, PassType> = {};
 
     constructor(public config: ConfigManager) {
         window.login = () => {
@@ -88,7 +109,7 @@ export class Account {
                     idx,
                 },
                 (_e, _t) => {
-                    this.getPass();
+                    this.getPass(false);
                 },
             );
         };
@@ -148,9 +169,18 @@ export class Account {
         if (this.config.get("sessionCookie")) {
             this.setSessionCookies();
         }
-        // if (helpers.getCookie("app-data")) {
-        this.login();
-        // }
+
+      if (helpers.getCookie("app-data")) {
+          this.login();
+          return;
+      }
+
+      this.emit("request", this);
+      this.emit("items", []);
+
+      const storedLoadout = this.config.get("loadout");
+      this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
+      this.emit("loadout", this.loadout);
     }
 
     setSessionCookies() {
@@ -188,15 +218,16 @@ export class Account {
     }
 
     login() {
-        // if (helpers.getCookie("app-data")) {
-        this.loadProfile();
-        this.getPass(true);
-        // }
+        if (helpers.getCookie("app-data")) {
+          this.loadProfile();
+          this.getPass(true);
+        }
     }
 
     logout() {
         this.config.set("profile", null);
         this.config.set("sessionCookie", null);
+        this.config.set("loadout", loadouts.defaultLoadout());
         this.ajaxRequest("/api/user/logout", (_e, _t) => {
             window.location.reload();
         });
@@ -212,7 +243,7 @@ export class Account {
             this.loadoutPriv = "";
             this.items = [];
             if (err) {
-                console.error("account", "load_profile_error");
+              errorLogManager.storeGeneric("account", "load_profile_error");
             } else if (data.banned) {
                 this.emit("error", "account_banned", data.reason);
             } else if (data.success) {
@@ -220,6 +251,7 @@ export class Account {
                 this.profile = data.profile;
                 this.loadoutPriv = data.loadoutPriv;
                 this.items = data.items;
+                this.loadout = data.loadout;
                 const profile = this.config.get("profile") || { slug: "" };
                 profile.slug = data.profile.slug;
                 this.config.set("profile", profile);
@@ -232,16 +264,12 @@ export class Account {
             }
             this.emit("items", this.items);
         });
-
-        const storedLoadout = this.config.get("loadout");
-        this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
-        this.emit("loadout", this.loadout);
     }
 
     resetStats() {
         this.ajaxRequest("/api/user/reset_stats", (t, _r) => {
             if (t) {
-                console.error("account", "reset_stats_error");
+                errorLogManager.storeGeneric("account", "reset_stats_error");
                 this.emit("error", "server_error");
             }
         });
@@ -250,7 +278,7 @@ export class Account {
     deleteAccount() {
         this.ajaxRequest("/api/user/delete", (err, _res) => {
             if (err) {
-                console.error("account", "delete_error");
+                errorLogManager.storeGeneric("account", "delete_error");
                 this.emit("error", "server_error");
                 return;
             }
@@ -268,7 +296,7 @@ export class Account {
             },
             (err, res) => {
                 if (err) {
-                    console.error("account", "set_username_error");
+                    errorLogManager.storeGeneric("account", "set_username_error");
                     callback(err);
                     return;
                 }
@@ -283,34 +311,33 @@ export class Account {
     }
 
     setLoadout(loadout: Loadout) {
-        const _r = this.loadout;
+        // Preemptively set the new loadout and revert if the call fail
+        const loadoutPrev = this.loadout;
         this.loadout = loadout;
         this.emit("loadout", this.loadout);
         this.config.set("loadout", loadout);
-        /* this.ajaxRequest(
-                "/api/user/loadout",
-                {
-                    loadout: {}
-                },
-                (e, a) => {
-                    if (e) {
-                        console.error(
-                            "account",
-                            "set_loadout_error"
-                        );
-                        this.emit("error", "server_error");
-                    }
-                    if (e || !a.loadout) {
-                        this.loadout = r;
-                    } else {
-                        this.loadout = a.loadout;
-                        this.loadoutPriv = a.loadoutPriv;
-                    }
-                    this.emit("loadout", this.loadout);
-                }
-            );
-        */
-    }
+
+        if (!helpers.getCookie("app-data")) return;
+        this.ajaxRequest(
+          "/api/user/loadout",
+          {
+              loadout: loadout,
+          },
+          (err, res) => {
+              if (err) {
+                  errorLogManager.storeGeneric("account", "set_loadout_error");
+                  this.emit("error", "server_error");
+              }
+              if (err || !res.loadout) {
+                  this.loadout = loadoutPrev;
+              } else {
+                  this.loadout = res.loadout;
+                  this.loadoutPriv = res.loadoutPriv;
+              }
+              this.emit("loadout", this.loadout);
+          },
+      );
+  }
 
     setItemStatus(status: ItemStatus, itemTypes: string[]) {
         if (itemTypes.length != 0) {
@@ -320,7 +347,7 @@ export class Account {
                     return x.type == itemTypes[i];
                 });
                 if (item) {
-                    item.status = Math.max(item.status, status);
+                    item.status = Math.max(item.status!, status);
                 }
             }
             this.emit("items", this.items);
@@ -332,7 +359,7 @@ export class Account {
                 },
                 (err, _res) => {
                     if (err) {
-                        console.error("account", "set_item_status_error");
+                        errorLogManager.storeGeneric("account", "set_item_status_error");
                     }
                 },
             );
@@ -340,6 +367,8 @@ export class Account {
     }
 
     unlock(unlockType: string) {
+        // not needed by the client anymore
+        return;
         this.ajaxRequest(
             "/api/user/unlock",
             {
@@ -357,36 +386,36 @@ export class Account {
         );
     }
 
-    getPass(_tryRefreshQuests?: boolean) {
-        /* const This = this;
-            this.ajaxRequest(
-                "/api/user/get_pass",
-                {
-                    tryRefreshQuests
-                },
-                (err, res) => {
-                    This.pass = {};
-                    This.quests = [];
-                    This.questPriv = "";
-                    if (err || !res.success) {
-                        console.error(
-                            "account",
-                            "get_pass_error"
-                        );
-                    } else {
-                        This.pass = res.pass || {};
-                        This.quests = res.quests || [];
-                        This.questPriv = res.questPriv || "";
-                        This.quests.sort((a, b) => {
-                            return a.idx - b.idx;
-                        });
-                        This.emit("pass", This.pass, This.quests, true);
-                        if (This.pass.newItems) {
-                            This.loadProfile();
-                        }
-                    }
-                }
-            ); */
+    getPass(tryRefreshQuests: boolean) {
+      return;
+          this.ajaxRequest(
+              "/api/user/get_pass",
+              {
+                  tryRefreshQuests
+              },
+              (err, res) => {
+                  this.pass = {};
+                  this.quests = [];
+                  this.questPriv = "";
+                  if (err || !res.success) {
+                      errorLogManager.storeGeneric(
+                          "account",
+                          "get_pass_error"
+                      );
+                  } else {
+                      this.pass = res.pass || {};
+                      this.quests = res.quests || [];
+                      this.questPriv = res.questPriv || "";
+                      this.quests.sort((a, b) => {
+                          return a.idx - b.idx;
+                      });
+                      this.emit("pass", this.pass, this.quests, true);
+                      if (this.pass.newItems) {
+                          this.loadProfile();
+                      }
+                  }
+              }
+          );
     }
 
     setPassUnlock(unlockType: string) {
@@ -397,7 +426,7 @@ export class Account {
             },
             (err, res) => {
                 if (err || !res.success) {
-                    console.error("account", "set_pass_unlock_error");
+                  errorLogManager.storeGeneric("account", "set_pass_unlock_error");
                 } else {
                     this.getPass(false);
                 }
@@ -411,12 +440,12 @@ export class Account {
             {
                 idx,
             },
-            (e, r) => {
-                if (e) {
-                    console.error("account", "refresh_quest_error");
+            (err, res) => {
+                if (err) {
+                  errorLogManager.storeGeneric("account", "refresh_quest_error");
                     return;
                 }
-                if (r.success) {
+                if (res.success) {
                     this.getPass(false);
                 } else {
                     // Give the pass UI a chance to update quests

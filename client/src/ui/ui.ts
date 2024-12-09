@@ -28,6 +28,7 @@ import type { Localization } from "./localization";
 import { PieTimer } from "./pieTimer";
 import type { Touch } from "./touch";
 import type { UiManager2 } from "./ui2";
+import { errorLogManager } from "../errorLogs";
 
 function humanizeTime(time: number) {
     const hours = Math.floor(time / 3600);
@@ -792,7 +793,7 @@ export class UiManager {
                 playing: this.game.m_playingTicker,
                 groupInfo: playerBarn.groupInfo,
             };
-            console.error(`badTeamInfo_1: ${JSON.stringify(err)}`);
+            errorLogManager.logError(`badTeamInfo_1: ${JSON.stringify(err)}`);
         }
 
         const layoutSm = device.uiLayout == device.UiLayout.Sm;

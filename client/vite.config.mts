@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
               }
             : {}),
     };
-
+    console.log({ regions })
     return {
         base: "",
         build: {
@@ -140,12 +140,12 @@ export default defineConfig(({ mode }) => {
             host: "0.0.0.0",
             proxy: {
                 "/api": {
-                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
                 },
                 "/team_v2": {
-                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
                     ws: true,

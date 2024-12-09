@@ -68,7 +68,7 @@ export interface SocketMsgsMsg {
     type: ProcessMsgType.SocketMsg;
     msgs: Array<{
         socketId: string;
-        data: ArrayBuffer;
+        data: ArrayBuffer | Uint8Array;
     }>;
 }
 

@@ -16,8 +16,8 @@ const isProduction = process.env["NODE_ENV"] === "production";
  */
 export const Config = {
     devServer: {
-        host: "127.0.0.1",
-        port: 8001,
+      host: "127.0.0.1",
+      port: 8001,
     },
 
     apiServer: {
@@ -47,6 +47,8 @@ export const Config = {
         allowEditMsg: !isProduction,
     },
 
+    accountsEnabled: true,
+    
     rateLimitsEnabled: isProduction,
 
     client: {
@@ -70,6 +72,18 @@ export const Config = {
     defaultItems: {},
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
+
+if (!isProduction) {
+  util.mergeDeep(Config, {
+      regions: {
+          local: {
+              https: false,
+              address: `${Config.devServer.host}:${Config.devServer.port}`,
+              l10n: "index-local",
+          },
+      },
+  });
+}
 
 const runningOnVite = process.argv.toString().includes("vite");
 
@@ -123,7 +137,6 @@ interface ServerConfig {
 
 export interface ConfigType {
     devServer: ServerConfig;
-
     apiServer: ServerConfig;
     gameServer: ServerConfig & {
         apiServerUrl: string;
@@ -132,6 +145,12 @@ export interface ConfigType {
      * API key used for game server and API server to communicate
      */
     apiKey: string;
+
+
+    /**
+     * used to hide/disable account-related features in both client and server.
+     */
+    readonly accountsEnabled: boolean;
 
     regions: Record<
         string,

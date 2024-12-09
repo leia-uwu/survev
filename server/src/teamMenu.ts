@@ -1,21 +1,22 @@
-import type { TemplatedApp, WebSocket } from "uWebSockets.js";
+import type { Context, Hono } from "hono";
+import type { UpgradeWebSocket } from "hono/ws";
 import type {
-    ClientToServerTeamMsg,
-    RoomData,
-    ServerToClientTeamMsg,
-    TeamErrorMsg,
-    TeamMenuPlayer,
-    TeamStateMsg,
+  ClientToServerTeamMsg,
+  RoomData,
+  ServerToClientTeamMsg,
+  TeamErrorMsg,
+  TeamMenuPlayer,
+  TeamStateMsg,
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
 import { assert } from "../../shared/utils/util";
-import type { ApiServer } from "./apiServer";
+import type { ApiServer } from "./api/apiServer";
 import { Config } from "./config";
 import {
     HTTPRateLimit,
-    WebSocketRateLimit,
-    getIp,
     validateUserName,
+    WebSocketRateLimit,
+    getHonoIp,
 } from "./utils/serverHelpers";
 
 export interface TeamSocketData {
@@ -72,87 +73,65 @@ export class TeamMenu {
 
     constructor(public server: ApiServer) {}
 
-    init(app: TemplatedApp) {
+    init(app: Hono, upgradeWebSocket: UpgradeWebSocket ) {
         const teamMenu = this;
 
         const httpRateLimit = new HTTPRateLimit(1, 2000);
         const wsRateLimit = new WebSocketRateLimit(5, 1000, 10);
 
-        app.ws("/team_v2", {
-            idleTimeout: 30,
-            /**
-             * Upgrade the connection to WebSocket.
-             */
-            upgrade(res, req, context) {
-                res.onAborted((): void => {});
 
-                const ip = getIp(res, req, Config.apiServer.proxyIPHeader);
+        app.get("/team_v2", upgradeWebSocket((c) => {
+            const ip = getHonoIp(c);
 
-                if (!ip) {
-                    teamMenu.server.logger.warn(`Invalid IP Found`);
-                    res.end();
-                    return;
-                }
+            let closeOnOpen = false;
+            if (
+                !ip ||
+                httpRateLimit.isRateLimited(ip) ||
+                wsRateLimit.isIpRateLimited(ip)
+            ) {
+                closeOnOpen = true;
+            }
 
-                if (httpRateLimit.isRateLimited(ip) || wsRateLimit.isIpRateLimited(ip)) {
-                    res.writeStatus("429 Too Many Requests");
-                    res.write("429 Too Many Requests");
-                    res.end();
-                    return;
-                }
-                wsRateLimit.ipConnected(ip);
+            wsRateLimit.ipConnected(ip!);
 
-                res.upgrade(
-                    {
-                        rateLimit: {},
-                        ip,
-                    },
-                    req.getHeader("sec-websocket-key"),
-                    req.getHeader("sec-websocket-protocol"),
-                    req.getHeader("sec-websocket-extensions"),
-                    context,
-                );
-            },
+            // guh, i'm sure there is a better way;
+            // lmssiehdev: leia found a way but it's broken? I couldn't get it to work
+            const userDataMap = new Map<Context, TeamSocketData>();
+            return {
+                onOpen(_event, ws) {
+                    const userData = {
+                      ip,
+                      rateLimit: {}
+                    } as TeamSocketData;
+                    userData.sendMsg = (data) => ws.send(data);
+                    userData.closeSocket = () => ws.close();
+                    userDataMap.set(c, userData);
 
-            /**
-             * Handle opening of the socket.
-             * @param socket The socket being opened.
-             */
-            open(socket: WebSocket<TeamSocketData>) {
-                socket.getUserData().sendMsg = (data) => socket.send(data, false, false);
-                socket.getUserData().closeSocket = () => socket.close();
-            },
-
-            /**
-             * Handle messages coming from the socket.
-             * @param socket The socket in question.
-             * @param message The message to handle.
-             */
-            message(socket: WebSocket<TeamSocketData>, message) {
-                if (wsRateLimit.isRateLimited(socket.getUserData().rateLimit)) {
-                    socket.close();
-                    return;
-                }
-                teamMenu.handleMsg(message, socket.getUserData());
-            },
-
-            /**
-             * Handle closing of the socket.
-             * Called if player hits the leave button or if there's an error joining/creating a team
-             * @param socket The socket being closed.
-             */
-            close(socket: WebSocket<TeamSocketData>) {
-                const userData = socket.getUserData();
-                const room = teamMenu.rooms.get(userData.roomUrl);
-                if (room) {
-                    teamMenu.removePlayer(userData);
-                    teamMenu.sendRoomState(room);
-                }
-                wsRateLimit.ipDisconnected(userData.ip);
-            },
-        });
-    }
-
+                    if (closeOnOpen) {
+                      ws.close();
+                    }
+                },
+                onMessage(event, ws) {
+                    const userData = userDataMap.get(c)!;
+                    if (wsRateLimit.isRateLimited(userData.rateLimit)) {
+                      ws.close();
+                      return;
+                    }
+                    teamMenu.handleMsg(event.data as string, userData);
+                },
+                onClose: () => {
+                    const userData = userDataMap.get(c)!;
+                    const room = teamMenu.rooms.get(userData.roomUrl);
+                    if (room) {
+                        teamMenu.removePlayer(userData);
+                        teamMenu.sendRoomState(room);
+                    }
+                    userDataMap.delete(c);
+                    wsRateLimit.ipDisconnected(userData.ip);
+                },
+            };
+        }))
+      }
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
         const enabledGameModeIdxs = Config.modes
             .slice(1)
@@ -253,6 +232,7 @@ export class TeamMenu {
     }
 
     validateMsg(msg: ClientToServerTeamMsg) {
+        console.log({msg})
         assert(typeof msg.type === "string");
 
         function validateRoomData(data: RoomData) {
@@ -303,13 +283,14 @@ export class TeamMenu {
         }
     }
 
-    async handleMsg(message: ArrayBuffer, localPlayerData: TeamSocketData) {
+    async handleMsg(message: string, localPlayerData: TeamSocketData) {
         let parsedMessage: ClientToServerTeamMsg;
         try {
-            parsedMessage = JSON.parse(new TextDecoder().decode(message));
+            parsedMessage = JSON.parse(message);
             this.validateMsg(parsedMessage);
         } catch {
             localPlayerData.closeSocket();
+            console.error("Failed parsing message")
             return;
         }
 
