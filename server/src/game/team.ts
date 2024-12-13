@@ -1,4 +1,5 @@
 import { GameConfig } from "../../../shared/gameConfig";
+import type { Game } from "./game";
 import type { Group } from "./group";
 import type { Player } from "./objects/player";
 
@@ -6,7 +7,10 @@ export class Team {
     players: Player[] = [];
     livingPlayers: Player[] = [];
 
-    constructor(public teamId: number) {}
+    constructor(
+        public game: Game,
+        public teamId: number,
+    ) {}
 
     addPlayer(player: Player): void {
         player.teamId = this.teamId;
@@ -21,12 +25,9 @@ export class Team {
     }
 
     getGroups(): Group[] {
-        const groups: Group[] = [];
-        for (let i = 0; i < this.players.length; i++) {
-            const player = this.players[i];
-            if (!groups[player.groupId]) groups[player.groupId] = player.group!;
-        }
-        return groups.filter((g) => g != undefined);
+        return this.game.playerBarn.groups.filter(
+            (g) => g.players[0].teamId == this.teamId,
+        );
     }
 
     checkAllDowned(player: Player): boolean {
