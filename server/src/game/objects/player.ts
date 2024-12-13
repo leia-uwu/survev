@@ -45,6 +45,10 @@ interface Emote {
     pos: Vec2;
     type: string;
     isPing: boolean;
+    /**
+     * if type is "emote_loot", typestring of item goes here
+     * "m870", "mosin", "1xscope", "762mm", etc
+     */
     itemType: string;
 }
 
@@ -2541,6 +2545,11 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        //medics always emote the healing/boost item they're using
+        if (this.role == "medic") {
+            this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
+        }
+
         this.cancelAction();
         this.doAction(
             item,
@@ -2580,6 +2589,11 @@ export class Player extends BaseGameObject {
         }
         if (!this.inventory[item]) {
             return;
+        }
+
+        //medics always emote the healing/boost item they're using
+        if (this.role == "medic") {
+            this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
         }
 
         this.cancelAction();
