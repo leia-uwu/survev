@@ -113,7 +113,10 @@ export class PlayerBarn {
         const result = this.getGroupAndTeam(joinData);
         const group = result?.group;
         //solo 50v50 just chooses the smallest team everytime no matter what
-        const team = (this.game.map.factionMode && !this.game.isTeamMode) ? this.getSmallestTeam() : result?.team;
+        const team =
+            this.game.map.factionMode && !this.game.isTeamMode
+                ? this.getSmallestTeam()
+                : result?.team;
 
         const pos: Vec2 = this.game.map.getSpawnPos(group, team);
 
@@ -199,6 +202,9 @@ export class PlayerBarn {
         }
         this.deletedPlayers.push(player.__id);
         player.destroy();
+        if (player.team) {
+            player.team.removePlayer(player);
+        }
         if (player.group) {
             player.group.removePlayer(player);
 
@@ -308,10 +314,12 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    getGroupAndTeam(joinData: JoinTokenData): {
-        group?: Group;
-        team?: Team;
-    } | undefined {
+    getGroupAndTeam(joinData: JoinTokenData):
+        | {
+              group?: Group;
+              team?: Team;
+          }
+        | undefined {
         if (!this.game.isTeamMode) return undefined;
         let group = this.groupsByHash.get(joinData.groupHashToJoin);
         let team = this.game.map.factionMode ? this.getSmallestTeam() : undefined;
@@ -319,9 +327,7 @@ export class PlayerBarn {
         if (!group && joinData.autoFill) {
             const groups = team ? team.getGroups() : this.groups;
             group = groups.find((group) => {
-                return (
-                    group.autoFill && group.canJoin(joinData.playerCount)
-                );
+                return group.autoFill && group.canJoin(joinData.playerCount);
             });
         }
 
@@ -347,7 +353,7 @@ export class PlayerBarn {
             team = group.players[0].team;
         }
 
-        return {group, team};
+        return { group, team };
     }
 
     addGroup(autoFill: boolean) {

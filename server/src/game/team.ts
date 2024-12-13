@@ -1,5 +1,5 @@
 import { GameConfig } from "../../../shared/gameConfig";
-import { Group } from "./group";
+import type { Group } from "./group";
 import type { Player } from "./objects/player";
 
 export class Team {
@@ -26,7 +26,7 @@ export class Team {
             const player = this.players[i];
             if (!groups[player.groupId]) groups[player.groupId] = player.group!;
         }
-        return groups.filter(g => g != undefined);
+        return groups.filter((g) => g != undefined);
     }
 
     checkAllDowned(player: Player): boolean {
