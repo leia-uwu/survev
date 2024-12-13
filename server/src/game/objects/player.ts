@@ -310,7 +310,7 @@ export class PlayerBarn {
     }
 
     addTeam(teamId: number) {
-        const team = new Team(teamId);
+        const team = new Team(this.game, teamId);
         this.teams.push(team);
     }
 
@@ -2451,9 +2451,6 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        // const downedTeammates = this.group!.getAliveTeammates(this).filter(
-        //     (t) => t.downed
-        // );
         const nearbyDownedTeammates = this.game.grid
             .intersectCollider(
                 collider.createCircle(this.pos, GameConfig.player.reviveRange),
@@ -2462,7 +2459,13 @@ export class Player extends BaseGameObject {
                 (obj): obj is Player =>
                     obj.__type == ObjectType.Player &&
                     obj.teamId == this.teamId &&
-                    obj.downed,
+                    obj.downed &&
+                    //if player is doing a revive action but they're not reviving anyone, it means they're the one being revived
+                    //we need to remove teammates already being revived since a player can only be revived by one person at a time
+                    !(
+                        obj.actionType == GameConfig.Action.Revive &&
+                        obj.playerBeingRevived == undefined
+                    ),
             );
 
         let playerToRevive: Player | undefined;
