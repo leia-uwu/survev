@@ -110,14 +110,10 @@ export class PlayerBarn {
             }, 1);
         }
 
-        let team = this.getSmallestTeam();
-
-        let group: Group | undefined;
-
-        if (this.game.isTeamMode) {
-            group = this.findFreeGroup(joinData, team);
-            assert(group);
-        }
+        const result = this.getGroupAndTeam(joinData);
+        const group = result?.group;
+        //solo 50v50 just chooses the smallest team everytime no matter what
+        const team = (this.game.map.factionMode && !this.game.isTeamMode) ? this.getSmallestTeam() : result?.team;
 
         const pos: Vec2 = this.game.map.getSpawnPos(group, team);
 
@@ -299,8 +295,6 @@ export class PlayerBarn {
     }
 
     getSmallestTeam() {
-        if (!this.game.map.factionMode) return undefined;
-
         return this.teams.reduce((smallest, current) => {
             if (current.livingPlayers.length < smallest.livingPlayers.length) {
                 return current;
@@ -314,16 +308,19 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    findFreeGroup(joinData: JoinTokenData, team?: Team): Group {
+    getGroupAndTeam(joinData: JoinTokenData): {
+        group?: Group;
+        team?: Team;
+    } | undefined {
+        if (!this.game.isTeamMode) return undefined;
         let group = this.groupsByHash.get(joinData.groupHashToJoin);
+        let team = this.game.map.factionMode ? this.getSmallestTeam() : undefined;
 
         if (!group && joinData.autoFill) {
-            group = this.groups.find((group) => {
-                const sameTeamId = team && team.teamId == group.players[0].teamId;
+            const groups = team ? team.getGroups() : this.groups;
+            group = groups.find((group) => {
                 return (
-                    (team ? sameTeamId : true) &&
-                    group.autoFill &&
-                    group.canJoin(joinData.playerCount)
+                    group.autoFill && group.canJoin(joinData.playerCount)
                 );
             });
         }
@@ -344,7 +341,13 @@ export class PlayerBarn {
 
         joinData.groupHashToJoin = group.hash;
 
-        return group;
+        //pre-existing group not created during this function call
+        //players who join from the same group need the same team
+        if (this.game.map.factionMode && group.players.length > 0) {
+            team = group.players[0].team;
+        }
+
+        return {group, team};
     }
 
     addGroup(autoFill: boolean) {

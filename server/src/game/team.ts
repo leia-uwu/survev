@@ -1,4 +1,5 @@
 import { GameConfig } from "../../../shared/gameConfig";
+import { Group } from "./group";
 import type { Player } from "./objects/player";
 
 export class Team {
@@ -17,6 +18,15 @@ export class Team {
     removePlayer(player: Player): void {
         this.players.splice(this.players.indexOf(player), 1);
         this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
+    }
+
+    getGroups(): Group[] {
+        const groups: Group[] = [];
+        for (let i = 0; i < this.players.length; i++) {
+            const player = this.players[i];
+            if (!groups[player.groupId]) groups[player.groupId] = player.group!;
+        }
+        return groups.filter(g => g != undefined);
     }
 
     checkAllDowned(player: Player): boolean {
