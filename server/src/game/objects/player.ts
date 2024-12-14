@@ -1094,10 +1094,12 @@ export class Player extends BaseGameObject {
             this.game.modeManager.isReviving(this) ||
             this.game.modeManager.isBeingRevived(this)
         ) {
+            //cancel revive if either player goes out of range or if player being revived dies
             if (
                 this.playerBeingRevived &&
-                v2.distance(this.pos, this.playerBeingRevived.pos) >
-                    GameConfig.player.reviveRange
+                (v2.distance(this.pos, this.playerBeingRevived.pos) >
+                    GameConfig.player.reviveRange ||
+                    this.playerBeingRevived.dead)
             ) {
                 this.cancelAction();
             }
