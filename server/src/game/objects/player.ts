@@ -2763,7 +2763,7 @@ export class Player extends BaseGameObject {
                             ? undefined
                             : this.getPlayerToRevive();
 
-                    const interactables = [loot, ...obstacles, playerToRevive];
+                    const interactables = [!this.downed && loot, ...obstacles, playerToRevive];
 
                     for (let i = 0; i < interactables.length; i++) {
                         const interactable = interactables[i];
