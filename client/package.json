@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.32",
-    "vite": "^5.4.10",
+    "vite": "^5.4.11",
     "vite-plugin-strip-block": "^1.0.1"
   }
 }
