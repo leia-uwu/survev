@@ -177,6 +177,12 @@ export class WeaponManager {
             this.setCurWeapIndex(WeaponSlot.Melee, undefined, undefined, true);
         }
 
+        //pan is always "worn" if player has it and any other slot is selected
+        if (type == "pan" && this.curWeapIdx != WeaponSlot.Melee) {
+            this.player.wearingPan = true;
+            this.player.setDirty();
+        }
+
         this.player.weapsDirty = true;
     }
 
