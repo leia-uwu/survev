@@ -57,6 +57,7 @@ export class PlayerBarn {
     livingPlayers: Player[] = [];
     newPlayers: Player[] = [];
     deletedPlayers: number[] = [];
+    killedPlayers: Player[] = [];
     groupIdAllocator = new IDAllocator(8);
     aliveCountDirty = false;
 
@@ -169,6 +170,12 @@ export class PlayerBarn {
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].update(dt);
         }
+
+        //doing this after updates ensures that gameover msgs sent are always accurate
+        for (let i = 0; i < this.killedPlayers.length; i++) {
+            this.killedPlayers[i].addGameOverMsg();
+        }
+        this.killedPlayers.length = 0;
 
         // update scheduled roles
         for (let i = this.scheduledRoles.length - 1; i >= 0; i--) {
@@ -284,7 +291,7 @@ export class PlayerBarn {
         );
 
         if (groupAlives.length <= 1) {
-            true;
+            return true;
         }
 
         return false;
@@ -1892,7 +1899,9 @@ export class Player extends BaseGameObject {
             case spectateMsg.specBegin:
                 const groupExistsOrAlive =
                     this.game.isTeamMode && this.group!.livingPlayers.length > 0;
-                if (groupExistsOrAlive) {
+                const teamExistsOrAlive =
+                    this.game.map.factionMode && this.team!.livingPlayers.length > 0;
+                if (groupExistsOrAlive || teamExistsOrAlive) {
                     playerToSpec =
                         spectatablePlayers[
                             util.randomInt(0, spectatablePlayers.length - 1)
@@ -2032,31 +2041,19 @@ export class Player extends BaseGameObject {
      */
     addGameOverMsg(winningTeamId: number = 0): void {
         const targetPlayer = this.spectating ?? this;
-        let stats: net.PlayerStatsMsg["playerStats"][] = [targetPlayer];
-
-        if (this.group) {
-            stats = this.group.players;
-        }
-
         const aliveCount = this.game.modeManager.aliveCount();
 
         if (this.game.modeManager.showStatsMsg(targetPlayer)) {
-            for (const stat of stats) {
-                const statsMsg = new net.PlayerStatsMsg();
-                statsMsg.playerStats = stat;
-
-                this.msgsToSend.push({ type: net.MsgType.PlayerStats, msg: statsMsg });
-
-                for (const spectator of this.spectators) {
-                    spectator.msgsToSend.push({
-                        type: net.MsgType.PlayerStats,
-                        msg: statsMsg,
-                    });
-                }
-            }
+            const statsMsg = new net.PlayerStatsMsg();
+            statsMsg.playerStats = targetPlayer;
+            this.msgsToSend.push({ type: net.MsgType.PlayerStats, msg: statsMsg });
         } else {
             const gameOverMsg = new net.GameOverMsg();
-            gameOverMsg.playerStats = stats;
+
+            const statsArr: net.PlayerStatsMsg["playerStats"][] = this.group
+                ? this.group.players
+                : [targetPlayer];
+            gameOverMsg.playerStats = statsArr;
             gameOverMsg.teamRank =
                 winningTeamId == targetPlayer.teamId ? 1 : aliveCount + 1; //gameover msg sent after alive count updated
             gameOverMsg.teamId = targetPlayer.teamId;
@@ -2108,8 +2105,13 @@ export class Player extends BaseGameObject {
         this.game.broadcastMsg(net.MsgType.Kill, downedMsg);
     }
 
-    private _assignNewSpectate() {
+    /**
+     * called after player dies, finds a new player to spectate and gives all of the dead player's spectators to the new player
+     */
+    private _assignNewSpectate(): void {
         if (this.spectatorCount == 0) return;
+        //if player just died and their whole group is dead, the entire group should be shown a game over msg instead of spectating someone new
+        if (this.group && this.group.checkAllDeadOrDisconnected(this)) return;
 
         let player: Player;
         if (!this.game.isTeamMode) {
@@ -2119,21 +2121,8 @@ export class Player extends BaseGameObject {
                     ? this.killedBy
                     : this.game.playerBarn.randomPlayer();
         } else if (this.group) {
-            if (!this.group.checkAllDeadOrDisconnected(this)) {
-                // team alive
-                player = this.group.randomPlayer(this);
-            } else {
-                // team dead
-                if (
-                    this.killedBy &&
-                    this.killedBy != this &&
-                    this.group.checkAllDeadOrDisconnected(this) // only spectate player's killer if all the players teammates are dead, otherwise spec teammates
-                ) {
-                    player = this.killedBy;
-                } else {
-                    player = this.group.randomPlayer(this);
-                }
-            }
+            //at least one player in the group guaranteed to be alive if this code is reached.
+            player = this.group.randomPlayer(this);
         }
 
         // loop through all of this object's spectators and change who they're spectating to the new selected player
@@ -2175,6 +2164,8 @@ export class Player extends BaseGameObject {
             this.game.playerBarn.livingPlayers.indexOf(this),
             1,
         );
+
+        this.game.playerBarn.killedPlayers.push(this);
 
         this.group?.checkPlayers();
 
@@ -2316,11 +2307,6 @@ export class Player extends BaseGameObject {
         //
 
         this._assignNewSpectate();
-
-        //
-        // Send game over message to player
-        //
-        this.addGameOverMsg();
 
         this.game.deadBodyBarn.addDeadBody(this.pos, this.__id, this.layer, params.dir);
 
@@ -2763,7 +2749,11 @@ export class Player extends BaseGameObject {
                             ? undefined
                             : this.getPlayerToRevive();
 
-                    const interactables = [!this.downed && loot, ...obstacles, playerToRevive];
+                    const interactables = [
+                        !this.downed && loot,
+                        ...obstacles,
+                        playerToRevive,
+                    ];
 
                     for (let i = 0; i < interactables.length; i++) {
                         const interactable = interactables[i];

@@ -77,7 +77,7 @@ export class Group {
      */
     checkAllDeadOrDisconnected(player: Player) {
         const alivePlayers = this.players.filter(
-            (p) => (!p.dead || !p.disconnected) && p !== player,
+            (p) => !p.dead && !p.disconnected && p !== player,
         );
         return alivePlayers.length <= 0;
     }

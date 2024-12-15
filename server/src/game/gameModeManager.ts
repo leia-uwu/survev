@@ -113,6 +113,7 @@ export class GameModeManager {
         if (this.getPlayerAlivePlayersContext(player).length != 0) {
             playerFilter = (p: Player) => !p.disconnected && p.teamId == player.teamId;
         } else {
+            //if no players left on group/team, player can spectate anyone
             playerFilter = (p: Player) => !p.disconnected;
         }
         // livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
@@ -221,19 +222,6 @@ export class GameModeManager {
             case GameMode.Team:
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
             case GameMode.Faction:
-                /**
-                 * temporary fix for when you kill the last non knocked player on a team
-                 * and all of the knocked players are supposed to bleed out
-                 * technically everyone is "dead" at this point and the stats message shouldnt show for anyone
-                 * but since the last knocked player gets killed first the downed teammates are technically still "alive"
-                 *
-                 * i believe the solution is to separate kills and gameovermsgs so that all kills in a tick get done first
-                 * then all gameovermsgs get done after
-                 * for (const kill of kills){};
-                 * for (const msg of gameovermsgs){};
-                 */
-                if (player.team!.checkAllDowned(player)) return false;
-
                 if (!this.game.isTeamMode) {
                     //stats msg can only show in solos if it's also faction mode
                     return this.aliveCount() > 1;
