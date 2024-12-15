@@ -315,7 +315,7 @@ const mapDef = {
         ],
         tier_ghillie: [
             {
-                name: "outfitDarkGhillie",
+                name: "outfitGhillie",
                 count: 1,
                 weight: 0.5,
             },
@@ -324,7 +324,7 @@ const mapDef = {
             { name: "", count: 1, weight: 25 },
             { name: "outfitHeaven", count: 1, weight: 1 },
             {
-                name: "outfitDarkGhillie",
+                name: "outfitGhillie",
                 count: 1,
                 weight: 0.5,
             },

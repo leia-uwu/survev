@@ -36,7 +36,7 @@ const mapDef = {
     lootTable: {
         tier_ghillie: [
             {
-                name: "outfitSpringGhillie",
+                name: "outfitGhillie",
                 count: 1,
                 weight: 1,
             },
