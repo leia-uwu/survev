@@ -113,7 +113,7 @@ export class GameModeManager {
         if (this.getPlayerAlivePlayersContext(player).length != 0) {
             playerFilter = (p: Player) => !p.disconnected && p.teamId == player.teamId;
         } else {
-            //if no players left on group/team, player can spectate anyone
+            // if no players left on group/team, player can spectate anyone
             playerFilter = (p: Player) => !p.disconnected;
         }
         // livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
@@ -157,7 +157,7 @@ export class GameModeManager {
     getNearbyAlivePlayersContext(player: Player, range: number): Player[] {
         const alivePlayersContext = this.getPlayerAlivePlayersContext(player);
 
-        //probably more efficient when there's 4 or less players in the context (untested)
+        // probably more efficient when there's 4 or less players in the context (untested)
         if (alivePlayersContext.length <= 4) {
             return alivePlayersContext.filter(
                 (p) =>
@@ -173,7 +173,7 @@ export class GameModeManager {
                 (obj): obj is Player =>
                     obj.__type == ObjectType.Player &&
                     playerIdContext == this.getIdContext(obj) &&
-                    !obj.dead && //necessary since player isnt deleted from grid on death
+                    !obj.dead && // necessary since player isnt deleted from grid on death
                     !!util.sameLayer(player.layer, obj.layer) &&
                     v2.lengthSqr(v2.sub(player.pos, obj.pos)) <= range * range,
             );
@@ -223,7 +223,7 @@ export class GameModeManager {
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
             case GameMode.Faction:
                 if (!this.game.isTeamMode) {
-                    //stats msg can only show in solos if it's also faction mode
+                    // stats msg can only show in solos if it's also faction mode
                     return this.aliveCount() > 1;
                 }
 
@@ -268,7 +268,7 @@ export class GameModeManager {
                         }
 
                         player.kill(params);
-                        //special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
+                        // special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
                         if (group.checkAllDowned(player)) {
                             group.killAllTeammates();
                         }
@@ -312,7 +312,7 @@ export class GameModeManager {
                         }
 
                         player.kill(params);
-                        //special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
+                        // special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
                         if (team.checkAllDowned(player)) {
                             team.killAllTeammates();
                         }

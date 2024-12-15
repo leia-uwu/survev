@@ -113,7 +113,7 @@ export class PlayerBarn {
 
         const result = this.getGroupAndTeam(joinData);
         const group = result?.group;
-        //solo 50v50 just chooses the smallest team everytime no matter what
+        // solo 50v50 just chooses the smallest team everytime no matter what
         const team =
             this.game.map.factionMode && !this.game.isTeamMode
                 ? this.getSmallestTeam()
@@ -171,7 +171,7 @@ export class PlayerBarn {
             this.players[i].update(dt);
         }
 
-        //doing this after updates ensures that gameover msgs sent are always accurate
+        // doing this after updates ensures that gameover msgs sent are always accurate
         for (let i = 0; i < this.killedPlayers.length; i++) {
             this.killedPlayers[i].addGameOverMsg();
         }
@@ -354,8 +354,8 @@ export class PlayerBarn {
 
         joinData.groupHashToJoin = group.hash;
 
-        //pre-existing group not created during this function call
-        //players who join from the same group need the same team
+        // pre-existing group not created during this function call
+        // players who join from the same group need the same team
         if (this.game.map.factionMode && group.players.length > 0) {
             team = group.players[0].team;
         }
@@ -666,7 +666,7 @@ export class Player extends BaseGameObject {
 
     wearingPan = false;
     healEffect = false;
-    //if hit by snowball or potato, slowed down for "x" seconds
+    // if hit by snowball or potato, slowed down for "x" seconds
     frozenTicker = 0;
     frozen = false;
     frozenOri = 0;
@@ -747,25 +747,25 @@ export class Player extends BaseGameObject {
         }
 
         if (def.defaultItems) {
-            //for non faction modes where teamId > 2, just cycles between blue and red teamId
+            // for non faction modes where teamId > 2, just cycles between blue and red teamId
             const clampedTeamId = ((this.teamId - 1) % 2) + 1;
 
-            //inventory
+            // inventory
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
-                if (value == 0) continue; //prevents overwriting existing inventory
+                if (value == 0) continue; // prevents overwriting existing inventory
                 this.inventory[key] = value;
             }
 
-            //outfit
+            // outfit
             const newOutfit = def.defaultItems.outfit;
             if (newOutfit instanceof Function) {
                 this.setOutfit(newOutfit(clampedTeamId));
             } else {
-                //string
+                // string
                 if (newOutfit) this.setOutfit(newOutfit);
             }
 
-            //armor
+            // armor
             this.scope = def.defaultItems.scope;
             if (this.helmet && !this.hasRoleHelmet)
                 this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
@@ -782,7 +782,7 @@ export class Player extends BaseGameObject {
             }
             this.backpack = def.defaultItems.backpack;
 
-            //weapons
+            // weapons
             for (let i = 0; i < def.defaultItems.weapons.length; i++) {
                 const weaponOrWeaponFunc = def.defaultItems.weapons[i];
                 const trueWeapon =
@@ -791,7 +791,7 @@ export class Player extends BaseGameObject {
                         : weaponOrWeaponFunc;
 
                 if (!trueWeapon.type) {
-                    //prevents overwriting existing weapons
+                    // prevents overwriting existing weapons
                     if (!this.weapons[i].type) {
                         continue;
                     }
@@ -1101,7 +1101,7 @@ export class Player extends BaseGameObject {
             this.game.modeManager.isReviving(this) ||
             this.game.modeManager.isBeingRevived(this)
         ) {
-            //cancel revive if either player goes out of range or if player being revived dies
+            // cancel revive if either player goes out of range or if player being revived dies
             if (
                 this.playerBeingRevived &&
                 (v2.distance(this.pos, this.playerBeingRevived.pos) >
@@ -2055,7 +2055,7 @@ export class Player extends BaseGameObject {
                 : [targetPlayer];
             gameOverMsg.playerStats = statsArr;
             gameOverMsg.teamRank =
-                winningTeamId == targetPlayer.teamId ? 1 : aliveCount + 1; //gameover msg sent after alive count updated
+                winningTeamId == targetPlayer.teamId ? 1 : aliveCount + 1; // gameover msg sent after alive count updated
             gameOverMsg.teamId = targetPlayer.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
             gameOverMsg.gameOver = !!winningTeamId;
@@ -2110,7 +2110,7 @@ export class Player extends BaseGameObject {
      */
     private _assignNewSpectate(): void {
         if (this.spectatorCount == 0) return;
-        //if player just died and their whole group is dead, the entire group should be shown a game over msg instead of spectating someone new
+        // if player just died and their whole group is dead, the entire group should be shown a game over msg instead of spectating someone new
         if (this.group && this.group.checkAllDeadOrDisconnected(this)) return;
 
         let player: Player;
@@ -2121,7 +2121,7 @@ export class Player extends BaseGameObject {
                     ? this.killedBy
                     : this.game.playerBarn.randomPlayer();
         } else if (this.group) {
-            //at least one player in the group guaranteed to be alive if this code is reached.
+            // at least one player in the group guaranteed to be alive if this code is reached.
             player = this.group.randomPlayer(this);
         }
 
@@ -2132,10 +2132,10 @@ export class Player extends BaseGameObject {
                 this.game.playerBarn.isTeamGameOver() &&
                 this.group!.players.includes(spectator)
             ) {
-                //inverted logic
-                //if the game is over and the spectator is on the player who died's team...
-                //then you keep them spectating their dead teammate instead of the winner...
-                //so the proper stats show in the game over msg
+                // inverted logic
+                // if the game is over and the spectator is on the player who died's team...
+                // then you keep them spectating their dead teammate instead of the winner...
+                // so the proper stats show in the game over msg
             } else {
                 spectator.spectating = player!;
             }
@@ -2448,8 +2448,8 @@ export class Player extends BaseGameObject {
                     obj.__type == ObjectType.Player &&
                     obj.teamId == this.teamId &&
                     obj.downed &&
-                    //if player is doing a revive action but they're not reviving anyone, it means they're the one being revived
-                    //we need to remove teammates already being revived since a player can only be revived by one person at a time
+                    // if player is doing a revive action but they're not reviving anyone, it means they're the one being revived
+                    // we need to remove teammates already being revived since a player can only be revived by one person at a time
                     !(
                         obj.actionType == GameConfig.Action.Revive &&
                         obj.playerBeingRevived == undefined
@@ -2522,7 +2522,7 @@ export class Player extends BaseGameObject {
 
         return this.game.grid
             .intersectCollider(
-                //includes self
+                // includes self
                 collider.createCircle(this.pos, effectRange),
             )
             .filter(
@@ -2545,7 +2545,7 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        //medics always emote the healing/boost item they're using
+        // medics always emote the healing/boost item they're using
         if (this.role == "medic") {
             this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
         }
@@ -2562,7 +2562,7 @@ export class Player extends BaseGameObject {
         if (this.hasPerk("aoe_heal")) {
             let aoePlayers = this.getAOEPlayers();
 
-            //aoe doesnt heal/give boost to downed players
+            // aoe doesnt heal/give boost to downed players
             if (this.actionType == GameConfig.Action.UseItem) {
                 aoePlayers = aoePlayers.filter((p) => !p.downed);
             }
@@ -2591,7 +2591,7 @@ export class Player extends BaseGameObject {
             return;
         }
 
-        //medics always emote the healing/boost item they're using
+        // medics always emote the healing/boost item they're using
         if (this.role == "medic") {
             this.game.playerBarn.addEmote(this.__id, this.pos, "emote_loot", false, item);
         }
@@ -3286,7 +3286,7 @@ export class Player extends BaseGameObject {
             removeLoot &&
             amountLeft > 0 &&
             lootToAdd !== "" &&
-            //if obj you tried picking up can't be picked up and needs to be dropped, "noDrop" is irrelevant
+            // if obj you tried picking up can't be picked up and needs to be dropped, "noDrop" is irrelevant
             (obj.type == lootToAdd || !(lootToAddDef as ChestDef).noDrop)
         ) {
             const dir = v2.neg(this.dir);
@@ -3312,7 +3312,7 @@ export class Player extends BaseGameObject {
     // in original game, only called on snowball or potato collision
     dropRandomLoot(): void {
         // all possible droppable loot held by the player
-        //4 categories: inventory, weapons, armor, perks
+        // 4 categories: inventory, weapons, armor, perks
         const playerLootTypes: string[] = [];
 
         for (const [type, count] of Object.entries(this.inventory)) {

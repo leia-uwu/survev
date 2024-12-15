@@ -11,8 +11,8 @@ export interface ExplosionDef {
     explosionEffectType: string;
     decalType: string;
     teamDamage?: boolean;
-    freezeAmount?: number; //unused atm in favor of gameconfig constant
-    freezeDuration?: number; //how long to slow down player on hit
+    freezeAmount?: number; // unused atm in favor of gameconfig constant
+    freezeDuration?: number; // how long to slow down player on hit
 }
 
 export const ExplosionDefs: Record<string, ExplosionDef> = {

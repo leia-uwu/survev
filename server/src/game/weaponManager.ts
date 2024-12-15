@@ -177,7 +177,7 @@ export class WeaponManager {
             this.setCurWeapIndex(WeaponSlot.Melee, undefined, undefined, true);
         }
 
-        //pan is always "worn" if player has it and any other slot is selected
+        // pan is always "worn" if player has it and any other slot is selected
         if (type == "pan" && this.curWeapIdx != WeaponSlot.Melee) {
             this.player.wearingPan = true;
             this.player.setDirty();
@@ -1017,8 +1017,8 @@ export class WeaponManager {
         if (!this.cookingThrowable) return;
         this.cookingThrowable = false;
 
-        //need to store this incase throwableType gets replaced with its "heavy" variant like snowball => snowball_heavy
-        //used to manage inventory since snowball_heavy isnt stored in inventory, when it's thrown you decrement "snowball" from inv
+        // need to store this incase throwableType gets replaced with its "heavy" variant like snowball => snowball_heavy
+        // used to manage inventory since snowball_heavy isnt stored in inventory, when it's thrown you decrement "snowball" from inv
         const oldThrowableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
 
         let throwableType = this.weapons[GameConfig.WeaponSlot.Throwable].type;
@@ -1037,10 +1037,10 @@ export class WeaponManager {
         if (throwableDef.forceMaxThrowDistance) {
             multiplier = 1;
         } else if (this.curWeapIdx != GameConfig.WeaponSlot.Throwable || noSpeed) {
-            //if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
+            // if selected weapon slot is not throwable, that means player switched slots early and velocity needs to be 0
             multiplier = 0;
         } else {
-            //default throw strength algorithm, just based on mouse distance from player
+            // default throw strength algorithm, just based on mouse distance from player
             multiplier =
                 math.clamp(
                     this.player.toMouseLen,
@@ -1089,7 +1089,7 @@ export class WeaponManager {
         // Incorporate some of the player motion into projectile velocity
         const vel = v2.add(
             v2.mul(this.player.moveVel, throwableDef.throwPhysics.playerVelMult),
-            //player mouse position is irrelevant for max throwing distance
+            // player mouse position is irrelevant for max throwing distance
             v2.mul(dir, throwStr),
         );
 

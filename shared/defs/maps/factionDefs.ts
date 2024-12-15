@@ -5,7 +5,7 @@ import type { MapDef } from "../mapDefs";
 import { Main } from "./baseDefs";
 
 export enum TeamColor {
-    // NONE = 0, //can be used ambiguously with code that runs the same regardless of team color
+    // NONE = 0, // can be used ambiguously with code that runs the same regardless of team color
     Red = 1,
     Blue = 2,
 }

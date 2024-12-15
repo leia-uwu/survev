@@ -114,7 +114,7 @@ export class Projectile extends BaseGameObject {
         // Velocity
         //
         if (!def.forceMaxThrowDistance) {
-            //velocity needs to stay constant to reach max throw dist
+            // velocity needs to stay constant to reach max throw dist
             this.vel = v2.mul(this.vel, 1 / (1 + dt * (this.posZ != 0 ? 1.2 : 2)));
         }
         this.pos = v2.add(this.pos, v2.mul(this.vel, dt));
