@@ -20,7 +20,6 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import { PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
@@ -38,6 +37,7 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { validateUserName } from "../../utils/serverHelpers";
+import { setLoadout } from "../../utils/loadoutHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
@@ -1166,54 +1166,7 @@ export class Player extends BaseGameObject {
             this.addPerk(perk.type, perk.droppable);
         }
 
-        /**
-         * Checks if an item is present in the player's loadout
-         */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
-        if (
-            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
-            joinMsg.loadout.outfit !== "outfitBase"
-        ) {
-            this.setOutfit(joinMsg.loadout.outfit);
-        } else {
-            this.setOutfit(defaultItems.outfit);
-        }
-
-        if (
-            isItemInLoadout(joinMsg.loadout.melee, "melee") &&
-            joinMsg.loadout.melee != "fists"
-        ) {
-            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        }
-
-        const loadout = this.loadout;
-
-        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-            loadout.heal = joinMsg.loadout.heal;
-        }
-        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-            loadout.boost = joinMsg.loadout.boost;
-        }
-
-        const emotes = joinMsg.loadout.emotes;
-        for (let i = 0; i < emotes.length; i++) {
-            const emote = emotes[i];
-            if (i > GameConfig.EmoteSlot.Count) break;
-
-            if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                continue;
-            }
-
-            loadout.emotes[i] = emote;
-        }
+        setLoadout(joinMsg, this)
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();

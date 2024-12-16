@@ -60,7 +60,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
                     usernameChangeTime: timeUntilNextChange,
                 },
                 loadout,
-                loadoutPriv: "",
+                loadoutPriv: encryptLoadout(loadout),
                 items,
             },
             200,
@@ -149,7 +149,7 @@ UserRouter.post(
             }>(
                 {
                     loadout: validatedLoadout,
-                    loadoutPriv: "",
+                    loadoutPriv: encryptLoadout(validatedLoadout),
                 },
                 200,
             );
