@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
@@ -13,6 +13,7 @@ import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
+import { encryptLoadout } from "../../../utils/loadoutHelpers";
 
 export const UserRouter = new Hono<Context>();
 
@@ -75,7 +76,7 @@ UserRouter.post(
     "/username",
     zValidator("json", usernameSchema, (result, c) => {
         if (!result.success) {
-            return c.text<UsernameErrorType>("invalid", 400);
+            return c.json<UsernameResponse>({ result: "invalid" }, 400);
         }
     }),
     AuthMiddleware,
@@ -93,24 +94,28 @@ UserRouter.post(
             );
 
             if (timeUntilNextChange > 0) {
-                return c.text<UsernameErrorType>("change_time_not_expired", 200);
+                return c.json<UsernameResponse>({ result: "change_time_not_expired" }, 200);
             }
 
             const isUsernameTaken = await db.query.usersTable.findFirst({
-                where: eq(usersTable.username, username),
+                where: or(
+                  eq(usersTable.username, username),
+                  eq(usersTable.slug, username)
+                ),
             });
 
             if (isUsernameTaken) {
-                return c.text<UsernameErrorType>("taken", 200);
+                return c.json<UsernameResponse>({ result: "taken"}, 200);
             }
 
             const now = new Date();
+            const slug = sanitizeSlug(username);
 
             await db
                 .update(usersTable)
                 .set({
-                    // update the slug as well?
-                    username: sanitizeSlug(username),
+                    username: slug,
+                    slug: slug,
                     usernameSet: true,
                     lastUsernameChangeTime: now,
                 })
@@ -119,7 +124,7 @@ UserRouter.post(
             return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {
             console.error("Error updating username", { error: err });
-            return c.text<UsernameErrorType>("failed");
+            return c.json<UsernameResponse>({ result: "failed" }, 500);
         }
     },
 );
@@ -373,8 +378,8 @@ type ProfileResponse =
           items: Item[];
       };
 
-type UsernameErrorType = "failed" | "invalid" | "taken" | "change_time_not_expired";
-
 type UsernameResponse = {
     result: "success";
+} | {
+  result: "failed" | "invalid" | "taken" | "change_time_not_expired"
 };
