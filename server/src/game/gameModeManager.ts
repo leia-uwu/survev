@@ -236,49 +236,49 @@ export class GameModeManager {
      * @param player player who died
      */
     assignNewSpectate(player: Player): void {
-        if (player.spectatorCount == 0) return;
-        // the reason this method doesn't use a mode switchcase like all the other methods in this class
-        // is because the solos/duos/squads spectate logic should be identical for factions minus one specific case
-        // the case is: if a player's group is dead in factions, the new player to spectate should be someone on the team...
-        // not any random player in the game
+        // This method doesn't use a mode switchcase like all the other methods in this class,
+        // as the spectate logic is identitical with the sole exception of narrowing random players
+        // in 50v50: random players spectated in 50v50 should be on the same team as the spectator.
 
-        let playerToSpec: Player;
-        if (!this.game.isTeamMode) {
-            if (player.killedBy && player.killedBy != player) {
-                playerToSpec = player.killedBy;
-            } else {
-                playerToSpec =
-                    this.mode == GameMode.Faction
-                        ? player.team!.randomPlayer()
-                        : player.game.playerBarn.randomPlayer();
+        // If there are no spectators, we have no need to run any logic.
+        if (player.spectatorCount === 0) return;
+
+        // Utility function to find a derivative of the original killer.
+        let attempts = 0;
+        const getAliveKiller = (
+            killer: Player | undefined,
+        ): Player | undefined => {
+            attempts++;
+            if (attempts > 80) return undefined;
+
+            if (!killer) return undefined;
+            if (!killer.dead) return killer;
+            if (
+                killer.killedBy &&
+                killer.killedBy !== player &&
+                killer.killedBy !== killer
+            ) {
+                return getAliveKiller(killer.killedBy);
             }
 
-            for (const spectator of player.spectators) {
-                spectator.spectating = playerToSpec;
-            }
-        } else if (player.group) {
-            //DOD = dead or disconnected
-            const groupAllDOD: boolean = player.group.checkAllDeadOrDisconnected(player);
+            return undefined;
+        };
 
-            //can only spec other groups once player's entire group is dead
-            if (groupAllDOD) {
-                if (player.killedBy && player.killedBy != player) {
-                    playerToSpec = player.killedBy;
-                } else {
-                    playerToSpec =
-                        this.mode == GameMode.Faction
-                            ? player.team!.randomPlayer()
-                            : player.game.playerBarn.randomPlayer();
-                }
-            } else {
-                playerToSpec = player.group.randomPlayer();
-            }
+        // Priority list of spectate targets.
+        const spectateTargets = [
+            player.group?.randomPlayer(),
+            player.team?.randomPlayer(),
+            player.killedBy && player.killedBy !== player ? getAliveKiller(player) : undefined,
+            player.game.playerBarn.randomPlayer()
+        ];
 
-            for (const spectator of player.spectators) {
-                //if the entire group is dead, all the group members need to get a gameover msg instead of spectating someone new
-                if (groupAllDOD && player.group.players.includes(spectator)) continue;
-                spectator.spectating = playerToSpec;
-            }
+        const playerToSpec = spectateTargets.filter(x => x !== undefined).shift();
+        for (const spectator of player.spectators) {
+            // If all group members have died, they need to be sent a game over message instead.
+            if (player.group && player.group.allDeadOrDisconnected && player.group.players.includes(spectator)) continue;
+
+            // Set remaining spectators to new player.
+            spectator.spectating = playerToSpec;
         }
     }
 
