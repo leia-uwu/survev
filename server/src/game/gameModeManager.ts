@@ -244,10 +244,14 @@ export class GameModeManager {
 
         let playerToSpec: Player;
         if (!this.game.isTeamMode) {
-            playerToSpec =
-                player.killedBy && player.killedBy != player
-                    ? player.killedBy
-                    : player.game.playerBarn.randomPlayer();
+            if (player.killedBy && player.killedBy != player) {
+                playerToSpec = player.killedBy;
+            } else {
+                playerToSpec =
+                    this.mode == GameMode.Faction
+                        ? player.team!.randomPlayer()
+                        : player.game.playerBarn.randomPlayer();
+            }
 
             for (const spectator of player.spectators) {
                 spectator.spectating = playerToSpec;
