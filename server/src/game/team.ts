@@ -1,4 +1,5 @@
 import { GameConfig } from "../../../shared/gameConfig";
+import { util } from "../../../shared/utils/util";
 import type { Game } from "./game";
 import type { Group } from "./group";
 import type { Player } from "./objects/player";
@@ -22,6 +23,11 @@ export class Team {
     removePlayer(player: Player): void {
         this.players.splice(this.players.indexOf(player), 1);
         this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
+    }
+
+    /** random alive player */
+    randomPlayer() {
+        return this.livingPlayers[util.randomInt(0, this.livingPlayers.length - 1)];
     }
 
     getGroups(): Group[] {

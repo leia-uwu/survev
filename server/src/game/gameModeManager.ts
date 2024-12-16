@@ -231,6 +231,53 @@ export class GameModeManager {
         }
     }
 
+    /**
+     * gives all the players spectating the player who died a new player to spectate
+     * @param player player who died
+     */
+    assignNewSpectate(player: Player): void {
+        if (player.spectatorCount == 0) return;
+        // the reason this method doesn't use a mode switchcase like all the other methods in this class
+        // is because the solos/duos/squads spectate logic should be identical for factions minus one specific case
+        // the case is: if a player's group is dead in factions, the new player to spectate should be someone on the team...
+        // not any random player in the game
+
+        let playerToSpec: Player;
+        if (!this.game.isTeamMode) {
+            playerToSpec =
+                player.killedBy && player.killedBy != player
+                    ? player.killedBy
+                    : player.game.playerBarn.randomPlayer();
+
+            for (const spectator of player.spectators) {
+                spectator.spectating = playerToSpec;
+            }
+        } else if (player.group) {
+            //DOD = dead or disconnected
+            const groupAllDOD: boolean = player.group.checkAllDeadOrDisconnected(player);
+
+            //can only spec other groups once player's entire group is dead
+            if (groupAllDOD) {
+                if (player.killedBy && player.killedBy != player) {
+                    playerToSpec = player.killedBy;
+                } else {
+                    playerToSpec =
+                        this.mode == GameMode.Faction
+                            ? player.team!.randomPlayer()
+                            : player.game.playerBarn.randomPlayer();
+                }
+            } else {
+                playerToSpec = player.group.randomPlayer();
+            }
+
+            for (const spectator of player.spectators) {
+                //if the entire group is dead, all the group members need to get a gameover msg instead of spectating someone new
+                if (groupAllDOD && player.group.players.includes(spectator)) continue;
+                spectator.spectating = playerToSpec;
+            }
+        }
+    }
+
     getPlayerStatuses(player: Player): PlayerStatus[] {
         if (this.isSolo) return [];
 

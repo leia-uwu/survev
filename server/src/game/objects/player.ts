@@ -2105,43 +2105,6 @@ export class Player extends BaseGameObject {
         this.game.broadcastMsg(net.MsgType.Kill, downedMsg);
     }
 
-    /**
-     * called after player dies, finds a new player to spectate and gives all of the dead player's spectators to the new player
-     */
-    private _assignNewSpectate(): void {
-        if (this.spectatorCount == 0) return;
-        // if player just died and their whole group is dead, the entire group should be shown a game over msg instead of spectating someone new
-        if (this.group && this.group.checkAllDeadOrDisconnected(this)) return;
-
-        let player: Player;
-        if (!this.game.isTeamMode) {
-            // solo
-            player =
-                this.killedBy && this.killedBy != this
-                    ? this.killedBy
-                    : this.game.playerBarn.randomPlayer();
-        } else if (this.group) {
-            // at least one player in the group guaranteed to be alive if this code is reached.
-            player = this.group.randomPlayer(this);
-        }
-
-        // loop through all of this object's spectators and change who they're spectating to the new selected player
-        for (const spectator of this.spectators) {
-            if (
-                this.game.isTeamMode &&
-                this.game.playerBarn.isTeamGameOver() &&
-                this.group!.players.includes(spectator)
-            ) {
-                // inverted logic
-                // if the game is over and the spectator is on the player who died's team...
-                // then you keep them spectating their dead teammate instead of the winner...
-                // so the proper stats show in the game over msg
-            } else {
-                spectator.spectating = player!;
-            }
-        }
-    }
-
     killedBy: Player | undefined;
 
     kill(params: DamageParams): void {
@@ -2306,7 +2269,7 @@ export class Player extends BaseGameObject {
         // Give spectators someone new to spectate
         //
 
-        this._assignNewSpectate();
+        this.game.modeManager.assignNewSpectate(this);
 
         this.game.deadBodyBarn.addDeadBody(this.pos, this.__id, this.layer, params.dir);
 
