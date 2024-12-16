@@ -33,6 +33,14 @@ export const Config = {
 
     apiKey: "Kongregate Sucks",
 
+    encryptLoadoutSecret: "IiRH2yg42jyp24qAAdLB6",
+
+    DISCORD_CLIENT_ID: "",
+    DISCORD_SECRET_ID: "",
+
+    GOOGLE_CLIENT_ID: "",
+    GOOGLE_SECRET_ID: "",
+
     modes: [
         { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
@@ -146,6 +154,21 @@ export interface ConfigType {
      */
     apiKey: string;
 
+    encryptLoadoutSecret?: string;
+
+    /*
+      used for auth redirects in production
+      should be the hosted website url ex: https://survev.io
+    */
+    BASE_URL?: string;
+
+    // ##### DISCORD OAUTH
+    DISCORD_CLIENT_ID?: string; 
+    DISCORD_SECRET_ID?: string;
+
+    // ##### GOOGLE OAUTH #####
+    GOOGLE_CLIENT_ID?: string;
+    GOOGLE_SECRET_ID?: string;
 
     /**
      * used to hide/disable account-related features in both client and server.
