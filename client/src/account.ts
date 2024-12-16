@@ -264,6 +264,7 @@ export class Account {
                 this.emit("login", this);
             }
             this.emit("items", this.items);
+            this.emit("loadout", this.loadout)
         });
     }
 
