@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "df674048-2cf5-4fac-8b9f-d4685d9ffaa2",
+  "id": "796033df-b945-4b68-aba6-2e29212df8af",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "session": {
@@ -129,6 +129,14 @@
         },
         "linked": {
           "name": "linked",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "linked_google": {
+          "name": "linked_google",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

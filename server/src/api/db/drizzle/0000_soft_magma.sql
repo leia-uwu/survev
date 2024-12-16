@@ -17,6 +17,7 @@ CREATE TABLE `users` (
 	`user_created` integer DEFAULT (unixepoch()) NOT NULL,
 	`last_username_change_time` integer,
 	`linked` integer DEFAULT false NOT NULL,
+	`linked_google` integer DEFAULT false NOT NULL,
 	`loadout` text DEFAULT '{"outfit":"outfitBase","melee":"fists","heal":"heal_basic","boost":"boost_basic","player_icon":"","crosshair":{"type":"crosshair_default","color":16777215,"size":"1.00","stroke":"0.00"},"emotes":["emote_happyface","emote_thumbsup","emote_surviv","emote_sadface","",""]}' NOT NULL,
 	`items` text DEFAULT '[]' NOT NULL
 );

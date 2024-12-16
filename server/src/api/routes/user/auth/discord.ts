@@ -10,8 +10,8 @@ import { usersTable } from "../../../db/schema";
 import { createNewUser, getRedirectUri, sanitizeSlug, setUserCookie } from "./authUtils";
 
 export const discord = new Discord(
-    process.env.DISCORD_CLIENT_ID!,
-    process.env.DISCORD_SECRET_ID!,
+    Config.DISCORD_CLIENT_ID!,
+    Config.DISCORD_SECRET_ID!,
     getRedirectUri("discord"),
 );
 
@@ -23,7 +23,7 @@ DiscordRouter.get("/", async (c) => {
     if (!Config.accountsEnabled) {
         return c.json({ err: "Account-related features are disabled" }, 403);
     }
-    if (!process.env.DISCORD_CLIENT_ID || !process.env.DISCORD_SECRET_ID) {
+    if (!Config.DISCORD_CLIENT_ID || !Config.DISCORD_SECRET_ID) {
         return c.json({ err: "Missing Discord credentials" }, 500);
     }
     const state = generateState();
@@ -39,6 +39,8 @@ DiscordRouter.get("/", async (c) => {
         maxAge: 60 * 10,
         sameSite: "Lax",
     });
+    
+    url.searchParams.append("prompt", "none");
     return c.redirect(url.toString());
 });
 
@@ -82,6 +84,7 @@ DiscordRouter.get("/callback", async (c) => {
             id: userId,
             authId: discordUser.id,
             linked: true,
+            linkedDiscord: true,
             username: slug,
             slug,
         });

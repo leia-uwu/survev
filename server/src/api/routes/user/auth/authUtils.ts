@@ -9,6 +9,7 @@ import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { type UsersTable, usersTable } from "../../../db/schema";
 import type { Item } from "../UserRouter";
+import { Config } from "../../../../config";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
@@ -55,12 +56,12 @@ export async function createNewUser(payload: UsersTable) {
 export function getRedirectUri(method: string) {
     const isProduction = process.env.NODE_ENV === "production";
 
-    if (isProduction && !process.env.BASE_URL) {
+    if (isProduction && !Config.BASE_URL) {
         throw new Error("BASE_URL is not defined.");
     }
 
     const baseUrl = isProduction
-        ? process.env.BASE_URL!
+        ? Config.BASE_URL!
         : // uh don't hardcode me
           `http://localhost:3000`;
 

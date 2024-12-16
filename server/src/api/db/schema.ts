@@ -26,6 +26,8 @@ export const usersTable = sqliteTable("users", {
         .default(sql`(unixepoch())`),
     lastUsernameChangeTime: integer("last_username_change_time", { mode: "timestamp" }),
     linked: integer("linked", { mode: "boolean" }).notNull().default(false),
+    linkedGoogle: integer("linked_google", { mode: "boolean"}).notNull().default(false),
+    linkedDiscord: integer("linked_google", { mode: "boolean"}).notNull().default(false),
     loadout: text("loadout", { mode: "json" })
         .notNull()
         .default(validateLoadout({} as Loadout))

@@ -10,8 +10,8 @@ import { usersTable } from "../../../db/schema";
 import { createNewUser, getRedirectUri, sanitizeSlug, setUserCookie } from "./authUtils";
 
 const google = new Google(
-    process.env.GOOGLE_CLIENT_ID!,
-    process.env.GOOGLE_SECRET_ID!,
+    Config.GOOGLE_CLIENT_ID!,
+    Config.GOOGLE_SECRET_ID!,
     getRedirectUri("google"),
 );
 
@@ -24,7 +24,7 @@ GoogleRouter.get("/", async (c) => {
     if (!Config.accountsEnabled) {
         return c.json({ err: "Account-related features are disabled" }, 403);
     }
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_SECRET_ID) {
+    if (!Config.GOOGLE_CLIENT_ID || !Config.GOOGLE_SECRET_ID) {
         return c.json({ err: "Missing Google credentials" }, 500);
     }
     const state = generateState();
@@ -92,6 +92,7 @@ GoogleRouter.get("/callback", async (c) => {
             authId: id,
             linked: true,
             username: slug,
+            linkedGoogle: true,
             slug,
         });
 
