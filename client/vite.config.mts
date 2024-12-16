@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
               }
             : {}),
     };
-    console.log({ regions })
+    console.log({ regions });
     return {
         base: "",
         build: {

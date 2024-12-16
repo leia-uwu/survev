@@ -1,12 +1,12 @@
 import type { Context, Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import type {
-  ClientToServerTeamMsg,
-  RoomData,
-  ServerToClientTeamMsg,
-  TeamErrorMsg,
-  TeamMenuPlayer,
-  TeamStateMsg,
+    ClientToServerTeamMsg,
+    RoomData,
+    ServerToClientTeamMsg,
+    TeamErrorMsg,
+    TeamMenuPlayer,
+    TeamStateMsg,
 } from "../../shared/net/team";
 import { math } from "../../shared/utils/math";
 import { assert } from "../../shared/utils/util";
@@ -73,65 +73,68 @@ export class TeamMenu {
 
     constructor(public server: ApiServer) {}
 
-    init(app: Hono, upgradeWebSocket: UpgradeWebSocket ) {
+    init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
         const teamMenu = this;
 
         const httpRateLimit = new HTTPRateLimit(1, 2000);
         const wsRateLimit = new WebSocketRateLimit(5, 1000, 10);
 
+        app.get(
+            "/team_v2",
+            upgradeWebSocket((c) => {
+                const ip = getHonoIp(c);
 
-        app.get("/team_v2", upgradeWebSocket((c) => {
-            const ip = getHonoIp(c);
+                let closeOnOpen = false;
+                if (
+                    !ip ||
+                    httpRateLimit.isRateLimited(ip) ||
+                    wsRateLimit.isIpRateLimited(ip)
+                ) {
+                    closeOnOpen = true;
+                }
 
-            let closeOnOpen = false;
-            if (
-                !ip ||
-                httpRateLimit.isRateLimited(ip) ||
-                wsRateLimit.isIpRateLimited(ip)
-            ) {
-                closeOnOpen = true;
-            }
+                wsRateLimit.ipConnected(ip!);
 
-            wsRateLimit.ipConnected(ip!);
+                // guh, i'm sure there is a better way;
+                // lmssiehdev: leia found a way but it's broken? I couldn't get it to work
+                const userDataMap = new Map<Context, TeamSocketData>();
+                return {
+                    onOpen(_event, ws) {
+                        const userData = {
+                            ip,
+                             rateLimit: {},
+                        } as TeamSocketData;
+                        userData.sendMsg = (data) => ws.send(data);
+                        userData.closeSocket = () => ws.close();
+                        userDataMap.set(c, userData);
 
-            // guh, i'm sure there is a better way;
-            // lmssiehdev: leia found a way but it's broken? I couldn't get it to work
-            const userDataMap = new Map<Context, TeamSocketData>();
-            return {
-                onOpen(_event, ws) {
-                    const userData = {
-                      ip,
-                      rateLimit: {}
-                    } as TeamSocketData;
-                    userData.sendMsg = (data) => ws.send(data);
-                    userData.closeSocket = () => ws.close();
-                    userDataMap.set(c, userData);
+                        if (closeOnOpen) {
+                            ws.close();
+                        }
+                    },
+                    onMessage(event, ws) {
+                        const userData = userDataMap.get(c)!;
+                        if (wsRateLimit.isRateLimited(userData.rateLimit)) {
+                            ws.close();
+                            return;
+                        }
+                        teamMenu.handleMsg(event.data as string, userData);
+                    },
+                    onClose: () => {
+                        const userData = userDataMap.get(c)!;
+                        const room = teamMenu.rooms.get(userData.roomUrl);
+                        if (room) {
+                            teamMenu.removePlayer(userData);
+                            teamMenu.sendRoomState(room);
+                        }
+                        userDataMap.delete(c);
+                        wsRateLimit.ipDisconnected(userData.ip);
+                    },
+                };
+            }),
+        );
+    }
 
-                    if (closeOnOpen) {
-                      ws.close();
-                    }
-                },
-                onMessage(event, ws) {
-                    const userData = userDataMap.get(c)!;
-                    if (wsRateLimit.isRateLimited(userData.rateLimit)) {
-                      ws.close();
-                      return;
-                    }
-                    teamMenu.handleMsg(event.data as string, userData);
-                },
-                onClose: () => {
-                    const userData = userDataMap.get(c)!;
-                    const room = teamMenu.rooms.get(userData.roomUrl);
-                    if (room) {
-                        teamMenu.removePlayer(userData);
-                        teamMenu.sendRoomState(room);
-                    }
-                    userDataMap.delete(c);
-                    wsRateLimit.ipDisconnected(userData.ip);
-                },
-            };
-        }))
-      }
     addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
         const enabledGameModeIdxs = Config.modes
             .slice(1)
@@ -232,7 +235,7 @@ export class TeamMenu {
     }
 
     validateMsg(msg: ClientToServerTeamMsg) {
-        console.log({msg})
+        console.log({ msg });
         assert(typeof msg.type === "string");
 
         function validateRoomData(data: RoomData) {
@@ -290,7 +293,7 @@ export class TeamMenu {
             this.validateMsg(parsedMessage);
         } catch {
             localPlayerData.closeSocket();
-            console.error("Failed parsing message")
+            console.error("Failed parsing message");
             return;
         }
 

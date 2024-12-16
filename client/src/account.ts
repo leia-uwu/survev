@@ -1,8 +1,8 @@
 import $ from "jquery";
+import type { ItemStatus, Loadout } from "../../shared/utils/helpers";
 import { util } from "../../shared/utils/util";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
-import type { ItemStatus, Loadout } from "../../shared/utils/helpers";
 import { errorLogManager } from "./errorLogs";
 import { helpers } from "./helpers";
 import type { Item } from "./ui/loadoutMenu";
@@ -48,20 +48,20 @@ function ajaxRequest(
 }
 
 export type Quest = {
-  idx: number;
-  type: string;
-  timeAcquired: number;
-  progress: number;
-  target: number;
-  complete: boolean;
-  rerolled: boolean;
-  timeToRefresh: number;
+    idx: number;
+    type: string;
+    timeAcquired: number;
+    progress: number;
+    target: number;
+    complete: boolean;
+    rerolled: boolean;
+    timeToRefresh: number;
 };
 export type PassType = {
-  type: string;
-  level: number;
-  xp: number;
-  newItems: unknown;
+    type: string;
+    level: number;
+    xp: number;
+    newItems: unknown;
 };
 
 export class Account {
@@ -171,17 +171,17 @@ export class Account {
             this.setSessionCookies();
         }
 
-      if (helpers.getCookie("app-data")) {
-          this.login();
-          return;
-      }
+        if (helpers.getCookie("app-data")) {
+            this.login();
+            return;
+        }
 
-      this.emit("request", this);
-      this.emit("items", []);
+        this.emit("request", this);
+        this.emit("items", []);
 
-      const storedLoadout = this.config.get("loadout");
-      this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
-      this.emit("loadout", this.loadout);
+        const storedLoadout = this.config.get("loadout");
+        this.loadout = util.mergeDeep({}, loadouts.defaultLoadout(), storedLoadout);
+        this.emit("loadout", this.loadout);
     }
 
     setSessionCookies() {
@@ -220,8 +220,8 @@ export class Account {
 
     login() {
         if (helpers.getCookie("app-data")) {
-          this.loadProfile();
-          this.getPass(true);
+            this.loadProfile();
+            this.getPass(true);
         }
     }
 
@@ -244,7 +244,7 @@ export class Account {
             this.loadoutPriv = "";
             this.items = [];
             if (err) {
-              errorLogManager.storeGeneric("account", "load_profile_error");
+                errorLogManager.storeGeneric("account", "load_profile_error");
             } else if (data.banned) {
                 this.emit("error", "account_banned", data.reason);
             } else if (data.success) {
@@ -264,7 +264,7 @@ export class Account {
                 this.emit("login", this);
             }
             this.emit("items", this.items);
-            this.emit("loadout", this.loadout)
+            this.emit("loadout", this.loadout);
         });
     }
 
@@ -321,25 +321,25 @@ export class Account {
 
         if (!helpers.getCookie("app-data")) return;
         this.ajaxRequest(
-          "/api/user/loadout",
-          {
-              loadout: loadout,
-          },
-          (err, res) => {
-              if (err) {
-                  errorLogManager.storeGeneric("account", "set_loadout_error");
-                  this.emit("error", "server_error");
-              }
-              if (err || !res.loadout) {
-                  this.loadout = loadoutPrev;
-              } else {
-                  this.loadout = res.loadout;
-                  this.loadoutPriv = res.loadoutPriv;
-              }
-              this.emit("loadout", this.loadout);
-          },
-      );
-  }
+            "/api/user/loadout",
+            {
+                loadout: loadout,
+            },
+            (err, res) => {
+                if (err) {
+                    errorLogManager.storeGeneric("account", "set_loadout_error");
+                    this.emit("error", "server_error");
+                }
+                if (err || !res.loadout) {
+                    this.loadout = loadoutPrev;
+                } else {
+                    this.loadout = res.loadout;
+                    this.loadoutPriv = res.loadoutPriv;
+                }
+                this.emit("loadout", this.loadout);
+            },
+        );
+    }
 
     setItemStatus(status: ItemStatus, itemTypes: string[]) {
         if (itemTypes.length != 0) {
@@ -389,35 +389,32 @@ export class Account {
     }
 
     getPass(tryRefreshQuests: boolean) {
-      return;
-          this.ajaxRequest(
-              "/api/user/get_pass",
-              {
-                  tryRefreshQuests
-              },
-              (err, res) => {
-                  this.pass = {};
-                  this.quests = [];
-                  this.questPriv = "";
-                  if (err || !res.success) {
-                      errorLogManager.storeGeneric(
-                          "account",
-                          "get_pass_error"
-                      );
-                  } else {
-                      this.pass = res.pass || {};
-                      this.quests = res.quests || [];
-                      this.questPriv = res.questPriv || "";
-                      this.quests.sort((a, b) => {
-                          return a.idx - b.idx;
-                      });
-                      this.emit("pass", this.pass, this.quests, true);
-                      if (this.pass.newItems) {
-                          this.loadProfile();
-                      }
-                  }
-              }
-          );
+        return;
+        this.ajaxRequest(
+            "/api/user/get_pass",
+            {
+                tryRefreshQuests,
+            },
+            (err, res) => {
+                this.pass = {};
+                this.quests = [];
+                this.questPriv = "";
+                if (err || !res.success) {
+                    errorLogManager.storeGeneric("account", "get_pass_error");
+                } else {
+                    this.pass = res.pass || {};
+                    this.quests = res.quests || [];
+                    this.questPriv = res.questPriv || "";
+                    this.quests.sort((a, b) => {
+                        return a.idx - b.idx;
+                    });
+                    this.emit("pass", this.pass, this.quests, true);
+                    if (this.pass.newItems) {
+                        this.loadProfile();
+                    }
+                }
+            },
+        );
     }
 
     setPassUnlock(unlockType: string) {
@@ -428,7 +425,7 @@ export class Account {
             },
             (err, res) => {
                 if (err || !res.success) {
-                  errorLogManager.storeGeneric("account", "set_pass_unlock_error");
+                    errorLogManager.storeGeneric("account", "set_pass_unlock_error");
                 } else {
                     this.getPass(false);
                 }
@@ -444,7 +441,7 @@ export class Account {
             },
             (err, res) => {
                 if (err) {
-                  errorLogManager.storeGeneric("account", "refresh_quest_error");
+                    errorLogManager.storeGeneric("account", "refresh_quest_error");
                     return;
                 }
                 if (res.success) {

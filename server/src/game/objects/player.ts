@@ -1166,7 +1166,7 @@ export class Player extends BaseGameObject {
             this.addPerk(perk.type, perk.droppable);
         }
 
-        setLoadout(joinMsg, this)
+        setLoadout(joinMsg, this);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();

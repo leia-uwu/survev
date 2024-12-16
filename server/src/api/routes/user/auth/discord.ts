@@ -39,7 +39,7 @@ DiscordRouter.get("/", async (c) => {
         maxAge: 60 * 10,
         sameSite: "Lax",
     });
-    
+
     url.searchParams.append("prompt", "none");
     return c.redirect(url.toString());
 });

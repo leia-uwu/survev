@@ -73,7 +73,7 @@ function createLoginOptions(
         window.location.href = "/api/user/auth/discord";
     });
     addLoginOption("mock", false, () => {
-      window.location.href = "/api/user/auth/mock";
+        window.location.href = "/api/user/auth/mock";
     });
 }
 

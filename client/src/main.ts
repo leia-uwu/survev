@@ -9,6 +9,7 @@ import { api } from "./api";
 import { AudioManager } from "./audioManager";
 import { ConfigManager, type ConfigType } from "./config";
 import { device } from "./device";
+import { errorLogManager } from "./errorLogs";
 import { Game } from "./game";
 import { helpers } from "./helpers";
 import { InputHandler } from "./input";
@@ -25,7 +26,6 @@ import { Pass } from "./ui/pass";
 import { ProfileUi } from "./ui/profileUi";
 import { TeamMenu } from "./ui/teamMenu";
 import { loadStaticDomImages } from "./ui/ui2";
-import { errorLogManager } from "./errorLogs";
 
 export interface MatchData {
     zone: string;
@@ -670,9 +670,7 @@ class Application {
             return;
         }
         const hosts = matchData.hosts || [];
-        console.log(
-          {matchData}
-        )
+        console.log({ matchData });
         const urls: string[] = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(

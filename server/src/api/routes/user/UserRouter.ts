@@ -3,17 +3,17 @@ import { eq, or } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
-import type { Context } from "../../index";
 import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
 import { ItemStatus, validateLoadout } from "../../../../../shared/utils/helpers";
+import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
+import type { Context } from "../../index";
 import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
-import { encryptLoadout } from "../../../utils/loadoutHelpers";
 
 export const UserRouter = new Hono<Context>();
 
@@ -94,18 +94,21 @@ UserRouter.post(
             );
 
             if (timeUntilNextChange > 0) {
-                return c.json<UsernameResponse>({ result: "change_time_not_expired" }, 200);
+                return c.json<UsernameResponse>(
+                    { result: "change_time_not_expired" },
+                    200,
+                );
             }
 
             const isUsernameTaken = await db.query.usersTable.findFirst({
                 where: or(
-                  eq(usersTable.username, username),
-                  eq(usersTable.slug, username)
+                    eq(usersTable.username, username),
+                    eq(usersTable.slug, username),
                 ),
             });
 
             if (isUsernameTaken) {
-                return c.json<UsernameResponse>({ result: "taken"}, 200);
+                return c.json<UsernameResponse>({ result: "taken" }, 200);
             }
 
             const now = new Date();
@@ -378,8 +381,10 @@ type ProfileResponse =
           items: Item[];
       };
 
-type UsernameResponse = {
-    result: "success";
-} | {
-  result: "failed" | "invalid" | "taken" | "change_time_not_expired"
-};
+type UsernameResponse =
+    | {
+          result: "success";
+      }
+    | {
+          result: "failed" | "invalid" | "taken" | "change_time_not_expired";
+      };

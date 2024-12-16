@@ -16,8 +16,8 @@ const isProduction = process.env["NODE_ENV"] === "production";
  */
 export const Config = {
     devServer: {
-      host: "127.0.0.1",
-      port: 8001,
+        host: "127.0.0.1",
+        port: 8001,
     },
 
     apiServer: {
@@ -35,6 +35,7 @@ export const Config = {
 
     encryptLoadoutSecret: "IiRH2yg42jyp24qAAdLB6",
 
+    // OAUTH PROVIDERS
     DISCORD_CLIENT_ID: "",
     DISCORD_SECRET_ID: "",
 
@@ -56,7 +57,7 @@ export const Config = {
     },
 
     accountsEnabled: true,
-    
+
     rateLimitsEnabled: isProduction,
 
     client: {
@@ -82,15 +83,15 @@ export const Config = {
 } satisfies ConfigType as ConfigType;
 
 if (!isProduction) {
-  util.mergeDeep(Config, {
-      regions: {
-          local: {
-              https: false,
-              address: `${Config.devServer.host}:${Config.devServer.port}`,
-              l10n: "index-local",
-          },
-      },
-  });
+    util.mergeDeep(Config, {
+        regions: {
+            local: {
+                https: false,
+                address: `${Config.devServer.host}:${Config.devServer.port}`,
+                l10n: "index-local",
+            },
+        },
+    });
 }
 
 const runningOnVite = process.argv.toString().includes("vite");
@@ -163,7 +164,7 @@ export interface ConfigType {
     BASE_URL?: string;
 
     // ##### DISCORD OAUTH
-    DISCORD_CLIENT_ID?: string; 
+    DISCORD_CLIENT_ID?: string;
     DISCORD_SECRET_ID?: string;
 
     // ##### GOOGLE OAUTH #####

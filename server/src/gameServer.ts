@@ -80,9 +80,10 @@ export class GameServer {
             /**
              * Upgrade the connection to WebSocket.
              */
-            upgrade(res, req, context) {
-                res.onAborted((): void => {});
-
+            async upgrade(res, req, context): Promise<void> {
+                res.onAborted((): void => {
+                    res.aborted = true;
+                });
                 const ip = getIp(res, req, Config.gameServer.proxyIPHeader);
 
                 if (!ip) {

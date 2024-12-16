@@ -22,7 +22,7 @@ class Region {
         return new Promise<Data>((resolve) => {
             fetch(url, {
                 body: JSON.stringify({
-                  ...body,
+                    ...body,
                     apiKey: Config.apiKey,
                 }),
                 method: "post",
@@ -68,11 +68,11 @@ export class ApiServer {
     }
 
     init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
-      this.teamMenu.init(app, upgradeWebSocket);
+        this.teamMenu.init(app, upgradeWebSocket);
 
-      app.get("/api/site_info", (c) => {
-          return c.json(this.getSiteInfo(), 200);
-      });
+        app.get("/api/site_info", (c) => {
+            return c.json(this.getSiteInfo(), 200);
+        });
     }
 
     getSiteInfo() {

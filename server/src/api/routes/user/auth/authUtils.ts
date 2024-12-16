@@ -4,12 +4,12 @@ import { generateId } from "lucia";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { ItemStatus } from "../../../../../../shared/utils/helpers";
+import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
 import { type UsersTable, usersTable } from "../../../db/schema";
 import type { Item } from "../UserRouter";
-import { Config } from "../../../../config";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
