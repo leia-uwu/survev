@@ -70,6 +70,7 @@ export class Account {
     loggingIn = false;
     loggedIn = false;
     profile = {
+        linkedGoogle: false,
         linkedTwitch: false,
         linkedDiscord: false,
         usernameSet: false,

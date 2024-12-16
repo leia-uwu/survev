@@ -66,8 +66,8 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    addLoginOption("twitch", account.profile.linkedTwitch, () => {
-        window.location.href = "/api/user/auth/twitch";
+    addLoginOption("google", account.profile.linkedGoogle, () => {
+        window.location.href = "/api/user/auth/google";
     });
     addLoginOption("discord", account.profile.linkedDiscord, () => {
         window.location.href = "/api/user/auth/discord";
