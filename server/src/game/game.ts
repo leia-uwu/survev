@@ -30,7 +30,7 @@ export interface GroupData {
 export interface JoinTokenData {
     autoFill: boolean;
     playerCount: number;
-    avaliableUses: number;
+    availableUses: number;
     expiresAt: number;
     groupHashToJoin: string;
 }
@@ -342,7 +342,7 @@ export class Game {
         this.joinTokens.set(id, {
             autoFill,
             playerCount,
-            avaliableUses: playerCount,
+            availableUses: playerCount,
             expiresAt: Date.now() + 15000,
             groupHashToJoin: "",
         });

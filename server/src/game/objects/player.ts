@@ -91,14 +91,14 @@ export class PlayerBarn {
     addPlayer(socketId: string, joinMsg: net.JoinMsg) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
-        if (!joinData || joinData.expiresAt < Date.now() || joinData.avaliableUses <= 0) {
+        if (!joinData || joinData.expiresAt < Date.now() || joinData.availableUses <= 0) {
             this.game.closeSocket(socketId);
             if (joinData) {
                 this.game.joinTokens.delete(joinMsg.matchPriv);
             }
             return;
         }
-        joinData.avaliableUses -= 1;
+        joinData.availableUses -= 1;
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
