@@ -5,12 +5,13 @@
     "build": "tsc",
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\"",
     "dev:api": "tsx watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/api/index.ts",
-    "dev:game": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server",
+    "dev:game": "tsx watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server",
     "db:generate": "drizzle-kit generate --config=src/api/drizzle.config.ts",
-    "db:migrate": "ts-node ./src/api/db/migrate.ts",
+    "db:migrate": "tsx ./src/api/db/migrate.ts",
     "db:push": "drizzle-kit push --config=src/api/drizzle.config.ts",
-    "db:seed": "ts-node src/api/db/seed.ts",
+    "db:seed": "tsx src/api/db/seed.ts",
     "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts",
     "db:wipe": "rm -rf src/api/db/drizzle && rm game.db"
   },
@@ -18,6 +19,7 @@
     "@hono/node-server": "^1.13.7",
     "@hono/node-ws": "^1.0.4",
     "@hono/zod-validator": "^0.2.2",
+    "@lucia-auth/adapter-drizzle": "1.1.0",
     "arctic": "^1.9.2",
     "better-sqlite3": "^11.7.0",
     "drizzle-orm": "^0.33.0",
@@ -30,13 +32,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@lucia-auth/adapter-drizzle": "1.1.0",
     "@types/better-sqlite3": "^7.6.12",
-    "@types/bun": "^1.1.12",
     "@types/nanotimer": "^0.3.2",
     "@types/node": "^22.13.9",
     "ts-node": "^10.9.2",
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.1.0",
     "drizzle-kit": "^0.24.2",
     "tsx": "^4.19.2"
   }
