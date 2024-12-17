@@ -268,7 +268,7 @@ export class GameModeManager {
         const spectateTargets = [
             player.group?.randomPlayer(),
             player.team?.randomPlayer(),
-            player.killedBy && player.killedBy !== player ? getAliveKiller(player) : undefined,
+            getAliveKiller(player.killedBy),
             player.game.playerBarn.randomPlayer()
         ];
 
