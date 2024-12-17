@@ -245,9 +245,7 @@ export class GameModeManager {
 
         // Utility function to find a derivative of the original killer.
         let attempts = 0;
-        const getAliveKiller = (
-            killer: Player | undefined,
-        ): Player | undefined => {
+        const getAliveKiller = (killer: Player | undefined): Player | undefined => {
             attempts++;
             if (attempts > 80) return undefined;
 
@@ -266,16 +264,21 @@ export class GameModeManager {
 
         // Priority list of spectate targets.
         const spectateTargets = [
-            player.group?.randomPlayer(),
-            player.team?.randomPlayer(),
+            player.group?.randomPlayer(), // undefined if no player to choose
+            player.team?.randomPlayer(), // undefined if no player to choose
             getAliveKiller(player.killedBy),
-            player.game.playerBarn.randomPlayer()
+            player.game.playerBarn.randomPlayer(),
         ];
 
-        const playerToSpec = spectateTargets.filter(x => x !== undefined).shift();
+        const playerToSpec = spectateTargets.filter((x) => x !== undefined).shift();
         for (const spectator of player.spectators) {
             // If all group members have died, they need to be sent a game over message instead.
-            if (player.group && player.group.allDeadOrDisconnected && player.group.players.includes(spectator)) continue;
+            if (
+                player.group &&
+                player.group.allDeadOrDisconnected &&
+                player.group.players.includes(spectator)
+            )
+                continue;
 
             // Set remaining spectators to new player.
             spectator.spectating = playerToSpec;
