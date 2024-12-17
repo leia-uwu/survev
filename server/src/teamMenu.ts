@@ -235,7 +235,6 @@ export class TeamMenu {
     }
 
     validateMsg(msg: ClientToServerTeamMsg) {
-        console.log({ msg });
         assert(typeof msg.type === "string");
 
         function validateRoomData(data: RoomData) {

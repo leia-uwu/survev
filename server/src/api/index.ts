@@ -64,8 +64,6 @@ app.post("/api/find_game", async (c) => {
 
         const body = (await c.req.json()) as FindGameBody;
 
-        console.log({ body });
-
         if (server.captchaEnabled && !(await verifyTurnsStile(body.token, ip))) {
             return c.json(
                 {

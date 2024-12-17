@@ -100,7 +100,6 @@ GoogleRouter.get("/callback", async (c) => {
         return c.redirect("/");
     } catch (e) {
         server.logger.warn(`/api/user/auth/google/callback: Failed to create user`);
-        console.log({ err: e });
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
             return c.json({}, 400);
         }
