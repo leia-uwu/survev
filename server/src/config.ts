@@ -33,6 +33,9 @@ export const Config = {
 
     apiKey: "Kongregate Sucks",
 
+    /*
+      a random string, should be private.
+    */
     encryptLoadoutSecret: "IiRH2yg42jyp24qAAdLB6",
 
     // OAUTH PROVIDERS
