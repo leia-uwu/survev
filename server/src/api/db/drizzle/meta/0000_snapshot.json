@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "796033df-b945-4b68-aba6-2e29212df8af",
+  "id": "80d9798c-fd6b-4222-a639-dd1de7f38087",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "session": {
@@ -71,14 +71,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "wins": {
-          "name": "wins",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
         },
         "banned": {
           "name": "banned",

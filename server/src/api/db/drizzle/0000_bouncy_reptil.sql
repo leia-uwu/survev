@@ -9,7 +9,6 @@ CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`auth_id` text NOT NULL,
 	`slug` text NOT NULL,
-	`wins` integer DEFAULT 0 NOT NULL,
 	`banned` integer DEFAULT false NOT NULL,
 	`ban_reason` text DEFAULT '' NOT NULL,
 	`username` text DEFAULT '' NOT NULL,

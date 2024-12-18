@@ -16,7 +16,6 @@ export const usersTable = sqliteTable("users", {
     id: text("id").notNull().primaryKey(),
     authId: text("auth_id").notNull(),
     slug: text("slug").notNull().unique(),
-    wins: integer("wins").notNull().default(0),
     banned: integer("banned", { mode: "boolean" }).notNull().default(false),
     banReason: text("ban_reason").notNull().default(""),
     username: text("username").notNull().default(""),
