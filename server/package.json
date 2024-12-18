@@ -10,7 +10,6 @@
     "dev:game": "tsx watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server",
     "db:generate": "drizzle-kit generate --config=src/api/drizzle.config.ts",
     "db:migrate": "tsx ./src/api/db/migrate.ts",
-    "db:push": "drizzle-kit push --config=src/api/drizzle.config.ts",
     "db:seed": "tsx src/api/db/seed.ts",
     "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts",
     "db:wipe": "rm -rf src/api/db/drizzle && rm game.db"
