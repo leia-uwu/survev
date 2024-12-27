@@ -458,8 +458,8 @@ export const Main: MapDef = {
     },
     mapGen: {
         map: {
-            baseWidth: 330,
-            baseHeight: 330,
+            baseWidth: 512,
+            baseHeight: 512,
             scale: { small: 1.1875, large: 1.28125 },
             extension: 112,
             shoreInset: 48,
