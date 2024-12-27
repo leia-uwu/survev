@@ -639,13 +639,13 @@ function createContainer(e: any) {
                     collision: [
                         e.open
                             ? collider.createAabbExtents(
-                                  v2.create(0, 0),
-                                  v2.create(2.5, 11),
-                              )
+                                v2.create(0, 0),
+                                v2.create(2.5, 11),
+                            )
                             : collider.createAabbExtents(
-                                  v2.create(0, 0),
-                                  v2.create(2.5, 8),
-                              ),
+                                v2.create(0, 0),
+                                v2.create(2.5, 8),
+                            ),
                     ],
                 },
             ],
@@ -665,19 +665,19 @@ function createContainer(e: any) {
                 {
                     zoomIn: e.open
                         ? collider.createAabbExtents(
-                              v2.create(0, 0),
-                              v2.create(2.5, 5.75),
-                          )
+                            v2.create(0, 0),
+                            v2.create(2.5, 5.75),
+                        )
                         : collider.createAabbExtents(
-                              v2.create(0, 2.25),
-                              v2.create(2.5, 5.5),
-                          ),
+                            v2.create(0, 2.25),
+                            v2.create(2.5, 5.5),
+                        ),
                     zoomOut: e.open
                         ? collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 11))
                         : collider.createAabbExtents(
-                              v2.create(0, -0.5),
-                              v2.create(2.5, 8.75),
-                          ),
+                            v2.create(0, -0.5),
+                            v2.create(2.5, 8.75),
+                        ),
                 },
             ],
             imgs: e.ceilingImgs || [
@@ -13502,7 +13502,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_01: 1,
                     container_02: 1,
                     container_03: 1,
-                    container_06: 0.08,
+                    container_06: 1,
                 }),
                 pos: v2.create(-37.5, 38),
                 scale: 1,
@@ -13525,7 +13525,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_01: 1,
                     container_02: 1,
                     container_03: 1,
-                    container_06: 0.08,
+                    container_06: 1,
                 }),
                 pos: v2.create(-37.5, -15),
                 scale: 1,
@@ -13563,7 +13563,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(-6, -29),
@@ -13576,7 +13576,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(9.5, -29),
@@ -13613,7 +13613,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(-3, 22),
@@ -13632,7 +13632,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(-3, 33),
@@ -13663,7 +13663,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(53, 22),
@@ -13682,7 +13682,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(53, 33),
@@ -13701,7 +13701,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     container_02: 1,
                     container_03: 1,
                     container_05: 2,
-                    container_06: 0.08,
+                    container_06: 1,
                     "": 0.75,
                 }),
                 pos: v2.create(86.425, 27.5),

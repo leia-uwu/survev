@@ -171,7 +171,7 @@ export const Main: MapDef = {
             { name: "soda", count: 1, weight: 1 }, // ?
             { name: "tier_ammo", count: 1, weight: 1 }, // ?
         ],
-        tier_sv98: [{ name: "sv98", count: 1, weight: 1 }],
+        tier_sv98: [{ name: "sv98", count: 10, weight: 100 }],
         tier_scopes_sniper: [
             { name: "4xscope", count: 1, weight: 5 }, // ?
             { name: "8xscope", count: 1, weight: 1 }, // ?
@@ -458,8 +458,8 @@ export const Main: MapDef = {
     },
     mapGen: {
         map: {
-            baseWidth: 512,
-            baseHeight: 512,
+            baseWidth: 400,
+            baseHeight: 400,
             scale: { small: 1.1875, large: 1.28125 },
             extension: 112,
             shoreInset: 48,
@@ -468,15 +468,6 @@ export const Main: MapDef = {
                 lakes: [],
                 weights: [
                     { weight: 0.1, widths: [4] },
-                    { weight: 0.15, widths: [8] },
-                    { weight: 0.25, widths: [8, 4] },
-                    { weight: 0.21, widths: [16] },
-                    { weight: 0.09, widths: [16, 8] },
-                    { weight: 0.2, widths: [16, 8, 4] },
-                    {
-                        weight: 1e-4,
-                        widths: [16, 16, 8, 6, 4],
-                    },
                 ],
                 smoothness: 0.45,
                 masks: [],
@@ -526,33 +517,27 @@ export const Main: MapDef = {
         },
         customSpawnRules: {
             locationSpawns: [
-                {
-                    type: "club_complex_01",
-                    pos: v2.create(0.5, 0.5),
-                    rad: 150,
-                    retryOnFailure: true,
-                },
             ],
             placeSpawns: ["warehouse_01", "house_red_01", "house_red_02", "barn_01"],
         },
         densitySpawns: [
             {
-                stone_01: 350,
-                barrel_01: 76,
-                silo_01: 8,
+                stone_01: 40,
+                barrel_01: 30,
+                silo_01: 3,
                 crate_01: 50,
                 crate_02: 4,
-                crate_03: 8,
+                crate_03: 30,
                 bush_01: 78,
                 cache_06: 12,
-                tree_01: 320,
-                hedgehog_01: 24,
-                container_01: 5,
-                container_02: 5,
-                container_03: 5,
-                container_04: 5,
-                shack_01: 7,
-                outhouse_01: 5,
+                tree_01: 100,
+                hedgehog_01: 0,
+                container_01: 0,
+                container_02: 0,
+                container_03: 0,
+                container_04: 0,
+                shack_01: 0,
+                outhouse_01: 0,
                 loot_tier_1: 24,
                 loot_tier_beach: 4,
             },
@@ -560,36 +545,37 @@ export const Main: MapDef = {
         fixedSpawns: [
             {
                 // small is spawn count for solos and duos, large is spawn count for squads
-                warehouse_01: 2,
-                house_red_01: { small: 3, large: 4 },
-                house_red_02: { small: 3, large: 4 },
-                barn_01: { small: 1, large: 3 },
-                barn_02: 1,
-                hut_01: 3,
-                hut_02: 1, // spas hut
-                hut_03: 1, // scout hut
-                shack_03a: 2,
-                shack_03b: { small: 2, large: 3 },
-                greenhouse_01: 1,
-                cache_01: 1,
-                cache_02: 1, // mosin tree
-                cache_07: 1,
-                bunker_structure_01: { odds: 0.05 },
-                bunker_structure_02: 1,
-                bunker_structure_03: 1,
-                bunker_structure_04: 1,
-                bunker_structure_05: 1,
-                warehouse_complex_01: 1,
-                chest_01: 1,
+                warehouse_01: 0,
+                house_red_01: { small: 0, large: 0 },
+                house_red_02: { small: 0, large: 0 },
+                barn_01: { small: 0, large: 0 },
+                barn_02: 0,
+                hut_01: 0,
+                hut_02: 0, // spas hut
+                hut_03: 0, // scout hut
+                shack_03a: 0,
+                shack_03b: { small: 0, large: 0 },
+                greenhouse_01: 2,
+                cache_01: 0,
+                cache_02: 0, // mosin tree
+                cache_07: 0,
+                bunker_structure_01: 0,
+                bunker_structure_02: 0,
+                bunker_structure_03: 0,
+                bunker_structure_04: 0,
+                bunker_structure_05: 0,
+                // airport
+                warehouse_complex_01: 4,
+                chest_01: 0,
                 chest_03: { odds: 0.2 },
                 mil_crate_02: { odds: 0.25 },
-                tree_02: 3,
+                tree_02: 0,
                 teahouse_complex_01su: {
-                    small: 1,
-                    large: 2,
+                    small: 0,
+                    large: 0,
                 },
-                stone_04: 1,
-                club_complex_01: 1,
+                stone_04: 0,
+                club_complex_01: 0,
             },
         ],
         randomSpawns: [
@@ -599,7 +585,7 @@ export const Main: MapDef = {
             },
         ],
         spawnReplacements: [{}],
-        importantSpawns: ["club_complex_01"],
+        importantSpawns: [],
     },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
