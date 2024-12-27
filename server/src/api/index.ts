@@ -14,6 +14,7 @@ import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
+import { StatsRouter } from "./routes/StatsRouter";
 
 export type Context = {
     Variables: {
@@ -42,12 +43,43 @@ app.use(
     }),
 );
 
+const stats = readFileSync(
+  path.resolve(__dirname.replace("dist/server/", ""), "static/index.html"),
+  "utf-8",
+);
+
+app.get('/stats/:slug', (c) => {
+  console.log("redirecting to /stats", 
+    c.req.url
+  )
+  return c.html(stats)
+})
+
 app.route("/api/user/", UserRouter);
 app.route("/api/user/auth/", AuthRouter);
+app.route("/api/", StatsRouter)
 
 server.init(app, upgradeWebSocket);
 
 const findGameRateLimit = new HTTPRateLimit(5, 3000);
+
+app.post("/api/match_history", (c) => {
+  return c.json(Array.from({ length: 10 }, (_, i) => ({
+    guid: "85d16fd3-be8f-913b-09ce-4ba5c86482aa",
+    region: "na",
+    map_id: 2,
+    team_mode: 2,
+    team_count: 1,
+    team_total: 13,
+    end_time: "2021-11-06T05:01:34.000Z",
+    time_alive: 303,
+    rank: 1,
+    kills: 11,
+    team_kills: 11,
+    damage_dealt: 1264,
+    damage_taken: 227
+})), 200)
+})
 
 app.post("/api/find_game", async (c) => {
     try {
