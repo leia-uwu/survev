@@ -551,13 +551,13 @@ export const Main: MapDef = {
                 barn_01: { small: 0, large: 0 },
                 barn_02: 0,
                 hut_01: 0,
-                hut_02: 0, // spas hut
-                hut_03: 0, // scout hut
+                hut_02: 6, // spas hut
+                hut_03: 6, // scout hut
                 shack_03a: 0,
                 shack_03b: { small: 0, large: 0 },
                 greenhouse_01: 2,
                 cache_01: 0,
-                cache_02: 0, // mosin tree
+                cache_02: 4, // mosin tree
                 cache_07: 0,
                 bunker_structure_01: 0,
                 bunker_structure_02: 0,
