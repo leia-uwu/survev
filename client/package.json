@@ -17,6 +17,7 @@
     "tsx-dom": "^3.0.1"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.5",
     "@types/jquery": "^3.5.32",
     "codefend": "^3.2.0",
     "vite": "^6.2.0",

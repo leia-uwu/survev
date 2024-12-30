@@ -134,15 +134,16 @@ export default defineConfig(({ mode }) => {
         json: {
             stringify: true,
         },
+        assetsInclude: ["**/*.ejs"],
         server: {
             port: 3000,
             host: "0.0.0.0",
             proxy: {
                 "/stats": {
-                  target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
-                  changeOrigin: true,
-                  secure: false,
-              },
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
+                    changeOrigin: true,
+                    secure: false,
+                },
                 "/api": {
                     target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
