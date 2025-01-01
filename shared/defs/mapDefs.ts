@@ -17,7 +17,7 @@ import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
 
 export const MapDefs = {
-    main: Main,
+    main: Main as any,
     main_spring: MainSpring,
     main_summer: MainSummer,
     desert: Desert,

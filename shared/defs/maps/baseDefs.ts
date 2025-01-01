@@ -9,7 +9,7 @@ import type { MapDef } from "../mapDefs";
 // Arrays are not mergeable, so the derived map will always redefine all
 // elements if that property is set.
 
-export const Main: MapDef = {
+export const Main = {
     mapId: 0,
     desc: { name: "Normal", icon: "", buttonCss: "" },
     assets: {
@@ -19,8 +19,21 @@ export const Main: MapDef = {
             { name: "ambient_steam_01", channel: "ambient" },
             { name: "log_11", channel: "sfx" },
             { name: "log_12", channel: "sfx" },
+            { name: "piano_02", channel: "sfx" },
+            { name: "log_03", channel: "sfx" },
+            { name: "log_04", channel: "sfx" },
+            { name: "piano_music_01", channel: "ambient" },
+            { name: "vault_change_02", channel: "sfx" },
+            { name: "log_01", channel: "sfx" },
+            { name: "log_02", channel: "sfx" },
+            { name: "footstep_08", channel: "sfx" },
+            { name: "footstep_09", channel: "sfx" },
+
+
         ],
-        atlases: ["gradient", "loadout", "shared", "main"],
+        atlases: ["gradient", "loadout", "shared", "main",
+            "gradient", "loadout", "shared", "desert",
+            "gradient", "loadout", "shared", "woods",],
     },
     biome: {
         colors: {
@@ -458,8 +471,8 @@ export const Main: MapDef = {
     },
     mapGen: {
         map: {
-            baseWidth: 400,
-            baseHeight: 400,
+            baseWidth: 512,
+            baseHeight: 512,
             scale: { small: 1.1875, large: 1.28125 },
             extension: 112,
             shoreInset: 48,
@@ -565,7 +578,7 @@ export const Main: MapDef = {
                 bunker_structure_04: 0,
                 bunker_structure_05: 0,
                 // airport
-                warehouse_complex_01: 4,
+                warehouse_complex_01: 1,
                 chest_01: 0,
                 chest_03: { odds: 0.2 },
                 mil_crate_02: { odds: 0.25 },
@@ -574,8 +587,20 @@ export const Main: MapDef = {
                     small: 0,
                     large: 0,
                 },
+                refrigerator_01: 24,
+                table_01: 24,
+                woodpile_01: 24,
+                logging_complex_01: 1,
+                logging_complex_02: 1,
+                bunker_structure_01b: 1,
+
+                river_town_02: 1,
+                crate_18: 49,
                 stone_04: 0,
                 club_complex_01: 0,
+                desert_town_01: 1,
+                desert_town_02: 1,
+
             },
         ],
         randomSpawns: [
