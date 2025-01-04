@@ -45,6 +45,9 @@ importers:
         specifier: ^3.0.1
         version: 3.1.0
     devDependencies:
+      '@types/ejs':
+        specifier: ^3.1.5
+        version: 3.1.5
       '@types/jquery':
         specifier: ^3.5.32
         version: 3.5.32
@@ -1392,6 +1395,9 @@ packages:
 
   '@types/earcut@2.1.4':
     resolution: {integrity: sha512-qp3m9PPz4gULB9MhjGID7wpo3gJ4bTGXm7ltNDsmOvsPduTeHp8wSW9YckBj3mljeOh4F0m2z/0JKAALRKbmLQ==}
+
+  '@types/ejs@3.1.5':
+    resolution: {integrity: sha512-nv+GSx77ZtXiJzwKdsASqi+YQ5Z7vwHsTP0JY2SiQgjGckkBRKZnk8nIM+7oUZ1VCtuTz0+By4qVR7fqzp/Dfg==}
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
@@ -3218,6 +3224,8 @@ snapshots:
   '@types/css-font-loading-module@0.0.12': {}
 
   '@types/earcut@2.1.4': {}
+
+  '@types/ejs@3.1.5': {}
 
   '@types/estree@1.0.6': {}
 

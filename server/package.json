@@ -6,7 +6,7 @@
     "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
     "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
     "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\"",
-    "dev:api": "tsx watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/api/index.ts",
+    "dev:api": "tsx watch --include \"../shared\" --include \"./src\" src/api/index.ts",
     "dev:game": "tsx watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server",
     "db:generate": "drizzle-kit generate --config=src/api/drizzle.config.ts",
     "db:migrate": "tsx ./src/api/db/migrate.ts",

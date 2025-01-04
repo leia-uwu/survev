@@ -1,18 +1,19 @@
-import {  getCensoredBattletag } from "./helper";
 import $ from "jquery";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
-import loading from "./templates/loading.js";
-import main from "./templates/main.js";
-import leaderboard from "./templates/leaderboard.js";
-import leaderboardError from "./templates/leaderboardError.js";
+import leaderboard from "./templates/leaderboard.ejs?raw";
+import leaderboardError from "./templates/leaderboardError.ejs?raw";
+import loading from "./templates/loading.ejs?raw";
+import main from "./templates/main.ejs?raw";
 import type { App } from "./app";
+import { getCensoredBattletag, renderEjs } from "./helper";
 
 var templates = {
-    loading,
-    main,
-    leaderboard,
-    leaderboardError,
+    loading: (params: Record<string, any>) => renderEjs(loading, params),
+    main: (params: Record<string, any>) => renderEjs(main, params),
+    leaderboard: (params: Record<string, any>) => renderEjs(leaderboard, params),
+    leaderboardError: (params: Record<string, any>) =>
+        renderEjs(leaderboardError, params),
 };
 
 //
@@ -22,28 +23,28 @@ export class MainView {
     loading = false;
     error = false;
     data = {} as Partial<{
-      username: string;
-      statName: string;
-      minGames: number;
-      teamMode: string;
-      mapId: string;
-      type: string;
-      interval: string;
-      maxCount: number;
-      data: {
-          username: string;
-          usernames: string[];
-          slug: string;
-          slugs: string[];
-          slugUncensored: string;
-          slugsUncensored: string[];
-      }[];
-  }>;
+        username: string;
+        statName: string;
+        minGames: number;
+        teamMode: string;
+        mapId: string;
+        type: string;
+        interval: string;
+        maxCount: number;
+        data: {
+            username: string;
+            usernames: string[];
+            slug: string;
+            slugs: string[];
+            slugUncensored: string;
+            slugsUncensored: string[];
+        }[];
+    }>;
     el = $(
-      templates.main({
-          phoneDetected: device.mobile && !device.tablet,
-          gameModes: helpers.getGameModes(),
-      }),
+        templates.main({
+            phoneDetected: device.mobile && !device.tablet,
+            gameModes: helpers.getGameModes(),
+        }),
     );
 
     constructor(readonly app: App) {
@@ -154,36 +155,31 @@ export class MainView {
                         this.data.data[i].username,
                     );
                 } else if (this.data.data[i].usernames) {
-                    this.data.data[i].usernames = this.data.data[i].usernames.map(
-                        getCensoredBattletag,
-                    );
+                    this.data.data[i].usernames =
+                        this.data.data[i].usernames.map(getCensoredBattletag);
                 }
 
                 if (this.data.data[i].slug) {
-                    this.data.data[i].slug = getCensoredBattletag(
-                        this.data.data[i].slug,
-                    );
+                    this.data.data[i].slug = getCensoredBattletag(this.data.data[i].slug);
                 } else if (this.data.data[i].slugs) {
-                    this.data.data[i].slugs = this.data.data[i].slugs.map(
-                        getCensoredBattletag,
-                    );
+                    this.data.data[i].slugs =
+                        this.data.data[i].slugs.map(getCensoredBattletag);
                 }
             }
 
-            var statName = TypeToString[this.data.type as keyof typeof TypeToString] || "";
+            var statName =
+                TypeToString[this.data.type as keyof typeof TypeToString] || "";
             var minGames = MinGames[this.data.type as keyof typeof MinGames]
-              // @ts-expect-error go away
-                ? MinGames[this.data.type ][this.data.interval]
+                ? // @ts-expect-error go away
+                  MinGames[this.data.type][this.data.interval]
                 : 1;
             minGames = minGames || 1;
 
-            content = templates.leaderboard(
-                    {
-                        ...this.data,
-                        statName: statName,
-                        minGames: minGames,
-                    },
-            );
+            content = templates.leaderboard({
+                ...this.data,
+                statName: statName,
+                minGames: minGames,
+            });
 
             // Set the select options
             $("#leaderboard-team-mode").val(this.data.teamMode!);

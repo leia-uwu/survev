@@ -1,23 +1,24 @@
 import $ from "jquery";
 import slugify from "slugify";
-import { Localization } from "./localization";
 import { device } from "../../device";
+import language from "./templates/langauge.ejs?raw";
+import { Localization } from "./localization";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
-import language from "./templates/language.js";
-import { ConfigManager } from '../../config';
+
+import { ConfigManager } from "../../config";
+import { renderEjs } from "./helper";
 var templates = {
-    language
-};  
+    language: (params: Record<string, any>) => renderEjs(language, params),
+};
 
 //
 // Router
 //
 class Router {
-  routes: { name: string; url: string }[] = [];
+    routes: { name: string; url: string }[] = [];
 
     constructor(readonly app: App) {
-
         var routeChange = this.onRouteChange.bind(this);
         window.addEventListener("load", routeChange);
     }
@@ -43,7 +44,7 @@ class Router {
 // Ads
 //
 class Ads {
-      slotIdToPlacement = {
+    slotIdToPlacement = {
         survivio_728x90_leaderboard_top: "survivio_728x90_leaderboard",
         survivio_300x250_leaderboard_top: "survivio_300x250_leaderboard",
         survivio_300x250_leaderboard_bottom: "survivio_300x250_leaderboard",
@@ -195,4 +196,4 @@ export class App {
     }
 }
 
-export const app =  new App();
+export const app = new App();

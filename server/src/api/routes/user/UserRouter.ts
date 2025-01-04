@@ -14,6 +14,7 @@ import { usersTable } from "../../db/schema";
 import type { Context } from "../../index";
 import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
+import { MOCK_USER_ID } from "./auth/mock";
 
 export const UserRouter = new Hono<Context>();
 
@@ -287,7 +288,7 @@ UserRouter.post(
             const result = await db
                 .select({ items: usersTable.items })
                 .from(usersTable)
-                .where(eq(usersTable.authId, "MOCK_USER_ID"))
+                .where(eq(usersTable.authId, MOCK_USER_ID))
                 .limit(1);
 
             if (!result.length) {
@@ -315,7 +316,7 @@ UserRouter.post(
                 .set({
                     items: updatedItems,
                 })
-                .where(eq(usersTable.authId, "MOCK_USER_ID"))
+                .where(eq(usersTable.authId, MOCK_USER_ID))
                 .returning({
                     items: usersTable.items,
                 });

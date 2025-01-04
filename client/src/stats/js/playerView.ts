@@ -1,21 +1,22 @@
-import { formatTime, emoteImgToSvg, getCensoredBattletag} from "./helper";
 import $ from "jquery";
-import { device } from "../../device";
-import { helpers } from "../../helpers";
-import loading from "./templates/loading";
-import matchData from "./templates/matchData";
-import matchHistory from "./templates/matchHistory";
-import player from "./templates/player";
-import playerCards from "./templates/playerCards";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
 import type { TeamMode } from "../../../../shared/gameConfig";
+import { device } from "../../device";
+import { helpers } from "../../helpers";
+import loading from "./templates/loading.ejs?raw";
+import matchData from "./templates/matchData.ejs?raw";
+import matchHistory from "./templates/matchHistory.ejs?raw";
+import player from "./templates/player.ejs?raw";
+import playerCards from "./templates/playerCards.ejs?raw";
+import type { App } from "./app";
+import { emoteImgToSvg, formatTime, getCensoredBattletag, renderEjs } from "./helper";
 
 var templates = {
-    loading,
-    matchData,
-    matchHistory,
-    player,
-    playerCards,
+    loading: (params: Record<string, any>) => renderEjs(loading, params),
+    matchData: (params: Record<string, any>) => renderEjs(matchData, params),
+    matchHistory: (params: Record<string, any>) => renderEjs(matchHistory, params),
+    player: (params: Record<string, any>) => renderEjs(player, params),
+    playerCards: (params: Record<string, any>) => renderEjs(playerCards, params),
 };
 
 var TeamModeToString = {
@@ -24,70 +25,73 @@ var TeamModeToString = {
     4: "squad",
 };
 
-
 export interface MatchData {
-  team_id: number;
-  player_id: number;
-  killer_id: number;
-  rank: number;
-  killed_ids: number[];
-  slug: string;
-  username: string;
-  kills: number;
-  damage_dealt: number;
-  time_alive: number;
+    team_id: number;
+    player_id: number;
+    killer_id: number;
+    rank: number;
+    killed_ids: number[];
+    slug: string;
+    username: string;
+    kills: number;
+    damage_dealt: number;
+    time_alive: number;
 }
 
 interface ModeStats {
-  teamMode: TeamMode;
-  games: number;
-  wins: number;
-  kills: number;
-  winPct: string;
-  mostKills: number;
-  mostDamage: number;
-  kpg: string;
-  avgDamage: number;
-  avgTimeAlive: number;
+    teamMode: TeamMode;
+    games: number;
+    wins: number;
+    kills: number;
+    winPct: string;
+    mostKills: number;
+    mostDamage: number;
+    kpg: string;
+    avgDamage: number;
+    avgTimeAlive: number;
 }
 
 export interface PlayerStats {
-  slug: string;
-  username: string;
-  player_icon: string;
-  banned: boolean;
-  wins: number;
-  kills: number;
-  games: number;
-  kpg: string;
-  modes: ModeStats[];
+    slug: string;
+    username: string;
+    player_icon: string;
+    banned: boolean;
+    wins: number;
+    kills: number;
+    games: number;
+    kpg: string;
+    modes: ModeStats[];
 }
 
 export interface MatchStats {
-  guid: string;
-  region: string;
-  map_id: number;
-  team_mode: string;
-  team_count: number;
-  team_total: number;
-  end_time: string;
-  time_alive: number;
-  rank: number;
-  kills: number;
-  team_kills: number;
-  damage_dealt: number;
-  damage_taken: number;
-  icon?: string;
+    guid: string;
+    region: string;
+    map_id: number;
+    team_mode: string;
+    team_count: number;
+    team_total: number;
+    end_time: string;
+    time_alive: number;
+    rank: number;
+    kills: number;
+    team_kills: number;
+    damage_dealt: number;
+    damage_taken: number;
+    icon?: string;
 }
 export interface TeamModes {
-  teamMode: TeamMode;
-  games: number;
-  name: string;
-  botStats: { name: string; val: string }[];
-  midStats: { name: string; val: string }[];
+    teamMode: TeamMode;
+    games: number;
+    name: string;
+    botStats: { name: string; val: string }[];
+    midStats: { name: string; val: string }[];
 }
 
-function getPlayerCardData(userData: PlayerStats, error: boolean, teamModeFilter: number) {
+function getPlayerCardData(
+    userData: PlayerStats,
+    error: boolean,
+    teamModeFilter: number,
+) {
     // get_user_stats currently returns data rows for all teamModes;
     // transform the data a bit for the player card.
     if (error || !userData) {
@@ -99,9 +103,11 @@ function getPlayerCardData(userData: PlayerStats, error: boolean, teamModeFilter
     }
 
     var emoteDef = EmotesDefs[userData.player_icon];
-    var texture = emoteDef
-        ? emoteImgToSvg(emoteDef.texture)
-        : "../img/gui/player-gui.svg";
+    var texture = emoteDef ? emoteImgToSvg(emoteDef.texture) : "/img/gui/player-gui.svg";
+    console.log({
+        emoteDef,
+        texture: emoteDef ? emoteImgToSvg(emoteDef.texture) : null,
+    });
     var tmpSlug = userData.slug.toLowerCase();
     tmpSlug = tmpSlug.replace(userData.username.toLowerCase(), "");
 
@@ -122,9 +128,11 @@ function getPlayerCardData(userData: PlayerStats, error: boolean, teamModeFilter
     };
 
     // Gather card data
-    var addStat = function addStat(arr: { name: string; val: number | string }[],
-      name: string,
-      val: number | string,) {
+    var addStat = function addStat(
+        arr: { name: string; val: number | string }[],
+        name: string,
+        val: number | string,
+    ) {
         arr.push({
             name: name,
             val: val,
@@ -161,17 +169,17 @@ function getPlayerCardData(userData: PlayerStats, error: boolean, teamModeFilter
     var keys = Object.keys(TeamModeToString) as unknown as TeamMode[];
 
     for (var _i = 0; _i < keys.length; _i++) {
-      var teamMode = keys[_i];
-      if (
-          !teamModes.find(function (x) {
-              return x.teamMode == teamMode;
-          })
-      ) {
-          teamModes.push({
-              teamMode,
-              games: 0,
-          });
-      }
+        var teamMode = keys[_i];
+        if (
+            !teamModes.find(function (x) {
+                return x.teamMode == teamMode;
+            })
+        ) {
+            teamModes.push({
+                teamMode,
+                games: 0,
+            });
+        }
     }
     teamModes.sort(function (a, b) {
         return a.teamMode! - b.teamMode!;
@@ -197,16 +205,17 @@ function getPlayerCardData(userData: PlayerStats, error: boolean, teamModeFilter
 //
 
 class Query {
-  inProgress = false;
-  dataValid = false;
-  error = false;
-  args = {};
-  data: PlayerStats | null = null;
+    inProgress = false;
+    dataValid = false;
+    error = false;
+    args = {};
+    data: PlayerStats | null = null;
 
-    query(  url: string,
-      args: Record<string, unknown>,
-      debugTimeout: number,
-      onComplete: (err: any, res: any) => void
+    query(
+        url: string,
+        args: Record<string, unknown>,
+        debugTimeout: number,
+        onComplete: (err: any, res: any) => void,
     ) {
         var _this = this;
 
@@ -245,7 +254,7 @@ class Query {
 // PlayerView
 //
 export class PlayerView {
-      games: {
+    games: {
         expanded: boolean;
         dataError: boolean;
         data: MatchData[] | null;
@@ -256,11 +265,12 @@ export class PlayerView {
     userStats = new Query();
     matchHistory = new Query();
     matchData = new Query();
-    el = $(templates.player({
-      phoneDetected: device.mobile && !device.tablet,
-  }));
-    constructor(readonly app: App) {
-    }
+    el = $(
+        templates.player({
+            phoneDetected: device.mobile && !device.tablet,
+        }),
+    );
+    constructor(readonly app: App) {}
     getUrlParams() {
         var location = window.location.href;
         var params = new RegExp("stats/([^/?#]+).*$").exec(location) || [];
@@ -317,19 +327,20 @@ export class PlayerView {
             var games = data || [];
 
             for (var i = 0; i < games.length; i++) {
-              games[i].team_mode = TeamModeToString[games[i].team_mode as unknown as TeamMode];
+                games[i].team_mode =
+                    TeamModeToString[games[i].team_mode as unknown as TeamMode];
 
-              var gameMode = gameModes.find(function (x) {
-                  return x.mapId == games[i].map_id;
-              });
-              games[i].icon = gameMode ? gameMode.desc.icon : "";
+                var gameMode = gameModes.find(function (x) {
+                    return x.mapId == games[i].map_id;
+                });
+                games[i].icon = gameMode ? gameMode.desc.icon : "";
 
-              This.games.push({
-                  expanded: false,
-                  summary: games[i],
-                  data: null,
-                  dataError: false,
-              });
+                This.games.push({
+                    expanded: false,
+                    summary: games[i],
+                    data: null,
+                    dataError: false,
+                });
             }
             This.moreGamesAvailable = games.length >= count;
             This.render();
