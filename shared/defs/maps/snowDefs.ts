@@ -24,7 +24,7 @@ const mapDef = {
             grass: 12434877,
             underground: 1772803,
             playerSubmerge: 2854052,
-            playerGhillie: 12303291, // NOTE: this is not lifted from surviv, it is just a temporary fix for the 2024 snow mode
+            // playerGhillie: 12303291, // NOTE: this is not lifted from surviv, it is just a temporary fix for the 2024 snow mode
         },
         particles: { camera: "falling_snow_fast" },
         airdrop: {
@@ -106,12 +106,7 @@ const mapDef = {
                 loot_tier_beach: 4,
             },
         ],
-        randomSpawns: [
-            {
-                spawns: ["mansion_structure_01", "police_01", "bank_01"],
-                choose: 3,
-            },
-        ],
+        randomSpawns: [],
         spawnReplacements: [
             {
                 bank_01: "bank_01x",
@@ -119,7 +114,7 @@ const mapDef = {
                 bridge_lg_01: "bridge_lg_01x",
                 cabin_01: "cabin_01x",
                 container_01: "container_01x",
-                // greenhouse_01: "greenhouse_02",
+                greenhouse_01: "greenhouse_02",
                 house_red_01: "house_red_01x",
                 house_red_02: "house_red_02x",
                 hut_01: "hut_01x",
@@ -144,13 +139,6 @@ const mapDef = {
                 table_03: "table_03x",
                 tree_01: "tree_10",
                 mil_crate_02: "mil_crate_03",
-                // Edits
-                stone_04: "mil_crate_03",
-                barn_02: "barn_01x",
-                teahouse_complex_01su: "shack_01x",
-                club_complex_01: "shack_01x",
-                greenhouse_01: "shack_01x",
-                hut_03: "hut_01x",
             },
         ],
     },

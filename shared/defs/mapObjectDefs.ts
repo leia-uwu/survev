@@ -9680,8 +9680,6 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         health: 100,
         loot: [
             autoLoot("ots38_dual", 1),
-            // TODO remove after pass
-            autoLoot("outfitWhite", 1),
         ],
         map: { display: false },
         terrain: { grass: true, beach: true },
