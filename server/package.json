@@ -9,7 +9,7 @@
     "dev:api": "tsx watch --include \"../shared\" --include \"./src\" src/api/index.ts",
     "dev:game": "tsx watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server",
     "db:generate": "drizzle-kit generate --config=src/api/drizzle.config.ts",
-    "db:migrate": "tsx ./src/api/db/migrate.ts",
+    "db:migrate": "drizzle-kit migrate --config=src/api/drizzle.config.ts",
     "db:seed": "tsx src/api/db/seed.ts",
     "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts",
     "db:wipe": "rm -rf src/api/db/drizzle && rm game.db"
@@ -20,10 +20,11 @@
     "@hono/zod-validator": "^0.2.2",
     "@lucia-auth/adapter-drizzle": "1.1.0",
     "arctic": "^1.9.2",
-    "better-sqlite3": "^11.7.0",
-    "drizzle-orm": "^0.33.0",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.38.3",
     "hono": "^4.6.7",
     "lucia": "3.2.2",
+    "mysql2": "^3.12.0",
     "nanotimer": "^0.3.15",
     "typescript": "^5.8.2",
     "slugify": "^1.6.6",
@@ -31,12 +32,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
     "@types/nanotimer": "^0.3.2",
     "@types/node": "^22.13.9",
     "ts-node": "^10.9.2",
     "concurrently": "^9.1.0",
-    "drizzle-kit": "^0.24.2",
+    "drizzle-kit": "^0.30.1",
     "tsx": "^4.19.2"
   }
 }

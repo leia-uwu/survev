@@ -1,7 +1,23 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import * as schema from "./schema";
+import 'dotenv/config';
+import { drizzle } from "drizzle-orm/mysql2";
+import * as schema from './schema';
+import mysql from 'mysql2/promise';
 
-const sqlite = new Database("game.db");
-export const closeDB = () => sqlite.close();
-export const db = drizzle(sqlite, { schema });
+/**
+ * DROP DATABASE IF EXISTS survev;
+  * CREATE DATABASE survev;
+ */
+const poolConnection = mysql.createPool({
+  host: '127.0.0.1',
+  user: 'root',
+  password: 'root',
+  database: 'survev',
+  port: 3307
+});
+
+export const DATABASE_URL = "mysql://root:root@127.0.0.1:3307/survev";
+
+export const db = drizzle(poolConnection, {
+    schema: schema,
+    mode: "default"
+ });

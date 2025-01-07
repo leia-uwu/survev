@@ -1,0 +1,1 @@
+ALTER TABLE `match_data` ADD `created_at` timestamp NOT NULL;

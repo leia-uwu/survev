@@ -1,4 +1,4 @@
-import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
+import { DrizzleMySQLAdapter } from "@lucia-auth/adapter-drizzle";
 import type { Env } from "hono";
 import type { Session, User } from "lucia";
 import { Lucia } from "lucia";
@@ -12,7 +12,7 @@ export interface Context extends Env {
     };
 }
 
-const adapter = new DrizzleSQLiteAdapter(db, sessionTable, usersTable);
+const adapter = new DrizzleMySQLAdapter(db, sessionTable, usersTable);
 
 export const lucia = new Lucia(adapter, {
     sessionCookie: {
