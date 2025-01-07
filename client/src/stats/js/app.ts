@@ -1,4 +1,6 @@
 import $ from "jquery";
+// TODO(performance): only load needed bootstrap components
+import 'bootstrap'
 import slugify from "slugify";
 import { device } from "../../device";
 import language from "./templates/langauge.ejs?raw";
@@ -8,6 +10,7 @@ import { PlayerView } from "./playerView";
 
 import { ConfigManager } from "../../config";
 import { renderEjs } from "./helper";
+
 var templates = {
     language: (params: Record<string, any>) => renderEjs(language, params),
 };
@@ -173,7 +176,7 @@ export class App {
 
     render() {
         var _this = this;
-
+      
         $("#language-select").html(
             templates.language({
                 code: this.localization.getLocale(),
@@ -181,7 +184,11 @@ export class App {
         );
         // Listen for changes in language select
         $(".dropdown-language").off("click");
-        $(".dropdown-language").on("click", function (e) {
+        $(".dropdown-language").on("click", (e) => {
+            console.log({
+              called: true,
+              ele: $("#selected-language")
+            })
             var el = e.target;
             var code = $(el).attr("value") as string;
             var _language = $(el).html();
@@ -193,6 +200,7 @@ export class App {
                 _this.config.set("language", code);
             }
         });
+
     }
 }
 
