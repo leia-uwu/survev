@@ -4,7 +4,6 @@ import type { FindGameBody } from "../gameServer";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, verifyTurnsStile } from "../utils/serverHelpers";
 import { ApiServer } from "./apiServer";
-
 import { readFileSync } from "fs";
 import path from "path";
 import { serve } from "@hono/node-server";
@@ -46,12 +45,18 @@ app.use(
 const stats = readFileSync(
     path.resolve(__dirname.replace("dist/server/", ""), "static/index.html"),
     "utf-8",
+    
 );
 
-app.get("/stats/", (c) => {
-    console.log("redirecting to /leaderboard");
-    return c.redirect("/leaderboard");
+[
+    "/stats",
+    "/stats/",
+].forEach((route) => {
+  app.get(route, (c) => {
+    return c.redirect("/leaderboard/");
+  });
 });
+
 app.get("/stats/:slug", (c) => {
     console.log("redirecting to /stats", c.req.url);
     return c.html(stats);
