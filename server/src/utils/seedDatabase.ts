@@ -1,5 +1,10 @@
 import { generateId } from "lucia";
 import type { MatchDataTable } from "../api/db/schema";
+import { TeamMode } from "../../../shared/gameConfig";
+
+function getRandomItem<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
+ }
 
 // Helper functions
  function shuffle<T>(array: T[]): T[] {
@@ -14,7 +19,7 @@ import type { MatchDataTable } from "../api/db/schema";
  }
  
 
-export function generateMatchHistory(userId: string, numPlayers = 70): MatchDataTable[] {
+export function generateMatchHistory(userId: string, slug: string, numPlayers = 70): MatchDataTable[] {
   const gameId = generateId(15);
   const playerIds = Array.from({ length: numPlayers }, (_, i) => i + 1);
   const teams = chunk(shuffle([...playerIds]), 4); // 4 players per team
@@ -35,20 +40,25 @@ export function generateMatchHistory(userId: string, numPlayers = 70): MatchData
       0;
  
     return {
+      mapId: 1,
+      region: getRandomItem(["na", "eu", "as"]),
+      createdAt: new Date(),
+      teamTotal: team.length,
+      teamMode: getRandomItem([TeamMode.Solo, TeamMode.Duo, TeamMode.Squad]),
       gameId,
       userId,
-      slug: (Math.random() > 0.2 ? `player${id}` : null),
+      slug: (Math.random() > 0.2 ? slug : null),
       username: `Player${id}`,
-      player_id: id,
-      team_id: teamId,
-      time_alive: died ? Math.floor(Math.random() * aliveTime) : aliveTime,
+      playerId: id,
+      teamId: teamId,
+      timeAlive: died ? Math.floor(Math.random() * aliveTime) : aliveTime,
       rank: teamId,
       died,
       kills,
-      damage_dealt: Math.floor(Math.random() * 1000),
-      damage_taken: Math.floor(Math.random() * 500),
-      killer_id: killer,
-      killed_ids: victims
+      damageDealt: Math.floor(Math.random() * 1000),
+      damageTaken: Math.floor(Math.random() * 500),
+      killerId: killer,
+      killedIds: victims
     };
   });
  }
