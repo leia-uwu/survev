@@ -1,6 +1,7 @@
 import { GameConfig } from "../../gameConfig";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 
 // @NOTE: Entries defined as single-element arrays, like fixedSpawns: [{ }],
 // are done this way so that util.mergeDeep(...) will function as expected
@@ -10,7 +11,7 @@ import type { MapDef } from "../mapDefs";
 // elements if that property is set.
 
 export const Main: MapDef = {
-    mapId: 0,
+    mapId: MapId.Main,
     desc: { name: "Normal", icon: "", buttonCss: "" },
     assets: {
         audio: [

@@ -1,11 +1,11 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
-import type { MapDef } from "../mapDefs";
-import { Main, type PartialMapDef } from "./baseDefs";
+import { MapId } from "../types/misc";
+import type { PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 1,
+    mapId: MapId.Desert,
     desc: {
         name: "Desert",
         icon: "img/loot/loot-weapon-flare-gun.svg",

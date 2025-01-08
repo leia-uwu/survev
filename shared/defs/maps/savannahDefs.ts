@@ -1,8 +1,10 @@
 import { util } from "../../utils/util";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 5,
+    mapId: MapId.Savannah,
+
     desc: {
         name: "Savannah",
         icon: "img/gui/player-the-hunted.svg",
