@@ -303,7 +303,8 @@ export const Main = {
         tier_khaki_outfit: [{ name: "outfitKhaki", count: 1, weight: 1 }],
         tier_pirate_melee: [{ name: "hook", count: 1, weight: 1 }],
         tier_hatchet: [
-            { name: "vector", count: 1, weight: 0.4 },
+            { name: "usas", count: 1, weight: 2 },
+            { name: "vector", count: 1, weight: 0.1 },
             { name: "hk416", count: 1, weight: 0.25 },
             { name: "mp220", count: 1, weight: 0.15 },
             { name: "pkp", count: 1, weight: 0.01 },
