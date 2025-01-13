@@ -2103,6 +2103,20 @@ export class Player extends BaseGameObject {
         }
 
         this.game.broadcastMsg(net.MsgType.Kill, downedMsg);
+
+        // in duos/squads 50v50, lone survivr is given on knock
+        if (this.game.map.factionMode && this.game.isTeamMode && this.team!.livingPlayers.length <= 2) {
+            const last1 = this.team!.livingPlayers[0];
+            const last2 = this.team!.livingPlayers[1];
+
+            if (last1 && last1.role != "last_man" && !last1.downed) {
+                last1.promoteToRole("last_man");
+            }
+
+            if (last2 && last2.role != "last_man" && !last2.downed) {
+                last2.promoteToRole("last_man");
+            }
+        }
     }
 
     killedBy: Player | undefined;
@@ -2198,7 +2212,8 @@ export class Player extends BaseGameObject {
             }
         }
 
-        if (this.game.map.factionMode && this.team!.livingPlayers.length <= 2) {
+        // in solos 50v50, lone survivr is given on kill
+        if (this.game.map.factionMode && !this.game.isTeamMode && this.team!.livingPlayers.length <= 2) {
             const last1 = this.team!.livingPlayers[0];
             const last2 = this.team!.livingPlayers[1];
 
