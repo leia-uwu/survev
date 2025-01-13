@@ -387,7 +387,14 @@ export class Bullet {
                     continue;
                 }
 
-                if (obj.hasPerk("windwalk") && v2.distance(this.pos, obj.pos) <= 5) {
+                if (
+                    obj.hasPerk("windwalk") && 
+                    obj.hasteType != GameConfig.HasteType.Windwalk && //can't stack windwalk
+                    this.player && //bullet must come from a player
+                    !obj.team?.players.includes(this.player) && //bullet must come from enemy team if team exists
+                    !obj.group?.players.includes(this.player) && //bullet must come from enemy group if group exists, this check MUST be below the team check
+                    v2.distance(this.pos, obj.pos) <= 5
+                ) {
                     obj.giveHaste(GameConfig.HasteType.Windwalk, 3);
                 }
 
