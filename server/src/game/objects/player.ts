@@ -3669,7 +3669,8 @@ export class Player extends BaseGameObject {
         // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
 
         if (this.actionType == GameConfig.Action.Revive) {
-            if (this.action.targetId) {
+            //prevents self reviving players from getting an unnecessary speed boost
+            if (this.action.targetId && !(this.downed && this.hasPerk("self_revive"))) {
                 // player reviving
                 this.speed = GameConfig.player.downedMoveSpeed + 2; // not specified in game config so i just estimated
             } else {
