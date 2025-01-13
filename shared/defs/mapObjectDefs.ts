@@ -8860,6 +8860,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" },
+        teamId: 1
     } as unknown as Partial<ObstacleDef>),
     crate_02d: createCrate({
         health: 140,
@@ -9301,6 +9302,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-22.img" },
         sound: { explode: "crate_break_01" },
+        teamId: 2
     }),
     crate_22d: createCrate({
         health: 140,

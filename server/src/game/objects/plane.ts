@@ -20,6 +20,9 @@ interface ScheduledAirDrop {
 
 // amount of seconds to travel to target
 const AIRDROP_PLANE_SPAWN_DIST = GameConfig.airdrop.planeVel * 15;
+const AIRSTRIKE_PLANE_SPAWN_DIST = GameConfig.airstrike.planeVel * 3;
+/** relative to the target airstrike position, this is the maximum distance a bomb can be dropped from that position */
+const AIRSTRIKE_PLANE_MAX_BOMB_DIST = 48;
 
 type PlaneOptions = MapDef["gameConfig"]["planes"]["timings"][number]["options"];
 
@@ -229,14 +232,40 @@ export class PlaneBarn {
         this.planes.push(plane);
     }
 
-    addAirStrike(targetPos: Vec2, dir: Vec2) {
-        const id = this.freeIds.pop();
+    addAirStrike(pos: Vec2, dir: Vec2, playerId?: number) {
+        let id = 1;
+        if (this.idNext < MAX_ID) {
+            id = this.idNext++;
+        } else {
+            if (this.freeIds.length > 0) {
+                id = this.freeIds.shift()!;
+            } else {
+                assert(false, `Ran out of plane ids`);
+            }
+        }
+
         if (!id) {
-            this.game.logger.warn("Planem Barn: ran out of IDs");
+            this.game.logger.warn("Plane Barn: ran out of IDs");
             return;
         }
 
-        const plane = new AirStrikePlane(this.game, id, v2.create(0, 0), targetPos, dir);
+        //necessary since something like projectile.pos could get passed in which would keep the reference.
+        const posCopy = v2.copy(pos);
+        const dirCopy = v2.copy(dir);
+
+        const invertedDir = v2.neg(dirCopy);
+        const planePos = v2.add(posCopy, v2.mul(invertedDir, AIRSTRIKE_PLANE_SPAWN_DIST));
+
+        const config = GameConfig.airstrike;
+        const unitsPerBomb = AIRSTRIKE_PLANE_MAX_BOMB_DIST / config.bombCount;
+        const bombPositions: Vec2[] = [];
+        for (let i = 0; i < config.bombCount; i++) {
+            let bombPos = v2.add(posCopy, v2.mul(dirCopy, unitsPerBomb * i));
+            bombPos = v2.add(bombPos, v2.mul(v2.randomUnit(), config.bombJitter));
+            bombPositions.push(bombPos);
+        }
+
+        const plane = new AirStrikePlane(this.game, id, planePos, posCopy, dirCopy, bombPositions, playerId ?? 0);
         this.planes.push(plane);
     }
 }
@@ -299,34 +328,64 @@ class AirdropPlane extends Plane {
 }
 
 class AirStrikePlane extends Plane {
+    /** needed for kill credits and friendly fire prevention */
+    playerId?: number;
+    reachedDropZone = false;
+    startPos: Vec2;
     bombCount = 0;
+    bombPositions: Vec2[];
+    //drop a bomb every 2 ticks
+    dropDelayCounter = 2;
 
-    constructor(game: Game, id: number, pos: Vec2, targetPos: Vec2, dir: Vec2) {
+    constructor(game: Game, id: number, pos: Vec2, targetPos: Vec2, dir: Vec2, bombPositions: Vec2[], playerId?: number) {
         super(game, id, GameConfig.Plane.Airstrike, pos, targetPos, dir);
+        this.playerId = playerId;
+        this.startPos = v2.copy(pos);
+        this.bombPositions = bombPositions;
+    }
+
+    dropBomb(pos: Vec2) : void {
+        const config = this.config as typeof GameConfig.airstrike;
+        if (this.bombCount >= config.bombCount) return;
+
+        this.bombCount++;
+        const bombDef = GameObjectDefs["bomb_iron"] as ThrowableDef;
+        this.game.projectileBarn.addProjectile(
+            this.playerId ?? 0, //0 means the projectile comes from the "game" itself not a player
+            "bomb_iron",
+            pos,
+            5,
+            0,
+            v2.mul(this.planeDir, config.bombVel),
+            bombDef.fuseTime,
+            GameConfig.DamageType.Airstrike,
+        );
+
     }
 
     update(dt: number) {
         super.update(dt);
 
-        const config = this.config as typeof GameConfig.airstrike;
-        if (v2.distance(this.pos, this.targetPos) < 10) {
-            this.actionComplete = true;
-
-            if (this.bombCount < config.bombCount) {
-                this.bombCount++;
-                const pos = v2.add(this.pos, v2.mul(v2.randomUnit(), config.bombJitter));
-                const bombDef = GameObjectDefs["bomb_iron"] as ThrowableDef;
-                this.game.projectileBarn.addProjectile(
-                    0,
-                    "bomb_iron",
-                    pos,
-                    5,
-                    0,
-                    v2.mul(v2.randomUnit(), config.bombVel),
-                    bombDef.fuseTime,
-                    GameConfig.DamageType.Airstrike,
-                );
-            }
+        const startDir = v2.directionNormalized(this.targetPos, this.startPos);
+        const currentDir = v2.directionNormalized(this.targetPos, this.pos);
+        //if dot product is -1, that means the direction vectors are pointing opposite to each other
+        //this can only happen if the plane has passed the targetPos meaning the drop zone has been reached
+        if (!this.reachedDropZone && math.eqAbs(v2.dot(startDir, currentDir), -1)) {
+            this.reachedDropZone = true;
         }
+
+        if (!this.reachedDropZone) return;
+
+        if (this.bombPositions.length == 0) {
+            this.actionComplete = true;
+            return;
+        }
+
+        if (this.dropDelayCounter % 2 == 0) {
+            const pos = this.bombPositions.shift()!;
+            this.dropBomb(pos);
+            this.dropDelayCounter = 0;
+        }
+        this.dropDelayCounter++;
     }
 }

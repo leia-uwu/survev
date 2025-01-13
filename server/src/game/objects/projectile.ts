@@ -78,6 +78,12 @@ export class Projectile extends BaseGameObject {
 
     obstacleBellowId = 0;
 
+    strobe?: {
+        strobeTicker: number,
+        airstrikesLeft: number,
+        airstrikeTicker: number
+    };
+
     constructor(
         game: Game,
         type: string,
@@ -108,7 +114,46 @@ export class Projectile extends BaseGameObject {
         );
     }
 
+    updateStrobe(dt: number): void {
+        if (!this.strobe) return;
+
+        if (this.strobe.strobeTicker > 0) {
+            this.strobe.strobeTicker -= dt;
+
+            if (this.strobe.strobeTicker <= 0) {
+                this.game.playerBarn.addEmote(0, this.pos, "ping_airstrike", true);
+                this.game.planeBarn.addAirStrike(this.pos, this.dir, this.playerId);
+                this.strobe.airstrikesLeft--;
+                this.strobe.airstrikeTicker = 0.85;
+            }
+        }
+
+        if (this.strobe.airstrikesLeft == 0) return;
+
+        //airstrikes cannot drop until the strobe ticker is finished
+        if (this.strobe.strobeTicker >= 0) return;
+
+        if (this.strobe.airstrikeTicker > 0) {
+            this.strobe.airstrikeTicker -= dt;
+
+            if (this.strobe.airstrikeTicker <= 0) {
+                //the position can only be "past" the strobe
+                //meaning that the random direction can be a MAX of 90 degrees offset from the regular direction so it doesnt go backwards
+                const randomDir = v2.rotate(this.dir, util.random(-Math.PI/2, Math.PI/2));
+                const pos = v2.add(this.pos, v2.mul(randomDir, 7));
+                this.game.planeBarn.addAirStrike(pos, this.dir, this.playerId);
+                this.strobe.airstrikesLeft--;
+                this.strobe.airstrikeTicker = 0.85;
+            }
+        }
+    }
+
     update(dt: number) {
+
+        if (this.strobe) {
+            this.updateStrobe(dt);
+        }
+
         const def = GameObjectDefs[this.type] as ThrowableDef;
         //
         // Velocity
@@ -219,6 +264,35 @@ export class Projectile extends BaseGameObject {
         }
     }
 
+    /**
+     * only used for bomb_iron projectiles, they CANNOT explode inside indestructable buildings
+     */
+    canBombIronExplode(): boolean {
+        const coll = collider.createCircle(this.pos, this.rad);
+        const objs = this.game.grid.intersectCollider(coll);
+
+        for (const obj of objs) {
+            if (obj.__type != ObjectType.Building) continue;
+            if (obj.wallsToDestroy < Infinity) continue; //building is destructable and bomb irons can explode on it
+            for (let i = 0; i < obj.zoomRegions.length; i++) {
+                const zoomRegion = obj.zoomRegions[i];
+
+                if (
+                    zoomRegion.zoomIn &&
+                    coldet.testCircleAabb(
+                        this.pos,
+                        this.rad,
+                        zoomRegion.zoomIn.min,
+                        zoomRegion.zoomIn.max,
+                    )
+                ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     explode() {
         if (this.dead) return;
         this.dead = true;
@@ -240,6 +314,11 @@ export class Projectile extends BaseGameObject {
                     DamageType.Player,
                 );
             }
+        }
+
+        if (this.type == "bomb_iron" && !this.canBombIronExplode()) {
+            this.destroy();
+            return;
         }
 
         const explosionType = def.explosionType;

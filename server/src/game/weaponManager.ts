@@ -1097,7 +1097,7 @@ export class WeaponManager {
             0.0,
             throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0),
         );
-        this.player.game.projectileBarn.addProjectile(
+        const projectile = this.player.game.projectileBarn.addProjectile(
             this.player.__id,
             throwableType,
             pos,
@@ -1107,6 +1107,14 @@ export class WeaponManager {
             fuseTime,
             GameConfig.DamageType.Player,
         );
+
+        if (oldThrowableType == "strobe") {
+            projectile.strobe = {
+                strobeTicker: 4,
+                airstrikesLeft: 3,
+                airstrikeTicker: 0
+            }
+        }
 
         const animationDuration = GameConfig.player.throwTime;
         this.player.playAnim(GameConfig.Anim.Throw, animationDuration);

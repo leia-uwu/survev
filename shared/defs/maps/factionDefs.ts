@@ -358,8 +358,8 @@ const mapDef = {
             rivers: {
                 weights: [
                     { weight: 1, widths: [20] },
-                    { weight: 1, widths: [20, 4] },
-                    { weight: 1, widths: [20, 8, 4] },
+                    // { weight: 1, widths: [20, 4] },
+                    // { weight: 1, widths: [20, 8, 4] },
                 ],
                 smoothness: 0.15,
             },
