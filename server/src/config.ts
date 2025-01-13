@@ -34,15 +34,15 @@ export const Config = {
     apiKey: "Kongregate Sucks",
 
     modes: [
-        { mapName: "faction", teamMode: TeamMode.Solo, enabled: true },
+        { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
-        { mapName: "faction", teamMode: TeamMode.Squad, enabled: true },
+        { mapName: "main", teamMode: TeamMode.Squad, enabled: true },
     ],
 
     regions: {},
 
     debug: {
-        spawnMode: "fixed",
+        spawnMode: "default",
     },
 
     rateLimitsEnabled: isProduction,
