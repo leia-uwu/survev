@@ -2105,7 +2105,11 @@ export class Player extends BaseGameObject {
         this.game.broadcastMsg(net.MsgType.Kill, downedMsg);
 
         // in duos/squads 50v50, lone survivr is given on knock
-        if (this.game.map.factionMode && this.game.isTeamMode && this.team!.livingPlayers.length <= 2) {
+        if (
+            this.game.map.factionMode &&
+            this.game.isTeamMode &&
+            this.team!.livingPlayers.length <= 2
+        ) {
             const last1 = this.team!.livingPlayers[0];
             const last2 = this.team!.livingPlayers[1];
 
@@ -2213,7 +2217,11 @@ export class Player extends BaseGameObject {
         }
 
         // in solos 50v50, lone survivr is given on kill
-        if (this.game.map.factionMode && !this.game.isTeamMode && this.team!.livingPlayers.length <= 2) {
+        if (
+            this.game.map.factionMode &&
+            !this.game.isTeamMode &&
+            this.team!.livingPlayers.length <= 2
+        ) {
             const last1 = this.team!.livingPlayers[0];
             const last2 = this.team!.livingPlayers[1];
 

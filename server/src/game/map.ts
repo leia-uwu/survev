@@ -491,8 +491,7 @@ export class GameMap {
         const riverCreator = new RiverCreator(this, randomGenerator);
         const widths = util.weightedRandom(mapConfig.rivers.weights).widths;
 
-        for (let i = 0; i < widths.length; i++){
-    
+        for (let i = 0; i < widths.length; i++) {
             //in factions mode, we always assume the first width in widths is the main faction river
             const isFactionRiver = this.factionMode && i == 0;
 
@@ -512,9 +511,17 @@ export class GameMap {
     /** only called inside generateObjects, separates logic into function to simplify control flow */
     private generateBridges(mapDef: MapDef): void {
         //factions mode always had one extra large bridge on each side of the river town's extra large bridge.
-        if (this.factionMode && this.buildings.find(b => b.type == "river_town_01")) {
-            this.genBridge(mapDef.mapGen.bridgeTypes.xlarge, this.terrain.rivers[0], 0.25);
-            this.genBridge(mapDef.mapGen.bridgeTypes.xlarge, this.terrain.rivers[0], 0.75);
+        if (this.factionMode && this.buildings.find((b) => b.type == "river_town_01")) {
+            this.genBridge(
+                mapDef.mapGen.bridgeTypes.xlarge,
+                this.terrain.rivers[0],
+                0.25,
+            );
+            this.genBridge(
+                mapDef.mapGen.bridgeTypes.xlarge,
+                this.terrain.rivers[0],
+                0.75,
+            );
             return;
         }
 
@@ -525,13 +532,13 @@ export class GameMap {
             const riverWidth = river.waterWidth;
             if (riverWidth < 9 && riverWidth > 4) {
                 return "medium";
-            } else if (riverWidth < 20 && riverWidth > 8) {
-                return "large";
-            } else if (riverWidth > 20) {
-                return "xlarge";
             }
-            
-            return null;
+
+            if (riverWidth < 20 && riverWidth > 8) {
+                return "large";
+            }
+
+            return "xlarge";
         }
 
         //maximum amount of a specific bridge that can spawn
@@ -544,7 +551,7 @@ export class GameMap {
         const nBridges = util.randomInt(0, 3);
         if (nBridges == 0) return;
 
-        let riversToPick = this.terrain.rivers.filter(river => {
+        let riversToPick = this.terrain.rivers.filter((river) => {
             //looped river is a lake, no bridges on lakes
             if (river.looped) return false;
 
@@ -557,12 +564,11 @@ export class GameMap {
         const bridgesGenerated: Record<BridgeSize, number> = {
             medium: 0,
             large: 0,
-            xlarge: 0
-        }
+            xlarge: 0,
+        };
 
         for (let i = 0; i < nBridges; i++) {
-            
-            const r = util.randomInt(0, riversToPick.length - 1)
+            const r = util.randomInt(0, riversToPick.length - 1);
             const randomRiver = riversToPick[r];
             const bridgeSize = getBridgeSize(randomRiver);
             if (!bridgeSize) continue;
@@ -576,7 +582,9 @@ export class GameMap {
                     bridgesGenerated[bridgeSize]++;
                     // if you can't spawn any more of a specific bridge size, can't pick any rivers associated with that bridgeSize
                     if (bridgesGenerated[bridgeSize] >= maxBridges[bridgeSize]) {
-                        riversToPick = riversToPick.filter(river => getBridgeSize(river) != bridgeSize);
+                        riversToPick = riversToPick.filter(
+                            (river) => getBridgeSize(river) != bridgeSize,
+                        );
                         if (riversToPick.length == 0) return;
                     }
                     break;
@@ -637,7 +645,6 @@ export class GameMap {
                 return 1;
             });
 
-
         //buildings that contain bridges such as ocean/river shacks and river town
         const bridgeTypes = [];
         for (let i = 0; i < types.length; i++) {
@@ -666,7 +673,6 @@ export class GameMap {
         }
 
         if (this.riverDescs.length) {
-
             //
             // Generate bridges
             //
@@ -1088,7 +1094,9 @@ export class GameMap {
                 const idx = teamId - 1;
 
                 const divisions = 10;
-                return util.randomPointInAabb(coldet.divideAabb(spawnAabb, vec, divisions)[idx * (divisions - 1)]);
+                return util.randomPointInAabb(
+                    coldet.divideAabb(spawnAabb, vec, divisions)[idx * (divisions - 1)],
+                );
             }
 
             return util.randomPointInAabb(spawnAabb);
@@ -1189,9 +1197,9 @@ export class GameMap {
         }
     }
 
-    /** 
+    /**
      * progress is a normalized number from 0-1 describing where on the river the bridge should generate
-     * 
+     *
      * 0 would be at the start, 1 would be at the end, 0.5 would be in the middle, etc
      */
     genBridge(type: string, river?: River, progress?: number): boolean {
@@ -1549,7 +1557,9 @@ export class GameMap {
 
                 //farthest fifth from the center of the team's half. 1/5 * 1/2 = 1/10 hence the 10 divisions
                 const divisions = 10;
-                spawnAabb = coldet.divideAabb(spawnAabb, vec, divisions)[idx * (divisions - 1)];
+                spawnAabb = coldet.divideAabb(spawnAabb, vec, divisions)[
+                    idx * (divisions - 1)
+                ];
             }
 
             getPos = () => {

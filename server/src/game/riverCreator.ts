@@ -4,11 +4,14 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { GameMap } from "./map";
 
 export class RiverCreator {
-
     randomGenerator: (min?: number, max?: number) => number;
 
-    constructor(public map: GameMap, randomGenerator?: (min?: number, max?: number) => number) {
-        this.randomGenerator = randomGenerator ?? ((min = 0, max = 1) => Math.random() * (max - min) + min);
+    constructor(
+        public map: GameMap,
+        randomGenerator?: (min?: number, max?: number) => number,
+    ) {
+        this.randomGenerator =
+            randomGenerator ?? ((min = 0, max = 1) => Math.random() * (max - min) + min);
     }
 
     private getStartPoint(isFactionRiver: boolean): Vec2 {
@@ -35,33 +38,39 @@ export class RiverCreator {
         }
 
         const corners = [
-            v2.create(0, 0), 
-            v2.create(0, this.map.height), 
-            v2.create(this.map.width, this.map.height), 
-            v2.create(this.map.width, 0)
+            v2.create(0, 0),
+            v2.create(0, this.map.height),
+            v2.create(this.map.width, this.map.height),
+            v2.create(this.map.width, 0),
         ];
 
         const gridSize = this.map.width;
         const tileSize = this.map.width / 4;
 
-        const isStartNearCorner = corners.some(c => v2.manhattanDistance(c, start) < tileSize);
+        const isStartNearCorner = corners.some(
+            (c) => v2.manhattanDistance(c, start) < tileSize,
+        );
         let attempts = 0;
         while (attempts++ < GameMap.MaxSpawnAttempts) {
             const end = this.map.randomPointOnMapEdge(this.randomGenerator);
             if (v2.manhattanDistance(start, end) <= gridSize) continue;
             //if a river starts on corner, it can't end on a corner
-            if (isStartNearCorner && corners.some(c => v2.manhattanDistance(c, end) < tileSize)) continue;
+            if (
+                isStartNearCorner &&
+                corners.some((c) => v2.manhattanDistance(c, end) < tileSize)
+            )
+                continue;
             return end;
         }
 
         //should hopefully never reach here
-        return v2.create(this.map.width/2, this.map.height);
+        return v2.create(this.map.width / 2, this.map.height);
     }
 
     private getMidPoint(lastPoint: Vec2, nextPoint: Vec2, offsetDir: Vec2): Vec2 {
-        const segmentDistance =  v2.distance(lastPoint, nextPoint);
+        const segmentDistance = v2.distance(lastPoint, nextPoint);
         //the closer the points are, the less offset there is to make the river look smoother
-        let offsetDistance = this.randomGenerator(0, 1) * segmentDistance / 7;
+        let offsetDistance = (this.randomGenerator(0, 1) * segmentDistance) / 7;
         //prevents rivers from straying off too far in one direction, need to stay relatively aligned to original start/end
         if (this.randomGenerator(0, 1) < 0.5) offsetDistance *= -1;
 
@@ -83,11 +92,11 @@ export class RiverCreator {
                         riverPoints[r - 1],
                         riverPoints[r],
                         points[j - 1],
-                        points[j]
-                    )
+                        points[j],
+                    );
                     if (intersection) {
                         //visually attaches the 2 colliding rivers if their intersections are too far apart
-                        riverPoints[r - 1] = intersection.point
+                        riverPoints[r - 1] = intersection.point;
                         riverPoints.splice(r);
                         return;
                     }
@@ -100,11 +109,11 @@ export class RiverCreator {
         const start = this.getStartPoint(isFactionRiver);
         const end = this.getEndPoint(start, isFactionRiver);
 
-        const slope = (end.y-start.y)/(end.x-start.x);
+        const slope = (end.y - start.y) / (end.x - start.x);
         const slopeAngle = Math.atan(slope);
         //river points need to be offset a bit to provide variation in the river
         //the offset needs to be perpendicular to the river direction hence the "+ Math.PI/2"
-        const offsetAngle = slopeAngle + Math.PI/2;
+        const offsetAngle = slopeAngle + Math.PI / 2;
         const offsetDir = math.rad2Direction(offsetAngle);
 
         const riverPoints = [start, end];
@@ -142,7 +151,6 @@ export class RiverCreator {
         }
 
         this.handleIntersection(riverPoints);
-
 
         return riverPoints;
     }

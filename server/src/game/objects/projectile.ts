@@ -79,9 +79,9 @@ export class Projectile extends BaseGameObject {
     obstacleBellowId = 0;
 
     strobe?: {
-        strobeTicker: number,
-        airstrikesLeft: number,
-        airstrikeTicker: number
+        strobeTicker: number;
+        airstrikesLeft: number;
+        airstrikeTicker: number;
     };
 
     constructor(
@@ -139,7 +139,10 @@ export class Projectile extends BaseGameObject {
             if (this.strobe.airstrikeTicker <= 0) {
                 //the position can only be "past" the strobe
                 //meaning that the random direction can be a MAX of 90 degrees offset from the regular direction so it doesnt go backwards
-                const randomDir = v2.rotate(this.dir, util.random(-Math.PI/2, Math.PI/2));
+                const randomDir = v2.rotate(
+                    this.dir,
+                    util.random(-Math.PI / 2, Math.PI / 2),
+                );
                 const pos = v2.add(this.pos, v2.mul(randomDir, 7));
                 this.game.planeBarn.addAirStrike(pos, this.dir, this.playerId);
                 this.strobe.airstrikesLeft--;
@@ -149,7 +152,6 @@ export class Projectile extends BaseGameObject {
     }
 
     update(dt: number) {
-
         if (this.strobe) {
             this.updateStrobe(dt);
         }

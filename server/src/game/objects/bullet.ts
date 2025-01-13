@@ -388,7 +388,7 @@ export class Bullet {
                 }
 
                 if (
-                    obj.hasPerk("windwalk") && 
+                    obj.hasPerk("windwalk") &&
                     obj.hasteType != GameConfig.HasteType.Windwalk && //can't stack windwalk
                     this.player && //bullet must come from a player
                     !obj.team?.players.includes(this.player) && //bullet must come from enemy team if team exists

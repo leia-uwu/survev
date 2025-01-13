@@ -8860,7 +8860,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" },
-        teamId: 1
+        teamId: 1,
     } as unknown as Partial<ObstacleDef>),
     crate_02d: createCrate({
         health: 140,
@@ -9302,7 +9302,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-22.img" },
         sound: { explode: "crate_break_01" },
-        teamId: 2
+        teamId: 2,
     }),
     crate_22d: createCrate({
         health: 140,
@@ -9678,9 +9678,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     mil_crate_03: createCrate({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
-        loot: [
-            autoLoot("ots38_dual", 1),
-        ],
+        loot: [autoLoot("ots38_dual", 1)],
         map: { display: false },
         terrain: { grass: true, beach: true },
         img: { sprite: "map-crate-mil-03.img" },
