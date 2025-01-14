@@ -34,12 +34,20 @@ export class PlaneBarn {
     freeIds: number[] = [];
     idNext = 1;
 
+    /** bounds where the plane can exist, not the bounds of the plane itself */
     planeBounds = collider.createAabb(v2.create(-512, -512), v2.create(1536, 1536));
 
     scheduledPlanes: Array<{
         time: number;
         options: PlaneOptions;
     }> = [];
+
+    newAirstrikeZones: {
+        pos: Vec2;
+        rad: number;
+        duration: number;
+    }[] = [];
+    airstrikeZones: AirstrikeZone[] = [];
 
     constructor(readonly game: Game) {}
     update(dt: number) {
@@ -61,6 +69,15 @@ export class PlaneBarn {
             }
         }
 
+        for (let i = 0; i < this.airstrikeZones.length; i++) {
+            const zone = this.airstrikeZones[i];
+            zone.update(dt);
+            if (zone.durationTicker <= 0) {
+                this.airstrikeZones.splice(i, 1);
+                i--;
+            }
+        }
+
         for (let i = 0; i < this.scheduledPlanes.length; i++) {
             const scheduledPlane = this.scheduledPlanes[i];
             scheduledPlane.time -= dt;
@@ -68,14 +85,47 @@ export class PlaneBarn {
                 this.scheduledPlanes.splice(i, 1);
                 i--;
 
-                switch (scheduledPlane.options.type) {
+                const options = scheduledPlane.options;
+                switch (options.type) {
                     case GameConfig.Plane.Airdrop: {
                         this.addAirdrop(
                             v2.add(
                                 this.game.gas.posNew,
                                 util.randomPointInCircle(this.game.gas.radNew),
                             ),
-                            scheduledPlane.options.airdropType,
+                            options.airdropType,
+                        );
+                        break;
+                    }
+                    case GameConfig.Plane.Airstrike: {
+                        assert(options.airstrikeZoneRad); //only option that MUST be defined
+                        const rad = options.airstrikeZoneRad;
+                        const timeBeforeStart = options.wait ?? 0;
+                        const airstrikeInterval = options.delay ?? 1;
+                        const planeCount = options.numPlanes
+                            ? util.weightedRandom(options.numPlanes).count
+                            : 3;
+
+                        let pos = v2.copy(this.game.gas.posNew); //defaults to center of safe zone if no players are inside it
+                        let attempts = 0;
+                        //finds random player inside safe zone
+                        while (attempts++ < 100) {
+                            const tempPos = this.game.playerBarn.randomPlayer().pos;
+                            if (!this.game.gas.isOutSideSafeZone(tempPos)) {
+                                pos = v2.copy(tempPos);
+                                break;
+                            }
+                        }
+
+                        pos = v2.add(pos, v2.mul(v2.randomUnit(), 7)); //randomize the point a bit
+                        this.game.map.clampToMapBounds(pos);
+
+                        this.addAirstrikeZone(
+                            pos,
+                            rad,
+                            planeCount,
+                            timeBeforeStart,
+                            airstrikeInterval,
                         );
                         break;
                     }
@@ -84,11 +134,49 @@ export class PlaneBarn {
         }
     }
 
+    flush() {
+        this.newAirstrikeZones.length = 0;
+    }
+
     schedulePlane(time: number, options: PlaneOptions) {
         this.scheduledPlanes.push({
             time,
             options,
         });
+    }
+
+    addAirstrikeZone(
+        pos: Vec2,
+        rad: number,
+        planeCount: number,
+        timeBeforeStart: number,
+        airstrikeInterval: number,
+    ) {
+        const timeToDropZone = 3; //takes 3 seconds from when a plane is called to reach its drop zone
+        const finishBuffer = 2; //2 second buffer after all planes are done
+        const duration =
+            timeBeforeStart +
+            timeToDropZone +
+            planeCount * airstrikeInterval +
+            finishBuffer;
+
+        this.newAirstrikeZones.push({
+            pos,
+            rad,
+            duration,
+        });
+
+        const zone = new AirstrikeZone(
+            this.game,
+            pos,
+            rad,
+            duration,
+            planeCount,
+            timeBeforeStart,
+            airstrikeInterval,
+        );
+        this.airstrikeZones.push(zone);
+        this.game.playerBarn.addEmote(0, pos, "ping_airstrike", true);
     }
 
     addAirdrop(pos: Vec2, type?: string) {
@@ -275,6 +363,85 @@ export class PlaneBarn {
             playerId ?? 0,
         );
         this.planes.push(plane);
+    }
+}
+
+class AirstrikeZone {
+    /** time until airstrike zone is completed */
+    durationTicker = 0;
+    /** time until airstrikes can start dropping in the zone */
+    startTicker = 0;
+    /** time inbetween airstrikes */
+    airstrikeTicker = 0;
+    planesLeft: number;
+
+    pos: Vec2;
+    rad: number;
+    /** all planes for the zone fly in the same randomly chosen direction */
+    planeDir: Vec2;
+
+    airstrikeInterval: number;
+
+    constructor(
+        public game: Game,
+        pos: Vec2,
+        rad: number,
+        duration: number,
+        planeCount: number,
+        timeBeforeStart: number,
+        airstrikeInterval: number,
+    ) {
+        this.pos = pos;
+        this.rad = rad;
+        this.durationTicker = duration;
+        this.planesLeft = planeCount;
+        this.startTicker = timeBeforeStart;
+        this.airstrikeInterval = airstrikeInterval;
+        this.planeDir = v2.randomUnit();
+    }
+
+    /**
+     * gets a random point inside the quarter sector opposite to the zone's planes' direction
+     */
+    getRandomPlanePos(): Vec2 {
+        const invertedDir = v2.neg(this.planeDir);
+        const randomDirInSector = v2.rotate(
+            invertedDir,
+            util.random(-Math.PI / 4, Math.PI / 4),
+        );
+        return v2.add(this.pos, v2.mul(randomDirInSector, util.random(0, this.rad)));
+    }
+
+    update(dt: number) {
+        this.durationTicker -= dt;
+
+        if (this.startTicker > 0) {
+            this.startTicker -= dt;
+
+            if (this.startTicker <= 0) {
+                const planePos = this.getRandomPlanePos();
+                this.game.planeBarn.addAirStrike(planePos, this.planeDir);
+                this.airstrikeTicker = this.airstrikeInterval;
+                this.planesLeft--;
+            }
+        }
+
+        //can't drop airstrikes until start ticker is finished
+        if (this.startTicker > 0) return;
+
+        //no more airstrikes left
+        if (this.planesLeft <= 0) return;
+
+        if (this.airstrikeTicker > 0) {
+            this.airstrikeTicker -= dt;
+
+            if (this.airstrikeTicker <= 0) {
+                const planePos = this.getRandomPlanePos();
+                this.game.planeBarn.addAirStrike(planePos, this.planeDir);
+                this.airstrikeTicker = this.airstrikeInterval;
+                this.planesLeft--;
+            }
+        }
     }
 }
 

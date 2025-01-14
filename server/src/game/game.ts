@@ -189,6 +189,7 @@ export class Game {
         // reset stuff
         //
         this.playerBarn.flush();
+        this.planeBarn.flush();
         this.bulletBarn.flush();
         this.airdropBarn.flush();
         this.objectRegister.flush();

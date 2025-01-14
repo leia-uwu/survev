@@ -1870,6 +1870,12 @@ export class Player extends BaseGameObject {
             }
         }
 
+        const newAirstrikeZones = this.game.planeBarn.newAirstrikeZones;
+        for (let i = 0; i < newAirstrikeZones.length; i++) {
+            const zone = newAirstrikeZones[i];
+            updateMsg.airstrikeZones.push(zone);
+        }
+
         if (playerBarn.killLeaderDirty || this._firstUpdate) {
             updateMsg.killLeaderDirty = true;
             updateMsg.killLeaderId = playerBarn.killLeader?.__id ?? 0;
