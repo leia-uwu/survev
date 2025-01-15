@@ -187,7 +187,9 @@ export class PlayerBarn {
 
                 const fullAliveContext = this.game.modeManager.getAlivePlayersContext();
                 for (let i = 0; i < fullAliveContext.length; i++) {
-                    const promotablePlayers = fullAliveContext[i].filter((p) => !p.role);
+                    const promotablePlayers = fullAliveContext[i].filter(
+                        (p) => !p.disconnected && !p.downed && !p.role,
+                    );
                     if (promotablePlayers.length == 0) continue;
 
                     const randomPlayer =
