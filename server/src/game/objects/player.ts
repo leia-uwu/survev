@@ -687,6 +687,11 @@ export class Player extends BaseGameObject {
     promoteToRole(role: string) {
         if (!GameObjectDefs[role]) return;
 
+        if (this.role == "medic") {
+            const index = this.game.playerBarn.medics.indexOf(this);
+            if (index != -1) this.game.playerBarn.medics.splice(index, 1);
+        }
+
         if (role === "kill_leader") {
             this.handleKillLeaderRole();
         } else {
