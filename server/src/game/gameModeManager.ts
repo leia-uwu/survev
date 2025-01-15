@@ -373,10 +373,13 @@ export class GameModeManager {
                         return;
                     }
 
+                    const teamHasSelfRevive = team.livingPlayers.find((p) =>
+                        p.hasPerk("self_revive"),
+                    );
                     const allDead = team.checkAllDead(player);
                     const allDowned = team.checkAllDowned(player);
 
-                    if (allDead || allDowned) {
+                    if (!teamHasSelfRevive && (allDead || allDowned)) {
                         player.kill(params);
                         if (allDowned) {
                             team.killAllTeammates();
