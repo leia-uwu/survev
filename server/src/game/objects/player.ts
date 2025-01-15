@@ -2076,6 +2076,19 @@ export class Player extends BaseGameObject {
         }
     }
 
+    checkAndApplyLastMan() {
+        const playersToPromote = this.team!.livingPlayers.filter(
+            (p) => !p.downed && !p.disconnected,
+        );
+        if (playersToPromote.length <= 2) {
+            const last1 = playersToPromote[0];
+            const last2 = playersToPromote[1];
+
+            if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
+            if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
+        }
+    }
+
     downedBy: Player | undefined;
     /** downs a player */
     down(params: DamageParams): void {
@@ -2110,22 +2123,9 @@ export class Player extends BaseGameObject {
 
         this.game.broadcastMsg(net.MsgType.Kill, downedMsg);
 
-        // in duos/squads 50v50, lone survivr is given on knock
-        if (
-            this.game.map.factionMode &&
-            this.game.isTeamMode &&
-            this.team!.livingPlayers.length <= 2
-        ) {
-            const last1 = this.team!.livingPlayers[0];
-            const last2 = this.team!.livingPlayers[1];
-
-            if (last1 && last1.role != "last_man" && !last1.downed) {
-                last1.promoteToRole("last_man");
-            }
-
-            if (last2 && last2.role != "last_man" && !last2.downed) {
-                last2.promoteToRole("last_man");
-            }
+        // lone survivr can be given on knock or kill
+        if (this.game.map.factionMode) {
+            this.checkAndApplyLastMan();
         }
     }
 
@@ -2222,22 +2222,9 @@ export class Player extends BaseGameObject {
             }
         }
 
-        // in solos 50v50, lone survivr is given on kill
-        if (
-            this.game.map.factionMode &&
-            !this.game.isTeamMode &&
-            this.team!.livingPlayers.length <= 2
-        ) {
-            const last1 = this.team!.livingPlayers[0];
-            const last2 = this.team!.livingPlayers[1];
-
-            if (last1 && last1.role != "last_man") {
-                last1.promoteToRole("last_man");
-            }
-
-            if (last2 && last2.role != "last_man") {
-                last2.promoteToRole("last_man");
-            }
+        // lone survivr can be given on knock or kill
+        if (this.game.map.factionMode) {
+            this.checkAndApplyLastMan();
         }
 
         this.game.broadcastMsg(net.MsgType.Kill, killMsg);
