@@ -1003,7 +1003,20 @@ export class GameMap {
         while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
             collided = false;
 
-            const side = util.randomInt(0, 3);
+            let side: number;
+            if (this.factionMode && "teamId" in def && def.teamId) {
+                //this formula does the same thing but isn't readable: ((this.factionModeSplitOri ^ 1) + 2) - ((def.teamId - 1) * 2);
+                switch (this.factionModeSplitOri) {
+                    case 0:
+                        side = def.teamId == 1 ? 3 : 1; //3 is bottom for red team and 1 is top for blue team
+                        break;
+                    case 1:
+                        side = def.teamId == 1 ? 2 : 0; //2 is left for red team and 0 is right for blue team
+                        break;
+                }
+            } else {
+                side = util.randomInt(0, 3);
+            }
 
             const rot = math.oriToRad(side);
 
@@ -1072,16 +1085,13 @@ export class GameMap {
                     "house_red_01",
                     "house_red_02",
                     "barn_01",
-                    "bank_01",
-                    "police_01",
-                    "mansion_structure_01",
-                    "warehouse_complex_01",
                 ];
 
                 let teamId: number;
-                //spawns obstacles that need to be on a specific team's side on their respective side
+                //spawns obstacles/buildings/structures that need to be on a specific team's side on their respective side
                 //for example, "crate_22" only spawns on blue's side and "crate_02f" only spawns on red's side
-                if (def.type == "obstacle" && def.teamId) {
+                //bank and mansion spawn on red's side, police and docks spawn on blue's side
+                if ("teamId" in def && def.teamId) {
                     teamId = def.teamId;
                 } else if (edgeObjects.includes(type)) {
                     teamId = util.randomInt(1, 2);

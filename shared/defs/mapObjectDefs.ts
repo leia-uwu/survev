@@ -13947,6 +13947,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 ori: 2,
             },
         ],
+        teamId: 2,
     },
     logging_complex_01: createLoggingComplex({}),
     logging_complex_01sp: createLoggingComplex({
@@ -17057,7 +17058,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         extents: v2.create(0.5, 4),
         img: wallImg("map-wall-08-rounded.img", 7951934),
     }),
-    bank_01: createBank({}),
+    bank_01: createBank({ teamId: 1 }),
     bank_01b: createBank({ vault: "vault_01b" }),
     bank_01x: createBank({
         ceiling: {
@@ -17177,7 +17178,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         extents: v2.create(0.5, 5),
         img: wallImg("map-wall-10-rounded.img", 1777447),
     }),
-    police_01: createPoliceStation({}),
+    police_01: createPoliceStation({ teamId: 2 }),
     police_01x: createPoliceStation({
         ceiling: {
             imgs: [
@@ -17779,6 +17780,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             collider.createAabbExtents(v2.create(10, -0.1), v2.create(15, 10.1)),
             collider.createAabbExtents(v2.create(17.5, 13.5), v2.create(7.49, 3.49)),
         ],
+        teamId: 1,
     },
     mansion_structure_02: {
         type: "structure",
