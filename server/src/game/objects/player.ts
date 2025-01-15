@@ -1973,7 +1973,8 @@ export class Player extends BaseGameObject {
             }
             if (
                 this.game.map.factionMode &&
-                (params.source as Player).teamId === this.teamId
+                (params.source as Player).teamId === this.teamId &&
+                !this.disconnected
             ) {
                 return;
             }
