@@ -281,9 +281,9 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet03_marksman",
             chest: "chest03",
-            scope: "4xscope",
+            scope: "8xscope",
             inventory: {
-                "4xscope": 1,
+                "8xscope": 1,
             },
         }),
     },
