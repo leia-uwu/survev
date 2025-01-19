@@ -173,6 +173,8 @@ export class PlayerBarn {
         }
 
         // doing this after updates ensures that gameover msgs sent are always accurate
+        // if this was done in netsync, players could die while waiting for the next netsync call
+        // then the gameover msgs would be inaccurate since theyre based on the current alive count
         for (let i = 0; i < this.killedPlayers.length; i++) {
             this.killedPlayers[i].addGameOverMsg();
         }
@@ -2055,23 +2057,20 @@ export class Player extends BaseGameObject {
      * adds gameover message to "this.msgsToSend" for the player and all their spectators
      */
     addGameOverMsg(winningTeamId: number = 0): void {
-        const targetPlayer = this.spectating ?? this;
         const aliveCount = this.game.modeManager.aliveCount();
 
-        if (this.game.modeManager.showStatsMsg(targetPlayer)) {
+        if (this.game.modeManager.showStatsMsg(this)) {
             const statsMsg = new net.PlayerStatsMsg();
-            statsMsg.playerStats = targetPlayer;
+            statsMsg.playerStats = this;
             this.msgsToSend.push({ type: net.MsgType.PlayerStats, msg: statsMsg });
         } else {
             const gameOverMsg = new net.GameOverMsg();
 
-            const statsArr: net.PlayerStatsMsg["playerStats"][] = this.group
-                ? this.group.players
-                : [targetPlayer];
+            const statsArr: net.PlayerStatsMsg["playerStats"][] =
+                this.game.modeManager.getGameoverPlayers(this);
             gameOverMsg.playerStats = statsArr;
-            gameOverMsg.teamRank =
-                winningTeamId == targetPlayer.teamId ? 1 : aliveCount + 1; // gameover msg sent after alive count updated
-            gameOverMsg.teamId = targetPlayer.teamId;
+            gameOverMsg.teamRank = winningTeamId == this.teamId ? 1 : aliveCount + 1; // gameover msg sent after alive count updated
+            gameOverMsg.teamId = this.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
             gameOverMsg.gameOver = !!winningTeamId;
             this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });

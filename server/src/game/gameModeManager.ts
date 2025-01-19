@@ -1,3 +1,4 @@
+import { TeamColor } from "../../../shared/defs/maps/factionDefs";
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import type { PlayerStatus } from "../../../shared/net/updateMsg";
@@ -222,12 +223,32 @@ export class GameModeManager {
             case GameMode.Team:
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
             case GameMode.Faction:
-                if (!this.game.isTeamMode) {
-                    // stats msg can only show in solos if it's also faction mode
-                    return this.aliveCount() > 1;
-                }
+                return this.aliveCount() > 1;
+        }
+    }
 
-                return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
+    getGameoverPlayers(player: Player): Player[] {
+        switch (this.mode) {
+            case GameMode.Solo:
+                return [player];
+            case GameMode.Team:
+                return player.group!.players;
+            case GameMode.Faction:
+                const redLeader = this.game.playerBarn.teams[
+                    TeamColor.Red - 1
+                ].players.find((p) => p.role == "leader");
+                const blueLeader = this.game.playerBarn.teams[
+                    TeamColor.Blue - 1
+                ].players.find((p) => p.role == "leader");
+                const highestKiller = this.game.playerBarn.players.reduce(
+                    (highestKiller, p) =>
+                        highestKiller.kills > p.kills ? highestKiller : p,
+                );
+
+                //if game ends before leaders are promoted, just show the player by himself
+                return !redLeader || !blueLeader
+                    ? [player]
+                    : [player, redLeader, blueLeader, highestKiller];
         }
     }
 
