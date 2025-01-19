@@ -3628,7 +3628,7 @@ export class Player extends BaseGameObject {
 
         const affectedPlayers = this.game.modeManager.getNearbyAlivePlayersContext(
             this,
-            60,
+            30,
         );
 
         for (const player of affectedPlayers) {
