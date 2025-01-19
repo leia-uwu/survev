@@ -131,13 +131,4 @@ export class Group {
             currentPlayerIndex == 0 ? alivePlayers.length - 1 : currentPlayerIndex - 1;
         return alivePlayers[newIndex];
     }
-
-    addGameOverMsg(winningTeamId: number = -1) {
-        for (const p of this.players) {
-            p.addGameOverMsg(winningTeamId);
-            for (const spectator of p.spectators) {
-                spectator.addGameOverMsg(winningTeamId);
-            }
-        }
-    }
 }
