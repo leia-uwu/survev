@@ -2191,7 +2191,7 @@ export class Player extends BaseGameObject {
         if (params.source instanceof Player) {
             const source = params.source;
             this.killedBy = source;
-            if (source !== this && source.groupId !== this.groupId) {
+            if (source !== this && source.teamId !== this.teamId) {
                 source.kills++;
 
                 if (source.isKillLeader) {
