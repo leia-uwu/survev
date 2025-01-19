@@ -69,6 +69,7 @@ export class PlayerBarn {
     killLeader?: Player;
 
     medics: Player[] = [];
+    isLastManApplied = false;
 
     scheduledRoles: Array<{
         role: string;
@@ -2088,13 +2089,19 @@ export class Player extends BaseGameObject {
         const playersToPromote = this.team!.livingPlayers.filter(
             (p) => !p.downed && !p.disconnected,
         );
-        if (playersToPromote.length <= 2) {
-            const last1 = playersToPromote[0];
-            const last2 = playersToPromote[1];
 
-            if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
-            if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
-        }
+        if (
+            this.game.playerBarn.isLastManApplied ||
+            playersToPromote.length > 2 ||
+            this.game.canJoin
+        )
+            return;
+
+        const last1 = playersToPromote[0];
+        const last2 = playersToPromote[1];
+        if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
+        if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
+        this.game.playerBarn.isLastManApplied = true;
     }
 
     downedBy: Player | undefined;
