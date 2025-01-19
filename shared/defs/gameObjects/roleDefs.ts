@@ -244,6 +244,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             scope: "4xscope",
             inventory: {
                 "4xscope": 1,
+                bandage: 30,
                 healthkit: 4,
                 painkiller: 4,
                 soda: 15,
