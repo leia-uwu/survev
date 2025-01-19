@@ -180,14 +180,8 @@ export class GameModeManager {
             );
     }
 
-    /**
-     * by default, true if the current context mode supports reviving
-     *
-     * always true regardless of context mode with self revive
-     * @param playerReviving player that initializes the revive action
-     */
-    canRevive(playerReviving: Player): boolean {
-        return playerReviving.hasPerk("self_revive") || !this.isSolo;
+    isReviveSupported(): boolean {
+        return !this.isSolo;
     }
 
     isReviving(player: Player): boolean {

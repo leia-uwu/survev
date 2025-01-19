@@ -2424,13 +2424,9 @@ export class Player extends BaseGameObject {
 
     /** returns player to revive if can revive */
     getPlayerToRevive(): Player | undefined {
-        if (this.actionType != GameConfig.Action.None) {
-            // action in progress
-            return;
-        }
-        if (!this.game.modeManager.canRevive(this)) {
-            return;
-        }
+        if (!this.game.modeManager.isReviveSupported()) return undefined;
+        if (this.downed && !this.hasPerk("self_revive")) return undefined;
+        if (this.actionType != GameConfig.Action.None) return undefined; //action in progress already
 
         const nearbyDownedTeammates = this.game.grid
             .intersectCollider(
@@ -2441,12 +2437,8 @@ export class Player extends BaseGameObject {
                     obj.__type == ObjectType.Player &&
                     obj.teamId == this.teamId &&
                     obj.downed &&
-                    // if player is doing a revive action but they're not reviving anyone, it means they're the one being revived
-                    // we need to remove teammates already being revived since a player can only be revived by one person at a time
-                    !(
-                        obj.actionType == GameConfig.Action.Revive &&
-                        obj.playerBeingRevived == undefined
-                    ),
+                    //can't revive someone already being revived or self reviving (medic)
+                    obj.actionType != GameConfig.Action.Revive,
             );
 
         let playerToRevive: Player | undefined;
@@ -2737,10 +2729,7 @@ export class Player extends BaseGameObject {
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
                     const obstacles = this.getInteractableObstacles();
-                    const playerToRevive =
-                        this.downed && !this.hasPerk("self_revive")
-                            ? undefined
-                            : this.getPlayerToRevive();
+                    const playerToRevive = this.getPlayerToRevive();
 
                     const interactables = [
                         !this.downed && loot,
