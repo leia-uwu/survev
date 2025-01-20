@@ -294,6 +294,30 @@ export class Gas {
         }
 
         if (this.circleIdx !== circleIdxOld) {
+            if (this.game.map.factionMode && this.circleIdx == 2) {
+                const losingTeam = this.game.playerBarn.teams.reduce(
+                    (losingTeam, team) =>
+                        losingTeam.livingPlayers.length < team.livingPlayers.length
+                            ? losingTeam
+                            : team,
+                );
+                let side: 0 | 1 | 2 | 3;
+                switch (this.game.map.factionModeSplitOri) {
+                    case 0:
+                        side = losingTeam.teamId == 1 ? 3 : 1; //3 is bottom for red team and 1 is top for blue team
+                        break;
+                    case 1:
+                        side = losingTeam.teamId == 1 ? 2 : 0; //2 is left for red team and 0 is right for blue team
+                        break;
+                }
+                const rad =
+                    math.oriToRad(side) + util.random(-Math.PI / 12, Math.PI / 12);
+                const dir = math.rad2Direction(rad);
+                const offset = v2.mul(dir, this.radOld * util.random(0.75, 0.9));
+                const pos = v2.add(this.posOld, offset);
+                this.game.planeBarn.addAirdrop(pos, "airdrop_crate_04"); //golden airdrop
+            }
+
             if (this.game.map.mapDef.gameConfig.roles) {
                 this.game.playerBarn.scheduleRoleAssignments();
             }
