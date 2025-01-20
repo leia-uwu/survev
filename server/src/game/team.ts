@@ -7,6 +7,7 @@ import type { Player } from "./objects/player";
 export class Team {
     players: Player[] = [];
     livingPlayers: Player[] = [];
+    isLastManApplied = false;
 
     constructor(
         public game: Game,
@@ -63,5 +64,21 @@ export class Team {
             });
             i--; //kill() removes the player from the array so we dont want to skip players
         }
+    }
+
+    checkAndApplyLastMan() {
+        if (this.isLastManApplied) return;
+
+        const playersToPromote = this.livingPlayers.filter(
+            (p) => !p.downed && !p.disconnected,
+        );
+
+        if (playersToPromote.length > 2 || this.game.canJoin) return;
+
+        const last1 = playersToPromote[0];
+        const last2 = playersToPromote[1];
+        if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
+        if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
+        this.isLastManApplied = true;
     }
 }

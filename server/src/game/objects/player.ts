@@ -69,7 +69,6 @@ export class PlayerBarn {
     killLeader?: Player;
 
     medics: Player[] = [];
-    isLastManApplied = false;
 
     scheduledRoles: Array<{
         role: string;
@@ -2084,25 +2083,6 @@ export class Player extends BaseGameObject {
         }
     }
 
-    checkAndApplyLastMan() {
-        const playersToPromote = this.team!.livingPlayers.filter(
-            (p) => !p.downed && !p.disconnected,
-        );
-
-        if (
-            this.game.playerBarn.isLastManApplied ||
-            playersToPromote.length > 2 ||
-            this.game.canJoin
-        )
-            return;
-
-        const last1 = playersToPromote[0];
-        const last2 = playersToPromote[1];
-        if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
-        if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
-        this.game.playerBarn.isLastManApplied = true;
-    }
-
     downedBy: Player | undefined;
     /** downs a player */
     down(params: DamageParams): void {
@@ -2139,7 +2119,7 @@ export class Player extends BaseGameObject {
 
         // lone survivr can be given on knock or kill
         if (this.game.map.factionMode) {
-            this.checkAndApplyLastMan();
+            this.team!.checkAndApplyLastMan();
         }
     }
 
@@ -2238,7 +2218,7 @@ export class Player extends BaseGameObject {
 
         // lone survivr can be given on knock or kill
         if (this.game.map.factionMode) {
-            this.checkAndApplyLastMan();
+            this.team!.checkAndApplyLastMan();
         }
 
         this.game.broadcastMsg(net.MsgType.Kill, killMsg);
