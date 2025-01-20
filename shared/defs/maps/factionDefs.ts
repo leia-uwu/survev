@@ -346,6 +346,14 @@ const mapDef = {
                 weight: 1,
             },
         ],
+        tier_faction_outfits: [
+            { name: "outfitVerde", count: 1, weight: 1 },
+            { name: "outfitWoodland", count: 1, weight: 1 },
+            { name: "outfitKeyLime", count: 1, weight: 1 },
+            { name: "outfitCamo", count: 1, weight: 1 },
+        ],
+        tier_airdrop_faction_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
+        tier_airdrop_faction_melee: [{ name: "pan", count: 1, weight: 1 }],
     },
     mapGen: {
         map: {
