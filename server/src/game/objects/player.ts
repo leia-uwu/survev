@@ -3715,7 +3715,7 @@ export class Player extends BaseGameObject {
             this.speed *= 0.5;
         }
 
-        this.speed = math.clamp(this.speed, 0, 10000);
+        this.speed = math.clamp(this.speed, 1, 10000);
     }
 
     sendMsg(type: number, msg: net.AbstractMsg, bytes = 128): void {
