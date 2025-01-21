@@ -647,6 +647,8 @@ export class Player extends BaseGameObject {
     downed = false;
 
     downedCount = 0;
+    /** players have a buffer where they can't take damage immediately after being downed */
+    downedDamageTicker = 0;
     bleedTicker = 0;
     playerBeingRevived: Player | undefined;
 
@@ -1121,6 +1123,14 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.downedDamageTicker > 0) {
+            this.downedDamageTicker -= dt;
+
+            if (this.downedDamageTicker <= 0) {
+                this.downedDamageTicker = 0;
+            }
+        }
+
         // Take bleeding damage
         this.bleedTicker -= dt;
         if (
@@ -1210,6 +1220,7 @@ export class Player extends BaseGameObject {
                     this.applyActionFunc((target: Player) => {
                         if (!target.downed) return;
                         target.downed = false;
+                        target.downedDamageTicker = 0;
                         target.health = GameConfig.player.reviveHealth;
                         if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
@@ -1964,6 +1975,7 @@ export class Player extends BaseGameObject {
     damage(params: DamageParams) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
+        if (this.downed && this.downedDamageTicker > 0) return;
 
         const sourceIsPlayer = params.source?.__type === ObjectType.Player;
 
@@ -2088,6 +2100,7 @@ export class Player extends BaseGameObject {
     down(params: DamageParams): void {
         this.downed = true;
         this.downedCount++;
+        this.downedDamageTicker = GameConfig.player.downedDamageBuffer;
         this.boost = 0;
         this.health = 100;
         this.animType = GameConfig.Anim.None;

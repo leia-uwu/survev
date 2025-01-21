@@ -149,6 +149,7 @@ export const GameConfig = {
         bleedTickRate: 1,
         downedMoveSpeed: 4,
         downedRezMoveSpeed: 2,
+        downedDamageBuffer: 1, //time buffer after being downed where a player can't take damage
         keepZoomWhileDowned: false,
         reviveDuration: 8,
         reviveRange: 5,
