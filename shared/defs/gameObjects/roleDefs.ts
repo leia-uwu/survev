@@ -366,7 +366,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             "splinter",
             () =>
                 util.weightedRandom([
-                    { type: "takedown", weight: 1 },
+                    { type: "takedown", weight: 4.5 },
                     { type: "windwalk", weight: 1 },
                     { type: "field_medic", weight: 1 },
                 ]).type,

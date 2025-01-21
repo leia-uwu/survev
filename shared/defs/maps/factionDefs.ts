@@ -197,25 +197,45 @@ const mapDef = {
                     wait: 50,
                 },
                 {
-                    role: () =>
-                        util.weightedRandom([
-                            { type: "lieutenant", weight: 1 },
-                            { type: "marksman", weight: 1 },
-                            { type: "recon", weight: 1 },
-                            { type: "grenadier", weight: 1 },
-                        ]).type,
+                    role: "lieutenant",
                     circleIdx: 0,
                     wait: 54,
                 },
                 {
-                    role: "medic",
+                    role: "marksman",
                     circleIdx: 0,
                     wait: 58,
                 },
                 {
-                    role: "bugler",
+                    role: "recon",
                     circleIdx: 0,
                     wait: 62,
+                },
+                {
+                    role: "grenadier",
+                    circleIdx: 0,
+                    wait: 66,
+                },
+                // {
+                //     role: () =>
+                //         util.weightedRandom([
+                //             { type: "lieutenant", weight: 1 },
+                //             { type: "marksman", weight: 1 },
+                //             { type: "recon", weight: 1 },
+                //             { type: "grenadier", weight: 1 },
+                //         ]).type,
+                //     circleIdx: 0,
+                //     wait: 54,
+                // },
+                {
+                    role: "medic",
+                    circleIdx: 0,
+                    wait: 70,
+                },
+                {
+                    role: "bugler",
+                    circleIdx: 0,
+                    wait: 74,
                 },
             ],
         },
@@ -394,7 +414,7 @@ const mapDef = {
                 stone_01: 350,
                 barrel_01: 76,
                 silo_01: 8,
-                crate_01: 38,
+                crate_01: 55,
                 crate_02f: 5,
                 crate_22: 5,
                 crate_03: 8,
