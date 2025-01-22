@@ -647,7 +647,10 @@ export class Player extends BaseGameObject {
     downed = false;
 
     downedCount = 0;
-    /** players have a buffer where they can't take damage immediately after being downed */
+    /**
+     * players have a buffer where they can't take damage immediately after being downed
+     * this is mostly so players dont get knocked AND killed by the same airstrike
+     */
     downedDamageTicker = 0;
     bleedTicker = 0;
     playerBeingRevived: Player | undefined;
