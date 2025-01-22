@@ -741,6 +741,9 @@ export class Player extends BaseGameObject {
             case "bugler":
                 break;
             case "leader":
+                if (this.game.map.factionMode && !this.team!.leader) {
+                    this.team!.leader = this;
+                }
                 break;
             case "lieutenant":
                 break;

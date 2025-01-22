@@ -228,12 +228,8 @@ export class GameModeManager {
             case GameMode.Team:
                 return player.group!.players;
             case GameMode.Faction:
-                const redLeader = this.game.playerBarn.teams[
-                    TeamColor.Red - 1
-                ].players.find((p) => p.role == "leader");
-                const blueLeader = this.game.playerBarn.teams[
-                    TeamColor.Blue - 1
-                ].players.find((p) => p.role == "leader");
+                const redLeader = this.game.playerBarn.teams[TeamColor.Red - 1].leader;
+                const blueLeader = this.game.playerBarn.teams[TeamColor.Blue - 1].leader;
                 const highestKiller = this.game.playerBarn.players.reduce(
                     (highestKiller, p) =>
                         highestKiller.kills > p.kills ? highestKiller : p,
