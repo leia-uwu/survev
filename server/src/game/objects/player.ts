@@ -764,9 +764,19 @@ export class Player extends BaseGameObject {
             // for non faction modes where teamId > 2, just cycles between blue and red teamId
             const clampedTeamId = ((this.teamId - 1) % 2) + 1;
 
-            // inventory
+            // inventory and scope
             for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
                 if (value == 0) continue; // prevents overwriting existing inventory
+
+                //only sets scope if scope in inventory is higher than current scope
+                const invDef = GameObjectDefs[key];
+                if (
+                    invDef.type == "scope" &&
+                    invDef.level > (GameObjectDefs[this.scope] as ScopeDef).level
+                ) {
+                    this.scope = key;
+                }
+
                 this.inventory[key] = value;
             }
 
@@ -780,7 +790,6 @@ export class Player extends BaseGameObject {
             }
 
             // armor
-            this.scope = def.defaultItems.scope;
             if (this.helmet && !this.hasRoleHelmet)
                 this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
             this.helmet =

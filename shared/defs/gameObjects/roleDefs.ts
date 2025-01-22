@@ -39,7 +39,6 @@ type DefaultItems = {
     helmet: string | ((teamcolor: TeamColor) => string);
     chest: string;
     outfit: string | ((teamcolor: TeamColor) => string);
-    scope: string;
     inventory: {
         "9mm": number;
         "762mm": number;
@@ -112,7 +111,6 @@ function createDefaultItems<T extends DefaultItems>(e: DeepPartial<T>): T {
         helmet: "",
         chest: "",
         outfit: "",
-        scope: "1xscope",
         // perks: [] as Array<{ type: string; droppable?: boolean }>,
         inventory: {
             "9mm": 0,
@@ -186,7 +184,6 @@ export const RoleDefs: Record<string, RoleDef> = {
                     [TeamColor.Red]: "outfitRedLeader",
                     [TeamColor.Blue]: "outfitBlueLeader",
                 })[teamcolor],
-            scope: "8xscope",
             inventory: {
                 "8xscope": 1,
             },
@@ -215,7 +212,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet03_lt",
             chest: "chest03",
-            scope: "4xscope",
             inventory: {
                 "4xscope": 1,
             },
@@ -241,7 +237,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet04_medic",
             chest: "chest03",
-            scope: "4xscope",
             inventory: {
                 "4xscope": 1,
                 bandage: 30,
@@ -281,7 +276,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet03_marksman",
             chest: "chest03",
-            scope: "8xscope",
             inventory: {
                 "8xscope": 1,
             },
@@ -303,7 +297,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet03_recon",
             chest: "chest03",
-            scope: "4xscope",
             inventory: {
                 "4xscope": 1,
                 soda: 6,
@@ -326,7 +319,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet03_grenadier",
             chest: "chest03",
-            scope: "4xscope",
             inventory: {
                 mirv: 8,
                 frag: 12,
@@ -350,7 +342,6 @@ export const RoleDefs: Record<string, RoleDef> = {
             backpack: "backpack03",
             helmet: "helmet03_bugler",
             chest: "chest03",
-            scope: "4xscope",
             inventory: {
                 "4xscope": 1,
             },
@@ -401,7 +392,6 @@ export const RoleDefs: Record<string, RoleDef> = {
                     teamcolor,
                 ),
             chest: "chest04",
-            scope: "8xscope",
             inventory: {
                 mirv: 8,
                 "8xscope": 1,
