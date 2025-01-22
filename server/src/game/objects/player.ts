@@ -3158,12 +3158,17 @@ export class Player extends BaseGameObject {
                         }
                     }
 
+                    //can only reload on pickup if gun empty OR if reload was already in progress
                     if (
                         newGunIdx === this.curWeapIdx &&
-                        this.weapons[newGunIdx].ammo <= 0
+                        (this.weapons[newGunIdx].ammo <= 0 ||
+                            this.actionType == GameConfig.Action.Reload)
                     ) {
                         this.cancelAction();
-                        this.weaponManager.scheduleReload(def.switchDelay);
+
+                        const switchDelay = (GameObjectDefs[gunType] as GunDef)
+                            .switchDelay;
+                        this.weaponManager.scheduleReload(switchDelay);
                     }
 
                     // always select primary slot if melee is selected
