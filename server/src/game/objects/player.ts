@@ -1237,6 +1237,12 @@ export class Player extends BaseGameObject {
                         target.downed = false;
                         target.downedDamageTicker = 0;
                         target.health = GameConfig.player.reviveHealth;
+
+                        // checks 2 conditions in one, player has pan AND has it selected
+                        if (target.weapons[target.curWeapIdx].type === "pan") {
+                            target.wearingPan = false;
+                        }
+
                         if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
                         target.setGroupStatuses();
@@ -2126,6 +2132,10 @@ export class Player extends BaseGameObject {
         this.cancelAction();
 
         this.weaponManager.throwThrowable();
+
+        if (this.weapons[GameConfig.WeaponSlot.Melee].type === "pan") {
+            this.wearingPan = true;
+        }
 
         //
         // Send downed msg
