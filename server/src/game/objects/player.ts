@@ -2254,9 +2254,14 @@ export class Player extends BaseGameObject {
             }
         }
 
-        // lone survivr can be given on knock or kill
         if (this.game.map.factionMode) {
+            // lone survivr can be given on knock or kill
             this.team!.checkAndApplyLastMan();
+
+            //golden airdrops depend on alive counts, so we only do this logic on kill
+            if (this.game.planeBarn.canDropSpecialAirdrop()) {
+                this.game.planeBarn.addSpecialAirdrop();
+            }
         }
 
         this.game.broadcastMsg(net.MsgType.Kill, killMsg);

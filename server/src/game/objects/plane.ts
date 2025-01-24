@@ -3,6 +3,7 @@ import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwable
 import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
+import { SpecialAirdropConfig } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type Collider, coldet } from "../../../../shared/utils/coldet";
@@ -48,6 +49,11 @@ export class PlaneBarn {
         duration: number;
     }[] = [];
     airstrikeZones: AirstrikeZone[] = [];
+
+    specialAirdrop = {
+        canDrop: false,
+        dropped: false,
+    };
 
     constructor(readonly game: Game) {}
     update(dt: number) {
@@ -177,6 +183,63 @@ export class PlaneBarn {
         );
         this.airstrikeZones.push(zone);
         this.game.playerBarn.addEmote(0, pos, "ping_airstrike", true);
+    }
+
+    canDropSpecialAirdrop(): boolean {
+        if (this.specialAirdrop.dropped || !this.specialAirdrop.canDrop) return false;
+
+        const red = this.game.playerBarn.teams[0];
+        const blue = this.game.playerBarn.teams[1];
+
+        const redAliveCount = red.livingPlayers.length;
+        const blueAliveCount = blue.livingPlayers.length;
+
+        const maxAliveCount = Math.max(redAliveCount, blueAliveCount);
+        const minAliveCount = Math.min(redAliveCount, blueAliveCount);
+
+        const threshold =
+            (maxAliveCount - minAliveCount) /
+            Math.max(red.highestAliveCount, blue.highestAliveCount);
+        return threshold >= SpecialAirdropConfig.aliveCountThreshold;
+    }
+
+    addSpecialAirdrop(): void {
+        const losingTeam = this.game.playerBarn.teams.reduce((losingTeam, team) =>
+            losingTeam.livingPlayers.length < team.livingPlayers.length
+                ? losingTeam
+                : team,
+        );
+        const winningTeam = this.game.playerBarn.teams.reduce((winningTeam, team) =>
+            winningTeam.livingPlayers.length > team.livingPlayers.length
+                ? winningTeam
+                : team,
+        );
+
+        const winningTeamMean = v2.create(0, 0);
+        for (let i = 0; i < winningTeam.livingPlayers.length; i++) {
+            const player = winningTeam.livingPlayers[i];
+            if (player.disconnected) continue;
+            winningTeamMean.x += player.pos.x;
+            winningTeamMean.y += player.pos.y;
+        }
+
+        winningTeamMean.x /= winningTeam.livingPlayers.length;
+        winningTeamMean.y /= winningTeam.livingPlayers.length;
+
+        const furthestLosingTeamPlayer = losingTeam.livingPlayers
+            .filter((p) => !p.disconnected && !this.game.gas.isInGas(p.pos))
+            .reduce((furthest, current) => {
+                return v2.distance(winningTeamMean, furthest.pos) >
+                    v2.distance(winningTeamMean, current.pos)
+                    ? furthest
+                    : current;
+            });
+
+        const pos = v2.add(furthestLosingTeamPlayer.pos, v2.mul(v2.randomUnit(), 5));
+        this.game.planeBarn.addAirdrop(pos, "airdrop_crate_04"); //golden airdrop
+
+        this.specialAirdrop.dropped = true;
+        this.specialAirdrop.canDrop = false;
     }
 
     addAirdrop(pos: Vec2, type?: string) {

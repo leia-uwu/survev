@@ -1,3 +1,4 @@
+import { SpecialAirdropConfig } from "../../../../shared/defs/maps/factionDefs";
 import { GameConfig, GasMode } from "../../../../shared/gameConfig";
 import { math } from "../../../../shared/utils/math";
 import { util } from "../../../../shared/utils/util";
@@ -254,6 +255,53 @@ export class Gas {
         }
     }
 
+    handleSpecialAirdrop(): void {
+        const specialAirdrop = this.game.planeBarn.specialAirdrop;
+        if (!specialAirdrop) return;
+        if (specialAirdrop.dropped) return;
+
+        if (
+            !specialAirdrop.canDrop &&
+            this.circleIdx == SpecialAirdropConfig.startCircle
+        ) {
+            specialAirdrop.canDrop = true;
+        }
+
+        if (!specialAirdrop.canDrop || this.circleIdx != SpecialAirdropConfig.endCircle)
+            return;
+
+        specialAirdrop.dropped = true;
+        specialAirdrop.canDrop = false;
+
+        const red = this.game.playerBarn.teams[0];
+        const redMean = v2.create(0, 0);
+        for (let i = 0; i < red.livingPlayers.length; i++) {
+            const player = red.livingPlayers[i];
+            if (player.disconnected) continue;
+            redMean.x += player.pos.x;
+            redMean.y += player.pos.y;
+        }
+
+        redMean.x /= red.livingPlayers.length;
+        redMean.y /= red.livingPlayers.length;
+
+        const blue = this.game.playerBarn.teams[1];
+        const blueMean = v2.create(0, 0);
+        for (let i = 0; i < blue.livingPlayers.length; i++) {
+            const player = blue.livingPlayers[i];
+            if (player.disconnected) continue;
+            blueMean.x += player.pos.x;
+            blueMean.y += player.pos.y;
+        }
+
+        blueMean.x /= blue.livingPlayers.length;
+        blueMean.y /= blue.livingPlayers.length;
+
+        const r = v2.mul(v2.randomUnit(), 5);
+        const pos = v2.add(v2.midpoint(redMean, blueMean), r);
+        this.game.planeBarn.addAirdrop(pos, "airdrop_crate_04"); //golden airdrop
+    }
+
     advanceGasStage() {
         this.stage++;
         this._running = true;
@@ -294,28 +342,14 @@ export class Gas {
         }
 
         if (this.circleIdx !== circleIdxOld) {
-            if (this.game.map.factionMode && this.circleIdx == 2) {
-                const losingTeam = this.game.playerBarn.teams.reduce(
-                    (losingTeam, team) =>
-                        losingTeam.livingPlayers.length < team.livingPlayers.length
-                            ? losingTeam
-                            : team,
-                );
-                let side: 0 | 1 | 2 | 3;
-                switch (this.game.map.factionModeSplitOri) {
-                    case 0:
-                        side = losingTeam.teamId == 1 ? 3 : 1; //3 is bottom for red team and 1 is top for blue team
-                        break;
-                    case 1:
-                        side = losingTeam.teamId == 1 ? 2 : 0; //2 is left for red team and 0 is right for blue team
-                        break;
+            if (this.game.map.factionMode) {
+                if (this.circleIdx == 1) {
+                    const red = this.game.playerBarn.teams[0];
+                    const blue = this.game.playerBarn.teams[1];
+                    red.highestAliveCount = red.livingPlayers.length;
+                    blue.highestAliveCount = blue.livingPlayers.length;
                 }
-                const rad =
-                    math.oriToRad(side) + util.random(-Math.PI / 12, Math.PI / 12);
-                const dir = math.rad2Direction(rad);
-                const offset = v2.mul(dir, this.radOld * util.random(0.75, 0.9));
-                const pos = v2.add(this.posOld, offset);
-                this.game.planeBarn.addAirdrop(pos, "airdrop_crate_04"); //golden airdrop
+                this.handleSpecialAirdrop();
             }
 
             if (this.game.map.mapDef.gameConfig.roles) {

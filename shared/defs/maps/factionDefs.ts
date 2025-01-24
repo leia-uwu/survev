@@ -10,6 +10,12 @@ export enum TeamColor {
     Blue = 2,
 }
 
+export const SpecialAirdropConfig = {
+    startCircle: 1,
+    endCircle: 3,
+    aliveCountThreshold: 0.2,
+};
+
 const mapDef = {
     mapId: 3,
     desc: {
