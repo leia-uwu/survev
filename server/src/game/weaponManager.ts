@@ -162,6 +162,18 @@ export class WeaponManager {
             );
         }
 
+        //can't wear pan if you're replacing it with another melee
+        if (this.weapons[idx].type == "pan") {
+            this.player.wearingPan = false;
+            this.player.setDirty();
+        }
+
+        // pan is always "worn" if player has it and any other slot is selected
+        if (type == "pan" && this.curWeapIdx != WeaponSlot.Melee) {
+            this.player.wearingPan = true;
+            this.player.setDirty();
+        }
+
         this.weapons[idx].type = type;
         this.weapons[idx].cooldown = 0;
         this.weapons[idx].ammo = ammo;
@@ -175,12 +187,6 @@ export class WeaponManager {
 
         if (!this.activeWeapon) {
             this.setCurWeapIndex(WeaponSlot.Melee, undefined, undefined, true);
-        }
-
-        // pan is always "worn" if player has it and any other slot is selected
-        if (type == "pan" && this.curWeapIdx != WeaponSlot.Melee) {
-            this.player.wearingPan = true;
-            this.player.setDirty();
         }
 
         this.player.weapsDirty = true;
