@@ -412,6 +412,13 @@ export const Main: MapDef = {
             { name: "vector45", count: 1, weight: 1 },
             { name: "mkg45", count: 1, weight: 1 },
         ],
+        tier_cattle_crate: [
+            { name: "m1a1", count: 1, weight: 1 },
+            { name: "model94", count: 1, weight: 1 },
+            { name: "colt45", count: 1, weight: 1 },
+            { name: "outfitVerde", count: 1, weight: 0.1 },
+            { name: "outfitDesertCamo", count: 1, weight: 0.1 },
+        ],
         tier_pumpkin_perks: [{ name: "halloween_mystery", count: 1, weight: 1 }],
         tier_xp_uncommon: [
             { name: "xp_book_tallow", count: 1, weight: 1 },
