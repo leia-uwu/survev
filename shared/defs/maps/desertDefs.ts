@@ -30,6 +30,7 @@ const mapDef = {
             grass: 14657367,
             underground: 4001027,
             playerSubmerge: 5151631,
+            playerGhillie: 0xdea756, //temporary until original color is found
         },
         particles: {},
     },
