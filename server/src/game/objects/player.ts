@@ -690,6 +690,9 @@ export class Player extends BaseGameObject {
     role = "";
     isKillLeader = false;
 
+    /** for the perk fabricate, fills inventory with frags every 12 seconds */
+    fabricateTicker = 0;
+
     // "Gabby Ghost" perk random emojis
     chattyTicker = 0;
 
@@ -713,6 +716,21 @@ export class Player extends BaseGameObject {
         msg.assigned = true;
         msg.playerId = this.__id;
         this.game.broadcastMsg(net.MsgType.RoleAnnouncement, msg);
+    }
+
+    removeRole(): void {
+        const def = GameObjectDefs[this.role] as RoleDef;
+        if (!def) return;
+        if (!def.perks) return;
+
+        for (let i = 0; i < def.perks.length; i++) {
+            const perk = def.perks[i];
+            if (perk instanceof Function) continue; //no support for removing dynamic perks yet
+            if (!this.hasPerk(perk)) continue;
+            this.removePerk(perk);
+        }
+
+        this.role = "";
     }
 
     handleKillLeaderRole(): void {
@@ -888,7 +906,11 @@ export class Player extends BaseGameObject {
                 "m9_cursed",
                 ammo.trueMaxClip,
             );
-        } else if (type === "leadership") this.boost = 100;
+        } else if (type === "fabricate") {
+            this.fabricateTicker = PerkProperties.fabricate.refillInterval;
+        } else if (type === "leadership") {
+            this.boost = 100;
+        }
 
         this.recalculateScale();
     }
@@ -905,6 +927,8 @@ export class Player extends BaseGameObject {
             if (slot !== -1) {
                 this.weaponManager.setWeapon(slot, "", 0);
             }
+        } else if (type === "fabricate") {
+            this.fabricateTicker = 0;
         }
 
         this.recalculateScale();
@@ -1349,6 +1373,27 @@ export class Player extends BaseGameObject {
             this.playerStatusTicker += dt;
             for (const spectator of this.spectators) {
                 spectator.playerStatusTicker += dt;
+            }
+        }
+
+        //ticker can only be stopped by removing the perk
+        if (this.fabricateTicker > 0) {
+            this.fabricateTicker -= dt;
+            if (this.fabricateTicker <= 0) {
+                const backpackLevel = this.getGearLevel(this.backpack);
+                const maxFrags = GameConfig.bagSizes["frag"][backpackLevel];
+                this.inventory["frag"] = maxFrags;
+
+                if (!this.weapons[GameConfig.WeaponSlot.Throwable].type) {
+                    this.weaponManager.setWeapon(
+                        GameConfig.WeaponSlot.Throwable,
+                        "frag",
+                        0, //throwable ammo count is taken from inventory
+                    );
+                }
+                this.inventoryDirty = true;
+
+                this.fabricateTicker = PerkProperties.fabricate.refillInterval;
             }
         }
 
@@ -3211,6 +3256,7 @@ export class Player extends BaseGameObject {
                 {
                     const objLevel = this.getGearLevel(obj.type);
                     const thisType = this[def.type];
+                    const thisDef = GameObjectDefs[thisType];
                     const thisLevel = this.getGearLevel(thisType);
                     amountLeft = 1;
 
@@ -3221,16 +3267,31 @@ export class Player extends BaseGameObject {
                         lootToAdd = thisType;
                         this[def.type] = obj.type;
                         pickupMsg.type = net.PickupMsgType.Success;
+
+                        //removes roles/perks associated with the dropped role/perk helmet
+                        if (thisDef && thisDef.type == "helmet" && thisDef.perk) {
+                            this.removePerk(thisDef.perk);
+                        }
+
+                        if (thisDef && thisDef.type == "helmet" && thisDef.role) {
+                            this.removeRole();
+                        }
+
+                        //adds roles/perks associated with the picked up role/perk helmet
+                        if (def.type == "helmet" && def.role) {
+                            this.promoteToRole(def.role);
+                        }
+
+                        if (def.type == "helmet" && def.perk) {
+                            this.addPerk(def.perk);
+                        }
+
                         this.setDirty();
                     } else {
                         lootToAdd = obj.type;
                         pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     }
                     if (this.getGearLevel(lootToAdd) === 0) lootToAdd = "";
-
-                    if (def.type == "helmet" && def.role) {
-                        this.promoteToRole(def.role);
-                    }
                 }
                 break;
             case "outfit":
@@ -3379,6 +3440,16 @@ export class Player extends BaseGameObject {
         if (armorDef.type != "chest" && armorDef.type != "helmet") return false;
         if (armorDef.noDrop) return false;
         if (!this[armorDef.type]) return false;
+
+        if (armorDef.type == "helmet" && armorDef.role && this.role == armorDef.role) {
+            this.removeRole();
+            this.hasRoleHelmet = false;
+        }
+
+        if (armorDef.type == "helmet" && armorDef.perk && this.hasPerk(armorDef.perk)) {
+            this.removePerk(armorDef.perk);
+        }
+
         this.dropLoot(item, 1);
         this[armorDef.type] = "";
         this.setDirty();

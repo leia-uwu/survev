@@ -24,6 +24,12 @@ export const PerkProperties = {
     final_bugle: {
         scaleOnDeath: 0.2,
     },
+    broken_arrow: {
+        bonusAirstrikes: 2,
+    },
+    fabricate: {
+        refillInterval: 12, //means refill every x seconds
+    },
     // map of ammo type to perk that boosts that ammo
     ammoBonuses: {
         "9mm": ["treat_9mm", "bonus_9mm"],

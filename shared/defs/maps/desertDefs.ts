@@ -51,7 +51,7 @@ const mapDef = {
             ],
             crates: [
                 { name: "airdrop_crate_01", weight: 10 },
-                { name: "airdrop_crate_02", weight: 1 },
+                { name: "airdrop_crate_02de", weight: 1 },
             ],
         },
     },
@@ -187,6 +187,24 @@ const mapDef = {
         tier_airdrop_throwables: [
             { name: "strobe", count: 1, weight: 1 },
             { name: "frag", count: 3, weight: 0.1 },
+        ],
+        tier_perks: [
+            { name: "broken_arrow", count: 1, weight: 1 },
+            { name: "fabricate", count: 1, weight: 1 },
+            { name: "flak_jacket", count: 1, weight: 1 },
+            { name: "bonus_45", count: 1, weight: 1 },
+        ],
+        tier_eye_stone: [
+            { name: "vector45", count: 1, weight: 1 },
+            { name: "45acp", count: 1, weight: 1 },
+            { name: "garand", count: 1, weight: 1 },
+            { name: "strobe", count: 1, weight: 1 },
+            { name: "healthkit", count: 1, weight: 1 },
+            { name: "painkiller", count: 1, weight: 1 },
+            { name: "m4a1", count: 1, weight: 0.7 },
+            { name: "m249", count: 1, weight: 0.2 },
+            { name: "awc", count: 1, weight: 0.1 },
+            { name: "pkp", count: 1, weight: 0.1 },
         ],
     },
     mapGen: {

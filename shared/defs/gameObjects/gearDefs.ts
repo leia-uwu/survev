@@ -106,6 +106,7 @@ const ChestDefs: Record<string, ChestDef> = {
 
 export interface HelmetDef {
     name: string;
+    perk?: string;
     role?: string;
     type: "helmet";
     noDrop?: boolean;

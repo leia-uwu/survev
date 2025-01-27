@@ -677,7 +677,7 @@ export class WeaponManager {
         const shouldApplyChambered =
             this.player.hasPerk("chambered") &&
             itemDef.bulletCount === 1 &&
-            (weapon.ammo === 0 ||
+            (weapon.ammo === 0 || //ammo count already decremented
                 weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
         let damageMult = 1;
@@ -1115,9 +1115,15 @@ export class WeaponManager {
         );
 
         if (oldThrowableType == "strobe") {
+            let airstrikesLeft = 3;
+
+            if (this.player.hasPerk("broken_arrow")) {
+                airstrikesLeft += PerkProperties.broken_arrow.bonusAirstrikes;
+            }
+
             projectile.strobe = {
                 strobeTicker: 4,
-                airstrikesLeft: 3,
+                airstrikesLeft: airstrikesLeft,
                 airstrikeTicker: 0,
             };
         }
