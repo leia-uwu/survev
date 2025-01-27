@@ -50,7 +50,7 @@ export const Config = {
     client: {
         AIP_ID: undefined,
         AIP_PLACEMENT_ID: undefined,
-        theme: "faction",
+        theme: "main",
     },
 
     thisRegion: "local",
