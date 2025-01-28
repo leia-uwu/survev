@@ -3244,13 +3244,6 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case "helmet":
-                if (this.hasRoleHelmet) {
-                    amountLeft = 1;
-                    lootToAdd = obj.type;
-                    pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
-                    break;
-                }
-
             case "chest":
             case "backpack":
                 {
@@ -3259,6 +3252,17 @@ export class Player extends BaseGameObject {
                     const thisDef = GameObjectDefs[thisType];
                     const thisLevel = this.getGearLevel(thisType);
                     amountLeft = 1;
+
+                    //role helmets and perk helmets can't be dropped in favor of another helmet, they're the "highest" tier
+                    if (
+                        def.type == "helmet" &&
+                        (this.hasRoleHelmet || (thisDef && (thisDef as HelmetDef).perk))
+                    ) {
+                        amountLeft = 1;
+                        lootToAdd = obj.type;
+                        pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
+                        break;
+                    }
 
                     if (thisType === obj.type) {
                         lootToAdd = obj.type;
