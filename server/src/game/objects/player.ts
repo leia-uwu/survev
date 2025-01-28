@@ -163,6 +163,13 @@ export class PlayerBarn {
 
         this.game.updateData();
 
+        this.game.lootBarn.addLoot("m870", player.pos, player.layer, 1);
+        this.game.lootBarn.addLoot("m870", player.pos, player.layer, 1);
+        this.game.lootBarn.addLoot("deagle", player.pos, player.layer, 1);
+        this.game.lootBarn.addLoot("deagle", player.pos, player.layer, 1);
+        this.game.lootBarn.addLoot("deagle_dual", player.pos, player.layer, 1);
+        this.game.lootBarn.addLoot("mp5", player.pos, player.layer, 1);
+
         return player;
     }
 
@@ -3196,7 +3203,31 @@ export class Player extends BaseGameObject {
                         gunType = def.dualWieldType;
                     }
 
-                    this.weaponManager.replaceGun(newGunIdx, gunType);
+                    //replaces the gun
+
+                    let newAmmo = 0;
+
+                    if (oldWeapDef) {
+                        newAmmo =
+                            oldWeapDef.dualWieldType === gunType
+                                ? this.weapons[newGunIdx].ammo
+                                : 0;
+
+                        //inverted logic, there is only 1 case where the old gun should not drop
+                        //when youre holding a pistol, and you pick up the same single pistol from the ground
+                        //it should turn it into its dual pistol version and drop nothing
+                        const shouldDrop = !(
+                            (
+                                oldWeapDef.dualWieldType && //verifies it's a dual wieldable pistol
+                                this.weapons[newGunIdx].type == obj.type
+                            ) //verifies the old gun and new gun are the same
+                        );
+                        if (shouldDrop) {
+                            this.weaponManager.dropGun(newGunIdx);
+                        }
+                    }
+
+                    this.weaponManager.setWeapon(newGunIdx, gunType, newAmmo);
 
                     // if "preloaded" gun add ammo to inventory
                     if (obj.isPreloadedGun) {
