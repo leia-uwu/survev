@@ -84,6 +84,7 @@ export class GameServer {
                 res.onAborted((): void => {
                     res.aborted = true;
                 });
+
                 const ip = getIp(res, req, Config.gameServer.proxyIPHeader);
 
                 if (!ip) {

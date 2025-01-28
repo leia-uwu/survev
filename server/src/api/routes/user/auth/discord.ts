@@ -35,7 +35,7 @@ DiscordRouter.get("/", async (c) => {
     setCookie(c, stateCookieName, state, {
         path: "/",
         secure: process.env.NODE_ENV === "production",
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
     });

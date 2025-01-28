@@ -1,11 +1,10 @@
-import { sql } from "drizzle-orm";
 import { boolean, datetime, int, json, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 import { validateLoadout } from "../../../../shared/utils/helpers";
 import type {  ModeStat } from "../routes/stats/user_stats";
 import type { Item } from "../routes/user/UserRouter";
 import type { Loadout } from "../zodSchemas";
 import { TeamMode } from "../../../../shared/gameConfig";
-import { create } from "domain";
+import type { Region } from "../../config";
 
 export const sessionTable = mysqlTable("session", {
 	id: varchar("id", {
@@ -15,7 +14,10 @@ export const sessionTable = mysqlTable("session", {
 		length: 255
 	})
 		.notNull()
-		.references(() => usersTable.id),
+		.references(() => usersTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade"
+    }),
 	expiresAt: datetime("expires_at").notNull()
 });
 
@@ -48,11 +50,9 @@ export type UsersTable = typeof usersTable.$inferInsert;
 
 
 export const matchDataTable = mysqlTable('match_data', {
-  userId: varchar('user_id', { length: 255 })
-    .notNull()
-    .references(() => usersTable.id),
-  createdAt: timestamp('created_at').notNull(),
-  region: varchar('region', { length: 255 }).notNull(),
+  userId: varchar('user_id', { length: 255 }).default(""),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  region: varchar('region', { length: 255 }).notNull().$type<Region>(),
   mapId: int('map_id').notNull(),
   gameId: varchar('gameId', { length: 255 }).notNull(),
   slug: varchar('slug', { length: 255 }),

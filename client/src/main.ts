@@ -670,7 +670,6 @@ class Application {
             return;
         }
         const hosts = matchData.hosts || [];
-        console.log({ matchData });
         const urls: string[] = [];
         for (let i = 0; i < hosts.length; i++) {
             urls.push(

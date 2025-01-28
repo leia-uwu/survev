@@ -1,6 +1,8 @@
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
+import { MatchDataTable } from "../api/db/schema";
+import { saveGameInfoToDatabase } from "../api/saveGameHelpers";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import type { ServerGameConfig } from "./gameManager";
@@ -405,5 +407,11 @@ export class Game {
         }
         this.logger.log("Game Ended");
         this.updateData();
+        console.log(this.playerBarn.players.map(player => player.authId))
+        this._saveGameToDatabase()
+    }
+
+    private _saveGameToDatabase() {
+      saveGameInfoToDatabase(this, this.playerBarn.players)
     }
 }

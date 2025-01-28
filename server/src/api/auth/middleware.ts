@@ -11,7 +11,7 @@ export const AuthMiddleware = async (c: Context, next: () => Promise<void>) => {
         return c.json({}, 401);
     }
     const { session, user } = await lucia.validateSession(sessionId);
-
+    
     if (!user) {
         return c.json({}, 401);
     }
@@ -22,6 +22,7 @@ export const AuthMiddleware = async (c: Context, next: () => Promise<void>) => {
             append: true,
         });
     }
+
     if (!session) {
         c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
             append: true,

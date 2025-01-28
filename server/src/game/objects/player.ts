@@ -35,6 +35,7 @@ import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { Config } from "../../config";
+import { lucia } from "../../api/auth/lucia";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { validateUserName } from "../../utils/serverHelpers";
 import { setLoadout } from "../../utils/loadoutHelpers";
@@ -120,8 +121,8 @@ export class PlayerBarn {
             return;
         }
         joinData.availableUses -= 1;
-
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
+<<<<<<< HEAD
             const disconnectMsg = new net.DisconnectMsg();
             disconnectMsg.reason = "index-invalid-protocol";
             const stream = new net.MsgStream(new ArrayBuffer(128));
@@ -132,12 +133,32 @@ export class PlayerBarn {
                 this.game.closeSocket(socketId);
             }, 250);
             return;
+||||||| parent of 1f72f733 (more progress)
+            const disconnectMsg = new net.DisconnectMsg();
+            disconnectMsg.reason = "index-invalid-protocol";
+            const stream = new net.MsgStream(new ArrayBuffer(128));
+            stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
+            this.game.sendSocketMsg(socketId, stream.getBuffer());
+            setTimeout(() => {
+                this.game.closeSocket(socketId);
+            }, 1);
+=======
+          const disconnectMsg = new net.DisconnectMsg();
+          disconnectMsg.reason = "index-invalid-protocol";
+          const stream = new net.MsgStream(new ArrayBuffer(128));
+          stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
+          this.game.sendSocketMsg(socketId, stream.getBuffer());
+          setTimeout(() => {
+            this.game.closeSocket(socketId);
+          }, 1);
+>>>>>>> 1f72f733 (more progress)
         }
-
+        
         const result = this.getGroupAndTeam(joinData);
         const group = result?.group;
         // solo 50v50 just chooses the smallest team everytime no matter what
         const team =
+<<<<<<< HEAD
             this.game.map.factionMode && !this.game.isTeamMode
                 ? this.getSmallestTeam()
                 : result?.team;
@@ -156,58 +177,88 @@ export class PlayerBarn {
 
         const player = new Player(this.game, pos, layer, socketId, joinMsg);
 
-        this.socketIdToPlayer.set(socketId, player);
+||||||| parent of 1f72f733 (more progress)
+            this.game.map.factionMode && !this.game.isTeamMode
+                ? this.getSmallestTeam()
+                : result?.team;
 
+        const pos: Vec2 = this.game.map.getSpawnPos(group, team);
+
+        const player = new Player(this.game, pos, socketId, joinMsg);
+
+=======
+        this.game.map.factionMode && !this.game.isTeamMode
+        ? this.getSmallestTeam()
+        : result?.team;
+        
+        const pos: Vec2 = this.game.map.getSpawnPos(group, team);
+        
+        const player = new Player(this.game, pos, socketId, joinMsg);
+        
+>>>>>>> 1f72f733 (more progress)
+        this.socketIdToPlayer.set(socketId, player);
+        
         if (team && group) {
-            team.addPlayer(player);
-            group.addPlayer(player);
+          team.addPlayer(player);
+          group.addPlayer(player);
         } else if (!team && group) {
-            group.addPlayer(player);
-            player.teamId = group.groupId;
+          group.addPlayer(player);
+          player.teamId = group.groupId;
         } else if (team && !group) {
-            team.addPlayer(player);
+          team.addPlayer(player);
             player.groupId = this.groupIdAllocator.getNextId();
         } else {
-            player.groupId = this.groupIdAllocator.getNextId();
-            player.teamId = player.groupId;
+          player.groupId = this.groupIdAllocator.getNextId();
+          player.teamId = player.groupId;
         }
         if (player.game.map.factionMode) {
-            player.playerStatusDirty = true;
+          player.playerStatusDirty = true;
         }
+<<<<<<< HEAD
 
         if (!this.game.map.perkMode && group && !group.spawnLeader) {
             group.spawnLeader = player;
         }
 
-        this.game.logger.log(`Player ${player.name} joined`);
+||||||| parent of 1f72f733 (more progress)
 
+=======
+        
+>>>>>>> 1f72f733 (more progress)
+        this.game.logger.log(`Player ${player.name} joined`);
+        
         this.newPlayers.push(player);
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
         if (!this.game.modeManager.isSolo) {
-            this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
+          this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         }
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
-
+        
         if (!this.game.started) {
-            this.game.started = this.game.modeManager.isGameStarted();
-            if (this.game.started) {
-                this.game.gas.advanceGasStage();
-            }
+          this.game.started = this.game.modeManager.isGameStarted();
+          if (this.game.started) {
+            this.game.gas.advanceGasStage();
+          }
         }
 
         this.game.updateData();
-
-        return player;
-    }
-
-    update(dt: number) {
+        
+        lucia.validateSession(joinMsg.data).then((data) => {
+          if ( data?.user && data.user.id ) {
+            player.authId = data.user.id;
+          }
+        });
+        return player;  
+      }
+      
+      update(dt: number) {
         for (let i = 0; i < this.players.length; i++) {
             this.players[i].update(dt);
         }
-
+        
         // doing this after updates ensures that gameover msgs sent are always accurate
         // if this was done in netsync, players could die while waiting for the next netsync call
         // then the gameover msgs would be inaccurate since theyre based on the current alive count
@@ -595,7 +646,7 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    _disconnected = false;
+    private _disconnected = false;
 
     get disconnected(): boolean {
         return this._disconnected;
@@ -1089,6 +1140,7 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
+<<<<<<< HEAD
     constructor(
         game: Game,
         pos: Vec2,
@@ -1096,6 +1148,13 @@ export class Player extends BaseGameObject {
         socketId: string,
         joinMsg: net.JoinMsg,
     ) {
+||||||| parent of 1f72f733 (more progress)
+    constructor(game: Game, pos: Vec2, socketId: string, joinMsg: net.JoinMsg) {
+=======
+    authId = null;
+
+    constructor(game: Game, pos: Vec2, socketId: string, joinMsg: net.JoinMsg) {
+>>>>>>> 1f72f733 (more progress)
         super(game, pos);
 
         this.layer = layer;
@@ -2421,6 +2480,7 @@ export class Player extends BaseGameObject {
     }
 
     killedBy: Player | undefined;
+    killedIds: number[] = [];
 
     kill(params: DamageParams): void {
         if (this.dead) return;
@@ -2470,7 +2530,9 @@ export class Player extends BaseGameObject {
         if (params.source instanceof Player) {
             const source = params.source;
             this.killedBy = source;
+
             if (source !== this && source.teamId !== this.teamId) {
+                source.killedIds.push(this.__id);
                 source.kills++;
 
                 if (source.isKillLeader) {
@@ -2487,7 +2549,6 @@ export class Player extends BaseGameObject {
                     this.game.playerBarn.addEmote(0, this.pos, "ping_woodsking", true);
                 }
             }
-
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;

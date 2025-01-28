@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
@@ -15,6 +15,19 @@ const userStatsSchema = z.object({
     // TODO: map enum
     mapIdFilter: z.string().catch("-1"),
 });
+
+const getDurationFilter = (duration: "daily" | "weekly") => {
+  const now = new Date()
+  
+  switch(duration) {
+    case 'daily':
+      return gt(matchDataTable.createdAt, new Date(now.setDate(now.getDate() - 1)))
+    case 'weekly': 
+      return gt(matchDataTable.createdAt, new Date(now.setDate(now.getDate() - 7)))
+    default:
+      undefined
+  }
+ }
 
 UserStatsRouter.post(
     "/",
@@ -32,6 +45,7 @@ UserStatsRouter.post(
         try {
             const { interval, mapIdFilter, slug } = c.req.valid("json");
 
+            // TODO: do both queries in a join
             const result = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, slug),
             });
@@ -60,10 +74,32 @@ UserStatsRouter.post(
                 banned,
             } = result;
 
-            const matchHistory = await db.query.matchDataTable.findMany({
-                where: eq(matchDataTable.userId, id),
-            });
+            type sortingInterval = "daily" | "weekly";
+            const statsQuery = db
+            .select({
+              teamMode: matchDataTable.teamMode,
+              games: sql<number>`count(*)`,
+              wins: sql<number>`SUM(CASE WHEN \`rank\` = 1 THEN 1 ELSE 0 END)`,
+              kills: sql<number>`SUM(kills)`,
+              winPct: sql<number>`ROUND(SUM(CASE WHEN \`rank\` = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)`,
+              mostKills: sql<number>`MAX(kills)`,
+              mostDamage: sql<number>`MAX(damage_dealt)`,
+              kpg: sql<number>`ROUND(SUM(kills) * 1.0 / COUNT(*), 1)`,
+              avgDamage: sql<number>`ROUND(AVG(damage_dealt))`,
+              avgTimeAlive: sql<number>`ROUND(AVG(time_alive))`
+            })
+            .from(matchDataTable)
+            .where(
+              and(
+                eq(matchDataTable.userId, id),
+                eq(matchDataTable.mapId, Number(mapIdFilter)).if(mapIdFilter !== "-1"),
+                getDurationFilter(interval as sortingInterval)
+              )
+            ) 
+            .groupBy(matchDataTable.teamMode);
 
+            const modes = await statsQuery.execute();
+            
             return c.json<UserStatsResponse>(
                 {
                     slug: user_slug,
@@ -74,50 +110,13 @@ UserStatsRouter.post(
                     kills,
                     games,
                     kpg,
-                    modes: [
-                        {
-                            teamMode: 1,
-                            games: 1035,
-                            wins: 561,
-                            kills: 2730,
-                            winPct: 54.2,
-                            mostKills: 10,
-                            mostDamage: 1309,
-                            kpg: 2.6,
-                            avgDamage: 373,
-                            avgTimeAlive: 294,
-                        },
-                        {
-                            teamMode: 2,
-                            games: 730,
-                            wins: 312,
-                            kills: 2019,
-                            winPct: 42.7,
-                            mostKills: 13,
-                            mostDamage: 1833,
-                            kpg: 2.8,
-                            avgDamage: 475,
-                            avgTimeAlive: 251,
-                        },
-                        {
-                            teamMode: 4,
-                            games: 783,
-                            wins: 432,
-                            kills: 1871,
-                            winPct: 55.2,
-                            mostKills: 12,
-                            mostDamage: 2427,
-                            kpg: 2.4,
-                            avgDamage: 546,
-                            avgTimeAlive: 272,
-                        },
-                    ],
+                    modes,
                 },
                 200,
             );
         } catch (_err) {
             console.log({ _err });
-            return c.json({}, 400);
+            return c.json({}, 500);
         }
     },
 );

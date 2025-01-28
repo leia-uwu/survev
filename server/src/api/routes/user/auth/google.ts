@@ -37,7 +37,7 @@ GoogleRouter.get("/", async (c) => {
     setCookie(c, stateCookieName, state, {
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
     });
@@ -45,7 +45,7 @@ GoogleRouter.get("/", async (c) => {
     setCookie(c, codeVerifierCookieName, codeVerifier, {
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
     });

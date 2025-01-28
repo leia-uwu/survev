@@ -9,6 +9,11 @@ export class JoinMsg implements AbstractMsg {
     useTouch = false;
     isMobile = false;
     bot = false;
+    /*
+      cookie sent from the client
+      much easier to test this way;
+    */
+    data="";
     loadout = {
         outfit: "",
         melee: "",
@@ -22,6 +27,7 @@ export class JoinMsg implements AbstractMsg {
         this.matchPriv = s.readString();
         this.loadoutPriv = s.readString();
         this.questPriv = s.readString();
+        this.data = s.readString();
         this.name = s.readString(Constants.PlayerNameMaxLen);
         this.useTouch = s.readBoolean();
         this.isMobile = s.readBoolean();
@@ -46,6 +52,7 @@ export class JoinMsg implements AbstractMsg {
         s.writeString(this.matchPriv);
         s.writeString(this.loadoutPriv);
         s.writeString(this.questPriv);
+        s.writeString(this.data);
         s.writeString(this.name, Constants.PlayerNameMaxLen);
         s.writeBoolean(this.useTouch);
         s.writeBoolean(this.isMobile);

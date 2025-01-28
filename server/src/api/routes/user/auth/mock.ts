@@ -22,9 +22,9 @@ MockRouter.get("/", async (c) => {
         });
 
         setCookie(c, "app-data", "1");
-
+        
         if (existingUser) {
-            setUserCookie(existingUser.id, c);
+          await setUserCookie(existingUser.id, c);
             return c.redirect("/");
         }
 
@@ -37,9 +37,10 @@ MockRouter.get("/", async (c) => {
             slug: MOCK_USER_ID,
         });
 
-        setUserCookie(userId, c);
+        await setUserCookie(userId, c);
         return c.redirect("/");
     } catch (_err) {
+        console.log({ _err })
         server.logger.warn("/api/user/auth/mock: Failed to create user");
         return c.json({}, 500);
     }

@@ -2,6 +2,10 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
+import { and, eq } from "drizzle-orm";
+import { matchDataTable } from "../../db/schema";
+import { db } from "../../db";
+import { TeamMode } from "../../../../../shared/gameConfig";
 
 export const matchHistoryRouter = new Hono<Context>();
 
@@ -9,7 +13,12 @@ const matchHistorySchema = z.object({
     slug: z.string(),
     offset: z.number(),
     count: z.number(),
-    teamModeFilter: z.enum(["1", "2", "4", "7"]).catch("7"),
+    teamModeFilter: z.union([
+      z.literal(TeamMode.Solo),
+      z.literal(TeamMode.Duo),
+      z.literal(TeamMode.Squad),
+      z.literal(7)
+    ]).catch(7), 
 });
 
 matchHistoryRouter.post(
@@ -25,23 +34,37 @@ matchHistoryRouter.post(
         }
     }),
     async (c) => {
-        return c.json(
-            Array.from({ length: 10 }, (_, i) => ({
-                guid: "85d16fd3-be8f-913b-09ce-4ba5c86482aa" + Math.random(),
-                region: "na",
-                map_id: 2,
-                team_mode: 2,
-                team_count: 1,
-                team_total: 13,
-                end_time: "2021-11-06T05:01:34.000Z",
-                time_alive: 303,
-                rank: 1,
-                kills: 11,
-                team_kills: 11,
-                damage_dealt: 1264,
-                damage_taken: 227,
-            })),
-            200,
-        );
-    },
+      try {
+      const { slug, offset, teamModeFilter } = c.req.valid("json");
+
+      const result = await db.select({
+        guid: matchDataTable.gameId,
+        region: matchDataTable.region,
+        map_id: matchDataTable.mapId,
+        team_mode: matchDataTable.teamMode,
+        team_count: matchDataTable.teamTotal,
+        team_total: matchDataTable.teamTotal,
+        end_time: matchDataTable.createdAt,
+        time_alive: matchDataTable.timeAlive,
+        rank: matchDataTable.rank,
+        kills: matchDataTable.kills,
+        team_kills: matchDataTable.kills,
+        damage_dealt: matchDataTable.damageDealt,
+        damage_taken: matchDataTable.damageTaken,
+      }).from(matchDataTable)
+      .where(
+        and(
+          eq(matchDataTable.slug, slug),
+          eq(matchDataTable.teamMode, teamModeFilter as TeamMode).if(teamModeFilter != 7),
+        )
+      )
+      .offset(offset)
+      // NOTE: we ignore the count sent from the client; not safe;
+      .limit(10);
+
+      return c.json(result);
+    } catch (_err) {
+    console.log({ _err });
+    return c.json({}, 500);
+}}
 );

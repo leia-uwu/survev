@@ -111,7 +111,7 @@ export class ApiServer {
         region.lastUpdateTime = Date.now();
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    findGame(body: FindGameBody): Promise<FindGameResponse> {
         if (body.region in this.regions) {
             return this.regions[body.region].fetch<FindGameResponse>(
                 "api/find_game",

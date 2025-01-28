@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
+import { zValidator } from "@hono/zod-validator";
+import { db } from "../../db";
+import { matchDataTable } from "../../db/schema";
+import { eq } from "drizzle-orm";
 
 export const matchDataRouter = new Hono<Context>();
 
@@ -8,11 +12,49 @@ const matchDataSchema = z.object({
     gameId: z.string(),
 });
 
-matchDataRouter.post("/", (c) => {
-    return c.json<MatchData[]>(json, 200);
-});
+matchDataRouter.post(
+    "/",
+    zValidator("json", matchDataSchema, (result, c) => {
+        if (!result.success) {
+            return c.json(
+                {
+                    message: "Invalid params",
+                },
+                400,
+            );
+        }
+    }),
+    async (c) => {
+        try {
+            const { gameId } = c.req.valid("json");
 
-type MatchData = {
+            const result = await db
+                .select({
+                    slug: matchDataTable.slug,
+                    username: matchDataTable.username,
+                    player_id: matchDataTable.playerId,
+                    team_id: matchDataTable.teamId,
+                    time_alive: matchDataTable.timeAlive,
+                    rank: matchDataTable.rank,
+                    died: matchDataTable.died,
+                    kills: matchDataTable.kills,
+                    damage_dealt: matchDataTable.damageDealt,
+                    damage_taken: matchDataTable.damageTaken,
+                    killer_id: matchDataTable.killerId,
+                    killed_ids: matchDataTable.killedIds,
+                })
+                .from(matchDataTable)
+                .where(eq(matchDataTable.gameId, gameId));
+
+                return c.json<MatchData[]>(result, 200);
+        } catch (_err) {
+            console.log({ _err });
+            return c.json({}, 500);
+        }
+    },
+);
+
+export type MatchData = {
     slug: string | null;
     username: string;
     player_id: number;
