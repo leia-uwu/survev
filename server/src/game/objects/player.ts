@@ -163,13 +163,6 @@ export class PlayerBarn {
 
         this.game.updateData();
 
-        this.game.lootBarn.addLoot("m870", player.pos, player.layer, 1);
-        this.game.lootBarn.addLoot("m870", player.pos, player.layer, 1);
-        this.game.lootBarn.addLoot("deagle", player.pos, player.layer, 1);
-        this.game.lootBarn.addLoot("deagle", player.pos, player.layer, 1);
-        this.game.lootBarn.addLoot("deagle_dual", player.pos, player.layer, 1);
-        this.game.lootBarn.addLoot("mp5", player.pos, player.layer, 1);
-
         return player;
     }
 
