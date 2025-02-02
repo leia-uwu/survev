@@ -1430,12 +1430,15 @@ export class Player extends BaseGameObject {
         }
         this.moveVel = v2.mul(movement, this.speed);
 
-        let objs!: GameObject[];
-
         const speedToAdd = (this.speed / steps) * dt;
-        for (let i = 0; i < steps; i++) {
-            objs = this.game.grid.intersectCollider(this.collider);
 
+        const circle = collider.createCircle(
+            this.pos,
+            GameConfig.player.maxVisualRadius + this.speed,
+        );
+        const objs = this.game.grid.intersectCollider(circle);
+
+        for (let i = 0; i < steps; i++) {
             v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
 
             for (let j = 0; j < objs.length; j++) {
