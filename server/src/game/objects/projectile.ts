@@ -275,6 +275,7 @@ export class Projectile extends BaseGameObject {
 
         for (const obj of objs) {
             if (obj.__type != ObjectType.Building) continue;
+            if (!util.sameLayer(obj.layer, this.layer)) continue;
             if (obj.wallsToDestroy < Infinity) continue; //building is destructable and bomb irons can explode on it
             for (let i = 0; i < obj.zoomRegions.length; i++) {
                 const zoomRegion = obj.zoomRegions[i];
