@@ -1,8 +1,6 @@
-import $ from "jquery";
-
 class ErrorLog {
     private requests = 0;
-    private enabled = import.meta.env.PROD;
+    private enabled = true || import.meta.env.PROD;
     private throttle = false;
     private throttleTimeout = 0;
     private errorLogCount = 0;
@@ -30,7 +28,7 @@ class ErrorLog {
                   parent: string;
                   child: unknown;
               }
-            | { error: string },
+            | { error: object },
     ) {
         console.error(loc, data);
 
@@ -43,15 +41,15 @@ class ErrorLog {
             this.throttle = true;
             return;
         }
-        // TODO
-        return;
-        const url = `https://us-central1-survev.cloudfunctions.net/${loc}`;
-        $.ajax({
-            type: "POST",
-            dataType: "html",
-            url: url,
-            data: data,
-            timeout: 10 * 1000,
+        fetch("/api/report_error", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                loc,
+                ...data,
+            }),
         });
     }
 
@@ -64,14 +62,14 @@ class ErrorLog {
         }
     }
 
-    logWindowOnError(error: string) {
+    logWindowOnError(error: object) {
         if (this.errorLogCount < 2) {
             this.store("windowOnError", { error });
             this.errorLogCount++;
         }
     }
 
-    logError(error: string) {
+    logError(error: object) {
         this.store("errorLog", { error });
     }
 }

@@ -186,6 +186,29 @@ app.post("/api/toggleCaptcha", async (c) => {
     }
 });
 
+app.post("/api/report_error", async (c) => {
+    try {
+        const content = await c.req.json();
+        return c.json({ success: true }, 200);
+
+        const ERROR_LOGS_WEBHOOK = "";
+
+        fetch(ERROR_LOGS_WEBHOOK, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                content,
+            }),
+        });
+        return c.json({ success: true }, 200);
+    } catch (err) {
+        server.logger.warn("/api/report_error: Invalid request");
+        return c.json({ error: "Invalid request" }, 400);
+    }
+});
+
 // TODO: HACK: this is just temporary
 // waiting for accounts to do a proper dashboard for stuff
 // since accounts pr refactors a lot of the API server and i dont want many conflicts

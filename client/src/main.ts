@@ -829,7 +829,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     // Don't report the same error multiple times
     if (!reportedErrors.includes(errStr)) {
         reportedErrors.push(errStr);
-        errorLogManager.logWindowOnError(errStr);
+        errorLogManager.logWindowOnError(errObj);
     }
 };
 
