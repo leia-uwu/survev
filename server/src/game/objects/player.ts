@@ -1434,7 +1434,7 @@ export class Player extends BaseGameObject {
 
         const circle = collider.createCircle(
             this.pos,
-            GameConfig.player.maxVisualRadius + this.speed,
+            GameConfig.player.maxVisualRadius + this.speed * dt,
         );
         const objs = this.game.grid.intersectCollider(circle);
 
