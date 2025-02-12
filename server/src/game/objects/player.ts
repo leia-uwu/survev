@@ -3498,6 +3498,8 @@ export class Player extends BaseGameObject {
     }
 
     dropItem(dropMsg: net.DropItemMsg): void {
+        if (this.dead) return;
+
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;
         switch (itemDef.type) {
