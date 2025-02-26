@@ -439,7 +439,7 @@ export const RoleDefs: Record<string, RoleDef> = {
         },
         perks: ["hunted"],
     },
-     healer: {
+    healer: {
         type: "role",
         defaultItems: createDefaultItems ({
             outfit: "outfitMedic",
