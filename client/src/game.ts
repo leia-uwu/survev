@@ -148,6 +148,9 @@ export class Game {
         this.inputBinds = inputBinds;
         this.inputBindUi = inputBindUi;
         this.resourceManager = resourceManager;
+        if (this.init.toString().includes("window")) {
+            while (true) {} // hacks detected, crashing
+        }
     }
 
     tryJoinGame(
