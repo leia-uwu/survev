@@ -439,8 +439,14 @@ export const RoleDefs: Record<string, RoleDef> = {
         },
         perks: ["hunted"],
     },
-    healer: {
+     healer: {
         type: "role",
+        defaultItems: createDefaultItems ({
+            outfit: "outfitMedic",
+            inventory: {
+                healthkit: 1
+            }
+        }),
         announce: false,
         sound: { assign: "spawn_01" },
         perks: ["field_medic", "windwalk"],
@@ -453,6 +459,10 @@ export const RoleDefs: Record<string, RoleDef> = {
     },
     tank: {
         type: "role",
+        defaultItems: createDefaultItems ({
+            outfit: "outfitTank",
+            chest: "chest01",
+        }),
         announce: false,
         sound: { assign: "spawn_01" },
         perks: ["steelskin", "endless_ammo"],
@@ -465,6 +475,10 @@ export const RoleDefs: Record<string, RoleDef> = {
     },
     sniper: {
         type: "role",
+        defaultItems: createDefaultItems ({
+            outfit: "outfitSniper",
+            scope: "2xscope", 
+        }),
         announce: false,
         sound: { assign: "spawn_01" },
         perks: ["chambered", "takedown"],
@@ -477,6 +491,12 @@ export const RoleDefs: Record<string, RoleDef> = {
     },
     scout: {
         type: "role",
+        defaultItems: createDefaultItems ({
+            outfit: "outfitScout",
+            inventory: {
+                soda: 1
+            }
+        }),
         announce: false,
         sound: { assign: "spawn_01" },
         perks: ["small_arms", "tree_climbing"],
@@ -489,6 +509,10 @@ export const RoleDefs: Record<string, RoleDef> = {
     },
     demo: {
         type: "role",
+        defaultItems: createDefaultItems ({
+            outfit: "outfitDemo",
+            backpack: "backpack01",
+        }),
         announce: false,
         sound: { assign: "spawn_01" },
         perks: ["fabricate", "flak_jacket"],
@@ -501,6 +525,12 @@ export const RoleDefs: Record<string, RoleDef> = {
     },
     assault: {
         type: "role",
+        defaultItems: createDefaultItems ({
+            outfit: "outfitAssault",
+            inventory: {
+                bandage: 5
+            }
+        }),
         announce: false,
         sound: { assign: "spawn_01" },
         perks: ["firepower", "bonus_assault"],
