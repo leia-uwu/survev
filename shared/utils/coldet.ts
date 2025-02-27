@@ -60,6 +60,9 @@ export const coldet = {
         return { min, max };
     },
 
+    /**
+     * splits ALONG axis not on the axis, (0, 1) is y axis so aabb will be split into top and bottom half
+     */
     splitAabb(aabb: { min: Vec2; max: Vec2 }, axis: Vec2) {
         // Split aabb along centerpoint into two child aabbs.
         // This could be generalized into split-along-plane
@@ -77,6 +80,41 @@ export const coldet = {
         // Return aabbs ordered [toward axis, away from axis]
         const dir = v2.sub(aabb.max, aabb.min);
         return v2.dot(dir, axis) > 0.0 ? [right, left] : [left, right];
+    },
+
+    /**
+     * similar to splitAabb(), but different in a few ways:
+     *
+     * divides aabb evenly into n number of sections
+     *
+     * does NOT care about sign of axis, will always return the sections from closest to origin to farthest to origin
+     */
+    divideAabb(aabb: { min: Vec2; max: Vec2 }, axis: Vec2, nDivisions: number) {
+        const length = v2.sub(aabb.max, aabb.min);
+        const segmentLength = v2.mul(length, 1 / nDivisions);
+
+        const sections: { min: Vec2; max: Vec2 }[] = [];
+        for (let i = 0; i < nDivisions; i++) {
+            const section = { min: v2.copy(aabb.min), max: v2.copy(aabb.max) };
+
+            if (Math.abs(axis.y) > Math.abs(axis.x)) {
+                section.min = v2.create(aabb.min.x, aabb.min.y + segmentLength.y * i);
+                section.max = v2.create(
+                    aabb.max.x,
+                    aabb.min.y + segmentLength.y * (i + 1),
+                );
+            } else {
+                section.min = v2.create(aabb.min.x + segmentLength.x * i, aabb.min.y);
+                section.max = v2.create(
+                    aabb.min.x + segmentLength.x * (i + 1),
+                    aabb.max.y,
+                );
+            }
+
+            sections.push(section);
+        }
+
+        return sections;
     },
 
     scaleAabbAlongAxis(aabb: AABB, axis: Vec2, scale: number) {

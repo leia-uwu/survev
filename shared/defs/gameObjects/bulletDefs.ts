@@ -291,7 +291,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_m9: {
         type: "bullet",
-        damage: 12,
+        damage: 14,
         obstacleDamage: 1,
         falloff: 0.7,
         speed: 85,
@@ -304,7 +304,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_m9_cursed: {
         type: "bullet",
-        damage: 12,
+        damage: 14,
         obstacleDamage: 1,
         falloff: 0.7,
         speed: 85,
@@ -383,7 +383,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_m1911: {
         type: "bullet",
-        damage: 14,
+        damage: 16,
         obstacleDamage: 1,
         falloff: 0.7,
         speed: 80,

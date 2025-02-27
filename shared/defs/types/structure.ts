@@ -36,4 +36,5 @@ export interface StructureDef {
     };
     bridgeLandBounds?: AABBWithHeight[];
     bridgeWaterBounds?: AABBWithHeight[];
+    teamId?: number;
 }

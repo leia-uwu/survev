@@ -5,7 +5,7 @@ import type { Player } from "./objects/player";
 export class Group {
     hash: string;
     groupId: number;
-    allDeadOrDisconnected = true; //only set to false when first player is added to the group
+    allDeadOrDisconnected = true; // only set to false when first player is added to the group
     players: Player[] = [];
     livingPlayers: Player[] = [];
     autoFill: boolean;
@@ -77,7 +77,7 @@ export class Group {
      */
     checkAllDeadOrDisconnected(player: Player) {
         const alivePlayers = this.players.filter(
-            (p) => (!p.dead || !p.disconnected) && p !== player,
+            (p) => !p.dead && !p.disconnected && p !== player,
         );
         return alivePlayers.length <= 0;
     }
@@ -130,14 +130,5 @@ export class Group {
         const newIndex =
             currentPlayerIndex == 0 ? alivePlayers.length - 1 : currentPlayerIndex - 1;
         return alivePlayers[newIndex];
-    }
-
-    addGameOverMsg(winningTeamId: number = -1) {
-        for (const p of this.players) {
-            p.addGameOverMsg(winningTeamId);
-            for (const spectator of p.spectators) {
-                spectator.addGameOverMsg(winningTeamId);
-            }
-        }
     }
 }

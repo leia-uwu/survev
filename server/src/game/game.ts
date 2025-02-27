@@ -30,7 +30,7 @@ export interface GroupData {
 export interface JoinTokenData {
     autoFill: boolean;
     playerCount: number;
-    avaliableUses: number;
+    availableUses: number;
     expiresAt: number;
     groupHashToJoin: string;
 }
@@ -189,6 +189,7 @@ export class Game {
         // reset stuff
         //
         this.playerBarn.flush();
+        this.planeBarn.flush();
         this.bulletBarn.flush();
         this.airdropBarn.flush();
         this.objectRegister.flush();
@@ -317,7 +318,7 @@ export class Game {
         player.spectating = undefined;
         player.dir = v2.create(0, 0);
         player.setPartDirty();
-        if (player.timeAlive < GameConfig.player.minActiveTime) {
+        if (player.timeAlive < GameConfig.player.minActiveTime && !player.downed) {
             player.game.playerBarn.removePlayer(player);
         }
     }
@@ -342,7 +343,7 @@ export class Game {
         this.joinTokens.set(id, {
             autoFill,
             playerCount,
-            avaliableUses: playerCount,
+            availableUses: playerCount,
             expiresAt: Date.now() + 15000,
             groupHashToJoin: "",
         });

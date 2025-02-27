@@ -1,4 +1,5 @@
 {
+  "name": "@survev/client",
   "private": true,
   "scripts": {
     "build": "tsc --noEmit && vite build",
@@ -14,7 +15,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.32",
-    "vite": "^5.4.10",
+    "vite": "^6.2.0",
     "vite-plugin-strip-block": "^1.0.1"
   }
 }

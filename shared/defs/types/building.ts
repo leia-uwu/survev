@@ -157,6 +157,7 @@ export interface BuildingDef {
         alpha: number;
         tint: number;
     }>;
+    teamId?: number;
 }
 
 export interface FloorImage {

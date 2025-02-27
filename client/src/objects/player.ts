@@ -1941,49 +1941,59 @@ export class Player implements AbstractObject {
             this.playAnim(Anim.None, this.anim.seq);
         }
         if (this.currentAnim() != Anim.None) {
-            const r = this.anim.ticker;
+            const ticker = this.anim.ticker;
             this.anim.ticker += dt * 1;
-            const a = Animations[this.anim.data.type];
+            const anim = Animations[this.anim.data.type];
 
-            const i = a.keyframes;
-            let o = -1;
-            let s = 0;
-            for (; this.anim.ticker >= i[s].time && s < i.length - 1; ) {
-                o++;
-                s++;
+            const frames = anim.keyframes;
+            let frameAIdx = -1;
+            let frameBIdx = 0;
+            for (
+                ;
+                this.anim.ticker >= frames[frameBIdx].time &&
+                frameBIdx < frames.length - 1;
+            ) {
+                frameAIdx++;
+                frameBIdx++;
             }
-            o = math.max(o, 0);
-            const n = i[o].time;
-            const l = i[s].time;
-            const c = math.min((this.anim.ticker - n) / (l - n), 1);
-            const m = i[o].bones;
-            const p = i[s].bones;
-            const h = this.anim.data.mirror;
-            for (let d = 0; d < this.anim.bones.length; d++) {
-                const g = this.anim.bones[d];
-                let y: Bones = d;
-                if (h) {
-                    y = d % 2 == 0 ? d + 1 : d - 1;
+            frameAIdx = math.max(frameAIdx, 0);
+            const frameATime = frames[frameAIdx].time;
+            const frameBTime = frames[frameBIdx].time;
+            const t = math.min(
+                (this.anim.ticker - frameATime) / (frameBTime - frameATime),
+                1,
+            );
+            const frameABones = frames[frameAIdx].bones;
+            const frameBBones = frames[frameBIdx].bones;
+            const mirror = this.anim.data.mirror;
+            for (let i = 0; i < this.anim.bones.length; i++) {
+                const bones = this.anim.bones[i];
+                let bone: Bones = i;
+                if (mirror) {
+                    bone = i % 2 == 0 ? i + 1 : i - 1;
                 }
-                if (m[y] !== undefined && p[y] !== undefined) {
-                    g.weight = o == s ? c : 1;
-                    g.pose.copy(Pose.lerp(c, m[y]!, p[y]!));
-                    if (h) {
-                        g.pose.pos.y *= -1;
-                        g.pose.pivot.y *= -1;
-                        g.pose.rot *= -1;
+                if (frameABones[bone] !== undefined && frameBBones[bone] !== undefined) {
+                    bones.weight = frameAIdx == frameBIdx ? t : 1;
+                    bones.pose.copy(Pose.lerp(t, frameABones[bone]!, frameBBones[bone]!));
+                    if (mirror) {
+                        bones.pose.pos.y *= -1;
+                        bones.pose.pivot.y *= -1;
+                        bones.pose.rot *= -1;
                     }
                 }
             }
-            const w = s == i.length - 1 && math.eqAbs(c, 1);
+            const w = frameBIdx == frames.length - 1 && math.eqAbs(t, 1);
             let f = this.anim.ticker;
             if (w) {
                 f += 1;
             }
-            for (let _ = 0; _ < a.effects.length; _++) {
-                const x = a.effects[_];
-                if (x.time >= r && x.time < f) {
-                    (this[x.fn as keyof this] as any).apply(this, [AnimCtx, x.args]);
+            for (let i = 0; i < anim.effects.length; i++) {
+                const effect = anim.effects[i];
+                if (effect.time >= ticker && effect.time < f) {
+                    (this[effect.fn as keyof this] as any).apply(this, [
+                        AnimCtx,
+                        effect.args,
+                    ]);
                 }
             }
             if (w) {

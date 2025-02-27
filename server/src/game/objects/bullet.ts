@@ -387,7 +387,14 @@ export class Bullet {
                     continue;
                 }
 
-                if (obj.hasPerk("windwalk") && v2.distance(this.pos, obj.pos) <= 5) {
+                if (
+                    obj.hasPerk("windwalk") &&
+                    obj.hasteType != GameConfig.HasteType.Windwalk && //can't stack windwalk
+                    this.player && //bullet must come from a player
+                    !obj.team?.players.includes(this.player) && //bullet must come from enemy team if team exists
+                    !obj.group?.players.includes(this.player) && //bullet must come from enemy group if group exists, this check MUST be below the team check
+                    v2.distance(this.pos, obj.pos) <= 5
+                ) {
                     obj.giveHaste(GameConfig.HasteType.Windwalk, 3);
                 }
 
@@ -421,11 +428,15 @@ export class Bullet {
                     );
                     const finalIntersection = oldIntersection || newIntersection;
                     if (finalIntersection) {
+                        const segment = newIntersection ? newSegment : oldSegment;
                         const normal = v2.normalize(
-                            v2.perp(v2.sub(newSegment.p1, newSegment.p0)),
+                            v2.perp(v2.sub(segment.p1, segment.p0)),
                         );
                         panCollision = {
-                            point: finalIntersection.point,
+                            point: v2.add(
+                                finalIntersection.point,
+                                v2.mul(v2.neg(this.dir), 0.2),
+                            ),
                             normal: normal,
                         };
                     }
@@ -467,7 +478,6 @@ export class Bullet {
                         normal: panCollision.normal,
                         layer: obj.layer,
                         collidable: true,
-                        obj: obj,
                     });
                 }
                 if (collision || panCollision) {
@@ -552,7 +562,7 @@ export class Bullet {
                 hit = col.collidable;
             } else if (col.type == "pan") {
                 hit = col.collidable;
-                this.reflect(col.point, col.normal, col.obj!.__id);
+                this.reflect(col.point, col.normal, col.obj?.__id ?? 0);
             }
             if (hit) {
                 this.pos = col.point;

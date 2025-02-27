@@ -24,6 +24,7 @@ const mapDef = {
             grass: 12434877,
             underground: 1772803,
             playerSubmerge: 2854052,
+            playerGhillie: 12303291, // surviv never had a snow color for the ghillie at all, i checked, so keeping this value. - Leia
         },
         particles: { camera: "falling_snow_fast" },
         airdrop: {

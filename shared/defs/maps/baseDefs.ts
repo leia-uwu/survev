@@ -365,8 +365,11 @@ export const Main: MapDef = {
         ],
         tier_airdrop_mythic: [
             { name: "scarssr", count: 1, weight: 1 }, // ?
-            { name: "usas", count: 1, weight: 1 }, // ?
+            { name: "usas", count: 1, weight: 0.5 }, // ?
             { name: "p30l_dual", count: 1, weight: 1 }, // ?
+            { name: "awc", count: 1, weight: 0.1 }, // ?
+            { name: "pkp", count: 1, weight: 0.3 }, // ?
+            { name: "m249", count: 1, weight: 0.3 }, // ?
         ],
         tier_airdrop_ammo: [
             { name: "9mm", count: 30, weight: 3 },
@@ -408,6 +411,13 @@ export const Main: MapDef = {
         tier_saloon: [
             { name: "vector45", count: 1, weight: 1 },
             { name: "mkg45", count: 1, weight: 1 },
+        ],
+        tier_cattle_crate: [
+            { name: "m1a1", count: 1, weight: 1 },
+            { name: "model94", count: 1, weight: 1 },
+            { name: "colt45", count: 1, weight: 1 },
+            { name: "outfitVerde", count: 1, weight: 0.1 },
+            { name: "outfitDesertCamo", count: 1, weight: 0.1 },
         ],
         tier_pumpkin_perks: [{ name: "halloween_mystery", count: 1, weight: 1 }],
         tier_xp_uncommon: [
@@ -455,6 +465,14 @@ export const Main: MapDef = {
             { name: "treat_762", count: 1, weight: 1 },
             { name: "treat_super", count: 1, weight: 0.1 },
         ],
+        tier_faction_outfits: [
+            { name: "outfitVerde", count: 1, weight: 1 },
+            { name: "outfitWoodland", count: 1, weight: 1 },
+            { name: "outfitKeyLime", count: 1, weight: 1 },
+            { name: "outfitCamo", count: 1, weight: 1 },
+        ],
+        tier_airdrop_faction_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
+        tier_airdrop_faction_melee: [{ name: "pan", count: 1, weight: 1 }],
     },
     mapGen: {
         map: {
@@ -578,7 +596,8 @@ export const Main: MapDef = {
                 bunker_structure_02: 1,
                 bunker_structure_03: 1,
                 bunker_structure_04: 1,
-                bunker_structure_05: 1,
+                // bunker_structure_05: 1,
+                // TODO undo
                 warehouse_complex_01: 1,
                 chest_01: 1,
                 chest_03: { odds: 0.2 },
