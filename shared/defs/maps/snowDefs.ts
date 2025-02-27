@@ -24,7 +24,7 @@ const mapDef = {
             grass: 12434877,
             underground: 1772803,
             playerSubmerge: 2854052,
-            // playerGhillie: 12303291, // NOTE: this is not lifted from surviv, it is just a temporary fix for the 2024 snow mode
+            playerGhillie: 12303291, // surviv never had a snow color for the ghillie at all, i checked, so keeping this value. - Leia
         },
         particles: { camera: "falling_snow_fast" },
         airdrop: {

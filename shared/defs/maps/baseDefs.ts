@@ -465,6 +465,14 @@ export const Main: MapDef = {
             { name: "treat_762", count: 1, weight: 1 },
             { name: "treat_super", count: 1, weight: 0.1 },
         ],
+        tier_faction_outfits: [
+            { name: "outfitVerde", count: 1, weight: 1 },
+            { name: "outfitWoodland", count: 1, weight: 1 },
+            { name: "outfitKeyLime", count: 1, weight: 1 },
+            { name: "outfitCamo", count: 1, weight: 1 },
+        ],
+        tier_airdrop_faction_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
+        tier_airdrop_faction_melee: [{ name: "pan", count: 1, weight: 1 }],
     },
     mapGen: {
         map: {
