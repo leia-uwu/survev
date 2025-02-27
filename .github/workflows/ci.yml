@@ -27,7 +27,7 @@ jobs:
         run: pnpm run build
         working-directory: ./server
 
-      - name: Build Server
+      - name: Build Client
         run: pnpm run build
         working-directory: ./client
   lint:

@@ -29,6 +29,6 @@ jobs:
         run: bun run build
         working-directory: ./server
 
-      - name: Build Server
+      - name: Build Client
         run: bun run build
         working-directory: ./client
