@@ -1176,24 +1176,8 @@ export class Player extends BaseGameObject {
         }
 
         //
-        // Emote cooldown
+        // No emote cooldown
         //
-
-        // no
-        
-        // this.emoteSoftTicker -= dt;
-        // if (
-        //     this.emoteCounter >= GameConfig.player.emoteThreshold &&
-        //     this.emoteHardTicker > 0.0
-        // ) {
-        //     this.emoteHardTicker -= dt;
-        //     if (this.emoteHardTicker < 0.0) {
-        //         this.emoteCounter = 0;
-        //     }
-        // } else if (this.emoteSoftTicker < 0.0 && this.emoteCounter > 0) {
-        //     this.emoteCounter--;
-        //     this.emoteSoftTicker = GameConfig.player.emoteSoftCooldown * 1.5;
-        // }
 
         // Take bleeding damage
         this.bleedTicker -= dt;
