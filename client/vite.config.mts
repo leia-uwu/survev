@@ -66,9 +66,11 @@ export default defineConfig(({ mode }) => {
         ...AdsVars,
     };
 
+    const isDev = mode === "development";
+
     const regions = {
         ...Config.regions,
-        ...(mode === "development"
+        ...(isDev
             ? {
                   local: {
                       https: false,
@@ -86,7 +88,7 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 output: {
                     assetFileNames(assetInfo) {
-                        if (assetInfo.name?.endsWith(".css")) {
+                        if (assetInfo.names[0]?.endsWith(".css")) {
                             return "css/[name]-[hash][extname]";
                         }
                         return "assets/[name]-[hash][extname]";
@@ -105,7 +107,7 @@ export default defineConfig(({ mode }) => {
             },
         },
         resolve: {
-            extensions: [".js", ".ts"],
+            extensions: [".ts", ".js"],
         },
         define: {
             GAME_REGIONS: regions,
@@ -122,7 +124,7 @@ export default defineConfig(({ mode }) => {
             AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
         },
         plugins: [
-            mode !== "development"
+            !isDev
                 ? stripBlockPlugin({
                       start: "STRIP_FROM_PROD_CLIENT:START",
                       end: "STRIP_FROM_PROD_CLIENT:END",
@@ -134,7 +136,6 @@ export default defineConfig(({ mode }) => {
         },
         server: {
             port: 3000,
-            strictPort: true,
             host: "0.0.0.0",
             proxy: {
                 "/api": {
@@ -152,7 +153,6 @@ export default defineConfig(({ mode }) => {
         },
         preview: {
             port: 3000,
-            strictPort: true,
             host: "0.0.0.0",
             proxy: {
                 "/api": {
