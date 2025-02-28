@@ -1316,7 +1316,20 @@ export class GameMap {
         if (!rivers.length) return;
         river = river ?? rivers[util.randomInt(0, rivers.length - 1)];
         const t = util.random(0, 1);
-        const offset = util.random(0, river.waterWidth);
+        const def = MapObjectDefs[type];
+
+        let width = river.getWaterWidth(t);
+        if (def.type === "obstacle") {
+            let circle =
+                def.collision.type === collider.Type.Circle
+                    ? def.collision
+                    : coldet.aabbToCircle(def.collision.min, def.collision.max);
+            width -= circle.rad + 1;
+        }
+        if (def.terrain?.riverShore) {
+            width += river.shoreWidth / 2;
+        }
+        const offset = util.random(0, width);
         const pos = v2.add(river.spline.getPos(t), v2.mul(v2.randomUnit(), offset));
         if (this.canSpawn(type, pos, 0)) {
             this.genAuto(type, pos, 0);
