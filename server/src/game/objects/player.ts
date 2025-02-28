@@ -25,6 +25,7 @@ import {
 } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
+import type { GroupStatus } from "../../../../shared/net/updateMsg";
 import { type Circle, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
@@ -1879,27 +1880,55 @@ export class Player extends BaseGameObject {
         updateMsg.playerInfos = player._firstUpdate
             ? playerBarn.players
             : playerBarn.newPlayers;
+
+        if (updateMsg.playerInfos.length > 255) {
+            this.game.logger.warn(
+                "Too many new player infos!",
+                updateMsg.playerInfos.length,
+            );
+            updateMsg.playerInfos = updateMsg.playerInfos.slice(0, 255);
+        }
+
         updateMsg.deletedPlayerIds = playerBarn.deletedPlayers;
+
+        if (updateMsg.deletedPlayerIds.length > 255) {
+            this.game.logger.warn(
+                "Too many deleted players!",
+                updateMsg.deletedPlayerIds.length,
+            );
+            updateMsg.deletedPlayerIds = updateMsg.deletedPlayerIds.slice(0, 255);
+        }
 
         if (
             player.playerStatusDirty ||
             player.playerStatusTicker >
                 net.getPlayerStatusUpdateRate(this.game.map.factionMode)
         ) {
-            updateMsg.playerStatus.players =
-                this.game.modeManager.getPlayerStatuses(player);
+            let statuses = this.game.modeManager.getPlayerStatuses(player);
+            if (statuses.length > 255) {
+                this.game.logger.warn("Too many new player statuses!", statuses.length);
+                statuses = statuses.slice(0, 255);
+            }
+            updateMsg.playerStatus.players = statuses;
             updateMsg.playerStatusDirty = true;
             player.playerStatusTicker = 0;
         }
 
         if (player.groupStatusDirty) {
             const teamPlayers = player.group!.players;
+
+            let statuses: GroupStatus[] = [];
             for (const p of teamPlayers) {
-                updateMsg.groupStatus.players.push({
+                statuses.push({
                     health: p.health,
                     disconnected: p.disconnected,
                 });
             }
+            if (statuses.length > 255) {
+                this.game.logger.warn("Too many new group statuses!", statuses.length);
+                statuses = statuses.slice(0, 255);
+            }
+            updateMsg.groupStatus.players = statuses;
             updateMsg.groupStatusDirty = true;
         }
 
@@ -1930,8 +1959,14 @@ export class Player extends BaseGameObject {
                 updateMsg.emotes.push(emote);
             }
         }
+        if (updateMsg.emotes.length > 255) {
+            this.game.logger.warn(
+                "Too many new emotes created!",
+                updateMsg.emotes.length,
+            );
+            updateMsg.emotes = updateMsg.emotes.slice(0, 255);
+        }
 
-        let newBullets = [];
         const extendedRadius = 1.1 * radius;
         const radiusSquared = extendedRadius * extendedRadius;
 
@@ -1948,15 +1983,16 @@ export class Player extends BaseGameObject {
                     extendedRadius,
                 )
             ) {
-                newBullets.push(bullet);
+                updateMsg.bullets.push(bullet);
             }
         }
-        if (newBullets.length > 255) {
-            this.game.logger.warn("Too many new bullets created!", newBullets.length);
-            newBullets = newBullets.slice(0, 255);
+        if (updateMsg.bullets.length > 255) {
+            this.game.logger.warn(
+                "Too many new bullets created!",
+                updateMsg.bullets.length,
+            );
+            updateMsg.bullets = updateMsg.bullets.slice(0, 255);
         }
-
-        updateMsg.bullets = newBullets;
 
         for (let i = 0; i < game.explosionBarn.newExplosions.length; i++) {
             const explosion = game.explosionBarn.newExplosions[i];
@@ -1980,11 +2016,26 @@ export class Player extends BaseGameObject {
                 updateMsg.planes.push(plane);
             }
         }
+        if (updateMsg.planes.length > 255) {
+            this.game.logger.warn(
+                "Too many new planes created!",
+                updateMsg.planes.length,
+            );
+            updateMsg.planes = updateMsg.planes.slice(0, 255);
+        }
 
         const newAirstrikeZones = this.game.planeBarn.newAirstrikeZones;
         for (let i = 0; i < newAirstrikeZones.length; i++) {
             const zone = newAirstrikeZones[i];
             updateMsg.airstrikeZones.push(zone);
+        }
+
+        if (updateMsg.airstrikeZones.length > 255) {
+            this.game.logger.warn(
+                "Too many new airstrike zones created!",
+                updateMsg.airstrikeZones.length,
+            );
+            updateMsg.airstrikeZones = updateMsg.airstrikeZones.slice(0, 255);
         }
 
         if (playerBarn.killLeaderDirty || this._firstUpdate) {
