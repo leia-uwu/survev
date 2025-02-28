@@ -278,7 +278,13 @@ export class PlaneBarn {
             for (let i = 0; i < objs.length && !collided; i++) {
                 const obj = objs[i];
                 if (obj.layer !== 0) continue;
-                if (obj.__type === ObjectType.Obstacle && !obj.destructible) {
+                // height check to make it so bombs can still spawn on top of obstacles like the
+                // faction mode statues
+                if (
+                    obj.__type === ObjectType.Obstacle &&
+                    !obj.destructible &&
+                    obj.height > 1
+                ) {
                     const intersection = collider.intersect(coll, obj.collider);
                     if (intersection) {
                         coll = collider.transform(

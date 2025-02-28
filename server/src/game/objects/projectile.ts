@@ -335,6 +335,7 @@ export class Projectile extends BaseGameObject {
                 "",
                 this.damageType,
                 source,
+                this.obstacleBellowId,
             );
         }
         this.destroy();

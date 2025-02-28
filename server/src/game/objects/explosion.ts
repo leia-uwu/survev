@@ -100,7 +100,12 @@ export class ExplosionBarn {
                     this.damageObject(explosion, collision);
                 }
 
-                if (obj.__type === ObjectType.Obstacle && obj.collidable) break;
+                if (
+                    obj.__type === ObjectType.Obstacle &&
+                    obj.collidable &&
+                    obj.__id !== explosion.ignoreObstacleId
+                )
+                    break;
             }
         }
 
@@ -194,6 +199,7 @@ export class ExplosionBarn {
         mapSourceType = "",
         damageType: number = GameConfig.DamageType.Player,
         source?: GameObject,
+        ignoreObstacleId?: number,
     ) {
         const def = GameObjectDefs[type];
         assert(def.type === "explosion", `Invalid explosion with type ${type}`);
@@ -207,6 +213,7 @@ export class ExplosionBarn {
             mapSourceType,
             damageType,
             source,
+            ignoreObstacleId,
         };
         this.explosions.push(explosion);
         this.newExplosions.push(explosion);
@@ -222,4 +229,5 @@ interface Explosion {
     mapSourceType: string;
     damageType: number;
     source?: GameObject;
+    ignoreObstacleId?: number;
 }
