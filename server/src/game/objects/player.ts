@@ -970,6 +970,10 @@ export class Player extends BaseGameObject {
         emotes: [...GameConfig.defaultEmoteLoadout],
     };
 
+    emoteSoftTicker = 0;
+    emoteHardTicker = 0;
+    emoteCounter = 0;
+
     damageTaken = 0;
     damageDealt = 0;
     kills = 0;
@@ -1168,6 +1172,24 @@ export class Player extends BaseGameObject {
             if (this.downedDamageTicker <= 0) {
                 this.downedDamageTicker = 0;
             }
+        }
+
+        //
+        // Emote cooldown
+        //
+
+        this.emoteSoftTicker -= dt;
+        if (
+            this.emoteCounter >= GameConfig.player.emoteThreshold &&
+            this.emoteHardTicker > 0.0
+        ) {
+            this.emoteHardTicker -= dt;
+            if (this.emoteHardTicker < 0.0) {
+                this.emoteCounter = 0;
+            }
+        } else if (this.emoteSoftTicker < 0.0 && this.emoteCounter > 0) {
+            this.emoteCounter--;
+            this.emoteSoftTicker = GameConfig.player.emoteSoftCooldown * 1.5;
         }
 
         // Take bleeding damage
@@ -3628,6 +3650,7 @@ export class Player extends BaseGameObject {
 
     emoteFromMsg(msg: net.EmoteMsg) {
         if (this.dead) return;
+        if (this.emoteHardTicker > 0) return;
 
         const emoteMsg = msg as net.EmoteMsg;
 
@@ -3649,6 +3672,14 @@ export class Player extends BaseGameObject {
             if (!emoteDef.teamOnly && (emoteIdx < 0 || emoteIdx > 3)) {
                 return;
             }
+        }
+
+        this.emoteCounter++;
+        if (this.emoteCounter >= GameConfig.player.emoteThreshold) {
+            this.emoteHardTicker =
+                this.emoteHardTicker > 0
+                    ? this.emoteHardTicker
+                    : GameConfig.player.emoteHardCooldown * 1.5;
         }
 
         this.game.playerBarn.addEmote(
