@@ -41,7 +41,7 @@ class PhysicsParticle {
 
         // Gather colliders
         const colliders = [];
-        const obstacles = map.obstaclePool.getPool();
+        const obstacles = map.m_obstaclePool.m_getPool();
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];
             if (
@@ -53,7 +53,7 @@ class PhysicsParticle {
             }
         }
 
-        const players = playerBarn.playerPool.getPool();
+        const players = playerBarn.playerPool.m_getPool();
         for (let i = 0; i < players.length; i++) {
             const player = players[i];
             if (
@@ -61,7 +61,7 @@ class PhysicsParticle {
                 !player.dead &&
                 util.sameLayer(this.layer, player.layer)
             ) {
-                colliders.push(collider.createCircle(player.pos, player.rad, 0));
+                colliders.push(collider.createCircle(player.m_pos, player.m_rad, 0));
             }
         }
 
@@ -249,7 +249,7 @@ class Explosion {
         this.ticker += dt;
         const shakeT = math.min(this.ticker / def.shakeDur, 1);
         const shakeInt = math.lerp(shakeT, def.shakeStr, 0);
-        camera.addShake(this.pos, shakeInt);
+        camera.m_addShake(this.pos, shakeInt);
         if (this.ticker >= this.lifetime) {
             this.active = false;
         }
@@ -295,7 +295,7 @@ export class ExplosionBarn {
         return p;
     }
 
-    update(
+    m_update(
         dt: number,
         map: Map,
         playerBarn: PlayerBarn,

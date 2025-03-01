@@ -39,19 +39,19 @@ class Decal implements AbstractObject {
     collider!: ColliderWithHeight;
     surface!: DecalDef["surface"] | null;
 
-    init() {
+    m_init() {
         this.isNew = false;
         this.goreT = 0;
     }
 
-    free() {
+    m_free() {
         if (this.decalRender) {
             this.decalRender.free();
             this.decalRender = null;
         }
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Decal>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -241,8 +241,8 @@ class DecalRender {
                 this.flickerCooldown -= dt;
             }
         }
-        const screenPos = camera.pointToScreen(this.pos);
-        const screenScale = camera.pixels(this.scale * this.imgScale);
+        const screenPos = camera.m_pointToScreen(this.pos);
+        const screenScale = camera.m_pixels(this.scale * this.imgScale);
         this.sprite.position.set(screenPos.x, screenPos.y);
         this.sprite.scale.set(screenScale, screenScale);
         this.sprite.rotation = -this.rot;
@@ -270,8 +270,8 @@ export class DecalBarn {
         return decalRender;
     }
 
-    update(dt: number, camera: Camera, renderer: Renderer, _debug: unknown) {
-        const decals = this.decalPool.getPool();
+    m_update(dt: number, camera: Camera, renderer: Renderer, _debug: unknown) {
+        const decals = this.decalPool.m_getPool();
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
             if (decal.active) {
@@ -286,5 +286,5 @@ export class DecalBarn {
         }
     }
 
-    render(_camera: unknown, _debug: unknown, _layer: number) {}
+    m_render(_camera: unknown, _debug: unknown, _layer: number) {}
 }

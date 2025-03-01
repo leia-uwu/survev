@@ -112,8 +112,8 @@ export class PieTimer {
         this.labelText.position.y = 87.5;
         this.labelText.text = this.label;
         this.container.position.set(
-            camera.screenWidth / 2,
-            (camera.screenHeight / 3) * this.screenScaleFactor + this.mobileOffset,
+            camera.m_screenWidth / 2,
+            (camera.m_screenHeight / 3) * this.screenScaleFactor + this.mobileOffset,
         );
         this.container.visible = true;
     }

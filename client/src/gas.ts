@@ -185,7 +185,7 @@ export class Gas {
         this.gasRenderer = new GasRenderer(canvasMode, 16711680);
     }
 
-    free() {
+    m_free() {
         this.gasRenderer.free();
     }
 
@@ -229,10 +229,10 @@ export class Gas {
         this.circleNew.rad = data.radNew;
     }
 
-    render(camera: Camera) {
+    m_render(camera: Camera) {
         const circle = this.getCircle();
-        const pos = camera.pointToScreen(circle.pos);
-        const scale = camera.scaleToScreen(circle.rad);
+        const pos = camera.m_pointToScreen(circle.pos);
+        const scale = camera.m_scaleToScreen(circle.rad);
         this.gasRenderer.render(pos, scale, this.isActive());
     }
 }

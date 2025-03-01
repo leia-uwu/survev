@@ -243,7 +243,7 @@ export class EmoteBarn {
                             this.map,
                             this.camera,
                         );
-                        worldPos ||= this.camera.screenToPoint(this.emoteScreenPos);
+                        worldPos ||= this.camera.m_screenToPoint(this.emoteScreenPos);
                         worldPos.x = math.clamp(worldPos.x, 0, this.map.width);
                         worldPos.y = math.clamp(worldPos.y, 0, this.map.height);
                         this.sendPing({
@@ -252,7 +252,7 @@ export class EmoteBarn {
                         });
                     }
                 } else if (this.emoteSelector.emote && !this.emoteWheelsGreyed) {
-                    worldPos = this.activePlayer.pos;
+                    worldPos = this.activePlayer.m_pos;
                     this.sendEmote({
                         type: this.emoteSelector.emote,
                         pos: worldPos,
@@ -268,7 +268,7 @@ export class EmoteBarn {
             if (this.activePlayer) {
                 let worldPos;
                 if (this.emoteSelector.emote && !this.emoteWheelsGreyed) {
-                    worldPos = this.activePlayer.pos;
+                    worldPos = this.activePlayer.m_pos;
 
                     // Send the emote to the server
                     this.sendEmote({
@@ -296,8 +296,8 @@ export class EmoteBarn {
                     y: e.originalEvent?.changedTouches[0].pageY!,
                 };
                 this.emoteScreenPos = v2.create(
-                    this.camera.screenWidth / 2,
-                    this.camera.screenHeight / 2,
+                    this.camera.m_screenWidth / 2,
+                    this.camera.m_screenHeight / 2,
                 );
                 this.pingMouseTriggered = true;
             });
@@ -307,8 +307,8 @@ export class EmoteBarn {
             this.emoteButtonElem.on("touchstart", (event) => {
                 event.stopPropagation();
                 this.emoteScreenPos = v2.create(
-                    this.camera.screenWidth / 2,
-                    this.camera.screenHeight / 2,
+                    this.camera.m_screenWidth / 2,
+                    this.camera.m_screenHeight / 2,
                 );
                 this.emoteMouseTriggered = true;
             });
@@ -545,7 +545,7 @@ export class EmoteBarn {
         });
     }
 
-    free() {
+    m_free() {
         if (device.touch) {
             $(document).off("touchstart", this.onTouchStart);
             this.emoteButtonElem.off("touchstart");
@@ -806,7 +806,7 @@ export class EmoteBarn {
         }
     }
 
-    update(
+    m_update(
         dt: number,
         localId: number,
         player: Player,
@@ -869,12 +869,12 @@ export class EmoteBarn {
 
         // Update local emote wheels
         this.activePlayer = player;
-        if ((localId != player.__id || !!player.netData.dead) && !this.disable) {
-            this.free();
+        if ((localId != player.__id || !!player.m_netData.m_dead) && !this.disable) {
+            this.m_free();
             this.disable = true;
         }
 
-        const perkModeDisable = map.perkMode && !player.netData.role;
+        const perkModeDisable = map.perkMode && !player.m_netData.m_role;
 
         if (!this.disable && !perkModeDisable) {
             this.wheelKeyTriggered = this.pingKeyTriggered || this.emoteMouseTriggered;
@@ -911,7 +911,7 @@ export class EmoteBarn {
                 this.displayedSelectors = this.pingMouseTriggered
                     ? this.teamPingSelectors
                     : this.emoteWheelSelectors;
-                this.worldPos = camera.screenToPoint(this.emoteScreenPos);
+                this.worldPos = camera.m_screenToPoint(this.emoteScreenPos);
             }
 
             if (this.wheelDisplayed) {
@@ -952,7 +952,7 @@ export class EmoteBarn {
                         const distMinLength = 35;
 
                         const equippedWeapon =
-                            player.localData.weapons[player.localData.curWeapIdx];
+                            player.m_localData.m_weapons[player.m_localData.m_curWeapIdx];
                         const weapDef = GameObjectDefs[equippedWeapon.type] as GunDef;
                         let ammoType = "";
                         if (weapDef && weapDef.ammo) {
@@ -1044,8 +1044,8 @@ export class EmoteBarn {
                 let targetLayer = 0;
                 const targetPlayer = playerBarn.getPlayerById(emote.playerId);
 
-                if (targetPlayer && !targetPlayer.netData.dead) {
-                    targetPos = v2.copy(targetPlayer.pos);
+                if (targetPlayer && !targetPlayer.m_netData.m_dead) {
+                    targetPos = v2.copy(targetPlayer.m_pos);
                     targetLayer = targetPlayer.layer;
                     hasTarget = true;
                 }
@@ -1092,12 +1092,12 @@ export class EmoteBarn {
             }
         }
         const camExtents = v2.create(
-            (camera.screenWidth * 0.5) / camera.z(),
-            (camera.screenHeight * 0.5) / camera.z(),
+            (camera.m_screenWidth * 0.5) / camera.m_z(),
+            (camera.m_screenHeight * 0.5) / camera.m_z(),
         );
         const camAabb = {
-            min: v2.sub(camera.pos, camExtents),
-            max: v2.add(camera.pos, camExtents),
+            min: v2.sub(camera.m_pos, camExtents),
+            max: v2.add(camera.m_pos, camExtents),
         };
         // Update indicators and pings (world positioned)
         const groupId = playerBarn.getPlayerInfo(player.__id).groupId;
@@ -1130,25 +1130,25 @@ export class EmoteBarn {
                 if (indicator.fadeOut > 0) {
                     const indicatorPos = indicator.pos;
                     const dir = v2.normalizeSafe(
-                        v2.sub(indicatorPos, camera.pos),
+                        v2.sub(indicatorPos, camera.m_pos),
                         v2.create(1, 0),
                     );
                     const edge = coldet.intersectRayAabb(
-                        camera.pos,
+                        camera.m_pos,
                         dir,
                         camAabb.min,
                         camAabb.max,
                     )!;
                     const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
-                    const screenEdge = camera.pointToScreen(edge);
+                    const screenEdge = camera.m_pointToScreen(edge);
                     const onscreen = coldet.testCircleAabb(
                         indicatorPos,
                         GameConfig.player.radius,
                         camAabb.min,
                         camAabb.max,
                     );
-                    const borderScale = camera.pixels(indicator.borderSprite.baseScale);
-                    const pingScale = camera.pixels(indicator.pingSprite.baseScale);
+                    const borderScale = camera.m_pixels(indicator.borderSprite.baseScale);
+                    const pingScale = camera.m_pixels(indicator.pingSprite.baseScale);
                     borderSprite.scale.set(borderScale, borderScale);
                     pingSprite.scale.set(pingScale, pingScale);
 
@@ -1160,14 +1160,14 @@ export class EmoteBarn {
                     hideIndicator = indicator.fadeOut < 0;
 
                     const leftConstrain = onscreen
-                        ? camera.pointToScreen(indicatorPos).x
-                        : math.clamp(screenEdge.x, off, camera.screenWidth - off);
+                        ? camera.m_pointToScreen(indicatorPos).x
+                        : math.clamp(screenEdge.x, off, camera.m_screenWidth - off);
                     const topConstrain = onscreen
-                        ? camera.pointToScreen(indicatorPos).y
-                        : math.clamp(screenEdge.y, off, camera.screenHeight - off);
+                        ? camera.m_pointToScreen(indicatorPos).y
+                        : math.clamp(screenEdge.y, off, camera.m_screenHeight - off);
 
-                    const left = camera.pointToScreen(indicatorPos).x;
-                    const top = camera.pointToScreen(indicatorPos).y;
+                    const left = camera.m_pointToScreen(indicatorPos).x;
+                    const top = camera.m_pointToScreen(indicatorPos).y;
 
                     pingSprite.position.x = left;
                     pingSprite.position.y = top;
@@ -1183,7 +1183,7 @@ export class EmoteBarn {
                     const pulseAlpha =
                         borderSprite.alpha <= 0 ? 1 : borderSprite.alpha - dt;
                     borderSprite.alpha = pulseAlpha;
-                    const pulseScale = camera.pixels(
+                    const pulseScale = camera.m_pixels(
                         indicator.borderSprite.baseScale * (2 - pulseAlpha),
                     );
                     borderSprite.scale.set(pulseScale, pulseScale);
@@ -1278,7 +1278,7 @@ export class EmoteBarn {
         }
     }
 
-    render(camera: Camera) {
+    m_render(camera: Camera) {
         for (let i = 0; i < this.emotes.length; i++) {
             const emote = this.emotes[i];
             emote.container.visible = emote.alive;
@@ -1296,11 +1296,11 @@ export class EmoteBarn {
 
                 const pos = v2.add(
                     emote.pos,
-                    v2.mul(emote.posOffset, 1 / math.clamp(camera.zoom, 0.75, 1)),
+                    v2.mul(emote.posOffset, 1 / math.clamp(camera.m_zoom, 0.75, 1)),
                 );
-                const screenPos = camera.pointToScreen(pos);
+                const screenPos = camera.m_pointToScreen(pos);
                 const screenScale =
-                    scale * emote.baseScale * math.clamp(camera.zoom, 0.9, 1.75);
+                    scale * emote.baseScale * math.clamp(camera.m_zoom, 0.9, 1.75);
 
                 emote.container.position.set(screenPos.x, screenPos.y);
                 emote.container.scale.set(screenScale, screenScale);

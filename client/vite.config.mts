@@ -3,6 +3,7 @@ import stripBlockPlugin from "vite-plugin-strip-block";
 import { version } from "../package.json";
 import { Config } from "../server/src/config";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
+import { codefendPlugin } from "./vite-plugins/codefendPlugin";
 
 export const SplashThemes = {
     main: {
@@ -84,6 +85,7 @@ export default defineConfig(({ mode }) => {
     return {
         base: "",
         build: {
+            target: "es2022",
             chunkSizeWarningLimit: 2000,
             rollupOptions: {
                 output: {
@@ -123,14 +125,15 @@ export default defineConfig(({ mode }) => {
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
             AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
         },
-        plugins: [
-            !isDev
-                ? stripBlockPlugin({
+        plugins: !isDev
+            ? [
+                  codefendPlugin(),
+                  stripBlockPlugin({
                       start: "STRIP_FROM_PROD_CLIENT:START",
                       end: "STRIP_FROM_PROD_CLIENT:END",
-                  })
-                : undefined,
-        ],
+                  }),
+              ]
+            : undefined,
         json: {
             stringify: true,
         },

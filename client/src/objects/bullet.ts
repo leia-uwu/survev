@@ -194,7 +194,7 @@ export class BulletBarn {
         renderer.addPIXIObj(b.container, b.layer, 20);
     }
 
-    update(
+    m_update(
         dt: number,
         playerBarn: PlayerBarn,
         map: Map,
@@ -204,7 +204,7 @@ export class BulletBarn {
         particleBarn: ParticleBarn,
         audioManager: AudioManager,
     ) {
-        const players = playerBarn.playerPool.getPool();
+        const players = playerBarn.playerPool.m_getPool();
         for (let i = 0; i < this.bullets.length; i++) {
             const b = this.bullets[i];
             if (b.collided) {
@@ -221,9 +221,9 @@ export class BulletBarn {
                 b.pos = v2.add(b.pos, v2.mul(b.dir, distTravel));
 
                 if (
-                    !activePlayer.netData.dead &&
+                    !activePlayer.m_netData.m_dead &&
                     util.sameAudioLayer(activePlayer.layer, b.layer) &&
-                    v2.length(v2.sub(camera.pos, b.pos)) < 7.5 &&
+                    v2.length(v2.sub(camera.m_pos, b.pos)) < 7.5 &&
                     !b.whizHeard &&
                     b.playerId != activePlayer.__id
                 ) {
@@ -256,7 +256,7 @@ export class BulletBarn {
                 }> = [];
 
                 // Obstacles
-                const obstacles = map.obstaclePool.getPool();
+                const obstacles = map.m_obstaclePool.m_getPool();
                 for (let i = 0; i < obstacles.length; i++) {
                     const obstacle = obstacles[i];
                     if (
@@ -286,26 +286,26 @@ export class BulletBarn {
                     const player = players[C];
                     if (
                         player.active &&
-                        !player.netData.dead &&
-                        (util.sameLayer(player.netData.layer, b.layer) ||
-                            player.netData.layer & 2) &&
+                        !player.m_netData.m_dead &&
+                        (util.sameLayer(player.m_netData.m_layer, b.layer) ||
+                            player.m_netData.m_layer & 2) &&
                         (player.__id != b.playerId || b.damageSelf)
                     ) {
                         let panCollision = null;
-                        if (player.hasActivePan()) {
+                        if (player.m_hasActivePan()) {
                             const p = player;
-                            const panSeg = p.getPanSegment()!;
+                            const panSeg = p.m_getPanSegment()!;
                             const oldSegment = transformSegment(
                                 panSeg.p0,
                                 panSeg.p1,
-                                p.posOld,
-                                p.dirOld,
+                                p.m_posOld,
+                                p.m_dirOld,
                             );
                             const newSegment = transformSegment(
                                 panSeg.p0,
                                 panSeg.p1,
-                                p.pos,
-                                p.dir,
+                                p.m_pos,
+                                p.m_dir,
                             );
                             const newIntersection = coldet.intersectSegmentSegment(
                                 posOld,
@@ -333,8 +333,8 @@ export class BulletBarn {
                         const collision = coldet.intersectSegmentCircle(
                             posOld,
                             b.pos,
-                            player.pos,
-                            player.rad,
+                            player.m_pos,
+                            player.m_rad,
                         );
                         if (
                             collision &&
@@ -350,7 +350,7 @@ export class BulletBarn {
                                 layer: player.layer,
                                 collidable: true,
                             });
-                            if (player.hasPerk("steelskin")) {
+                            if (player.m_hasPerk("steelskin")) {
                                 colObjs.push({
                                     type: "pan",
                                     point: v2.add(
@@ -388,7 +388,7 @@ export class BulletBarn {
 
                 let shooterDead = false;
                 const W = playerBarn.getPlayerById(b.playerId);
-                if (W && (W.netData.dead || W.netData.downed)) {
+                if (W && (W.m_netData.m_dead || W.m_netData.m_downed)) {
                     shooterDead = true;
                 }
                 let hit = false;
@@ -414,28 +414,28 @@ export class BulletBarn {
                         // bullets being inactivated when a player dies.
                         if (!shooterDead) {
                             const Y = col.player!;
-                            if (map.turkeyMode && W?.hasPerk("turkey_shoot")) {
+                            if (map.turkeyMode && W?.m_hasPerk("turkey_shoot")) {
                                 const J = v2.mul(v2.randomUnit(), util.random(3, 6));
                                 particleBarn.addParticle(
                                     "turkeyFeathersHit",
                                     Y.layer,
-                                    Y.pos,
+                                    Y.m_pos,
                                     J,
                                 );
                             }
-                            const Q = v2.sub(col.point, Y?.pos);
+                            const Q = v2.sub(col.point, Y?.m_pos);
                             Q.y *= -1;
                             particleBarn.addParticle(
                                 "bloodSplat",
                                 Y.layer,
-                                v2.mul(Q, camera.ppu),
+                                v2.mul(Q, camera.m_ppu),
                                 v2.create(0, 0),
                                 1,
                                 1,
                                 Y.container,
                             );
                             audioManager.playGroup("player_bullet_hit", {
-                                soundPos: Y.pos,
+                                soundPos: Y.m_pos,
                                 fallOff: 1,
                                 layer: Y.layer,
                                 filter: "muffled",
@@ -460,7 +460,7 @@ export class BulletBarn {
                     }
                 }
                 if (!(b.layer & 2)) {
-                    const $ = map.structurePool.getPool();
+                    const $ = map.m_structurePool.m_getPool();
                     let ee = b.layer;
                     for (let te = 0; te < $.length; te++) {
                         const re = $[te];
@@ -516,7 +516,7 @@ export class BulletBarn {
         const player = playerBarn.getPlayerById(targetId);
         if (player) {
             audioManager.playGroup("player_bullet_hit", {
-                soundPos: player.pos,
+                soundPos: player.m_pos,
                 fallOff: 1,
                 layer: player.layer,
                 filter: "muffled",
@@ -524,15 +524,15 @@ export class BulletBarn {
         }
     }
 
-    render(camera: Camera, _debug: unknown) {
-        camera.pixels(1);
+    m_render(camera: Camera, _debug: unknown) {
+        camera.m_pixels(1);
         for (let i = 0; i < this.bullets.length; i++) {
             const b = this.bullets[i];
             if (b.alive || b.collided) {
                 const dist = v2.length(v2.sub(b.pos, b.startPos));
-                const screenPos = camera.pointToScreen(b.pos);
+                const screenPos = camera.m_pointToScreen(b.pos);
                 b.container.position.set(screenPos.x, screenPos.y);
-                const screenScale = camera.pixels(1);
+                const screenScale = camera.m_pixels(1);
                 const trailLength = math.min(b.tracerLength * 15, dist / 2);
                 b.container.scale.set(screenScale * trailLength * b.scale, screenScale);
             }

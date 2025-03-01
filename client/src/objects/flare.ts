@@ -114,7 +114,7 @@ export class FlareBarn {
         b.trailContainer.visible = true;
     }
 
-    update(
+    m_update(
         dt: number,
         _playerBarn: unknown,
         map: Map,
@@ -187,13 +187,13 @@ export class FlareBarn {
         }
     }
 
-    render(camera: Camera) {
+    m_render(camera: Camera) {
         for (let i = 0; i < this.bullets.length; i++) {
             const b = this.bullets[i];
             if (b.alive || b.collided) {
-                const screenPos = camera.pointToScreen(b.pos);
+                const screenPos = camera.m_pointToScreen(b.pos);
                 b.flareContainer.position.set(screenPos.x, screenPos.y);
-                const screenScale = camera.pixels(1);
+                const screenScale = camera.m_pixels(1);
                 b.flareContainer.scale.set(
                     screenScale * b.flareScale,
                     screenScale * b.flareScale,

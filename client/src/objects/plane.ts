@@ -49,7 +49,7 @@ class Plane {
         this.sprite.visible = false;
     }
 
-    init(data: PlaneData, map: Map) {
+    m_init(data: PlaneData, map: Map) {
         this.id = data.id;
         this.pos = v2.copy(data.pos);
         this.planeDir = v2.copy(data.planeDir);
@@ -88,7 +88,7 @@ class Plane {
         this.sprite.rotation = Math.atan2(this.planeDir.x, this.planeDir.y);
     }
 
-    free(audioManager: AudioManager) {
+    m_free(audioManager: AudioManager) {
         // Don't free this plane until it's fully elevated
         if (this.spriteUpdateTime >= planeElevateTime) {
             if (this.soundInstance) {
@@ -116,7 +116,7 @@ class AirstrikeZone {
         container.addChild(this.gfx);
     }
 
-    init(pos: Vec2, rad: number, duration: number) {
+    m_init(pos: Vec2, rad: number, duration: number) {
         this.active = true;
         this.pos = v2.copy(pos);
         this.rad = rad;
@@ -127,7 +127,7 @@ class AirstrikeZone {
         this.gfx.visible = true;
     }
 
-    update(dt: number) {
+    m_update(dt: number) {
         this.ticker += dt;
         this.gfx.visible = true;
         if (this.ticker >= this.duration) {
@@ -182,9 +182,9 @@ export class PlaneBarn {
 
     constructor(public audioManager: AudioManager) {}
 
-    free() {
+    m_free() {
         for (let i = 0; i < this.planes.length; i++) {
-            this.planes[i].free(this.audioManager);
+            this.planes[i].m_free(this.audioManager);
         }
     }
 
@@ -213,7 +213,7 @@ export class PlaneBarn {
         for (let i = 0; i < this.planes.length; i++) {
             const p = this.planes[i];
             if (p.active && p.dirty) {
-                p.free(this.audioManager);
+                p.m_free(this.audioManager);
             }
         }
     }
@@ -231,7 +231,7 @@ export class PlaneBarn {
             this.planes.push(p);
         }
 
-        p.init(data, map);
+        p.m_init(data, map);
         return p;
     }
 
@@ -247,11 +247,11 @@ export class PlaneBarn {
             zone = new AirstrikeZone(this.airstrikeZoneContainer);
             this.airstrikeZones.push(zone);
         }
-        zone.init(data.pos, data.rad, data.duration);
+        zone.m_init(data.pos, data.rad, data.duration);
         return zone;
     }
 
-    update(
+    m_update(
         dt: number,
         camera: Camera,
         activePlayer: Player,
@@ -312,7 +312,7 @@ export class PlaneBarn {
                         p.soundUpdateThrottle -= dt;
                     }
                 } else {
-                    const distToPlane = v2.length(v2.sub(activePlayer.pos, p.pos));
+                    const distToPlane = v2.length(v2.sub(activePlayer.m_pos, p.pos));
                     const maxRange = p.config.soundRangeMax * p.config.soundRangeMult;
                     let offset = 0;
                     // Offset fighter sounds to compensate for distToPlane
@@ -344,10 +344,10 @@ export class PlaneBarn {
                     }
                 }
                 renderer.addPIXIObj(p.sprite, layer, 1501, p.id);
-                const screenPos = camera.pointToScreen(p.pos);
-                const screenScale = camera.pixels(p.rad / camera.ppu);
+                const screenPos = camera.m_pointToScreen(p.pos);
+                const screenScale = camera.m_pixels(p.rad / camera.m_ppu);
                 const activePlayerIndoors = map.insideBuildingCeiling(
-                    collider.createCircle(activePlayer.pos, 0.01),
+                    collider.createCircle(activePlayer.m_pos, 0.01),
                     true,
                 );
                 let alphaTarget = p.alpha;
@@ -369,7 +369,7 @@ export class PlaneBarn {
         for (let i = 0; i < this.airstrikeZones.length; i++) {
             const zone = this.airstrikeZones[i];
             if (zone.active) {
-                zone.update(dt);
+                zone.m_update(dt);
             }
         }
     }

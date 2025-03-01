@@ -62,7 +62,7 @@ class ObjectCreator {
         return this.idToObj[id];
     }
 
-    getTypeById(id: number, s: net.BitStream) {
+    m_getTypeById(id: number, s: net.BitStream) {
         const obj = this.getObjById(id);
         if (!obj) {
             const err = {

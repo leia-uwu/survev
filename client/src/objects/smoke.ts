@@ -16,41 +16,43 @@ class Smoke implements AbstractObject {
     __type!: ObjectType.Smoke;
     active!: boolean;
 
-    particle!: SmokeParticle | null;
-    type!: string;
-    pos!: Vec2;
-    rad!: number;
-    layer!: number;
-    interior!: number;
+    m_particle!: SmokeParticle | null;
+    m_pos!: Vec2;
+    m_rad!: number;
+    m_layer!: number;
+    m_interior!: number;
 
-    init() {}
-    free() {
-        this.particle!.fadeOut();
-        this.particle = null;
+    m_init() {}
+    m_free() {
+        this.m_particle!.fadeOut();
+        this.m_particle = null;
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Smoke>,
         fullUpdate: boolean,
         isNew: boolean,
         ctx: Ctx,
     ) {
-        // @ts-expect-error data.type doesn't exist; this.type not used anywhere;
-        this.type = data.type;
-        this.pos = v2.copy(data.pos);
-        this.rad = data.rad;
+        this.m_pos = v2.copy(data.pos);
+        this.m_rad = data.rad;
 
         if (fullUpdate) {
-            this.layer = data.layer;
-            this.interior = data.interior;
+            this.m_layer = data.layer;
+            this.m_interior = data.interior;
         }
 
         if (isNew) {
-            this.particle = ctx.smokeBarn.allocParticle();
-            this.particle?.init(this.pos, this.rad, this.layer, this.interior);
+            this.m_particle = ctx.smokeBarn.m_allocParticle();
+            this.m_particle?.m_init(
+                this.m_pos,
+                this.m_rad,
+                this.m_layer,
+                this.m_interior,
+            );
         }
-        this.particle!.posTarget = v2.copy(this.pos);
-        this.particle!.radTarget = this.rad;
+        this.m_particle!.posTarget = v2.copy(this.m_pos);
+        this.m_particle!.radTarget = this.m_rad;
     }
 }
 
@@ -79,7 +81,7 @@ export class SmokeParticle {
         this.sprite.visible = false;
     }
 
-    init(pos: Vec2, rad: number, layer: number, interior: number) {
+    m_init(pos: Vec2, rad: number, layer: number, interior: number) {
         this.pos = v2.copy(pos);
         this.posTarget = v2.copy(this.pos);
         this.rad = rad;
@@ -99,28 +101,28 @@ export class SmokeParticle {
     }
 }
 export class SmokeBarn {
-    smokePool = new Pool(Smoke);
-    particles: SmokeParticle[] = [];
+    m_smokePool = new Pool(Smoke);
+    m_particles: SmokeParticle[] = [];
     zIdx = 2147483647;
 
-    allocParticle() {
+    m_allocParticle() {
         let particle = null;
-        for (let i = 0; i < this.particles.length; i++) {
-            if (!this.particles[i].active) {
-                particle = this.particles[i];
+        for (let i = 0; i < this.m_particles.length; i++) {
+            if (!this.m_particles[i].active) {
+                particle = this.m_particles[i];
                 break;
             }
         }
         if (!particle) {
             particle = new SmokeParticle();
-            this.particles.push(particle);
+            this.m_particles.push(particle);
         }
         particle.active = true;
         particle.zIdx = this.zIdx--;
         return particle;
     }
 
-    update(
+    m_update(
         dt: number,
         camera: Camera,
         activePlayer: Player,
@@ -133,8 +135,8 @@ export class SmokeBarn {
         // }
 
         // Update visual particles
-        for (let m = 0; m < this.particles.length; m++) {
-            const p = this.particles[m];
+        for (let m = 0; m < this.m_particles.length; m++) {
+            const p = this.m_particles[m];
             if (p.active) {
                 p.rad = math.lerp(dt * 3, p.rad, p.radTarget);
                 p.pos = math.v2lerp(dt * 3, p.pos, p.posTarget);
@@ -161,8 +163,8 @@ export class SmokeBarn {
                 const zOrd = p.interior ? 500 : 1000;
                 renderer.addPIXIObj(p.sprite, layer, zOrd, p.zIdx);
 
-                const screenPos = camera.pointToScreen(p.pos);
-                const screenScale = camera.pixels((p.rad * 2) / camera.ppu);
+                const screenPos = camera.m_pointToScreen(p.pos);
+                const screenScale = camera.m_pixels((p.rad * 2) / camera.m_ppu);
 
                 p.sprite.position.set(screenPos.x, screenPos.y);
                 p.sprite.scale.set(screenScale, screenScale);

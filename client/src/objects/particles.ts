@@ -215,7 +215,7 @@ export class ParticleBarn {
         this.valueAdjust = map.getMapDef().biome.valueAdjust;
     }
 
-    free() {
+    m_free() {
         for (let i = 0; i < this.particles.length; i++) {
             const sprite = this.particles[i].sprite;
             sprite.parent?.removeChild(sprite);
@@ -298,7 +298,7 @@ export class ParticleBarn {
         return emitter;
     }
 
-    update(dt: number, camera: Camera, _debug: unknown) {
+    m_update(dt: number, camera: Camera, _debug: unknown) {
         // Update emitters
         for (let i = 0; i < this.emitters.length; i++) {
             const e = this.emitters[i];
@@ -355,7 +355,7 @@ export class ParticleBarn {
                 if (p.alphaUseExp) {
                     p.alpha = math.max(p.alpha + dt * p.alphaExp, 0);
                 }
-                const pos = p.hasParent ? p.pos : camera.pointToScreen(p.pos);
+                const pos = p.hasParent ? p.pos : camera.m_pointToScreen(p.pos);
                 let scale = p.scaleUseExp
                     ? p.scale
                     : math.remap(
@@ -389,7 +389,7 @@ export class ParticleBarn {
                     alpha *= this.emitters[p.emitterIdx].alpha;
                 }
                 if (!p.hasParent) {
-                    scale = camera.pixels(scale);
+                    scale = camera.m_pixels(scale);
                 }
                 p.sprite.position.set(pos.x, pos.y);
                 p.sprite.scale.set(scale, scale);

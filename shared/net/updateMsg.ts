@@ -503,7 +503,7 @@ export class UpdateMsg implements AbstractMsg {
     // @ts-expect-error deserialize only accept one argument for now
     deserialize(
         s: BitStream,
-        objectCreator: { getTypeById: (id: number, s: BitStream) => ObjectType },
+        objectCreator: { m_getTypeById: (id: number, s: BitStream) => ObjectType },
     ) {
         const flags = s.readUint16();
 
@@ -539,7 +539,7 @@ export class UpdateMsg implements AbstractMsg {
         for (let count = s.readUint16(), i = 0; i < count; i++) {
             const data = {} as this["partObjects"][0];
             data.__id = s.readUint16();
-            const type = objectCreator.getTypeById(data.__id, s);
+            const type = objectCreator.m_getTypeById(data.__id, s);
             (
                 ObjectSerializeFns[type].deserializePart as (
                     s: BitStream,
