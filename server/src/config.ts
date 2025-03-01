@@ -1,11 +1,11 @@
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 import type { MapDefs } from "../../shared/defs/mapDefs";
-import { GameConfig, TeamMode } from "../../shared/gameConfig";
-import { util } from "../../shared/utils/util";
+import { type GameConfig, TeamMode } from "../../shared/gameConfig";
+// import { util } from "../../shared/utils/util";
 import type { Vec2 } from "../../shared/utils/v2";
 
-const isProduction = process.env["NODE_ENV"] === "production";
+const isProduction = false;
 
 // WARNING: THIS IS THE DEFAULT CONFIG
 // YOU SHOULD MODIFY survev-config.json FILE INSTEAD FOR LOCAL CHANGES
@@ -71,6 +71,8 @@ export const Config = {
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
+/*
+
 const runningOnVite = process.argv.toString().includes("vite");
 
 const configPath = path.join(
@@ -100,6 +102,8 @@ function loadConfig(fileName: string, create?: boolean) {
 if (!loadConfig("resurviv-config.json")) {
     loadConfig("survev-config.json", true);
 }
+
+*/
 
 type DeepPartial<T> = T extends object
     ? {

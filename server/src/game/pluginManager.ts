@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+// import fs from "fs";
+// import path from "path";
 import type { Game } from "./game";
 import type { DamageParams } from "./objects/gameObject";
 import type { Player } from "./objects/player";
@@ -23,6 +23,7 @@ type EventHandler<E extends EventType> = (data: Events[E]) => void;
 type EventHandlers = {
     [E in keyof Events]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
 };
+/*
 
 function readDirectory(dir: string): string[] {
     let results: string[] = [];
@@ -50,6 +51,7 @@ if (fs.existsSync(pluginDir)) {
     );
 }
 
+*/
 export abstract class GamePlugin {
     handlers: EventHandlers = {};
 
@@ -87,12 +89,14 @@ export class PluginManager {
     }
 
     async loadPlugins() {
+        /*
         for (const path of pluginPaths) {
             const plugin = ((await import(path)) as { default: new () => GamePlugin })
                 .default;
 
             this.loadPlugin(plugin);
         }
+        */
     }
 
     unloadPlugins() {

@@ -1,5 +1,6 @@
 import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
+import { MapDefs } from "../../shared/defs/mapDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
 import { math } from "../../shared/utils/math";
@@ -13,6 +14,7 @@ import { Game } from "./game";
 import { helpers } from "./helpers";
 import { InputHandler } from "./input";
 import { InputBindUi, InputBinds } from "./inputBinds";
+import { OfflineServer } from "./offlineServer";
 import { PingTest } from "./pingTest";
 import { ResourceManager } from "./resources";
 import { SiteInfo } from "./siteInfo";
@@ -94,6 +96,8 @@ class Application {
     checkedPingTest = false;
     hasFocus = true;
     newsDisplayed = true;
+
+    offlineServer = new OfflineServer();
 
     constructor() {
         this.account = new Account(this.config);
@@ -330,6 +334,7 @@ class Application {
                 this.resourceManager,
                 onJoin,
                 onQuit,
+                this.offlineServer,
             );
             this.loadoutDisplay = new LoadoutDisplay(
                 this.pixi,
@@ -345,6 +350,18 @@ class Application {
             this.onConfigModified();
             this.config.addModifiedListener(this.onConfigModified.bind(this));
             loadStaticDomImages();
+
+            $(".btn-play").on("click", async (e) => {
+                const mapName = e.target.attributes.getNamedItem("data-mapName")!
+                    .value as keyof typeof MapDefs;
+
+                $(e.target).html('<div class="ui-spinner"></div>');
+
+                const res = await this.offlineServer.findGame(mapName);
+                if (res) {
+                    this.game?.tryJoinGame(res.gameId, res.data, "", "", () => {});
+                }
+            });
         }
     }
 
@@ -522,6 +539,19 @@ class Application {
         updateButton(this.playMode0Btn, 0);
         updateButton(this.playMode1Btn, 1);
         updateButton(this.playMode2Btn, 2);
+
+        if (!this.game?.connecting) {
+            $(".btn-play").each((_i, ele) => {
+                const btn = $(ele);
+                const mapId = btn.attr("data-mapName") as keyof typeof MapDefs;
+                const def = MapDefs[mapId];
+                const name = def.desc.name;
+
+                btn.html(
+                    `Play ${name} ${name.toLowerCase() == mapId ? "" : `(${mapId})`}`,
+                );
+            });
+        }
     }
 
     waitOnAccount(cb: () => void) {
@@ -762,6 +792,8 @@ class Application {
             this.pass?.update(dt);
         }
         this.input!.flush();
+
+        this.offlineServer.update();
     }
 }
 

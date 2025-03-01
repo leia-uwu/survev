@@ -1,4 +1,4 @@
-import { isIP } from "net";
+// import { isIP } from "net";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
@@ -122,7 +122,7 @@ export function getIp(res: HttpResponse, req: HttpRequest, proxyHeader?: string)
         ? req.getHeader(proxyHeader)
         : textDecoder.decode(res.getRemoteAddressAsText());
 
-    if (!ip || isIP(ip) == 0) return undefined;
+    // if (!ip || isIP(ip) == 0) return undefined;
     return ip;
 }
 

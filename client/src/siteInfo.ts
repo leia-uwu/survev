@@ -1,7 +1,6 @@
 import $ from "jquery";
-import { MapDefs } from "../../shared/defs/mapDefs";
+import { type MapDef, MapDefs } from "../../shared/defs/mapDefs";
 import { TeamMode } from "../../shared/gameConfig";
-import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
 import type { Localization } from "./ui/localization";
@@ -34,8 +33,32 @@ interface Info {
 }
 
 export class SiteInfo {
-    info: Info = {} as Info;
-    loaded = false;
+    info: Info = {
+        country: "us",
+        gitRevision: GIT_VERSION,
+        modes: Object.keys(MapDefs)
+            .reverse()
+            .map((mapName) => {
+                return {
+                    mapName,
+                    teamMode: 1,
+                    enabled: true,
+                };
+            }),
+        pops: {
+            local: {
+                playerCount: "0",
+                l10n: "index-local",
+            },
+        },
+        youtube: {
+            name: "",
+            link: "",
+        },
+        twitch: [],
+    };
+
+    loaded = true;
 
     constructor(
         public config: ConfigManager,
@@ -46,6 +69,9 @@ export class SiteInfo {
     }
 
     load() {
+        this.updatePageFromInfo();
+        /*
+
         const locale = this.localization.getLocale();
         const siteInfoUrl = api.resolveUrl(`/api/site_info?language=${locale}`);
 
@@ -65,6 +91,8 @@ export class SiteInfo {
             this.loaded = true;
             this.updatePageFromInfo();
         });
+
+        */
     }
 
     getGameModeStyles() {
@@ -96,12 +124,31 @@ export class SiteInfo {
     updatePageFromInfo() {
         if (this.loaded) {
             const getGameModeStyles = this.getGameModeStyles();
+
+            const mainBtn = $("#btn-start-mode-0");
+            mainBtn.hide();
+
+            $("#start-menu").css("overflow-y", "auto");
+            $(".btns-double-row").hide();
+
+            mainBtn.hide();
+
+            $("#start-menu").css("overflow-y", "auto");
+            $(".btns-double-row").hide();
+
             for (let i = 0; i < getGameModeStyles.length; i++) {
                 const style = getGameModeStyles[i];
-                const selector = `index-play-${style.buttonText}`;
-                const btn = $(`#btn-start-mode-${i}`);
-                btn.data("l10n", selector);
-                btn.html(this.localization.translate(selector));
+                const info = this.info.modes[i];
+
+                const def = MapDefs[info.mapName as keyof typeof MapDefs] as MapDef;
+                const name = def.desc.name;
+                const mapName = info.mapName;
+
+                const btn = $(
+                    `<a class='btn-green btn-darken menu-option btn-play' data-mapName='${info.mapName}'>Play ${name} ${name.toLowerCase() == mapName ? "" : `(${mapName})`}</a>`,
+                );
+                btn.insertAfter(mainBtn);
+
                 if (style.icon || style.buttonCss) {
                     if (i == 0) {
                         btn.addClass("btn-custom-mode-no-indent");
