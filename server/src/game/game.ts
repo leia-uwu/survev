@@ -5,7 +5,7 @@ import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import type { ServerGameConfig } from "./gameManager";
 import { GameModeManager } from "./gameModeManager";
-import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
+import type { UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
@@ -26,6 +26,16 @@ import { PluginManager } from "./pluginManager";
 export interface GroupData {
     hash: string;
     autoFill: boolean;
+}
+
+export enum ProcessMsgType {
+    Create,
+    Created,
+    KeepAlive,
+    UpdateData,
+    AddJoinToken,
+    SocketMsg,
+    SocketClose,
 }
 
 export interface JoinTokenData {
