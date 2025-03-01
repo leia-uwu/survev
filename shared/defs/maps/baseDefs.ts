@@ -246,6 +246,65 @@ export const Main: MapDef = {
             { name: "scout_elite", count: 1, weight: 0.05 },
             { name: "vss", count: 1, weight: 0.05 }, // !
         ],
+        tier_guns_common_scout: [
+            { name: "glock_dual", count: 1, weight: 0.5},
+            { name: "ot38_dual", count: 1, weight: 0.5 },
+        ],
+        tier_guns_common_sniper: [
+            { name: "blr", count: 1, weight: 0.75},
+            { name: "mosin", count: 1, weight: 0.25},
+        ],
+        tier_guns_common_healer: [
+            { name: "mk12", count: 1, weight: 0.5},
+            { name: "m39", count: 1, weight: 0.5},
+        ],
+        tier_guns_common_demo: [
+            { name: "m870", count: 1, weight: 0.5},
+            { name: "spas12", count: 1, weight: 0.5}
+        ],
+        tier_guns_common_assault: [
+            { name: "hk416", count: 1, weight: 0.5},
+            { name: "ak47", count: 1, weight: 0.5},
+            { name: "groza", count: 1, weight: 0.25},
+            { name: "famas", count: 1, weight: 0.25},
+        ],
+        tier_guns_common_tank: [
+            { name: "dp28", count: 1, weight: 0.5},
+            { name: "qbb97", count: 1, weight: 0.25},
+        ],
+        tier_guns_rare_scout: [
+            { name: "p30l_dual", count: 1, weight: 0.5},
+            { name: "deagle_dual", count: 1, weight: 0.5},
+            { name: "ots38_dual", count: 1, weight: 1}
+        ],
+        tier_guns_rare_sniper: [
+            { name: "awc", count: 1, weight: 0.25},
+            { name: "mosin", count: 1, weight: 0.5},
+        ],
+        tier_guns_rare_healer: [
+            { name: "l86", count: 1, weight: 0.5},
+            { name: "svd", count: 1, weight: 0.5},
+            { name: "garand", count: 1, weight: 0.5}
+        ],
+        tier_guns_rare_demo: [
+            { name: "saiga", count: 1, weight: 0.5},
+            { name: "usas", count: 1, weight: 0.1},
+        ],
+        tier_guns_rare_assault: [
+            { name: "scar", count: 1, weight: 0.5},
+            { name: "grozas", count: 1, weight: 0.5},
+            { name: "m4a1", count: 1, weight: 0.5},
+            { name: "an94", count: 1, weight: 0.1},
+        ],
+        tier_guns_rare_tank: [
+            { name: "qbb97", count: 1, weight: 0.5},
+            { name: "pkp", count: 1, weight: 0.25},
+            { name: "m249", count: 1, weight: 0.35},
+        ],
+        tier_class_crate_mythic: [
+            { name: "explosive", count: 1, weight: 0.5},
+            { name: "scavenger_adv", count: 1, weight: 0.5},
+        ],
         tier_police: [
             { name: "scar", count: 1, weight: 0.5 },
             { name: "helmet03", count: 1, weight: 0.15 },
