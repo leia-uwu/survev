@@ -33,6 +33,7 @@ import { type Player, PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { ShotBarn } from "./objects/shot";
 import { SmokeBarn } from "./objects/smoke";
+import type { OfflineServer, Socket } from "./offlineServer";
 import { Renderer } from "./renderer";
 import type { ResourceManager } from "./resources";
 import type { Localization } from "./ui/localization";
@@ -70,7 +71,7 @@ export class Game {
     teamMode: TeamMode = TeamMode.Solo;
 
     victoryMusic: SoundHandle | null = null;
-    ws: WebSocket | null = null;
+    ws: Socket | null = null;
     connecting = false;
     connected = false;
 
@@ -138,6 +139,7 @@ export class Game {
         public resourceManager: ResourceManager,
         public onJoin: () => void,
         public onQuit: (err?: string) => void,
+        public offlineServer: OfflineServer,
     ) {
         this.pixi = pixi;
         this.audioManager = audioManager;
@@ -151,7 +153,7 @@ export class Game {
     }
 
     tryJoinGame(
-        url: string,
+        gameId: string,
         matchPriv: string,
         loadoutPriv: string,
         questPriv: string,
@@ -169,7 +171,7 @@ export class Game {
             this.connecting = true;
             this.connected = false;
             try {
-                this.ws = new WebSocket(url);
+                this.ws = this.offlineServer.connect(gameId);
                 this.ws.binaryType = "arraybuffer";
                 this.ws.onerror = (_err) => {
                     this.ws?.close();
@@ -192,7 +194,7 @@ export class Game {
                     this.sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };
                 this.ws.onmessage = (e) => {
-                    const msgStream = new net.MsgStream(e.data);
+                    const msgStream = new net.MsgStream(e);
                     while (true) {
                         const type = msgStream.deserializeMsgType();
                         if (type == net.MsgType.None) {
