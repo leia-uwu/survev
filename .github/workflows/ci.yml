@@ -5,7 +5,13 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   nodejs:
@@ -23,13 +29,26 @@ jobs:
       - name: Install Packages
         run: pnpm install
 
-      - name: Build Server
-        run: pnpm run build
-        working-directory: ./server
+      # - name: Build Server
+      #   run: pnpm run build
+      #   working-directory: ./server
 
       - name: Build Client
-        run: pnpm run build
         working-directory: ./client
+        run: pnpm exec vite build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: './client/dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
   lint:
     name: Lint
     runs-on: ubuntu-latest

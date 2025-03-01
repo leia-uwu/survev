@@ -59,7 +59,7 @@ if (!Config.client.AIP_ID) {
     }
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
     process.env = {
         ...process.env,
         VITE_GAME_VERSION: version,
@@ -67,7 +67,7 @@ export default defineConfig(({ mode }) => {
         ...AdsVars,
     };
 
-    const isDev = mode === "development";
+    const isDev = true;
 
     const regions = {
         ...Config.regions,
