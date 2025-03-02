@@ -282,6 +282,7 @@ class Bot {
 
         const joinMsg = new net.JoinMsg();
 
+        joinMsg.bot = true;
         joinMsg.name = `BOT_${this.id}`;
         joinMsg.isMobile = false;
         joinMsg.protocol = GameConfig.protocolVersion;

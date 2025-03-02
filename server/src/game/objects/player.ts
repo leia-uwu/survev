@@ -31,6 +31,7 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { checkForBadWords } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
@@ -79,6 +80,12 @@ export class PlayerBarn {
     teams: Team[] = [];
     groups: Group[] = [];
     groupsByHash = new Map<string, Group>();
+
+    defaultItems = util.mergeDeep(
+        {},
+        GameConfig.player.defaultItems,
+        Config.defaultItems,
+    );
 
     constructor(readonly game: Game) {}
 
@@ -962,6 +969,8 @@ export class Player extends BaseGameObject {
     name: string;
     isMobile: boolean;
 
+    bot: boolean;
+
     teamId = 1;
     groupId = 0;
 
@@ -1002,7 +1011,14 @@ export class Player extends BaseGameObject {
         this.isMobile = joinMsg.isMobile;
 
         this.weapons = this.weaponManager.weapons;
-        const defaultItems = GameConfig.player.defaultItems;
+
+        this.bot = Config.debug.allowBots && joinMsg.bot;
+
+        let defaultItems = GameConfig.player.defaultItems;
+
+        if (!this.bot) {
+            defaultItems = this.game.playerBarn.defaultItems;
+        }
 
         // createCircle clones the position
         // so set it manually to link both
