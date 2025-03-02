@@ -166,6 +166,7 @@ export class Map {
         const cameraEmitterType = this.mapDef.biome.particles.camera;
         if (cameraEmitterType) {
             const dir = v2.normalize(v2.create(1, -1));
+            this.cameraEmitter?.stop();
             this.cameraEmitter = particleBarn.addEmitter(cameraEmitterType, {
                 pos: v2.create(0, 0),
                 dir,
