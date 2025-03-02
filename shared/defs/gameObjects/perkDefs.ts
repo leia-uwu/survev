@@ -38,6 +38,10 @@ export const PerkProperties = {
         "12gauge": ["treat_12g"],
         "45acp": ["bonus_45"],
     } as Record<string, string[]>,
+    gotw: {
+        scale: 0.25,
+        healthRegen: 0.5, // per second
+    },
     ammoBonusDamageMulti: 1.08,
 };
 

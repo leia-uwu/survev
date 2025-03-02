@@ -1165,6 +1165,10 @@ export class Player extends BaseGameObject {
         else if (this.boost > 50 && this.boost <= 87.5) this.health += 1.5 * dt;
         else if (this.boost > 87.5 && this.boost <= 100) this.health += 1.75 * dt;
 
+        if (this.hasPerk("gotw")) {
+            this.health += PerkProperties.gotw.healthRegen * dt;
+        }
+
         //
         // Action logic
         //
@@ -2357,6 +2361,15 @@ export class Player extends BaseGameObject {
                     source.health += 25;
                     source.boost += 25;
                     source.giveHaste(GameConfig.HasteType.Takedown, 3);
+                }
+
+                if (source.role === "woods_king") {
+                    this.game.playerBarn.addEmote(
+                        source.__id,
+                        this.pos,
+                        "ping_woodsking",
+                        true,
+                    );
                 }
             }
 

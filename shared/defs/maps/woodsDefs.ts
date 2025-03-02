@@ -18,6 +18,7 @@ const mapDef = {
             { name: "log_02", channel: "sfx" },
             { name: "footstep_08", channel: "sfx" },
             { name: "footstep_09", channel: "sfx" },
+            { name: "helmet03_forest_pickup_01", channel: "ui" },
         ],
         atlases: ["gradient", "loadout", "shared", "woods"],
     },
