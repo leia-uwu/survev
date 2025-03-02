@@ -85,18 +85,6 @@ function computeColliders(type: string): GroundBunkerColliders {
                     colliders[colliderLayer].push(coll);
                 }
             }
-
-            if (def.bridgeLandBounds) {
-                for (let i = 0; i < def.bridgeLandBounds.length; i++) {
-                    colliders.ground.push(def.bridgeLandBounds[i]);
-                }
-            }
-            if (def.bridgeWaterBounds) {
-                for (let i = 0; i < def.bridgeWaterBounds.length; i++) {
-                    colliders.ground.push(def.bridgeWaterBounds[i]);
-                }
-            }
-
             break;
         }
         case "building": {
@@ -151,18 +139,6 @@ function computeColliders(type: string): GroundBunkerColliders {
                     colliders.ground.push(region.zoomOut);
                 }
             }
-
-            if (def.bridgeLandBounds) {
-                for (let i = 0; i < def.bridgeLandBounds.length; i++) {
-                    colliders.ground.push(def.bridgeLandBounds[i]);
-                }
-            }
-            if (def.bridgeWaterBounds) {
-                for (let i = 0; i < def.bridgeWaterBounds.length; i++) {
-                    colliders.ground.push(def.bridgeWaterBounds[i]);
-                }
-            }
-
             break;
         }
         case "loot_spawner": {
@@ -1371,16 +1347,18 @@ export class GameMap {
     }
 
     genCabinDock(river: River, pos: Vec2, ori: number, otherSide: boolean) {
+        if (river.waterWidth < 8) return;
+
         const type = "dock_01";
         let attempts = 0;
 
         while (attempts < GameMap.MaxSpawnAttempts) {
             attempts++;
-            const t = river.spline.getClosestTtoPoint(pos) + util.random(-0.02, 0.02);
+            const t = river.spline.getClosestTtoPoint(pos) + util.random(-0.04, 0.04);
             const riverPos = river.spline.getPos(t);
             const riverNorm = river.spline.getNormal(t);
 
-            const offset = river.waterWidth * (otherSide ? -1 : 1);
+            const offset = river.waterWidth * (otherSide ? -1 : 1) + util.random(-5, 0);
             const dockPos = v2.add(riverPos, v2.mul(riverNorm, offset));
 
             if (this.canSpawn(type, dockPos, ori)) {
