@@ -251,7 +251,7 @@ export class GameMap {
 
     msg = new net.MapMsg();
     mapStream = new MsgStream(new ArrayBuffer(1 << 15));
-    seed = util.randomInt(0, 2 ** 31);
+    seed = util.randomInt(0, 2 ** 32 - 1);
 
     bounds: AABB;
 
@@ -429,10 +429,10 @@ export class GameMap {
 
     randomPointOnMapEdge(randomGenerator?: (min?: number, max?: number) => number): Vec2 {
         if (!randomGenerator) {
-            randomGenerator = (min = 0, max = 1) => Math.random() * (max - min) + min;
+            randomGenerator = (min = 0, max = 1) => util.random(min, max);
         }
 
-        const side = util.randomInt(0, 3) as 0 | 1 | 2 | 3;
+        const side = Math.floor(randomGenerator(0, 3)) as 0 | 1 | 2 | 3;
         switch (side) {
             case 0:
                 return v2.create(this.width, randomGenerator(0, this.height));
@@ -463,7 +463,10 @@ export class GameMap {
         // Generate rivers
         //
 
-        const widths = util.weightedRandom(mapConfig.rivers.weights).widths;
+        const widths = util.weightedRandom(
+            mapConfig.rivers.weights,
+            randomGenerator,
+        ).widths;
 
         for (let i = 0; i < widths.length; i++) {
             //in factions mode, we always assume the first width in widths is the main faction river
@@ -472,7 +475,7 @@ export class GameMap {
             let riverPoints: Vec2[];
             do {
                 riverPoints = riverCreator.create(isFactionRiver);
-            } while (riverPoints.length < 2);
+            } while (riverPoints.length < 12);
 
             this.riverDescs.push({
                 width: widths[i],

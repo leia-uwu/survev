@@ -1,5 +1,6 @@
 import type { MapDef } from "../../../shared/defs/mapDefs";
-import { coldet } from "../../../shared/utils/coldet";
+import { type AABB, coldet } from "../../../shared/utils/coldet";
+import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { GameMap } from "./map";
@@ -7,12 +8,20 @@ import { GameMap } from "./map";
 export class RiverCreator {
     randomGenerator: (min?: number, max?: number) => number;
 
+    grassBounds: AABB;
+
     constructor(
         public map: GameMap,
         randomGenerator?: (min?: number, max?: number) => number,
     ) {
         this.randomGenerator =
             randomGenerator ?? ((min = 0, max = 1) => Math.random() * (max - min) + min);
+
+        const inset = this.map.shoreInset + this.map.grassInset;
+        this.grassBounds = collider.createAabb(
+            v2.create(inset, inset),
+            v2.create(this.map.width - inset, this.map.height - inset),
+        );
     }
 
     private getStartPoint(isFactionRiver: boolean): Vec2 {
@@ -138,6 +147,24 @@ export class RiverCreator {
                 riverPoints.splice(j, 0, midPoint);
                 //skip over point we just added
                 j++;
+            }
+        }
+
+        // if too many points are inside the ocean
+        // discard the river because its most likely "sliding" along the map boundaries
+        const maxPointsOutside = math.min(this.map.shoreInset / 4, 3);
+        for (let i = 0, pointsOutsideGrass = 0; i < riverPoints.length; i++) {
+            if (
+                !coldet.testPointAabb(
+                    riverPoints[i],
+                    this.grassBounds.min,
+                    this.grassBounds.max,
+                )
+            ) {
+                pointsOutsideGrass++;
+                if (pointsOutsideGrass > maxPointsOutside) {
+                    return [];
+                }
             }
         }
 
