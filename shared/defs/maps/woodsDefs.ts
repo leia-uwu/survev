@@ -14,8 +14,6 @@ const mapDef = {
     assets: {
         audio: [
             { name: "vault_change_02", channel: "sfx" },
-            { name: "log_01", channel: "sfx" },
-            { name: "log_02", channel: "sfx" },
             { name: "footstep_08", channel: "sfx" },
             { name: "footstep_09", channel: "sfx" },
             { name: "helmet03_forest_pickup_01", channel: "ui" },
@@ -240,6 +238,9 @@ const mapDef = {
                 crate_02: "crate_19",
                 crate_08: "crate_19",
                 crate_09: "crate_19",
+                // make eye bunkers have the proper woods recorders
+                recorder_01: "recorder_08",
+                recorder_02: "recorder_09",
             },
         ],
     },

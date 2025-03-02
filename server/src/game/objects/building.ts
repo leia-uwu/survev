@@ -38,7 +38,7 @@ export class Building extends BaseGameObject {
     hasPuzzle = false;
     puzzleSolved = false;
     puzzleErrSeq = 0;
-    puzzleOrder: string = "";
+    puzzleOrder: string[] = [];
     puzzleResetTimeout?: NodeJS.Timeout;
 
     scale = 1;
@@ -210,13 +210,18 @@ export class Building extends BaseGameObject {
     puzzlePieceToggled(piece: Obstacle): void {
         if (this.puzzleResetTimeout) clearTimeout(this.puzzleResetTimeout);
 
-        if (this.puzzleOrder.length) this.puzzleOrder += ",";
-        this.puzzleOrder += piece.puzzlePiece;
+        this.puzzleOrder.push(piece.puzzlePiece!);
 
         const puzzleDef = (MapObjectDefs[this.type] as BuildingDef).puzzle!;
-        const puzzleOrder = Puzzles[puzzleDef.name];
 
-        if (this.puzzleOrder === puzzleOrder) {
+        let puzzleName = puzzleDef.name;
+        if (this.game.map.woodsMode && puzzleName === "bunker_eye_02") {
+            puzzleName = "bunker_eye_02_woods";
+        }
+
+        const puzzleOrder = Puzzles[puzzleName];
+
+        if (this.puzzleOrder.join("-") === puzzleOrder.join("-")) {
             for (const obj of this.childObjects) {
                 if (obj instanceof Obstacle && obj.type === puzzleDef.completeUseType) {
                     setTimeout(() => {
@@ -264,7 +269,7 @@ export class Building extends BaseGameObject {
     }
 
     resetPuzzle(): void {
-        this.puzzleOrder = "";
+        this.puzzleOrder.length = 0;
         for (const piece of this.childObjects) {
             if (piece instanceof Obstacle && piece.isButton) {
                 piece.button.canUse = !this.puzzleSolved;
