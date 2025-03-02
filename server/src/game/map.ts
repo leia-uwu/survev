@@ -473,9 +473,10 @@ export class GameMap {
             const isFactionRiver = this.factionMode && i == 0;
 
             let riverPoints: Vec2[];
+            let iterations = 0;
             do {
                 riverPoints = riverCreator.create(isFactionRiver);
-            } while (riverPoints.length < 12);
+            } while (riverPoints.length < 12 && iterations < 300);
 
             this.riverDescs.push({
                 width: widths[i],
