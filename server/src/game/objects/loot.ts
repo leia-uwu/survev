@@ -297,7 +297,7 @@ export class Loot extends BaseGameObject {
         const surface = this.game.map.getGroundSurface(this.pos, this.layer);
         let finalRiver: River | undefined;
         if ((this.layer === 0 && surface.river) || this.bellowBridge) {
-            const rivers = this.game.map.terrain.rivers;
+            const rivers = this.game.map.normalRivers;
             for (let i = 0; i < rivers.length; i++) {
                 const river = rivers[i];
                 if (

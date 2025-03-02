@@ -1,3 +1,4 @@
+import type { MapDef } from "../../../shared/defs/mapDefs";
 import { coldet } from "../../../shared/utils/coldet";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -153,5 +154,69 @@ export class RiverCreator {
         this.handleIntersection(riverPoints);
 
         return riverPoints;
+    }
+
+    private getLakeMidPoint(lastPoint: Vec2, nextPoint: Vec2): Vec2 {
+        const segmentDistance = v2.distance(lastPoint, nextPoint);
+        // the closer the points are, the less offset there is to make the river look smoother
+        let offsetDistance = (this.randomGenerator(0, 1) * segmentDistance) / 8;
+        // if (this.randomGenerator() < 0.5) offsetDistance *= -1;
+
+        const dir = v2.sub(lastPoint, nextPoint);
+        const angle = Math.atan2(dir.y, dir.x) + Math.PI / 2;
+        const offset = v2.mul(
+            v2.create(Math.cos(angle), Math.sin(angle)),
+            offsetDistance,
+        );
+
+        const midpoint = v2.midpoint(lastPoint, nextPoint);
+        return v2.add(midpoint, offset);
+    }
+
+    createLake(lake: MapDef["mapGen"]["map"]["rivers"]["lakes"][number]) {
+        const points: Vec2[] = [];
+        const center = v2.add(
+            v2.mulElems(v2.create(this.map.width, this.map.height), lake.spawnBound.pos),
+            v2.create(0, 0),
+        );
+
+        const width = (lake.outerRad - lake.innerRad) / 2;
+        const shoreWidth = math.clamp(width * 0.75, 4.0, 8.0) / 2;
+        const lenAdjustMax = lake.outerRad / 3;
+        const len = lake.innerRad + (width - lenAdjustMax / 2) - shoreWidth;
+
+        const step = math.min(Math.acos(1 - (40 / lake.outerRad) ** 2 / 2), 5);
+        const max = Math.PI * 2 - step;
+        for (let i = 0; i < max; i += step) {
+            const dir = v2.create(Math.cos(i), Math.sin(i));
+            const finalLen = len + this.randomGenerator(0, lenAdjustMax);
+            points.push(v2.add(center, v2.mul(dir, finalLen)));
+        }
+
+        points.push(v2.copy(points[0]));
+
+        const nPasses = 2;
+        for (let i = 0; i < nPasses; i++) {
+            for (let j = 1; j < points.length; j++) {
+                const lastPoint = points[j - 1];
+                const nextPoint = points[j];
+
+                let midPoint: Vec2;
+
+                midPoint = this.getLakeMidPoint(lastPoint, nextPoint);
+
+                this.map.clampToMapBounds(midPoint);
+                points.splice(j, 0, midPoint);
+                //skip over point we just added
+                j++;
+            }
+        }
+
+        return {
+            width,
+            points,
+            looped: true,
+            center,
+        };
     }
 }

@@ -289,10 +289,8 @@ export class GameMap {
     /** 0 for horizontal split, 1 for vertical split*/
     factionModeSplitOri: 0 | 1 = 0;
 
-    lakes: Array<{
-        river: MapRiverData;
-        center: Vec2;
-    }> = [];
+    normalRivers: Array<River & { looped: false }> = [];
+    lakes: Array<River & { looped: true }> = [];
 
     obstacles: Obstacle[] = [];
     buildings: Building[] = [];
@@ -371,6 +369,12 @@ export class GameMap {
             this.riverDescs,
             this.seed,
         );
+        this.normalRivers = this.terrain.rivers.filter((river) => !river.looped) as Array<
+            River & { looped: false }
+        >;
+        this.lakes = this.terrain.rivers.filter((river) => river.looped) as Array<
+            River & { looped: true }
+        >;
 
         this.generateObjects();
 
@@ -445,50 +449,20 @@ export class GameMap {
         const mapConfig = this.mapDef.mapGen.map;
 
         const randomGenerator = util.seededRand(this.seed);
+        const riverCreator = new RiverCreator(this, randomGenerator);
 
         //
         // Generate lakes
         //
         for (const lake of mapConfig.rivers.lakes) {
-            const points: Vec2[] = [];
-
-            const center = v2.add(
-                v2.mulElems(v2.create(this.width, this.height), lake.spawnBound.pos),
-                util.randomPointInCircle(lake.spawnBound.rad),
-            );
-
-            let len = lake.outerRad - lake.innerRad;
-            const startLen = len;
-
-            for (let i = 0; i < Math.PI * 2; i += randomGenerator(0.2, 0.3)) {
-                const dir = v2.create(Math.sin(i), Math.cos(i));
-                len += randomGenerator(-8, 8);
-                len = math.clamp(len, startLen - 10, startLen + 10);
-
-                points.push(v2.add(center, v2.mul(dir, len)));
-            }
-
-            points.push(v2.copy(points[0]));
-
-            const river = {
-                width: (lake.outerRad - lake.innerRad) / 2,
-                points,
-                looped: true,
-            };
-
+            const river = riverCreator.createLake(lake);
             this.riverDescs.push(river);
-
-            this.lakes.push({
-                river,
-                center,
-            });
         }
 
         //
         // Generate rivers
         //
 
-        const riverCreator = new RiverCreator(this, randomGenerator);
         const widths = util.weightedRandom(mapConfig.rivers.weights).widths;
 
         for (let i = 0; i < widths.length; i++) {
@@ -551,10 +525,7 @@ export class GameMap {
         const nBridges = util.randomInt(0, 3);
         if (nBridges == 0) return;
 
-        let riversToPick = this.terrain.rivers.filter((river) => {
-            //looped river is a lake, no bridges on lakes
-            if (river.looped) return false;
-
+        let riversToPick = this.normalRivers.filter((river) => {
             //can't pick a river that has a bridge which can't spawn
             const bridgeSize = getBridgeSize(river);
             return bridgeSize && maxBridges[bridgeSize] != 0;
@@ -1222,14 +1193,14 @@ export class GameMap {
      * 0 would be at the start, 1 would be at the end, 0.5 would be in the middle, etc
      */
     genBridge(type: string, river?: River, progress?: number): boolean {
-        if (this.terrain.rivers.length == 0) {
+        if (this.normalRivers.length == 0) {
             return false;
         }
         let { ori, scale } = this.getOriAndScale(type);
 
         const def = MapObjectDefs[type];
 
-        let rivers = this.terrain.rivers;
+        let rivers = this.normalRivers;
         if (type === "bunker_structure_05") {
             rivers = rivers.filter((r) => r.waterWidth > 8);
             if (!rivers.length) return false;
@@ -1337,6 +1308,8 @@ export class GameMap {
     }
 
     genRiverCabin(type: string) {
+        if (!this.normalRivers.length) return;
+
         const inset = this.grassInset + this.shoreInset;
         const mapBound = collider.createAabb(
             v2.create(inset, inset),
@@ -1348,12 +1321,10 @@ export class GameMap {
         const bound = mapHelpers.getBoundingCollider(type) as AABB;
         const height = bound.max.y - bound.min.y / 2;
 
-        let river =
-            this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+        let river = this.normalRivers[util.randomInt(0, this.normalRivers.length - 1)];
         const getPosAndOri = () => {
             const t = util.random(0.1, 0.9);
-            river =
-                this.terrain.rivers[util.randomInt(0, this.terrain.rivers.length - 1)];
+            river = this.normalRivers[util.randomInt(0, this.normalRivers.length - 1)];
             let pos = river.spline.getPos(t);
 
             const otherSide = Math.random() < 0.5;
@@ -1417,9 +1388,7 @@ export class GameMap {
 
     genOnLakeCenter(type: string) {
         const lake = this.lakes[util.randomInt(0, this.lakes.length - 1)];
-        const pos = lake.center;
-
-        this.genAuto(type, pos, 0, 0);
+        this.genAuto(type, lake.center, 0, 0);
     }
 
     genObstacle(
