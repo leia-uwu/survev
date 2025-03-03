@@ -40,6 +40,7 @@ import { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
+import type { MapIndicator } from "./mapIndicator";
 import type { Obstacle } from "./obstacle";
 
 interface Emote {
@@ -716,8 +717,14 @@ export class Player extends BaseGameObject {
     // "Gabby Ghost" perk random emojis
     chattyTicker = 0;
 
+    mapIndicator?: MapIndicator;
+
     promoteToRole(role: string) {
-        if (!GameObjectDefs[role]) return;
+        const roleDef = GameObjectDefs[role] as RoleDef;
+        if (!roleDef || roleDef.type !== "role") {
+            console.warn(`Invalid role type: ${role}`);
+            return;
+        }
 
         if (this.role == "medic") {
             const index = this.game.playerBarn.medics.indexOf(this);
@@ -729,6 +736,12 @@ export class Player extends BaseGameObject {
         } else {
             this.handleFactionModeRoles(role);
             this.hasRoleHelmet = true;
+        }
+
+        // for savannah the hunted indicator
+        if (roleDef.mapIndicator) {
+            this.mapIndicator?.kill();
+            this.mapIndicator = this.game.mapIndicatorBarn.allocIndicator(role, true);
         }
 
         const msg = new net.RoleAnnouncementMsg();
@@ -1154,8 +1167,6 @@ export class Player extends BaseGameObject {
         super.serializeFull();
     }
 
-    visibleObjects = new Set<GameObject>();
-
     update(dt: number): void {
         if (this.dead) return;
         this.timeAlive += dt;
@@ -1515,6 +1526,8 @@ export class Player extends BaseGameObject {
             }
         }
 
+        this.mapIndicator?.updatePosition(this.pos);
+
         this.pickupTicker -= dt;
 
         //
@@ -1789,6 +1802,8 @@ export class Player extends BaseGameObject {
     }
 
     private _firstUpdate = true;
+    visibleObjects = new Set<GameObject>();
+    visibleMapIndicators = new Set<MapIndicator>();
 
     msgStream = new net.MsgStream(new ArrayBuffer(65536));
     sendMsgs(): void {
@@ -2068,6 +2083,26 @@ export class Player extends BaseGameObject {
             updateMsg.airstrikeZones = updateMsg.airstrikeZones.slice(0, 255);
         }
 
+        const indicators = this.game.mapIndicatorBarn.mapIndicators;
+        for (let i = 0; i < indicators.length; i++) {
+            const indicator = indicators[i];
+            if (indicator.dirty || !this.visibleMapIndicators.has(indicator)) {
+                updateMsg.mapIndicators.push(indicator);
+                this.visibleMapIndicators.add(indicator);
+            }
+            if (indicator.dead) {
+                this.visibleMapIndicators.delete(indicator);
+            }
+        }
+
+        if (updateMsg.mapIndicators.length > 255) {
+            this.game.logger.warn(
+                "Too many new map indicators created!",
+                updateMsg.mapIndicators.length,
+            );
+            updateMsg.mapIndicators = updateMsg.mapIndicators.slice(0, 255);
+        }
+
         if (playerBarn.killLeaderDirty || this._firstUpdate) {
             updateMsg.killLeaderDirty = true;
             updateMsg.killLeaderId = playerBarn.killLeader?.__id ?? 0;
@@ -2328,6 +2363,8 @@ export class Player extends BaseGameObject {
         this.setDirty();
 
         this.shootHold = false;
+
+        this.mapIndicator?.kill();
 
         this.game.playerBarn.aliveCountDirty = true;
         this.game.playerBarn.livingPlayers.splice(

@@ -16,6 +16,7 @@ import { ExplosionBarn } from "./objects/explosion";
 import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
+import { MapIndicatorBarn } from "./objects/mapIndicator";
 import { PlaneBarn } from "./objects/plane";
 import { PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
@@ -79,6 +80,7 @@ export class Game {
 
     explosionBarn: ExplosionBarn;
     planeBarn: PlaneBarn;
+    mapIndicatorBarn: MapIndicatorBarn;
 
     map: GameMap;
     gas: Gas;
@@ -125,6 +127,7 @@ export class Game {
         this.planeBarn = new PlaneBarn(this);
         this.explosionBarn = new ExplosionBarn(this);
         this.planeBarn = new PlaneBarn(this);
+        this.mapIndicatorBarn = new MapIndicatorBarn();
 
         this.gas = new Gas(this);
 
@@ -208,6 +211,8 @@ export class Game {
         this.objectRegister.flush();
         this.explosionBarn.flush();
         this.gas.flush();
+        this.mapIndicatorBarn.flush();
+
         this.msgsToSend.stream.index = 0;
     }
 
