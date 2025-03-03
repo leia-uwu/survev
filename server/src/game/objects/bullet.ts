@@ -224,7 +224,7 @@ export class Bullet {
             bulletDef.distance /
             Math.pow(GameConfig.bullet.reflectDistDecay, this.reflectCount);
         if (params.clipDistance) {
-            distance = Math.min(bulletDef.distance, params.distance!);
+            distance = math.min(bulletDef.distance, params.distance!);
         }
 
         this.shotSourceType = params.gameSourceType;
@@ -613,6 +613,13 @@ export class Bullet {
         const dot = v2.dot(this.dir, normal);
         const dir = v2.add(v2.mul(normal, dot * -2), this.dir);
 
+        let distance = this.distance;
+        if (this.clipDistance) {
+            distance =
+                math.max(1, this.distance - this.distanceTraveled) /
+                Math.pow(GameConfig.bullet.reflectDistDecay, this.reflectCount);
+        }
+
         this.bulletManager.fireBullet({
             bulletType: this.bulletType,
             gameSourceType: this.shotSourceType,
@@ -633,7 +640,8 @@ export class Bullet {
             trailThick: this.trailThick,
             onHitFx: this.onHitFx,
             varianceT: this.varianceT,
-            distance: this.distance,
+            clipDistance: this.clipDistance,
+            distance: distance,
         });
     }
 }
