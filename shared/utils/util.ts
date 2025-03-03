@@ -64,9 +64,9 @@ export const util = {
 
     // Uniformly distributed random point within circle
     // Taken from https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
-    randomPointInCircle(rad: number) {
-        let a = Math.random();
-        let b = Math.random();
+    randomPointInCircle(rad: number, rand = Math.random) {
+        let a = rand();
+        let b = rand();
         if (b < a) {
             const c = a;
             a = b;

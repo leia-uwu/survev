@@ -2,6 +2,7 @@ import type { MapDef } from "../../../shared/defs/mapDefs";
 import { type AABB, coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
+import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { GameMap } from "./map";
 
@@ -203,48 +204,49 @@ export class RiverCreator {
         return v2.add(midpoint, offset);
     }
 
+    pushNodes(center: Vec2, points: Vec2[], position: Vec2) {
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const dist = v2.distance(point, position);
+
+            if (dist > 32) continue;
+            const force = (32 - dist) * 0.8;
+            const dir = v2.normalize(v2.sub(position, center));
+            v2.set(point, v2.add(point, v2.mul(dir, force)));
+        }
+    }
+
     createLake(lake: MapDef["mapGen"]["map"]["rivers"]["lakes"][number]) {
         const points: Vec2[] = [];
 
         const center = v2.add(
             v2.mulElems(v2.create(this.map.width, this.map.height), lake.spawnBound.pos),
-            v2.create(
-                this.randomGenerator(-1, 1) * lake.spawnBound.rad,
-                this.randomGenerator(-1, 1) * lake.spawnBound.rad,
-            ), // yes i know this is a square not a circle; will change when i fix lakes as a whole
+            util.randomPointInCircle(lake.spawnBound.rad, this.randomGenerator),
         );
 
+        const variationPushDistance = 10;
         const width = (lake.outerRad - lake.innerRad) / 2;
-        const shoreWidth = math.clamp(width * 0.75, 4.0, 8.0) / 2;
-        const lenAdjustMax = lake.outerRad / 3;
-        const len = lake.innerRad + (width - lenAdjustMax / 2) - shoreWidth;
 
-        const step = math.min(Math.acos(1 - (40 / lake.outerRad) ** 2 / 2), 5);
+        const len = lake.innerRad + width - variationPushDistance * 2;
+
+        const step = (Math.PI * 2) / (width + 1);
         const max = Math.PI * 2 - step;
         for (let i = 0; i < max; i += step) {
             const dir = v2.create(Math.cos(i), Math.sin(i));
-            const finalLen = len + this.randomGenerator(0, lenAdjustMax);
-            points.push(v2.add(center, v2.mul(dir, finalLen)));
+            points.push(v2.add(center, v2.mul(dir, len)));
         }
 
+        const start = this.randomGenerator(0, Math.PI * 2);
+        const end = start + Math.PI * 2;
+        for (let i = start; i < end; i += this.randomGenerator(0.5, 1.1)) {
+            let pushDist = this.randomGenerator(0, variationPushDistance);
+            if (this.randomGenerator() < 0.5) pushDist *= -1;
+            pushDist += len;
+
+            const dir = v2.create(Math.cos(i) * pushDist, Math.sin(i) * pushDist);
+            this.pushNodes(center, points, v2.add(center, dir));
+        }
         points.push(v2.copy(points[0]));
-
-        const nPasses = 2;
-        for (let i = 0; i < nPasses; i++) {
-            for (let j = 1; j < points.length; j++) {
-                const lastPoint = points[j - 1];
-                const nextPoint = points[j];
-
-                let midPoint: Vec2;
-
-                midPoint = this.getLakeMidPoint(lastPoint, nextPoint);
-
-                this.map.clampToMapBounds(midPoint);
-                points.splice(j, 0, midPoint);
-                //skip over point we just added
-                j++;
-            }
-        }
 
         return {
             width,
