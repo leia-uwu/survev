@@ -15,6 +15,7 @@ import { type Vec2, v2 } from "../../shared/utils/v2";
 import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
 import type { Camera } from "./camera";
+import { debugLines } from "./debugLines";
 import { device } from "./device";
 import type { DebugOptions } from "./game";
 import { Building } from "./objects/building";
@@ -408,6 +409,18 @@ export class Map {
         // Translate and scale the map polygons to move the with camera
         this.display.ground.position.set(p0.x, p0.y);
         this.display.ground.scale.set(s.x, s.y);
+
+        if (device.debug) {
+            for (const river of this.terrain!.rivers) {
+                for (let i = 0; i < river.spline.points.length; i++) {
+                    const pointA = river.spline.points[i];
+                    debugLines.addCircle(pointA, 1, 0xff0000, 1);
+                    let pointB = river.spline.points[i + 1];
+                    if (!pointB) continue;
+                    debugLines.addLine(pointA, pointB, 0xff0000, 0);
+                }
+            }
+        }
     }
 
     getMinimapRender(obj: (typeof this.mapData.objects)[number]) {
