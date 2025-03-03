@@ -370,10 +370,10 @@ export const Animations: Record<
             }),
         ],
         effects: [
-            effect(def.woodaxe.attack.damageTimes[0], "animPlaySound", {
+            effect(def.naginata.attack.damageTimes[0], "animPlaySound", {
                 sound: "swing",
             }),
-            effect(def.woodaxe.attack.damageTimes[0], "animMeleeCollision", {}),
+            effect(def.naginata.attack.damageTimes[0], "animMeleeCollision", {}),
         ],
     },
     sawSwing: {
