@@ -606,9 +606,9 @@ export class Bullet {
     }
 
     reflect(pos: Vec2, normal: Vec2, objId: number) {
+        if (this.reflectCount >= GameConfig.bullet.maxReflect) return;
         if (this.reflected) return;
         this.reflected = true;
-        if (this.reflectCount >= GameConfig.bullet.maxReflect) return;
 
         const dot = v2.dot(this.dir, normal);
         const dir = v2.add(v2.mul(normal, dot * -2), this.dir);
