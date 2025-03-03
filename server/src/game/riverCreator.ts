@@ -205,9 +205,13 @@ export class RiverCreator {
 
     createLake(lake: MapDef["mapGen"]["map"]["rivers"]["lakes"][number]) {
         const points: Vec2[] = [];
+
         const center = v2.add(
             v2.mulElems(v2.create(this.map.width, this.map.height), lake.spawnBound.pos),
-            v2.create(0, 0),
+            v2.create(
+                this.randomGenerator(-1, 1) * lake.spawnBound.rad,
+                this.randomGenerator(-1, 1) * lake.spawnBound.rad,
+            ), // yes i know this is a square not a circle; will change when i fix lakes as a whole
         );
 
         const width = (lake.outerRad - lake.innerRad) / 2;
