@@ -497,8 +497,8 @@ export class WeaponManager {
 
         let amountToDrop = 0;
         // some guns ammo type have no item in bagSizes, like potato guns
-        if (GameConfig.bagSizes[weaponAmmoType] && !this.isInfinite(weaponDef)) {
-            const bagSpace = GameConfig.bagSizes[weaponAmmoType][backpackLevel];
+        if (this.player.bagSizes[weaponAmmoType] && !this.isInfinite(weaponDef)) {
+            const bagSpace = this.player.bagSizes[weaponAmmoType][backpackLevel];
             if (this.player.inventory[weaponAmmoType] + weaponAmmoCount <= bagSpace) {
                 this.player.inventory[weaponAmmoType] += weaponAmmoCount;
                 this.player.inventoryDirty = true;

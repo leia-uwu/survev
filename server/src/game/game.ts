@@ -68,17 +68,17 @@ export class Game {
      */
     msgsToSend = new net.MsgStream(new ArrayBuffer(4096));
 
-    playerBarn = new PlayerBarn(this);
-    lootBarn = new LootBarn(this);
-    deadBodyBarn = new DeadBodyBarn(this);
-    decalBarn = new DecalBarn(this);
-    projectileBarn = new ProjectileBarn(this);
-    bulletBarn = new BulletBarn(this);
-    smokeBarn = new SmokeBarn(this);
-    airdropBarn = new AirdropBarn(this);
+    playerBarn: PlayerBarn;
+    lootBarn: LootBarn;
+    deadBodyBarn: DeadBodyBarn;
+    decalBarn: DecalBarn;
+    projectileBarn: ProjectileBarn;
+    bulletBarn: BulletBarn;
+    smokeBarn: SmokeBarn;
+    airdropBarn: AirdropBarn;
 
-    explosionBarn = new ExplosionBarn(this);
-    planeBarn = new PlaneBarn(this);
+    explosionBarn: ExplosionBarn;
+    planeBarn: PlaneBarn;
 
     map: GameMap;
     gas: Gas;
@@ -112,6 +112,19 @@ export class Game {
         this.map = new GameMap(this);
         this.grid = new Grid(this.map.width, this.map.height);
         this.objectRegister = new ObjectRegister(this.grid);
+
+        this.playerBarn = new PlayerBarn(this);
+        this.lootBarn = new LootBarn(this);
+        this.deadBodyBarn = new DeadBodyBarn(this);
+        this.decalBarn = new DecalBarn(this);
+        this.projectileBarn = new ProjectileBarn(this);
+        this.bulletBarn = new BulletBarn(this);
+        this.smokeBarn = new SmokeBarn(this);
+        this.airdropBarn = new AirdropBarn(this);
+        this.explosionBarn = new ExplosionBarn(this);
+        this.planeBarn = new PlaneBarn(this);
+        this.explosionBarn = new ExplosionBarn(this);
+        this.planeBarn = new PlaneBarn(this);
 
         this.gas = new Gas(this);
 

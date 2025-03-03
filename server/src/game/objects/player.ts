@@ -87,7 +87,15 @@ export class PlayerBarn {
         Config.defaultItems,
     );
 
-    constructor(readonly game: Game) {}
+    bagSizes: (typeof GameConfig)["bagSizes"];
+
+    constructor(readonly game: Game) {
+        this.bagSizes = util.mergeDeep(
+            {},
+            GameConfig.bagSizes,
+            this.game.map.mapDef.gameConfig.bagSizes,
+        );
+    }
 
     randomPlayer(player?: Player) {
         const livingPlayers = player
@@ -552,6 +560,10 @@ export class Player extends BaseGameObject {
 
     inventory: Record<string, number> = {};
 
+    get bagSizes() {
+        return this.game.playerBarn.bagSizes;
+    }
+
     get curWeapIdx() {
         return this.weaponManager.curWeapIdx;
     }
@@ -865,9 +877,7 @@ export class Player extends BaseGameObject {
                     if (trueWeapon.fillInv) {
                         const ammoType = trueWeapDef.ammo;
                         this.inventory[ammoType] =
-                            GameConfig.bagSizes[ammoType][
-                                this.getGearLevel(this.backpack)
-                            ];
+                            this.bagSizes[ammoType][this.getGearLevel(this.backpack)];
                     }
                 } else if (trueWeapDef && trueWeapDef.type == "melee") {
                     if (this.weapons[i].type) this.weaponManager.dropMelee();
@@ -1048,7 +1058,7 @@ export class Player extends BaseGameObject {
             this.weaponManager.setWeapon(i, type, weap.ammo ?? 0);
         }
 
-        for (const key in GameConfig.bagSizes) {
+        for (const key in this.bagSizes) {
             this.inventory[key] = defaultItems.inventory[key] ?? 0;
         }
 
@@ -1424,7 +1434,7 @@ export class Player extends BaseGameObject {
             this.fabricateTicker -= dt;
             if (this.fabricateTicker <= 0) {
                 const backpackLevel = this.getGearLevel(this.backpack);
-                const maxFrags = GameConfig.bagSizes["frag"][backpackLevel];
+                const maxFrags = this.bagSizes["frag"][backpackLevel];
                 this.inventory["frag"] = maxFrags;
 
                 if (!this.weapons[GameConfig.WeaponSlot.Throwable].type) {
@@ -1554,9 +1564,9 @@ export class Player extends BaseGameObject {
                     }
                     default:
                         if (
-                            GameConfig.bagSizes[closestLoot.type] &&
+                            this.bagSizes[closestLoot.type] &&
                             this.inventory[closestLoot.type] >=
-                                GameConfig.bagSizes[closestLoot.type][
+                                this.bagSizes[closestLoot.type][
                                     this.getGearLevel(this.backpack)
                                 ]
                         ) {
@@ -2508,7 +2518,7 @@ export class Player extends BaseGameObject {
         }
         this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
-        for (const item in GameConfig.bagSizes) {
+        for (const item in this.bagSizes) {
             // const def = GameObjectDefs[item] as AmmoDef | HealDef;
             if (item == "1xscope") {
                 continue;
@@ -3190,8 +3200,8 @@ export class Player extends BaseGameObject {
             case "throwable":
                 {
                     const backpackLevel = this.getGearLevel(this.backpack);
-                    const bagSpace = GameConfig.bagSizes[obj.type]
-                        ? GameConfig.bagSizes[obj.type][backpackLevel]
+                    const bagSpace = this.bagSizes[obj.type]
+                        ? this.bagSizes[obj.type][backpackLevel]
                         : 0;
 
                     if (this.inventory[obj.type] + obj.count <= bagSpace) {
@@ -3332,8 +3342,8 @@ export class Player extends BaseGameObject {
                         const ammoAmount = def.ammoSpawnCount;
                         const ammoType = def.ammo;
                         const backpackLevel = this.getGearLevel(this.backpack);
-                        const bagSpace = GameConfig.bagSizes[ammoType]
-                            ? GameConfig.bagSizes[ammoType][backpackLevel]
+                        const bagSpace = this.bagSizes[ammoType]
+                            ? this.bagSizes[ammoType][backpackLevel]
                             : 0;
                         if (this.inventory[ammoType] + ammoAmount <= bagSpace) {
                             this.inventory[ammoType] += ammoAmount;
