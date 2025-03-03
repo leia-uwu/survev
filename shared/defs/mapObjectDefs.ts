@@ -454,7 +454,7 @@ function createBush<T extends ObstacleDef>(e: Partial<T>): T {
 function createCache<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { displayType: "stone_02" },
+        map: { displayType: "stone_01" },
         terrain: { grass: true, beach: false },
         ori: 0,
         floor: {
@@ -12791,7 +12791,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "stone_02sv" },
+        map: { displayType: "stone_01" },
     }),
     cache_02: createCache({
         mapObjects: [
@@ -12809,7 +12809,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "tree_03" },
+        map: { displayType: "tree_01" },
     }),
     cache_02sv: createCache({
         mapObjects: [
@@ -12827,7 +12827,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "tree_03sv" },
+        map: { displayType: "tree_01sv" },
     }),
     cache_03: createCache({
         mapObjects: [
@@ -12881,7 +12881,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "barrel_01b" },
+        map: { displayType: "barrel_01" },
     }),
     cache_log_13: createCache({
         terrain: { grass: false, beach: true },
@@ -28602,6 +28602,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ceilingSprite: "map-building-container-ceiling-01.img",
         loot_spawner_01: "loot_tier_sv98",
         loot_spawner_02: "loot_tier_scopes_sniper",
+        map: { displayType: "container_01" },
     }),
     loot_tier_1: {
         type: "loot_spawner",

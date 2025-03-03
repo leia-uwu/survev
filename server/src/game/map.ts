@@ -724,6 +724,7 @@ export class GameMap {
         parentId?: number,
         puzzlePiece?: string,
         ignoreMapSpawnReplacement?: boolean,
+        hideFromMap?: boolean,
     ) {
         const def = MapObjectDefs[type];
 
@@ -745,7 +746,7 @@ export class GameMap {
                     puzzlePiece,
                 );
             case "building":
-                return this.genBuilding(type, pos, layer, ori, parentId);
+                return this.genBuilding(type, pos, layer, ori, parentId, hideFromMap);
             case "structure":
                 return this.genStructure(type, pos, layer, ori);
             case "decal": {
@@ -1380,6 +1381,7 @@ export class GameMap {
         scale?: number,
         buildingId?: number,
         puzzlePiece?: string,
+        hideFromMap?: boolean,
     ): Obstacle {
         const def = MapObjectDefs[type] as ObstacleDef;
 
@@ -1398,7 +1400,8 @@ export class GameMap {
         this.game.objectRegister.register(obstacle);
         this.obstacles.push(obstacle);
 
-        if (def.map?.display && layer === 0) this.msg.objects.push(obstacle);
+        if (def.map?.display && layer === 0 && !hideFromMap)
+            this.msg.objects.push(obstacle);
         this.incrementCount(type);
 
         return obstacle;
@@ -1430,6 +1433,7 @@ export class GameMap {
         layer = 0,
         ori?: number,
         parentId?: number,
+        hideFromMap?: boolean,
     ): Building {
         const def = MapObjectDefs[type] as BuildingDef;
 
@@ -1442,7 +1446,14 @@ export class GameMap {
             this.buildingsWithEmitters.push(building);
         }
 
-        if (def.map?.display && layer === 0) this.msg.objects.push(building);
+        if (def.map?.display && layer === 0 && !hideFromMap) {
+            this.msg.objects.push({
+                type: def.map.displayType ?? type,
+                pos,
+                ori,
+                scale: 1,
+            });
+        }
 
         for (const mapObject of def.mapObjects ?? []) {
             let partType = mapObject.type;
@@ -1467,6 +1478,7 @@ export class GameMap {
                 building.__id,
                 mapObject.puzzlePiece,
                 mapObject.ignoreMapSpawnReplacement,
+                def.map?.displayType !== undefined,
             );
 
             if (obj) building.childObjects.push(obj);
