@@ -643,16 +643,15 @@ export class GameMap {
             //
             // Generate river rocks and bushes
             //
-            const riverObjs = {
-                stone_03: 3,
-                bush_04: 1.2,
+            const riverObjs: Record<string, number> = {
+                stone_03: 0.9,
+                bush_04: 0.4,
             };
-            for (const type in riverObjs) {
-                for (const river of this.terrain.rivers) {
-                    const amount = math.min(
-                        river.waterWidth * riverObjs[type as keyof typeof riverObjs],
-                        30,
-                    );
+            for (const river of this.terrain.rivers) {
+                const riverArea = math.polygonArea(river.waterPoly) / 1000;
+
+                for (const type in riverObjs) {
+                    const amount = math.min(riverArea * riverObjs[type], 30);
 
                     for (let i = 0; i < amount; i++) {
                         this.genOnRiver(type, river);
