@@ -437,6 +437,13 @@ export class Player implements AbstractObject {
 
         this.throwableStatePrev = this.throwableState;
         this.m_bodyRad = this.m_rad;
+
+        this.m_visualPos = v2.create(0, 0);
+        this.m_visualPosOld = v2.create(0, 0);
+        this.m_visualDir = v2.create(0, 0);
+        this.m_visualDirOld = v2.create(0, 0);
+        this.posInterpTicker = 0;
+        this.dirInterpolationTicker = 0;
     }
 
     m_init() {
