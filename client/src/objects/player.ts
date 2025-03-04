@@ -532,12 +532,12 @@ export class Player implements AbstractObject {
         isNew: boolean,
         _ctx: Ctx,
     ) {
-        if (!v2.eq(data.pos, this.m_pos)) {
-            this.m_visualPosOld = v2.copy(this.m_pos);
+        if (!v2.eq(data.pos, this.m_visualPosOld)) {
+            this.m_visualPosOld = v2.copy(isNew ? data.pos : this.m_pos);
             this.posInterpTicker = 0;
         }
-        if (!v2.eq(data.dir, this.m_dir)) {
-            this.m_visualDirOld = v2.copy(this.m_dir);
+        if (!v2.eq(data.dir, this.m_visualDirOld)) {
+            this.m_visualDirOld = v2.copy(isNew ? data.dir : this.m_dir);
             this.dirInterpolationTicker = 0;
         }
 
