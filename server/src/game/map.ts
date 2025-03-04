@@ -904,6 +904,18 @@ export class GameMap {
             if (!coldet.testPointAabb(pos, mapBound.min, mapBound.max)) {
                 return false;
             }
+
+            if (def.type === "obstacle" && !def.terrain.riverShore) {
+                const aabb =
+                    def.collision.type === collider.Type.Aabb
+                        ? def.collision
+                        : coldet.circleToAabb(def.collision.pos, def.collision.rad);
+                const points = collider.getPoints(aabb);
+
+                for (let i = 0; i < points.length; i++) {
+                    if (!this.isOnWater(points[i], 0)) return false;
+                }
+            }
         }
 
         return true;
@@ -1278,7 +1290,7 @@ export class GameMap {
             width -= circle.rad + 1;
         }
         if (def.terrain?.riverShore) {
-            width += river.shoreWidth / 2;
+            width += river.shoreWidth / 4;
         }
         const offset = util.random(0, width);
         const pos = v2.add(river.spline.getPos(t), v2.mul(v2.randomUnit(), offset));
