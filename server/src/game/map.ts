@@ -502,44 +502,22 @@ export class GameMap {
             xlarge: 0,
         };
 
-        const nBridges = util.randomInt(0, 3);
-        if (nBridges == 0) return;
-
-        let riversToPick = this.normalRivers.filter((river) => {
-            //can't pick a river that has a bridge which can't spawn
+        for (let i = 0; i < this.normalRivers.length; i++) {
+            const river = this.normalRivers[i];
             const bridgeSize = getBridgeSize(river);
-            return bridgeSize && maxBridges[bridgeSize] != 0;
-        });
-        if (riversToPick.length == 0) return;
-
-        const bridgesGenerated: Record<BridgeSize, number> = {
-            medium: 0,
-            large: 0,
-            xlarge: 0,
-        };
-
-        for (let i = 0; i < nBridges; i++) {
-            const r = util.randomInt(0, riversToPick.length - 1);
-            const randomRiver = riversToPick[r];
-            const bridgeSize = getBridgeSize(randomRiver);
             if (!bridgeSize) continue;
 
             const bridgeType = mapDef.mapGen.bridgeTypes[bridgeSize];
             if (!bridgeType) continue;
 
-            let attempts = 0;
-            while (attempts++ < 50) {
-                if (this.genBridge(bridgeType, randomRiver)) {
-                    bridgesGenerated[bridgeSize]++;
-                    // if you can't spawn any more of a specific bridge size, can't pick any rivers associated with that bridgeSize
-                    if (bridgesGenerated[bridgeSize] >= maxBridges[bridgeSize]) {
-                        riversToPick = riversToPick.filter(
-                            (river) => getBridgeSize(river) != bridgeSize,
-                        );
-                        if (riversToPick.length == 0) return;
-                    }
-                    break;
-                }
+            // full length rivers have 33 points
+            // if they are smaller than that we shouldn't try to generate more bridges since that will
+            // result in useless failed attempts
+            const max = Math.ceil(
+                maxBridges[bridgeSize] * (river.spline.points.length / 33),
+            );
+            for (let i = 0; i < max; i++) {
+                this.genBridge(bridgeType, river);
             }
         }
     }
@@ -548,23 +526,19 @@ export class GameMap {
         const mapDef = this.mapDef;
 
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
-            let pos: Vec2 | undefined;
-            let ori: number | undefined;
-
             const center = v2.create(
                 customSpawnRule.pos.x * this.width,
                 customSpawnRule.pos.y * this.height,
             );
 
-            let attempts = 0;
-            while (attempts++ < GameMap.MaxSpawnAttempts) {
-                ori = this.getOriAndScale(customSpawnRule.type).ori;
-                pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
+            this.trySpawn(customSpawnRule.type, () => {
+                const ori = this.getOriAndScale(customSpawnRule.type).ori;
+                const pos = v2.add(util.randomPointInCircle(customSpawnRule.rad), center);
 
-                if (!this.canSpawn(customSpawnRule.type, pos, ori)) continue;
+                if (!this.canSpawn(customSpawnRule.type, pos, ori)) return false;
                 this.genAuto(customSpawnRule.type, pos);
-                break;
-            }
+                return true;
+            });
         }
 
         // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
@@ -772,6 +746,30 @@ export class GameMap {
         }
     }
 
+    /**
+     * Helper to not reapeat the stupid while loop everywhere
+     * @param type The type of thing you are trying to spawn, used to show a log when it fails
+     * @param cb The callback to spawn it, it should return true on a sucessful spawn attempt to break the loop
+     * @param maxAttempts I dont have to explain this one
+     * @param logOnFailure I think i also dont have to explain this one
+     * @returns True when it spawned successfully, false otherwise
+     */
+    typesLogged = {};
+    trySpawn(
+        type: string,
+        cb: () => boolean,
+        maxAttempts = 1000,
+        logOnFailure = true,
+    ): boolean {
+        let attempts = 0;
+        while (attempts < maxAttempts) {
+            if (cb()) return true;
+            attempts++;
+        }
+        if (logOnFailure) this.game.logger.warn("Failed to spawn", type);
+        return false;
+    }
+
     static collidableTypes = [
         ObjectType.Obstacle,
         ObjectType.Building,
@@ -943,8 +941,6 @@ export class GameMap {
         return { ori, scale };
     }
 
-    static MaxSpawnAttempts = 1000;
-
     genOnWaterEdge(type: string): void {
         const def = MapObjectDefs[type] as BuildingDef | StructureDef;
         // safety check + makes ts shut up about it being possibly undefined
@@ -955,26 +951,18 @@ export class GameMap {
         // const width = aabb.max.x - aabb.min.x;
         const height = aabb.max.y - aabb.min.y;
 
-        let ori: number;
-        let pos: Vec2 | undefined;
-
-        let attempts = 0;
-        let collided = true;
-
         const edgeRot = Math.atan2(waterEdge.dir.y, waterEdge.dir.x);
 
-        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
-            collided = false;
-
+        this.trySpawn(type, () => {
             let side: number;
             if (this.factionMode && "teamId" in def && def.teamId) {
-                //this formula does the same thing but isn't readable: ((this.factionModeSplitOri ^ 1) + 2) - ((def.teamId - 1) * 2);
+                // this formula does the same thing but isn't readable: ((this.factionModeSplitOri ^ 1) + 2) - ((def.teamId - 1) * 2);
                 switch (this.factionModeSplitOri) {
                     case 0:
-                        side = def.teamId == 1 ? 3 : 1; //3 is bottom for red team and 1 is top for blue team
+                        side = def.teamId == 1 ? 3 : 1; // 3 is bottom for red team and 1 is top for blue team
                         break;
                     case 1:
-                        side = def.teamId == 1 ? 2 : 0; //2 is left for red team and 0 is right for blue team
+                        side = def.teamId == 1 ? 2 : 0; // 2 is left for red team and 0 is right for blue team
                         break;
                 }
             } else {
@@ -983,7 +971,7 @@ export class GameMap {
 
             const rot = math.oriToRad(side);
 
-            ori = math.radToOri(rot - edgeRot);
+            const ori = math.radToOri(rot - edgeRot);
 
             let dist = util.random(waterEdge.distMin, waterEdge.distMax);
 
@@ -1006,22 +994,17 @@ export class GameMap {
                 y: util.random(min.y, max.y),
             };
             const offset = v2.sub(this.center, tempPos);
-            pos = v2.add(this.center, v2.rotate(offset, rot));
+            const pos = v2.add(this.center, v2.rotate(offset, rot));
 
-            if (!this.canSpawn(type, pos, ori!, 1)) {
-                collided = true;
-            }
-        }
+            if (!this.canSpawn(type, pos, ori!, 1)) return false;
 
-        if (pos && attempts < GameMap.MaxSpawnAttempts) {
             this.genAuto(type, pos, 0, ori!, 1);
-        }
+            return true;
+        });
     }
 
     genOnGrass(type: string) {
         const bounds = collider.toAabb(mapHelpers.getBoundingCollider(type));
-
-        let { ori, scale } = this.getOriAndScale(type);
 
         let width = bounds.max.x - bounds.min.x;
         let height = bounds.max.y - bounds.min.y;
@@ -1084,74 +1067,71 @@ export class GameMap {
             return util.randomPointInAabb(spawnAabb);
         };
 
-        let attempts = 0;
-
-        let place: Vec2 | undefined = undefined;
         if (this.placesToSpawn.length && this.placeSpawns.includes(type)) {
-            getPos = () => {
-                place =
-                    this.placesToSpawn[
-                        Math.floor(Math.random() * this.placeSpawns.length)
-                    ];
-                return math.v2Clamp(
-                    v2.add(
+            let attempts = 0;
+            const spawnedOnPlace = this.trySpawn(
+                type,
+                () => {
+                    attempts++;
+
+                    const placeIdx = Math.floor(Math.random() * this.placeSpawns.length);
+                    const place = this.placesToSpawn[placeIdx];
+
+                    const placePos = v2.add(
                         place,
                         v2.mulElems(
                             v2.mul(v2.randomUnit(), 0.5),
                             v2.create(width + attempts * 2, height + attempts * 2),
                         ),
-                    ),
-                    v2.create(this.shoreInset + width, this.shoreInset + height),
-                    v2.create(
-                        this.width - this.shoreInset - width,
-                        this.height - this.shoreInset - height,
-                    ),
-                );
-            };
-        }
+                    );
 
-        let pos: Vec2 | undefined;
-        let collided = true;
+                    const pos = math.v2Clamp(
+                        placePos,
+                        v2.create(this.shoreInset + width, this.shoreInset + height),
+                        v2.create(
+                            this.width - this.shoreInset - width,
+                            this.height - this.shoreInset - height,
+                        ),
+                    );
+                    const { ori, scale } = this.getOriAndScale(type);
 
-        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
-            collided = false;
+                    if (!this.canSpawn(type, pos, ori, scale)) return false;
+                    this.genAuto(type, pos, 0, ori, scale);
 
-            ori = this.getOriAndScale(type).ori;
-            pos = getPos();
+                    this.placesToSpawn.splice(placeIdx, 1);
+                    this.placeSpawns.splice(this.placeSpawns.indexOf(type), 1);
 
-            if (collided) continue;
+                    return true;
+                },
+                200,
+                false,
+            );
 
-            if (!this.canSpawn(type, pos, ori, scale)) {
-                collided = true;
+            // if couldn't spawn it near a map place
+            // try spawning somewhere else on grass
+            if (spawnedOnPlace) {
+                return;
             }
         }
 
-        if (pos && attempts < GameMap.MaxSpawnAttempts) {
+        this.trySpawn(type, () => {
+            const { ori, scale } = this.getOriAndScale(type);
+            const pos = getPos();
+
+            if (!this.canSpawn(type, pos, ori, scale)) return false;
             this.genAuto(type, pos, 0, ori, scale);
 
-            if (place) {
-                this.placesToSpawn.splice(this.placesToSpawn.indexOf(place), 1);
-                this.placeSpawns.splice(this.placeSpawns.indexOf(type), 1);
-            }
-        } else {
-            this.game.logger.warn("Failed to generate building", type, "on grass");
-        }
+            return true;
+        });
     }
 
     genOnBeach(type: string) {
         const aabb = collider.toAabb(mapHelpers.getBoundingCollider(type));
         const width = aabb.max.x - aabb.min.x;
         const height = aabb.max.y - aabb.min.y;
-        const { ori, scale } = this.getOriAndScale(type);
 
-        let pos: Vec2 | undefined;
-
-        let attempts = 0;
-        let collided = true;
-
-        while (attempts++ < GameMap.MaxSpawnAttempts && collided) {
-            collided = false;
-
+        this.trySpawn(type, () => {
+            const { ori, scale } = this.getOriAndScale(type);
             const side = util.randomInt(0, 3);
             const rot = math.oriToRad(side);
 
@@ -1167,16 +1147,12 @@ export class GameMap {
                 y: util.random(min.y, max.y),
             };
             const offset = v2.sub(this.center, tempPos);
-            pos = v2.add(this.center, v2.rotate(offset, rot));
+            const pos = v2.add(this.center, v2.rotate(offset, rot));
 
-            if (!this.canSpawn(type, pos, ori, 1)) {
-                collided = true;
-            }
-        }
-
-        if (pos && attempts < GameMap.MaxSpawnAttempts) {
+            if (!this.canSpawn(type, pos, ori, 1)) return false;
             this.genAuto(type, pos, 0, ori, scale);
-        }
+            return true;
+        });
     }
 
     /**
@@ -1184,7 +1160,7 @@ export class GameMap {
      *
      * 0 would be at the start, 1 would be at the end, 0.5 would be in the middle, etc
      */
-    genBridge(type: string, river?: River, progress?: number): boolean {
+    genBridge(type: string, river?: River, progress?: number) {
         if (this.normalRivers.length == 0) {
             return false;
         }
@@ -1257,12 +1233,11 @@ export class GameMap {
             return { pos, ori };
         };
 
-        let attempts = 0;
-        while (attempts++ < GameMap.MaxSpawnAttempts) {
+        this.trySpawn(type, () => {
             const { pos, ori } = getPosAndOri();
 
             if (!this.canSpawn(type, pos, ori, scale)) {
-                continue;
+                return false;
             }
 
             const obj = this.genAuto(type, pos, 0, ori, scale);
@@ -1270,8 +1245,7 @@ export class GameMap {
                 this.bridges.push(obj);
             }
             return true;
-        }
-        return false;
+        });
     }
 
     genOnRiver(type: string, river?: River) {
@@ -1337,47 +1311,49 @@ export class GameMap {
             return { pos, ori, otherSide };
         };
 
-        let attempts = 0;
-
-        while (attempts++ < GameMap.MaxSpawnAttempts) {
+        this.trySpawn(type, () => {
             const { pos, ori, otherSide } = getPosAndOri();
             const bounds = collider.transform(bound, pos, math.oriToRad(ori), 1) as AABB;
             if (
                 !coldet.aabbInsideAabb(bounds.min, bounds.max, mapBound.min, mapBound.max)
             ) {
-                continue;
+                return false;
             }
 
             if (!this.canSpawn(type, pos, ori, 1)) {
-                continue;
+                return false;
             }
 
             this.genAuto(type, pos, 0, ori);
             this.genCabinDock(river, pos, ori, otherSide);
-            break;
-        }
+            return true;
+        });
     }
 
     genCabinDock(river: River, pos: Vec2, ori: number, otherSide: boolean) {
         if (river.waterWidth < 8) return;
 
         const type = "dock_01";
-        let attempts = 0;
 
-        while (attempts < GameMap.MaxSpawnAttempts) {
-            attempts++;
-            const t = river.spline.getClosestTtoPoint(pos) + util.random(-0.04, 0.04);
-            const riverPos = river.spline.getPos(t);
-            const riverNorm = river.spline.getNormal(t);
+        this.trySpawn(
+            type,
+            () => {
+                const t = river.spline.getClosestTtoPoint(pos) + util.random(-0.04, 0.04);
+                const riverPos = river.spline.getPos(t);
+                const riverNorm = river.spline.getNormal(t);
 
-            const offset = river.waterWidth * (otherSide ? -1 : 1) + util.random(-5, 0);
-            const dockPos = v2.add(riverPos, v2.mul(riverNorm, offset));
+                const offset =
+                    river.waterWidth * (otherSide ? -1 : 1) + util.random(-5, 0);
+                const dockPos = v2.add(riverPos, v2.mul(riverNorm, offset));
 
-            if (this.canSpawn(type, dockPos, ori)) {
+                if (!this.canSpawn(type, dockPos, ori)) return false;
+
                 this.genAuto(type, dockPos, 0, ori);
-                break;
-            }
-        }
+                return true;
+            },
+            100,
+            false,
+        );
     }
 
     genOnLakeCenter(type: string) {

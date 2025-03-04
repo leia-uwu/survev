@@ -4,7 +4,7 @@ import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
-import { GameMap } from "./map";
+import type { GameMap } from "./map";
 
 export class RiverCreator {
     randomGenerator: (min?: number, max?: number) => number;
@@ -62,7 +62,7 @@ export class RiverCreator {
             (c) => v2.manhattanDistance(c, start) < tileSize,
         );
         let attempts = 0;
-        while (attempts++ < GameMap.MaxSpawnAttempts) {
+        while (attempts++ < 1000) {
             const end = this.map.randomPointOnMapEdge(this.randomGenerator);
             if (v2.manhattanDistance(start, end) <= gridSize) continue;
             //if a river starts on corner, it can't end on a corner
@@ -154,7 +154,7 @@ export class RiverCreator {
         // if too many points are inside the ocean
         // discard the river because its most likely "sliding" along the map boundaries
         const maxPointsOutside = math.max(
-            (this.map.shoreInset + this.map.grassInset) / 5,
+            (this.map.shoreInset + this.map.grassInset) / 9,
             3,
         );
         for (let i = 0, pointsOutsideGrass = 0; i < riverPoints.length; i++) {
@@ -185,23 +185,6 @@ export class RiverCreator {
         this.handleIntersection(riverPoints);
 
         return riverPoints;
-    }
-
-    private getLakeMidPoint(lastPoint: Vec2, nextPoint: Vec2): Vec2 {
-        const segmentDistance = v2.distance(lastPoint, nextPoint);
-        // the closer the points are, the less offset there is to make the river look smoother
-        let offsetDistance = (this.randomGenerator(0, 1) * segmentDistance) / 8;
-        // if (this.randomGenerator() < 0.5) offsetDistance *= -1;
-
-        const dir = v2.sub(lastPoint, nextPoint);
-        const angle = Math.atan2(dir.y, dir.x) + Math.PI / 2;
-        const offset = v2.mul(
-            v2.create(Math.cos(angle), Math.sin(angle)),
-            offsetDistance,
-        );
-
-        const midpoint = v2.midpoint(lastPoint, nextPoint);
-        return v2.add(midpoint, offset);
     }
 
     pushNodes(center: Vec2, points: Vec2[], position: Vec2) {

@@ -596,8 +596,7 @@ export const Main: MapDef = {
                 bunker_structure_02: 1,
                 bunker_structure_03: 1,
                 bunker_structure_04: 1,
-                // bunker_structure_05: 1,
-                // TODO undo
+                bunker_structure_05: 1,
                 warehouse_complex_01: 1,
                 chest_01: 1,
                 chest_03: { odds: 0.2 },
