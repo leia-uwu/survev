@@ -367,6 +367,12 @@ export class Player implements AbstractObject {
     m_posOld = v2.create(0, 0);
     m_dir = v2.create(1, 0);
     m_dirOld = v2.create(1, 0);
+    m_visualPos = v2.create(0, 0);
+    m_visualPosOld = v2.create(0, 0);
+    m_visualDir = v2.create(0, 0);
+    m_visualDirOld = v2.create(0, 0);
+    posInterpTicker = 0;
+    dirInterpolationTicker = 0;
     layer = 0;
     isLoadoutAvatar = false;
     playActionStartSfx = true;
@@ -519,6 +525,15 @@ export class Player implements AbstractObject {
         isNew: boolean,
         _ctx: Ctx,
     ) {
+        if (!v2.eq(data.pos, this.m_pos)) {
+            this.m_visualPosOld = v2.copy(this.m_pos);
+            this.posInterpTicker = 0;
+        }
+        if (!v2.eq(data.dir, this.m_dir)) {
+            this.m_visualDirOld = v2.copy(this.m_dir);
+            this.dirInterpolationTicker = 0;
+        }
+
         this.m_netData.m_pos = v2.copy(data.pos);
         this.m_netData.m_dir = v2.copy(data.dir);
 
@@ -776,6 +791,24 @@ export class Player implements AbstractObject {
         this.layer = this.m_netData.m_layer;
         this.downed = this.m_netData.m_downed;
         this.m_rad = this.m_netData.m_scale * GameConfig.player.radius;
+
+        // interpolation
+        if (camera.m_interpEnabled) {
+            this.posInterpTicker += dt;
+            const posT = math.clamp(this.posInterpTicker / camera.m_interpInterval, 0, 1);
+            this.m_visualPos = v2.lerp(posT, this.m_visualPosOld, this.m_pos);
+
+            this.dirInterpolationTicker += dt;
+            const dirT = math.clamp(
+                this.dirInterpolationTicker / camera.m_interpInterval,
+                0,
+                1,
+            );
+            this.m_visualDir = v2.lerp(dirT, this.m_visualDirOld, this.m_dir);
+        } else {
+            this.m_visualPos = v2.copy(this.m_pos);
+            this.m_visualDir = v2.copy(this.m_dir);
+        }
 
         // Ease radius transitions
         if (!math.eqAbs(this.m_rad, this.m_bodyRad)) {
@@ -1243,7 +1276,7 @@ export class Player implements AbstractObject {
     }
 
     render(camera: Camera, debug: DebugOptions) {
-        const screenPos = camera.m_pointToScreen(this.m_pos);
+        const screenPos = camera.m_pointToScreen(this.m_visualPos);
         const screenScale = camera.m_pixels(1);
         this.container.position.set(screenPos.x, screenPos.y);
         this.container.scale.set(screenScale, screenScale);
@@ -1748,7 +1781,7 @@ export class Player implements AbstractObject {
         }
         this.handLContainer.position.x -= this.gunRecoilL * 1.125;
         this.handRContainer.position.x -= this.gunRecoilR * 1.125;
-        this.bodyContainer.rotation = -Math.atan2(this.m_dir.y, this.m_dir.x);
+        this.bodyContainer.rotation = -Math.atan2(this.m_visualDir.y, this.m_visualDir.x);
     }
 
     playActionStartEffect(

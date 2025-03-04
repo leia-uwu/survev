@@ -11,6 +11,9 @@ export default class Camera {
     m_shakeEnabled = true;
     m_shakeInt = 0;
 
+    m_interpEnabled = true;
+    m_interpInterval = 0;
+
     m_z() {
         return this.m_ppu * this.m_zoom;
     }
@@ -39,6 +42,10 @@ export default class Camera {
 
     m_setShakeEnabled(en: boolean) {
         this.m_shakeEnabled = en;
+    }
+
+    m_setInterpEnabled(en: boolean) {
+        this.m_interpEnabled = en;
     }
 
     m_addShake(pos: Vec2, intensity: number) {

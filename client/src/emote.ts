@@ -1045,7 +1045,7 @@ export class EmoteBarn {
                 const targetPlayer = playerBarn.getPlayerById(emote.playerId);
 
                 if (targetPlayer && !targetPlayer.m_netData.m_dead) {
-                    targetPos = v2.copy(targetPlayer.m_pos);
+                    targetPos = v2.copy(targetPlayer.m_visualPos);
                     targetLayer = targetPlayer.layer;
                     hasTarget = true;
                 }

@@ -8,6 +8,10 @@ const defaultConfig = {
     soundVolume: 1,
     musicVolume: 1,
     highResTex: true,
+    // underscore because i will leave it off by default for a testing period
+    // so when we make it default to true i can rename it and no migration
+    // is needed for existing users :)
+    _interpolation: false,
     screenShake: true,
     anonPlayerNames: false,
     touchMoveStyle: "anywhere" as "locked" | "anywhere",

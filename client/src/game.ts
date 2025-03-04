@@ -346,6 +346,7 @@ export class Game {
 
         // Process config
         this.m_camera.m_setShakeEnabled(this.m_config.get("screenShake")!);
+        this.m_camera.m_setInterpEnabled(this.m_config.get("_interpolation")!);
         this.m_playerBarn.anonPlayerNames = this.m_config.get("anonPlayerNames")!;
         this.initialized = true;
     }
@@ -418,7 +419,7 @@ export class Game {
         );
         this.updateAmbience();
 
-        this.m_camera.m_pos = v2.copy(this.m_activePlayer.m_pos);
+        this.m_camera.m_pos = v2.copy(this.m_activePlayer.m_visualPos);
         this.m_camera.m_applyShake();
         const zoom = this.m_activePlayer.m_getZoom();
         const minDim = math.min(
@@ -464,7 +465,15 @@ export class Game {
         }
         // Update facing direction
         const playerPos = this.m_activePlayer.m_pos;
-        const mousePos = this.m_camera.m_screenToPoint(this.m_input.mousePos);
+        const mousePos = v2.create(
+            this.m_activePlayer.m_pos.x +
+                (this.m_input.mousePos.x - this.m_camera.m_screenWidth * 0.5) /
+                    this.m_camera.m_z(),
+            this.m_activePlayer.m_pos.y +
+                (this.m_camera.m_screenHeight * 0.5 - this.m_input.mousePos.y) /
+                    this.m_camera.m_z(),
+        );
+        // const mousePos = this.m_camera.m_screenToPoint(this.m_input.mousePos);
         const toMousePos = v2.sub(mousePos, playerPos);
         let toMouseLen = v2.length(toMousePos);
         let toMouseDir =
@@ -986,7 +995,7 @@ export class Game {
         this.m_render(dt, debug);
     }
 
-    m_render(_dt: number, debug: DebugOptions) {
+    m_render(dt: number, debug: DebugOptions) {
         const grassColor = this.m_map.mapLoaded
             ? this.m_map.getMapDef().biome.colors.grass
             : 8433481;
@@ -997,7 +1006,7 @@ export class Game {
         this.m_flareBarn.m_render(this.m_camera);
         this.m_decalBarn.m_render(this.m_camera, debug, this.m_activePlayer.layer);
         this.m_map.m_render(this.m_camera);
-        this.m_gas.m_render(this.m_camera);
+        this.m_gas.m_render(dt, this.m_camera);
         this.m_uiManager.m_render(
             this.m_activePlayer.m_pos,
             this.m_gas,
@@ -1211,6 +1220,7 @@ export class Game {
         }
         if (this.lastUpdateTime > 0) {
             const interval = now - this.lastUpdateTime;
+            this.m_camera.m_interpInterval = interval / 1000;
             this.updateIntervals.push(interval);
         }
         this.lastUpdateTime = now;

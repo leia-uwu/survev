@@ -33,6 +33,8 @@ export class Loot implements AbstractObject {
 
     updatedData!: boolean;
     pos!: Vec2;
+    visualPosOld!: Vec2;
+    posInterpTicker!: number;
     isOld!: boolean;
 
     layer!: number;
@@ -53,6 +55,7 @@ export class Loot implements AbstractObject {
 
     m_init() {
         this.updatedData = false;
+        this.visualPosOld = v2.create(0, 0);
     }
 
     m_free() {
@@ -74,6 +77,11 @@ export class Loot implements AbstractObject {
         },
     ) {
         this.updatedData = true;
+
+        if (!v2.eq(data.pos, this.visualPosOld)) {
+            this.visualPosOld = v2.copy(isNew ? data.pos : this.pos);
+            this.posInterpTicker = 0;
+        }
         this.pos = v2.copy(data.pos);
 
         if (fullUpdate) {
@@ -211,7 +219,17 @@ export class LootBarn {
 
                 const scaleIn = math.delerp(loot.ticker, 0, 1);
                 const scale = math.easeOutElastic(scaleIn, 0.75);
-                const screenPos = camera.m_pointToScreen(loot.pos);
+                let pos = loot.pos;
+                if (camera.m_interpEnabled) {
+                    loot.posInterpTicker += dt;
+                    const posT = math.clamp(
+                        loot.posInterpTicker / camera.m_interpInterval,
+                        0,
+                        1,
+                    );
+                    pos = v2.lerp(posT, loot.visualPosOld, loot.pos);
+                }
+                const screenPos = camera.m_pointToScreen(pos);
                 const screenScale = camera.m_pixels(loot.imgScale * scale);
 
                 if (device.debug && debug.loot && activePlayer.layer === loot.layer) {

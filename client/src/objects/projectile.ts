@@ -44,6 +44,10 @@ class Projectile implements AbstractObject {
     rad!: number;
     pos!: Vec2;
     posOld!: Vec2;
+
+    visualPosOld = v2.create(0, 0);
+    posInterpTicker = 0;
+
     posZ!: number;
     posZOld!: number;
     dir!: Vec2;
@@ -100,6 +104,10 @@ class Projectile implements AbstractObject {
         this.posOld = isNew ? v2.copy(data.pos) : v2.copy(this.pos);
         this.posZOld = isNew ? data.posZ : this.posZ;
         this.pos = v2.copy(data.pos);
+        if (!v2.eq(data.pos, this.visualPosOld)) {
+            this.visualPosOld = v2.copy(this.posOld);
+            this.posInterpTicker = 0;
+        }
         this.posZ = data.posZ;
         this.dir = v2.copy(data.dir);
 
@@ -373,7 +381,19 @@ export class ProjectileBarn {
                 const scale =
                     p.imgScale *
                     math.remap(p.posZ, 0, GameConfig.projectile.maxHeight, 1, 4.75);
-                const screenPos = camera.m_pointToScreen(p.pos);
+
+                let pos = p.pos;
+                if (camera.m_interpEnabled) {
+                    p.posInterpTicker += dt;
+                    const posT = math.clamp(
+                        p.posInterpTicker / camera.m_interpInterval,
+                        0,
+                        1,
+                    );
+                    pos = v2.lerp(posT, p.visualPosOld, p.pos);
+                }
+
+                const screenPos = camera.m_pointToScreen(pos);
                 const screenScale = camera.m_pixels(scale);
                 p.container.position.set(screenPos.x, screenPos.y);
                 p.container.scale.set(screenScale, screenScale);

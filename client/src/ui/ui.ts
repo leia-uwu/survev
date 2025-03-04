@@ -764,11 +764,11 @@ export class UiManager {
             this.mapSprite.x =
                 this.minimapPos.x +
                 this.mapSprite.width / 2 -
-                (player.m_pos.x / map.width) * this.mapSprite.width;
+                (player.m_visualPos.x / map.width) * this.mapSprite.width;
             this.mapSprite.y =
                 this.minimapPos.y -
                 this.mapSprite.height / 2 +
-                (player.m_pos.y / map.height) * this.mapSprite.height;
+                (player.m_visualPos.y / map.height) * this.mapSprite.height;
         }
 
         const camExtents = v2.create(
@@ -2028,7 +2028,7 @@ export class UiManager {
         debug: unknown,
     ) {
         // Gas
-        const circle = gas.getCircle();
+        const circle = gas.getCircle(1);
         const gasPos = this.getMapPosFromWorldPos(circle.pos, map);
         const gasEdge = this.getMapPosFromWorldPos(
             v2.add(circle.pos, v2.create(circle.rad, 0)),
