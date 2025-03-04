@@ -45,8 +45,8 @@ class Projectile implements AbstractObject {
     pos!: Vec2;
     posOld!: Vec2;
 
-    visualPosOld = v2.create(0, 0);
-    posInterpTicker = 0;
+    visualPosOld!: Vec2;
+    posInterpTicker!: number;
 
     posZ!: number;
     posZOld!: number;
@@ -78,7 +78,10 @@ class Projectile implements AbstractObject {
         this.container.addChild(this.sprite);
     }
 
-    m_init() {}
+    m_init() {
+        this.visualPosOld = v2.create(0, 0);
+        this.posInterpTicker = 0;
+    }
     m_free() {
         this.container.visible = false;
         if (this.strobeSprite) {
