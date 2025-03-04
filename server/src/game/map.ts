@@ -226,7 +226,7 @@ export class GameMap {
     center: Vec2;
 
     msg = new net.MapMsg();
-    mapStream = new MsgStream(new ArrayBuffer(1 << 15));
+    mapStream = new MsgStream(new ArrayBuffer(1 << 16));
     seed = util.randomInt(0, 2 ** 32 - 1);
 
     bounds: AABB;
