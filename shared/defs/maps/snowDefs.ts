@@ -1,9 +1,9 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
-import { Main } from "./baseDefs";
+import { Main, type PartialMapDef } from "./baseDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     assets: {
         audio: [
             { name: "snowball_01", channel: "sfx" },

@@ -35,7 +35,19 @@ export const MapDefs = {
     turkey: Turkey,
 } satisfies Record<string, MapDef>;
 
-export type Atlas = "gradient" | "loadout" | "shared" | "main";
+export type Atlas =
+    | "gradient"
+    | "loadout"
+    | "shared"
+    | "main"
+    | "desert"
+    | "faction"
+    | "halloween"
+    | "potato"
+    | "snow"
+    | "woods"
+    | "cobalt"
+    | "savannah";
 
 export interface MapDef {
     mapId: number;

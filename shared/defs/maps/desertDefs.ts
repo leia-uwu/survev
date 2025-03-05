@@ -2,9 +2,9 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
-import { Main } from "./baseDefs";
+import { Main, type PartialMapDef } from "./baseDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     mapId: 1,
     desc: {
         name: "Desert",

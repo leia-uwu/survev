@@ -1,8 +1,9 @@
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
+import type { PartialMapDef } from "./baseDefs";
 import { Woods } from "./woodsDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     assets: {
         audio: [
             { name: "vault_change_02", channel: "sfx" },

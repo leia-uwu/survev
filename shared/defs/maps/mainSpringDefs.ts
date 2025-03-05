@@ -1,8 +1,8 @@
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
-import { Main } from "./baseDefs";
+import { Main, type PartialMapDef } from "./baseDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     assets: {
         audio: [],
         atlases: ["gradient", "loadout", "shared", "main"],

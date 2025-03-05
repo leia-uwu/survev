@@ -2,7 +2,7 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
-import { Main } from "./baseDefs";
+import { Main, type PartialMapDef } from "./baseDefs";
 
 export enum TeamColor {
     // NONE = 0, // can be used ambiguously with code that runs the same regardless of team color
@@ -16,7 +16,7 @@ export const SpecialAirdropConfig = {
     aliveCountThreshold: 0.2,
 };
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     mapId: 3,
     desc: {
         name: "50v50",

@@ -1,8 +1,9 @@
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
+import type { PartialMapDef } from "./baseDefs";
 import { Potato } from "./potatoDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     assets: {
         audio: [
             { name: "club_music_01", channel: "ambient" },

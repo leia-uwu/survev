@@ -1,8 +1,9 @@
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
+import type { PartialMapDef } from "./baseDefs";
 import { Woods } from "./woodsDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     biome: {
         colors: {
             background: 2118510,
