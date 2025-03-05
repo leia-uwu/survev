@@ -551,23 +551,23 @@ export class GameMap {
 
                 const widthA = boundsA.max.x - boundsA.min.x;
                 const heightA = boundsA.max.y - boundsA.min.y;
-                const sizeA = widthA + heightA / 2;
+                const sizeA = widthA * heightA;
 
                 const widthB = boundsB.max.x - boundsB.min.x;
                 const heightB = boundsB.max.y - boundsB.min.y;
-                const sizeB = widthB + heightB / 2;
+                const sizeB = widthB * heightB;
 
-                return sizeA > sizeB ? -1 : 1;
+                return sizeB - sizeA;
             })
             .sort((a, b) => {
                 const includesA = importantSpawns.includes(a);
                 const includesB = importantSpawns.includes(b);
 
-                if (includesA && includesB) return 0;
+                if (includesA == includesB) return 0;
                 if (includesA) return -1;
                 if (includesB) return 1;
 
-                return 1;
+                return 0;
             });
 
         //buildings that contain bridges such as ocean/river shacks and river town
