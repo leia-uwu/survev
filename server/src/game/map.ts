@@ -607,10 +607,21 @@ export class GameMap {
             //
             // Generate river cabins
             //
-            for (const type in mapDef.mapGen.riverCabins) {
-                const count = mapDef.mapGen.riverCabins[type];
-                for (let i = 0; i < count; i++) {
-                    this.genRiverCabin(type);
+
+            if (this.mapDef.mapGen.map.rivers.spawnCabins) {
+                let cabinsToSpawn = 1;
+                for (let i = 0; i < this.normalRivers.length; i++) {
+                    const river = this.normalRivers[i];
+                    if (river.waterWidth >= 16) {
+                        cabinsToSpawn += util.randomInt(1, 2);
+                    } else if (river.waterWidth >= 6) {
+                        cabinsToSpawn += util.randomInt(0, 1);
+                    }
+                }
+                cabinsToSpawn = math.clamp(cabinsToSpawn, 1, 3);
+
+                for (let i = 0; i < cabinsToSpawn; i++) {
+                    this.genRiverCabin();
                 }
             }
 
@@ -1273,8 +1284,10 @@ export class GameMap {
         }
     }
 
-    genRiverCabin(type: string) {
+    genRiverCabin() {
         if (!this.normalRivers.length) return;
+
+        const type = "cabin_01";
 
         const inset = this.grassInset + this.shoreInset;
         const mapBound = collider.createAabb(
@@ -1287,10 +1300,10 @@ export class GameMap {
         const bound = mapHelpers.getBoundingCollider(type) as AABB;
         const height = bound.max.y - bound.min.y / 2;
 
-        let river = this.normalRivers[util.randomInt(0, this.normalRivers.length - 1)];
-        const getPosAndOri = () => {
+        this.trySpawn(type, () => {
             const t = util.random(0.1, 0.9);
-            river = this.normalRivers[util.randomInt(0, this.normalRivers.length - 1)];
+            const river =
+                this.normalRivers[util.randomInt(0, this.normalRivers.length - 1)];
             let pos = river.spline.getPos(t);
 
             const otherSide = Math.random() < 0.5;
@@ -1308,11 +1321,6 @@ export class GameMap {
                 4;
             const ori = (def.terrain.nearbyRiver!.facingOri + riverOri) % 4;
 
-            return { pos, ori, otherSide };
-        };
-
-        this.trySpawn(type, () => {
-            const { pos, ori, otherSide } = getPosAndOri();
             const bounds = collider.transform(bound, pos, math.oriToRad(ori), 1) as AABB;
             if (
                 !coldet.aabbInsideAabb(bounds.min, bounds.max, mapBound.min, mapBound.max)

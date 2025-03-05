@@ -497,6 +497,7 @@ export const Main: MapDef = {
                     },
                 ],
                 smoothness: 0.45,
+                spawnCabins: true,
                 masks: [],
             },
         },
@@ -538,9 +539,6 @@ export const Main: MapDef = {
             medium: "bridge_md_structure_01",
             large: "bridge_lg_structure_01",
             xlarge: "",
-        },
-        riverCabins: {
-            cabin_01: 3,
         },
         customSpawnRules: {
             locationSpawns: [
