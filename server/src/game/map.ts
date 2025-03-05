@@ -448,16 +448,16 @@ export class GameMap {
             //in factions mode, we always assume the first width in widths is the main faction river
             const isFactionRiver = this.factionMode && i == 0;
 
-            let riverPoints: Vec2[];
-            let iterations = 0;
-            do {
-                riverPoints = riverCreator.create(isFactionRiver);
-            } while (riverPoints.length < 12 && iterations < 300);
+            this.trySpawn(`river_${widths[i]}`, () => {
+                const riverPoints = riverCreator.create(isFactionRiver);
+                if (riverPoints.length < 12) return false;
 
-            this.riverDescs.push({
-                width: widths[i],
-                points: riverPoints,
-                looped: false,
+                this.riverDescs.push({
+                    width: widths[i],
+                    points: riverPoints,
+                    looped: false,
+                });
+                return true;
             });
         }
     }

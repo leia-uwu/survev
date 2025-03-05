@@ -153,10 +153,11 @@ export class RiverCreator {
 
         // if too many points are inside the ocean
         // discard the river because its most likely "sliding" along the map boundaries
-        const maxPointsOutside = math.max(
+        let maxPointsOutside = math.max(
             (this.map.shoreInset + this.map.grassInset) / 9,
             3,
         );
+        if (isFactionRiver) maxPointsOutside *= 2;
         for (let i = 0, pointsOutsideGrass = 0; i < riverPoints.length; i++) {
             if (
                 !coldet.testPointAabb(
