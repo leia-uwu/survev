@@ -222,6 +222,10 @@ const mapDef: PartialMapDef = {
                 bunker_structure_01b: 1,
                 bunker_structure_03: 1,
                 bunker_structure_07: 1,
+                teahouse_01: {
+                    small: 2,
+                    large: 3,
+                },
                 chest_03: { odds: 0.5 },
                 crate_19: 12,
                 stone_04: 6,
