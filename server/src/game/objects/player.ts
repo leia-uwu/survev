@@ -3735,7 +3735,9 @@ export class Player extends BaseGameObject {
                 break;
             }
             case "perk": {
-                const perkSlotType = this.perks.find((p) => p.droppable && p.type === dropMsg.item)?.type;
+                const perkSlotType = this.perks.find(
+                    (p) => p.droppable && p.type === dropMsg.item,
+                )?.type;
                 if (perkSlotType && perkSlotType == dropMsg.item) {
                     this.dropLoot(dropMsg.item);
                     this.removePerk(dropMsg.item);
