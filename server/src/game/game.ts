@@ -353,6 +353,7 @@ export class Game {
         player.setPartDirty();
         if (player.timeAlive < GameConfig.player.minActiveTime && !player.downed) {
             player.game.playerBarn.removePlayer(player);
+            player.game.playerBarn.allPlayers.push(player)
         }
     }
 
@@ -406,7 +407,6 @@ export class Game {
         }
         this.logger.log("Game Ended");
         this.updateData();
-        console.log(this.playerBarn.players.map((player) => player.authId));
         this._saveGameToDatabase();
     }
 

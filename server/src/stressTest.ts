@@ -16,7 +16,7 @@ import { v2 } from "../../shared/utils/v2";
 import type { FindGameResponse } from "./gameServer";
 
 const config = {
-    address: "http://127.0.0.1:8001",
+    address: "http://127.0.0.1:8000",
     region: "local",
     gameModeIdx: 0,
     botCount: 79,
