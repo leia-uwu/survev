@@ -19,6 +19,10 @@ import { ApiServer } from "./apiServer";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { handleModerationAction } from "./moderation";
+import { validateParams } from "./zodSchemas";
 
 export type Context = {
     Variables: {
@@ -183,6 +187,32 @@ app.post("/api/toggleCaptcha", async (c) => {
     } catch (_err) {
         server.logger.warn("/api/toggleCaptcha: Invalid request");
         return c.json({ error: "Invalid request" }, 400);
+    }
+});
+
+app.post("/api/moderation",
+    validateParams(z.object({
+        apiKey: z.string(),
+        data: z.object({
+            action: z.enum(["ban", "unban", "isbanned", "clear", "get-player-ip"]),
+            ip: z.string(),
+            name: z.string().optional(),
+        })
+    })),
+    async (ctx) => {
+    try {
+        const { apiKey, data } = ctx.req.valid("json");
+
+        if (apiKey !== Config.apiKey) {
+            return ctx.json({ message: "Forbidden" }, 403);
+        }
+
+        const message = handleModerationAction(data.action, data.ip, data.name);
+
+        return ctx.json({ message });
+    } catch (err) {
+        console.error("Error processing request:", err);
+        return ctx.json({ message: "An unexpected error occurred." }, 500); // Handle unexpected errors
     }
 });
 

@@ -6,6 +6,7 @@ import {
     mysqlTable,
     timestamp,
     varchar,
+    index
 } from "drizzle-orm/mysql-core";
 import { TeamMode } from "../../../../shared/gameConfig";
 import { validateLoadout } from "../../../../shared/utils/helpers";
@@ -81,6 +82,27 @@ export const matchDataTable = mysqlTable("match_data", {
 
 export type MatchDataTable = typeof matchDataTable.$inferInsert;
 
+//
+// LOGS
+//
+export const ipLogsTable = mysqlTable(
+    "ip_logs",
+    {
+        createdAt: timestamp("created_at").notNull().defaultNow(),
+        realIp: varchar("real_ip", { length: 255 }).notNull(),
+        encodedIp: varchar("encoded_ip", { length: 255 }).notNull(),
+        name: varchar("name", { length: 255 }).notNull(),
+        gameId: varchar("game_id", { length: 255 }).notNull(),
+    },
+    (table) => [index("name_created_at_idx").on(table.name, table.createdAt)],
+);
+
+export const bannedIpsTable = mysqlTable("banned_ips", {
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    expiresIn: timestamp("expries_in").notNull(),
+    encodedIp: varchar("encoded_ip", { length: 255 }).notNull().primaryKey(),
+});
+
 export function generateEmptyStatModes(): ModeStat[] {
     return [TeamMode.Solo, TeamMode.Duo, TeamMode.Squad].map((teamMode) => ({
         teamMode,
@@ -94,4 +116,4 @@ export function generateEmptyStatModes(): ModeStat[] {
         avgDamage: 0,
         avgTimeAlive: 0,
     }));
-}
+};
