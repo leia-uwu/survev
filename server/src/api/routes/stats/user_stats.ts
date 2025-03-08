@@ -7,6 +7,7 @@ import type { TeamMode } from "../../../../../shared/gameConfig";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { getRedisClient } from "../../cache";
+import { validateParams } from "../../zodSchemas";
 
 export const UserStatsRouter = new Hono<Context>();
 
@@ -31,16 +32,7 @@ const emptyState = {
 
 UserStatsRouter.post(
     "/",
-    zValidator("json", userStatsSchema, (result, c) => {
-        if (!result.success) {
-            return c.json(
-                {
-                    message: "Invalid params",
-                },
-                400,
-            );
-        }
-    }),
+    validateParams(userStatsSchema),
     async (c) => {
         try {
           // TODO: filter by interval

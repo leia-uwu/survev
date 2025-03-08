@@ -8,6 +8,7 @@ import type { Region } from "../../../config";
 import { db } from "../../db";
 import { getRedisClient } from "../../cache";
 import { filterByInterval, filterByMapId } from "./user_stats";
+import { validateParams } from "../../zodSchemas";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -44,16 +45,7 @@ function getVal(
 }
 leaderboardRouter.post(
     "/",
-    zValidator("json", paramsSchema, (result, c) => {
-        if (!result.success) {
-            return c.json(
-                {
-                    message: "Invalid params",
-                },
-                400,
-            );
-        }
-    }),
+    validateParams(paramsSchema),
     async (c) => {
       const { teamMode, mapId, type, interval } = c.req.valid("json");
       const cacheKey = getLeaderboardCacheKey({teamMode, mapId, type})

@@ -12,7 +12,7 @@ import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import type { Context } from "../../index";
-import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
+import { type Loadout, loadoutSchema, usernameSchema, validateParams } from "../../zodSchemas";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
 import { invalidateUserStatsCache } from "../stats/user_stats";
@@ -155,11 +155,7 @@ UserRouter.post(
 
 UserRouter.post(
     "/loadout",
-    zValidator("json", z.object({ loadout: loadoutSchema }), (result, c) => {
-        if (!result.success) {
-            return c.json({}, 400);
-        }
-    }),
+    validateParams(z.object({ loadout: loadoutSchema })),
     AuthMiddleware,
     async (c) => {
         try {
@@ -227,18 +223,10 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
 
 UserRouter.post(
     "/set_item_status",
-    zValidator(
-        "json",
-        z.object({
-            itemTypes: z.array(z.string()),
-            status: z.nativeEnum(ItemStatus),
-        }),
-        (result, c) => {
-            if (!result.success) {
-                return c.json({}, 400);
-            }
-        },
-    ),
+    validateParams(z.object({
+        itemTypes: z.array(z.string()),
+        status: z.nativeEnum(ItemStatus),
+    })),
     AuthMiddleware,
     async (c) => {
         try {
@@ -287,17 +275,9 @@ UserRouter.post(
 // if not delete it, or make it admin only.
 UserRouter.post(
     "/unlock",
-    zValidator(
-        "json",
-        z.object({
-            unlockType: z.string(),
-        }),
-        (result, c) => {
-            if (!result.success) {
-                return c.json({}, 400);
-            }
-        },
-    ),
+    validateParams(z.object({
+        unlockType: z.string(),
+    })),
     async (c) => {
         try {
             if (process.env.NODE_ENV === "production") return;
@@ -366,17 +346,9 @@ UserRouter.post("/reset_stats", (c) => {
 
 UserRouter.post(
     "/get_pass",
-    zValidator(
-        "json",
-        z.object({
-            tryRefreshQuests: z.boolean(),
-        }),
-        (result, c) => {
-            if (!result.success) {
-                return c.json({}, 400);
-            }
-        },
-    ),
+    validateParams(z.object({
+        tryRefreshQuests: z.boolean(),
+    })),
     (c) => {
         return c.json({ success: true }, 200);
     },

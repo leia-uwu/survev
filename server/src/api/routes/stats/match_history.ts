@@ -7,6 +7,7 @@ import { TeamMode } from "../../../../../shared/gameConfig";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { getRedisClient } from "../../cache";
+import { validateParams } from "../../zodSchemas";
 
 export const matchHistoryRouter = new Hono<Context>();
 
@@ -31,16 +32,7 @@ const matchHistorySchema = z.object({
 
 matchHistoryRouter.post(
     "/",
-    zValidator("json", matchHistorySchema, (result, c) => {
-        if (!result.success) {
-            return c.json(
-                {
-                    message: "Invalid params",
-                },
-                400,
-            );
-        }
-    }),
+    validateParams(matchHistorySchema),
     async (c) => {
         try {
             const { slug, offset, teamModeFilter } = c.req.valid("json");

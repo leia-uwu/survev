@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Constants } from "../../../shared/net/net";
+import { zValidator } from "@hono/zod-validator";
 
 export const loadoutSchema = z.object({
     outfit: z.string(),
@@ -21,3 +22,19 @@ export type Loadout = z.infer<typeof loadoutSchema>;
 export const usernameSchema = z.object({
     username: z.string().trim().min(1).max(Constants.PlayerNameMaxLen),
 });
+
+/**
+ * middleware for validating JSON request parameters against a Zod schema.
+*/
+export function validateParams<Schema extends z.ZodSchema>(schema: Schema) {
+    return zValidator("json", schema, (result, c) => {
+        if (!result.success) {
+            return c.json(
+                {
+                    message: "Invalid params",
+                },
+                400,
+            );
+        }
+    });
+}

@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { Context } from "../..";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
+import { validateParams } from "../../zodSchemas";
 
 export const matchDataRouter = new Hono<Context>();
 
@@ -18,16 +19,7 @@ function shuffle<T>(array: T[]): T[] {
 
 matchDataRouter.post(
     "/",
-    zValidator("json", matchDataSchema, (result, c) => {
-        if (!result.success) {
-            return c.json(
-                {
-                    message: "Invalid params",
-                },
-                400,
-            );
-        }
-    }),
+    validateParams(matchDataSchema),
     async (c) => {
         try {
             const { gameId } = c.req.valid("json");
