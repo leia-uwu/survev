@@ -220,39 +220,14 @@ export class GameMap {
 
     width: number;
     height: number;
-
     scale: "large" | "small";
-
     center: Vec2;
-
-    msg = new net.MapMsg();
-    mapStream = new MsgStream(new ArrayBuffer(1 << 16));
-    seed = util.randomInt(0, 2 ** 32 - 1);
-
     bounds: AABB;
-
-    objectCount: Record<string, number> = {};
-    incrementCount(type: string) {
-        if (!this.objectCount[type]) {
-            this.objectCount[type] = 1;
-        } else {
-            this.objectCount[type]++;
-        }
-    }
 
     grassInset: number;
     shoreInset: number;
 
-    terrain!: ReturnType<typeof generateTerrain>;
-
     mapDef: MapDef;
-
-    riverDescs: MapRiverData[] = [];
-
-    riverMasks: Array<{ pos: Vec2; rad: number }>;
-
-    placeSpawns: string[];
-    placesToSpawn: Vec2[];
 
     factionMode: boolean;
     perkMode: boolean;
@@ -262,17 +237,35 @@ export class GameMap {
     potatoMode: boolean;
     sniperMode: boolean;
 
+    mapStream = new MsgStream(new ArrayBuffer(1 << 16));
+
+    seed!: number;
+    msg!: net.MapMsg;
+    terrain!: ReturnType<typeof generateTerrain>;
+    riverDescs!: MapRiverData[];
+    riverMasks!: Array<{ pos: Vec2; rad: number }>;
+    normalRivers!: Array<River & { looped: false }>;
+    lakes!: Array<River & { looped: true }>;
+
+    placeSpawns!: string[];
+    placesToSpawn!: Vec2[];
+
     /** 0 for horizontal split, 1 for vertical split*/
     factionModeSplitOri: 0 | 1 = 0;
 
-    normalRivers: Array<River & { looped: false }> = [];
-    lakes: Array<River & { looped: true }> = [];
-
-    obstacles: Obstacle[] = [];
-    buildings: Building[] = [];
-    buildingsWithEmitters: Building[] = [];
-    structures: Structure[] = [];
-    bridges: Structure[] = [];
+    obstacles!: Obstacle[];
+    buildings!: Building[];
+    buildingsWithEmitters!: Building[];
+    structures!: Structure[];
+    bridges!: Structure[];
+    objectCount!: Record<string, number>;
+    incrementCount(type: string) {
+        if (!this.objectCount[type]) {
+            this.objectCount[type] = 1;
+        } else {
+            this.objectCount[type]++;
+        }
+    }
 
     constructor(game: Game) {
         this.game = game;
@@ -293,16 +286,6 @@ export class GameMap {
             v2.create(0, 0),
             v2.create(this.width, this.height),
         );
-
-        this.msg.mapName = game.config.mapName;
-        this.msg.seed = this.seed;
-        this.msg.width = this.width;
-        this.msg.height = this.height;
-        this.msg.rivers = this.riverDescs;
-        this.center = v2.create(this.width / 2, this.height / 2);
-        this.grassInset = this.msg.grassInset = mapConfig.grassInset;
-        this.shoreInset = this.msg.shoreInset = mapConfig.shoreInset;
-
         this.factionMode = !!this.mapDef.gameMode.factionMode;
         this.perkMode = !!this.mapDef.gameMode.perkMode;
         this.turkeyMode = !!this.mapDef.gameMode.turkeyMode;
@@ -311,9 +294,31 @@ export class GameMap {
         this.potatoMode = !!this.mapDef.gameMode.potatoMode;
         this.sniperMode = !!this.mapDef.gameMode.sniperMode;
 
-        if (this.factionMode) {
-            this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
-        }
+        this.center = v2.create(this.width / 2, this.height / 2);
+        this.grassInset = mapConfig.grassInset;
+        this.shoreInset = mapConfig.shoreInset;
+    }
+
+    init() {
+        this.seed = util.randomInt(0, 2 ** 32 - 1);
+
+        this.objectCount = {};
+        this.obstacles = [];
+        this.buildings = [];
+        this.buildingsWithEmitters = [];
+        this.structures = [];
+        this.bridges = [];
+        this.riverDescs = [];
+
+        this.msg = new net.MapMsg();
+        this.msg.mapName = this.game.config.mapName;
+        this.msg.seed = this.seed;
+        this.msg.width = this.width;
+        this.msg.height = this.height;
+        this.msg.rivers = this.riverDescs;
+        this.msg.grassInset = this.mapDef.mapGen.map.grassInset;
+        this.msg.shoreInset = this.mapDef.mapGen.map.shoreInset;
+        this.msg.places = [...this.mapDef.mapGen.places];
 
         this.placeSpawns = [...this.mapDef.mapGen.customSpawnRules.placeSpawns];
         this.msg.places = [...this.mapDef.mapGen.places];
@@ -332,10 +337,14 @@ export class GameMap {
                 rad: mask.rad,
             };
         });
-    }
 
-    init() {
+        if (this.factionMode) {
+            this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
+        }
+
         this.generateTerrain();
+
+        this.msg.rivers = this.riverDescs;
 
         this.terrain = generateTerrain(
             this.width,
@@ -345,6 +354,7 @@ export class GameMap {
             this.riverDescs,
             this.seed,
         );
+
         this.normalRivers = this.terrain.rivers.filter((river) => !river.looped) as Array<
             River & { looped: false }
         >;
@@ -354,7 +364,32 @@ export class GameMap {
 
         this.generateObjects();
 
+        this.mapStream.stream.index = 0;
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
+    }
+
+    regenerate() {
+        for (const obj of this.game.objectRegister.objects) {
+            if (!obj) continue;
+            // destroy everything :3
+            if (
+                [
+                    ObjectType.Obstacle,
+                    ObjectType.Building,
+                    ObjectType.Decal,
+                    ObjectType.Structure,
+                    ObjectType.Loot,
+                ].includes(obj.__type)
+            ) {
+                obj.destroy();
+            }
+        }
+
+        this.init();
+
+        for (const player of this.game.playerBarn.players) {
+            player.sendData(this.mapStream.getBuffer());
+        }
     }
 
     update() {
@@ -765,7 +800,6 @@ export class GameMap {
      * @param logOnFailure I think i also dont have to explain this one
      * @returns True when it spawned successfully, false otherwise
      */
-    typesLogged = {};
     trySpawn(
         type: string,
         cb: () => boolean,
