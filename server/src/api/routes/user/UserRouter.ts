@@ -15,6 +15,7 @@ import type { Context } from "../../index";
 import { type Loadout, loadoutSchema, usernameSchema } from "../../zodSchemas";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
+import { invalidateUserStatsCache } from "../stats/user_stats";
 
 export const UserRouter = new Hono<Context>();
 
@@ -23,6 +24,17 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
         const user = c.get("user")!;
         const result = await db.query.usersTable.findFirst({
             where: eq(usersTable.id, user.id),
+            columns: {
+                loadout: true,
+                slug: true,
+                linked: true,
+                username: true,
+                usernameSet: true,
+                items: true,
+                banned: true,
+                banReason: true,
+                lastUsernameChangeTime: true
+            }
         });
 
         if (!result) {
@@ -50,7 +62,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
 
         const timeUntilNextChange =
             getTimeUntilNextUsernameChange(lastUsernameChangeTime);
-
+        
         return c.json<ProfileResponse>(
             {
                 success: true,
@@ -63,7 +75,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
                 },
                 loadout,
                 loadoutPriv: encryptLoadout(loadout),
-                items,
+                items: items,
             },
             200,
         );
@@ -88,6 +100,9 @@ UserRouter.post(
 
             const existingUser = await db.query.usersTable.findFirst({
                 where: eq(usersTable.id, user.id),
+                columns: {
+                    lastUsernameChangeTime: true,
+                }
             })!;
 
             const timeUntilNextChange = getTimeUntilNextUsernameChange(
@@ -106,6 +121,9 @@ UserRouter.post(
                     eq(usersTable.username, username),
                     eq(usersTable.slug, username),
                 ),
+                columns: {
+                  id: true,
+                },
             });
 
             if (isUsernameTaken) {
@@ -124,6 +142,8 @@ UserRouter.post(
                     lastUsernameChangeTime: now,
                 })
                 .where(eq(usersTable.id, user.id));
+
+          await invalidateUserStatsCache(user.id, "*");
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {
@@ -230,14 +250,19 @@ UserRouter.post(
 
             if (!validItemTypes.length) return c.json({}, 200);
 
-            const [{ items }] = await db
-                .select({ items: usersTable.items })
-                .from(usersTable)
-                .where(eq(usersTable.id, user.id))
-                .limit(1);
+            const result = await db.query.usersTable.findFirst({
+                where: eq(usersTable.id, user.id),
+                columns: {
+                    items: true
+                }
+            });
+
+            if ( !result ) return c.json({}, 200);
+
+            const { items } = result;
 
             const updatedItems = items.map((item) => {
-                if (itemTypes.includes(item.type)) {
+                if (validItemTypes.includes(item.type)) {
                     item.status = status;
                 }
                 return item;
@@ -246,7 +271,7 @@ UserRouter.post(
             await db
                 .update(usersTable)
                 .set({
-                    items: updatedItems,
+                    items: updatedItems,    
                 })
                 .where(eq(usersTable.id, user.id));
 
@@ -285,17 +310,19 @@ UserRouter.post(
             const timeAcquired = new Date();
             const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
 
-            const result = await db
-                .select({ items: usersTable.items })
-                .from(usersTable)
-                .where(eq(usersTable.authId, MOCK_USER_ID))
-                .limit(1);
+            const result = await db.query.usersTable.findFirst({
+                where: eq(usersTable.authId, MOCK_USER_ID),
+                columns: {
+                    items: true
+                }
+            })
+                
 
-            if (!result.length) {
+            if (!result) {
                 return c.json({ err: "No items found for this user." }, 404);
             }
 
-            const [{ items }] = result;
+            const { items } = result;
 
             // Remove duplicates
             const unlockedItemTypes = new Set(items.map(({ type }) => type));

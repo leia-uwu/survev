@@ -40,28 +40,19 @@ export async function setUserCookie(userId: string, c: Context) {
 }
 
 export async function createNewUser(payload: UsersTable) {
-    await db.insert(usersTable).values(payload);
-
-    // unlock outfits on account creation;
     const unlockType = "unlock_new_account";
-    const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
-    if (outfitsToUnlock.length) {
-        const timeAcquired = new Date();
-        const items: Item[] = outfitsToUnlock.map((outfit) => {
-            return {
-                source: unlockType,
-                type: outfit,
-                timeAcquired,
-                status: ItemStatus.New,
-            };
-        });
+    const outfitsToUnlock = UnlockDefs[unlockType].unlocks || [];
+    const timeAcquired = new Date();
+    const items: Item[] = outfitsToUnlock.map((outfit) => {
+        return {
+            source: unlockType,
+            type: outfit,
+            timeAcquired,
+            status: ItemStatus.New,
+        };
+    });
 
-        const data = await db
-            .update(usersTable)
-            .set({ items })
-            .where(eq(usersTable.id, payload.id));
-        console.log({ data });
-    }
+    await db.insert(usersTable).values({...payload, items });
 }
 
 export function getRedirectUri(method: string) {
