@@ -172,7 +172,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_scarssr: {
         type: "bullet",
-        damage: 60,
+        damage: 81,
         obstacleDamage: 1.5,
         falloff: 0.85,
         distance: 200,
