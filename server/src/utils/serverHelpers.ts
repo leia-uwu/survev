@@ -1,7 +1,7 @@
 import { isIP } from "net";
 import type { Context } from "hono";
-import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
+import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Config } from "../config";
 
 /**
@@ -19,7 +19,10 @@ export function cors(res: HttpResponse): void {
         .writeHeader("Access-Control-Max-Age", "3600");
 }
 
-export function getHonoIp(c: Context) {
+export function getHonoIp(c: Context, proxyHeader?: string) {
+    if ( proxyHeader) {
+        return c.req.raw.headers.get(proxyHeader);
+    }
     const ip =
         c.req.header("x-forwarded-for") ||
         c.req.header("x-real-ip") ||

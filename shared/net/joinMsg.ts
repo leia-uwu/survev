@@ -13,7 +13,7 @@ export class JoinMsg implements AbstractMsg {
       cookie sent from the client
       much easier to test this way;
     */
-    data="";
+    data = "";
     loadout = {
         outfit: "",
         melee: "",

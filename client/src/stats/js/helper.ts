@@ -3,6 +3,7 @@ import EnJs from "../l10n/en";
 
 export function getCensoredBattletag(content: string) {
     if (content) {
+        // @ts-expect-error can't bother
         var words = EnJs?.words || [];
 
         var asterisk = "*";

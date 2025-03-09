@@ -1,12 +1,12 @@
 import $ from "jquery";
 // TODO(performance): only load needed bootstrap components
-import 'bootstrap'
+import "bootstrap";
 import slugify from "slugify";
 import { device } from "../../device";
-import language from "./templates/langauge.ejs?raw";
-import { Localization } from "./localization";
+import { AcceptedLocales, Localization } from "./localization";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
+import language from "./templates/langauge.ejs?raw";
 
 import { ConfigManager } from "../../config";
 import { renderEjs } from "./helper";
@@ -97,7 +97,7 @@ export class App {
         this.config.load(() => {});
 
         this.localization = new Localization();
-        this.localization.setLocale(this.config.get("language"));
+        this.localization.setLocale(this.config.get("language") as AcceptedLocales);
         this.localization.localizeIndex();
 
         this.adManager = new Ads();
@@ -170,13 +170,13 @@ export class App {
         this.adManager.showFreestarAds(slotIds);
 
         this.view.load();
-        this.el.html(this.view.el);
+        this.el.html(this.view.el.html());
         this.render();
     }
 
     render() {
         var _this = this;
-      
+
         $("#language-select").html(
             templates.language({
                 code: this.localization.getLocale(),
@@ -186,11 +186,11 @@ export class App {
         $(".dropdown-language").off("click");
         $(".dropdown-language").on("click", (e) => {
             console.log({
-              called: true,
-              ele: $("#selected-language")
-            })
+                called: true,
+                ele: $("#selected-language"),
+            });
             var el = e.target;
-            var code = $(el).attr("value") as string;
+            var code = $(el).attr("value") as AcceptedLocales;
             var _language = $(el).html();
             if (code) {
                 // Set the config language
@@ -200,7 +200,6 @@ export class App {
                 _this.config.set("language", code);
             }
         });
-
     }
 }
 

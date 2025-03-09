@@ -1,12 +1,12 @@
 import $ from "jquery";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
+import type { App } from "./app";
+import { getCensoredBattletag, renderEjs } from "./helper";
 import leaderboard from "./templates/leaderboard.ejs?raw";
 import leaderboardError from "./templates/leaderboardError.ejs?raw";
 import loading from "./templates/loading.ejs?raw";
 import main from "./templates/main.ejs?raw";
-import type { App } from "./app";
-import { getCensoredBattletag, renderEjs } from "./helper";
 
 var templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
@@ -147,7 +147,7 @@ export class MainView {
                 type: "leaderboard",
             });
         } else if (this.error || !this.data.data) {
-            content = templates.leaderboardError();
+            content = templates.leaderboardError({});
         } else {
             for (var i = 0; i < this.data.data.length; i++) {
                 if (this.data.data[i].username) {
@@ -188,7 +188,7 @@ export class MainView {
             $("#leaderboard-time").val(this.data.interval!);
 
             // Disable most kills option if 50v50 selected
-            var factionMode = this.data.mapId == 3;
+            var factionMode = Number(this.data.mapId) == 3;
             if (factionMode) {
                 $('#leaderboard-type option[value="most_kills"]').attr(
                     "disabled",

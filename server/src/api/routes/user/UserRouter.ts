@@ -317,6 +317,7 @@ UserRouter.post(
                     items: updatedItems,
                 })
                 .where(eq(usersTable.authId, MOCK_USER_ID))
+                // @ts-expect-error delete me after merge;
                 .returning({
                     items: usersTable.items,
                 });

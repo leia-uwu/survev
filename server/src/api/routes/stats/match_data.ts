@@ -1,10 +1,10 @@
+import { zValidator } from "@hono/zod-validator";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
-import { zValidator } from "@hono/zod-validator";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
-import { eq } from "drizzle-orm";
 
 export const matchDataRouter = new Hono<Context>();
 
@@ -46,7 +46,7 @@ matchDataRouter.post(
                 .from(matchDataTable)
                 .where(eq(matchDataTable.gameId, gameId));
 
-                return c.json<MatchData[]>(result, 200);
+            return c.json<MatchData[]>(result, 200);
         } catch (_err) {
             console.log({ _err });
             return c.json({}, 500);

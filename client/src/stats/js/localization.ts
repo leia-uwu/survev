@@ -2,7 +2,7 @@ import $ from "jquery";
 import EnJs from "../l10n/en";
 import EsJs from "../l10n/es";
 
-type AcceptedLocales = "en" | "es";
+export type AcceptedLocales = "en" | "es";
 
 const map = {
     en: EnJs,
@@ -50,9 +50,9 @@ export class Localization {
 
         // Go through index and replace data-l10n tagged elements
         var localizedElements = $("*[data-l10n]");
-        localizedElements.each((_idx, el) => {
+        localizedElements.each((_idx, el): any => {
             var el$ = $(el);
-            var datal10n = el$.attr("data-l10n");
+            var datal10n = el$.attr("data-l10n")!;
             var localizedText = _this.translate(datal10n);
             if (localizedText) {
                 if (el$.attr("data-caps") == "true") {

@@ -8,7 +8,7 @@ import type { Vec2 } from "../../shared/utils/v2";
 const isProduction = process.env["NODE_ENV"] === "production";
 
 // !! TODO: update this
-export type Region = "eu" | "na" | "as"
+export type Region = "eu" | "na" | "as";
 
 // WARNING: THIS IS THE DEFAULT CONFIG
 // YOU SHOULD MODIFY survev-config.json FILE INSTEAD FOR LOCAL CHANGES

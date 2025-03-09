@@ -1,17 +1,16 @@
 import { eq } from "drizzle-orm";
 import type { Context } from "hono";
+import { setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
-import { ItemStatus, validateLoadout } from "../../../../../../shared/utils/helpers";
+import { ItemStatus } from "../../../../../../shared/utils/helpers";
 import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
-import { generateEmptyStatModes, type UsersTable, usersTable } from "../../../db/schema";
+import { type UsersTable, usersTable } from "../../../db/schema";
 import type { Item } from "../UserRouter";
-import { Loadout } from "../../../zodSchemas";
-import { setCookie } from "hono/cookie";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
@@ -29,13 +28,13 @@ export function sanitizeSlug(username: string) {
 export async function setUserCookie(userId: string, c: Context) {
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    
+
     setCookie(c, sessionCookie.name, sessionCookie.value, {
         httpOnly: false,
         secure: true,
         sameSite: "lax",
         path: sessionCookie.attributes.path,
-        expires: sessionCookie.attributes.expires
+        expires: sessionCookie.attributes.expires,
     });
     return session;
 }
@@ -57,8 +56,11 @@ export async function createNewUser(payload: UsersTable) {
             };
         });
 
-        const data = await db.update(usersTable).set({ items }).where(eq(usersTable.id, payload.id));
-        console.log({ data })
+        const data = await db
+            .update(usersTable)
+            .set({ items })
+            .where(eq(usersTable.id, payload.id));
+        console.log({ data });
     }
 }
 

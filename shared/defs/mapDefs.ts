@@ -32,22 +32,22 @@ export type Atlas =
     | "savannah";
 
 export const MapDefs = {
-  main: Main,
-  main_spring: MainSpring,
-  main_summer: MainSummer,
-  desert: Desert,
-  faction: Faction,
-  halloween: Halloween,
-  potato: Potato,
-  potato_spring: PotatoSpring,
-  snow: Snow,
-  woods: Woods,
-  woods_snow: WoodsSnow,
-  woods_spring: WoodsSpring,
-  woods_summer: WoodsSummer,
-  savannah: Savannah,
-  cobalt: Cobalt,
-  turkey: Turkey,
+    main: Main,
+    main_spring: MainSpring,
+    main_summer: MainSummer,
+    desert: Desert,
+    faction: Faction,
+    halloween: Halloween,
+    potato: Potato,
+    potato_spring: PotatoSpring,
+    snow: Snow,
+    woods: Woods,
+    woods_snow: WoodsSnow,
+    woods_spring: WoodsSpring,
+    woods_summer: WoodsSummer,
+    savannah: Savannah,
+    cobalt: Cobalt,
+    turkey: Turkey,
 } satisfies Record<string, MapDef>;
 
 export interface MapDef {

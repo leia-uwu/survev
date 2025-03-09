@@ -30,7 +30,7 @@ class Region {
                     "Content-type": "application/json",
                 },
             })
-                .catch(console.error)
+                .catch(console.warn)
                 .then((response) => {
                     if (response?.ok) {
                         return response.json();
@@ -41,7 +41,7 @@ class Region {
                     resolve(json);
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.warn(error);
                     return [{ err: "Error parsing region response JSON" }];
                 });
         });
@@ -60,6 +60,7 @@ export class ApiServer {
     regions: Record<string, Region> = {};
 
     captchaEnabled = false;
+    proxyCheckEnabled = true;
 
     constructor() {
         for (const region in Config.regions) {
@@ -111,7 +112,7 @@ export class ApiServer {
         region.lastUpdateTime = Date.now();
     }
 
-    findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGameBody): Promise<FindGameResponse> {
         if (body.region in this.regions) {
             return this.regions[body.region].fetch<FindGameResponse>(
                 "api/find_game",

@@ -17,17 +17,17 @@ const userStatsSchema = z.object({
 });
 
 const getDurationFilter = (duration: "daily" | "weekly") => {
-  const now = new Date()
-  
-  switch(duration) {
-    case 'daily':
-      return gt(matchDataTable.createdAt, new Date(now.setDate(now.getDate() - 1)))
-    case 'weekly': 
-      return gt(matchDataTable.createdAt, new Date(now.setDate(now.getDate() - 7)))
-    default:
-      undefined
-  }
- }
+    const now = new Date();
+
+    switch (duration) {
+        case "daily":
+            return gt(matchDataTable.createdAt, new Date(now.setDate(now.getDate() - 1)));
+        case "weekly":
+            return gt(matchDataTable.createdAt, new Date(now.setDate(now.getDate() - 7)));
+        default:
+            undefined;
+    }
+};
 
 UserStatsRouter.post(
     "/",
@@ -58,7 +58,7 @@ UserStatsRouter.post(
                         username: "",
                         modes: [],
                     },
-                    200
+                    200,
                 );
             }
 
@@ -76,30 +76,32 @@ UserStatsRouter.post(
 
             type sortingInterval = "daily" | "weekly";
             const statsQuery = db
-            .select({
-              teamMode: matchDataTable.teamMode,
-              games: sql<number>`count(*)`,
-              wins: sql<number>`SUM(CASE WHEN \`rank\` = 1 THEN 1 ELSE 0 END)`,
-              kills: sql<number>`SUM(kills)`,
-              winPct: sql<number>`ROUND(SUM(CASE WHEN \`rank\` = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)`,
-              mostKills: sql<number>`MAX(kills)`,
-              mostDamage: sql<number>`MAX(damage_dealt)`,
-              kpg: sql<number>`ROUND(SUM(kills) * 1.0 / COUNT(*), 1)`,
-              avgDamage: sql<number>`ROUND(AVG(damage_dealt))`,
-              avgTimeAlive: sql<number>`ROUND(AVG(time_alive))`
-            })
-            .from(matchDataTable)
-            .where(
-              and(
-                eq(matchDataTable.userId, id),
-                eq(matchDataTable.mapId, Number(mapIdFilter)).if(mapIdFilter !== "-1"),
-                getDurationFilter(interval as sortingInterval)
-              )
-            ) 
-            .groupBy(matchDataTable.teamMode);
+                .select({
+                    teamMode: matchDataTable.teamMode,
+                    games: sql<number>`count(*)`,
+                    wins: sql<number>`SUM(CASE WHEN \`rank\` = 1 THEN 1 ELSE 0 END)`,
+                    kills: sql<number>`SUM(kills)`,
+                    winPct: sql<number>`ROUND(SUM(CASE WHEN \`rank\` = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)`,
+                    mostKills: sql<number>`MAX(kills)`,
+                    mostDamage: sql<number>`MAX(damage_dealt)`,
+                    kpg: sql<number>`ROUND(SUM(kills) * 1.0 / COUNT(*), 1)`,
+                    avgDamage: sql<number>`ROUND(AVG(damage_dealt))`,
+                    avgTimeAlive: sql<number>`ROUND(AVG(time_alive))`,
+                })
+                .from(matchDataTable)
+                .where(
+                    and(
+                        eq(matchDataTable.userId, id),
+                        eq(matchDataTable.mapId, Number(mapIdFilter)).if(
+                            mapIdFilter !== "-1",
+                        ),
+                        getDurationFilter(interval as sortingInterval),
+                    ),
+                )
+                .groupBy(matchDataTable.teamMode);
 
             const modes = await statsQuery.execute();
-            
+
             return c.json<UserStatsResponse>(
                 {
                     slug: user_slug,

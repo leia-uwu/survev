@@ -1,9 +1,3 @@
-import { version } from "../../../package.json";
-import { Config } from "../config";
-import type { FindGameBody } from "../gameServer";
-import { GIT_VERSION } from "../utils/gitRevision";
-import { HTTPRateLimit, getHonoIp, verifyTurnsStile } from "../utils/serverHelpers";
-import { ApiServer } from "./apiServer";
 import { readFileSync } from "fs";
 import path from "path";
 import { serve } from "@hono/node-server";
@@ -11,6 +5,17 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
+import { version } from "../../../package.json";
+import { Config } from "../config";
+import type { FindGameBody } from "../gameServer";
+import { GIT_VERSION } from "../utils/gitRevision";
+import {
+    HTTPRateLimit,
+    getHonoIp,
+    isBehindProxy,
+    verifyTurnsStile,
+} from "../utils/serverHelpers";
+import { ApiServer } from "./apiServer";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
@@ -45,16 +50,12 @@ app.use(
 const stats = readFileSync(
     path.resolve(__dirname.replace("dist/server/", ""), "static/index.html"),
     "utf-8",
-    
 );
 
-[
-    "/stats",
-    "/stats/",
-].forEach((route) => {
-  app.get(route, (c) => {
-    return c.redirect("/leaderboard/");
-  });
+["/stats", "/stats/"].forEach((route) => {
+    app.get(route, (c) => {
+        return c.redirect("/leaderboard/");
+    });
 });
 
 app.get("/stats/:slug", (c) => {
@@ -72,7 +73,12 @@ const findGameRateLimit = new HTTPRateLimit(5, 3000);
 
 app.post("/api/find_game", async (c) => {
     try {
-        const ip = getHonoIp(c);
+        const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
+        server.logger.log(`/api/find_game IP: ${ip}`, ip);
+
+        if (!ip) {
+            return c.json({}, 500);
+        }
 
         if (findGameRateLimit.isRateLimited(ip)) {
             return c.json(
@@ -84,6 +90,20 @@ app.post("/api/find_game", async (c) => {
         }
 
         const body = (await c.req.json()) as FindGameBody;
+
+        if (server.proxyCheckEnabled && (await isBehindProxy(ip))) {
+            c.json(
+                {
+                    res: [
+                        {
+                            err: "IP is behind a proxy",
+                        },
+                    ],
+                },
+                200,
+            );
+            return;
+        }
 
         if (server.captchaEnabled && !(await verifyTurnsStile(body.token, ip))) {
             return c.json(
@@ -121,6 +141,29 @@ app.post("/api/update_region", async (c) => {
         server.logger.warn("/api/find_game: Error processing request");
         return c.json({ error: "Error processing request" }, 500);
     }
+});
+
+app.post("/api/toggleSettings", async (c) => {
+    const body = await c.req.json<{
+        apiKey: string;
+        state?: { captcha: boolean; proxyCheck: boolean };
+    }>();
+
+    if (body.apiKey !== Config.apiKey) {
+        return c.json({ error: "Invalid token" }, 401);
+    }
+
+    if (typeof body.state === "object") {
+        server.captchaEnabled = body.state.captcha;
+        server.proxyCheckEnabled = body.state.proxyCheck;
+    }
+
+    return c.json({
+        state: {
+            captcha: server.captchaEnabled,
+            proxyCheck: server.proxyCheckEnabled,
+        },
+    });
 });
 
 app.post("/api/toggleCaptcha", async (c) => {
