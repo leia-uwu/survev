@@ -170,7 +170,7 @@ export class App {
         this.adManager.showFreestarAds(slotIds);
 
         this.view.load();
-        this.el.html(this.view.el.html());
+        this.el.html(this.view.el);
         this.render();
     }
 
