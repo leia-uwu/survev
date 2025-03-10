@@ -86,7 +86,13 @@ export class TeamMenu {
             upgrade(res, req, context) {
                 res.onAborted((): void => {});
 
-                const ip = getIp(res);
+                const ip = getIp(res, req, Config.apiServer.proxyIPHeader);
+
+                if (!ip) {
+                    teamMenu.server.logger.warn(`Invalid IP Found`);
+                    res.end();
+                    return;
+                }
 
                 if (httpRateLimit.isRateLimited(ip) || wsRateLimit.isIpRateLimited(ip)) {
                     res.writeStatus("429 Too Many Requests");

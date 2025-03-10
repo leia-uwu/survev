@@ -109,6 +109,7 @@ type DeepPartial<T> = T extends object
 interface ServerConfig {
     host: string;
     port: number;
+    proxyIPHeader?: string;
 
     /**
      * HTTPS/SSL options. Not used if running locally or with nginx.

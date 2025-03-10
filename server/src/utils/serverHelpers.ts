@@ -1,4 +1,5 @@
-import type { HttpResponse } from "uWebSockets.js";
+import { isIP } from "net";
+import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Config } from "../config";
 
 /**
@@ -102,11 +103,13 @@ const textDecoder = new TextDecoder();
 /**
  * Get an IP from an uWebsockets HTTP response
  */
-export function getIp(res: HttpResponse) {
-    const ip = textDecoder.decode(res.getRemoteAddressAsText());
-    const proxyIp = textDecoder.decode(res.getProxiedRemoteAddressAsText());
-    // proxy ip should be an empty string when not proxied
-    return proxyIp || ip;
+export function getIp(res: HttpResponse, req: HttpRequest, proxyHeader?: string) {
+    const ip = proxyHeader
+        ? req.getHeader(proxyHeader)
+        : textDecoder.decode(res.getRemoteAddressAsText());
+
+    if (!ip || isIP(ip) == 0) return undefined;
+    return ip;
 }
 
 // modified version of https://github.com/uNetworking/uWebSockets.js/blob/master/examples/RateLimit.js

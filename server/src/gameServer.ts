@@ -83,7 +83,14 @@ export class GameServer {
             upgrade(res, req, context) {
                 res.onAborted((): void => {});
 
-                const ip = getIp(res);
+                const ip = getIp(res, req, Config.gameServer.proxyIPHeader);
+
+                if (!ip) {
+                    server.logger.warn(`Invalid IP Found`);
+                    res.end();
+                    return;
+                }
+
                 if (
                     gameHTTPRateLimit.isRateLimited(ip) ||
                     gameWsRateLimit.isIpRateLimited(ip)
@@ -168,7 +175,13 @@ export class GameServer {
             upgrade(res, req, context) {
                 res.onAborted((): void => {});
 
-                const ip = getIp(res);
+                const ip = getIp(res, req, Config.gameServer.proxyIPHeader);
+
+                if (!ip) {
+                    server.logger.warn(`Invalid IP Found`);
+                    res.end();
+                    return;
+                }
 
                 if (
                     pingHTTPRateLimit.isRateLimited(ip) ||

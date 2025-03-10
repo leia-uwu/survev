@@ -77,18 +77,18 @@ export class ApiServer {
         this.teamMenu.init(app);
 
         app.get("/api/site_info", (res) => {
-            cors(res);
             res.onAborted(() => {
                 res.aborted = true;
             });
             returnJson(res, this.getSiteInfo());
         });
+
         app.options("/api/user/profile", (res) => {
             cors(res);
             res.end();
         });
+
         app.post("/api/user/profile", (res, _req) => {
-            cors(res);
             returnJson(res, this.getUserProfile());
         });
     }
@@ -161,13 +161,20 @@ if (process.argv.includes("--api-server")) {
 
     const findGameRateLimit = new HTTPRateLimit(5, 3000);
 
-    app.post("/api/find_game", async (res) => {
-        cors(res);
+    app.post("/api/find_game", async (res, req) => {
         res.onAborted(() => {
             res.aborted = true;
         });
 
-        if (findGameRateLimit.isRateLimited(getIp(res))) {
+        const ip = getIp(res, req, Config.apiServer.proxyIPHeader);
+
+        if (!ip) {
+            server.logger.warn(`Invalid IP Found`);
+            res.end();
+            return;
+        }
+
+        if (findGameRateLimit.isRateLimited(ip)) {
             res.writeStatus("429 Too Many Requests");
             returnJson(res, {
                 res: [
@@ -201,7 +208,6 @@ if (process.argv.includes("--api-server")) {
     });
 
     app.post("/api/update_region", (res) => {
-        cors(res);
         res.onAborted(() => {
             res.aborted = true;
         });
