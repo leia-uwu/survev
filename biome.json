@@ -29,7 +29,7 @@
         "noDoubleEquals": "off",
         "noExplicitAny": "off",
         "noPrototypeBuiltins": "off",
-        "useAwait": "error"
+        "useAwait": "warn"
       }
     },
     "ignore": ["drizzle/*"]
