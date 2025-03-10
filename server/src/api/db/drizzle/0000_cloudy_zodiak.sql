@@ -1,3 +1,18 @@
+CREATE TABLE `banned_ips` (
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`expries_in` timestamp NOT NULL,
+	`encoded_ip` varchar(255) NOT NULL,
+	CONSTRAINT `banned_ips_encoded_ip` PRIMARY KEY(`encoded_ip`)
+);
+--> statement-breakpoint
+CREATE TABLE `ip_logs` (
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`real_ip` varchar(255) NOT NULL,
+	`encoded_ip` varchar(255) NOT NULL,
+	`name` varchar(255) NOT NULL,
+	`game_id` varchar(255) NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `match_data` (
 	`user_id` varchar(255) DEFAULT '',
 	`created_at` timestamp NOT NULL DEFAULT (now()),
@@ -51,4 +66,5 @@ CREATE TABLE `users` (
 	CONSTRAINT `users_slug_unique` UNIQUE(`slug`)
 );
 --> statement-breakpoint
-ALTER TABLE `session` ADD CONSTRAINT `session_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;
+ALTER TABLE `session` ADD CONSTRAINT `session_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
+CREATE INDEX `name_created_at_idx` ON `ip_logs` (`name`,`created_at`);

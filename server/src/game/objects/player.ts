@@ -25,7 +25,6 @@ import {
     type Anim,
     GameConfig,
     type HasteType,
-    TeamMode,
 } from "../../../../shared/gameConfig";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
@@ -2353,8 +2352,8 @@ export class Player extends BaseGameObject {
             } else {
                 this.game.modeManager.handlePlayerDeath(this, params);
             }
-            }
-  }
+        }
+    }
 
     /**
      * adds gameover message to "this.msgsToSend" for the player and all their spectators

@@ -1,12 +1,12 @@
 import {
     boolean,
     datetime,
+    index,
     int,
     json,
     mysqlTable,
     timestamp,
     varchar,
-    index
 } from "drizzle-orm/mysql-core";
 import { TeamMode } from "../../../../shared/gameConfig";
 import { validateLoadout } from "../../../../shared/utils/helpers";
@@ -58,43 +58,47 @@ export const usersTable = mysqlTable("users", {
 
 export type UsersTable = typeof usersTable.$inferInsert;
 
-export const matchDataTable = mysqlTable("match_data", {
-    userId: varchar("user_id", { length: 255 }).default(""),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    region: varchar("region", { length: 255 }).notNull().$type<Region>(),
-    mapId: int("map_id").notNull(),
-    gameId: varchar("gameId", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }),
-    username: varchar("username", { length: 255 }).notNull(),
-    playerId: int("player_id").notNull(),
-    teamMode: int("team_mode").$type<TeamMode>().notNull(),
-    teamTotal: int("team_total").notNull(),
-    teamId: int("team_id").notNull(),
-    timeAlive: int("time_alive").notNull(),
-    rank: int("rank").notNull(),
-    died: boolean("died").notNull(),
-    kills: int("kills").notNull(),
-    damageDealt: int("damage_dealt").notNull(),
-    damageTaken: int("damage_taken").notNull(),
-    killerId: int("killer_id").notNull(),
-    killedIds: json("killed_ids").$type<number[]>().notNull(),
-}, (table) => [
-    index("idx_match_data_user_stats").on(
-        table.userId, 
-        table.teamMode, 
-        table.rank, 
-        table.kills, 
-        table.damageDealt,
-        table.timeAlive
-    ),
-    index("idx_game_id").on(table.gameId),
-    index("idx_match_data_team_query").on(
-        table.teamMode,
-        table.mapId,
-        table.createdAt,
-        table.region,
-      )
-]);
+export const matchDataTable = mysqlTable(
+    "match_data",
+    {
+        userId: varchar("user_id", { length: 255 }).default(""),
+        createdAt: timestamp("created_at").notNull().defaultNow(),
+        region: varchar("region", { length: 255 }).notNull().$type<Region>(),
+        mapId: int("map_id").notNull(),
+        gameId: varchar("gameId", { length: 255 }).notNull(),
+        slug: varchar("slug", { length: 255 }),
+        username: varchar("username", { length: 255 }).notNull(),
+        playerId: int("player_id").notNull(),
+        teamMode: int("team_mode").$type<TeamMode>().notNull(),
+        teamTotal: int("team_total").notNull(),
+        teamId: int("team_id").notNull(),
+        timeAlive: int("time_alive").notNull(),
+        rank: int("rank").notNull(),
+        died: boolean("died").notNull(),
+        kills: int("kills").notNull(),
+        damageDealt: int("damage_dealt").notNull(),
+        damageTaken: int("damage_taken").notNull(),
+        killerId: int("killer_id").notNull(),
+        killedIds: json("killed_ids").$type<number[]>().notNull(),
+    },
+    (table) => [
+        index("idx_match_data_user_stats").on(
+            table.userId,
+            table.teamMode,
+            table.rank,
+            table.kills,
+            table.damageDealt,
+            table.timeAlive,
+        ),
+        index("idx_game_id").on(table.gameId),
+        index("idx_match_data_team_query").on(
+            table.teamMode,
+            table.mapId,
+            table.createdAt,
+            table.region,
+        ),
+    ],
+);
 
 export type MatchDataTable = typeof matchDataTable.$inferInsert;
 
@@ -132,4 +136,4 @@ export function generateEmptyStatModes(): ModeStat[] {
         avgDamage: 0,
         avgTimeAlive: 0,
     }));
-};
+}

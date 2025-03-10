@@ -3,7 +3,7 @@ import $ from "jquery";
 import "bootstrap";
 import slugify from "slugify";
 import { device } from "../../device";
-import { AcceptedLocales, Localization } from "./localization";
+import { type AcceptedLocales, Localization } from "./localization";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
 import language from "./templates/langauge.ejs?raw";
@@ -170,6 +170,7 @@ export class App {
         this.adManager.showFreestarAds(slotIds);
 
         this.view.load();
+        // @ts-expect-error go away
         this.el.html(this.view.el);
         this.render();
     }

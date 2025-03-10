@@ -353,7 +353,7 @@ export class Game {
         player.setPartDirty();
         if (player.timeAlive < GameConfig.player.minActiveTime && !player.downed) {
             player.game.playerBarn.removePlayer(player);
-            player.game.playerBarn.allPlayers.push(player)
+            player.game.playerBarn.allPlayers.push(player);
         }
     }
 
@@ -415,7 +415,7 @@ export class Game {
         try {
             saveGameInfoToDatabase(this, this.playerBarn.players);
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
     }
 }

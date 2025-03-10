@@ -20,7 +20,7 @@ export function cors(res: HttpResponse): void {
 }
 
 export function getHonoIp(c: Context, proxyHeader?: string) {
-    if ( proxyHeader) {
+    if (proxyHeader) {
         return c.req.raw.headers.get(proxyHeader);
     }
     const ip =

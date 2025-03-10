@@ -1,4 +1,3 @@
-import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
 import { generateId } from "lucia";
@@ -52,7 +51,7 @@ export async function createNewUser(payload: UsersTable) {
         };
     });
 
-    await db.insert(usersTable).values({...payload, items });
+    await db.insert(usersTable).values({ ...payload, items });
 }
 
 export function getRedirectUri(method: string) {

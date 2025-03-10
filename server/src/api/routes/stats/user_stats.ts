@@ -1,12 +1,11 @@
-import { zValidator } from "@hono/zod-validator";
-import { and, eq, gt, max, sql, sum } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
-import { db } from "../../db";
-import { matchDataTable, usersTable } from "../../db/schema";
 import { getRedisClient } from "../../cache";
+import { db } from "../../db";
+import { usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
 
 export const UserStatsRouter = new Hono<Context>();
@@ -15,54 +14,51 @@ const userStatsSchema = z.object({
     // why is the client sending null as the default value
     // and why is there all and alltime???
     // TODO: remove all and send "alltime" as the default
-    interval: z.enum(["all", "daily", "weekly", "alltime"]).nullable().catch("all").transform(v => v ?? "all"),
+    interval: z
+        .enum(["all", "daily", "weekly", "alltime"])
+        .nullable()
+        .catch("all")
+        .transform((v) => v ?? "all"),
     slug: z.string().min(1),
     // TODO: use mapId eenum for extra validation
     mapIdFilter: z.string().catch("-1"),
 });
 
 /*
-  * minimum data required for the ui to show the user doesn't exist
-*/
+ * minimum data required for the ui to show the user doesn't exist
+ */
 const emptyState = {
-  slug: "",
-  username: "",
-  modes: [],
+    slug: "",
+    username: "",
+    modes: [],
 };
 
-UserStatsRouter.post(
-    "/",
-    validateParams(userStatsSchema),
-    async (c) => {
-        try {
-          // TODO: filter by interval
-            const { interval, mapIdFilter, slug } = c.req.valid("json");
+UserStatsRouter.post("/", validateParams(userStatsSchema), async (c) => {
+    try {
+        // TODO: filter by interval
+        const { interval, mapIdFilter, slug } = c.req.valid("json");
 
-            const result = await db.query.usersTable.findFirst({
-              where: eq(usersTable.slug, slug),
-              columns: {
-                id: true
-              }
-            })
+        const result = await db.query.usersTable.findFirst({
+            where: eq(usersTable.slug, slug),
+            columns: {
+                id: true,
+            },
+        });
 
-            if (!result) {
-                return c.json(
-                    emptyState,
-                    200,
-                );
-            }
-
-          const { id: userId } = result;
-
-          const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
-
-          return c.json<UserStatsResponse>(data, 200);
-        } catch (_err) {
-            console.log({ _err });
-            return c.json({ error: ""}, 500);
+        if (!result) {
+            return c.json(emptyState, 200);
         }
-    },
-);
+
+        const { id: userId } = result;
+
+        const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
+
+        return c.json<UserStatsResponse>(data, 200);
+    } catch (_err) {
+        console.log({ _err });
+        return c.json({ error: "" }, 500);
+    }
+});
 
 type UserStatsResponse = {
     slug: string;
@@ -89,26 +85,29 @@ export interface ModeStat {
     avgTimeAlive: number;
 }
 
-
 export function filterByInterval(interval: string) {
-  if (interval === "weekly") {
-    return "AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
-  }
-  if (interval === "daily") {
-    return "AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
-  }
-  return ""; // Default case for "all" or "alltime"
-};
-
-export function filterByMapId(mapIdFilter: string) {
-  return mapIdFilter === "-1" ? "" : `AND map_id = '${mapIdFilter}'`
+    if (interval === "weekly") {
+        return "AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+    }
+    if (interval === "daily") {
+        return "AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
+    }
+    return ""; // Default case for "all" or "alltime"
 }
 
-async function userStatsSqlQuery(userId: string, mapIdFilter: string, interval: string): Promise<UserStatsResponse> {
-  const intervalFilterQuery = filterByInterval(interval)
-  const mapIdFilterQuery = filterByMapId(mapIdFilter);
+export function filterByMapId(mapIdFilter: string) {
+    return mapIdFilter === "-1" ? "" : `AND map_id = '${mapIdFilter}'`;
+}
 
-  const query = sql.raw(`
+async function userStatsSqlQuery(
+    userId: string,
+    mapIdFilter: string,
+    interval: string,
+): Promise<UserStatsResponse> {
+    const intervalFilterQuery = filterByInterval(interval);
+    const mapIdFilterQuery = filterByMapId(mapIdFilter);
+
+    const query = sql.raw(`
             WITH mode_stats AS (
                 SELECT
                     m.team_mode,
@@ -123,8 +122,8 @@ async function userStatsSqlQuery(userId: string, mapIdFilter: string, interval: 
                     ROUND(AVG(m.time_alive)) AS avg_time_alive
                 FROM match_data m
                 WHERE m.user_id = '${userId}'
-                ${ intervalFilterQuery }
-                ${ mapIdFilterQuery }
+                ${intervalFilterQuery}
+                ${mapIdFilterQuery}
                 GROUP BY m.team_mode
             )
             SELECT
@@ -154,44 +153,44 @@ async function userStatsSqlQuery(userId: string, mapIdFilter: string, interval: 
             GROUP BY u.slug, u.username, u.banned
             LIMIT 1;
     `);
-  const [data] = await db.execute(query);
-  const userStats = (data as any)[0];
+    const [data] = await db.execute(query);
+    const userStats = (data as any)[0];
 
-  if ( !userStats ) return emptyState as unknown as UserStatsResponse;
+    if (!userStats) return emptyState as unknown as UserStatsResponse;
 
-  const modes = JSON.parse(userStats?.modes)
-  const formatedData: UserStatsResponse = {
-    ...userStats,
-    // sql fuckery, it returns [null] where no result
-    modes: modes[0] === null ? [] : modes,
-  };
-  return formatedData;
+    const modes = JSON.parse(userStats?.modes);
+    const formatedData: UserStatsResponse = {
+        ...userStats,
+        // sql fuckery, it returns [null] where no result
+        modes: modes[0] === null ? [] : modes,
+    };
+    return formatedData;
 }
 
 function getUserStatsCacheKey(userId: string, mapIdFilter: string) {
-  return `user-stats:${userId}:${mapIdFilter}`;
+    return `user-stats:${userId}:${mapIdFilter}`;
 }
 
 async function getUserStatsFromCache(cacheKey: string) {
-  const client = await getRedisClient();
-  const data = await client.get(cacheKey);
-  return data ? JSON.parse(data) : null
+    const client = await getRedisClient();
+    const data = await client.get(cacheKey);
+    return data ? JSON.parse(data) : null;
 }
 
 async function setUserStatsCache(cacheKey: string, data: UserStatsResponse) {
-  const client = await getRedisClient();
-  await client.set(cacheKey, JSON.stringify(data));
-  return true;
+    const client = await getRedisClient();
+    await client.set(cacheKey, JSON.stringify(data));
+    return true;
 }
 /*
   this needss to be called every time a game is played.
   also if any of these {banned, username, slug, laodout.avatar} changes :sob:
 */
 export async function invalidateUserStatsCache(userId: string, mapIdFilter: string) {
-  const client = await getRedisClient();
-  // clear the cached stat for that sepcific map
-  await client.del(getUserStatsCacheKey(userId, mapIdFilter));
-  // clear the cached stat for when no map filter is applied
-  await client.del(getUserStatsCacheKey(userId, "-1"));
-  return true;
+    const client = await getRedisClient();
+    // clear the cached stat for that sepcific map
+    await client.del(getUserStatsCacheKey(userId, mapIdFilter));
+    // clear the cached stat for when no map filter is applied
+    await client.del(getUserStatsCacheKey(userId, "-1"));
+    return true;
 }

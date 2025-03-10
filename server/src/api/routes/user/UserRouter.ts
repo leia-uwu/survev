@@ -12,10 +12,15 @@ import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import type { Context } from "../../index";
-import { type Loadout, loadoutSchema, usernameSchema, validateParams } from "../../zodSchemas";
+import {
+    type Loadout,
+    loadoutSchema,
+    usernameSchema,
+    validateParams,
+} from "../../zodSchemas";
+import { invalidateUserStatsCache } from "../stats/user_stats";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
-import { invalidateUserStatsCache } from "../stats/user_stats";
 
 export const UserRouter = new Hono<Context>();
 
@@ -33,8 +38,8 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
                 items: true,
                 banned: true,
                 banReason: true,
-                lastUsernameChangeTime: true
-            }
+                lastUsernameChangeTime: true,
+            },
         });
 
         if (!result) {
@@ -62,7 +67,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
 
         const timeUntilNextChange =
             getTimeUntilNextUsernameChange(lastUsernameChangeTime);
-        
+
         return c.json<ProfileResponse>(
             {
                 success: true,
@@ -102,7 +107,7 @@ UserRouter.post(
                 where: eq(usersTable.id, user.id),
                 columns: {
                     lastUsernameChangeTime: true,
-                }
+                },
             })!;
 
             const timeUntilNextChange = getTimeUntilNextUsernameChange(
@@ -122,7 +127,7 @@ UserRouter.post(
                     eq(usersTable.slug, username),
                 ),
                 columns: {
-                  id: true,
+                    id: true,
                 },
             });
 
@@ -143,7 +148,7 @@ UserRouter.post(
                 })
                 .where(eq(usersTable.id, user.id));
 
-          await invalidateUserStatsCache(user.id, "*");
+            await invalidateUserStatsCache(user.id, "*");
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {
@@ -223,10 +228,12 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
 
 UserRouter.post(
     "/set_item_status",
-    validateParams(z.object({
-        itemTypes: z.array(z.string()),
-        status: z.nativeEnum(ItemStatus),
-    })),
+    validateParams(
+        z.object({
+            itemTypes: z.array(z.string()),
+            status: z.nativeEnum(ItemStatus),
+        }),
+    ),
     AuthMiddleware,
     async (c) => {
         try {
@@ -241,11 +248,11 @@ UserRouter.post(
             const result = await db.query.usersTable.findFirst({
                 where: eq(usersTable.id, user.id),
                 columns: {
-                    items: true
-                }
+                    items: true,
+                },
             });
 
-            if ( !result ) return c.json({}, 200);
+            if (!result) return c.json({}, 200);
 
             const { items } = result;
 
@@ -259,7 +266,7 @@ UserRouter.post(
             await db
                 .update(usersTable)
                 .set({
-                    items: updatedItems,    
+                    items: updatedItems,
                 })
                 .where(eq(usersTable.id, user.id));
 
@@ -275,9 +282,11 @@ UserRouter.post(
 // if not delete it, or make it admin only.
 UserRouter.post(
     "/unlock",
-    validateParams(z.object({
-        unlockType: z.string(),
-    })),
+    validateParams(
+        z.object({
+            unlockType: z.string(),
+        }),
+    ),
     async (c) => {
         try {
             if (process.env.NODE_ENV === "production") return;
@@ -293,10 +302,9 @@ UserRouter.post(
             const result = await db.query.usersTable.findFirst({
                 where: eq(usersTable.authId, MOCK_USER_ID),
                 columns: {
-                    items: true
-                }
-            })
-                
+                    items: true,
+                },
+            });
 
             if (!result) {
                 return c.json({ err: "No items found for this user." }, 404);
@@ -346,9 +354,11 @@ UserRouter.post("/reset_stats", (c) => {
 
 UserRouter.post(
     "/get_pass",
-    validateParams(z.object({
-        tryRefreshQuests: z.boolean(),
-    })),
+    validateParams(
+        z.object({
+            tryRefreshQuests: z.boolean(),
+        }),
+    ),
     (c) => {
         return c.json({ success: true }, 200);
     },

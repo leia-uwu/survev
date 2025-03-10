@@ -3,21 +3,25 @@ import { Config } from "../config";
 import { db } from "./db";
 import { bannedIpsTable, ipLogsTable } from "./db/schema";
 
-export async function handleModerationAction(action: string, ip: string, name = ""): Promise<string> {
+export async function handleModerationAction(
+    action: string,
+    ip: string,
+    name = "",
+): Promise<string> {
     const actionHandlers = {
         ban: async () => await banIP(ip),
         unban: async () => await unbanIp(ip),
         clear: async () => await clearAllBans(),
         "get-player-ip": async () => await getPlayerIp(name),
-        "isbanned": async () => {
+        isbanned: async () => {
             const isIpBanned = await isBanned(ip);
             return isIpBanned ? `IP ${ip} is banned.` : `IP ${ip} is not banned.`;
         },
     };
 
-    if ( action in actionHandlers ) {
-        return await actionHandlers[action as keyof typeof actionHandlers]()
-    };
+    if (action in actionHandlers) {
+        return await actionHandlers[action as keyof typeof actionHandlers]();
+    }
 
     return "Invalid action.";
 }
@@ -29,9 +33,9 @@ async function isBanned(ip: string, shouldEncode = true) {
         const banned = await db.query.bannedIpsTable.findFirst({
             where: eq(bannedIpsTable.encodedIp, encodedIp),
             columns: {
-                expiresIn: true
-            }
-        })
+                expiresIn: true,
+            },
+        });
         if (banned) {
             const { expiresIn } = banned;
             if (expiresIn.getTime() > Date.now()) {
@@ -96,7 +100,7 @@ async function clearAllBans() {
 }
 
 async function getPlayerIp(name: string) {
-    if ( !name ) return "Please enter a valid name";
+    if (!name) return "Please enter a valid name";
     try {
         const result = await db
             .select({
@@ -142,9 +146,8 @@ async function cleanupOldLogs() {
     }
 }
 
-
 /**
- * DONT ASK ME ABOUT THIS CODE. 
+ * DONT ASK ME ABOUT THIS CODE.
  */
 export function encodeIP(ip: string, secret: string = Config.apiKey) {
     let encoded = "";

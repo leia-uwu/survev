@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "d1918456-9981-4235-ac99-943425fb3cfe",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "446ac279-ca35-45e6-8d4e-801be00e6347",
+  "prevId": "d1918456-9981-4235-ac99-943425fb3cfe",
   "tables": {
     "banned_ips": {
       "name": "banned_ips",
@@ -237,7 +237,20 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_match_data_user_stats": {
+          "name": "idx_match_data_user_stats",
+          "columns": [
+            "user_id",
+            "team_mode",
+            "rank",
+            "kills",
+            "damage_dealt",
+            "time_alive"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
