@@ -712,7 +712,9 @@ export class Player extends BaseGameObject {
     isKillLeader = false;
 
     /** for the perk fabricate, fills inventory with frags every 12 seconds */
-    fabricateTicker = 0;
+    fabricateRefillTicker = 0;
+    fabricateGiveTicker = 0;
+    fabricateThrowablesLeft = 0;
 
     // "Gabby Ghost" perk random emojis
     chattyTicker = 0;
@@ -938,7 +940,7 @@ export class Player extends BaseGameObject {
                 ammo.trueMaxClip,
             );
         } else if (type === "fabricate") {
-            this.fabricateTicker = PerkProperties.fabricate.refillInterval;
+            this.fabricateRefillTicker = PerkProperties.fabricate.refillInterval;
         } else if (type === "leadership") {
             this.boost = 100;
         }
@@ -959,7 +961,7 @@ export class Player extends BaseGameObject {
                 this.weaponManager.setWeapon(slot, "", 0);
             }
         } else if (type === "fabricate") {
-            this.fabricateTicker = 0;
+            this.fabricateRefillTicker = 0;
         }
 
         this.recalculateScale();
@@ -1440,24 +1442,40 @@ export class Player extends BaseGameObject {
             }
         }
 
-        //ticker can only be stopped by removing the perk
-        if (this.fabricateTicker > 0) {
-            this.fabricateTicker -= dt;
-            if (this.fabricateTicker <= 0) {
-                const backpackLevel = this.getGearLevel(this.backpack);
-                const maxFrags = this.bagSizes["frag"][backpackLevel];
-                this.inventory["frag"] = maxFrags;
+        if (this.hasPerk("fabricate")) {
+            if (this.fabricateThrowablesLeft > 0) {
+                this.fabricateGiveTicker -= dt;
+                if (this.fabricateGiveTicker < 0) {
+                    this.fabricateGiveTicker = PerkProperties.fabricate.giveInterval;
+                    this.inventory["frag"]++;
+                    this.inventoryDirty = true;
+                    this.fabricateThrowablesLeft--;
 
-                if (!this.weapons[GameConfig.WeaponSlot.Throwable].type) {
-                    this.weaponManager.setWeapon(
-                        GameConfig.WeaponSlot.Throwable,
-                        "frag",
-                        0, //throwable ammo count is taken from inventory
-                    );
+                    const msg = new net.PickupMsg();
+                    msg.type = net.PickupMsgType.Success;
+                    msg.item = "frag";
+                    msg.count = 1;
+
+                    if (
+                        !this.weaponManager.weapons[GameConfig.WeaponSlot.Throwable].type
+                    ) {
+                        this.weaponManager.showNextThrowable();
+                    }
+
+                    this.msgsToSend.push({ type: net.MsgType.Pickup, msg });
                 }
-                this.inventoryDirty = true;
+            }
 
-                this.fabricateTicker = PerkProperties.fabricate.refillInterval;
+            this.fabricateRefillTicker -= dt;
+            if (this.fabricateRefillTicker <= 0) {
+                const backpackLevel = this.getGearLevel(this.backpack);
+                const throwablesToGive = math.max(
+                    this.bagSizes["frag"][backpackLevel] - this.inventory["frag"],
+                    0,
+                );
+                this.fabricateThrowablesLeft = throwablesToGive;
+                this.fabricateGiveTicker = PerkProperties.fabricate.giveInterval;
+                this.fabricateRefillTicker = PerkProperties.fabricate.refillInterval;
             }
         }
 

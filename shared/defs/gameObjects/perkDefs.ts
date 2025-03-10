@@ -28,7 +28,8 @@ export const PerkProperties = {
         bonusAirstrikes: 2,
     },
     fabricate: {
-        refillInterval: 12, //means refill every x seconds
+        refillInterval: 12, // means refill every x seconds
+        giveInterval: 0.08, // interval between each grenade being given until the backpack is full
     },
     // map of ammo type to perk that boosts that ammo
     ammoBonuses: {
