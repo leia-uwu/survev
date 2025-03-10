@@ -681,17 +681,13 @@ export class WeaponManager {
                 weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
         let damageMult = 1;
-        if (this.player.hasPerk("splinter")) {
+        if (hasSplinter) {
             damageMult *= PerkProperties.splinter.mainDamageMulti;
         }
 
         const saturated = this.isBulletSaturated(itemDef.ammo);
         if (saturated) {
             damageMult *= PerkProperties.ammoBonusDamageMulti;
-        }
-
-        if (this.player.lastBreathActive) {
-            damageMult *= 1.08;
         }
 
         if (shouldApplyChambered) {
@@ -807,11 +803,11 @@ export class WeaponManager {
                 for (let j = 0; j < 2; j++) {
                     const sParams = { ...params };
 
-                    const _deviation =
+                    const deviation =
                         util.random(0.2, 0.25) *
                         splinterSpread *
                         (j % 2 === 0 ? -1.0 : 1.0);
-                    sParams.dir = v2.rotate(sParams.dir, math.deg2rad(_deviation));
+                    sParams.dir = v2.rotate(sParams.dir, math.deg2rad(deviation));
                     sParams.lastShot = false;
                     sParams.shotFx = false;
                     sParams.trailSmall = true;
