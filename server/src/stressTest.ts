@@ -62,7 +62,7 @@ class ObjectCreator {
         return this.idToObj[id];
     }
 
-    getTypeById(id: number, s: net.BitStream) {
+    m_getTypeById(id: number, s: net.BitStream) {
         const obj = this.getObjById(id);
         if (!obj) {
             const err = {
@@ -282,6 +282,7 @@ class Bot {
 
         const joinMsg = new net.JoinMsg();
 
+        joinMsg.bot = true;
         joinMsg.name = `BOT_${this.id}`;
         joinMsg.isMobile = false;
         joinMsg.protocol = GameConfig.protocolVersion;

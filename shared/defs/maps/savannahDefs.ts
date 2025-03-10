@@ -1,7 +1,7 @@
 import { util } from "../../utils/util";
-import { Main } from "./baseDefs";
+import { Main, type PartialMapDef } from "./baseDefs";
 
-const mapDef = {
+const mapDef: PartialMapDef = {
     mapId: 5,
     desc: {
         name: "Savannah",

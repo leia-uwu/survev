@@ -44,6 +44,10 @@ class Projectile implements AbstractObject {
     rad!: number;
     pos!: Vec2;
     posOld!: Vec2;
+
+    visualPosOld!: Vec2;
+    posInterpTicker!: number;
+
     posZ!: number;
     posZOld!: number;
     dir!: Vec2;
@@ -74,15 +78,18 @@ class Projectile implements AbstractObject {
         this.container.addChild(this.sprite);
     }
 
-    init() {}
-    free() {
+    m_init() {
+        this.visualPosOld = v2.create(0, 0);
+        this.posInterpTicker = 0;
+    }
+    m_free() {
         this.container.visible = false;
         if (this.strobeSprite) {
             this.strobeSprite.visible = false;
         }
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Projectile>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -100,6 +107,10 @@ class Projectile implements AbstractObject {
         this.posOld = isNew ? v2.copy(data.pos) : v2.copy(this.pos);
         this.posZOld = isNew ? data.posZ : this.posZ;
         this.pos = v2.copy(data.pos);
+        if (!v2.eq(data.pos, this.visualPosOld)) {
+            this.visualPosOld = v2.copy(this.posOld);
+            this.posInterpTicker = 0;
+        }
         this.posZ = data.posZ;
         this.dir = v2.copy(data.dir);
 
@@ -171,7 +182,7 @@ const groundSounds = {
 export class ProjectileBarn {
     projectilePool = new Pool(Projectile);
 
-    update(
+    m_update(
         dt: number,
         particleBarn: ParticleBarn,
         audioManager: AudioManager,
@@ -180,7 +191,7 @@ export class ProjectileBarn {
         renderer: Renderer,
         camera: Camera,
     ) {
-        const projectiles = this.projectilePool.getPool();
+        const projectiles = this.projectilePool.m_getPool();
         for (let i = 0; i < projectiles.length; i++) {
             const p = projectiles[i];
             if (p.active) {
@@ -208,7 +219,7 @@ export class ProjectileBarn {
                     pen: 0,
                 };
                 const projCollider = collider.createCircle(p.pos, p.rad);
-                const obstacles = map.obstaclePool.getPool();
+                const obstacles = map.m_obstaclePool.m_getPool();
                 for (let j = 0; j < obstacles.length; j++) {
                     const o = obstacles[j];
                     if (o.active && !o.dead && util.sameLayer(o.layer, p.layer)) {
@@ -373,8 +384,20 @@ export class ProjectileBarn {
                 const scale =
                     p.imgScale *
                     math.remap(p.posZ, 0, GameConfig.projectile.maxHeight, 1, 4.75);
-                const screenPos = camera.pointToScreen(p.pos);
-                const screenScale = camera.pixels(scale);
+
+                let pos = p.pos;
+                if (camera.m_interpEnabled) {
+                    p.posInterpTicker += dt;
+                    const posT = math.clamp(
+                        p.posInterpTicker / camera.m_interpInterval,
+                        0,
+                        1,
+                    );
+                    pos = v2.lerp(posT, p.visualPosOld, p.pos);
+                }
+
+                const screenPos = camera.m_pointToScreen(pos);
+                const screenScale = camera.m_pixels(scale);
                 p.container.position.set(screenPos.x, screenPos.y);
                 p.container.scale.set(screenScale, screenScale);
             }

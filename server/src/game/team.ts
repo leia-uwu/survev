@@ -1,11 +1,22 @@
 import { GameConfig } from "../../../shared/gameConfig";
+import { util } from "../../../shared/utils/util";
+import type { Game } from "./game";
+import type { Group } from "./group";
 import type { Player } from "./objects/player";
 
 export class Team {
     players: Player[] = [];
     livingPlayers: Player[] = [];
+    /** number of alive players once the lobby closes, only set and used after lobby close */
+    highestAliveCount = -1;
+    /** even if leader becomes lone survivr, this variable remains unchanged since it's used for gameover msgs */
+    leader?: Player;
+    isLastManApplied = false;
 
-    constructor(public teamId: number) {}
+    constructor(
+        public game: Game,
+        public teamId: number,
+    ) {}
 
     addPlayer(player: Player): void {
         player.teamId = this.teamId;
@@ -17,6 +28,17 @@ export class Team {
     removePlayer(player: Player): void {
         this.players.splice(this.players.indexOf(player), 1);
         this.livingPlayers.splice(this.livingPlayers.indexOf(player), 1);
+    }
+
+    /** random alive player */
+    randomPlayer() {
+        return this.livingPlayers[util.randomInt(0, this.livingPlayers.length - 1)];
+    }
+
+    getGroups(): Group[] {
+        return this.game.playerBarn.groups.filter(
+            (g) => g.players[0].teamId == this.teamId,
+        );
     }
 
     checkAllDowned(player: Player): boolean {
@@ -44,6 +66,23 @@ export class Team {
                 dir: p.dir,
                 source: p.downedBy,
             });
+            i--; //kill() removes the player from the array so we dont want to skip players
         }
+    }
+
+    checkAndApplyLastMan() {
+        if (this.isLastManApplied) return;
+
+        const playersToPromote = this.livingPlayers.filter(
+            (p) => !p.downed && !p.disconnected,
+        );
+
+        if (playersToPromote.length > 2 || this.game.canJoin) return;
+
+        const last1 = playersToPromote[0];
+        const last2 = playersToPromote[1];
+        if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
+        if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
+        this.isLastManApplied = true;
     }
 }

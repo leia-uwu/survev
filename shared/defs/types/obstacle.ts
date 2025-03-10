@@ -112,4 +112,5 @@ export interface ObstacleDef {
     armorPlated?: boolean;
     smartLoot?: boolean;
     createSmoke?: boolean;
+    teamId?: number;
 }

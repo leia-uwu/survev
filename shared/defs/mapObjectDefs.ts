@@ -454,7 +454,7 @@ function createBush<T extends ObstacleDef>(e: Partial<T>): T {
 function createCache<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { displayType: "stone_02" },
+        map: { displayType: "stone_01" },
         terrain: { grass: true, beach: false },
         ori: 0,
         floor: {
@@ -8860,6 +8860,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" },
+        teamId: 1,
     } as unknown as Partial<ObstacleDef>),
     crate_02d: createCrate({
         health: 140,
@@ -9301,6 +9302,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-22.img" },
         sound: { explode: "crate_break_01" },
+        teamId: 2,
     }),
     crate_22d: createCrate({
         health: 140,
@@ -9437,7 +9439,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     } as unknown as Partial<ObstacleDef>),
     airdrop_crate_01x: createAirdrop({
         button: {
-            useImg: "map-crate-13x.img",
+            useImg: "map-airdrop-02x.img",
             useParticle: "airdropCrate01x",
             sound: { on: "airdrop_open_01", off: "" },
         },
@@ -9450,12 +9452,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     } as unknown as Partial<ObstacleDef>),
     airdrop_crate_02x: createAirdrop({
         button: {
-            useImg: "map-crate-13x.img",
+            useImg: "map-airdrop-02x.img",
             useParticle: "airdropCrate01x",
             sound: { on: "airdrop_open_01", off: "" },
         },
         img: {
-            sprite: "map-airdrop-02x.img",
+            sprite: "map-airdrop-01x.img",
             residue: "none",
         },
         destroyType: "crate_11",
@@ -12789,7 +12791,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "stone_02sv" },
+        map: { displayType: "stone_01" },
     }),
     cache_02: createCache({
         mapObjects: [
@@ -12807,7 +12809,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "tree_03" },
+        map: { displayType: "tree_01" },
     }),
     cache_02sv: createCache({
         mapObjects: [
@@ -12825,7 +12827,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "tree_03sv" },
+        map: { displayType: "tree_01sv" },
     }),
     cache_03: createCache({
         mapObjects: [
@@ -12879,7 +12881,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 inheritOri: false,
             },
         ],
-        map: { displayType: "barrel_01b" },
+        map: { displayType: "barrel_01" },
     }),
     cache_log_13: createCache({
         terrain: { grass: false, beach: true },
@@ -13945,6 +13947,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 ori: 2,
             },
         ],
+        teamId: 2,
     },
     logging_complex_01: createLoggingComplex({}),
     logging_complex_01sp: createLoggingComplex({
@@ -17055,7 +17058,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         extents: v2.create(0.5, 4),
         img: wallImg("map-wall-08-rounded.img", 7951934),
     }),
-    bank_01: createBank({}),
+    bank_01: createBank({ teamId: 1 }),
     bank_01b: createBank({ vault: "vault_01b" }),
     bank_01x: createBank({
         ceiling: {
@@ -17175,7 +17178,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         extents: v2.create(0.5, 5),
         img: wallImg("map-wall-10-rounded.img", 1777447),
     }),
-    police_01: createPoliceStation({}),
+    police_01: createPoliceStation({ teamId: 2 }),
     police_01x: createPoliceStation({
         ceiling: {
             imgs: [
@@ -17777,6 +17780,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             collider.createAabbExtents(v2.create(10, -0.1), v2.create(15, 10.1)),
             collider.createAabbExtents(v2.create(17.5, 13.5), v2.create(7.49, 3.49)),
         ],
+        teamId: 1,
     },
     mansion_structure_02: {
         type: "structure",
@@ -28598,6 +28602,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ceilingSprite: "map-building-container-ceiling-01.img",
         loot_spawner_01: "loot_tier_sv98",
         loot_spawner_02: "loot_tier_scopes_sniper",
+        map: { displayType: "container_01" },
     }),
     loot_tier_1: {
         type: "loot_spawner",

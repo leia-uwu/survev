@@ -35,7 +35,19 @@ export const MapDefs = {
     turkey: Turkey,
 } satisfies Record<string, MapDef>;
 
-export type Atlas = "gradient" | "loadout" | "shared" | "main";
+export type Atlas =
+    | "gradient"
+    | "loadout"
+    | "shared"
+    | "main"
+    | "desert"
+    | "faction"
+    | "halloween"
+    | "potato"
+    | "snow"
+    | "woods"
+    | "cobalt"
+    | "savannah";
 
 export interface MapDef {
     mapId: number;
@@ -164,6 +176,7 @@ export interface MapDef {
                     pos: Vec2;
                     rad: number;
                 }>;
+                spawnCabins: boolean;
             };
         };
         places: Array<{
@@ -175,7 +188,6 @@ export interface MapDef {
             large: string;
             xlarge: string;
         };
-        riverCabins: Record<string, number>;
         customSpawnRules: {
             locationSpawns: Array<{
                 type: string;

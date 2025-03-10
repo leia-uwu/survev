@@ -1,4 +1,4 @@
-import { GameObjectDefs } from "../../../../shared/defs/gameObjectDefs";
+import { GameObjectDefs, type LootDef } from "../../../../shared/defs/gameObjectDefs";
 import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { GameConfig } from "../../../../shared/gameConfig";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
@@ -10,6 +10,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
+import type { MapIndicator } from "./mapIndicator";
 import type { Player } from "./player";
 
 // velocity drag applied every tick
@@ -187,6 +188,8 @@ export class Loot extends BaseGameObject {
 
     bellowBridge = false;
 
+    mapIndicator?: MapIndicator;
+
     constructor(
         game: Game,
         type: string,
@@ -198,8 +201,10 @@ export class Loot extends BaseGameObject {
     ) {
         super(game, pos);
 
-        const def = GameObjectDefs[type];
-        assert("lootImg" in def, `Invalid loot type ${type}`);
+        const def = GameObjectDefs[type] as LootDef;
+        def === undefined
+            ? console.log(`Invalid loot type ${type}`)
+            : assert("lootImg" in def, `Invalid loot type ${type}`);
 
         this.layer = layer;
         this.type = type;
@@ -214,6 +219,14 @@ export class Loot extends BaseGameObject {
             v2.create(0, 0),
             v2.create(this.rad, this.rad),
         );
+
+        if ("mapIndicator" in def) {
+            this.mapIndicator = this.game.mapIndicatorBarn.allocIndicator(
+                this.type,
+                false,
+            );
+            this.mapIndicator?.updatePosition(this.pos);
+        }
 
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
@@ -295,7 +308,7 @@ export class Loot extends BaseGameObject {
         const surface = this.game.map.getGroundSurface(this.pos, this.layer);
         let finalRiver: River | undefined;
         if ((this.layer === 0 && surface.river) || this.bellowBridge) {
-            const rivers = this.game.map.terrain.rivers;
+            const rivers = this.game.map.normalRivers;
             for (let i = 0; i < rivers.length; i++) {
                 const river = rivers[i];
                 if (
@@ -317,6 +330,7 @@ export class Loot extends BaseGameObject {
         if (!v2.eq(this.oldPos, this.pos)) {
             this.setPartDirty();
             this.game.grid.updateObject(this);
+            this.mapIndicator?.updatePosition(this.pos);
         }
 
         this.game.map.clampToMapBounds(this.pos, this.rad);
@@ -324,5 +338,10 @@ export class Loot extends BaseGameObject {
 
     push(dir: Vec2, velocity: number): void {
         this.vel = v2.add(this.vel, v2.mul(dir, velocity));
+    }
+
+    override destroy() {
+        super.destroy();
+        this.mapIndicator?.kill();
     }
 }

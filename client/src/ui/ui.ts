@@ -70,7 +70,7 @@ interface ContainerWithMask extends PIXI.Container {
 
 type PrevStatus = Pick<PlayerStatus, "downed" | "dead" | "disconnected" | "role">;
 export class UiManager {
-    pieTimer = new PieTimer();
+    m_pieTimer = new PieTimer();
     gameElem = $("#ui-game");
     statsMain = $("#ui-stats");
     statsElem = $("#ui-stats-bg");
@@ -380,8 +380,8 @@ export class UiManager {
             e.stopPropagation();
         });
         $("#btn-game-quit").on("click", () => {
-            this.game.updatePass = true;
-            this.game.updatePassDelay = 1;
+            this.game.m_updatePass = true;
+            this.game.m_updatePassDelay = 1;
             this.quitGame();
         });
         this.specStatsButton.on("click", () => {
@@ -498,7 +498,7 @@ export class UiManager {
         const minimapSize = this.getMinimapSize();
         this.minimapPos = v2.create(
             minimapMargin + minimapSize / 2,
-            game.camera.screenHeight - minimapSize / 2 - minimapMargin,
+            game.m_camera.m_screenHeight - minimapSize / 2 - minimapMargin,
         );
 
         // Audio
@@ -565,7 +565,7 @@ export class UiManager {
         this.init();
     }
 
-    free() {
+    m_free() {
         this.gasRenderer.free();
 
         this.clearUI();
@@ -617,7 +617,7 @@ export class UiManager {
             this.cycleHud();
         }
 
-        this.pieTimer.destroy();
+        this.m_pieTimer.destroy();
         this.clearStatsElems();
         this.setRoleMenuActive(false);
         this.init();
@@ -651,7 +651,7 @@ export class UiManager {
         }
     }
 
-    update(
+    m_update(
         dt: number,
         player: Player,
         map: Map,
@@ -696,12 +696,12 @@ export class UiManager {
         }
 
         // Spectator count display
-        this.spectatorCount = player.localData.spectatorCount;
+        this.spectatorCount = player.m_localData.m_spectatorCount;
         this.updateSpectatorCountDisplay(false);
 
-        if (player.netData.dead && !this.dead) {
+        if (player.m_netData.m_dead && !this.dead) {
             this.dead = true;
-            this.pieTimer.stop();
+            this.m_pieTimer.stop();
         }
 
         if (localPlayer.downed || this.dead) {
@@ -710,32 +710,32 @@ export class UiManager {
 
         // Action pie timer
         if (
-            this.actionSeq != player.action.seq &&
-            ((this.actionSeq = player.action.seq),
-            this.pieTimer.stop(),
-            player.action.type != Action.None && !this.displayingStats)
+            this.actionSeq != player.m_action.seq &&
+            ((this.actionSeq = player.m_action.seq),
+            this.m_pieTimer.stop(),
+            player.m_action.type != Action.None && !this.displayingStats)
         ) {
             let desc = "";
             let actionTxt1 = "";
             let actionTxt2 = "";
-            switch (player.action.type) {
+            switch (player.m_action.type) {
                 case Action.Reload:
                 case Action.ReloadAlt:
-                    if (GameObjectDefs[player.action.item]) {
+                    if (GameObjectDefs[player.m_action.item]) {
                         actionTxt1 = this.localization.translate("game-reloading");
                     }
                     break;
                 case Action.UseItem:
-                    if (GameObjectDefs[player.action.item]) {
+                    if (GameObjectDefs[player.m_action.item]) {
                         actionTxt1 = this.localization.translate("game-using");
                         actionTxt2 = this.localization.translate(
-                            `game-${player.action.item}`,
+                            `game-${player.m_action.item}`,
                         );
                     }
                     break;
                 case Action.Revive: {
                     const targetName = playerBarn.getPlayerInfo(
-                        player.action.targetId,
+                        player.m_action.targetId,
                     ).name;
                     actionTxt1 = this.localization.translate("game-reviving");
                     actionTxt2 = localPlayer.downed ? "" : targetName;
@@ -752,7 +752,11 @@ export class UiManager {
                     desc += actionTxt2 ? `${actionTxt2} ` : "";
                     desc += actionTxt1 ? ` ${actionTxt1}` : "";
                 }
-                this.pieTimer.start(desc, player.action.time, player.action.duration);
+                this.m_pieTimer.start(
+                    desc,
+                    player.m_action.time,
+                    player.m_action.duration,
+                );
             }
         }
 
@@ -760,20 +764,20 @@ export class UiManager {
             this.mapSprite.x =
                 this.minimapPos.x +
                 this.mapSprite.width / 2 -
-                (player.pos.x / map.width) * this.mapSprite.width;
+                (player.m_visualPos.x / map.width) * this.mapSprite.width;
             this.mapSprite.y =
                 this.minimapPos.y -
                 this.mapSprite.height / 2 +
-                (player.pos.y / map.height) * this.mapSprite.height;
+                (player.m_visualPos.y / map.height) * this.mapSprite.height;
         }
 
         const camExtents = v2.create(
-            (camera.screenWidth * 0.5) / camera.z(),
-            (camera.screenHeight * 0.5) / camera.z(),
+            (camera.m_screenWidth * 0.5) / camera.m_z(),
+            (camera.m_screenHeight * 0.5) / camera.m_z(),
         );
         const camAabb = {
-            min: v2.sub(camera.pos, camExtents),
-            max: v2.add(camera.pos, camExtents),
+            min: v2.sub(camera.m_pos, camExtents),
+            max: v2.add(camera.m_pos, camExtents),
         };
 
         // Update team UI elements
@@ -785,7 +789,7 @@ export class UiManager {
                 playerId: player.__id,
                 groupId,
                 spectating: this.spectating,
-                playing: this.game.playingTicker,
+                playing: this.game.m_playingTicker,
                 groupInfo: playerBarn.groupInfo,
             };
             console.error(`badTeamInfo_1: ${JSON.stringify(err)}`);
@@ -832,17 +836,17 @@ export class UiManager {
                         if ((!isLocalPlayer || indicator.displayAll) && !factionMode) {
                             const playerPos = playerStatus.pos;
                             const dir = v2.normalizeSafe(
-                                v2.sub(playerPos, camera.pos),
+                                v2.sub(playerPos, camera.m_pos),
                                 v2.create(1, 0),
                             );
                             const edge = coldet.intersectRayAabb(
-                                camera.pos,
+                                camera.m_pos,
                                 dir,
                                 camAabb.min,
                                 camAabb.max,
                             )!;
                             const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
-                            const screenEdge = camera.pointToScreen(edge);
+                            const screenEdge = camera.m_pointToScreen(edge);
                             const onscreen = coldet.testCircleAabb(
                                 playerPos,
                                 GameConfig.player.radius,
@@ -862,12 +866,12 @@ export class UiManager {
                                     left: math.clamp(
                                         screenEdge.x,
                                         off,
-                                        camera.screenWidth - off,
+                                        camera.m_screenWidth - off,
                                     ),
                                     top: math.clamp(
                                         screenEdge.y,
                                         off,
-                                        camera.screenHeight - off - heightAdjust,
+                                        camera.m_screenHeight - off - heightAdjust,
                                     ),
                                     transform,
                                 });
@@ -934,7 +938,7 @@ export class UiManager {
         }
         this.updatePlayerMapSprites(dt, player, playerBarn, map);
         this.mapSpriteBarn.update(dt, this, map);
-        this.pieTimer.update(dt, camera);
+        this.m_pieTimer.update(dt, camera);
 
         // Update role selection menu
         if (this.roleMenuActive) {
@@ -1227,16 +1231,16 @@ export class UiManager {
     getWorldPosFromMapPos(screenPos: Vec2, map: Map, camera: Camera): Vec2 {
         let insideMap = false;
         if (this.bigmapDisplayed) {
-            const xBuffer = (camera.screenWidth - this.mapSprite.width) / 2;
-            let yBuffer = (camera.screenHeight - this.mapSprite.height) / 2;
+            const xBuffer = (camera.m_screenWidth - this.mapSprite.width) / 2;
+            let yBuffer = (camera.m_screenHeight - this.mapSprite.height) / 2;
             if (device.uiLayout == device.UiLayout.Sm && !device.isLandscape) {
                 yBuffer = 0;
             }
             insideMap =
                 screenPos.x > xBuffer &&
-                screenPos.x < camera.screenWidth - xBuffer &&
+                screenPos.x < camera.m_screenWidth - xBuffer &&
                 screenPos.y > yBuffer &&
-                screenPos.y < camera.screenHeight - yBuffer;
+                screenPos.y < camera.m_screenHeight - yBuffer;
         } else if (this.minimapDisplayed) {
             const thisMinimapSize = this.getMinimapSize();
             const thisMinimapMargin = this.getMinimapMargin();
@@ -1298,7 +1302,7 @@ export class UiManager {
     }
 
     clearUI() {
-        this.pieTimer.stop();
+        this.m_pieTimer.stop();
         // @ts-expect-error not used anywhere, should be removed, I think.
         this.curAction = {
             type: Action.None,
@@ -1390,7 +1394,7 @@ export class UiManager {
     }
 
     quitGame() {
-        this.game.gameOver = true;
+        this.game.m_gameOver = true;
         this.refreshMainPageAds();
         this.game.onQuit();
     }
@@ -1414,7 +1418,7 @@ export class UiManager {
         if (!spectating || teamId == localTeamId || gameOver) {
             this.toggleEscMenu(true);
             this.displayingStats = true;
-            this.pieTimer.stop();
+            this.m_pieTimer.stop();
             this.displayMapLarge(true);
             this.clearStatsElems();
             this.setSpectating(false, teamMode);
@@ -1663,7 +1667,7 @@ export class UiManager {
         this.clearStatsElems();
         this.statsMain.css("display", "block");
         this.statsLogo.css("display", "none");
-        this.pieTimer.stop();
+        this.m_pieTimer.stop();
         this.displayingStats = true;
         this.statsHeader.html(
             (() => {
@@ -1773,7 +1777,7 @@ export class UiManager {
                 .find("#spectate-player")
                 .html(this.spectatedPlayerName);
             this.actionSeq = -1;
-            this.pieTimer.stop();
+            this.m_pieTimer.stop();
         }
     }
 
@@ -1887,7 +1891,7 @@ export class UiManager {
         );
         $(".js-ui-map-show").css("display", this.bigmapDisplayed ? "block" : "none");
         this.updateSpectatorCountDisplay(true);
-        this.redraw(this.game.camera);
+        this.redraw(this.game.m_camera);
     }
 
     updateSpectatorCountDisplay(dirty: boolean) {
@@ -2015,7 +2019,7 @@ export class UiManager {
         this.waitingText.css("display", waiting ? "block" : "none");
     }
 
-    render(
+    m_render(
         playerPos: Vec2,
         gas: Gas,
         _camera: unknown,
@@ -2024,7 +2028,7 @@ export class UiManager {
         debug: unknown,
     ) {
         // Gas
-        const circle = gas.getCircle();
+        const circle = gas.getCircle(1);
         const gasPos = this.getMapPosFromWorldPos(circle.pos, map);
         const gasEdge = this.getMapPosFromWorldPos(
             v2.add(circle.pos, v2.create(circle.rad, 0)),
@@ -2179,10 +2183,10 @@ export class UiManager {
                 ? 0.5626
                 : math.min(
                       1,
-                      math.clamp(camera.screenWidth / 1280, 0.75, 1) *
-                          math.clamp(camera.screenHeight / 1024, 0.75, 1),
+                      math.clamp(camera.m_screenWidth / 1280, 0.75, 1) *
+                          math.clamp(camera.m_screenHeight / 1024, 0.75, 1),
                   );
-        this.pieTimer.resize(this.touch, this.screenScaleFactor);
+        this.m_pieTimer.resize(this.touch, this.screenScaleFactor);
 
         this.gasRenderer.resize();
 
@@ -2190,7 +2194,7 @@ export class UiManager {
 
         const roleMenuScale = math.min(
             1,
-            math.min(camera.screenWidth / 1200, camera.screenHeight / 900),
+            math.min(camera.m_screenWidth / 1200, camera.m_screenHeight / 900),
         );
 
         this.roleMenuElem.css(
@@ -2202,8 +2206,8 @@ export class UiManager {
     }
 
     redraw(camera: Camera) {
-        const screenWidth = camera.screenWidth;
-        const screenHeight = camera.screenHeight;
+        const screenWidth = camera.m_screenWidth;
+        const screenHeight = camera.m_screenHeight;
 
         const thisMinimapMargin = this.getMinimapMargin();
 

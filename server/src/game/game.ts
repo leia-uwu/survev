@@ -16,6 +16,7 @@ import { ExplosionBarn } from "./objects/explosion";
 import { type GameObject, ObjectRegister } from "./objects/gameObject";
 import { Gas } from "./objects/gas";
 import { LootBarn } from "./objects/loot";
+import { MapIndicatorBarn } from "./objects/mapIndicator";
 import { PlaneBarn } from "./objects/plane";
 import { PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
@@ -30,7 +31,7 @@ export interface GroupData {
 export interface JoinTokenData {
     autoFill: boolean;
     playerCount: number;
-    avaliableUses: number;
+    availableUses: number;
     expiresAt: number;
     groupHashToJoin: string;
 }
@@ -68,17 +69,18 @@ export class Game {
      */
     msgsToSend = new net.MsgStream(new ArrayBuffer(4096));
 
-    playerBarn = new PlayerBarn(this);
-    lootBarn = new LootBarn(this);
-    deadBodyBarn = new DeadBodyBarn(this);
-    decalBarn = new DecalBarn(this);
-    projectileBarn = new ProjectileBarn(this);
-    bulletBarn = new BulletBarn(this);
-    smokeBarn = new SmokeBarn(this);
-    airdropBarn = new AirdropBarn(this);
+    playerBarn: PlayerBarn;
+    lootBarn: LootBarn;
+    deadBodyBarn: DeadBodyBarn;
+    decalBarn: DecalBarn;
+    projectileBarn: ProjectileBarn;
+    bulletBarn: BulletBarn;
+    smokeBarn: SmokeBarn;
+    airdropBarn: AirdropBarn;
 
-    explosionBarn = new ExplosionBarn(this);
-    planeBarn = new PlaneBarn(this);
+    explosionBarn: ExplosionBarn;
+    planeBarn: PlaneBarn;
+    mapIndicatorBarn: MapIndicatorBarn;
 
     map: GameMap;
     gas: Gas;
@@ -112,6 +114,20 @@ export class Game {
         this.map = new GameMap(this);
         this.grid = new Grid(this.map.width, this.map.height);
         this.objectRegister = new ObjectRegister(this.grid);
+
+        this.playerBarn = new PlayerBarn(this);
+        this.lootBarn = new LootBarn(this);
+        this.deadBodyBarn = new DeadBodyBarn(this);
+        this.decalBarn = new DecalBarn(this);
+        this.projectileBarn = new ProjectileBarn(this);
+        this.bulletBarn = new BulletBarn(this);
+        this.smokeBarn = new SmokeBarn(this);
+        this.airdropBarn = new AirdropBarn(this);
+        this.explosionBarn = new ExplosionBarn(this);
+        this.planeBarn = new PlaneBarn(this);
+        this.explosionBarn = new ExplosionBarn(this);
+        this.planeBarn = new PlaneBarn(this);
+        this.mapIndicatorBarn = new MapIndicatorBarn();
 
         this.gas = new Gas(this);
 
@@ -189,11 +205,14 @@ export class Game {
         // reset stuff
         //
         this.playerBarn.flush();
+        this.planeBarn.flush();
         this.bulletBarn.flush();
         this.airdropBarn.flush();
         this.objectRegister.flush();
         this.explosionBarn.flush();
         this.gas.flush();
+        this.mapIndicatorBarn.flush();
+
         this.msgsToSend.stream.index = 0;
     }
 
@@ -317,7 +336,7 @@ export class Game {
         player.spectating = undefined;
         player.dir = v2.create(0, 0);
         player.setPartDirty();
-        if (player.timeAlive < GameConfig.player.minActiveTime) {
+        if (player.timeAlive < GameConfig.player.minActiveTime && !player.downed) {
             player.game.playerBarn.removePlayer(player);
         }
     }
@@ -342,7 +361,7 @@ export class Game {
         this.joinTokens.set(id, {
             autoFill,
             playerCount,
-            avaliableUses: playerCount,
+            availableUses: playerCount,
             expiresAt: Date.now() + 15000,
             groupHashToJoin: "",
         });

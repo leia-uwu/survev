@@ -95,7 +95,7 @@ class DebugLines {
         }
     }
 
-    render(camera: Camera, gfx: Graphics) {
+    m_render(camera: Camera, gfx: Graphics) {
         /* STRIP_FROM_PROD_CLIENT:START */
         gfx.clear();
         for (let i = 0; i < this.shapes.length; i++) {
@@ -110,24 +110,24 @@ class DebugLines {
 
             switch (shape.type) {
                 case kShapes.Line: {
-                    const start = camera.pointToScreen(shape.start);
+                    const start = camera.m_pointToScreen(shape.start);
                     gfx.moveTo(start.x, start.y);
-                    const end = camera.pointToScreen(shape.end);
+                    const end = camera.m_pointToScreen(shape.end);
                     gfx.lineTo(end.x, end.y);
                     break;
                 }
                 case kShapes.Ray: {
-                    const start = camera.pointToScreen(shape.pos);
+                    const start = camera.m_pointToScreen(shape.pos);
                     gfx.moveTo(start.x, start.y);
-                    const end = camera.pointToScreen(
+                    const end = camera.m_pointToScreen(
                         v2.add(shape.pos, v2.mul(shape.dir, shape.len)),
                     );
                     gfx.lineTo(end.x, end.y);
                     break;
                 }
                 case kShapes.Aabb: {
-                    const min = camera.pointToScreen(shape.min);
-                    const max = camera.pointToScreen(shape.max);
+                    const min = camera.m_pointToScreen(shape.min);
+                    const max = camera.m_pointToScreen(shape.max);
                     gfx.moveTo(min.x, min.y)
                         .lineTo(max.x, min.y)
                         .lineTo(max.x, max.y)
@@ -136,8 +136,8 @@ class DebugLines {
                     break;
                 }
                 case kShapes.Circle: {
-                    const pos = camera.pointToScreen(shape.pos);
-                    const rad = camera.scaleToScreen(shape.rad);
+                    const pos = camera.m_pointToScreen(shape.pos);
+                    const rad = camera.m_scaleToScreen(shape.rad);
                     gfx.drawCircle(pos.x, pos.y, rad);
                     break;
                 }

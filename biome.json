@@ -32,7 +32,8 @@
   "formatter": {
     "indentWidth": 4,
     "indentStyle": "space",
-    "lineWidth": 90
+    "lineWidth": 90,
+    "ignore": ["package.json"]
   },
   "vcs": {
     "enabled": true,

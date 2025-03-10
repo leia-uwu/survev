@@ -128,7 +128,7 @@ export class Touch {
 
     getAimMovement(activePlayer: Player, camera: Camera) {
         const isHoldingThrowable =
-            activePlayer.localData.curWeapIdx == GameConfig.WeaponSlot.Throwable;
+            activePlayer.m_localData.m_curWeapIdx == GameConfig.WeaponSlot.Throwable;
         return this.getAim(isHoldingThrowable, camera);
     }
 
@@ -251,7 +251,7 @@ export class Touch {
         };
     }
 
-    update(
+    m_update(
         _dt: number,
         activePlayer: Player,
         map: Map,
@@ -276,7 +276,7 @@ export class Touch {
     }
 
     isLeftSideTouch(posX: number, camera: Camera) {
-        return posX < camera.screenWidth * 0.5;
+        return posX < camera.m_screenWidth * 0.5;
     }
 
     getConstrainedPos(posDown: Vec2, pos: Vec2, dist: number) {
@@ -597,7 +597,7 @@ class LineSprites {
         const visible = device.touch && touch.touchingAim && touch.touchAimLine;
 
         if (visible) {
-            const curWeap = activePlayer.netData.activeWeapon;
+            const curWeap = activePlayer.m_netData.m_activeWeapon;
             const curWeapDef = GameObjectDefs[curWeap] as GunDef | ThrowableDef;
 
             // Determine max range of the aim line
@@ -608,15 +608,15 @@ class LineSprites {
             }
 
             // Clamp max range to be within the camera radius
-            const cameraZoom = activePlayer.getZoom();
+            const cameraZoom = activePlayer.m_getZoom();
             const cameraRad = Math.sqrt(cameraZoom * 1.414 * cameraZoom);
             maxRange = math.min(maxRange, cameraRad);
 
-            const start = v2.copy(activePlayer.pos);
-            let end = v2.add(start, v2.mul(activePlayer.dir, maxRange));
+            const start = v2.copy(activePlayer.m_pos);
+            let end = v2.add(start, v2.mul(activePlayer.m_dir, maxRange));
 
             // Compute the nearest intersecting obstacle
-            const obstacles = map.obstaclePool.getPool();
+            const obstacles = map.m_obstaclePool.m_getPool();
             for (let i = 0; i < obstacles.length; i++) {
                 const obstacle = obstacles[i];
                 if (
@@ -657,15 +657,18 @@ class LineSprites {
             for (let i = 0; i < this.dots.length; i++) {
                 const dot = this.dots[i];
                 const offset = startOffset + i * increment;
-                const pos = v2.add(activePlayer.pos, v2.mul(activePlayer.dir, offset));
+                const pos = v2.add(
+                    activePlayer.m_pos,
+                    v2.mul(activePlayer.m_dir, offset),
+                );
                 const scale = (1.0 / 32.0) * 0.375;
                 dot.position.set(pos.x, pos.y);
                 dot.scale.set(scale, scale);
                 dot.visible = i < dotCount;
             }
 
-            const p0 = camera.pointToScreen(v2.create(0, 0));
-            const p1 = camera.pointToScreen(v2.create(1, 1));
+            const p0 = camera.m_pointToScreen(v2.create(0, 0));
+            const p1 = camera.m_pointToScreen(v2.create(1, 1));
             const R = v2.sub(p1, p0);
             this.container.position.set(p0.x, p0.y);
             this.container.scale.set(R.x, R.y);

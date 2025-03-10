@@ -58,12 +58,12 @@ class DeadBody implements AbstractObject {
         this.container.visible = this.sprite;
     }
 
-    init() {}
-    free() {
+    m_init() {}
+    m_free() {
         this.container.visible = false;
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.DeadBody>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -84,7 +84,7 @@ class DeadBody implements AbstractObject {
 export class DeadBodyBarn {
     deadBodyPool = new Pool(DeadBody);
 
-    update(
+    m_update(
         _dt: number,
         playerBarn: PlayerBarn,
         activePlayer: Player,
@@ -92,7 +92,7 @@ export class DeadBodyBarn {
         camera: Camera,
         renderer: Renderer,
     ) {
-        const deadBodies = this.deadBodyPool.getPool();
+        const deadBodies = this.deadBodyPool.m_getPool();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];
             if (d.active) {
@@ -116,8 +116,8 @@ export class DeadBodyBarn {
 
                 renderer.addPIXIObj(d.container, layer, zOrd, d.__id);
 
-                const screenPos = camera.pointToScreen(d.pos);
-                const screenScale = camera.pixels(1);
+                const screenPos = camera.m_pointToScreen(d.pos);
+                const screenScale = camera.m_pixels(1);
                 d.container.position.set(screenPos.x, screenPos.y);
                 d.container.scale.set(screenScale, screenScale);
             }
@@ -125,7 +125,7 @@ export class DeadBodyBarn {
     }
 
     getDeadBodyById(playerId: number) {
-        const deadBodies = this.deadBodyPool.getPool();
+        const deadBodies = this.deadBodyPool.m_getPool();
         for (let i = 0; i < deadBodies.length; i++) {
             const d = deadBodies[i];
             if (d.active && d.playerId == playerId) {

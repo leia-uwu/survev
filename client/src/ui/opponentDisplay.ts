@@ -78,17 +78,17 @@ export class LoadoutDisplay {
         // Register types
         const TypeToPool = {
             [ObjectType.Player]: this.playerBarn.playerPool,
-            [ObjectType.Obstacle]: this.map.obstaclePool,
-            [ObjectType.Building]: this.map.buildingPool,
-            [ObjectType.Structure]: this.map.structurePool,
+            [ObjectType.Obstacle]: this.map.m_obstaclePool,
+            [ObjectType.Building]: this.map.m_buildingPool,
+            [ObjectType.Structure]: this.map.m_structurePool,
             [ObjectType.Decal]: this.decalBarn.decalPool,
-            [ObjectType.Smoke]: this.smokeBarn.smokePool,
+            [ObjectType.Smoke]: this.smokeBarn.m_smokePool,
         };
 
         this.objectCreator = new Creator();
         for (const type in TypeToPool) {
             if (TypeToPool.hasOwnProperty(type)) {
-                this.objectCreator.registerType(
+                this.objectCreator.m_registerType(
                     type,
                     TypeToPool[type as unknown as keyof typeof TypeToPool],
                 );
@@ -141,7 +141,7 @@ export class LoadoutDisplay {
         );
 
         this.activePlayer = this.playerBarn.getPlayerById(this.activeId)!;
-        this.activePlayer.setLocalData(
+        this.activePlayer.m_setLocalData(
             {
                 boost: 100,
                 boostDirty: true,
@@ -174,7 +174,7 @@ export class LoadoutDisplay {
             this.playerBarn,
         );
 
-        this.activePlayer.layer = this.activePlayer.netData.layer;
+        this.activePlayer.layer = this.activePlayer.m_netData.m_layer;
         this.activePlayer.isLoadoutAvatar = true;
         this.renderer.setActiveLayer(this.activePlayer.layer);
         this.audioManager.activeLayer = this.activePlayer.layer;
@@ -199,9 +199,9 @@ export class LoadoutDisplay {
 
     free() {
         if (this.initialized) {
-            this.map.free();
-            this.particleBarn.free();
-            this.renderer.free();
+            this.map.m_free();
+            this.particleBarn.m_free();
+            this.renderer.m_free();
             while (this.pixi.stage.children.length > 0) {
                 const e = this.pixi.stage.children[0];
                 this.pixi.stage.removeChild(e);
@@ -283,7 +283,7 @@ export class LoadoutDisplay {
             dir: v2.create(0, -1),
         };
 
-        this.objectCreator.updateObjFull(
+        this.objectCreator.m_updateObjFull(
             ObjectType.Player,
             98,
             obj as unknown as ObjectData<ObjectType.Player>,
@@ -306,27 +306,27 @@ export class LoadoutDisplay {
         return (
             ((document.getElementById("modal-content-left")!.getBoundingClientRect()
                 .height /
-                this.camera.screenHeight) *
+                this.camera.m_screenHeight) *
                 0.2 *
-                this.camera.screenHeight *
+                this.camera.m_screenHeight *
                 0.5) /
-            this.camera.ppu
+            this.camera.m_ppu
         );
     }
 
     getCameraLoadoutOffset() {
-        const zoomPrev = this.camera.zoom;
+        const zoomPrev = this.camera.m_zoom;
 
         const targetZoom = this.getCameraTargetZoom();
-        this.camera.zoom = targetZoom;
+        this.camera.m_zoom = targetZoom;
 
         const modal = document.getElementById("modal-content-left")!;
         const modalBound = modal.getBoundingClientRect();
         const modalAabb = collider.createAabb(
-            this.camera.screenToPoint(
+            this.camera.m_screenToPoint(
                 v2.create(modalBound.left, modalBound.top + modalBound.height),
             ),
-            this.camera.screenToPoint(
+            this.camera.m_screenToPoint(
                 v2.create(modalBound.left + modalBound.width, modalBound.top),
             ),
         );
@@ -334,8 +334,8 @@ export class LoadoutDisplay {
         const modalPos = v2.add(modalAabb.min, modalExt);
 
         const screenAabb = collider.createAabb(
-            this.camera.screenToPoint(v2.create(0, this.camera.screenHeight)),
-            this.camera.screenToPoint(v2.create(this.camera.screenWidth, 0)),
+            this.camera.m_screenToPoint(v2.create(0, this.camera.m_screenHeight)),
+            this.camera.m_screenToPoint(v2.create(this.camera.m_screenWidth, 0)),
         );
 
         const screenExt = v2.mul(v2.sub(screenAabb.max, screenAabb.min), 0.5);
@@ -348,7 +348,7 @@ export class LoadoutDisplay {
             modalOffset.x + modalExt.x + offsetX,
             modalOffset.y + offsetY,
         );
-        this.camera.zoom = zoomPrev;
+        this.camera.m_zoom = zoomPrev;
         return offset;
     }
 
@@ -362,7 +362,7 @@ export class LoadoutDisplay {
     hide() {
         if (this.active) {
             this.active = false;
-            this.camera.zoom = 2;
+            this.camera.m_zoom = 2;
         }
     }
 
@@ -370,10 +370,14 @@ export class LoadoutDisplay {
         const debug: DebugOptions = {};
 
         // Camera
-        this.camera.pos = v2.sub(this.activePlayer.pos, this.cameraOffset);
-        this.camera.zoom = math.lerp(dt * 5, this.camera.zoom, this.camera.targetZoom);
+        this.camera.m_pos = v2.sub(this.activePlayer.m_pos, this.cameraOffset);
+        this.camera.m_zoom = math.lerp(
+            dt * 5,
+            this.camera.m_zoom,
+            this.camera.m_targetZoom,
+        );
 
-        this.audioManager.cameraPos = v2.copy(this.camera.pos);
+        this.audioManager.cameraPos = v2.copy(this.camera.m_pos);
 
         // DebugLines.addAabb(modalAabb.min, modalAabb.max, 0xff0000, 0.0);
         // DebugLines.addCircle(this.m_activePlayer.pos, 1.5, 0xff0000, 0.0);
@@ -427,7 +431,7 @@ export class LoadoutDisplay {
                 });
             }
         }
-        this.playerBarn.update(
+        this.playerBarn.m_update(
             dt,
             this.activeId,
             // @ts-expect-error not defined locally.
@@ -443,16 +447,16 @@ export class LoadoutDisplay {
             false,
             false,
         );
-        this.smokeBarn.update(
+        this.smokeBarn.m_update(
             dt,
             this.camera,
             this.activePlayer,
             this.map,
             this.renderer,
         );
-        this.particleBarn.update(dt, this.camera, debug);
-        this.decalBarn.update(dt, this.camera, this.renderer, debug);
-        this.renderer.update(dt, this.camera, this.map, debug);
+        this.particleBarn.m_update(dt, this.camera, debug);
+        this.decalBarn.m_update(dt, this.camera, this.renderer, debug);
+        this.renderer.m_update(dt, this.camera, this.map, debug);
         this.activePlayer.playActionStartSfx = false;
 
         this.render(dt, debug);
@@ -466,20 +470,20 @@ export class LoadoutDisplay {
         this.pixi.renderer.background.color = grassColor;
 
         // Module rendering
-        this.playerBarn.render(this.camera, debug);
-        this.map.render(this.camera);
+        this.playerBarn.m_render(this.camera, debug);
+        this.map.m_render(this.camera);
 
-        debugLines.render(this.camera, this.debugDisplay);
+        debugLines.m_render(this.camera, this.debugDisplay);
         debugLines.flush();
     }
 
     resize() {
         if (this.initialized) {
-            this.camera.screenWidth = device.screenWidth;
-            this.camera.screenHeight = device.screenHeight;
+            this.camera.m_screenWidth = device.screenWidth;
+            this.camera.m_screenHeight = device.screenHeight;
             this.map.resize(this.pixi.renderer, this.canvasMode);
             this.renderer.resize(this.map, this.camera);
-            this.camera.targetZoom = this.getCameraTargetZoom();
+            this.camera.m_targetZoom = this.getCameraTargetZoom();
             this.cameraOffset = this.getCameraLoadoutOffset();
         }
     }

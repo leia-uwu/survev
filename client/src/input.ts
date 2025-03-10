@@ -67,7 +67,7 @@ export class InputHandler {
         );
     }
 
-    free() {
+    m_free() {
         this.touches = [];
         this.touchIdCounter = 0;
     }

@@ -1,3 +1,4 @@
+import { TeamColor } from "../../../shared/defs/maps/factionDefs";
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import { ObjectType } from "../../../shared/net/objectSerializeFns";
 import type { PlayerStatus } from "../../../shared/net/updateMsg";
@@ -113,6 +114,7 @@ export class GameModeManager {
         if (this.getPlayerAlivePlayersContext(player).length != 0) {
             playerFilter = (p: Player) => !p.disconnected && p.teamId == player.teamId;
         } else {
+            // if no players left on group/team, player can spectate anyone
             playerFilter = (p: Player) => !p.disconnected;
         }
         // livingPlayers is used here instead of a more "efficient" option because its sorted while other options are not
@@ -156,7 +158,7 @@ export class GameModeManager {
     getNearbyAlivePlayersContext(player: Player, range: number): Player[] {
         const alivePlayersContext = this.getPlayerAlivePlayersContext(player);
 
-        //probably more efficient when there's 4 or less players in the context (untested)
+        // probably more efficient when there's 4 or less players in the context (untested)
         if (alivePlayersContext.length <= 4) {
             return alivePlayersContext.filter(
                 (p) =>
@@ -172,20 +174,14 @@ export class GameModeManager {
                 (obj): obj is Player =>
                     obj.__type == ObjectType.Player &&
                     playerIdContext == this.getIdContext(obj) &&
-                    !obj.dead && //necessary since player isnt deleted from grid on death
+                    !obj.dead && // necessary since player isnt deleted from grid on death
                     !!util.sameLayer(player.layer, obj.layer) &&
                     v2.lengthSqr(v2.sub(player.pos, obj.pos)) <= range * range,
             );
     }
 
-    /**
-     * by default, true if the current context mode supports reviving
-     *
-     * always true regardless of context mode with self revive
-     * @param playerReviving player that initializes the revive action
-     */
-    canRevive(playerReviving: Player): boolean {
-        return playerReviving.hasPerk("self_revive") || !this.isSolo;
+    isReviveSupported(): boolean {
+        return !this.isSolo;
     }
 
     isReviving(player: Player): boolean {
@@ -221,25 +217,82 @@ export class GameModeManager {
             case GameMode.Team:
                 return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
             case GameMode.Faction:
-                /**
-                 * temporary fix for when you kill the last non knocked player on a team
-                 * and all of the knocked players are supposed to bleed out
-                 * technically everyone is "dead" at this point and the stats message shouldnt show for anyone
-                 * but since the last knocked player gets killed first the downed teammates are technically still "alive"
-                 *
-                 * i believe the solution is to separate kills and gameovermsgs so that all kills in a tick get done first
-                 * then all gameovermsgs get done after
-                 * for (const kill of kills){};
-                 * for (const msg of gameovermsgs){};
-                 */
-                if (player.team!.checkAllDowned(player)) return false;
+                return this.aliveCount() > 1;
+        }
+    }
 
-                if (!this.game.isTeamMode) {
-                    //stats msg can only show in solos if it's also faction mode
-                    return this.aliveCount() > 1;
-                }
+    getGameoverPlayers(player: Player): Player[] {
+        switch (this.mode) {
+            case GameMode.Solo:
+                return [player];
+            case GameMode.Team:
+                return player.group!.players;
+            case GameMode.Faction:
+                const redLeader = this.game.playerBarn.teams[TeamColor.Red - 1].leader;
+                const blueLeader = this.game.playerBarn.teams[TeamColor.Blue - 1].leader;
+                const highestKiller = this.game.playerBarn.players.reduce(
+                    (highestKiller, p) =>
+                        highestKiller.kills > p.kills ? highestKiller : p,
+                );
 
-                return !player.group!.allDeadOrDisconnected && this.aliveCount() > 1;
+                //if game ends before leaders are promoted, just show the player by himself
+                return !redLeader || !blueLeader
+                    ? [player]
+                    : [player, redLeader, blueLeader, highestKiller];
+        }
+    }
+
+    /**
+     * gives all the players spectating the player who died a new player to spectate
+     * @param player player who died
+     */
+    assignNewSpectate(player: Player): void {
+        // This method doesn't use a mode switchcase like all the other methods in this class,
+        // as the spectate logic is identitical with the sole exception of narrowing random players
+        // in 50v50: random players spectated in 50v50 should be on the same team as the spectator.
+
+        // If there are no spectators, we have no need to run any logic.
+        if (player.spectatorCount === 0) return;
+
+        // Utility function to find a derivative of the original killer.
+        let attempts = 0;
+        const getAliveKiller = (killer: Player | undefined): Player | undefined => {
+            attempts++;
+            if (attempts > 80) return undefined;
+
+            if (!killer) return undefined;
+            if (!killer.dead) return killer;
+            if (
+                killer.killedBy &&
+                killer.killedBy !== player &&
+                killer.killedBy !== killer
+            ) {
+                return getAliveKiller(killer.killedBy);
+            }
+
+            return undefined;
+        };
+
+        // Priority list of spectate targets.
+        const spectateTargets = [
+            player.group?.randomPlayer(), // undefined if no player to choose
+            player.team?.randomPlayer(), // undefined if no player to choose
+            getAliveKiller(player.killedBy),
+            player.game.playerBarn.randomPlayer(),
+        ];
+
+        const playerToSpec = spectateTargets.filter((x) => x !== undefined).shift();
+        for (const spectator of player.spectators) {
+            // If all group members have died, they need to be sent a game over message instead.
+            if (
+                player.group &&
+                player.group.allDeadOrDisconnected &&
+                player.group.players.includes(spectator)
+            )
+                continue;
+
+            // Set remaining spectators to new player.
+            spectator.spectating = playerToSpec;
         }
     }
 
@@ -280,7 +333,7 @@ export class GameModeManager {
                         }
 
                         player.kill(params);
-                        //special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
+                        // special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
                         if (group.checkAllDowned(player)) {
                             group.killAllTeammates();
                         }
@@ -324,17 +377,20 @@ export class GameModeManager {
                         }
 
                         player.kill(params);
-                        //special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
+                        // special case that only happens when the player has self_revive since the teammates wouldnt have previously been finished off
                         if (team.checkAllDowned(player)) {
                             team.killAllTeammates();
                         }
                         return;
                     }
 
+                    const teamHasSelfRevive = team.livingPlayers.find((p) =>
+                        p.hasPerk("self_revive"),
+                    );
                     const allDead = team.checkAllDead(player);
                     const allDowned = team.checkAllDowned(player);
 
-                    if (allDead || allDowned) {
+                    if (!teamHasSelfRevive && (allDead || allDowned)) {
                         player.kill(params);
                         if (allDowned) {
                             team.killAllTeammates();

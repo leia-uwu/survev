@@ -67,6 +67,7 @@
   "index-viewers": "viewers",
   "index-settings": "Settings",
   "index-high-resolution": "High resolution (check to increase visual quality)",
+  "index-client-side-interp": "Client side interpolation",
   "index-screen-shake": "Screen shake",
   "index-anon-player-names": "Anonymize player names",
   "index-master-volume": "Master Volume",

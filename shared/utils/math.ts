@@ -109,6 +109,10 @@ export const math = {
         return (rad * 180.0) / Math.PI;
     },
 
+    rad2Direction(rad: number): Vec2 {
+        return v2.create(Math.cos(rad), Math.sin(rad));
+    },
+
     rad2degFromDirection(y: number, x: number) {
         const rad = Math.atan2(y, x);
         let angle = (rad * 180) / Math.PI;

@@ -55,7 +55,7 @@ export class Renderer {
         this.ground.alpha = 0;
     }
 
-    free() {
+    m_free() {
         this.layerMask.parent?.removeChild(this.layerMask);
         this.layerMask.destroy(true);
     }
@@ -67,10 +67,10 @@ export class Renderer {
                 type: "addChild",
                 stack: err.stack,
                 browser: navigator.userAgent,
-                playing: this.game.playing,
-                gameOver: this.game.gameOver,
-                spectating: this.game.spectating,
-                time: this.game.playingTicker,
+                playing: this.game.m_playing,
+                gameOver: this.game.m_gameOver,
+                spectating: this.game.m_spectating,
+                time: this.game.m_playingTicker,
                 mode: this.game.teamMode,
                 layer,
                 zOrd,
@@ -121,7 +121,7 @@ export class Renderer {
 
         this.ground.clear();
         this.ground.beginFill(undergroundColor);
-        this.ground.drawRect(0, 0, camera.screenWidth, camera.screenHeight);
+        this.ground.drawRect(0, 0, camera.m_screenWidth, camera.m_screenHeight);
         this.ground.endFill();
 
         this.layerMaskDirty = true;
@@ -133,8 +133,8 @@ export class Renderer {
             mask.clear();
             if (this.layerMaskActive) {
                 mask.beginFill(0xffffff, 1.0);
-                mask.drawRect(0.0, 0.0, camera.screenWidth, camera.screenHeight);
-                const structures = map.structurePool.getPool();
+                mask.drawRect(0.0, 0.0, camera.m_screenWidth, camera.m_screenHeight);
+                const structures = map.m_structurePool.m_getPool();
                 for (let i = 0; i < structures.length; i++) {
                     const structure = structures[i];
                     if (!structure.active) {
@@ -144,8 +144,8 @@ export class Renderer {
                         const m = structure.mask[j];
                         const e = v2.mul(v2.sub(m.max, m.min), 0.5);
                         const c = v2.add(m.min, e);
-                        const ll = camera.pointToScreen(v2.sub(c, e));
-                        const tr = camera.pointToScreen(v2.add(c, e));
+                        const ll = camera.m_pointToScreen(v2.sub(c, e));
+                        const tr = camera.m_pointToScreen(v2.add(c, e));
                         mask.drawRect(ll.x, ll.y, tr.x - ll.x, tr.y - ll.y);
                     }
                 }
@@ -158,7 +158,7 @@ export class Renderer {
                 mask.clear();
                 mask.beginFill(0xffffff, 1.0);
                 drawRect(mask, 0.0, 0.0, 1024.0, 1024.0);
-                const structures = map.structurePool.getPool();
+                const structures = map.m_structurePool.m_getPool();
                 for (let i = 0; i < structures.length; i++) {
                     const structure = structures[i];
                     if (!structure.active) {
@@ -181,8 +181,8 @@ export class Renderer {
                 mask.endFill();
             }
             // Position layer mask
-            const p0 = camera.pointToScreen(v2.create(0.0, 0.0));
-            const s = camera.scaleToScreen(1.0);
+            const p0 = camera.m_pointToScreen(v2.create(0.0, 0.0));
+            const s = camera.m_scaleToScreen(1.0);
             mask.position.set(p0.x, p0.y);
             mask.scale.set(s, -s);
         }
@@ -192,7 +192,7 @@ export class Renderer {
         const mask = this.debugLayerMask as unknown as PIXI.Graphics;
         mask.clear();
         mask.beginFill(16711935, 1);
-        const structures = map.structurePool.getPool();
+        const structures = map.m_structurePool.m_getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active) {
@@ -209,14 +209,14 @@ export class Renderer {
             }
         }
         mask.endFill();
-        const p0 = camera.pointToScreen(v2.create(0, 0));
-        const _p1 = camera.pointToScreen(v2.create(1, 0));
-        const s = camera.scaleToScreen(1);
+        const p0 = camera.m_pointToScreen(v2.create(0, 0));
+        const _p1 = camera.m_pointToScreen(v2.create(1, 0));
+        const s = camera.m_scaleToScreen(1);
         mask.position.set(p0.x, p0.y);
         mask.scale.set(s, -s);
     }
 
-    update(dt: number, camera: Camera, map: Map, _debug: unknown) {
+    m_update(dt: number, camera: Camera, map: Map, _debug: unknown) {
         // Adjust layer alpha
         const alphaTarget = this.layer > 0 ? 1.0 : 0.0;
         this.layerAlpha += step(this.layerAlpha, alphaTarget, dt * 12.0);

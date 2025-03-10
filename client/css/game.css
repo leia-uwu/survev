@@ -2531,9 +2531,24 @@ img {
 }
 
 .ui-perk-pulse {
-  -webkit-animation-name: perkPulse;
-  -webkit-animation-duration: 1.5s;
-  -webkit-animation-iteration-count: 2;
+  animation-name: perkPulse;
+  animation-duration: 1.5s;
+  animation-iteration-count: 2;
+}
+
+@keyframes perkPulse {
+  from {
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0);
+  }
+  50% {
+    background-color: rgba(255, 210, 0, 0.75);
+    box-shadow: 0px 0px 30px #ffd200;
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0);
+  }
 }
 
 /* Tooltip container */

@@ -1,1 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="672" viewBox="0 0 254 177.8"><defs><clipPath id="e"><path fill="#424148" stroke-width="3.175" d="M143.933 25.4H228.6v127h-84.667z"/></clipPath><clipPath id="f"><path d="M127 169.334h16.933c0-4.234 4.233-8.467 8.467-8.467h16.933c4.233 0 8.467 4.233 8.468 8.467h67.732L228.6 152.4h-84.667z" fill="#3a3a3a" stroke-width="6.524" stroke-opacity=".227"/></clipPath><clipPath id="g"><path d="M245.533 169.334L228.6 152.4v-127l16.933-16.933z" fill="#3a3a3a" stroke-width="3.175"/></clipPath><clipPath id="d"><path d="M127 33.867V50.8H33.866L16.933 33.867z" fill="#2c2c2c" stroke-width="3.175"/></clipPath><clipPath id="c"><path d="M16.933 143.934L33.865 127l.001-76.2-16.933-16.934z" fill="#2c2c2c" stroke-width="3.175"/></clipPath><clipPath id="b"><path d="M33.866 50.8H127V127H33.866z" fill="#3a3a3a" stroke-width="2.577"/></clipPath><clipPath id="a"><path d="M127 143.934V127H33.866l-16.933 16.934z" fill="#2c2c2c" stroke-width="3.175"/></clipPath></defs><path d="M127 143.934V127H33.866l-16.933 16.934z" clip-path="url(#a)" fill="#2c2c2c" stroke="#000" stroke-width="2.117"/><path d="M33.866 50.8H127V127H33.866z" clip-path="url(#b)" fill="#3a3a3a" stroke="#000" stroke-width="2.117"/><path d="M16.933 143.934L33.865 127l.001-76.2-16.933-16.934z" clip-path="url(#c)" fill="#2c2c2c" stroke="#000" stroke-width="2.117"/><path d="M127 33.867V50.8H33.866L16.933 33.867z" clip-path="url(#d)" fill="#2c2c2c" stroke="#000" stroke-width="2.117"/><path clip-path="url(#e)" fill="#565656" stroke="#000" stroke-width="2.117" d="M143.933 25.4H228.6v127h-84.667z"/><path d="M127 169.334h16.933c0-4.234 4.233-8.467 8.467-8.467h16.933c4.233 0 8.467 4.233 8.468 8.467h67.732L228.6 152.4h-84.667z" clip-path="url(#f)" fill="#3a3a3a" stroke-width="2.117" stroke="#000"/><path d="M245.533 169.334L228.6 152.4v-127l16.933-16.933z" clip-path="url(#g)" fill="#3a3a3a" stroke="#000" stroke-width="2.117"/><path clip-path="url(#f)" d="M127 169.334h16.933c0-4.234 4.233-8.467 8.467-8.467h16.933c4.233 0 8.467 4.233 8.468 8.467h67.732L228.6 152.4h-84.667z" transform="matrix(1 0 0 -1 0 177.8)" fill="#3a3a3a" stroke="#000" stroke-width="2.117"/><path clip-path="url(#g)" d="M245.533 169.334L228.6 152.4v-127l16.933-16.933z" transform="rotate(-180 186.267 88.9)" fill="#3a3a3a" stroke="#000" stroke-width="2.117"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="864" height="608.00507" viewBox="0 0 228.6 160.86801" version="1.1" id="svg16" sodipodi:docname="map-bunker-hydra-ceiling-01.svg" inkscape:version="1.4 (e7c3feb100, 2024-10-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview id="namedview16" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="0.60044643" inkscape:cx="174.86989" inkscape:cy="172.37175" inkscape:current-layer="svg16" />
+  <defs id="defs7">
+    <clipPath id="e">
+      <path fill="#424148" stroke-width="3.175" d="M 143.933,25.4 H 228.6 v 127 h -84.667 z" id="path1" />
+    </clipPath>
+    <clipPath id="f">
+      <path d="m 127,169.334 h 16.933 c 0,-4.234 4.233,-8.467 8.467,-8.467 h 16.933 c 4.233,0 8.467,4.233 8.468,8.467 h 67.732 L 228.6,152.4 h -84.667 z" fill="#3a3a3a" stroke-width="6.524" stroke-opacity="0.227" id="path2" />
+    </clipPath>
+    <clipPath id="g">
+      <path d="M 245.533,169.334 228.6,152.4 V 25.4 L 245.533,8.467 Z" fill="#3a3a3a" stroke-width="3.175" id="path3" />
+    </clipPath>
+    <clipPath id="d">
+      <path d="M 127,33.867 V 50.8 H 33.866 L 16.933,33.867 Z" fill="#2c2c2c" stroke-width="3.175" id="path4" />
+    </clipPath>
+    <clipPath id="c">
+      <path d="M 16.933,143.934 33.865,127 33.866,50.8 16.933,33.866 Z" fill="#2c2c2c" stroke-width="3.175" id="path5" />
+    </clipPath>
+    <clipPath id="b">
+      <path d="M 33.866,50.8 H 127 V 127 H 33.866 Z" fill="#3a3a3a" stroke-width="2.577" id="path6" />
+    </clipPath>
+    <clipPath id="a">
+      <path d="M 127,143.934 V 127 H 33.866 l -16.933,16.934 z" fill="#2c2c2c" stroke-width="3.175" id="path7" />
+    </clipPath>
+  </defs>
+  <path d="M 127,143.934 V 127 H 33.866 l -16.933,16.934 z" clip-path="url(#a)" fill="#2c2c2c" stroke="#000000" stroke-width="2.117" id="path8" transform="translate(-16.933,-8.466)" />
+  <path d="M 33.866,50.8 H 127 V 127 H 33.866 Z" clip-path="url(#b)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path9" transform="translate(-16.933,-8.466)" />
+  <path d="M 16.933,143.934 33.865,127 33.866,50.8 16.933,33.866 Z" clip-path="url(#c)" fill="#2c2c2c" stroke="#000000" stroke-width="2.117" id="path10" transform="translate(-16.933,-8.466)" />
+  <path d="M 127,33.867 V 50.8 H 33.866 L 16.933,33.867 Z" clip-path="url(#d)" fill="#2c2c2c" stroke="#000000" stroke-width="2.117" id="path11" transform="translate(-16.933,-8.466)" />
+  <path clip-path="url(#e)" fill="#565656" stroke="#000000" stroke-width="2.117" d="M 143.933,25.4 H 228.6 v 127 h -84.667 z" id="path12" transform="translate(-16.933,-8.466)" />
+  <path d="m 127,169.334 h 16.933 c 0,-4.234 4.233,-8.467 8.467,-8.467 h 16.933 c 4.233,0 8.467,4.233 8.468,8.467 h 67.732 L 228.6,152.4 h -84.667 z" clip-path="url(#f)" fill="#3a3a3a" stroke-width="2.117" stroke="#000000" id="path13" transform="translate(-16.933,-8.466)" />
+  <path d="M 245.533,169.334 228.6,152.4 V 25.4 L 245.533,8.467 Z" clip-path="url(#g)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path14" transform="translate(-16.933,-8.466)" />
+  <path clip-path="url(#f)" d="m 127,169.334 h 16.933 c 0,-4.234 4.233,-8.467 8.467,-8.467 h 16.933 c 4.233,0 8.467,4.233 8.468,8.467 h 67.732 L 228.6,152.4 h -84.667 z" transform="matrix(1,0,0,-1,-16.933,169.334)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path15" />
+  <path clip-path="url(#g)" d="M 245.533,169.334 228.6,152.4 V 25.4 L 245.533,8.467 Z" transform="rotate(180,177.8005,84.667)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path16" />
+</svg>

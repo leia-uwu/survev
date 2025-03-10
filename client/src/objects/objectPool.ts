@@ -12,77 +12,77 @@ import type { AbstractObject } from "./player";
 type C<T extends AbstractObject> = new () => T;
 
 export class Pool<T extends AbstractObject> {
-    pool: T[] = [];
-    activeCount = 0;
-    creator: {
+    m_pool: T[] = [];
+    m_activeCount = 0;
+    m_creator: {
         type: C<T>;
     };
 
     constructor(classFn: C<T>) {
-        this.creator = {
+        this.m_creator = {
             type: classFn,
         };
         assert(classFn !== undefined);
     }
 
-    alloc() {
+    m_alloc() {
         let obj: T | null = null;
-        for (let i = 0; i < this.pool.length; i++) {
-            if (!this.pool[i].active) {
-                obj = this.pool[i];
+        for (let i = 0; i < this.m_pool.length; i++) {
+            if (!this.m_pool[i].active) {
+                obj = this.m_pool[i];
                 break;
             }
         }
         if (!obj) {
-            obj = new this.creator.type();
-            this.pool.push(obj);
+            obj = new this.m_creator.type();
+            this.m_pool.push(obj);
         }
         obj.active = true;
-        obj.init();
-        this.activeCount++;
+        obj.m_init();
+        this.m_activeCount++;
         return obj;
     }
 
-    free(obj: AbstractObject) {
-        obj.free();
+    m_free(obj: AbstractObject) {
+        obj.m_free();
         obj.active = false;
-        this.activeCount--;
+        this.m_activeCount--;
 
-        if (this.pool.length > 128 && this.activeCount < this.pool.length / 2) {
+        if (this.m_pool.length > 128 && this.m_activeCount < this.m_pool.length / 2) {
             const compact = [];
-            for (let i = 0; i < this.pool.length; i++) {
-                if (this.pool[i].active) {
-                    compact.push(this.pool[i]);
+            for (let i = 0; i < this.m_pool.length; i++) {
+                if (this.m_pool[i].active) {
+                    compact.push(this.m_pool[i]);
                 }
             }
-            this.pool = compact;
+            this.m_pool = compact;
         }
     }
 
-    getPool() {
-        return this.pool;
+    m_getPool() {
+        return this.m_pool;
     }
 }
 
 export class Creator {
-    idToObj: Record<number, AbstractObject> = {};
-    types: Record<string, Pool<AbstractObject>> = {};
-    seenCount = 0;
+    m_idToObj: Record<number, AbstractObject> = {};
+    m_types: Record<string, Pool<AbstractObject>> = {};
+    m_seenCount = 0;
 
-    registerType(type: string, pool: Pool<AbstractObject>) {
-        this.types[type] = pool;
+    m_registerType(type: string, pool: Pool<AbstractObject>) {
+        this.m_types[type] = pool;
     }
 
-    getObjById(id: number) {
-        return this.idToObj[id];
+    m_getObjById(id: number) {
+        return this.m_idToObj[id];
     }
 
-    getTypeById(id: number, s: BitStream) {
-        const obj = this.getObjById(id);
+    m_getTypeById(id: number, s: BitStream) {
+        const obj = this.m_getObjById(id);
         if (!obj) {
             const err = {
                 id,
-                ids: Object.keys(this.idToObj),
+                ids: Object.keys(this.m_idToObj),
                 stream: s._view._view,
             };
             console.error("objectPoolErr", `getTypeById${JSON.stringify(err)}`);
@@ -91,42 +91,42 @@ export class Creator {
         return obj.__type;
     }
 
-    updateObjFull<Type extends ObjectType>(
+    m_updateObjFull<Type extends ObjectType>(
         type: Type,
         id: number,
         data: ObjectData<Type>,
         ctx: Ctx,
     ) {
-        let obj = this.getObjById(id);
+        let obj = this.m_getObjById(id);
         let isNew = false;
         if (obj === undefined) {
-            obj = this.types[type].alloc();
+            obj = this.m_types[type].m_alloc();
             obj.__id = id;
             obj.__type = type;
-            this.idToObj[id] = obj;
-            this.seenCount++;
+            this.m_idToObj[id] = obj;
+            this.m_seenCount++;
             isNew = true;
         }
-        obj.updateData(data, true, isNew, ctx);
+        obj.m_updateData(data, true, isNew, ctx);
         return obj;
     }
 
-    updateObjPart(id: number, data: ObjectsPartialData[ObjectType], ctx: Ctx) {
-        const obj = this.getObjById(id);
+    m_updateObjPart(id: number, data: ObjectsPartialData[ObjectType], ctx: Ctx) {
+        const obj = this.m_getObjById(id);
         if (obj) {
-            obj.updateData(data, false, false, ctx);
+            obj.m_updateData(data, false, false, ctx);
         } else {
             console.error("updateObjPart, missing object", id);
         }
     }
 
-    deleteObj(id: number) {
-        const obj = this.getObjById(id);
+    m_deleteObj(id: number) {
+        const obj = this.m_getObjById(id);
         if (obj === undefined) {
             console.error("deleteObj, missing object", id);
         } else {
-            this.types[obj.__type].free(obj);
-            delete this.idToObj[id];
+            this.m_types[obj.__type].m_free(obj);
+            delete this.m_idToObj[id];
         }
     }
 }

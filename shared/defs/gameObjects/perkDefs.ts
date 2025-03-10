@@ -11,7 +11,7 @@ export const PerkProperties = {
         damageReduction: 0.1,
         explosionDamageReduction: 0.9,
     },
-    smallArms: {
+    small_arms: {
         scale: -0.25,
     },
     splinter: {
@@ -24,6 +24,12 @@ export const PerkProperties = {
     final_bugle: {
         scaleOnDeath: 0.2,
     },
+    broken_arrow: {
+        bonusAirstrikes: 2,
+    },
+    fabricate: {
+        refillInterval: 12, //means refill every x seconds
+    },
     // map of ammo type to perk that boosts that ammo
     ammoBonuses: {
         "9mm": ["treat_9mm", "bonus_9mm"],
@@ -32,6 +38,10 @@ export const PerkProperties = {
         "12gauge": ["treat_12g"],
         "45acp": ["bonus_45"],
     } as Record<string, string[]>,
+    gotw: {
+        scale: 0.25,
+        healthRegen: 0.5, // per second
+    },
     ammoBonusDamageMulti: 1.08,
 };
 

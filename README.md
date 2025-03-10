@@ -1,7 +1,3 @@
-Archived because I don't have time to work on this anymore
-go fork it to continue development if you want
-- Leia, 2024-11-03
-
 # Open sourced surviv.io
 Survev.io is an open source recreation of a hit web game "surviv.io" that has been permanently shut down.
 

@@ -100,14 +100,14 @@ export class Obstacle implements AbstractObject {
         this.sprite.visible = false;
     }
 
-    init() {
+    m_init() {
         this.isNew = false;
         this.smokeEmitter = null;
         this.sprite.visible = false;
         this.img = "";
     }
 
-    free() {
+    m_free() {
         this.sprite.visible = false;
         this.sprite.parent?.removeChild(this.sprite);
         if (this.door?.casingSprite) {
@@ -120,7 +120,7 @@ export class Obstacle implements AbstractObject {
         }
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Obstacle>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -452,8 +452,8 @@ export class Obstacle implements AbstractObject {
         const rot = this.isDoor ? this.door.interpRot : this.rot;
         const scale = this.scale;
 
-        const screenPos = camera.pointToScreen(pos);
-        const screenScale = camera.pixels(scale * this.imgScale);
+        const screenPos = camera.m_pointToScreen(pos);
+        const screenScale = camera.m_pixels(scale * this.imgScale);
 
         this.sprite.position.set(screenPos.x, screenPos.y);
         this.sprite.scale.set(screenScale, screenScale);
@@ -466,10 +466,10 @@ export class Obstacle implements AbstractObject {
         this.sprite.rotation = -rot;
 
         if (this.isDoor && this.door?.casingSprite) {
-            const casingPos = camera.pointToScreen(
+            const casingPos = camera.m_pointToScreen(
                 v2.add(this.door.closedPos, this.door.casingSprite.posOffset),
             );
-            const casingScale = camera.pixels(scale * this.door.casingSprite.imgScale);
+            const casingScale = camera.m_pixels(scale * this.door.casingSprite.imgScale);
             this.door.casingSprite.position.set(casingPos.x, casingPos.y);
             this.door.casingSprite.scale.set(casingScale, casingScale);
             this.door.casingSprite.rotation = -rot;

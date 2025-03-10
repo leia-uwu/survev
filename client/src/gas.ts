@@ -159,7 +159,9 @@ export class GasSafeZoneRenderer {
 export class Gas {
     mode: number = gasMode.Inactive;
     circleT = 0;
+    circleTOld = 0;
     duration = 0;
+    interpolationT = 0;
 
     gasRenderer!: GasRenderer;
     circleOld: {
@@ -185,7 +187,7 @@ export class Gas {
         this.gasRenderer = new GasRenderer(canvasMode, 16711680);
     }
 
-    free() {
+    m_free() {
         this.gasRenderer.free();
     }
 
@@ -197,8 +199,11 @@ export class Gas {
         return this.mode != gasMode.Inactive;
     }
 
-    getCircle() {
-        const t = this.mode == gasMode.Moving ? this.circleT : 0;
+    getCircle(interpT: number) {
+        const t =
+            this.mode == gasMode.Moving
+                ? math.lerp(interpT, this.circleTOld, this.circleT)
+                : 0;
         return {
             pos: v2.lerp(t, this.circleOld.pos, this.circleNew.pos),
             rad: math.lerp(t, this.circleOld.rad, this.circleNew.rad),
@@ -206,7 +211,9 @@ export class Gas {
     }
 
     setProgress(circleT: number) {
+        this.circleTOld = this.circleT;
         this.circleT = circleT;
+        this.interpolationT = 0;
     }
 
     setFullState(circleT: number, data: GasData, _map: unknown, ui: UiManager) {
@@ -220,7 +227,7 @@ export class Gas {
         // Update state
         this.mode = data.mode;
         this.duration = data.duration;
-        this.circleT = circleT;
+        this.setProgress(circleT);
 
         // Update circles
         this.circleOld.pos = v2.copy(data.posOld);
@@ -229,10 +236,15 @@ export class Gas {
         this.circleNew.rad = data.radNew;
     }
 
-    render(camera: Camera) {
-        const circle = this.getCircle();
-        const pos = camera.pointToScreen(circle.pos);
-        const scale = camera.scaleToScreen(circle.rad);
+    m_render(dt: number, camera: Camera) {
+        this.interpolationT += dt;
+        let interpT = 1;
+        if (camera.m_interpEnabled) {
+            interpT = math.clamp(this.interpolationT / camera.m_interpInterval, 0, 1);
+        }
+        const circle = this.getCircle(interpT);
+        const pos = camera.m_pointToScreen(circle.pos);
+        const scale = camera.m_scaleToScreen(circle.rad);
         this.gasRenderer.render(pos, scale, this.isActive());
     }
 }

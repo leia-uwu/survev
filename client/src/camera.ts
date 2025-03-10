@@ -2,56 +2,63 @@ import { math } from "../../shared/utils/math";
 import { type Vec2, v2 } from "../../shared/utils/v2";
 
 export default class Camera {
-    pos = v2.create(0, 0);
-    ppu = 16;
-    zoom = 1.5;
-    targetZoom = 1.5;
-    screenWidth = 1;
-    screenHeight = 1;
-    shakeEnabled = true;
-    shakeInt = 0;
+    m_pos = v2.create(0, 0);
+    m_ppu = 16;
+    m_zoom = 1.5;
+    m_targetZoom = 1.5;
+    m_screenWidth = 1;
+    m_screenHeight = 1;
+    m_shakeEnabled = true;
+    m_shakeInt = 0;
 
-    z() {
-        return this.ppu * this.zoom;
+    m_interpEnabled = true;
+    m_interpInterval = 0;
+
+    m_z() {
+        return this.m_ppu * this.m_zoom;
     }
 
-    pointToScreen(point: Vec2) {
+    m_pointToScreen(point: Vec2) {
         return {
-            x: this.screenWidth * 0.5 + (point.x - this.pos.x) * this.z(),
-            y: this.screenHeight * 0.5 - (point.y - this.pos.y) * this.z(),
+            x: this.m_screenWidth * 0.5 + (point.x - this.m_pos.x) * this.m_z(),
+            y: this.m_screenHeight * 0.5 - (point.y - this.m_pos.y) * this.m_z(),
         };
     }
 
-    screenToPoint(screen: Vec2) {
+    m_screenToPoint(screen: Vec2) {
         return {
-            x: this.pos.x + (screen.x - this.screenWidth * 0.5) / this.z(),
-            y: this.pos.y + (this.screenHeight * 0.5 - screen.y) / this.z(),
+            x: this.m_pos.x + (screen.x - this.m_screenWidth * 0.5) / this.m_z(),
+            y: this.m_pos.y + (this.m_screenHeight * 0.5 - screen.y) / this.m_z(),
         };
     }
 
-    pixels(p: number) {
-        return p * this.zoom;
+    m_pixels(p: number) {
+        return p * this.m_zoom;
     }
 
-    scaleToScreen(s: number) {
-        return s * this.z();
+    m_scaleToScreen(s: number) {
+        return s * this.m_z();
     }
 
-    setShakeEnabled(en: boolean) {
-        this.shakeEnabled = en;
+    m_setShakeEnabled(en: boolean) {
+        this.m_shakeEnabled = en;
     }
 
-    addShake(pos: Vec2, intensity: number) {
-        const dist = v2.length(v2.sub(this.pos, pos));
+    m_setInterpEnabled(en: boolean) {
+        this.m_interpEnabled = en;
+    }
+
+    m_addShake(pos: Vec2, intensity: number) {
+        const dist = v2.length(v2.sub(this.m_pos, pos));
         const newInt = math.delerp(dist, 40, 10) * intensity;
-        this.shakeInt = Math.max(this.shakeInt, newInt);
+        this.m_shakeInt = Math.max(this.m_shakeInt, newInt);
     }
 
-    applyShake() {
-        if (this.shakeEnabled) {
-            this.pos = v2.add(this.pos, v2.mul(v2.randomUnit(), this.shakeInt));
+    m_applyShake() {
+        if (this.m_shakeEnabled) {
+            this.m_pos = v2.add(this.m_pos, v2.mul(v2.randomUnit(), this.m_shakeInt));
         }
-        this.shakeInt = 0;
+        this.m_shakeInt = 0;
     }
 }
 export { Camera };

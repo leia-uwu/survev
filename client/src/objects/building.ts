@@ -108,7 +108,7 @@ export class Building implements AbstractObject {
         colliders: ColliderWithHeight[];
     }>;
 
-    init() {
+    m_init() {
         this.isNew = false;
         this.residue = null;
         this.ceilingDead = false;
@@ -122,7 +122,7 @@ export class Building implements AbstractObject {
         this.soundEmitterTicker = 0;
     }
 
-    free() {
+    m_free() {
         for (let i = 0; i < this.sprites.length; i++) {
             const t = this.sprites[i];
             t.active = false;
@@ -157,7 +157,7 @@ export class Building implements AbstractObject {
         return sprite;
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Building>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -367,7 +367,7 @@ export class Building implements AbstractObject {
         }
     }
 
-    update(
+    m_update(
         dt: number,
         map: Map,
         particleBarn: ParticleBarn,
@@ -389,12 +389,12 @@ export class Building implements AbstractObject {
                 // sound from that location. Fallback to the building location
                 // if none can be found.
                 let nearestObj: Obstacle | Building = this;
-                let nearestDist = v2.length(v2.sub(activePlayer.pos, nearestObj.pos));
-                const obstacles = map.obstaclePool.getPool();
+                let nearestDist = v2.length(v2.sub(activePlayer.m_pos, nearestObj.pos));
+                const obstacles = map.m_obstaclePool.m_getPool();
                 for (let i = 0; i < obstacles.length; i++) {
                     const o = obstacles[i];
                     if (o.active && o.isPuzzlePiece && o.parentBuildingId == this.__id) {
-                        const dist = v2.length(v2.sub(activePlayer.pos, o.pos));
+                        const dist = v2.length(v2.sub(activePlayer.m_pos, o.pos));
                         if (dist < nearestDist) {
                             nearestObj = o;
                             nearestDist = dist;
@@ -462,8 +462,8 @@ export class Building implements AbstractObject {
                 (this.layer == activePlayer.layer || activePlayer.layer & 2) &&
                 collisionHelpers.scanCollider(
                     zoomIn,
-                    map.obstaclePool.getPool(),
-                    activePlayer.pos,
+                    map.m_obstaclePool.m_getPool(),
+                    activePlayer.m_pos,
                     activePlayer.layer,
                     0.5,
                     vision.width! * 2,
@@ -532,7 +532,7 @@ export class Building implements AbstractObject {
                 }
                 if (soundEmitter.instance) {
                     // Update volume
-                    const diff = v2.sub(camera.pos, soundEmitter.pos);
+                    const diff = v2.sub(camera.m_pos, soundEmitter.pos);
                     const dist = v2.length(diff);
                     const distT = math.remap(
                         dist,
@@ -637,8 +637,8 @@ export class Building implements AbstractObject {
     }
 
     positionSprite(sprite: BuildingSprite, alpha: number, camera: Camera) {
-        const screenPos = camera.pointToScreen(v2.add(this.pos, sprite.posOffset));
-        const screenScale = camera.pixels(this.scale * sprite.defScale);
+        const screenPos = camera.m_pointToScreen(v2.add(this.pos, sprite.posOffset));
+        const screenScale = camera.m_pixels(this.scale * sprite.defScale);
 
         sprite.position.set(screenPos.x, screenPos.y);
         sprite.scale.set(screenScale, screenScale);

@@ -37,7 +37,7 @@ class AirDrop implements AbstractObject {
         this.sprite.visible = false;
     }
 
-    init() {
+    m_init() {
         this.playedLandFx = false;
         this.landed = false;
         this.fallInstance = null;
@@ -48,13 +48,13 @@ class AirDrop implements AbstractObject {
         this.fallTicker = 0;
     }
 
-    free() {
+    m_free() {
         this.fallInstance?.stop();
         this.fallInstance = null;
         this.sprite.visible = false;
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Airdrop>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -75,14 +75,14 @@ class AirDrop implements AbstractObject {
 export class AirdropBarn {
     airdropPool = new Pool(AirDrop);
 
-    free() {
-        const airdrops = this.airdropPool.getPool();
+    m_free() {
+        const airdrops = this.airdropPool.m_getPool();
         for (let i = 0; i < airdrops.length; i++) {
-            airdrops[i].free();
+            airdrops[i].m_free();
         }
     }
 
-    update(
+    m_update(
         dt: number,
         activePlayer: Player,
         camera: Camera,
@@ -91,7 +91,7 @@ export class AirdropBarn {
         renderer: Renderer,
         audioManager: AudioManager,
     ) {
-        const airdrops = this.airdropPool.getPool();
+        const airdrops = this.airdropPool.m_getPool();
         for (let i = 0; i < airdrops.length; i++) {
             const airdrop = airdrops[i];
             if (!airdrop.active) {
@@ -191,8 +191,8 @@ export class AirdropBarn {
             airdrop.rad = math.lerp((1.0 - fallT) ** 1.1, 5.0, 12.0);
             renderer.addPIXIObj(airdrop.sprite, layer, 1500, airdrop.__id);
 
-            const screenPos = camera.pointToScreen(airdrop.pos);
-            const screenScale = camera.pixels((2.0 * airdrop.rad) / camera.ppu);
+            const screenPos = camera.m_pointToScreen(airdrop.pos);
+            const screenScale = camera.m_pixels((2.0 * airdrop.rad) / camera.m_ppu);
             airdrop.sprite.position.set(screenPos.x, screenPos.y);
             airdrop.sprite.scale.set(screenScale, screenScale);
             airdrop.sprite.tint = 0xffff00;

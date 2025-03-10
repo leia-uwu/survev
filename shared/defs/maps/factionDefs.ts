@@ -2,15 +2,21 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
-import { Main } from "./baseDefs";
+import { Main, type PartialMapDef } from "./baseDefs";
 
 export enum TeamColor {
-    // NONE = 0, //can be used ambiguously with code that runs the same regardless of team color
+    // NONE = 0, // can be used ambiguously with code that runs the same regardless of team color
     Red = 1,
     Blue = 2,
 }
 
-const mapDef = {
+export const SpecialAirdropConfig = {
+    startCircle: 1,
+    endCircle: 3,
+    aliveCountThreshold: 0.2,
+};
+
+const mapDef: PartialMapDef = {
     mapId: 3,
     desc: {
         name: "50v50",
@@ -197,25 +203,45 @@ const mapDef = {
                     wait: 50,
                 },
                 {
-                    role: () =>
-                        util.weightedRandom([
-                            { type: "lieutenant", weight: 1 },
-                            { type: "marksman", weight: 1 },
-                            { type: "recon", weight: 1 },
-                            { type: "grenadier", weight: 1 },
-                        ]).type,
+                    role: "lieutenant",
                     circleIdx: 0,
                     wait: 54,
                 },
                 {
-                    role: "medic",
+                    role: "marksman",
                     circleIdx: 0,
                     wait: 58,
                 },
                 {
-                    role: "bugler",
+                    role: "recon",
                     circleIdx: 0,
                     wait: 62,
+                },
+                {
+                    role: "grenadier",
+                    circleIdx: 0,
+                    wait: 66,
+                },
+                // {
+                //     role: () =>
+                //         util.weightedRandom([
+                //             { type: "lieutenant", weight: 1 },
+                //             { type: "marksman", weight: 1 },
+                //             { type: "recon", weight: 1 },
+                //             { type: "grenadier", weight: 1 },
+                //         ]).type,
+                //     circleIdx: 0,
+                //     wait: 54,
+                // },
+                {
+                    role: "medic",
+                    circleIdx: 0,
+                    wait: 70,
+                },
+                {
+                    role: "bugler",
+                    circleIdx: 0,
+                    wait: 74,
                 },
             ],
         },
@@ -315,7 +341,7 @@ const mapDef = {
         ],
         tier_ghillie: [
             {
-                name: "outfitDarkGhillie",
+                name: "outfitGhillie",
                 count: 1,
                 weight: 0.5,
             },
@@ -324,7 +350,7 @@ const mapDef = {
             { name: "", count: 1, weight: 25 },
             { name: "outfitHeaven", count: 1, weight: 1 },
             {
-                name: "outfitDarkGhillie",
+                name: "outfitGhillie",
                 count: 1,
                 weight: 0.5,
             },
@@ -358,8 +384,8 @@ const mapDef = {
             rivers: {
                 weights: [
                     { weight: 1, widths: [20] },
-                    { weight: 1, widths: [20, 4] },
-                    { weight: 1, widths: [20, 8, 4] },
+                    // { weight: 1, widths: [20, 4] },
+                    // { weight: 1, widths: [20, 8, 4] },
                 ],
                 smoothness: 0.15,
             },
@@ -386,7 +412,7 @@ const mapDef = {
                 stone_01: 350,
                 barrel_01: 76,
                 silo_01: 8,
-                crate_01: 38,
+                crate_01: 55,
                 crate_02f: 5,
                 crate_22: 5,
                 crate_03: 8,

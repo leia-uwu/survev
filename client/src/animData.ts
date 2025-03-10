@@ -48,12 +48,12 @@ export class Pose {
 
     static identity = new Pose(v2.create(0, 0));
 
-    static lerp(e: number, t: Pose, r: Pose) {
-        const a: Pose = new Pose();
-        a.pos = v2.lerp(e, t.pos, r.pos);
-        a.rot = math.lerp(e, t.rot, r.rot);
-        a.pivot = v2.lerp(e, t.pivot, r.pivot);
-        return a;
+    static lerp(t: number, poseA: Pose, poseB: Pose) {
+        const result: Pose = new Pose();
+        result.pos = v2.lerp(t, poseA.pos, poseB.pos);
+        result.rot = math.lerp(t, poseA.rot, poseB.rot);
+        result.pivot = v2.lerp(t, poseA.pivot, poseB.pivot);
+        return result;
     }
 }
 
@@ -370,10 +370,10 @@ export const Animations: Record<
             }),
         ],
         effects: [
-            effect(def.woodaxe.attack.damageTimes[0], "animPlaySound", {
+            effect(def.naginata.attack.damageTimes[0], "animPlaySound", {
                 sound: "swing",
             }),
-            effect(def.woodaxe.attack.damageTimes[0], "animMeleeCollision", {}),
+            effect(def.naginata.attack.damageTimes[0], "animMeleeCollision", {}),
         ],
     },
     sawSwing: {

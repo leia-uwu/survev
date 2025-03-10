@@ -15,6 +15,7 @@ import { type Vec2, v2 } from "../../shared/utils/v2";
 import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
 import type { Camera } from "./camera";
+import { debugLines } from "./debugLines";
 import { device } from "./device";
 import type { DebugOptions } from "./game";
 import { Building } from "./objects/building";
@@ -92,9 +93,9 @@ export class Map {
 
     mapLoaded = false;
     mapTexture: PIXI.RenderTexture | null = null;
-    obstaclePool = new Pool(Obstacle);
-    buildingPool = new Pool(Building);
-    structurePool = new Pool(Structure);
+    m_obstaclePool = new Pool(Obstacle);
+    m_buildingPool = new Pool(Building);
+    m_structurePool = new Pool(Structure);
     deadObstacleIds: number[] = [];
     deadCeilingIds: number[] = [];
     solvedPuzzleIds: number[] = [];
@@ -112,11 +113,11 @@ export class Map {
 
     constructor(public decalBarn: DecalBarn) {}
 
-    free() {
+    m_free() {
         // Buildings need to stop sound emitters
-        const buildings = this.buildingPool.getPool();
+        const buildings = this.m_buildingPool.m_getPool();
         for (let i = 0; i < buildings.length; i++) {
-            buildings[i].free();
+            buildings[i].m_free();
         }
         this.mapTexture?.destroy(true);
         this.display.ground.destroy({
@@ -166,6 +167,7 @@ export class Map {
         const cameraEmitterType = this.mapDef.biome.particles.camera;
         if (cameraEmitterType) {
             const dir = v2.normalize(v2.create(1, -1));
+            this.cameraEmitter?.stop();
             this.cameraEmitter = particleBarn.addEmitter(cameraEmitterType, {
                 pos: v2.create(0, 0),
                 dir,
@@ -173,7 +175,7 @@ export class Map {
             });
         }
         this.display.ground.clear();
-        this.renderTerrain(this.display.ground, 2 / camera.ppu, canvasMode, false);
+        this.renderTerrain(this.display.ground, 2 / camera.m_ppu, canvasMode, false);
     }
 
     getMapDef() {
@@ -187,7 +189,7 @@ export class Map {
         return this.mapTexture;
     }
 
-    update(
+    m_update(
         dt: number,
         activePlayer: Player,
         playerBarn: PlayerBarn,
@@ -199,7 +201,7 @@ export class Map {
         _smokeParticles: SmokeParticle[],
         debug: DebugOptions,
     ) {
-        const obstacles = this.obstaclePool.getPool();
+        const obstacles = this.m_obstaclePool.m_getPool();
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];
             if (obstacle.active) {
@@ -216,11 +218,11 @@ export class Map {
             }
         }
 
-        const buildings = this.buildingPool.getPool();
+        const buildings = this.m_buildingPool.m_getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (building.active) {
-                building.update(
+                building.m_update(
                     dt,
                     this,
                     particleBarn,
@@ -235,7 +237,7 @@ export class Map {
         }
 
         for (
-            let structures = this.structurePool.getPool(), x = 0;
+            let structures = this.m_structurePool.m_getPool(), x = 0;
             x < structures.length;
             x++
         ) {
@@ -247,12 +249,12 @@ export class Map {
         }
 
         if (this.cameraEmitter) {
-            this.cameraEmitter.pos = v2.copy(camera.pos);
+            this.cameraEmitter.pos = v2.copy(camera.m_pos);
             this.cameraEmitter.enabled = true;
 
             // Adjust radius and spawn rate based on zoom
             const maxRadius = 120;
-            const camRadius = activePlayer.getZoom() * 2.5;
+            const camRadius = activePlayer.m_getZoom() * 2.5;
             this.cameraEmitter.radius = math.min(camRadius, maxRadius);
             const radius = this.cameraEmitter.radius;
             const ratio = (radius * radius) / (maxRadius * maxRadius);
@@ -398,15 +400,27 @@ export class Map {
         }
     }
 
-    render(camera: Camera) {
+    m_render(camera: Camera) {
         // Terrain
         // Fairly robust way to get translation and scale from the camera ...
-        const p0 = camera.pointToScreen(v2.create(0, 0));
-        const p1 = camera.pointToScreen(v2.create(1, 1));
+        const p0 = camera.m_pointToScreen(v2.create(0, 0));
+        const p1 = camera.m_pointToScreen(v2.create(1, 1));
         const s = v2.sub(p1, p0);
         // Translate and scale the map polygons to move the with camera
         this.display.ground.position.set(p0.x, p0.y);
         this.display.ground.scale.set(s.x, s.y);
+
+        if (device.debug) {
+            for (const river of this.terrain!.rivers) {
+                for (let i = 0; i < river.spline.points.length; i++) {
+                    const pointA = river.spline.points[i];
+                    debugLines.addCircle(pointA, 1, 0xff0000, 1);
+                    let pointB = river.spline.points[i + 1];
+                    if (!pointB) continue;
+                    debugLines.addLine(pointA, pointB, 0xff0000, 0);
+                }
+            }
+        }
     }
 
     getMinimapRender(obj: (typeof this.mapData.objects)[number]) {
@@ -629,7 +643,7 @@ export class Map {
         };
 
         // Check decals
-        const decals = this.decalBarn.decalPool.getPool();
+        const decals = this.decalBarn.decalPool.m_getPool();
         for (let i = 0; i < decals.length; i++) {
             const decal = decals[i];
             if (
@@ -646,7 +660,7 @@ export class Map {
         let surface = null;
         let zIdx = 0;
         const onStairs = layer & 2;
-        const buildings = this.buildingPool.getPool();
+        const buildings = this.m_buildingPool.m_getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (
@@ -712,7 +726,7 @@ export class Map {
     }
 
     insideStructureStairs(collision: Collider) {
-        const structures = this.structurePool.getPool();
+        const structures = this.m_structurePool.m_getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active && structure.insideStairs(collision)) {
@@ -723,7 +737,7 @@ export class Map {
     }
 
     getBuildingById(objId: number) {
-        const buildings = this.buildingPool.getPool();
+        const buildings = this.m_buildingPool.m_getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (building.active && building.__id == objId) {
@@ -734,7 +748,7 @@ export class Map {
     }
 
     insideStructureMask(collision: Collider) {
-        const structures = this.structurePool.getPool();
+        const structures = this.m_structurePool.m_getPool();
         for (let i = 0; i < structures.length; i++) {
             const structure = structures[i];
             if (structure.active && structure.insideMask(collision)) {
@@ -745,7 +759,7 @@ export class Map {
     }
 
     insideBuildingCeiling(collision: Collider, checkVisible: boolean) {
-        const buildings = this.buildingPool.getPool();
+        const buildings = this.m_buildingPool.m_getPool();
         for (let i = 0; i < buildings.length; i++) {
             const building = buildings[i];
             if (

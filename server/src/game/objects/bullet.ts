@@ -35,7 +35,7 @@ interface BulletCollision {
     collidable: boolean;
     point: Vec2;
     normal: Vec2;
-    dist?: number;
+    dist: number;
     player?: Player;
     layer?: number;
 }
@@ -75,30 +75,13 @@ export class BulletBarn {
     damages: Array<DamageParams & { obj: GameObject }> = [];
 
     update(dt: number): void {
+        let activeCount = 0;
         for (let i = 0; i < this.bullets.length; i++) {
             const bullet = this.bullets[i];
-
-            if (!bullet.alive || bullet.skipCollision || (bullet.player?.dead ?? false)) {
-                this.bullets.splice(i, 1);
-                i--;
-
-                if (bullet.onHitFx && !bullet.reflected) {
-                    this.game.explosionBarn.addExplosion(
-                        bullet.onHitFx,
-                        // spawn the bullet a bit behind the bullet so it won't spawn inside obstacles
-                        v2.sub(bullet.pos, v2.mul(bullet.dir, 0.01)),
-                        bullet.layer,
-                        bullet.shotSourceType,
-                        bullet.mapSourceType,
-                        bullet.damageType,
-                        bullet.player,
-                    );
-                }
-
-                continue;
+            if (bullet.active) {
+                bullet.update(dt);
+                activeCount++;
             }
-
-            bullet.update(dt);
         }
 
         for (let i = 0; i < this.damages.length; i++) {
@@ -106,16 +89,34 @@ export class BulletBarn {
             damageRecord.obj.damage(damageRecord);
         }
         this.damages.length = 0;
+
+        // free some bullets if pool is too big
+        if (this.bullets.length > 512 && activeCount < this.bullets.length / 2) {
+            this.bullets = this.bullets.filter((b) => b.active);
+        }
+
+        // console.log("allocated:", this.bullets.length, "active:", activeCount)
     }
 
     flush(): void {
+        for (let i = 0; i < this.newBullets.length; i++) {
+            this.newBullets[i].sentToClient = true;
+        }
         this.newBullets.length = 0;
     }
 
     fireBullet(params: BulletParams): Bullet {
         this.game.map.clampToMapBounds(params.pos);
-        const bullet = new Bullet(this, params);
-        this.bullets.push(bullet);
+
+        // sentToClient check to make sure bullets that are created and die immediatly
+        // go through a net-tick first, so their data is not overwritten by the init call
+        let bullet = this.bullets.find((b) => !b.active && b.sentToClient);
+        if (!bullet) {
+            bullet = new Bullet(this);
+            this.bullets.push(bullet);
+        }
+        bullet.init(params);
+
         this.newBullets.push(bullet);
 
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
@@ -128,51 +129,60 @@ export class BulletBarn {
 }
 
 export class Bullet {
-    collided = false;
-    alive = true;
-    distanceTraveled = 0;
+    alive = false;
+    active = false;
 
-    playerId: number;
+    distanceTraveled!: number;
+    sentToClient!: boolean;
+    collided!: boolean;
+    playerId!: number;
     player?: Player;
-    pos: Vec2;
-    endPos: Vec2;
-    clientEndPos: Vec2;
-    dir: Vec2;
-    bulletType: string;
-    layer: number;
-    varianceT: number;
-    distAdjIdx: number;
-    clipDistance: boolean;
-    distance: number;
-    maxDistance: number;
-    shotFx: boolean;
-    shotSourceType: string;
-    mapSourceType: string;
-    shotOffhand: boolean;
-    lastShot: boolean;
-    reflectCount: number;
-    reflectObjId: number;
-    hasSpecialFx: boolean;
-    shotAlt: boolean;
-    splinter: boolean;
-    trailSaturated: boolean;
-    trailSmall: boolean;
-    trailThick: boolean;
-    startPos: Vec2;
-    speed: number;
-    damageSelf: boolean;
-    damage: number;
-    damageMult: number;
+    pos!: Vec2;
+    endPos!: Vec2;
+    clientEndPos!: Vec2;
+    dir!: Vec2;
+    bulletType!: string;
+    layer!: number;
+    varianceT!: number;
+    distAdjIdx!: number;
+    clipDistance!: boolean;
+    distance!: number;
+    maxDistance!: number;
+    shotFx!: boolean;
+    shotSourceType!: string;
+    mapSourceType!: string;
+    shotOffhand!: boolean;
+    lastShot!: boolean;
+    reflectCount!: number;
+    reflectObjId!: number;
+    hasSpecialFx!: boolean;
+    shotAlt!: boolean;
+    splinter!: boolean;
+    trailSaturated!: boolean;
+    trailSmall!: boolean;
+    trailThick!: boolean;
+    startPos!: Vec2;
+    speed!: number;
+    damageSelf!: boolean;
+    damage!: number;
+    damageMult!: number;
     onHitFx?: string;
-    hasOnHitFx: boolean;
-    damageType: number;
-    isShrapnel: boolean;
-    skipCollision: boolean;
+    hasOnHitFx!: boolean;
+    damageType!: number;
+    isShrapnel!: boolean;
+    skipCollision!: boolean;
+    reflected!: boolean;
 
-    constructor(
-        public bulletManager: BulletBarn,
-        params: BulletParams,
-    ) {
+    constructor(public bulletManager: BulletBarn) {}
+
+    init(params: BulletParams) {
+        this.alive = true;
+        this.active = true;
+        this.collided = false;
+        this.distanceTraveled = 0;
+        this.sentToClient = false;
+        // this.serialized = false; // TODO: cache bullet serialization?
+
         const bulletDef = GameObjectDefs[params.bulletType] as BulletDef;
 
         const variance = 1 + (params.varianceT ?? 1) * bulletDef.variance;
@@ -185,6 +195,7 @@ export class Bullet {
         this.bulletType = params.bulletType;
         this.reflectCount = params.reflectCount ?? 0;
         this.reflectObjId = params.reflectObjId ?? 0;
+        this.reflected = false;
         this.lastShot = params.lastShot ?? false;
         this.speed = bulletDef.speed * variance;
         this.onHitFx = bulletDef.onHit ?? params.onHitFx;
@@ -193,6 +204,8 @@ export class Bullet {
         const player = this.bulletManager.game.objectRegister.getById(this.playerId);
         if (player instanceof Player) {
             this.player = player;
+        } else {
+            this.player = undefined;
         }
 
         // Add random jitter to the bullet distance. This makes spray patterns
@@ -211,11 +224,9 @@ export class Bullet {
             bulletDef.distance /
             Math.pow(GameConfig.bullet.reflectDistDecay, this.reflectCount);
         if (params.clipDistance) {
-            distance = Math.min(bulletDef.distance, params.distance!);
+            distance = math.min(bulletDef.distance, params.distance!);
         }
-        // this.serialized = false;
-        // this.sentToClient = false;
-        // this.timeInactive = 0.0;
+
         this.shotSourceType = params.gameSourceType;
         this.mapSourceType = params.mapSourceType ?? "";
         this.damageType = params.damageType;
@@ -253,7 +264,7 @@ export class Bullet {
             obj: Obstacle;
             pos: Vec2;
             nrm: Vec2;
-            t: number;
+            dist: number;
         }> = [];
 
         for (let i = 0; i < nearbyObjs.length; i++) {
@@ -272,17 +283,17 @@ export class Bullet {
             const res = collider.intersectSegment(obj.collider, this.pos, this.endPos);
 
             if (res) {
-                const dist = v2.length(v2.sub(res.point, this.pos));
+                const dist = v2.lengthSqr(v2.sub(res.point, this.pos));
                 colIds.push({
                     obj,
                     pos: res.point,
                     nrm: res.normal,
-                    t: dist / this.distance,
+                    dist,
                 });
             }
         }
 
-        colIds.sort((a, b) => a.t - b.t);
+        colIds.sort((a, b) => a.dist - b.dist);
 
         // Clamp end pos to the map boundaries if the bullet
         // has an onHit effect
@@ -310,7 +321,7 @@ export class Bullet {
             const col = colIds[i];
             const obj = col.obj;
             if (obj && !obj.destructible) {
-                maxDistance = col.t * this.distance;
+                maxDistance = Math.sqrt(col.dist);
                 break;
             }
         }
@@ -340,6 +351,27 @@ export class Bullet {
             if (this.onHitFx === "explosion_rounds") {
                 this.onHitFx = "";
             }
+        }
+
+        if (!this.alive && !this.reflected && this.onHitFx) {
+            this.bulletManager.game.explosionBarn.addExplosion(
+                this.onHitFx,
+                // spawn the explosion a bit behind the bullet so it won't spawn inside obstacles
+                v2.sub(this.pos, v2.mul(this.dir, 0.01)),
+                this.layer,
+                this.shotSourceType,
+                this.mapSourceType,
+                this.damageType,
+                this.player,
+            );
+        }
+
+        // set active at the end of the update because:
+        // new bullets may be created inside this update call from the `reflect` method
+        // so if we check for alive instead of active, the new bullet may be the one we are
+        // currently updating
+        if (!this.alive) {
+            this.active = false;
         }
     }
 
@@ -373,6 +405,7 @@ export class Bullet {
                         collidable: obj.collidable,
                         point: res.point,
                         normal: res.normal,
+                        dist: v2.lengthSqr(v2.sub(res.point, this.startPos)),
                     });
                 }
             } else if (obj.__type === ObjectType.Player) {
@@ -387,7 +420,12 @@ export class Bullet {
                     continue;
                 }
 
-                if (obj.hasPerk("windwalk") && v2.distance(this.pos, obj.pos) <= 5) {
+                if (
+                    obj.hasPerk("windwalk") &&
+                    obj.hasteType != GameConfig.HasteType.Windwalk && // can't stack windwalk
+                    v2.distance(this.pos, obj.pos) <= 5 &&
+                    this.player?.teamId !== obj.teamId // bullet shooter or its teammates cant give the shooter winwalk
+                ) {
                     obj.giveHaste(GameConfig.HasteType.Windwalk, 3);
                 }
 
@@ -421,11 +459,15 @@ export class Bullet {
                     );
                     const finalIntersection = oldIntersection || newIntersection;
                     if (finalIntersection) {
+                        const segment = newIntersection ? newSegment : oldSegment;
                         const normal = v2.normalize(
-                            v2.perp(v2.sub(newSegment.p1, newSegment.p0)),
+                            v2.perp(v2.sub(segment.p1, segment.p0)),
                         );
                         panCollision = {
-                            point: finalIntersection.point,
+                            point: v2.add(
+                                finalIntersection.point,
+                                v2.mul(v2.neg(this.dir), 0.2),
+                            ),
                             normal: normal,
                         };
                     }
@@ -439,8 +481,8 @@ export class Bullet {
                 if (
                     collision &&
                     (!panCollision ||
-                        v2.length(v2.sub(collision.point, this.startPos)) <
-                            v2.length(v2.sub(panCollision.point, this.startPos)))
+                        v2.lengthSqr(v2.sub(collision.point, this.startPos)) <
+                            v2.lengthSqr(v2.sub(panCollision.point, this.startPos)))
                 ) {
                     collisions.push({
                         type: "player",
@@ -449,15 +491,21 @@ export class Bullet {
                         normal: collision.normal,
                         layer: obj.layer,
                         collidable: true,
+                        dist: v2.lengthSqr(v2.sub(collision.point, this.startPos)),
                     });
                     if (obj.hasPerk("steelskin")) {
+                        const point = v2.add(
+                            collision.point,
+                            v2.mul(collision.normal, 0.1),
+                        );
                         collisions.push({
                             type: "pan",
-                            point: v2.add(collision.point, v2.mul(collision.normal, 0.1)),
+                            point,
                             normal: collision.normal,
                             layer: obj.layer,
                             collidable: false,
                             obj: obj,
+                            dist: v2.lengthSqr(v2.sub(point, this.startPos)),
                         });
                     }
                 } else if (panCollision) {
@@ -467,7 +515,7 @@ export class Bullet {
                         normal: panCollision.normal,
                         layer: obj.layer,
                         collidable: true,
-                        obj: obj,
+                        dist: v2.lengthSqr(v2.sub(panCollision.point, this.startPos)),
                     });
                 }
                 if (collision || panCollision) {
@@ -478,13 +526,8 @@ export class Bullet {
 
         if (!collisions.length) return;
 
-        for (let i = 0; i < collisions.length; i++) {
-            const collision = collisions[i];
-            collision.dist = v2.length(v2.sub(collision.point, posOld));
-        }
-
-        collisions.sort((e, t) => {
-            return e.dist! - t.dist!;
+        collisions.sort((a, b) => {
+            return a.dist - b.dist;
         });
 
         let shooterDead = false;
@@ -552,7 +595,7 @@ export class Bullet {
                 hit = col.collidable;
             } else if (col.type == "pan") {
                 hit = col.collidable;
-                this.reflect(col.point, col.normal, col.obj!.__id);
+                this.reflect(col.point, col.normal, col.obj?.__id ?? 0);
             }
             if (hit) {
                 this.pos = col.point;
@@ -562,14 +605,20 @@ export class Bullet {
         }
     }
 
-    reflected = false;
     reflect(pos: Vec2, normal: Vec2, objId: number) {
+        if (this.reflectCount >= GameConfig.bullet.maxReflect) return;
         if (this.reflected) return;
         this.reflected = true;
-        if (this.reflectCount >= GameConfig.bullet.maxReflect) return;
 
         const dot = v2.dot(this.dir, normal);
         const dir = v2.add(v2.mul(normal, dot * -2), this.dir);
+
+        let distance = this.distance;
+        if (this.clipDistance) {
+            distance =
+                math.max(1, this.distance - this.distanceTraveled) /
+                Math.pow(GameConfig.bullet.reflectDistDecay, this.reflectCount);
+        }
 
         this.bulletManager.fireBullet({
             bulletType: this.bulletType,
@@ -591,7 +640,8 @@ export class Bullet {
             trailThick: this.trailThick,
             onHitFx: this.onHitFx,
             varianceT: this.varianceT,
-            distance: this.distance,
+            clipDistance: this.clipDistance,
+            distance: distance,
         });
     }
 }

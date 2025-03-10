@@ -4,58 +4,45 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
-  client:
-    name: Client
+  nodejs:
+    name: Node.js
     runs-on: ubuntu-latest
-    concurrency: ci-client-${{ github.ref }}
+    concurrency: ci-nodejs-${{ github.ref }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Install pnpm
+      
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-          cache-dependency-path: '**/pnpm-lock.yaml'
 
       - name: Install Packages
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      - name: Build
-        working-directory: ./client
-        run: pnpm build
-  server:
-    name: Server
-    runs-on: ubuntu-latest
-    concurrency: ci-server-${{ github.ref }}
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-          cache-dependency-path: '**/pnpm-lock.yaml'
-
-      - name: Install Packages
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
+      - name: Build Server
+        run: pnpm run build
         working-directory: ./server
-        run: pnpm build
+
+      - name: Build Client
+        run: pnpm run build
+        working-directory: ./client
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    concurrency: ci-lint-${{ github.ref }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Run Biome
+        run: biome ci .

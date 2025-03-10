@@ -64,9 +64,9 @@ export const util = {
 
     // Uniformly distributed random point within circle
     // Taken from https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
-    randomPointInCircle(rad: number) {
-        let a = Math.random();
-        let b = Math.random();
+    randomPointInCircle(rad: number, rand = Math.random) {
+        let a = rand();
+        let b = rand();
         if (b < a) {
             const c = a;
             a = b;
@@ -322,12 +322,15 @@ export const util = {
         return arr.at(index % arr.length) as T;
     },
 
-    weightedRandom<T extends Object>(items: Array<T & { weight: number }>) {
+    weightedRandom<T extends Object>(
+        items: Array<T & { weight: number }>,
+        rand = Math.random,
+    ) {
         let total = 0.0;
         for (let i = 0; i < items.length; i++) {
             total += items[i].weight;
         }
-        let rng = util.random(0, total);
+        let rng = rand() * total;
         let idx = 0;
         while (rng > items[idx].weight) {
             rng -= items[idx].weight;

@@ -43,6 +43,7 @@ export const Config = {
 
     debug: {
         spawnMode: "default",
+        allowBots: !isProduction,
     },
 
     rateLimitsEnabled: isProduction,
@@ -65,6 +66,7 @@ export const Config = {
         time: 10,
     },
 
+    defaultItems: {},
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
 
@@ -183,7 +185,11 @@ export interface ConfigType {
         spawnMode: "default" | "fixed";
         // spawn pos for fixed, defaults to map center if not set
         spawnPos?: Vec2;
+        allowBots: boolean;
     };
+
+    // overrides for default items; doesn't apply to bots
+    defaultItems: DeepPartial<(typeof GameConfig)["player"]["defaultItems"]>;
 
     /**
      * Game config overrides

@@ -424,8 +424,11 @@ export const Main: MapDef = {
         ],
         tier_airdrop_mythic: [
             { name: "scarssr", count: 1, weight: 1 }, // ?
-            { name: "usas", count: 1, weight: 1 }, // ?
+            { name: "usas", count: 1, weight: 0.5 }, // ?
             { name: "p30l_dual", count: 1, weight: 1 }, // ?
+            { name: "awc", count: 1, weight: 0.1 }, // ?
+            { name: "pkp", count: 1, weight: 0.3 }, // ?
+            { name: "m249", count: 1, weight: 0.3 }, // ?
         ],
         tier_airdrop_ammo: [
             { name: "9mm", count: 30, weight: 3 },
@@ -467,6 +470,13 @@ export const Main: MapDef = {
         tier_saloon: [
             { name: "vector45", count: 1, weight: 1 },
             { name: "mkg45", count: 1, weight: 1 },
+        ],
+        tier_cattle_crate: [
+            { name: "m1a1", count: 1, weight: 1 },
+            { name: "model94", count: 1, weight: 1 },
+            { name: "colt45", count: 1, weight: 1 },
+            { name: "outfitVerde", count: 1, weight: 0.1 },
+            { name: "outfitDesertCamo", count: 1, weight: 0.1 },
         ],
         tier_pumpkin_perks: [{ name: "halloween_mystery", count: 1, weight: 1 }],
         tier_xp_uncommon: [
@@ -514,6 +524,14 @@ export const Main: MapDef = {
             { name: "treat_762", count: 1, weight: 1 },
             { name: "treat_super", count: 1, weight: 0.1 },
         ],
+        tier_faction_outfits: [
+            { name: "outfitVerde", count: 1, weight: 1 },
+            { name: "outfitWoodland", count: 1, weight: 1 },
+            { name: "outfitKeyLime", count: 1, weight: 1 },
+            { name: "outfitCamo", count: 1, weight: 1 },
+        ],
+        tier_airdrop_faction_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
+        tier_airdrop_faction_melee: [{ name: "pan", count: 1, weight: 1 }],
     },
     mapGen: {
         map: {
@@ -538,6 +556,7 @@ export const Main: MapDef = {
                     },
                 ],
                 smoothness: 0.45,
+                spawnCabins: true,
                 masks: [],
             },
         },
@@ -579,9 +598,6 @@ export const Main: MapDef = {
             medium: "bridge_md_structure_01",
             large: "bridge_lg_structure_01",
             xlarge: "",
-        },
-        riverCabins: {
-            cabin_01: 3,
         },
         customSpawnRules: {
             locationSpawns: [
@@ -662,3 +678,11 @@ export const Main: MapDef = {
     },
     /* STRIP_FROM_PROD_CLIENT:END */
 };
+
+type DeepPartial<T> = T extends object
+    ? {
+          [P in keyof T]?: DeepPartial<T[P]>;
+      }
+    : T;
+
+export type PartialMapDef = DeepPartial<MapDef>;

@@ -33,6 +33,8 @@ export class Loot implements AbstractObject {
 
     updatedData!: boolean;
     pos!: Vec2;
+    visualPosOld!: Vec2;
+    posInterpTicker!: number;
     isOld!: boolean;
 
     layer!: number;
@@ -51,11 +53,12 @@ export class Loot implements AbstractObject {
         this.container.addChild(this.sprite);
     }
 
-    init() {
+    m_init() {
         this.updatedData = false;
+        this.visualPosOld = v2.create(0, 0);
     }
 
-    free() {
+    m_free() {
         this.container.visible = false;
         if (this.emitter) {
             this.emitter.stop();
@@ -63,7 +66,7 @@ export class Loot implements AbstractObject {
         }
     }
 
-    updateData(
+    m_updateData(
         data: ObjectData<ObjectType.Loot>,
         fullUpdate: boolean,
         isNew: boolean,
@@ -74,6 +77,11 @@ export class Loot implements AbstractObject {
         },
     ) {
         this.updatedData = true;
+
+        if (!v2.eq(data.pos, this.visualPosOld)) {
+            this.visualPosOld = v2.copy(isNew ? data.pos : this.pos);
+            this.posInterpTicker = 0;
+        }
         this.pos = v2.copy(data.pos);
 
         if (fullUpdate) {
@@ -156,7 +164,7 @@ export class LootBarn {
     lootPool = new Pool(Loot);
     closestLoot: Loot | null = null;
 
-    update(
+    m_update(
         dt: number,
         activePlayer: Player,
         map: Map,
@@ -166,20 +174,21 @@ export class LootBarn {
     ) {
         this.closestLoot = null;
         let closestDist = Number.MAX_VALUE;
-        const loots = this.lootPool.getPool();
+        const loots = this.lootPool.m_getPool();
         for (let i = 0; i < loots.length; i++) {
             const loot = loots[i];
             if (loot.active) {
                 if (
                     util.sameLayer(loot.layer, activePlayer.layer) &&
-                    !activePlayer.netData.dead &&
+                    !activePlayer.m_netData.m_dead &&
                     (loot.ownerId == 0 || loot.ownerId == activePlayer.__id)
                 ) {
                     const pos = loot.pos;
                     const rad = device.touch
-                        ? activePlayer.rad + loot.rad * GameConfig.player.touchLootRadMult
+                        ? activePlayer.m_rad +
+                          loot.rad * GameConfig.player.touchLootRadMult
                         : loot.rad;
-                    const toPlayer = v2.sub(activePlayer.pos, pos);
+                    const toPlayer = v2.sub(activePlayer.m_pos, pos);
                     const distSq = v2.lengthSqr(toPlayer);
                     if (distSq < rad * rad && distSq < closestDist) {
                         closestDist = distSq;
@@ -210,8 +219,18 @@ export class LootBarn {
 
                 const scaleIn = math.delerp(loot.ticker, 0, 1);
                 const scale = math.easeOutElastic(scaleIn, 0.75);
-                const screenPos = camera.pointToScreen(loot.pos);
-                const screenScale = camera.pixels(loot.imgScale * scale);
+                let pos = loot.pos;
+                if (camera.m_interpEnabled) {
+                    loot.posInterpTicker += dt;
+                    const posT = math.clamp(
+                        loot.posInterpTicker / camera.m_interpInterval,
+                        0,
+                        1,
+                    );
+                    pos = v2.lerp(posT, loot.visualPosOld, loot.pos);
+                }
+                const screenPos = camera.m_pointToScreen(pos);
+                const screenScale = camera.m_pixels(loot.imgScale * scale);
 
                 if (device.debug && debug.loot && activePlayer.layer === loot.layer) {
                     debugLines.addCircle(loot.pos, loot.rad, 0xff0000, 0);
