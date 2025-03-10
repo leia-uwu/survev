@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
+import { Config } from "../../../config";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
@@ -172,21 +173,26 @@ function getUserStatsCacheKey(userId: string, mapIdFilter: string) {
 }
 
 async function getUserStatsFromCache(cacheKey: string) {
+    if (!Config.cachingEnabled) return;
+
     const client = await getRedisClient();
     const data = await client.get(cacheKey);
     return data ? JSON.parse(data) : null;
 }
 
 async function setUserStatsCache(cacheKey: string, data: UserStatsResponse) {
+    if (!Config.cachingEnabled) return;
+
     const client = await getRedisClient();
     await client.set(cacheKey, JSON.stringify(data));
-    return true;
 }
 /*
   this needss to be called every time a game is played.
   also if any of these {banned, username, slug, laodout.avatar} changes :sob:
 */
 export async function invalidateUserStatsCache(userId: string, mapIdFilter: string) {
+    if (!Config.cachingEnabled) return false;
+
     const client = await getRedisClient();
     // clear the cached stat for that sepcific map
     await client.del(getUserStatsCacheKey(userId, mapIdFilter));

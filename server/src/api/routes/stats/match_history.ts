@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
+import { Config } from "../../../config";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
@@ -69,7 +70,7 @@ matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
                 and(
                     eq(usersTable.id, userId),
                     eq(matchDataTable.teamMode, teamModeFilter as TeamMode).if(
-                        teamModeFilter != 7,
+                        teamModeFilter != ALL_TEAM_MODES,
                     ),
                 ),
             )
@@ -92,6 +93,8 @@ function getMatchHistoryCacheKey(userId: string) {
 }
 
 async function getMatchHistoryCache(cacheKey: string) {
+    if (!Config.cachingEnabled) return;
+
     const client = await getRedisClient();
     const data = await client.get(cacheKey);
     return data ? JSON.parse(data) : null;
@@ -100,15 +103,16 @@ async function getMatchHistoryCache(cacheKey: string) {
 const CACHE_TTL = 300;
 
 async function setMatchHistoryCache(cacheKey: string, data: any) {
+    if (!Config.cachingEnabled) return;
     const client = await getRedisClient();
     await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data));
-    return true;
 }
 
 /**
  * needs to be called everytime a game is saved
  */
 async function invalidateMatchHistoryCache(cacheKey: string) {
+    if (!Config.cachingEnabled) return false;
     const client = await getRedisClient();
     await client.del(cacheKey);
     return true;

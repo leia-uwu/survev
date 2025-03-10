@@ -64,6 +64,8 @@ export const Config = {
 
     accountsEnabled: true,
 
+    cachingEnabled: false,
+
     rateLimitsEnabled: isProduction,
 
     client: {
@@ -222,6 +224,8 @@ export interface ConfigType {
          */
         time: number;
     };
+
+    cachingEnabled: boolean;
 
     rateLimitsEnabled: boolean;
 

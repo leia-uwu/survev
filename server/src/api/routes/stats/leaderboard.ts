@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
-import type { Region } from "../../../config";
+import { Config, type Region } from "../../../config";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { validateParams } from "../../zodSchemas";
@@ -45,7 +45,7 @@ function getVal(type: ParamsSchema["type"], row: any) {
 }
 leaderboardRouter.post("/", validateParams(paramsSchema), async (c) => {
     const { teamMode, mapId, type, interval } = c.req.valid("json");
-    const cacheKey = getLeaderboardCacheKey({ teamMode, mapId, type });
+    const cacheKey = getLeaderboardCacheKey({ teamMode, mapId, type, interval });
     const cachedResult = await getLeaderboardCache(cacheKey);
 
     if (cachedResult) {
@@ -214,9 +214,10 @@ async function updateLowestScore({
     cacheKey: string;
     lowestScore: string;
 }) {
+    if (!Config.cachingEnabled) return;
+
     const client = await getRedisClient();
     await client.setEx(cacheKey, CACHE_TTL, lowestScore);
-    return;
 }
 async function shouldUpdateLeaderboard({
     cacheKey,
@@ -225,6 +226,8 @@ async function shouldUpdateLeaderboard({
     cacheKey: string;
     highestScore: number;
 }): Promise<boolean> {
+    if (!Config.cachingEnabled) return true;
+
     const client = await getRedisClient();
     const data = await client.get(cacheKey);
 
@@ -239,15 +242,17 @@ function getLowestScoreCacheKey({
     teamMode,
     mapId,
     type,
-}: { teamMode: TeamMode; mapId: number; type: string }) {
-    return `leaderboard:lowest:${teamMode}:${mapId}:${type}`;
+    interval,
+}: { teamMode: TeamMode; mapId: number; type: string; interval: string }) {
+    return `leaderboard:lowest:${teamMode}:${mapId}:${type}:${interval}`;
 }
 function getLeaderboardCacheKey({
     teamMode,
     mapId,
     type,
-}: { teamMode: TeamMode; mapId: number; type: string }) {
-    return `leaderboard:${teamMode}:${mapId}:${type}`;
+    interval,
+}: { teamMode: TeamMode; mapId: number; type: string; interval: string }) {
+    return `leaderboard:${teamMode}:${mapId}:${type}:${interval}`;
 }
 async function setLeaderboardCache({
     cacheKey,
@@ -256,11 +261,14 @@ async function setLeaderboardCache({
     cacheKey: string;
     data: LeaderboardReturnType[];
 }) {
+    if (!Config.cachingEnabled) return;
     const client = await getRedisClient();
     await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data));
 }
 
 async function getLeaderboardCache(cacheKey: string) {
+    if (!Config.cachingEnabled) return;
+
     const client = await getRedisClient();
     const data = await client.get(cacheKey);
     return data ? JSON.parse(data) : null;
@@ -270,6 +278,7 @@ async function invalidateLeaderboardCache({
 }: {
     cacheKey: string;
 }) {
+    if (!Config.cachingEnabled) return false;
     const client = await getRedisClient();
     await client.del(cacheKey);
     return true;
