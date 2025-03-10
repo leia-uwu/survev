@@ -6,31 +6,38 @@ import { TeamMode } from "../../../../shared/gameConfig";
 import type { MatchDataTable } from "../../api/db/schema";
 import { createNewUser } from "../routes/user/auth/authUtils";
 import { matchDataTable } from "./schema";
+import { generateUsername } from "unique-username-generator";
 
-const slugs = ["olimpiq", "floor", "mitm", "preacher", "test"];
-seed();
-async function seed() {
-    try {
-         for (const slug of slugs) {
-           const userId = generateId(15);
-            await createNewUser({
-                id: userId ,
-                authId: generateId(15),
-                username: slug,
-                linked: true,
-                slug: slug,
-            });
-            for (let i = 0; i < util.randomInt(50, 100); i++) {
-                const data = generateMatchHistory(userId, slug, util.randomInt(60, 80));
-                await db.insert(matchDataTable).values(data);
-            }
-        }
-        console.log("Seeded database");
-        return;
-    } catch (error) {
-        console.error("Failed to seed database", error);
-    }
-};
+const playersWithAccounts = Array.from({ length: 3000 }, (_, idx) => ({
+  slug: generateUsername(),
+  userId: generateId(15)
+ })).concat([{
+  slug: "test",
+  userId: generateId(15)
+ }]);
+
+ seed();
+ async function seed() {
+ try {
+ for (const {slug, userId} of playersWithAccounts) {
+ await createNewUser({
+  id: userId ,
+  authId: generateId(15),
+  username: slug,
+  linked: true,
+  slug: slug,
+  });
+ for (let j = 0; j < util.randomInt(50, 100); j++) {
+ const data = generateMatchHistory(userId, slug, util.randomInt(60, 80));
+ await db.insert(matchDataTable).values(data);
+  }
+  console.log({slug, userId})
+  }
+  console.log("Seeded database");
+  } catch (error) {
+  console.error("Failed to seed database", error);
+  }
+ };
 
 
 interface Player {
@@ -48,6 +55,7 @@ interface Player {
     slug: string,
     numPlayers = 70
   ): MatchDataTable[] {
+    const loggedInUsersInGame = shuffle([...playersWithAccounts]).splice(0, util.randomInt(12, 20))
     const { teamMode, region, mapId, gameId, createdAt } = getRandomData();
     const maxTeamSize = teamMode;
   
@@ -108,29 +116,38 @@ interface Player {
       }
     }
   
-    const slugUserIdx = util.randomInt(0, Object.keys((players)).length);
   
-    return shuffle(Object.values(players)).map((player, i) => ({
-      mapId,
-      region,
-      createdAt,
-      teamTotal: teams.length,
-      teamMode,
-      gameId,
-      userId: slugUserIdx === i ? userId : Math.random() < 0.3 ? generateId(15) : null,
-      slug: slugUserIdx === i ? slug : Math.random() < 0.3 ? generateId(15) : null,
-      username: `${slug.substr(0, 5)}#${player.id}#${player.teamId}`,
-      playerId: player.id,
-      teamId: player.teamId,
-      timeAlive:  util.randomInt(10, 120),
-      rank: player.rank,
-      died: player.dead,
-      kills: player.killerIds.length,
-      damageDealt: (player.killerIds.length * util.randomInt(70, 120)) + util.randomInt(40, 100),
-      damageTaken: util.randomInt(100, 300),
-      killerId: player.killedBy ?? 0,
-      killedIds: player.killerIds,
-    })) satisfies MatchDataTable[];
+    return shuffle(Object.values(players)).map((player, i) => {
+      const isLoggedIn = i != 0 && loggedInUsersInGame.length;
+      const loggedInUser = isLoggedIn ? loggedInUsersInGame.pop()! : {
+        slug: generateUsername(),
+        userId: generateId(15)
+      };
+      const playerUserId = Math.random() < 0.3 ? loggedInUser?.userId : null;
+      const playerSlug = Math.random() < 0.3 ? loggedInUser?.slug : null;
+      
+      return ({
+        mapId,
+        region,
+        createdAt,
+        teamTotal: teams.length,
+        teamMode,
+        gameId,
+        userId: 0 === i ? userId : playerUserId,
+        slug: 0 === i ? slug : playerSlug,
+        username: generateUsername(),
+        playerId: player.id,
+        teamId: player.teamId,
+        timeAlive:  util.randomInt(10, 120),
+        rank: player.rank,
+        died: player.dead,
+        kills: player.killerIds.length,
+        damageDealt: (player.killerIds.length * util.randomInt(70, 120)) + util.randomInt(40, 100),
+        damageTaken: util.randomInt(100, 300),
+        killerId: player.killedBy ?? 0,
+        killedIds: player.killerIds,
+      })
+    }) satisfies MatchDataTable[];
   };
   
   function getRandomData() {
