@@ -376,6 +376,8 @@ export class Bullet {
     }
 
     checkForCollisions(posOld: Vec2): void {
+        if (this.skipCollision) return;
+
         const collisions: BulletCollision[] = [];
 
         const objects = this.bulletManager.game.grid.intersectLineSegment(
