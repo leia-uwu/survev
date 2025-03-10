@@ -78,7 +78,23 @@ export const matchDataTable = mysqlTable("match_data", {
     damageTaken: int("damage_taken").notNull(),
     killerId: int("killer_id").notNull(),
     killedIds: json("killed_ids").$type<number[]>().notNull(),
-});
+}, (table) => [
+    index("idx_match_data_user_stats").on(
+        table.userId, 
+        table.teamMode, 
+        table.rank, 
+        table.kills, 
+        table.damageDealt,
+        table.timeAlive
+    ),
+    index("idx_game_id").on(table.gameId),
+    index("idx_match_data_team_query").on(
+        table.teamMode,
+        table.mapId,
+        table.createdAt,
+        table.region,
+      )
+]);
 
 export type MatchDataTable = typeof matchDataTable.$inferInsert;
 

@@ -109,55 +109,50 @@ async function userStatsSqlQuery(userId: string, mapIdFilter: string, interval: 
   const mapIdFilterQuery = filterByMapId(mapIdFilter);
 
   const query = sql.raw(`
-    WITH mode_stats AS (
-        SELECT
-            u.slug,
-            m.team_mode,
-            COUNT(*) AS games,
-            SUM(CASE WHEN m.rank = 1 THEN 1 ELSE 0 END) AS wins,
-            SUM(m.kills) AS kills,
-            ROUND(SUM(CASE WHEN m.rank = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS winPct,
-            MAX(m.kills) AS most_kills,
-            MAX(m.damage_dealt) AS most_damage,
-            ROUND(SUM(m.kills) * 1.0 / COUNT(*), 1) AS kpg,
-            ROUND(AVG(m.damage_dealt)) AS avg_damage,
-            ROUND(AVG(m.time_alive)) AS avg_time_alive
-        FROM users u
-        INNER JOIN match_data m ON u.id = m.user_id
-        WHERE u.id = '${userId}'
-        ${ intervalFilterQuery }
-        ${ mapIdFilterQuery }
-        GROUP BY u.slug, u.username, m.team_mode
-    )
-    SELECT
-        u.slug,
-        u.username,
-        u.banned,
-        JSON_EXTRACT(u.loadout, '$.player_icon') AS player_icon,
-        COALESCE(SUM(ms.games), 0) AS games,
-        COALESCE(SUM(ms.wins), 0) AS wins,
-        COALESCE(SUM(ms.kills), 0) AS kills,
-        COALESCE(ROUND(SUM(ms.kills) * 1.0 / NULLIF(SUM(ms.games), 0), 1), 0) AS kpg,
-        COALESCE(JSON_ARRAYAGG(
-            CASE WHEN ms.team_mode IS NOT NULL THEN
-                JSON_OBJECT(
-                    'wins', ms.wins,
-                    'kills', ms.kills,
-                    'teamMode', ms.team_mode,
-                    'avgDamage', ms.avg_damage,
-                    'avgTimeAlive', ms.avg_time_alive,
-                    'mostDamage', ms.most_damage,
-                    'kpg', ms.kpg,
-                    'winPct', ms.winPct,
-                    'mostKils', ms.most_kills
-                )
-            END
-        ), '[]') AS modes
-    FROM users u
-    LEFT JOIN mode_stats ms ON u.slug = ms.slug
-    WHERE u.id = '${userId}'
-    GROUP BY u.slug, u.username, u.banned
-    LIMIT 1;
+            WITH mode_stats AS (
+                SELECT
+                    m.team_mode,
+                    COUNT(*) AS games,
+                    SUM(CASE WHEN m.rank = 1 THEN 1 ELSE 0 END) AS wins,
+                    SUM(m.kills) AS kills,
+                    ROUND(SUM(CASE WHEN m.rank = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS winPct,
+                    MAX(m.kills) AS most_kills,
+                    MAX(m.damage_dealt) AS most_damage,
+                    ROUND(SUM(m.kills) * 1.0 / COUNT(*), 1) AS kpg,
+                    ROUND(AVG(m.damage_dealt)) AS avg_damage,
+                    ROUND(AVG(m.time_alive)) AS avg_time_alive
+                FROM match_data m
+                WHERE m.user_id = '${userId}'
+                ${ intervalFilterQuery }
+                ${ mapIdFilterQuery }
+                GROUP BY m.team_mode
+            )
+            SELECT
+                u.slug,
+                u.username,
+                u.banned,
+                JSON_EXTRACT(u.loadout, '$.player_icon') AS player_icon,
+                COALESCE(SUM(ms.games), 0) AS games,
+                COALESCE(SUM(ms.wins), 0) AS wins,
+                COALESCE(SUM(ms.kills), 0) AS kills,  
+                COALESCE(ROUND(SUM(ms.kills) * 1.0 / NULLIF(SUM(ms.games), 0), 1), 0) AS kpg,
+                COALESCE(JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'wins', ms.wins,
+                            'kills', ms.kills,
+                            'teamMode', ms.team_mode,
+                            'avgDamage', ms.avg_damage,
+                            'avgTimeAlive', ms.avg_time_alive,
+                            'mostDamage', ms.most_damage,
+                            'kpg', ms.kpg,
+                            'winPct', ms.winPct,
+                            'mostKils', ms.most_kills
+                        )
+                ), '[]') AS modes
+            FROM users u
+            LEFT JOIN mode_stats ms ON 1 = 1
+            GROUP BY u.slug, u.username, u.banned
+            LIMIT 1;
     `);
   const [data] = await db.execute(query);
   const userStats = (data as any)[0];
