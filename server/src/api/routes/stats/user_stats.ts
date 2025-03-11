@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { server, type Context } from "../..";
+import { type Context, server } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { getRedisClient } from "../../cache";

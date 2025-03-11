@@ -23,9 +23,11 @@ export function getHonoIp(c: Context, proxyHeader?: string): string {
     if (proxyHeader) {
         return c.req.raw.headers.get(proxyHeader) || "";
     }
-    return c.req.raw.headers.get("remote-addr") ||
+    return (
+        c.req.raw.headers.get("remote-addr") ||
         c.env?.incoming?.socket?.remoteAddress ||
         ""
+    );
 }
 
 export function forbidden(res: HttpResponse): void {

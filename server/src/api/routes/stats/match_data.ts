@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { server, type Context } from "../..";
+import { type Context, server } from "../..";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";

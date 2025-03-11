@@ -5,9 +5,8 @@ import type { Player } from "../game/objects/player";
 import { type MapDef, MapDefs } from "./../../../shared/defs/mapDefs";
 import { db } from "./db";
 import { type MatchDataTable, matchDataTable } from "./db/schema";
+import { invalidateLeaderboards } from "./routes/stats/leaderboard";
 import { invalidateUserStatsCache } from "./routes/stats/user_stats";
-import { math } from "../../../shared/utils/math";
-import { getLeaderboardCache, getLeaderboardCacheKey, getLowestScoreCacheKey, invalidateLeaderboardCache, invalidateLeaderboards, LeaderboardParamsSchema, shouldUpdateLeaderboard } from "./routes/stats/leaderboard";
 
 const sqliteDb = new Database("lost_data.db");
 
@@ -27,15 +26,15 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
     // !! TODO: for duos and squads rank needs to be the teamRank.
     const sortedPlayers = [...players].sort((a, b) => b.timeAlive - a.timeAlive);
     const mapId = (MapDefs[game.mapName as keyof typeof MapDefs] as MapDef).mapId;
-    
+
     await invalidateLeaderboards(sortedPlayers, mapId, game.teamMode);
 
     for (let i = 0; i < sortedPlayers.length; i++) {
         const player = sortedPlayers[i];
-    
-        if ( player.authId ) {
+
+        if (player.authId) {
             invalidateUserStatsCache(player.authId, mapId.toString());
-        };
+        }
 
         // deciding the rank based on the time alive; probably not ideal;
         const rank = i + 1;

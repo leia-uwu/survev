@@ -11,7 +11,7 @@ import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
-import { server, type Context } from "../../index";
+import { type Context, server } from "../../index";
 import {
     type Loadout,
     loadoutSchema,
@@ -331,7 +331,7 @@ UserRouter.post(
                 .set({
                     items: updatedItems,
                 })
-                .where(eq(usersTable.authId, MOCK_USER_ID))
+                .where(eq(usersTable.authId, MOCK_USER_ID));
 
             return c.json({ success: true }, 200);
         } catch (err) {

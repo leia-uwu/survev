@@ -1,7 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { server, type Context } from "../..";
+import { type Context, server } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { CACHE_TTL, getRedisClient } from "../../cache";
@@ -100,7 +100,6 @@ async function getMatchHistoryCache(cacheKey: string) {
     const data = await client.get(cacheKey);
     return data ? JSON.parse(data) : null;
 }
-
 
 async function setMatchHistoryCache(cacheKey: string, data: any) {
     if (!Config.cachingEnabled) return;
