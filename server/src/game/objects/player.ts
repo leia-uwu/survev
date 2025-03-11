@@ -3952,7 +3952,7 @@ export class Player extends BaseGameObject {
             player._lastBreathTicker = 5;
 
             player.giveHaste(GameConfig.HasteType.Inspire, 5);
-            this.recalculateScale();
+            player.recalculateScale();
         }
     }
 
