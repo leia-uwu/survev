@@ -860,8 +860,13 @@ export class Player extends BaseGameObject {
         }
 
         if (roleDef.perks) {
-            for (let i = this.perks.length - 1; i >= 0; i--)
-                this.removePerk(this.perks[i].type);
+            for (let i = 0; i < this.perks.length; i++) {
+                if (this.perks[i].isFromRole) {
+                    this.removePerk(this.perks[i].type);
+                    i--;
+                }
+            }
+
             for (let i = 0; i < roleDef.perks.length; i++) {
                 const perkOrPerkFunc = roleDef.perks[i];
                 const perkType =
@@ -883,6 +888,7 @@ export class Player extends BaseGameObject {
             const perk = this.perks[i];
             if (perk.isFromRole) {
                 this.removePerk(perk.type);
+                i--;
             }
         }
         this.setDirty();
