@@ -732,13 +732,11 @@ export class Player extends BaseGameObject {
             const index = this.game.playerBarn.medics.indexOf(this);
             if (index != -1) this.game.playerBarn.medics.splice(index, 1);
         }
+        if (this.role === role) return;
 
-        if (role === "kill_leader") {
-            this.handleKillLeaderRole();
-        } else {
-            this.handleFactionModeRoles(role);
-            this.hasRoleHelmet = true;
-        }
+        this.role = role;
+        this.inventoryDirty = true;
+        this.setDirty();
 
         // for savannah the hunted indicator
         if (roleDef.mapIndicator) {
@@ -751,64 +749,17 @@ export class Player extends BaseGameObject {
         msg.assigned = true;
         msg.playerId = this.__id;
         this.game.broadcastMsg(net.MsgType.RoleAnnouncement, msg);
-    }
-
-    removeRole(): void {
-        const def = GameObjectDefs[this.role] as RoleDef;
-        if (!def) return;
-        if (!def.perks) return;
-
-        for (let i = 0; i < def.perks.length; i++) {
-            const perk = def.perks[i];
-            if (perk instanceof Function) continue; //no support for removing dynamic perks yet
-            if (!this.hasPerk(perk)) continue;
-            this.removePerk(perk);
-        }
-
-        this.role = "";
-    }
-
-    handleKillLeaderRole(): void {
-        if (this.isKillLeader) return;
-        if (this.game.map.mapDef.gameMode.sniperMode) {
-            this.role = "kill_leader";
-            this.setDirty();
-        }
-        this.isKillLeader = true;
-        if (this.game.playerBarn.killLeader) {
-            this.game.playerBarn.killLeader.isKillLeader = false;
-        }
-        this.game.playerBarn.killLeader = this;
-        this.game.playerBarn.killLeaderDirty = true;
-    }
-
-    lastBreathActive = false;
-    private _lastBreathTicker = 0;
-
-    bugleTickerActive = false;
-    private _bugleTicker = 0;
-
-    handleFactionModeRoles(role: string): void {
-        if (this.role === role) return;
-
-        const def = GameObjectDefs[role] as RoleDef;
 
         switch (role) {
-            case "bugler":
-                break;
             case "leader":
                 if (this.game.map.factionMode && !this.team!.leader) {
                     this.team!.leader = this;
                 }
                 break;
-            case "lieutenant":
-                break;
             case "last_man":
                 this.health = 100;
                 this.boost = 100;
                 this.giveHaste(GameConfig.HasteType.Windwalk, 5);
-                break;
-            case "grenadier":
                 break;
             case "medic":
                 // TODO: this should be based on aoe_heal perk not role
@@ -816,12 +767,12 @@ export class Player extends BaseGameObject {
                 break;
         }
 
-        if (def.defaultItems) {
+        if (roleDef.defaultItems) {
             // for non faction modes where teamId > 2, just cycles between blue and red teamId
             const clampedTeamId = ((this.teamId - 1) % 2) + 1;
 
             // inventory and scope
-            for (const [key, value] of Object.entries(def.defaultItems.inventory)) {
+            for (const [key, value] of Object.entries(roleDef.defaultItems.inventory)) {
                 if (value == 0) continue; // prevents overwriting existing inventory
 
                 //only sets scope if scope in inventory is higher than current scope
@@ -837,7 +788,7 @@ export class Player extends BaseGameObject {
             }
 
             // outfit
-            const newOutfit = def.defaultItems.outfit;
+            const newOutfit = roleDef.defaultItems.outfit;
             if (newOutfit instanceof Function) {
                 this.setOutfit(newOutfit(clampedTeamId));
             } else {
@@ -846,24 +797,31 @@ export class Player extends BaseGameObject {
             }
 
             // armor
-            if (this.helmet && !this.hasRoleHelmet)
+            if (this.helmet && !this.hasRoleHelmet) {
                 this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
-            this.helmet =
-                def.defaultItems.helmet instanceof Function
-                    ? def.defaultItems.helmet(clampedTeamId)
-                    : def.defaultItems.helmet;
+            }
 
-            if (def.defaultItems.chest) {
+            const roleHelmet =
+                roleDef.defaultItems.helmet instanceof Function
+                    ? roleDef.defaultItems.helmet(clampedTeamId)
+                    : roleDef.defaultItems.helmet;
+
+            if (roleHelmet) {
+                this.helmet = roleHelmet;
+                this.hasRoleHelmet = true;
+            }
+
+            if (roleDef.defaultItems.chest) {
                 if (this.chest) {
                     this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
                 }
-                this.chest = def.defaultItems.chest;
+                this.chest = roleDef.defaultItems.chest;
             }
-            this.backpack = def.defaultItems.backpack;
+            this.backpack = roleDef.defaultItems.backpack;
 
             // weapons
-            for (let i = 0; i < def.defaultItems.weapons.length; i++) {
-                const weaponOrWeaponFunc = def.defaultItems.weapons[i];
+            for (let i = 0; i < roleDef.defaultItems.weapons.length; i++) {
+                const weaponOrWeaponFunc = roleDef.defaultItems.weapons[i];
                 const trueWeapon =
                     weaponOrWeaponFunc instanceof Function
                         ? weaponOrWeaponFunc(clampedTeamId)
@@ -901,32 +859,85 @@ export class Player extends BaseGameObject {
             }
         }
 
-        if (def.perks) {
+        if (roleDef.perks) {
             for (let i = this.perks.length - 1; i >= 0; i--)
                 this.removePerk(this.perks[i].type);
-            for (let i = 0; i < def.perks.length; i++) {
-                const perkOrPerkFunc = def.perks[i];
+            for (let i = 0; i < roleDef.perks.length; i++) {
+                const perkOrPerkFunc = roleDef.perks[i];
                 const perkType =
                     perkOrPerkFunc instanceof Function
                         ? perkOrPerkFunc()
                         : perkOrPerkFunc;
-                this.addPerk(perkType, false);
+                this.addPerk(perkType, false, undefined, true);
             }
         }
-        this.role = role;
-        this.inventoryDirty = true;
+    }
+
+    removeRole(): void {
+        const def = GameObjectDefs[this.role] as RoleDef;
+        if (!def) return;
+        this.role = "";
+
+        this.mapIndicator?.kill();
+        for (let i = 0; i < this.perks.length; i++) {
+            const perk = this.perks[i];
+            if (perk.isFromRole) {
+                this.removePerk(perk.type);
+            }
+        }
         this.setDirty();
     }
 
-    perks: Array<{ type: string; droppable: boolean; replaceOnDeath?: string }> = [];
+    promoteToKillLeader() {
+        if (this.isKillLeader) return;
+
+        this.isKillLeader = true;
+        if (this.game.playerBarn.killLeader) {
+            this.game.playerBarn.killLeader.isKillLeader = false;
+        }
+
+        this.game.playerBarn.killLeader = this;
+        this.game.playerBarn.killLeaderDirty = true;
+
+        if (this.game.map.sniperMode) {
+            // promote to the role on savannah
+            this.promoteToRole("the_hunted");
+        } else {
+            // else just send a RoleAnnouncementMsg
+            const msg = new net.RoleAnnouncementMsg();
+            msg.role = "kill_leader";
+            msg.assigned = true;
+            msg.playerId = this.__id;
+            this.game.broadcastMsg(net.MsgType.RoleAnnouncement, msg);
+        }
+    }
+
+    lastBreathActive = false;
+    private _lastBreathTicker = 0;
+
+    bugleTickerActive = false;
+    private _bugleTicker = 0;
+
+    perks: Array<{
+        type: string;
+        droppable: boolean;
+        replaceOnDeath?: string;
+        isFromRole?: boolean;
+    }> = [];
 
     perkTypes: string[] = [];
 
-    addPerk(type: string, droppable = false, replaceOnDeath?: string) {
+    addPerk(
+        type: string,
+        droppable = false,
+        replaceOnDeath?: string,
+        isFromRole?: boolean,
+    ) {
         this.perks.push({
             type,
             droppable,
             replaceOnDeath,
+            isFromRole,
         });
         this.perkTypes.push(type);
 
@@ -2481,7 +2492,7 @@ export class Player extends BaseGameObject {
 
         this.game.broadcastMsg(net.MsgType.Kill, killMsg);
 
-        if (this.role && this.role !== "kill_leader") {
+        if (this.role) {
             const roleMsg = new net.RoleAnnouncementMsg();
             roleMsg.role = this.role;
             roleMsg.assigned = false;
@@ -2491,7 +2502,7 @@ export class Player extends BaseGameObject {
             this.game.broadcastMsg(net.MsgType.RoleAnnouncement, roleMsg);
         }
 
-        if (this.isKillLeader) {
+        if (this.isKillLeader && this.role !== "the_hunted") {
             const roleMsg = new net.RoleAnnouncementMsg();
             roleMsg.role = "kill_leader";
             roleMsg.assigned = false;
@@ -2517,11 +2528,11 @@ export class Player extends BaseGameObject {
                 newKillLeader === params.source &&
                 newKillLeader.kills > killLeaderKills
             ) {
-                if (killLeader) {
-                    killLeader.role = "";
+                if (killLeader && killLeader.role === "the_hunted") {
+                    killLeader.removeRole();
                 }
 
-                params.source.promoteToRole("kill_leader");
+                params.source.promoteToKillLeader();
             }
         }
 
@@ -2529,6 +2540,11 @@ export class Player extends BaseGameObject {
             this.game.playerBarn.killLeader = undefined;
             this.game.playerBarn.killLeaderDirty = true;
             this.isKillLeader = false;
+
+            // remove the role on savannah
+            if (this.role === "the_hunted") {
+                this.removeRole();
+            }
         }
 
         this.game.pluginManager.emit("playerKill", { ...params, player: this });
@@ -4036,13 +4052,18 @@ export class Player extends BaseGameObject {
             this.speed -= GameConfig.player.frozenSpeedPenalty;
         }
 
+        const hasFieldMedic = this.hasPerk("field_medic");
         // decrease speed if shooting or popping adren or heals
         // field_medic perk doesn't slow you down while you heal
         if (
             this.shotSlowdownTimer > 0 ||
-            (!this.hasPerk("field_medic") && this.actionType == GameConfig.Action.UseItem)
+            (!hasFieldMedic && this.actionType == GameConfig.Action.UseItem)
         ) {
             this.speed *= 0.5;
+        }
+
+        if (hasFieldMedic && this.actionType == GameConfig.Action.UseItem) {
+            this.speed += PerkProperties.field_medic.speedBoost;
         }
 
         this.speed = math.clamp(this.speed, 1, 10000);

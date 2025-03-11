@@ -43,6 +43,9 @@ export const PerkProperties = {
         scale: 0.25,
         healthRegen: 0.5, // per second
     },
+    field_medic: {
+        speedBoost: 1.5,
+    },
     ammoBonusDamageMulti: 1.08,
 };
 
