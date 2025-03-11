@@ -1,7 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import type { Context } from "../..";
+import { server, type Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { getRedisClient } from "../../cache";
@@ -56,7 +56,7 @@ UserStatsRouter.post("/", validateParams(userStatsSchema), async (c) => {
 
         return c.json<UserStatsResponse>(data, 200);
     } catch (_err) {
-        console.log({ _err });
+        server.logger.warn("/api/user_stats: Error getting user stats");
         return c.json({ error: "" }, 500);
     }
 });

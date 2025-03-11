@@ -75,7 +75,7 @@ leaderboardRouter.post("/", validateParams(paramsSchema), async (c) => {
         await setLeaderboardCache({ cacheKey, data });
     }
 
-    return c.json(data, 200);
+    return c.json<LeaderboardReturnType[]>(data, 200);
 });
 
 type LeaderboardReturnType = {
@@ -150,9 +150,7 @@ async function soloLeaderboardQuery(
     ORDER BY ${sortMap[type]} DESC
     LIMIT ${MAX_RESULT_COUNT};
   `);
-    const result: any = await db.execute(query);
-
-    // @ts-expect-error guh drizzle
+    const result = await db.execute(query) as unknown as [LeaderboardReturnType[]];
     return result[0].map((row) => {
         const val = getVal(type, row) as number;
         return {
@@ -199,7 +197,7 @@ async function multiplePlayersQuery(
   `);
 
     const data = await db.execute(query);
-    return data[0];
+    return data[0]  as unknown as LeaderboardReturnType[];
 }
 
 /**

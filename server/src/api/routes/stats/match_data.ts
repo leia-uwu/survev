@@ -1,7 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import type { Context } from "../..";
+import { server, type Context } from "../..";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
@@ -41,7 +41,7 @@ matchDataRouter.post("/", validateParams(matchDataSchema), async (c) => {
 
         return c.json<MatchData[]>(result);
     } catch (_err) {
-        console.log({ _err });
+        server.logger.warn("/api/match_data: Error getting match data");
         return c.json({}, 500);
     }
 });

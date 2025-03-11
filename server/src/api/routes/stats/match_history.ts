@@ -1,7 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import type { Context } from "../..";
+import { server, type Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { CACHE_TTL, getRedisClient } from "../../cache";
@@ -82,7 +82,7 @@ matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
 
         return c.json(data);
     } catch (_err) {
-        console.log({ _err });
+        server.logger.warn("/api/match_history: Error getting match history");
         return c.json({}, 500);
     }
 });

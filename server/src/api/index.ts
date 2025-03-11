@@ -62,7 +62,6 @@ const stats = readFileSync(
 });
 
 app.get("/stats/:slug", (c) => {
-    console.log("redirecting to /stats", c.req.url);
     return c.html(stats);
 });
 
@@ -213,8 +212,8 @@ app.post(
 
             return ctx.json({ message });
         } catch (err) {
-            console.error("Error processing request:", err);
-            return ctx.json({ message: "An unexpected error occurred." }, 500); // Handle unexpected errors
+            server.logger.warn("/api/moderation: Error processing request");
+            return ctx.json({ message: "An unexpected error occurred." }, 500);
         }
     },
 );

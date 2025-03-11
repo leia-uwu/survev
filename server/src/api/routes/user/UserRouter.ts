@@ -11,7 +11,7 @@ import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
-import type { Context } from "../../index";
+import { server, type Context } from "../../index";
 import {
     type Loadout,
     loadoutSchema,
@@ -85,7 +85,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             200,
         );
     } catch (err) {
-        console.error("Error fetching user profile:", err);
+        server.logger.warn("/api/profile: Error fetching user profile");
         return c.json({}, 500);
     }
 });
@@ -152,7 +152,7 @@ UserRouter.post(
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {
-            console.error("Error updating username", { error: err });
+            server.logger.warn("/api/username: Error updating username");
             return c.json<UsernameResponse>({ result: "failed" }, 500);
         }
     },
@@ -184,7 +184,7 @@ UserRouter.post(
                 200,
             );
         } catch (err) {
-            console.error("Error updating loadout", { error: err });
+            server.logger.warn("/api/username: Error updating loadout");
             return c.json({}, 500);
         }
     },
@@ -200,7 +200,7 @@ UserRouter.post("/logout", AuthMiddleware, async (c) => {
         });
         return c.json({}, 200);
     } catch (err) {
-        console.error("Error logging out", { error: err });
+        server.logger.warn("/api/logout: Error logging out");
         return c.json({}, 500);
     }
 });
@@ -221,7 +221,7 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
 
         return c.json({}, 200);
     } catch (err) {
-        console.error("Error deleting account", { error: err });
+        server.logger.warn("/api/delete: Error deleting account");
         return c.json({}, 500);
     }
 });
@@ -272,7 +272,7 @@ UserRouter.post(
 
             return c.json({}, 200);
         } catch (err) {
-            console.error("Error setting item status", { error: err });
+            server.logger.warn("/api/set_item_status: Error setting item status");
             return c.json({}, 500);
         }
     },
@@ -326,20 +326,16 @@ UserRouter.post(
                 });
             const updatedItems = items.concat(itemsToUnlock);
 
-            const retunedItems = await db
+            await db
                 .update(usersTable)
                 .set({
                     items: updatedItems,
                 })
                 .where(eq(usersTable.authId, MOCK_USER_ID))
-                // @ts-expect-error delete me after merge;
-                .returning({
-                    items: usersTable.items,
-                });
 
-            return c.json({ success: true, items: retunedItems }, 200);
+            return c.json({ success: true }, 200);
         } catch (err) {
-            console.error("Error unlocking item", { error: err });
+            server.logger.warn("/api/set_item_status: Error unlocking item");
             return c.json({}, 500);
         }
     },

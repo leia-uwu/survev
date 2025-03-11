@@ -8,7 +8,6 @@ async function clearDb(): Promise<void> {
     } catch (error) {
         console.error("Error:", error);
         throw error;
-    } finally {
     }
 }
 
