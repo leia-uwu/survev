@@ -19,17 +19,13 @@ export function cors(res: HttpResponse): void {
         .writeHeader("Access-Control-Max-Age", "3600");
 }
 
-export function getHonoIp(c: Context, proxyHeader?: string) {
+export function getHonoIp(c: Context, proxyHeader?: string): string {
     if (proxyHeader) {
-        return c.req.raw.headers.get(proxyHeader);
+        return c.req.raw.headers.get(proxyHeader) || "";
     }
-    const ip =
-        c.req.header("x-forwarded-for") ||
-        c.req.header("x-real-ip") ||
-        c.req.raw.headers.get("remote-addr") ||
-        c.env?.incoming?.socket?.remoteAddress;
-
-    return ip || "";
+    return c.req.raw.headers.get("remote-addr") ||
+        c.env?.incoming?.socket?.remoteAddress ||
+        ""
 }
 
 export function forbidden(res: HttpResponse): void {
