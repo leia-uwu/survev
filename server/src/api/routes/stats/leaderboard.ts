@@ -8,6 +8,8 @@ import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { validateParams } from "../../zodSchemas";
 import { filterByInterval, filterByMapId } from "./user_stats";
+import { Player } from "../../../game/objects/player";
+import { math } from "../../../../../shared/utils/math";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -33,9 +35,9 @@ const paramsSchema = z.object({
         .transform((mode) => teamModeMap[mode]),
 });
 
-type ParamsSchema = z.infer<typeof paramsSchema>;
+export type LeaderboardParamsSchema = z.infer<typeof paramsSchema>;
 
-function getVal(type: ParamsSchema["type"], row: any) {
+function getVal(type: LeaderboardParamsSchema["type"], row: any) {
     // can this be done in the sql?
     if (type === "most_kills") return row.mostKills;
     if (type === "most_damage_dealt") return row.mostDamage;
@@ -103,7 +105,7 @@ const MAX_RESULT_COUNT = 100;
 
 async function soloLeaderboardQuery(
     teamMode: TeamMode,
-    type: ParamsSchema["type"],
+    type: LeaderboardParamsSchema["type"],
     mapIdFilter: number | string,
     interval: string,
 ) {
@@ -162,9 +164,9 @@ async function soloLeaderboardQuery(
 
 async function multiplePlayersQuery(
     teamMode: TeamMode,
-    type: ParamsSchema["type"],
+    type: LeaderboardParamsSchema["type"],
     mapIdFilter: number | string,
-    interval: string,
+    interval: LeaderboardParamsSchema["interval"],
 ) {
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapIdFilter as string);
@@ -219,39 +221,35 @@ async function updateLowestScore({
     const client = await getRedisClient();
     await client.setEx(cacheKey, CACHE_TTL, lowestScore);
 }
-async function shouldUpdateLeaderboard({
-    cacheKey,
-    highestScore,
-}: {
-    cacheKey: string;
-    highestScore: number;
-}): Promise<boolean> {
+export async function shouldUpdateLeaderboard(
+    lowestScoreCacheKey: string,
+    maxGameValue: number): Promise<boolean> {
     if (!Config.cachingEnabled) return true;
 
     const client = await getRedisClient();
-    const data = await client.get(cacheKey);
+    const lowestLeaderboardValue = await client.get(lowestScoreCacheKey);
 
-    if (!data || highestScore <= parseInt(data)) return false;
+    if (!lowestLeaderboardValue || maxGameValue <= parseInt(lowestLeaderboardValue)) return false;
 
-    await client.setEx(cacheKey, CACHE_TTL, highestScore.toString());
+    await client.setEx(lowestScoreCacheKey, CACHE_TTL, maxGameValue.toString());
 
     return true;
 }
 
-function getLowestScoreCacheKey({
+export function getLowestScoreCacheKey({
     teamMode,
     mapId,
     type,
     interval,
-}: { teamMode: TeamMode; mapId: number; type: string; interval: string }) {
+}: { teamMode: TeamMode; mapId: number; type: LeaderboardParamsSchema["type"]; interval: LeaderboardParamsSchema["interval"] }) {
     return `leaderboard:lowest:${teamMode}:${mapId}:${type}:${interval}`;
 }
-function getLeaderboardCacheKey({
+export function getLeaderboardCacheKey({
     teamMode,
     mapId,
     type,
     interval,
-}: { teamMode: TeamMode; mapId: number; type: string; interval: string }) {
+}: { teamMode: TeamMode; mapId: number; type: LeaderboardParamsSchema["type"]; interval: LeaderboardParamsSchema["interval"] }) {
     return `leaderboard:${teamMode}:${mapId}:${type}:${interval}`;
 }
 async function setLeaderboardCache({
@@ -266,20 +264,53 @@ async function setLeaderboardCache({
     await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data));
 }
 
-async function getLeaderboardCache(cacheKey: string) {
+export async function getLeaderboardCache(cacheKey: string) {
     if (!Config.cachingEnabled) return;
 
     const client = await getRedisClient();
     const data = await client.get(cacheKey);
     return data ? JSON.parse(data) : null;
 }
-async function invalidateLeaderboardCache({
-    cacheKey,
-}: {
-    cacheKey: string;
-}) {
+
+export async function invalidateLeaderboardCache(
+    cacheKey: string
+) {
     if (!Config.cachingEnabled) return false;
     const client = await getRedisClient();
     await client.del(cacheKey);
     return true;
+}
+
+
+export async function invalidateLeaderboards(
+    players: Player[],
+    mapId: number,
+    teamMode: number,
+) {
+    const maxValues = players.reduce((obj, player) => {
+        obj.most_kills = math.max(obj.most_kills, player.kills);
+        obj.most_damage_dealt = math.max(obj.most_damage_dealt, player.damageDealt);        
+        return obj;
+    }, {
+        most_kills: 0,
+        most_damage_dealt: 0,
+    } as Record<LeaderboardParamsSchema["type"], number>);
+
+    for ( const [type, maxGameValue] of Object.entries(maxValues) as [LeaderboardParamsSchema["type"], number][] ) {
+        for ( const interval of ["daily", "weekly", "alltime"] as const) {
+            const gameData = { 
+                type,
+                teamMode,
+                mapId,
+                interval
+            };
+            const lowestScoreCacheKey = getLowestScoreCacheKey(gameData);
+            const shouldInvalidateLeaderboardCache = await shouldUpdateLeaderboard(lowestScoreCacheKey, maxGameValue);
+            
+            if ( !shouldInvalidateLeaderboardCache ) continue;
+
+            const leaderboardCacheKey = getLeaderboardCacheKey(gameData);
+            invalidateLeaderboardCache(leaderboardCacheKey);
+        }
+    }
 }

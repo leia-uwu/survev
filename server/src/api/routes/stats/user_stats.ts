@@ -194,8 +194,9 @@ export async function invalidateUserStatsCache(userId: string, mapIdFilter: stri
     if (!Config.cachingEnabled) return false;
 
     const client = await getRedisClient();
+    const cacheKey = getUserStatsCacheKey(userId, mapIdFilter);
     // clear the cached stat for that sepcific map
-    await client.del(getUserStatsCacheKey(userId, mapIdFilter));
+    await client.del(cacheKey);
     // clear the cached stat for when no map filter is applied
     await client.del(getUserStatsCacheKey(userId, "-1"));
     return true;

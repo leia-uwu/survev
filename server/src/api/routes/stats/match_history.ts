@@ -53,6 +53,7 @@ matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
                 region: matchDataTable.region,
                 map_id: matchDataTable.mapId,
                 team_mode: matchDataTable.teamMode,
+                // !! TODO: teamCount
                 team_count: matchDataTable.teamTotal,
                 team_total: matchDataTable.teamTotal,
                 end_time: matchDataTable.createdAt,

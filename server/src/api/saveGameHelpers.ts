@@ -5,6 +5,9 @@ import type { Player } from "../game/objects/player";
 import { type MapDef, MapDefs } from "./../../../shared/defs/mapDefs";
 import { db } from "./db";
 import { type MatchDataTable, matchDataTable } from "./db/schema";
+import { invalidateUserStatsCache } from "./routes/stats/user_stats";
+import { math } from "../../../shared/utils/math";
+import { getLeaderboardCache, getLeaderboardCacheKey, getLowestScoreCacheKey, invalidateLeaderboardCache, invalidateLeaderboards, LeaderboardParamsSchema, shouldUpdateLeaderboard } from "./routes/stats/leaderboard";
 
 const sqliteDb = new Database("lost_data.db");
 
@@ -20,16 +23,24 @@ sqliteDb
 
 export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
     const values: Omit<MatchDataTable, "slug" | "createdAt">[] = [];
-
+    // * NOTE: find a better way to get the player rank. @leia HELP!!!!!!!
     // !! TODO: for duos and squads rank needs to be the teamRank.
     const sortedPlayers = [...players].sort((a, b) => b.timeAlive - a.timeAlive);
     const mapId = (MapDefs[game.mapName as keyof typeof MapDefs] as MapDef).mapId;
+    
+    await invalidateLeaderboards(sortedPlayers, mapId, game.teamMode);
+
     for (let i = 0; i < sortedPlayers.length; i++) {
+        const player = sortedPlayers[i];
+    
+        if ( player.authId ) {
+            invalidateUserStatsCache(player.authId, mapId.toString());
+        };
+
         // deciding the rank based on the time alive; probably not ideal;
         const rank = i + 1;
-        const player = sortedPlayers[i];
         /**
-         * The total number of teams that started the match, i hope?
+         * teamTotal is for total teams that started the match, i hope?
          */
         const teamTotal = new Set(sortedPlayers.map((player) => player.teamId)).size;
         const matchData = {
@@ -56,8 +67,7 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
     }
 
     try {
-        console.log(values);
-        if (values.length) return;
+        if (!values.length) return;
         await insertWithRetry(values);
     } catch (err) {
         // we dump the stats to a local db if we failed to save;
