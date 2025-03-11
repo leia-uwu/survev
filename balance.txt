@@ -1,0 +1,24 @@
+Log any balance changes made here to keep track of differences from the original game.
+
+M9 + Cursed:
++ damage 12 -> 14
++ moveSpread 8 -> 3
++ shotSpread 8 -> 3
+
+Dual M9 + Cursed:
++ damage 12 -> 14
++ moveSpread 9 -> 3.5
++ shotSpread 11 -> 4
+
+M1911:
++ damage 14 -> 16
++ moveSpread 7 -> 3
++ shotSpread 6 -> 2
+
+Dual M1911:
++ damage 14 -> 16
++ moveSpread 8 -> 3.5
++ shotSpread 9.5 -> 4
+
+SCAR-SSR:
++ damage 60 -> 81

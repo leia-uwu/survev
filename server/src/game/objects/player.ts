@@ -2263,7 +2263,7 @@ export class Player extends BaseGameObject {
             let isHeadShot = false;
 
             if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                isHeadShot = gameSourceDef.headshotMult > 1 && Math.random() < 0.15;
+                isHeadShot = gameSourceDef.type != "melee" && Math.random() < 0.15;
 
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
