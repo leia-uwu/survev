@@ -3929,6 +3929,19 @@ export class Player extends BaseGameObject {
     }
 
     initLastBreath(): void {
+        this.game.bulletBarn.fireBullet({
+            dir: this.dir,
+            pos: this.pos,
+            bulletType: "bullet_bugle",
+            gameSourceType: "bugle",
+            layer: this.layer,
+            damageMult: 1,
+            damageType: GameConfig.DamageType.Player,
+            playerId: this.__id,
+            shotAlt: true,
+            shotFx: true,
+        });
+
         const affectedPlayers = this.game.modeManager.getNearbyAlivePlayersContext(
             this,
             60,
