@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
-import { getRedisClient } from "../../cache";
+import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
@@ -101,7 +101,6 @@ async function getMatchHistoryCache(cacheKey: string) {
     return data ? JSON.parse(data) : null;
 }
 
-const CACHE_TTL = 300;
 
 async function setMatchHistoryCache(cacheKey: string, data: any) {
     if (!Config.cachingEnabled) return;
@@ -110,7 +109,8 @@ async function setMatchHistoryCache(cacheKey: string, data: any) {
 }
 
 /**
- * needs to be called everytime a game is saved
+ * needs to be called everytime a player plays a game
+ * does it make sense to cache then?
  */
 async function invalidateMatchHistoryCache(cacheKey: string) {
     if (!Config.cachingEnabled) return false;

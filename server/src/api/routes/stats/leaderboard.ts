@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { Config, type Region } from "../../../config";
-import { getRedisClient } from "../../cache";
+import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { validateParams } from "../../zodSchemas";
 import { filterByInterval, filterByMapId } from "./user_stats";
@@ -201,8 +201,6 @@ async function multiplePlayersQuery(
     const data = await db.execute(query);
     return data[0];
 }
-
-const CACHE_TTL = 300;
 
 /**
  * WE KEEP TRACK OF THE LOWEST VALUE IN THE LEADERBOARD

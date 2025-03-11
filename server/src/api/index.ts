@@ -245,6 +245,7 @@ app.post("/api/report_error", async (c) => {
 // TODO: HACK: this is just temporary
 // waiting for accounts to do a proper dashboard for stuff
 // since accounts pr refactors a lot of the API server and i dont want many conflicts
+// accessible at http://localhost:8000/dashboard
 const dashboard = readFileSync(
     path.resolve(__dirname.replace("dist/server/", ""), "static/dashboard.html"),
     "utf-8",

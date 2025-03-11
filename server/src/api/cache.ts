@@ -1,5 +1,7 @@
 import { createClient } from "redis";
 
+export const CACHE_TTL = 3 * 24 * 60 * 60;
+
 type RedisClientType = ReturnType<typeof createClient>;
 
 let redisClient: RedisClientType;
