@@ -101,9 +101,6 @@ export default defineConfig(({ mode }) => {
                         if (id.includes("node_modules")) {
                             return "vendor";
                         }
-                        if (id.includes("shared")) {
-                            return "shared";
-                        }
                     },
                 },
             },
