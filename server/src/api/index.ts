@@ -50,13 +50,13 @@ app.use(
 );
 
 const stats = readFileSync(
-    path.resolve(__dirname.replace("dist/server/", ""), "static/leaderboard.html"),
+    path.resolve(__dirname.replace("dist/server/", ""), "static/stats.html"),
     "utf-8",
 );
 
 ["/stats", "/stats/"].forEach((route) => {
     app.get(route, (c) => {
-        return c.redirect("/leaderboard/");
+        return c.redirect("/stats/");
     });
 });
 

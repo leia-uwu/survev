@@ -37,6 +37,7 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
             username: player.name,
             playerId: player.__id,
             teamMode: game.teamMode,
+            teamCount: player.group?.totalCount ?? 1,
             teamTotal: teamTotal,
             teamId: player.teamId,
             timeAlive: player.timeAlive,

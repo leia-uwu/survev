@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "b218944f-84a2-4d41-86a9-3cf0e62d5116",
+  "id": "93f17201-d037-41a0-934f-743ee0bb8212",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "banned_ips": {
@@ -161,6 +161,13 @@
         },
         "team_mode": {
           "name": "team_mode",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_count": {
+          "name": "team_count",
           "type": "int",
           "primaryKey": false,
           "notNull": true,
@@ -435,46 +442,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "('[]')"
-        },
-        "wins": {
-          "name": "wins",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "games": {
-          "name": "games",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "kills": {
-          "name": "kills",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "kpg": {
-          "name": "kpg",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
-        },
-        "modes": {
-          "name": "modes",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "('[{\"teamMode\":1,\"games\":0,\"wins\":0,\"kills\":0,\"winPct\":0,\"mostKills\":0,\"mostDamage\":0,\"kpg\":0,\"avgDamage\":0,\"avgTimeAlive\":0},{\"teamMode\":2,\"games\":0,\"wins\":0,\"kills\":0,\"winPct\":0,\"mostKills\":0,\"mostDamage\":0,\"kpg\":0,\"avgDamage\":0,\"avgTimeAlive\":0},{\"teamMode\":4,\"games\":0,\"wins\":0,\"kills\":0,\"winPct\":0,\"mostKills\":0,\"mostDamage\":0,\"kpg\":0,\"avgDamage\":0,\"avgTimeAlive\":0}]')"
         }
       },
       "indexes": {},

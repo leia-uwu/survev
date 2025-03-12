@@ -23,6 +23,7 @@ CREATE TABLE `match_data` (
 	`username` varchar(255) NOT NULL,
 	`player_id` int NOT NULL,
 	`team_mode` int NOT NULL,
+	`team_count` int NOT NULL,
 	`team_total` int NOT NULL,
 	`team_id` int NOT NULL,
 	`time_alive` int NOT NULL,
@@ -57,11 +58,6 @@ CREATE TABLE `users` (
 	`linked_discord` boolean NOT NULL DEFAULT false,
 	`loadout` json NOT NULL DEFAULT ('{"outfit":"outfitBase","melee":"fists","heal":"heal_basic","boost":"boost_basic","player_icon":"","crosshair":{"type":"crosshair_default","color":16777215,"size":"1.00","stroke":"0.00"},"emotes":["emote_happyface","emote_thumbsup","emote_surviv","emote_sadface","",""]}'),
 	`items` json NOT NULL DEFAULT ('[]'),
-	`wins` int NOT NULL DEFAULT 0,
-	`games` int NOT NULL DEFAULT 0,
-	`kills` int NOT NULL DEFAULT 0,
-	`kpg` int NOT NULL DEFAULT 0,
-	`modes` json NOT NULL DEFAULT ('[{"teamMode":1,"games":0,"wins":0,"kills":0,"winPct":0,"mostKills":0,"mostDamage":0,"kpg":0,"avgDamage":0,"avgTimeAlive":0},{"teamMode":2,"games":0,"wins":0,"kills":0,"winPct":0,"mostKills":0,"mostDamage":0,"kpg":0,"avgDamage":0,"avgTimeAlive":0},{"teamMode":4,"games":0,"wins":0,"kills":0,"winPct":0,"mostKills":0,"mostDamage":0,"kpg":0,"avgDamage":0,"avgTimeAlive":0}]'),
 	CONSTRAINT `users_id` PRIMARY KEY(`id`),
 	CONSTRAINT `users_slug_unique` UNIQUE(`slug`)
 );
