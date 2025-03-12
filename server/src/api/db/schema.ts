@@ -64,6 +64,7 @@ export const matchDataTable = mysqlTable(
         username: varchar("username", { length: 255 }).notNull(),
         playerId: int("player_id").notNull(),
         teamMode: int("team_mode").$type<TeamMode>().notNull(),
+        teamCount: int("team_count").notNull(),
         teamTotal: int("team_total").notNull(),
         teamId: int("team_id").notNull(),
         timeAlive: int("time_alive").notNull(),
@@ -116,18 +117,3 @@ export const bannedIpsTable = mysqlTable("banned_ips", {
     expiresIn: timestamp("expries_in").notNull(),
     encodedIp: varchar("encoded_ip", { length: 255 }).notNull().primaryKey(),
 });
-
-export function generateEmptyStatModes(): ModeStat[] {
-    return [TeamMode.Solo, TeamMode.Duo, TeamMode.Squad].map((teamMode) => ({
-        teamMode,
-        games: 0,
-        wins: 0,
-        kills: 0,
-        winPct: 0,
-        mostKills: 0,
-        mostDamage: 0,
-        kpg: 0,
-        avgDamage: 0,
-        avgTimeAlive: 0,
-    }));
-}

@@ -8,7 +8,7 @@ import type { MatchDataTable } from "../../api/db/schema";
 import { createNewUser } from "../routes/user/auth/authUtils";
 import { matchDataTable } from "./schema";
 
-const playersWithAccounts = Array.from({ length: 3000 }, (_, idx) => ({
+const playersWithAccounts = Array.from({ length: 40 }, (_, idx) => ({
     slug: generateUsername(),
     userId: generateId(15),
 })).concat([
@@ -48,6 +48,7 @@ interface Player {
     id: number;
     teamId: number;
     rank: number;
+    teamCount: number;
 }
 
 function generateMatchHistory(
@@ -81,6 +82,7 @@ function generateMatchHistory(
             id,
             teamId: id,
             rank: 0,
+            teamCount: 1
         };
     }
 
@@ -89,6 +91,7 @@ function generateMatchHistory(
     const teams = chunk(alivePlayers, maxTeamSize);
     for (let i = 0; i < teams.length; i++) {
         for (const playerId of teams[i]) {
+            players[playerId].teamCount = teams[i].length;
             players[playerId].rank = i + 1;
             players[playerId].teamId = 101 + i;
         }
@@ -138,6 +141,7 @@ function generateMatchHistory(
             region,
             createdAt,
             teamTotal: teams.length,
+            teamCount: player.teamCount,
             teamMode,
             gameId,
             userId: 0 === i ? userId : playerUserId,
