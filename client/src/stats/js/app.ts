@@ -48,12 +48,12 @@ class Router {
 //
 class Ads {
     slotIdToPlacement = {
-        survivio_728x90_leaderboard_top: "survivio_728x90_leaderboard",
-        survivio_300x250_leaderboard_top: "survivio_300x250_leaderboard",
-        survivio_300x250_leaderboard_bottom: "survivio_300x250_leaderboard",
-        survivio_728x90_playerprofile_top: "survivio_728x90_playerprofile",
-        survivio_300x250_playerprofile_top: "survivio_300x250_playerprofile",
-        survivio_300x250_playerprofile_bottom: "survivio_300x250_playerprofile",
+        survevio_728x90_leaderboard_top: "survevio_728x90_leaderboard",
+        survevio_300x250_leaderboard_top: "survevio_300x250_leaderboard",
+        survevio_300x250_leaderboard_bottom: "survevio_300x250_leaderboard",
+        survevio_728x90_playerprofile_top: "survevio_728x90_playerprofile",
+        survevio_300x250_playerprofile_top: "survevio_300x250_playerprofile",
+        survevio_300x250_playerprofile_bottom: "survevio_300x250_playerprofile",
     };
     showFreestarAds(_slotIds: unknown) {}
     getFreestarSlotPlacement(_slotId: unknown) {}
@@ -84,7 +84,7 @@ export class App {
 
         // Load slug for "My Profile" link
         try {
-            var config = JSON.parse(localStorage.getItem("surviv_config")!);
+            var config = JSON.parse(localStorage.getItem("survev_config")!);
             if (config.profile && config.profile.slug) {
                 $("#my-profile")
                     .css("display", "block")
@@ -142,30 +142,30 @@ export class App {
             elAdsLeaderboardTop.css("display") != "none" &&
             premiumPass == "false"
         ) {
-            slotIds.push("survivio_728x90_leaderboard_top");
-            slotIds.push("survivio_300x250_leaderboard_top");
+            slotIds.push("survevio_728x90_leaderboard_top");
+            slotIds.push("survevio_300x250_leaderboard_top");
         }
         if (
             elAdsLeaderboardBottom &&
             elAdsLeaderboardBottom.css("display") != "none" &&
             premiumPass == "false"
         ) {
-            slotIds.push("survivio_300x250_leaderboard_bottom");
+            slotIds.push("survevio_300x250_leaderboard_bottom");
         }
         if (
             elAdsPlayerTop &&
             elAdsPlayerTop.css("display") != "none" &&
             premiumPass == "false"
         ) {
-            slotIds.push("survivio_728x90_playerprofile_top");
-            slotIds.push("survivio_300x250_playerprofile_top");
+            slotIds.push("survevio_728x90_playerprofile_top");
+            slotIds.push("survevio_300x250_playerprofile_top");
         }
         if (
             elAdsPlayerBottom &&
             elAdsPlayerBottom.css("display") != "none" &&
             premiumPass == "false"
         ) {
-            slotIds.push("survivio_300x250_playerprofile_bottom");
+            slotIds.push("survevio_300x250_playerprofile_bottom");
         }
         this.adManager.showFreestarAds(slotIds);
 
