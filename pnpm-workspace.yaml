@@ -2,4 +2,5 @@ packages:
   - 'server/'
   - 'shared/'
   - 'client/'
+  - 'client/atlas-builder'
   - '!**dist/**'

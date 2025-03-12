@@ -1,5 +1,7 @@
 reference/
 
+client/atlas-builder/pngs
+
 # config file
 # legacy
 resurviv-config.json
