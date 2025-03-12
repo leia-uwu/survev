@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="127"><defs><clipPath id="a"><rect ry="3.836" rx="2.469" y="280.067" x=".529" height="16.933" width="3.704" stroke-miterlimit="10" fill="#8f8f8f" stroke-width="2.286"/></clipPath><clipPath id="b"><rect width="3.704" height="16.933" x=".529" y="280.067" rx="2.469" ry="3.836" clip-path="url(#a)" stroke-miterlimit="10" fill="#8f8f8f" stroke-width="2.286"/></clipPath></defs><rect clip-path="url(#b)" ry="3.836" rx="2.469" y="280.067" x=".529" height="16.933" width="3.704" stroke-miterlimit="10" transform="matrix(3.7797 0 0 3.66149 -1 -991.463)" fill="#fff" stroke="#4b4b4b" stroke-width="2.117"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="14.000009" height="62.000011" version="1.1" id="svg3" sodipodi:docname="gun-med-01.svg" inkscape:version="1.4 (e7c3feb100, 2024-10-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview id="namedview3" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="6.3543307" inkscape:cx="7.0030979" inkscape:cy="29.507435" inkscape:current-layer="svg3" />
+  <defs id="defs2">
+    <clipPath id="a">
+      <rect ry="3.836" rx="2.4690001" y="280.06699" x="0.52899998" height="16.933001" width="3.704" stroke-miterlimit="10" fill="#8f8f8f" stroke-width="2.286" id="rect1" />
+    </clipPath>
+    <clipPath id="b">
+      <rect width="3.704" height="16.933001" x="0.52899998" y="280.06699" rx="2.4690001" ry="3.836" clip-path="url(#a)" stroke-miterlimit="10" fill="#8f8f8f" stroke-width="2.286" id="rect2" />
+    </clipPath>
+  </defs>
+  <rect clip-path="url(#b)" ry="3.836" rx="2.4690001" y="280.06699" x="0.52899998" height="16.933001" width="3.704" stroke-miterlimit="10" transform="matrix(3.7797,0,0,3.66149,-1.9994612,-1025.4625)" fill="#ffffff" stroke="#4b4b4b" stroke-width="2.117" id="rect3" />
+</svg>
