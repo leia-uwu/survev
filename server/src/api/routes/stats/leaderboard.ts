@@ -1,4 +1,5 @@
 import { sql } from "drizzle-orm";
+import type { MySqlQueryResult } from "drizzle-orm/mysql2";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
@@ -10,7 +11,6 @@ import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { validateParams } from "../../zodSchemas";
 import { filterByInterval, filterByMapId } from "./user_stats";
-import { MySqlQueryResult } from "drizzle-orm/mysql2";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -113,7 +113,7 @@ async function soloLeaderboardQuery(
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapIdFilter as string);
 
-    // SQL 🤮, migrate to drizzle once stable 
+    // SQL 🤮, migrate to drizzle once stable
     const query = sql.raw(`
       SELECT
         match_data.username,
@@ -139,7 +139,9 @@ async function soloLeaderboardQuery(
     ORDER BY val DESC
     LIMIT ${MAX_RESULT_COUNT};
   `);
-    const [result] = (await db.execute(query)) as unknown as MySqlQueryResult<LeaderboardReturnType>;
+    const [result] = (await db.execute(
+        query,
+    )) as unknown as MySqlQueryResult<LeaderboardReturnType>;
 
     return result;
 }
@@ -181,8 +183,10 @@ async function multiplePlayersQuery(
     LIMIT ${MAX_RESULT_COUNT};
   `);
 
-  const [result] = (await db.execute(query)) as unknown as MySqlQueryResult<LeaderboardReturnType>;
-  return result;
+    const [result] = (await db.execute(
+        query,
+    )) as unknown as MySqlQueryResult<LeaderboardReturnType>;
+    return result;
 }
 
 /**

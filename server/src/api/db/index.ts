@@ -9,11 +9,11 @@ const dbConfig = {
     password: "root",
     database: "survev",
     port: 3306,
-  };
-  
-  const poolConnection = mysql.createPool(dbConfig);
-  
-  export const DATABASE_URL = `mysql://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
+};
+
+const poolConnection = mysql.createPool(dbConfig);
+
+export const DATABASE_URL = `mysql://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
 
 export const db = drizzle(poolConnection, {
     schema: schema,

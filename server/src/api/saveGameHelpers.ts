@@ -59,7 +59,10 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
         await db.insert(matchDataTable).values(values);
         console.log("Data inserted successfully");
     } catch (err) {
-        console.error(`Failed to save game data for game ID ${game.id}, saving locally instead`, err);
+        console.error(
+            `Failed to save game data for game ID ${game.id}, saving locally instead`,
+            err,
+        );
         saveGameDataToLocalDB(values);
     }
 }
@@ -78,6 +81,6 @@ sqliteDb
     .run();
 function saveGameDataToLocalDB(values: unknown[]) {
     sqliteDb
-    .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
-    .run(JSON.stringify(values));
+        .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
+        .run(JSON.stringify(values));
 }

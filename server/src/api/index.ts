@@ -16,7 +16,7 @@ import {
     isBehindProxy,
     verifyTurnsStile,
 } from "../utils/serverHelpers";
-import { ApiServer, server } from "./apiServer";
+import { server } from "./apiServer";
 import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
@@ -29,7 +29,6 @@ export type Context = {
         session: Session | null;
     };
 };
-
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });

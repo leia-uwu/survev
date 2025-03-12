@@ -82,7 +82,7 @@ function generateMatchHistory(
             id,
             teamId: id,
             rank: 0,
-            teamCount: 1
+            teamCount: 1,
         };
     }
 

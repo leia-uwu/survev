@@ -1,14 +1,14 @@
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { type Context } from "../..";
+import type { Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
+import { server } from "../../apiServer";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
-import { server } from "../../apiServer";
 
 export const UserStatsRouter = new Hono<Context>();
 
@@ -55,7 +55,7 @@ UserStatsRouter.post("/", validateParams(userStatsSchema), async (c) => {
 
         const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
 
-        if ( !data?.slug ) return c.json(emptyState, 200);
+        if (!data?.slug) return c.json(emptyState, 200);
 
         return c.json<UserStatsResponse>(data, 200);
     } catch (_err) {

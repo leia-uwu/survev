@@ -8,10 +8,9 @@ import {
     timestamp,
     varchar,
 } from "drizzle-orm/mysql-core";
-import { TeamMode } from "../../../../shared/gameConfig";
+import type { TeamMode } from "../../../../shared/gameConfig";
 import { validateLoadout } from "../../../../shared/utils/helpers";
 import type { Region } from "../../config";
-import type { ModeStat } from "../routes/stats/user_stats";
 import type { Item } from "../routes/user/UserRouter";
 import type { Loadout } from "../zodSchemas";
 

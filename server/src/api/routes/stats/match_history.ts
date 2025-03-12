@@ -1,14 +1,14 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { type Context } from "../..";
+import type { Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
+import { server } from "../../apiServer";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
-import { server } from "../../apiServer";
 
 export const matchHistoryRouter = new Hono<Context>();
 

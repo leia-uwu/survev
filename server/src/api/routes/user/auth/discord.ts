@@ -4,10 +4,10 @@ import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import { Config } from "../../../../config";
+import { server } from "../../../apiServer";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
 import { createNewUser, getRedirectUri, sanitizeSlug, setUserCookie } from "./authUtils";
-import { server } from "../../../apiServer";
 
 export const discord = new Discord(
     Config.DISCORD_CLIENT_ID!,
