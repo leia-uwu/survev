@@ -125,3 +125,5 @@ export class ApiServer {
         };
     }
 }
+
+export const server = new ApiServer();

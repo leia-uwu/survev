@@ -1,13 +1,14 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { type Context, server } from "../..";
+import { type Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
+import { server } from "../../apiServer";
 
 export const matchHistoryRouter = new Hono<Context>();
 
@@ -46,7 +47,6 @@ matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
         }
 
         const { id: userId } = result;
-
         const data = await db
             .select({
                 guid: matchDataTable.gameId,
@@ -75,7 +75,7 @@ matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
                     ),
                 ),
             )
-            .orderBy(desc(matchDataTable.timeAlive))
+            .orderBy(desc(matchDataTable.createdAt))
             .offset(offset)
             // NOTE: we ignore the count sent from the client; not safe;
             .limit(10);

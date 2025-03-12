@@ -11,7 +11,7 @@ import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
-import { type Context, server } from "../../index";
+import { type Context } from "../../index";
 import {
     type Loadout,
     loadoutSchema,
@@ -21,6 +21,7 @@ import {
 import { invalidateUserStatsCache } from "../stats/user_stats";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
+import { server } from "../../apiServer";
 
 export const UserRouter = new Hono<Context>();
 

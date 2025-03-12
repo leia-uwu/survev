@@ -1,10 +1,11 @@
 import { asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { type Context, server } from "../..";
+import { type Context } from "../..";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
+import { server } from "../../apiServer";
 
 export const matchDataRouter = new Hono<Context>();
 

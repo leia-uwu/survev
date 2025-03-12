@@ -16,7 +16,7 @@ import {
     isBehindProxy,
     verifyTurnsStile,
 } from "../utils/serverHelpers";
-import { ApiServer } from "./apiServer";
+import { ApiServer, server } from "./apiServer";
 import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
@@ -30,7 +30,6 @@ export type Context = {
     };
 };
 
-export const server = new ApiServer();
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -51,7 +50,7 @@ app.use(
 );
 
 const stats = readFileSync(
-    path.resolve(__dirname.replace("dist/server/", ""), "static/index.html"),
+    path.resolve(__dirname.replace("dist/server/", ""), "static/leaderboard.html"),
     "utf-8",
 );
 

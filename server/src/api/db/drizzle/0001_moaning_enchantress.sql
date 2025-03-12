@@ -1,1 +1,0 @@
-CREATE INDEX `idx_match_data_user_stats` ON `match_data` (`user_id`,`team_mode`,`rank`,`kills`,`damage_dealt`,`time_alive`);

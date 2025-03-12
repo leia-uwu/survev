@@ -1,13 +1,14 @@
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import { type Context, server } from "../..";
+import { type Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
+import { server } from "../../apiServer";
 
 export const UserStatsRouter = new Hono<Context>();
 
@@ -53,6 +54,8 @@ UserStatsRouter.post("/", validateParams(userStatsSchema), async (c) => {
         const { id: userId } = result;
 
         const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
+
+        if ( !data?.slug ) return c.json(emptyState, 200);
 
         return c.json<UserStatsResponse>(data, 200);
     } catch (_err) {
@@ -136,19 +139,21 @@ async function userStatsSqlQuery(
                 COALESCE(SUM(ms.wins), 0) AS wins,
                 COALESCE(SUM(ms.kills), 0) AS kills,  
                 COALESCE(ROUND(SUM(ms.kills) * 1.0 / NULLIF(SUM(ms.games), 0), 1), 0) AS kpg,
-                COALESCE(JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'wins', ms.wins,
-                            'kills', ms.kills,
-                            'teamMode', ms.team_mode,
-                            'avgDamage', ms.avg_damage,
-                            'avgTimeAlive', ms.avg_time_alive,
-                            'mostDamage', ms.most_damage,
-                            'kpg', ms.kpg,
-                            'winPct', ms.winPct,
-                            'mostKils', ms.most_kills
-                        )
-                ), '[]') AS modes
+        COALESCE(JSON_ARRAYAGG(
+            CASE WHEN ms.team_mode IS NOT NULL THEN
+                JSON_OBJECT(
+                    'wins', ms.wins,
+                    'kills', ms.kills,
+                    'teamMode', ms.team_mode,
+                    'avgDamage', ms.avg_damage,
+                    'avgTimeAlive', ms.avg_time_alive,
+                    'mostDamage', ms.most_damage,
+                    'kpg', ms.kpg,
+                    'winPct', ms.winPct,
+                    'mostKils', ms.most_kills
+                )
+            END
+        ), '[]') AS modes
             FROM users u
             LEFT JOIN mode_stats ms ON 1 = 1
             GROUP BY u.slug, u.username, u.banned

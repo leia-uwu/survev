@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "d1918456-9981-4235-ac99-943425fb3cfe",
+  "id": "b218944f-84a2-4d41-86a9-3cf0e62d5116",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "banned_ips": {
@@ -237,7 +237,37 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_match_data_user_stats": {
+          "name": "idx_match_data_user_stats",
+          "columns": [
+            "user_id",
+            "team_mode",
+            "rank",
+            "kills",
+            "damage_dealt",
+            "time_alive"
+          ],
+          "isUnique": false
+        },
+        "idx_game_id": {
+          "name": "idx_game_id",
+          "columns": [
+            "gameId"
+          ],
+          "isUnique": false
+        },
+        "idx_match_data_team_query": {
+          "name": "idx_match_data_team_query",
+          "columns": [
+            "team_mode",
+            "map_id",
+            "created_at",
+            "region"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},

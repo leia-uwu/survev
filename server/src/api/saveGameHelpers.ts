@@ -8,18 +8,6 @@ import { type MatchDataTable, matchDataTable } from "./db/schema";
 import { invalidateLeaderboards } from "./routes/stats/leaderboard";
 import { invalidateUserStatsCache } from "./routes/stats/user_stats";
 
-const sqliteDb = new Database("lost_data.db");
-
-sqliteDb
-    .prepare(`
-    CREATE TABLE IF NOT EXISTS lost_game_data (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        data TEXT NOT NULL,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-`)
-    .run();
-
 export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
     const values: Omit<MatchDataTable, "slug" | "createdAt">[] = [];
     // * NOTE: find a better way to get the player rank. @leia HELP!!!!!!!
@@ -65,28 +53,30 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
         values.push(matchData);
     }
 
+    if (!values.length) return;
     try {
-        if (!values.length) return;
-        await insertWithRetry(values);
+        await db.insert(matchDataTable).values(values);
+        console.log("Data inserted successfully");
     } catch (err) {
-        // we dump the stats to a local db if we failed to save;
-        sqliteDb
-            .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
-            .run(JSON.stringify(values));
-        console.log("WE LOST GAME DATA, INVESTIGATE", { err });
+        console.error(`Failed to save game data for game ID ${game.id}, saving locally instead`, err);
+        saveGameDataToLocalDB(values);
     }
 }
 
-async function insertWithRetry(values: MatchDataTable[], retries = 2, delay = 500) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            await db.insert(matchDataTable).values(values);
-            console.log("Data inserted successfully");
-            return;
-        } catch (err) {
-            console.error(`Attempt ${i + 1} failed:`, err);
-            if (i === retries - 1) throw err;
-            await new Promise((res) => setTimeout(res, delay * (i + 1)));
-        }
-    }
+// we dump the game  to a local db if we failed to save;
+const sqliteDb = new Database("lost_game_data.db");
+
+sqliteDb
+    .prepare(`
+    CREATE TABLE IF NOT EXISTS lost_game_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        data TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+`)
+    .run();
+function saveGameDataToLocalDB(values: unknown[]) {
+    sqliteDb
+    .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
+    .run(JSON.stringify(values));
 }

@@ -1,1 +1,0 @@
-CREATE INDEX `idx_match_data_team_query` ON `match_data` (`team_mode`,`map_id`,`created_at`,`region`);

@@ -12,7 +12,7 @@ survev-config.json
 .env
 
 # sqlite db
-game.db
+lost_game_data.db
 
 # Compiled source
 dist/

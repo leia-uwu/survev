@@ -48,12 +48,6 @@ export const usersTable = mysqlTable("users", {
         .notNull()
         .default(validateLoadout({} as Loadout)),
     items: json("items").$type<Item[]>().notNull().default([]),
-    // STATS
-    wins: int("wins").notNull().default(0),
-    games: int("games").notNull().default(0),
-    kills: int("kills").notNull().default(0),
-    kpg: int("kpg").notNull().default(0),
-    modes: json("modes").$type<ModeStat[]>().notNull().default(generateEmptyStatModes()),
 });
 
 export type UsersTable = typeof usersTable.$inferInsert;
