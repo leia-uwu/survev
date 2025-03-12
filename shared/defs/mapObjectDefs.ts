@@ -564,7 +564,16 @@ function createRiverChest<T extends ObstacleDef>(e: Partial<T>): T {
     return util.mergeDeep(t, e || {});
 }
 // !
-function createContainer(e: any) {
+function createContainer(props: {
+    tint?: number;
+    loot_spawner_01?: string;
+    loot_spawner_02?: string;
+    mapTint?: number;
+    mapDisplayType?: string;
+    open?: boolean;
+    ceilingImgs?: BuildingDef["ceiling_images"];
+    ceilingSprite?: string;
+}) {
     const t = [
         {
             type: "container_wall_top",
@@ -585,13 +594,13 @@ function createContainer(e: any) {
             ori: 0,
         },
         {
-            type: e.loot_spawner_01 || "loot_tier_2",
+            type: props.loot_spawner_01 || "loot_tier_2",
             pos: v2.create(0, 3.25),
             scale: 1,
             ori: 0,
         },
         {
-            type: e.loot_spawner_02 || randomObstacleType({ loot_tier_1: 2, "": 1 }),
+            type: props.loot_spawner_02 || randomObstacleType({ loot_tier_1: 2, "": 1 }),
             pos: v2.create(0, 0.05),
             scale: 1,
             ori: 0,
@@ -627,8 +636,9 @@ function createContainer(e: any) {
         type: "building",
         map: {
             display: true,
-            color: e.mapTint || 2703694,
+            color: props.mapTint || 2703694,
             scale: 1,
+            displayType: props.mapDisplayType,
         },
         terrain: { grass: true, beach: true, riverShore: true },
         zIdx: 1,
@@ -637,7 +647,7 @@ function createContainer(e: any) {
                 {
                     type: "container",
                     collision: [
-                        e.open
+                        props.open
                             ? collider.createAabbExtents(
                                   v2.create(0, 0),
                                   v2.create(2.5, 11),
@@ -651,19 +661,19 @@ function createContainer(e: any) {
             ],
             imgs: [
                 {
-                    sprite: e.open
+                    sprite: props.open
                         ? "map-building-container-open-floor.img"
                         : "map-building-container-floor-01.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: e.tint,
+                    tint: props.tint!,
                 },
             ],
         },
         ceiling: {
             zoomRegions: [
                 {
-                    zoomIn: e.open
+                    zoomIn: props.open
                         ? collider.createAabbExtents(
                               v2.create(0, 0),
                               v2.create(2.5, 5.75),
@@ -672,7 +682,7 @@ function createContainer(e: any) {
                               v2.create(0, 2.25),
                               v2.create(2.5, 5.5),
                           ),
-                    zoomOut: e.open
+                    zoomOut: props.open
                         ? collider.createAabbExtents(v2.create(0, 0), v2.create(2.5, 11))
                         : collider.createAabbExtents(
                               v2.create(0, -0.5),
@@ -680,16 +690,16 @@ function createContainer(e: any) {
                           ),
                 },
             ],
-            imgs: e.ceilingImgs || [
+            imgs: props.ceilingImgs! || [
                 {
-                    sprite: e.ceilingSprite,
+                    sprite: props.ceilingSprite!,
                     scale: 0.5,
                     alpha: 1,
-                    tint: e.tint,
+                    tint: props.tint,
                 },
             ],
         },
-        mapObjects: e.open ? r : t,
+        mapObjects: props.open ? r : t,
     } satisfies BuildingDef;
 }
 function createCouch<T extends ObstacleDef>(e: Partial<T>): T {
@@ -13067,6 +13077,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     hut_02: createHut({
         ceilingImg: "map-building-hut-ceiling-02.img",
         specialLoot: "pot_02",
+        map: { displayType: "hut_01" },
     }),
     hut_02x: createHut({
         specialLoot: "pot_02",
@@ -13096,6 +13107,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 },
             ],
         },
+        map: { displayType: "hut_01x" },
     } as unknown as Partial<BuildingDef>),
     hut_03: createHut({
         map: {
@@ -28602,7 +28614,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ceilingSprite: "map-building-container-ceiling-01.img",
         loot_spawner_01: "loot_tier_sv98",
         loot_spawner_02: "loot_tier_scopes_sniper",
-        map: { displayType: "container_01" },
+        mapDisplayType: "container_01",
     }),
     loot_tier_1: {
         type: "loot_spawner",
