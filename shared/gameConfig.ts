@@ -107,7 +107,11 @@ export enum Input {
 }
 
 export const GameConfig = {
-    protocolVersion: 78,
+    // started with 1000 to distinguish us from the original surviv protocol
+    // the protocol we originated from was 78
+    // remember to bump this every time a serialization function is changed
+    // or a definition item added, removed or moved
+    protocolVersion: 1000,
     Input,
     EmoteSlot,
     WeaponSlot,

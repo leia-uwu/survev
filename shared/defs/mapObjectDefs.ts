@@ -4706,6 +4706,62 @@ function createLoggingComplex2<T extends BuildingDef>(e: Partial<T>): T {
     };
     return util.mergeDeep(t, e || {});
 }
+
+function createLoggingComplex3<T extends BuildingDef>(e: Partial<T>): T {
+    const t = {
+        type: "building",
+        map: { display: true, shapes: [] },
+        terrain: {
+            grass: true,
+            beach: false,
+            spawnPriority: 10,
+        },
+        mapObstacleBounds: [collider.createCircle(v2.create(0, 0), 32)],
+        mapGroundPatches: [
+            {
+                bound: collider.createAabbExtents(v2.create(0, 0), v2.create(6.5, 5.5)),
+                color: e.groundTintDk || 7563810,
+                roughness: 0.05,
+                offsetDist: 0.5,
+            },
+        ],
+        floor: {
+            surfaces: [{ type: "grass", collision: [] }],
+            imgs: [],
+        },
+        ceiling: { zoomRegions: [], imgs: [] },
+        mapObjects: [
+            {
+                type: randomObstacleType({ crate_01: 4, crate_19: 1 }),
+                pos: v2.create(1.75, 2.5),
+                scale: 1,
+                ori: 0,
+                inheritOri: false,
+            },
+            {
+                type: randomObstacleType({ crate_01: 4, crate_19: 1 }),
+                pos: v2.create(-1.75, -2.5),
+                scale: 1,
+                ori: 0,
+                inheritOri: false,
+            },
+            {
+                type: "tree_09",
+                pos: v2.create(2.75, -2.25),
+                scale: 1,
+                ori: 0,
+            },
+            {
+                type: "barrel_01",
+                pos: v2.create(-2.75, 2.25),
+                scale: 1,
+                ori: 0,
+            },
+        ],
+    };
+    return util.mergeDeep(t, e || {});
+}
+
 function createMansion<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
@@ -13976,63 +14032,8 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         tree_08c: "tree_08spc",
     }),
     logging_complex_02su: createLoggingComplex2({ groundTintDk: 5143827 }),
-    logging_complex_03: (function <T extends BuildingDef>(e: Partial<T>): T {
-        const t = {
-            type: "building",
-            map: { display: true, shapes: [] },
-            terrain: {
-                grass: true,
-                beach: false,
-                spawnPriority: 10,
-            },
-            mapObstacleBounds: [collider.createCircle(v2.create(0, 0), 32)],
-            mapGroundPatches: [
-                {
-                    bound: collider.createAabbExtents(
-                        v2.create(0, 0),
-                        v2.create(6.5, 5.5),
-                    ),
-                    color: e.groundTintDk || 7563810,
-                    roughness: 0.05,
-                    offsetDist: 0.5,
-                },
-            ],
-            floor: {
-                surfaces: [{ type: "grass", collision: [] }],
-                imgs: [],
-            },
-            ceiling: { zoomRegions: [], imgs: [] },
-            mapObjects: [
-                {
-                    type: randomObstacleType({ crate_01: 4, crate_19: 1 }),
-                    pos: v2.create(1.75, 2.5),
-                    scale: 1,
-                    ori: 0,
-                    inheritOri: false,
-                },
-                {
-                    type: randomObstacleType({ crate_01: 4, crate_19: 1 }),
-                    pos: v2.create(-1.75, -2.5),
-                    scale: 1,
-                    ori: 0,
-                    inheritOri: false,
-                },
-                {
-                    type: "tree_09",
-                    pos: v2.create(2.75, -2.25),
-                    scale: 1,
-                    ori: 0,
-                },
-                {
-                    type: "barrel_01",
-                    pos: v2.create(-2.75, 2.25),
-                    scale: 1,
-                    ori: 0,
-                },
-            ],
-        };
-        return util.mergeDeep(t, e || {});
-    })({}),
+    logging_complex_03: createLoggingComplex3({}),
+    logging_complex_03sp: createLoggingComplex3({ groundTintDk: 2437648 }),
     junkyard_01: {
         type: "building",
         map: { display: true, shapes: [] },
