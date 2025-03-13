@@ -272,7 +272,7 @@ export class Building extends BaseGameObject {
     resetPuzzle(): void {
         this.puzzleOrder.length = 0;
         for (const piece of this.childObjects) {
-            if (piece instanceof Obstacle && piece.isButton) {
+            if (piece instanceof Obstacle && piece.isButton && piece.puzzlePiece) {
                 piece.button.canUse = !this.puzzleSolved;
                 piece.button.onOff = false;
                 piece.button.seq++;
