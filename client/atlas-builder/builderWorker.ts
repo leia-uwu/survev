@@ -147,9 +147,6 @@ export class AtlasBuilder {
         for (const rect of this.rects) {
             this.packer.add(rect.width, rect.height, rect.data);
         }
-
-        // repack for even better packing :)
-        this.packer.repack();
     }
 
     async generateAtlases() {
