@@ -60,7 +60,7 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
         console.log("Data inserted successfully");
     } catch (err) {
         console.error(
-            `Failed to save game data for game ID ${game.id}, saving locally instead`,
+            `Failed to save game data for ${game.id}, saving locally instead`,
             err,
         );
         saveGameDataToLocalDB(values);

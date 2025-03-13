@@ -26,7 +26,7 @@ const LeaderboardsParamsSchema = z.object({
         .string()
         .min(1)
         .transform((v) => Number(v)),
-    maxCount: z.number(),
+    maxCount: z.number().optional(),
     type: z.enum(["most_kills", "most_damage_dealt", "kpg", "kills", "wins"]),
     // why tf is this sent as a string
     // TODO: refactor the client to use TeamMode enum
@@ -51,8 +51,8 @@ leaderboardRouter.post("/", validateParams(LeaderboardsParamsSchema), async (c) 
     const data =
         type === "most_kills" &&
         (teamMode === TeamMode.Duo || teamMode === TeamMode.Squad)
-            ? await multiplePlayersQuery(teamMode, type, mapId, interval)
-            : await soloLeaderboardQuery(teamMode, type, mapId, interval);
+            ? await multiplePlayersQuery({ teamMode, type, mapId, interval })
+            : await soloLeaderboardQuery({ teamMode, type, mapId, interval });
 
     // TODO: decide if we should cache empty results;
     if (data.length != 0) {
@@ -104,14 +104,14 @@ const typeToQuery: Record<LeaderboardParams["type"], string> = {
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
-async function soloLeaderboardQuery(
-    teamMode: TeamMode,
-    type: LeaderboardParams["type"],
-    mapIdFilter: number | string,
-    interval: string,
-) {
+async function soloLeaderboardQuery({
+    interval,
+    mapId,
+    teamMode,
+    type,
+}: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
-    const mapIdFilterQuery = filterByMapId(mapIdFilter as string);
+    const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
     // SQL 🤮, migrate to drizzle once stable
     const query = sql.raw(`
@@ -119,7 +119,7 @@ async function soloLeaderboardQuery(
         match_data.username,
         match_data.map_id AS map_id,
         match_data.region,
-        COUNT(DISTINCT(match_data.gameId)) as games,
+        COUNT(DISTINCT(match_data.game_id)) as games,
         match_data.team_mode as team_mode,
         users.slug,
         ${typeToQuery[type]} as val
@@ -146,14 +146,9 @@ async function soloLeaderboardQuery(
     return result;
 }
 
-async function multiplePlayersQuery(
-    teamMode: TeamMode,
-    type: LeaderboardParams["type"],
-    mapIdFilter: number | string,
-    interval: LeaderboardParams["interval"],
-) {
+async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
-    const mapIdFilterQuery = filterByMapId(mapIdFilter as string);
+    const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
     const query = sql.raw(`
     WITH team_stats AS (
@@ -216,12 +211,7 @@ export function getLowestScoreCacheKey({
     mapId,
     type,
     interval,
-}: {
-    teamMode: TeamMode;
-    mapId: number;
-    type: LeaderboardParams["type"];
-    interval: LeaderboardParams["interval"];
-}) {
+}: LeaderboardParams) {
     return `leaderboard:lowest:${teamMode}:${mapId}:${type}:${interval}`;
 }
 export function getLeaderboardCacheKey({
@@ -229,12 +219,7 @@ export function getLeaderboardCacheKey({
     mapId,
     type,
     interval,
-}: {
-    teamMode: TeamMode;
-    mapId: number;
-    type: LeaderboardParams["type"];
-    interval: LeaderboardParams["interval"];
-}) {
+}: LeaderboardParams) {
     return `leaderboard:${teamMode}:${mapId}:${type}:${interval}`;
 }
 async function setLeaderboardCache({
@@ -267,7 +252,7 @@ export async function invalidateLeaderboardCache(cacheKey: string) {
 export async function invalidateLeaderboards(
     players: Player[],
     mapId: number,
-    teamMode: number,
+    teamMode: TeamMode,
 ) {
     const maxValues = players.reduce(
         (obj, player) => {
@@ -286,7 +271,7 @@ export async function invalidateLeaderboards(
         number,
     ][]) {
         for (const interval of ["daily", "weekly", "alltime"] as const) {
-            const gameData = {
+            const gameData: LeaderboardParams = {
                 type,
                 teamMode,
                 mapId,

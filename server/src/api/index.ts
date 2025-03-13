@@ -55,7 +55,7 @@ const stats = readFileSync(
 
 ["/stats", "/stats/"].forEach((route) => {
     app.get(route, (c) => {
-        return c.redirect("/stats/");
+        return c.redirect("/leaderboard/");
     });
 });
 

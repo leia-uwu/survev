@@ -13,10 +13,6 @@ const matchDataSchema = z.object({
     gameId: z.string(),
 });
 
-function shuffle<T>(array: T[]): T[] {
-    return array.sort(() => Math.random() - 0.5);
-}
-
 matchDataRouter.post("/", validateParams(matchDataSchema), async (c) => {
     try {
         const { gameId } = c.req.valid("json");

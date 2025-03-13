@@ -130,7 +130,7 @@ function generateMatchHistory(
         const loggedInUser = isLoggedIn
             ? loggedInUsersInGame.pop()!
             : {
-                  slug: generateUsername(),
+                  slug: null,
                   userId: generateId(15),
               };
         const playerUserId = Math.random() < 0.3 ? loggedInUser?.userId : null;

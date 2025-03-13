@@ -43,7 +43,7 @@ matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
         });
 
         if (result == undefined || result?.id == undefined) {
-            return c.json({}, 400);
+            return c.json({}, 200);
         }
 
         const { id: userId } = result;

@@ -18,7 +18,7 @@ CREATE TABLE `match_data` (
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`region` varchar(255) NOT NULL,
 	`map_id` int NOT NULL,
-	`gameId` varchar(255) NOT NULL,
+	`game_id` varchar(255) NOT NULL,
 	`slug` varchar(255),
 	`username` varchar(255) NOT NULL,
 	`player_id` int NOT NULL,
@@ -65,5 +65,5 @@ CREATE TABLE `users` (
 ALTER TABLE `session` ADD CONSTRAINT `session_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
 CREATE INDEX `name_created_at_idx` ON `ip_logs` (`name`,`created_at`);--> statement-breakpoint
 CREATE INDEX `idx_match_data_user_stats` ON `match_data` (`user_id`,`team_mode`,`rank`,`kills`,`damage_dealt`,`time_alive`);--> statement-breakpoint
-CREATE INDEX `idx_game_id` ON `match_data` (`gameId`);--> statement-breakpoint
+CREATE INDEX `idx_game_id` ON `match_data` (`game_id`);--> statement-breakpoint
 CREATE INDEX `idx_match_data_team_query` ON `match_data` (`team_mode`,`map_id`,`created_at`,`region`);

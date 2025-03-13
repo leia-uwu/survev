@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "93f17201-d037-41a0-934f-743ee0bb8212",
+  "id": "1d00b48f-7805-4ca1-9e8c-46d9417c70e4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "banned_ips": {
@@ -131,8 +131,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "gameId": {
-          "name": "gameId",
+        "game_id": {
+          "name": "game_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
@@ -260,7 +260,7 @@
         "idx_game_id": {
           "name": "idx_game_id",
           "columns": [
-            "gameId"
+            "game_id"
           ],
           "isUnique": false
         },
