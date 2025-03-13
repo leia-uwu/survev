@@ -108,6 +108,8 @@ const mapDef: PartialMapDef = {
                 crate_02: "crate_19",
                 crate_08: "crate_19",
                 crate_09: "crate_19",
+                recorder_01: "recorder_08",
+                recorder_02: "recorder_09",
             },
         ],
         importantSpawns: [
