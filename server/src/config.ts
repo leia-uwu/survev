@@ -36,6 +36,8 @@ export const Config = {
 
     apiKey: "Kongregate Sucks",
 
+    BASE_URL: "https://survev.io",
+
     /*
       a random string, should be private.
     */
@@ -169,7 +171,7 @@ export interface ConfigType {
       used for auth redirects in production
       should be the hosted website url ex: https://survev.io
     */
-    BASE_URL?: string;
+    BASE_URL: string;
 
     // ##### DISCORD OAUTH
     DISCORD_CLIENT_ID?: string;
