@@ -412,7 +412,7 @@ const mapDef: PartialMapDef = {
                 stone_01: 350,
                 barrel_01: 76,
                 silo_01: 8,
-                crate_01: 55,
+                crate_01: 38,
                 crate_02f: 5,
                 crate_22: 5,
                 crate_03: 8,

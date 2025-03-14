@@ -251,6 +251,9 @@ export class GameMap {
     lakes!: Array<River & { looped: true }>;
     riverAreas!: Map<River, { water: number; shore: number }>;
 
+    shoreArea!: number;
+    grassArea!: number;
+
     placeSpawns!: string[];
     placesToSpawn!: Vec2[];
 
@@ -373,15 +376,24 @@ export class GameMap {
         this.lakes = [];
         this.riverAreas = new Map();
 
+        this.shoreArea = math.polygonArea(this.terrain.shore);
+        this.grassArea = math.polygonArea(this.terrain.grass);
+
         for (const river of this.terrain.rivers) {
             if (river.looped) {
                 this.lakes.push(river as this["lakes"][0]);
             } else {
                 this.normalRivers.push(river as this["normalRivers"][0]);
             }
+            const shoreArea = math.polygonArea(river.shorePoly);
+            const waterArea = math.polygonArea(river.waterPoly);
+
+            this.shoreArea -= shoreArea;
+            this.grassArea -= shoreArea;
+
             this.riverAreas.set(river, {
-                shore: math.polygonArea(river.shorePoly),
-                water: math.polygonArea(river.waterPoly),
+                shore: shoreArea,
+                water: waterArea,
             });
         }
 
@@ -754,8 +766,7 @@ export class GameMap {
             return;
         }
 
-        // TODO: figure out a density spawn amount algorithm for other types of spawn
-        const multiplier = this.scale === "large" ? 1.45 : 1.35;
+        const multiplier = this.shoreArea / 250000;
         const count = Math.round(density * multiplier);
         this.genFromMapDef(type, count);
     }
