@@ -239,6 +239,9 @@ export class GameMap {
 
     mapStream = new MsgStream(new ArrayBuffer(1 << 16));
 
+    grassBounds: AABB;
+    beachBounds: AABB;
+
     seed!: number;
     msg!: net.MapMsg;
     terrain!: ReturnType<typeof generateTerrain>;
@@ -246,6 +249,7 @@ export class GameMap {
     riverMasks!: Array<{ pos: Vec2; rad: number }>;
     normalRivers!: Array<River & { looped: false }>;
     lakes!: Array<River & { looped: true }>;
+    riverAreas!: Map<River, { water: number; shore: number }>;
 
     placeSpawns!: string[];
     placesToSpawn!: Vec2[];
@@ -297,6 +301,16 @@ export class GameMap {
         this.center = v2.create(this.width / 2, this.height / 2);
         this.grassInset = mapConfig.grassInset;
         this.shoreInset = mapConfig.shoreInset;
+
+        const inset = this.shoreInset + this.grassInset;
+        this.grassBounds = collider.createAabb(
+            v2.create(inset, inset),
+            v2.create(this.width - inset, this.height - inset),
+        );
+        this.beachBounds = collider.createAabb(
+            v2.create(this.shoreInset, this.shoreInset),
+            v2.create(this.width - this.shoreInset, this.height - this.shoreInset),
+        );
     }
 
     init() {
@@ -355,12 +369,21 @@ export class GameMap {
             this.seed,
         );
 
-        this.normalRivers = this.terrain.rivers.filter((river) => !river.looped) as Array<
-            River & { looped: false }
-        >;
-        this.lakes = this.terrain.rivers.filter((river) => river.looped) as Array<
-            River & { looped: true }
-        >;
+        this.normalRivers = [];
+        this.lakes = [];
+        this.riverAreas = new Map();
+
+        for (const river of this.terrain.rivers) {
+            if (river.looped) {
+                this.lakes.push(river as this["lakes"][0]);
+            } else {
+                this.normalRivers.push(river as this["normalRivers"][0]);
+            }
+            this.riverAreas.set(river, {
+                shore: math.polygonArea(river.shorePoly),
+                water: math.polygonArea(river.waterPoly),
+            });
+        }
 
         this.generateObjects();
 
@@ -668,7 +691,7 @@ export class GameMap {
                 bush_04: 0.4,
             };
             for (const river of this.terrain.rivers) {
-                const riverArea = math.polygonArea(river.waterPoly) / 1000;
+                const riverArea = this.riverAreas.get(river)!.water / 1000;
 
                 for (const type in riverObjs) {
                     const amount = math.min(riverArea * riverObjs[type], 30);
@@ -707,10 +730,34 @@ export class GameMap {
 
         const densitySpawns = mapDef.mapGen.densitySpawns[0];
         for (const type in densitySpawns) {
-            // TODO: figure out density spawn amount algorithm
-            const count = Math.round(densitySpawns[type] * 1.35);
-            this.genFromMapDef(type, count);
+            this.genDensitySpawn(type, densitySpawns[type]);
         }
+    }
+
+    genDensitySpawn(type: string, density: number) {
+        const def = MapObjectDefs[type];
+
+        // for objects the spawn only on river shores
+        // we need to do a density calculation for each river
+        // this is used for the spring mode river trees
+        if (!def.terrain?.grass && def.terrain?.riverShore) {
+            for (let i = 0; i < this.terrain.rivers.length; i++) {
+                const river = this.terrain.rivers[i];
+                const areas = this.riverAreas.get(river)!;
+                const area = areas.shore - areas.water;
+                const count = (area / 15000) * density;
+
+                for (let i = 0; i < count; i++) {
+                    this.genOnRiverShore(type, river);
+                }
+            }
+            return;
+        }
+
+        // TODO: figure out a density spawn amount algorithm for other types of spawn
+        const multiplier = this.scale === "large" ? 1.45 : 1.35;
+        const count = Math.round(density * multiplier);
+        this.genFromMapDef(type, count);
     }
 
     genFromMapDef(type: string, count: number): void {
@@ -729,6 +776,8 @@ export class GameMap {
                 this.genOnGrass(type);
             } else if (def.terrain?.beach) {
                 this.genOnBeach(type);
+            } else if (def.terrain?.riverShore) {
+                this.genOnRiverShore(type);
             } else {
                 this.genOnGrass(type);
             }
@@ -808,7 +857,10 @@ export class GameMap {
     ): boolean {
         let attempts = 0;
         while (attempts < maxAttempts) {
-            if (cb()) return true;
+            if (cb()) {
+                // if (attempts > 50) console.log(type, attempts);
+                return true;
+            }
             attempts++;
         }
         if (logOnFailure) this.game.logger.warn("Failed to spawn", type);
@@ -832,6 +884,13 @@ export class GameMap {
         const collsA = transformColliders(getColliders(type), pos, rot, def.type);
 
         const objs = this.game.grid.intersectCollider(collsA.gridBound);
+
+        if (!def.terrain?.river && !def.terrain?.waterEdge) {
+            const mapBound = def.terrain?.beach ? this.beachBounds : this.grassBounds;
+            if (!coldet.testPointAabb(pos, mapBound.min, mapBound.max)) {
+                return false;
+            }
+        }
 
         for (let i = 0; i < objs.length; i++) {
             if (!GameMap.collidableTypes.includes(objs[i].__type)) continue;
@@ -1296,26 +1355,58 @@ export class GameMap {
     genOnRiver(type: string, river?: River) {
         let rivers = this.terrain.rivers;
         if (!rivers.length) return;
-        river = river ?? rivers[util.randomInt(0, rivers.length - 1)];
-        const t = util.random(0, 1);
-        const def = MapObjectDefs[type];
 
-        let width = river.getWaterWidth(t);
-        if (def.type === "obstacle") {
-            let circle =
-                def.collision.type === collider.Type.Circle
-                    ? def.collision
-                    : coldet.aabbToCircle(def.collision.min, def.collision.max);
-            width -= circle.rad + 1;
-        }
-        if (def.terrain?.riverShore) {
-            width += river.shoreWidth / 4;
-        }
-        const offset = util.random(0, width);
-        const pos = v2.add(river.spline.getPos(t), v2.mul(v2.randomUnit(), offset));
-        if (this.canSpawn(type, pos, 0)) {
+        this.trySpawn(type, () => {
+            river = river ?? rivers[util.randomInt(0, rivers.length - 1)];
+            const t = util.random(0, 1);
+            const def = MapObjectDefs[type];
+
+            let width = river.getWaterWidth(t);
+            if (def.type === "obstacle") {
+                let circle =
+                    def.collision.type === collider.Type.Circle
+                        ? def.collision
+                        : coldet.aabbToCircle(def.collision.min, def.collision.max);
+                width -= circle.rad + 1;
+            }
+            if (def.terrain?.riverShore) {
+                width += river.shoreWidth / 4;
+            }
+            const offset = util.random(-width, width);
+            const pos = v2.add(
+                river.spline.getPos(t),
+                v2.mul(river.spline.getNormal(t), offset),
+            );
+
+            if (!this.canSpawn(type, pos, 0)) return false;
+
             this.genAuto(type, pos, 0);
-        }
+            return true;
+        });
+    }
+
+    genOnRiverShore(type: string, river?: River) {
+        let rivers = this.terrain.rivers;
+        if (!rivers.length) return;
+
+        this.trySpawn(type, () => {
+            river = river ?? rivers[util.randomInt(0, rivers.length - 1)];
+            const t = util.random(0, 1);
+
+            let width = river.getWaterWidth(t);
+
+            let offset = util.random(width, width + river.shoreWidth);
+            if (Math.random() < 0.5) offset *= -1;
+
+            const pos = v2.add(
+                river.spline.getPos(t),
+                v2.mul(river.spline.getNormal(t), offset),
+            );
+            if (!this.canSpawn(type, pos, 0)) return false;
+
+            this.genAuto(type, pos, 0);
+            return true;
+        });
     }
 
     genRiverCabin() {

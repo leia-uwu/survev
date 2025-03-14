@@ -1,6 +1,5 @@
 import type { MapDef } from "../../../shared/defs/mapDefs";
-import { type AABB, coldet } from "../../../shared/utils/coldet";
-import { collider } from "../../../shared/utils/collider";
+import { coldet } from "../../../shared/utils/coldet";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
@@ -9,20 +8,12 @@ import type { GameMap } from "./map";
 export class RiverCreator {
     randomGenerator: (min?: number, max?: number) => number;
 
-    grassBounds: AABB;
-
     constructor(
         public map: GameMap,
         randomGenerator?: (min?: number, max?: number) => number,
     ) {
         this.randomGenerator =
             randomGenerator ?? ((min = 0, max = 1) => Math.random() * (max - min) + min);
-
-        const inset = this.map.shoreInset + this.map.grassInset;
-        this.grassBounds = collider.createAabb(
-            v2.create(inset, inset),
-            v2.create(this.map.width - inset, this.map.height - inset),
-        );
     }
 
     private getStartPoint(isFactionRiver: boolean): Vec2 {
@@ -162,8 +153,8 @@ export class RiverCreator {
             if (
                 !coldet.testPointAabb(
                     riverPoints[i],
-                    this.grassBounds.min,
-                    this.grassBounds.max,
+                    this.map.grassBounds.min,
+                    this.map.grassBounds.max,
                 )
             ) {
                 pointsOutsideGrass++;
