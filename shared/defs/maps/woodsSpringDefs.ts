@@ -5,6 +5,9 @@ import type { PartialMapDef } from "./baseDefs";
 import { Woods } from "./woodsDefs";
 
 const mapDef: PartialMapDef = {
+    desc: {
+        buttonCss: "btn-woods-spring-mode",
+    },
     assets: {
         audio: [
             { name: "vault_change_02", channel: "sfx" },
