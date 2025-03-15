@@ -22,3 +22,6 @@ Dual M1911:
 
 SCAR-SSR:
 + damage 60 -> 81
+
+Loot Caches:
+Added more mode specific variations of mosin tree and ak rock

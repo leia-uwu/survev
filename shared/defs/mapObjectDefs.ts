@@ -10626,6 +10626,20 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
+    // woods cache
+    tree_03w: createTree({
+        scale: { createMin: 1, createMax: 1.2 },
+        map: { color: 5199637, scale: 2.5 },
+        img: { sprite: "map-tree-07.img", tint: 11645361 },
+        loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
+    } as unknown as Partial<ObstacleDef>),
+    // spring cache
+    tree_03sp: createTree({
+        scale: { createMin: 1, createMax: 1.2 },
+        map: { color: 16697057, scale: 2.5 },
+        img: { sprite: "map-tree-07sp.img", tint: 11645361 },
+        loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
+    } as unknown as Partial<ObstacleDef>),
     tree_05: createTree({
         collision: collider.createCircle(v2.create(0, 0), 2.3),
         aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(12, 12)),
@@ -12894,6 +12908,42 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             },
         ],
         map: { displayType: "tree_01sv" },
+    }),
+    cache_02w: createCache({
+        mapObjects: [
+            {
+                type: "tree_03w",
+                pos: v2.create(0, 0),
+                scale: 0.9,
+                ori: 0,
+            },
+            {
+                type: "decal_initiative_01",
+                pos: v2.create(0, 0),
+                scale: 1.2,
+                ori: 0,
+                inheritOri: false,
+            },
+        ],
+        map: { displayType: "tree_07" },
+    }),
+    cache_02sp: createCache({
+        mapObjects: [
+            {
+                type: "tree_03sp",
+                pos: v2.create(0, 0),
+                scale: 1,
+                ori: 0,
+            },
+            {
+                type: "decal_initiative_01",
+                pos: v2.create(0, 0),
+                scale: 1.3,
+                ori: 0,
+                inheritOri: false,
+            },
+        ],
+        map: { displayType: "tree_07sp" },
     }),
     cache_03: createCache({
         mapObjects: [
