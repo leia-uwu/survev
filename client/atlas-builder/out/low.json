@@ -22731,13 +22731,13 @@
           "trimmed": true,
           "spriteSourceSize": {
             "x": 0,
-            "y": 0,
+            "y": 72,
             "w": 160,
             "h": 152
           },
           "sourceSize": {
             "w": 160,
-            "h": 152
+            "h": 224
           }
         },
         "map-bunker-egg-chamber-floor-01a.img": {

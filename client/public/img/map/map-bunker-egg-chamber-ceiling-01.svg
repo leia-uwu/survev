@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="639.99408" height="608.00043" viewBox="0 0 169.33143 160.86701" version="1.1" id="svg13" sodipodi:docname="map-bunker-egg-chamber-ceiling-01.svg" inkscape:version="1.4 (e7c3feb100, 2024-10-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview id="namedview13" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="0.90066964" inkscape:cx="320.31722" inkscape:cy="160.43618" inkscape:current-layer="svg13" />
+<svg width="639.99408" height="896" viewBox="0 0 169.33143 237.06701" version="1.1" id="svg13" sodipodi:docname="map-bunker-egg-chamber-ceiling-01.svg" inkscape:version="1.4 (e7c3feb100, 2024-10-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview id="namedview13" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="0.31843481" inkscape:cx="-139.74603" inkscape:cy="29.833422" inkscape:current-layer="svg13" />
   <defs id="defs6">
-    <pattern inkscape:collect="always" xlink:href="#a" id="pattern13" patternTransform="matrix(0.06615,0,0,0.06615,-29.634286,177.8)" />
-    <pattern xlink:href="#a" id="c" patternTransform="matrix(0.06615,0,0,0.06615,50.799714,249.767)" />
+    <pattern inkscape:collect="always" xlink:href="#a" id="pattern13" patternTransform="matrix(0.06615,0,0,0.06615,-29.634286,254.00001)" />
+    <pattern xlink:href="#a" id="c" patternTransform="matrix(0.06615,0,0,0.06615,50.799714,325.96701)" />
     <pattern xlink:href="#b" id="a" patternTransform="translate(-159.834 378.683) scale(.06615)" />
     <clipPath id="f">
       <path d="M 39.132,200.883 22.2,217.816 H -113.267 L -130.2,200.883 Z" fill="#3f3c34" stroke-width="2.117" stroke-opacity="0.706" id="path1" />
@@ -20,11 +20,11 @@
       <path d="M 64,352 V 832 H 576 V 352 Z m 96,64 a 32,32 0 0 1 32,32 32,32 0 0 1 -32,32 32,32 0 0 1 -32,-32 32,32 0 0 1 32,-32 z m 304,256 a 48,48 0 0 1 48,48 48,48 0 0 1 -48,48 48,48 0 0 1 -48,-48 48,48 0 0 1 48,-48 z" fill="#3f3c34" stroke-width="6.358" stroke-opacity="0.706" id="path6" />
     </clipPath>
   </defs>
-  <path fill="url(#c)" d="m 110.06571,101.6 h 25.4 V 127 h -25.4 z" id="path7" />
-  <path fill="url(#a)" d="m 29.631714,29.633 h 25.4 v 25.4 h -25.4 z" id="path8" style="fill:url(#pattern13)" />
-  <path clip-path="url(#d)" d="M 64,352 V 832 H 576 V 352 Z m 96,64 a 32,32 0 0 1 32,32 32,32 0 0 1 -32,32 32,32 0 0 1 -32,-32 32,32 0 0 1 32,-32 z m 304,256 a 48,48 0 0 1 48,48 48,48 0 0 1 -48,48 48,48 0 0 1 -48,-48 48,48 0 0 1 48,-48 z" transform="matrix(0.26458,0,0,0.26458,-2.8571429e-4,-76.2)" fill="#565656" stroke="#000000" stroke-width="8" id="path9" />
-  <path transform="translate(130.19971,-200.883)" clip-path="url(#e)" d="m -130.2,200.883 16.932,16.933 v 127 L -130.2,361.75 Z" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path10" />
-  <path transform="translate(130.19971,-200.883)" clip-path="url(#f)" d="M 39.132,200.883 22.2,217.816 H -113.267 L -130.2,200.883 Z" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path11" />
-  <path transform="rotate(180,19.565857,180.875)" d="m -130.2,200.883 16.932,16.933 v 127 L -130.2,361.75 Z" clip-path="url(#e)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path12" />
-  <path transform="rotate(180,19.565857,180.875)" d="M 39.132,200.883 22.2,217.816 H -113.267 L -130.2,200.883 Z" clip-path="url(#f)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path13" />
+  <path fill="url(#c)" d="m 110.06571,177.80001 h 25.4 v 25.4 h -25.4 z" id="path7" />
+  <path fill="url(#a)" d="m 29.631714,105.83301 h 25.4 v 25.4 h -25.4 z" id="path8" style="fill:url(#pattern13)" />
+  <path clip-path="url(#d)" d="M 64,352 V 832 H 576 V 352 Z m 96,64 a 32,32 0 0 1 32,32 32,32 0 0 1 -32,32 32,32 0 0 1 -32,-32 32,32 0 0 1 32,-32 z m 304,256 a 48,48 0 0 1 48,48 48,48 0 0 1 -48,48 48,48 0 0 1 -48,-48 48,48 0 0 1 48,-48 z" transform="matrix(0.26458,0,0,0.26458,-2.8571429e-4,1e-5)" fill="#565656" stroke="#000000" stroke-width="8" id="path9" />
+  <path transform="translate(130.19971,-124.68299)" clip-path="url(#e)" d="m -130.2,200.883 16.932,16.933 v 127 L -130.2,361.75 Z" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path10" />
+  <path transform="translate(130.19971,-124.68299)" clip-path="url(#f)" d="M 39.132,200.883 22.2,217.816 H -113.267 L -130.2,200.883 Z" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path11" />
+  <path transform="rotate(180,19.565857,218.975)" d="m -130.2,200.883 16.932,16.933 v 127 L -130.2,361.75 Z" clip-path="url(#e)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path12" />
+  <path transform="rotate(180,19.565857,218.975)" d="M 39.132,200.883 22.2,217.816 H -113.267 L -130.2,200.883 Z" clip-path="url(#f)" fill="#3a3a3a" stroke="#000000" stroke-width="2.117" id="path13" />
 </svg>
