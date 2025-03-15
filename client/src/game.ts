@@ -346,7 +346,7 @@ export class Game {
 
         // Process config
         this.m_camera.m_setShakeEnabled(this.m_config.get("screenShake")!);
-        this.m_camera.m_setInterpEnabled(this.m_config.get("_interpolation")!);
+        this.m_camera.m_setInterpEnabled(this.m_config.get("interpolation")!);
         this.m_playerBarn.anonPlayerNames = this.m_config.get("anonPlayerNames")!;
         this.initialized = true;
     }
