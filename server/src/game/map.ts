@@ -863,7 +863,7 @@ export class GameMap {
     trySpawn(
         type: string,
         cb: () => boolean,
-        maxAttempts = 1000,
+        maxAttempts = 500,
         logOnFailure = true,
     ): boolean {
         let attempts = 0;
