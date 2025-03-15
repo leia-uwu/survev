@@ -2448,12 +2448,7 @@ export class Player extends BaseGameObject {
                 }
 
                 if (source.role === "woods_king") {
-                    this.game.playerBarn.addEmote(
-                        source.__id,
-                        this.pos,
-                        "ping_woodsking",
-                        true,
-                    );
+                    this.game.playerBarn.addEmote(0, this.pos, "ping_woodsking", true);
                 }
             }
 
