@@ -2,7 +2,6 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { generateId } from "lucia";
-import { Config } from "../../../../config";
 import { server } from "../../../apiServer";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
@@ -17,8 +16,8 @@ MockRouter.get("/", async (c) => {
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.authId, MOCK_USER_ID),
             columns: {
-                id: true
-            }
+                id: true,
+            },
         });
 
         setCookie(c, "app-data", "1");

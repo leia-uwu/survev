@@ -7,12 +7,12 @@ import { TeamMode } from "../../../../../shared/gameConfig";
 import { math } from "../../../../../shared/utils/math";
 import { Config, type Region } from "../../../config";
 import type { Player } from "../../../game/objects/player";
+import { server } from "../../apiServer";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { validateParams } from "../../zodSchemas";
 import { filterByInterval, filterByMapId } from "./user_stats";
-import { server } from "../../apiServer";
-import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -40,43 +40,48 @@ const LeaderboardsParamsSchema = z.object({
 
 export type LeaderboardParams = z.infer<typeof LeaderboardsParamsSchema>;
 
-leaderboardRouter.post("/", accountsEnabledMiddleware, validateParams(LeaderboardsParamsSchema), async (c) => {
-    try {
-    const { teamMode, mapId, type, interval } = c.req.valid("json");
-    const cacheKey = getLeaderboardCacheKey({ teamMode, mapId, type, interval });
-    const cachedResult = await getLeaderboardCache(cacheKey);
+leaderboardRouter.post(
+    "/",
+    accountsEnabledMiddleware,
+    validateParams(LeaderboardsParamsSchema),
+    async (c) => {
+        try {
+            const { teamMode, mapId, type, interval } = c.req.valid("json");
+            const cacheKey = getLeaderboardCacheKey({ teamMode, mapId, type, interval });
+            const cachedResult = await getLeaderboardCache(cacheKey);
 
-    if (cachedResult) {
-        console.log(`CACHE HIT -> ${cacheKey}`);
-        return c.json(cachedResult, 200);
-    }
+            if (cachedResult) {
+                console.log(`CACHE HIT -> ${cacheKey}`);
+                return c.json(cachedResult, 200);
+            }
 
-    const data =
-        type === "most_kills" &&
-        (teamMode === TeamMode.Duo || teamMode === TeamMode.Squad)
-            ? await multiplePlayersQuery({ teamMode, type, mapId, interval })
-            : await soloLeaderboardQuery({ teamMode, type, mapId, interval });
+            const data =
+                type === "most_kills" &&
+                (teamMode === TeamMode.Duo || teamMode === TeamMode.Squad)
+                    ? await multiplePlayersQuery({ teamMode, type, mapId, interval })
+                    : await soloLeaderboardQuery({ teamMode, type, mapId, interval });
 
-    // TODO: decide if we should cache empty results;
-    if (data.length != 0) {
-        let lowestScore: string | number = data[0].val;
+            // TODO: decide if we should cache empty results;
+            if (data.length != 0) {
+                let lowestScore: string | number = data[0].val;
 
-        if (typeof lowestScore === "number") lowestScore = lowestScore.toString();
+                if (typeof lowestScore === "number") lowestScore = lowestScore.toString();
 
-        // await updateLowestScore({
-        //   cacheKey: getLowestScoreCacheKey(type, mapId),
-        //   lowestScore
-        // });
+                // await updateLowestScore({
+                //   cacheKey: getLowestScoreCacheKey(type, mapId),
+                //   lowestScore
+                // });
 
-        await setLeaderboardCache({ cacheKey, data });
-    }
+                await setLeaderboardCache({ cacheKey, data });
+            }
 
-    return c.json<LeaderboardReturnType[]>(data, 200);
-    } catch(_err) {
-        server.logger.warn("/api/user_stats: Error getting leaderboard data");
-        return c.json({ error: "" }, 500);
-    }
-});
+            return c.json<LeaderboardReturnType[]>(data, 200);
+        } catch (_err) {
+            server.logger.warn("/api/user_stats: Error getting leaderboard data");
+            return c.json({ error: "" }, 500);
+        }
+    },
+);
 
 type LeaderboardReturnType = {
     val: number;
@@ -152,7 +157,6 @@ async function soloLeaderboardQuery({
 
     return result;
 }
-
 
 async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);

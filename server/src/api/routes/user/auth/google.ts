@@ -73,8 +73,8 @@ GoogleRouter.get("/callback", async (c) => {
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.authId, id),
             columns: {
-                id: true
-            }
+                id: true,
+            },
         });
 
         setCookie(c, "app-data", "1");

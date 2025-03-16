@@ -5,11 +5,11 @@ import type { Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
 import { Config } from "../../../config";
 import { server } from "../../apiServer";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
-import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const UserStatsRouter = new Hono<Context>();
 
@@ -36,34 +36,39 @@ const emptyState = {
     modes: [],
 };
 
-UserStatsRouter.post("/", accountsEnabledMiddleware, validateParams(userStatsSchema), async (c) => {
-    try {
-        // TODO: filter by interval
-        const { interval, mapIdFilter, slug } = c.req.valid("json");
+UserStatsRouter.post(
+    "/",
+    accountsEnabledMiddleware,
+    validateParams(userStatsSchema),
+    async (c) => {
+        try {
+            // TODO: filter by interval
+            const { interval, mapIdFilter, slug } = c.req.valid("json");
 
-        const result = await db.query.usersTable.findFirst({
-            where: eq(usersTable.slug, slug),
-            columns: {
-                id: true,
-            },
-        });
+            const result = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    id: true,
+                },
+            });
 
-        if (!result) {
-            return c.json(emptyState, 200);
+            if (!result) {
+                return c.json(emptyState, 200);
+            }
+
+            const { id: userId } = result;
+
+            const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
+
+            if (!data?.slug) return c.json(emptyState, 200);
+
+            return c.json<UserStatsResponse>(data, 200);
+        } catch (_err) {
+            server.logger.warn("/api/user_stats: Error getting user stats");
+            return c.json({ error: "" }, 500);
         }
-
-        const { id: userId } = result;
-
-        const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
-
-        if (!data?.slug) return c.json(emptyState, 200);
-
-        return c.json<UserStatsResponse>(data, 200);
-    } catch (_err) {
-        server.logger.warn("/api/user_stats: Error getting user stats");
-        return c.json({ error: "" }, 500);
-    }
-});
+    },
+);
 
 type UserStatsResponse = {
     slug: string;

@@ -1,17 +1,15 @@
 import type { Context, Next } from "hono";
 import { deleteCookie, getCookie } from "hono/cookie";
-import { lucia } from "./lucia";
-import { server } from "../apiServer";
 import { Config } from "../../config";
-
+import { server } from "../apiServer";
+import { lucia } from "./lucia";
 
 export async function accountsEnabledMiddleware(c: Context, next: Next) {
     if (!Config.accountsEnabled) {
         return c.json({ err: "Account-related features are disabled" }, 403);
     }
     await next();
-};
-
+}
 
 export const AuthMiddleware = async (c: Context, next: Next) => {
     try {
@@ -48,4 +46,4 @@ export const AuthMiddleware = async (c: Context, next: Next) => {
         server.logger.warn("Error trying to authenticate user");
         return c.json({ error: "Authentication failed" }, 500);
     }
-}
+};

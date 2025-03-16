@@ -1,7 +1,6 @@
 import Database from "better-sqlite3";
 import { Config, type Region } from "../config";
 import type { Game } from "../game/game";
-import type { Player } from "../game/objects/player";
 import { type MapDef, MapDefs } from "./../../../shared/defs/mapDefs";
 import { db } from "./db";
 import { type MatchDataTable, matchDataTable } from "./db/schema";
@@ -21,8 +20,8 @@ export async function saveGameInfoToDatabase(game: Game) {
 
     for (let i = 0; i < players.length; i++) {
         const player = players[i];
-        
-        if ( processedPlayers.has(player.__id) ) continue;
+
+        if (processedPlayers.has(player.__id)) continue;
         processedPlayers.add(player.__id);
 
         if (player.authId) {
