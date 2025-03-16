@@ -11,7 +11,7 @@ import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
-import { usersTable } from "../../db/schema";
+import { matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";
 import {
     type Loadout,
@@ -27,7 +27,6 @@ import { accountsEnabledMiddleware } from "../../auth/middleware";
 export const UserRouter = new Hono<Context>();
 
 UserRouter.use(accountsEnabledMiddleware);
-UserRouter.use(AuthMiddleware);
 
 UserRouter.post("/profile", AuthMiddleware, async (c) => {
     try {
@@ -346,12 +345,25 @@ UserRouter.post(
     },
 );
 
+UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
+    try {
+        const user = c.get("user")!;
+
+        await db.update(matchDataTable)
+        .set({ userId: null }).where(
+            eq(matchDataTable.userId, user.id)
+        );
+
+    return c.json({}, 200);
+    } catch (_err) {
+        server.logger.warn("/api/reset_stats: Error reseting stats");
+        return c.json({}, 500) 
+    }
+});
+
 //
 // NOT IMPLEMENTED
 //
-UserRouter.post("/reset_stats", (c) => {
-    return c.json({}, 200);
-});
 
 UserRouter.post(
     "/get_pass",

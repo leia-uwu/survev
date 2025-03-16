@@ -8,28 +8,30 @@ import { type MatchDataTable, matchDataTable } from "./db/schema";
 import { invalidateLeaderboards } from "./routes/stats/leaderboard";
 import { invalidateUserStatsCache } from "./routes/stats/user_stats";
 
-export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
+// @leia HELP!!!!!!!
+export async function saveGameInfoToDatabase(game: Game) {
+    const players = game.playerBarn.allPlayers;
     const values: Omit<MatchDataTable, "slug" | "createdAt">[] = [];
-    // * NOTE: find a better way to get the player rank. @leia HELP!!!!!!!
-    // !! TODO: for duos and squads rank needs to be the teamRank.
-    const sortedPlayers = [...players].sort((a, b) => b.timeAlive - a.timeAlive);
     const mapId = (MapDefs[game.mapName as keyof typeof MapDefs] as MapDef).mapId;
 
-    await invalidateLeaderboards(sortedPlayers, mapId, game.teamMode);
+    await invalidateLeaderboards(players, mapId, game.teamMode);
 
-    for (let i = 0; i < sortedPlayers.length; i++) {
-        const player = sortedPlayers[i];
+    // allPlayers has duplicates :sob:
+    const processedPlayers = new Set();
+
+    for (let i = 0; i < players.length; i++) {
+        const player = players[i];
+        
+        if ( processedPlayers.has(player.__id) ) continue;
+        processedPlayers.add(player.__id);
 
         if (player.authId) {
             invalidateUserStatsCache(player.authId, mapId.toString());
         }
-
-        // deciding the rank based on the time alive; probably not ideal;
-        const rank = i + 1;
         /**
          * teamTotal is for total teams that started the match, i hope?
          */
-        const teamTotal = new Set(sortedPlayers.map((player) => player.teamId)).size;
+        const teamTotal = new Set(players.map((player) => player.teamId)).size;
         const matchData = {
             // *NOTE: userId is optional; we save the game stats for non logged users too
             userId: player.authId,
@@ -49,15 +51,16 @@ export async function saveGameInfoToDatabase(game: Game, players: Player[]) {
             gameId: game.id,
             mapId: mapId,
             killedIds: player.killedIds,
-            rank: rank,
+            rank: player.rank,
         };
         values.push(matchData);
     }
 
     if (!values.length) return;
+
     try {
         await db.insert(matchDataTable).values(values);
-        console.log("Data inserted successfully");
+        console.log(`Saved game data for ${game.id}`);
     } catch (err) {
         console.error(
             `Failed to save game data for ${game.id}, saving locally instead`,

@@ -269,8 +269,8 @@ export class Account {
     }
 
     resetStats() {
-        this.ajaxRequest("/api/user/reset_stats", (t, _r) => {
-            if (t) {
+        this.ajaxRequest("/api/user/reset_stats", (err, _res) => {
+            if (err) {
                 errorLogManager.storeGeneric("account", "reset_stats_error");
                 this.emit("error", "server_error");
             }

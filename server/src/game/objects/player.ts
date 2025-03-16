@@ -204,11 +204,13 @@ export class PlayerBarn {
 
         this.game.updateData();
 
+        if ( Config.accountsEnabled ) {
         lucia.validateSession(joinMsg.data).then((data) => {
             if (data?.user && data.user.id) {
                 player.authId = data.user.id;
             }
         });
+        }
         return player;
     }
 

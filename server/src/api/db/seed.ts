@@ -8,15 +8,10 @@ import type { MatchDataTable } from "../../api/db/schema";
 import { createNewUser } from "../routes/user/auth/authUtils";
 import { matchDataTable } from "./schema";
 
-const playersWithAccounts = Array.from({ length: 40 }, (_, idx) => ({
+const playersWithAccounts = Array.from({ length: 3000 }, (_, idx) => ({
     slug: generateUsername(),
     userId: generateId(15),
-})).concat([
-    {
-        slug: "test",
-        userId: generateId(15),
-    },
-]);
+}));
 
 seed();
 async function seed() {
