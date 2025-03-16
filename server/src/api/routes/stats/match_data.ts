@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Context } from "../..";
 import { server } from "../../apiServer";
 import { db } from "../../db";
-import { matchDataTable } from "../../db/schema";
+import { matchDataTable, usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 
@@ -20,7 +20,7 @@ matchDataRouter.post("/", accountsEnabledMiddleware, validateParams(matchDataSch
 
         const result = await db
             .select({
-                slug: matchDataTable.slug,
+                slug: usersTable.slug,
                 username: matchDataTable.username,
                 player_id: matchDataTable.playerId,
                 team_id: matchDataTable.teamId,
@@ -34,6 +34,7 @@ matchDataRouter.post("/", accountsEnabledMiddleware, validateParams(matchDataSch
                 killed_ids: matchDataTable.killedIds,
             })
             .from(matchDataTable)
+            .leftJoin(usersTable, eq(usersTable.id, matchDataTable.userId))
             .orderBy(asc(matchDataTable.rank))
             .where(eq(matchDataTable.gameId, gameId));
 

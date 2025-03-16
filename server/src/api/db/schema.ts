@@ -59,7 +59,6 @@ export const matchDataTable = mysqlTable(
         region: varchar("region", { length: 255 }).notNull().$type<Region>(),
         mapId: int("map_id").notNull(),
         gameId: varchar("game_id", { length: 255 }).notNull(),
-        slug: varchar("slug", { length: 255 }),
         username: varchar("username", { length: 255 }).notNull(),
         playerId: int("player_id").notNull(),
         teamMode: int("team_mode").$type<TeamMode>().notNull(),
