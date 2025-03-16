@@ -80,6 +80,13 @@ const mapDef: PartialMapDef = {
                 loot_tier_beach: 4,
             },
         ],
+        fixedSpawns: [
+            {
+                ...Potato.mapGen.fixedSpawns[0],
+                cache_02: 0,
+                cache_02sp: 1,
+            },
+        ],
         spawnReplacements: [
             {
                 tree_01: "tree_07sp",

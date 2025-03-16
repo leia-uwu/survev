@@ -711,7 +711,7 @@ export class WeaponManager {
 
         let bulletType = itemDef.bulletType;
 
-        if (this.player.hasPerk("bonus_9mm")) {
+        if (itemDef.ammo == "9mm" && this.player.hasPerk("bonus_9mm")) {
             bulletType = itemDef.bulletTypeBonus ?? bulletType;
             spread *= PerkProperties.bonus_9mm.spreadMul;
         }
