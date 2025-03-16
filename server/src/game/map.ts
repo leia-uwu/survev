@@ -478,7 +478,7 @@ export class GameMap {
             randomGenerator = (min = 0, max = 1) => util.random(min, max);
         }
 
-        const side = Math.floor(randomGenerator(0, 3)) as 0 | 1 | 2 | 3;
+        const side = Math.floor(randomGenerator(0, 4)) as 0 | 1 | 2 | 3;
         switch (side) {
             case 0:
                 return v2.create(this.width, randomGenerator(0, this.height));
@@ -516,7 +516,7 @@ export class GameMap {
 
         for (let i = 0; i < widths.length; i++) {
             //in factions mode, we always assume the first width in widths is the main faction river
-            const isFactionRiver = this.factionMode && i == 0;
+            const isFactionRiver = this.factionMode;
 
             this.trySpawn(`river_${widths[i]}`, () => {
                 const riverPoints = riverCreator.create(isFactionRiver);
@@ -535,7 +535,7 @@ export class GameMap {
     /** only called inside generateObjects, separates logic into function to simplify control flow */
     private generateBridges(mapDef: MapDef): void {
         //factions mode always had one extra large bridge on each side of the river town's extra large bridge.
-        if (this.factionMode && this.buildings.find((b) => b.type == "river_town_01")) {
+        if (this.factionMode) {
             this.genBridge(
                 mapDef.mapGen.bridgeTypes.xlarge,
                 this.terrain.rivers[0],
@@ -546,7 +546,6 @@ export class GameMap {
                 this.terrain.rivers[0],
                 0.75,
             );
-            return;
         }
 
         //generate 0-3 bridges on random rivers for normal modes
