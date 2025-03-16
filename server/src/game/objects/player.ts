@@ -1087,6 +1087,8 @@ export class Player extends BaseGameObject {
 
     damageTaken = 0;
     damageDealt = 0;
+    // @LEIAAAAA
+    rank = 0;
     kills = 0;
     timeAlive = 0;
 
