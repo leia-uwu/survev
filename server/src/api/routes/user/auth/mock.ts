@@ -13,12 +13,12 @@ export const MockRouter = new Hono();
 export const MOCK_USER_ID = "MOCK_USER_ID";
 
 MockRouter.get("/", async (c) => {
-    if (!Config.accountsEnabled) {
-        return c.json({ err: "Account-related features are disabled" }, 403);
-    }
     try {
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.authId, MOCK_USER_ID),
+            columns: {
+                id: true
+            }
         });
 
         setCookie(c, "app-data", "1");

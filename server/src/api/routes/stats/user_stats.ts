@@ -9,6 +9,7 @@ import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const UserStatsRouter = new Hono<Context>();
 
@@ -35,7 +36,7 @@ const emptyState = {
     modes: [],
 };
 
-UserStatsRouter.post("/", validateParams(userStatsSchema), async (c) => {
+UserStatsRouter.post("/", accountsEnabledMiddleware, validateParams(userStatsSchema), async (c) => {
     try {
         // TODO: filter by interval
         const { interval, mapIdFilter, slug } = c.req.valid("json");

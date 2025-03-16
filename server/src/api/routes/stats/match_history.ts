@@ -9,6 +9,7 @@ import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const matchHistoryRouter = new Hono<Context>();
 
@@ -31,7 +32,7 @@ const matchHistorySchema = z.object({
         .catch(ALL_TEAM_MODES),
 });
 
-matchHistoryRouter.post("/", validateParams(matchHistorySchema), async (c) => {
+matchHistoryRouter.post("/", accountsEnabledMiddleware, validateParams(matchHistorySchema), async (c) => {
     try {
         const { slug, offset, teamModeFilter } = c.req.valid("json");
 

@@ -21,9 +21,6 @@ const codeVerifierCookieName = "google_code_verifier";
 export const GoogleRouter = new Hono();
 
 GoogleRouter.get("/", async (c) => {
-    if (!Config.accountsEnabled) {
-        return c.json({ err: "Account-related features are disabled" }, 403);
-    }
     if (!Config.GOOGLE_CLIENT_ID || !Config.GOOGLE_SECRET_ID) {
         return c.json({ err: "Missing Google credentials" }, 500);
     }
@@ -75,6 +72,9 @@ GoogleRouter.get("/callback", async (c) => {
 
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.authId, id),
+            columns: {
+                id: true
+            }
         });
 
         setCookie(c, "app-data", "1");

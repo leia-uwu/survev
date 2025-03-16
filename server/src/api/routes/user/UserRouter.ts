@@ -22,8 +22,12 @@ import {
 import { invalidateUserStatsCache } from "../stats/user_stats";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const UserRouter = new Hono<Context>();
+
+UserRouter.use(accountsEnabledMiddleware);
+UserRouter.use(AuthMiddleware);
 
 UserRouter.post("/profile", AuthMiddleware, async (c) => {
     try {

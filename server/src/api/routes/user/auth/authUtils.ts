@@ -54,7 +54,7 @@ export async function createNewUser(payload: UsersTable) {
     await db.insert(usersTable).values({ ...payload, items });
 }
 
-export function getRedirectUri(method: string) {
+export function getRedirectUri(method: "discord" | "google") {
     const isProduction = process.env.NODE_ENV === "production";
 
     if (isProduction && !Config.BASE_URL) {

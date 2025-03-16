@@ -11,6 +11,8 @@ import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { validateParams } from "../../zodSchemas";
 import { filterByInterval, filterByMapId } from "./user_stats";
+import { server } from "../../apiServer";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -38,7 +40,8 @@ const LeaderboardsParamsSchema = z.object({
 
 export type LeaderboardParams = z.infer<typeof LeaderboardsParamsSchema>;
 
-leaderboardRouter.post("/", validateParams(LeaderboardsParamsSchema), async (c) => {
+leaderboardRouter.post("/", accountsEnabledMiddleware, validateParams(LeaderboardsParamsSchema), async (c) => {
+    try {
     const { teamMode, mapId, type, interval } = c.req.valid("json");
     const cacheKey = getLeaderboardCacheKey({ teamMode, mapId, type, interval });
     const cachedResult = await getLeaderboardCache(cacheKey);
@@ -69,6 +72,10 @@ leaderboardRouter.post("/", validateParams(LeaderboardsParamsSchema), async (c) 
     }
 
     return c.json<LeaderboardReturnType[]>(data, 200);
+    } catch(_err) {
+        server.logger.warn("/api/user_stats: Error getting leaderboard data");
+        return c.json({ error: "" }, 500);
+    }
 });
 
 type LeaderboardReturnType = {
@@ -145,6 +152,7 @@ async function soloLeaderboardQuery({
 
     return result;
 }
+
 
 async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
@@ -254,6 +262,7 @@ export async function invalidateLeaderboards(
     mapId: number,
     teamMode: TeamMode,
 ) {
+    if (!Config.cachingEnabled) return;
     const maxValues = players.reduce(
         (obj, player) => {
             obj.most_kills = math.max(obj.most_kills, player.kills);

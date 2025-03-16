@@ -6,6 +6,7 @@ import { server } from "../../apiServer";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
+import { accountsEnabledMiddleware } from "../../auth/middleware";
 
 export const matchDataRouter = new Hono<Context>();
 
@@ -13,7 +14,7 @@ const matchDataSchema = z.object({
     gameId: z.string(),
 });
 
-matchDataRouter.post("/", validateParams(matchDataSchema), async (c) => {
+matchDataRouter.post("/", accountsEnabledMiddleware, validateParams(matchDataSchema), async (c) => {
     try {
         const { gameId } = c.req.valid("json");
 

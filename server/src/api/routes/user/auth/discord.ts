@@ -20,9 +20,6 @@ const stateCookieName = "discord_oauth_state";
 export const DiscordRouter = new Hono();
 
 DiscordRouter.get("/", async (c) => {
-    if (!Config.accountsEnabled) {
-        return c.json({ err: "Account-related features are disabled" }, 403);
-    }
     if (!Config.DISCORD_CLIENT_ID || !Config.DISCORD_SECRET_ID) {
         return c.json({ err: "Missing Discord credentials" }, 500);
     }
@@ -68,6 +65,9 @@ DiscordRouter.get("/callback", async (c) => {
 
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.authId, discordUser.id),
+            columns: {
+                id: true
+            }
         });
 
         setCookie(c, "app-data", "1");
