@@ -1,5 +1,6 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
+import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
 import { Main, type PartialMapDef } from "./baseDefs";
 
@@ -144,6 +145,16 @@ const mapDef: PartialMapDef = {
         tier_airdrop_rare: [{ name: "potato_cannon", count: 1, weight: 1 }],
     },
     mapGen: {
+        customSpawnRules: {
+            locationSpawns: [
+                {
+                    type: "shilo_01",
+                    pos: v2.create(0.5, 0.5),
+                    rad: 50,
+                    retryOnFailure: true,
+                },
+            ],
+        },
         densitySpawns: [
             {
                 stone_01: 350,
@@ -171,6 +182,7 @@ const mapDef: PartialMapDef = {
         ],
         fixedSpawns: [
             {
+                shilo_01: 1,
                 warehouse_01: 2,
                 house_red_01: { small: 3, large: 4 },
                 house_red_02: { small: 3, large: 4 },

@@ -32,6 +32,7 @@ const mapDef: PartialMapDef = {
             grass: 4351497,
             underground: 1772803,
             playerSubmerge: 2854052,
+            playerGhillie: 4285194,
         },
         sound: { riverShore: "stone" },
         particles: { camera: "falling_leaf_spring" },
