@@ -682,12 +682,12 @@ export class WeaponManager {
 
         let damageMult = 1;
         if (hasSplinter) {
-            damageMult *= PerkProperties.splinter.mainDamageMulti;
+            damageMult *= PerkProperties.splinter.mainDamageMult;
         }
 
         const saturated = this.isBulletSaturated(itemDef.ammo);
         if (saturated) {
-            damageMult *= PerkProperties.ammoBonusDamageMulti;
+            damageMult *= PerkProperties.ammoBonusDamageMult;
         }
 
         if (shouldApplyChambered) {
@@ -708,6 +708,13 @@ export class WeaponManager {
             spread = 0.0;
         }
         this.player.recoilTicker = 0.0;
+
+        let bulletType = itemDef.bulletType;
+
+        if (this.player.hasPerk("bonus_9mm")) {
+            bulletType = itemDef.bulletTypeBonus ?? bulletType;
+            spread *= PerkProperties.bonus_9mm.spreadMul;
+        }
 
         const bulletCount = itemDef.bulletCount;
         const jitter = itemDef.jitter ?? 0.25;
@@ -752,7 +759,7 @@ export class WeaponManager {
 
             const params: BulletParams = {
                 playerId: this.player.__id,
-                bulletType: itemDef.bulletType,
+                bulletType: bulletType,
                 gameSourceType: this.activeWeapon,
                 damageType: GameConfig.DamageType.Player,
                 pos: shotPos,
@@ -811,7 +818,7 @@ export class WeaponManager {
                     sParams.lastShot = false;
                     sParams.shotFx = false;
                     sParams.trailSmall = true;
-                    sParams.damageMult *= PerkProperties.splinter.splitsDamageMulti;
+                    sParams.damageMult *= PerkProperties.splinter.splitsDamageMult;
 
                     this.player.game.bulletBarn.fireBullet(sParams);
                 }

@@ -15,8 +15,8 @@ export const PerkProperties = {
         scale: -0.25,
     },
     splinter: {
-        mainDamageMulti: 0.6,
-        splitsDamageMulti: 0.45,
+        mainDamageMult: 0.6,
+        splitsDamageMult: 0.45,
     },
     trick_size: {
         scale: 0.25,
@@ -41,6 +41,9 @@ export const PerkProperties = {
     tree_climbing: {
         waterSpeedBoost: 2,
     },
+    bonus_9mm: {
+        spreadMul: 1.1,
+    },
     // map of ammo type to perk that boosts that ammo
     ammoBonuses: {
         "9mm": ["treat_9mm", "bonus_9mm"],
@@ -49,7 +52,7 @@ export const PerkProperties = {
         "12gauge": ["treat_12g"],
         "45acp": ["bonus_45"],
     } as Record<string, string[]>,
-    ammoBonusDamageMulti: 1.08,
+    ammoBonusDamageMult: 1.08,
 };
 
 export interface PerkDef {
