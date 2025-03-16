@@ -88,6 +88,7 @@ export class Obstacle extends BaseGameObject {
     collidable: boolean;
     isWindow: boolean;
     isWall: boolean;
+    isTree: boolean;
 
     layer: number;
 
@@ -144,6 +145,7 @@ export class Obstacle extends BaseGameObject {
         this.collidable = (def.collidable && !this.isSkin) ?? true;
         this.isWindow = def.isWindow ?? false;
         this.isWall = def.isWall ?? false;
+        this.isTree = def.isTree ?? false;
 
         this.maxHealth = def.health;
         this.health = def.health;

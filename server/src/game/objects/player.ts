@@ -1519,9 +1519,11 @@ export class Player extends BaseGameObject {
 
         this.posOld = v2.copy(this.pos);
 
+        const hasTreeClimbing = this.hasPerk("tree_climbing");
+
         let steps: number;
         if (movement.x !== 0 || movement.y !== 0) {
-            this.recalculateSpeed();
+            this.recalculateSpeed(hasTreeClimbing);
             steps = Math.round(math.max(this.speed * dt + 5, 5));
         } else {
             this.speed = 0;
@@ -1546,6 +1548,7 @@ export class Player extends BaseGameObject {
                 if (!obj.collidable) continue;
                 if (obj.dead) continue;
                 if (!util.sameLayer(obj.layer, this.layer)) continue;
+                if (obj.isTree && hasTreeClimbing) continue;
 
                 const collision = collider.intersectCircle(
                     obj.collider,
@@ -4011,7 +4014,7 @@ export class Player extends BaseGameObject {
         this.collider.rad = this.rad;
     }
 
-    recalculateSpeed(): void {
+    recalculateSpeed(hasTreeClimbing: boolean): void {
         // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
 
         if (this.actionType == GameConfig.Action.Revive) {
@@ -4049,7 +4052,11 @@ export class Player extends BaseGameObject {
 
         // if player is on water decrease speed
         const isOnWater = this.game.map.isOnWater(this.pos, this.layer);
-        if (isOnWater) this.speed -= GameConfig.player.waterSpeedPenalty;
+        if (isOnWater) {
+            this.speed -= hasTreeClimbing
+                ? -PerkProperties.tree_climbing.waterSpeedBoost
+                : GameConfig.player.waterSpeedPenalty;
+        }
 
         // increase speed when adrenaline is above 50%
         if (this.boost >= 50) {
