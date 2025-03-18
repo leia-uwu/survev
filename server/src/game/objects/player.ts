@@ -3670,7 +3670,17 @@ export class Player extends BaseGameObject {
             string,
             GunDef | ThrowableDef | MeleeDef,
         ][];
-        const weaponChoices = enumerableDefs.filter(([_type, def]) => !def.noPotatoSwap);
+
+        let filterCb: ([_type, def]: [
+            string,
+            GunDef | ThrowableDef | MeleeDef,
+        ]) => boolean;
+        if (this.hasPerk("rare_potato")) {
+            filterCb = ([_type, def]) => !def.noPotatoSwap && def.quality == 1;
+        } else {
+            filterCb = ([_type, def]) => !def.noPotatoSwap;
+        }
+        const weaponChoices = enumerableDefs.filter(filterCb);
         const [chosenWeaponType, chosenWeaponDef] =
             weaponChoices[util.randomInt(0, weaponChoices.length - 1)];
 
