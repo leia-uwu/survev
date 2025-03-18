@@ -802,7 +802,7 @@ export class Player extends BaseGameObject {
 
             // armor
             if (this.helmet && !this.hasRoleHelmet) {
-                this.dropArmor(this.helmet, GameObjectDefs[this.helmet] as LootDef);
+                this.dropArmor(this.helmet);
             }
 
             const roleHelmet =
@@ -817,7 +817,7 @@ export class Player extends BaseGameObject {
 
             if (roleDef.defaultItems.chest) {
                 if (this.chest) {
-                    this.dropArmor(this.chest, GameObjectDefs[this.chest] as LootDef);
+                    this.dropArmor(this.chest);
                 }
                 this.chest = roleDef.defaultItems.chest;
             }
@@ -3737,10 +3737,11 @@ export class Player extends BaseGameObject {
         );
     }
 
-    dropArmor(item: string, armorDef: LootDef): boolean {
+    dropArmor(item: string): boolean {
+        const armorDef = GameObjectDefs[item];
         if (armorDef.type != "chest" && armorDef.type != "helmet") return false;
+        if (this[armorDef.type] !== item) return false;
         if (armorDef.noDrop) return false;
-        if (!this[armorDef.type]) return false;
 
         if (armorDef.type == "helmet" && armorDef.role && this.role == armorDef.role) {
             this.removeRole();
@@ -3813,7 +3814,7 @@ export class Player extends BaseGameObject {
             }
             case "chest":
             case "helmet": {
-                this.dropArmor(dropMsg.item, itemDef);
+                this.dropArmor(dropMsg.item);
                 break;
             }
             case "heal":
