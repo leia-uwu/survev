@@ -44,6 +44,9 @@ export const PerkProperties = {
     bonus_9mm: {
         spreadMul: 1.1,
     },
+    rare_potato: {
+        quality: 1,
+    },
     // map of ammo type to perk that boosts that ammo
     ammoBonuses: {
         "9mm": ["treat_9mm", "bonus_9mm"],

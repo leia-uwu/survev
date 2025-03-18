@@ -1294,4 +1294,4 @@ const SkinDefs: Record<string, MeleeDef> = {
     }),
 };
 
-export const MeleeDefs = { ...BaseDefs, ...SkinDefs };
+export const MeleeDefs: Record<string, MeleeDef> = { ...BaseDefs, ...SkinDefs };

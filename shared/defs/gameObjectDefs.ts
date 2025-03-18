@@ -85,6 +85,12 @@ const ObjectDefsList: Array<Record<string, GameObjectDef>> = [
     XPDefs,
 ];
 
+export const WeaponTypeToDefs = {
+    gun: GunDefs,
+    melee: MeleeDefs,
+    throwable: ThrowableDefs,
+} as const;
+
 export const GameObjectDefs: Record<string, GameObjectDef> = {};
 
 // Merge all item defs in together into one object

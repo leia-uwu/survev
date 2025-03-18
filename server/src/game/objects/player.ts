@@ -1,4 +1,8 @@
-import { GameObjectDefs, type LootDef } from "../../../../shared/defs/gameObjectDefs";
+import {
+    GameObjectDefs,
+    type LootDef,
+    WeaponTypeToDefs,
+} from "../../../../shared/defs/gameObjectDefs";
 import { type EmoteDef, EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
 import {
     type BackpackDef,
@@ -2217,6 +2221,11 @@ export class Player extends BaseGameObject {
         this.spectating = playerToSpec;
     }
 
+    /**
+     * doesn't care about kill credit or anything, simply the last player to damage you (excludes yourself)
+     */
+    lastDamagedBy: Player | undefined;
+
     damage(params: DamageParams) {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
@@ -2294,6 +2303,7 @@ export class Player extends BaseGameObject {
         this.damageTaken += finalDamage;
         if (sourceIsPlayer && params.source !== this) {
             (params.source as Player).damageDealt += finalDamage;
+            this.lastDamagedBy = params.source as Player;
         }
 
         this.health -= finalDamage;
@@ -2494,6 +2504,11 @@ export class Player extends BaseGameObject {
             if (this.game.planeBarn.canDropSpecialAirdrop()) {
                 this.game.planeBarn.addSpecialAirdrop();
             }
+        }
+
+        //params.gameSourceType check ensures player didnt die by bleeding out
+        if (this.game.map.potatoMode && this.lastDamagedBy && params.gameSourceType) {
+            this.lastDamagedBy.randomWeaponSwap(params.gameSourceType);
         }
 
         this.game.broadcastMsg(net.MsgType.Kill, killMsg);
@@ -3641,6 +3656,84 @@ export class Player extends BaseGameObject {
         dropMsg.item = item;
         dropMsg.weapIdx = weapIdx;
         this.dropItem(dropMsg);
+    }
+
+    /** just used in potato mode, swaps oldWeapon with a random weapon of the same type (mosin -> m9) */
+    randomWeaponSwap(oldWeapon: string): void {
+        const oldWeaponDef = GameObjectDefs[oldWeapon] as
+            | GunDef
+            | ThrowableDef
+            | MeleeDef;
+        if (oldWeaponDef.noPotatoSwap) return;
+        const weaponDefs = WeaponTypeToDefs[oldWeaponDef.type];
+        //necessary for type safety since Object.entries() is not type safe and just returns "any"
+        const enumerableDefs = Object.entries(weaponDefs) as [
+            string,
+            GunDef | ThrowableDef | MeleeDef,
+        ][];
+
+        let filterCb: ([_type, def]: [
+            string,
+            GunDef | ThrowableDef | MeleeDef,
+        ]) => boolean;
+        if (this.hasPerk("rare_potato")) {
+            filterCb = ([_type, def]) =>
+                !def.noPotatoSwap && def.quality == PerkProperties.rare_potato.quality;
+        } else {
+            filterCb = ([_type, def]) => !def.noPotatoSwap;
+        }
+        const weaponChoices = enumerableDefs.filter(filterCb);
+        const [chosenWeaponType, chosenWeaponDef] =
+            weaponChoices[util.randomInt(0, weaponChoices.length - 1)];
+
+        let index = this.weaponManager.weapons.findIndex((w) => w.type == oldWeapon);
+        if (index == -1) {
+            //defaults if we can't figure out what slot was used to "trigger" the weapon swap
+            switch (oldWeaponDef.type) {
+                case "gun":
+                    //arbitrary choice
+                    index = GameConfig.WeaponSlot.Primary;
+                    break;
+                case "melee":
+                    index = GameConfig.WeaponSlot.Melee;
+                    break;
+                case "throwable":
+                    index = GameConfig.WeaponSlot.Throwable;
+                    break;
+            }
+        }
+
+        this.weaponManager.setWeapon(
+            index,
+            chosenWeaponType,
+            chosenWeaponDef.type == "gun"
+                ? this.weaponManager.getTrueAmmoStats(chosenWeaponDef).trueMaxClip
+                : 0,
+        );
+
+        if (chosenWeaponDef.type == "throwable") {
+            const backpackLevel = this.getGearLevel(this.backpack);
+            const bagSpace = this.bagSizes[chosenWeaponType]
+                ? this.bagSizes[chosenWeaponType][backpackLevel]
+                : 0;
+
+            const amountToAdd = math.clamp(Math.floor(bagSpace / 3), 1, 511);
+            if (this.inventory[chosenWeaponType] + amountToAdd <= bagSpace) {
+                this.inventory[chosenWeaponType] += amountToAdd;
+            } else {
+                this.inventory[chosenWeaponType] = bagSpace;
+            }
+
+            this.inventoryDirty = true;
+        }
+
+        this.game.playerBarn.addEmote(
+            this.__id,
+            this.pos,
+            "emote_loot",
+            false,
+            chosenWeaponType,
+        );
     }
 
     dropLoot(type: string, count = 1, useCountForAmmo?: boolean) {
