@@ -3676,7 +3676,8 @@ export class Player extends BaseGameObject {
             GunDef | ThrowableDef | MeleeDef,
         ]) => boolean;
         if (this.hasPerk("rare_potato")) {
-            filterCb = ([_type, def]) => !def.noPotatoSwap && def.quality == 1;
+            filterCb = ([_type, def]) =>
+                !def.noPotatoSwap && def.quality == PerkProperties.rare_potato.quality;
         } else {
             filterCb = ([_type, def]) => !def.noPotatoSwap;
         }
