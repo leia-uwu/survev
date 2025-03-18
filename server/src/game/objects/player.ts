@@ -725,6 +725,11 @@ export class Player extends BaseGameObject {
 
     mapIndicator?: MapIndicator;
 
+    // spud gun variables
+
+    fatModifier = 0;
+    fatTicker = 0;
+
     promoteToRole(role: string) {
         const roleDef = GameObjectDefs[role] as RoleDef;
         if (!roleDef || roleDef.type !== "role") {
@@ -1500,6 +1505,15 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.fatModifier > 0) {
+            this.fatTicker -= dt;
+            if (this.fatTicker < 0) {
+                this.fatModifier -= 0.2 * dt;
+                this.fatModifier = math.max(0, this.fatModifier);
+                this.recalculateScale();
+            }
+        }
+
         //
         // Calculate new speed, position and check for collision with obstacles
         //
@@ -1539,7 +1553,7 @@ export class Player extends BaseGameObject {
 
         const circle = collider.createCircle(
             this.pos,
-            GameConfig.player.maxVisualRadius + this.speed * dt,
+            GameConfig.player.maxVisualRadius * this.scale + this.speed * dt,
         );
         const objs = this.game.grid.intersectCollider(circle);
 
@@ -4064,6 +4078,13 @@ export class Player extends BaseGameObject {
         }
     }
 
+    incrementFat() {
+        this.fatTicker = 2.5;
+        if (this.fatModifier > 0.6) return;
+        this.fatModifier += 0.06;
+        this.recalculateScale();
+    }
+
     giveHaste(type: HasteType, duration: number): void {
         this.hasteType = type;
         this.hasteSeq++;
@@ -4100,12 +4121,29 @@ export class Player extends BaseGameObject {
             scale += PerkProperties.final_bugle.scaleOnDeath;
         }
 
-        this.scale = math.clamp(
+        scale += this.fatModifier;
+
+        scale = math.clamp(
             scale,
             net.Constants.PlayerMinScale,
             net.Constants.PlayerMaxScale,
         );
+
+        if (scale === this.scale) return;
+
+        this.scale = scale;
+
         this.collider.rad = this.rad;
+
+        this.bounds = collider.createAabbExtents(
+            v2.create(0, 0),
+            v2.create(
+                GameConfig.player.maxVisualRadius * this.scale,
+                GameConfig.player.maxVisualRadius * this.scale,
+            ),
+        );
+        this.game.grid.updateObject(this);
+        this.setDirty();
     }
 
     recalculateSpeed(hasTreeClimbing: boolean): void {

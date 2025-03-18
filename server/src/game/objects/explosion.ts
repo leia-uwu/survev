@@ -153,14 +153,12 @@ export class ExplosionBarn {
         }
 
         if (obj.__type == ObjectType.Player) {
-            if (def.freezeAmount && def.freezeDuration) {
-                const isSourceTeammate =
-                    explosion.source &&
-                    explosion.source.__type == ObjectType.Player &&
-                    explosion.source.teamId == obj.teamId;
-                if (!isSourceTeammate) {
-                    obj.dropRandomLoot();
-
+            const isSourceTeammate =
+                explosion.source &&
+                explosion.source.__type == ObjectType.Player &&
+                explosion.source.teamId == obj.teamId;
+            if (!isSourceTeammate) {
+                if (def.freezeAmount && def.freezeDuration) {
                     const playerRot = Math.atan2(obj.dir.y, obj.dir.x);
                     const collRot = -Math.atan2(collision.dir.y, collision.dir.x);
 
@@ -169,6 +167,13 @@ export class ExplosionBarn {
 
                     obj.freeze(ori, def.freezeDuration);
                 }
+                if (def.dropRandomLoot) {
+                    obj.dropRandomLoot();
+                }
+            }
+
+            if (explosion.type === "explosion_potato_smgshot") {
+                obj.incrementFat();
             }
         }
 

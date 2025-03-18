@@ -13,6 +13,7 @@ export interface ExplosionDef {
     teamDamage?: boolean;
     freezeAmount?: number; // unused atm in favor of gameconfig constant
     freezeDuration?: number; // how long to slow down player on hit
+    dropRandomLoot?: boolean;
 }
 
 export const ExplosionDefs: Record<string, ExplosionDef> = {
@@ -137,6 +138,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         decalType: "decal_snowball_explosion",
         freezeAmount: 3,
         freezeDuration: 0.5,
+        dropRandomLoot: true,
     },
     explosion_snowball_heavy: {
         type: "explosion",
@@ -149,6 +151,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         decalType: "decal_snowball_explosion",
         freezeAmount: 3,
         freezeDuration: 1,
+        dropRandomLoot: true,
     },
     explosion_potato: {
         type: "explosion",
@@ -162,6 +165,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         decalType: "decal_potato_explosion",
         freezeAmount: 3,
         freezeDuration: 0.5,
+        dropRandomLoot: true,
     },
     explosion_potato_heavy: {
         type: "explosion",
@@ -175,6 +179,7 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         decalType: "decal_potato_explosion",
         freezeAmount: 3,
         freezeDuration: 1,
+        dropRandomLoot: true,
     },
     explosion_potato_cannonball: {
         type: "explosion",
@@ -197,6 +202,8 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         shrapnelType: "",
         explosionEffectType: "potato_smgshot",
         decalType: "",
+        freezeAmount: 3,
+        freezeDuration: 1,
     },
     explosion_bomb_iron: {
         type: "explosion",
