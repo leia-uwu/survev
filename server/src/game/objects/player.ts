@@ -3664,6 +3664,7 @@ export class Player extends BaseGameObject {
             | GunDef
             | ThrowableDef
             | MeleeDef;
+        if (oldWeaponDef.noPotatoSwap) return;
         const weaponDefs = WeaponTypeToDefs[oldWeaponDef.type];
         //necessary for type safety since Object.entries() is not type safe and just returns "any"
         const enumerableDefs = Object.entries(weaponDefs) as [
@@ -3716,7 +3717,7 @@ export class Player extends BaseGameObject {
                 ? this.bagSizes[chosenWeaponType][backpackLevel]
                 : 0;
 
-            const amountToAdd = Math.floor(bagSpace / 3);
+            const amountToAdd = math.clamp(Math.floor(bagSpace / 3), 1, 511);
             if (this.inventory[chosenWeaponType] + amountToAdd <= bagSpace) {
                 this.inventory[chosenWeaponType] += amountToAdd;
             } else {
