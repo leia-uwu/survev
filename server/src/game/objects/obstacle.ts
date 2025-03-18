@@ -339,6 +339,15 @@ export class Obstacle extends BaseGameObject {
             this.game.map.genAuto(def.destroyType, this.pos, this.layer, this.ori);
         }
 
+        //potatos in potato mode
+        if (
+            def.swapWeaponOnDestroy &&
+            params.source instanceof Player &&
+            params.gameSourceType
+        ) {
+            params.source.randomWeaponSwap(params.gameSourceType);
+        }
+
         const lootPos = v2.copy(this.pos);
         if (def.lootSpawn) {
             v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
