@@ -10,6 +10,14 @@ export class Group {
     livingPlayers: Player[] = [];
     autoFill: boolean;
 
+    /**
+     * for normal modes, the first player in the group to spawn, all groupmate spawn positions will be relative to the spawn leader
+     *
+     * for cobalt mode, since everyone technically spawns in the intermediary bunker while stuck on the perk select menu, this represents
+     * the first player in the group to get a **real** spawn after selecting a perk
+     */
+    spawnLeader?: Player;
+
     maxPlayers: number;
     reservedSlots = 0;
 

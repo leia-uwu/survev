@@ -140,9 +140,19 @@ export class PlayerBarn {
                 ? this.getSmallestTeam()
                 : result?.team;
 
-        const pos: Vec2 = this.game.map.getSpawnPos(group, team);
+        let pos: Vec2;
+        let layer: number;
+        if (this.game.map.perkMode) {
+            //intermediate spawn point while the player chooses a perk before theyre moved to their real spawn point
+            const spawnData = this.game.map.perkModeSpawnData!;
+            pos = spawnData.pos;
+            layer = spawnData.layer;
+        } else {
+            pos = this.game.map.getSpawnPos(group, team);
+            layer = 0;
+        }
 
-        const player = new Player(this.game, pos, socketId, joinMsg);
+        const player = new Player(this.game, pos, layer, socketId, joinMsg);
 
         this.socketIdToPlayer.set(socketId, player);
 
@@ -161,6 +171,10 @@ export class PlayerBarn {
         }
         if (player.game.map.factionMode) {
             player.playerStatusDirty = true;
+        }
+
+        if (!this.game.map.perkMode && group && !group.spawnLeader) {
+            group.spawnLeader = player;
         }
 
         this.game.logger.log(`Player ${player.name} joined`);
@@ -666,7 +680,7 @@ export class Player extends BaseGameObject {
         return (GameObjectDefs[type] as BackpackDef | HelmetDef | ChestDef).level;
     }
 
-    layer = 0;
+    layer: number;
     aimLayer = 0;
     dead = false;
     downed = false;
@@ -887,6 +901,23 @@ export class Player extends BaseGameObject {
         }
     }
 
+    roleSelect(perkModeRoleSelectMsg: net.PerkModeRoleSelectMsg): void {
+        if (!this.game.map.perkModeSpawnData || this.role) return;
+
+        const role = perkModeRoleSelectMsg.role;
+        //so the client can't be manipulated to send lone survivr or something
+        if (!this.game.map.mapDef.gameMode.perkModeRoles!.includes(role)) return;
+
+        this.promoteToRole(role);
+        //v2.set() necessary since this.collider.pos is linked to this.pos by reference
+        v2.set(this.pos, this.game.map.getSpawnPos(this.group, this.team));
+        this.layer = 0; //player was underground before this
+
+        if (this.group && !this.group.spawnLeader) {
+            this.group.spawnLeader = this;
+        }
+    }
+
     removeRole(): void {
         const def = GameObjectDefs[this.role] as RoleDef;
         if (!def) return;
@@ -1050,8 +1081,16 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
-    constructor(game: Game, pos: Vec2, socketId: string, joinMsg: net.JoinMsg) {
+    constructor(
+        game: Game,
+        pos: Vec2,
+        layer: number,
+        socketId: string,
+        joinMsg: net.JoinMsg,
+    ) {
         super(game, pos);
+
+        this.layer = layer;
 
         this.socketId = socketId;
 
@@ -1202,6 +1241,9 @@ export class Player extends BaseGameObject {
         if (this.game.map.factionMode) {
             this.timeUntilHidden -= dt;
         }
+
+        // players are still choosing a perk from the perk select menu
+        if (this.game.map.perkMode && !this.role) return;
 
         //
         // Boost logic
