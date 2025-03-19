@@ -3723,6 +3723,10 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (index === this.curWeapIdx && this.isReloading()) {
+            this.cancelAction();
+        }
+
         this.weaponManager.setWeapon(
             index,
             chosenWeaponType,
