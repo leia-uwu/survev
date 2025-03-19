@@ -274,6 +274,18 @@ export class GameMap {
         }
     }
 
+    scheduledUnlocks: Array<{
+        type: string;
+        stagger: number;
+        time: number;
+    }> = [];
+    unlocks: Array<{
+        unlockables: Obstacle[];
+        staggerTicker: number;
+        staggerAmount: number;
+        staggerCount: number;
+    }> = [];
+
     constructor(game: Game) {
         this.game = game;
 
@@ -427,7 +439,7 @@ export class GameMap {
         }
     }
 
-    update() {
+    update(dt: number) {
         for (let i = 0; i < this.buildingsWithEmitters.length; i++) {
             const building = this.buildingsWithEmitters[i];
 
@@ -470,6 +482,73 @@ export class GameMap {
             if (building.occupied !== oldOccupiedState) {
                 building.setPartDirty();
             }
+        }
+
+        for (let i = this.unlocks.length - 1; i >= 0; i--) {
+            const unlockObj = this.unlocks[i];
+            if (unlockObj.staggerTicker > 0) {
+                unlockObj.staggerTicker -= dt;
+                if (unlockObj.staggerTicker <= 0) {
+                    unlockObj.staggerCount--;
+                    if (unlockObj.staggerCount == 0) {
+                        unlockObj.staggerTicker = 0;
+                        this.unlocks.splice(i, 0);
+                    } else {
+                        unlockObj.staggerTicker = unlockObj.staggerAmount;
+                    }
+
+                    const unlockable = unlockObj.unlockables.shift();
+                    unlockable?.unlock();
+                }
+            }
+        }
+
+        for (let i = this.scheduledUnlocks.length - 1; i >= 0; i--) {
+            const scheduledUnlock = this.scheduledUnlocks[i];
+            scheduledUnlock.time -= dt;
+            if (scheduledUnlock.time <= 0) {
+                this.scheduledUnlocks.splice(i, 1);
+
+                const unlockObject =
+                    this.buildings.find((b) => b.type == scheduledUnlock.type) ||
+                    this.obstacles.find(
+                        (o) => o.type == scheduledUnlock.type && o.door && o.door.locked,
+                    );
+                if (!unlockObject) continue;
+
+                if (unlockObject.__type == ObjectType.Obstacle) {
+                    unlockObject.unlock();
+                    continue;
+                }
+
+                //building
+                const unlockables = unlockObject.childObjects.filter(
+                    (o) => o instanceof Obstacle && o.door && o.door.locked,
+                ) as Obstacle[];
+                this.unlocks.push({
+                    unlockables: unlockables,
+                    staggerTicker: scheduledUnlock.stagger,
+                    staggerAmount: scheduledUnlock.stagger,
+                    staggerCount: unlockables.length,
+                });
+            }
+        }
+    }
+
+    scheduleUnlocks(): void {
+        const unlocks = this.game.map.mapDef.gameConfig.unlocks;
+        if (!unlocks) return;
+        const unlocksToSchedule = unlocks.timings.filter(
+            (timing) => this.game.gas.circleIdx == timing.circleIdx,
+        );
+
+        for (let i = 0; i < unlocksToSchedule.length; i++) {
+            const unlock = unlocksToSchedule[i];
+            this.game.map.scheduledUnlocks.push({
+                type: unlock.type,
+                stagger: unlock.stagger,
+                time: unlock.wait,
+            });
         }
     }
 
@@ -1566,10 +1645,7 @@ export class GameMap {
         return obstacle;
     }
 
-    perkModeSpawnData?: {
-        pos: Vec2;
-        layer: number;
-    };
+    perkModeTwinsBunker?: Building;
 
     genBuilding(
         type: string,
@@ -1581,16 +1657,14 @@ export class GameMap {
     ): Building {
         const def = MapObjectDefs[type] as BuildingDef;
 
-        if (this.perkMode && type == "bunker_twins_sublevel_01") {
-            this.perkModeSpawnData = {
-                pos,
-                layer,
-            };
-        }
-
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
         const building = new Building(this.game, type, pos, ori, layer, parentId);
+
+        if (this.perkMode && type == "bunker_twins_sublevel_01") {
+            this.perkModeTwinsBunker = building;
+        }
+
         this.game.objectRegister.register(building);
         this.buildings.push(building);
         if (building.hasOccupiedEmitters) {

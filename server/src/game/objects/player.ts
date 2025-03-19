@@ -142,11 +142,11 @@ export class PlayerBarn {
 
         let pos: Vec2;
         let layer: number;
-        if (this.game.map.perkMode) {
+        if (this.game.map.perkMode && this.game.map.perkModeTwinsBunker) {
             //intermediate spawn point while the player chooses a perk before theyre moved to their real spawn point
-            const spawnData = this.game.map.perkModeSpawnData!;
-            pos = spawnData.pos;
-            layer = spawnData.layer;
+            const spawnBuilding = this.game.map.perkModeTwinsBunker;
+            pos = spawnBuilding.pos;
+            layer = spawnBuilding.layer;
         } else {
             pos = this.game.map.getSpawnPos(group, team);
             layer = 0;
@@ -220,7 +220,6 @@ export class PlayerBarn {
             scheduledRole.time -= dt;
             if (scheduledRole.time <= 0) {
                 this.scheduledRoles.splice(i, 1);
-                i--;
 
                 const fullAliveContext = this.game.modeManager.getAlivePlayersContext();
                 for (let i = 0; i < fullAliveContext.length; i++) {
@@ -902,7 +901,7 @@ export class Player extends BaseGameObject {
     }
 
     roleSelect(perkModeRoleSelectMsg: net.PerkModeRoleSelectMsg): void {
-        if (!this.game.map.perkModeSpawnData || this.role) return;
+        if (!this.game.map.perkModeTwinsBunker || this.role) return;
 
         const role = perkModeRoleSelectMsg.role;
         //so the client can't be manipulated to send lone survivr or something
@@ -1710,7 +1709,7 @@ export class Player extends BaseGameObject {
             const obstacles = this.getInteractableObstacles();
             for (let i = 0; i < obstacles.length; i++) {
                 const obstacle = obstacles[i];
-                if (obstacle.isDoor && !obstacle.door.open) {
+                if (obstacle.isDoor && obstacle.door && !obstacle.door.open) {
                     obstacle.interact(this);
                 }
             }
@@ -1794,7 +1793,7 @@ export class Player extends BaseGameObject {
                 }
             } else if (obj.__type === ObjectType.Obstacle) {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
-                if (!(obj.isDoor && obj.door.autoOpen)) continue;
+                if (!(obj.isDoor && obj.door && obj.door.autoOpen)) continue;
 
                 const res = collider.intersectCircle(
                     obj.collider,
