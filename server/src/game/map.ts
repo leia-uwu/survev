@@ -807,6 +807,11 @@ export class GameMap {
     ) {
         const def = MapObjectDefs[type];
 
+        if (!def) {
+            this.game.logger.warn("Type does not exist!", type);
+            return;
+        }
+
         const spawnReplacements = this.mapDef.mapGen.spawnReplacements[0];
         if (spawnReplacements[type] && !ignoreMapSpawnReplacement)
             type = spawnReplacements[type];

@@ -336,7 +336,20 @@ export class Obstacle extends BaseGameObject {
         this.updateCollider();
 
         if (def.destroyType) {
-            this.game.map.genAuto(def.destroyType, this.pos, this.layer, this.ori);
+            let destroyType: string;
+            //in cobalt, class shells need to spawn a pod that corresponds to the player's class (role)
+            if (
+                def.smartLoot &&
+                this.interactedBy &&
+                this.game.map.mapDef.gameMode.perkModeRoles?.includes(
+                    this.interactedBy.role,
+                )
+            ) {
+                destroyType = `${def.destroyType}_${this.interactedBy.role}`;
+            } else {
+                destroyType = def.destroyType;
+            }
+            this.game.map.genAuto(destroyType, this.pos, this.layer, this.ori);
         }
 
         //potatos in potato mode
@@ -440,8 +453,12 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
+    interactedBy?: Player;
+
     interact(player?: Player, auto = false): void {
         if (this.dead) return;
+
+        this.interactedBy = player;
 
         if (this.isDoor) {
             if (this.door.autoOpen && !auto) return;

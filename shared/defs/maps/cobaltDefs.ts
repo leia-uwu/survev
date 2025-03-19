@@ -44,6 +44,11 @@ const mapDef: PartialMapDef = {
                 },
             ],
         },
+        fixedSpawns: [
+            {
+                class_shell_01: 15,
+            },
+        ],
     },
     /* STRIP_FROM_PROD_CLIENT:END */
     gameMode: {
