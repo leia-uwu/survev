@@ -10,10 +10,10 @@ import { v2 } from "../../../shared/utils/v2";
 import type { Account } from "../account";
 import type { AudioManager } from "../audioManager";
 import { Camera } from "../camera";
-import type { ConfigManager } from "../config";
+import type { ConfigManager, DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { DebugOptions, Game } from "../game";
+import type { Game } from "../game";
 import type { InputBinds } from "../inputBinds";
 import { Map } from "../map";
 import { DecalBarn } from "../objects/decal";
@@ -367,7 +367,9 @@ export class LoadoutDisplay {
     }
 
     update(dt: number, hasFocus: boolean) {
-        const debug: DebugOptions = {};
+        const debug = {
+            render: {},
+        } as DebugOptions;
 
         // Camera
         this.camera.m_pos = v2.sub(this.activePlayer.m_pos, this.cameraOffset);

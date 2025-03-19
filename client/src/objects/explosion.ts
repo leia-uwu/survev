@@ -1,10 +1,16 @@
-import { ExplosionDefs } from "../../../shared/defs/gameObjects/explosionsDefs";
+import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
+import {
+    type ExplosionDef,
+    ExplosionDefs,
+} from "../../../shared/defs/gameObjects/explosionsDefs";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
+import type { DebugOptions } from "../config";
+import { debugLines } from "../debugLines";
 import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import type { Particle, ParticleBarn } from "./particles";
@@ -302,7 +308,7 @@ export class ExplosionBarn {
         camera: Camera,
         particleBarn: ParticleBarn,
         audioManager: AudioManager,
-        _debug: unknown,
+        debug: DebugOptions,
     ) {
         for (let i = 0; i < this.explosions.length; i++) {
             const e = this.explosions[i];
@@ -310,6 +316,12 @@ export class ExplosionBarn {
                 e.update(dt, this, particleBarn, audioManager, map, camera);
                 if (!e.active) {
                     e.free();
+                }
+
+                if (IS_DEV && debug.render.explosions) {
+                    const def = GameObjectDefs[e.type] as ExplosionDef;
+                    debugLines.addCircle(e.pos, def.rad.min, 0xff0000, 0);
+                    debugLines.addCircle(e.pos, def.rad.max, 0xff9900, 0);
                 }
             }
         }

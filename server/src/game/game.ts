@@ -240,6 +240,7 @@ export class Game {
             | net.DropItemMsg
             | net.SpectateMsg
             | net.PerkModeRoleSelectMsg
+            | net.EditMsg
             | undefined = undefined;
 
         switch (type) {
@@ -267,6 +268,11 @@ export class Game {
                 break;
             case net.MsgType.PerkModeRoleSelect:
                 msg = new net.PerkModeRoleSelectMsg();
+                msg.deserialize(stream);
+                break;
+            case net.MsgType.Edit:
+                if (!Config.debug.allowEditMsg) break;
+                msg = new net.EditMsg();
                 msg.deserialize(stream);
                 break;
         }
@@ -326,6 +332,11 @@ export class Game {
             }
             case net.MsgType.PerkModeRoleSelect: {
                 player.roleSelect(msg as net.PerkModeRoleSelectMsg);
+                break;
+            }
+            case net.MsgType.Edit: {
+                player.processEditMsg(msg as net.EditMsg);
+                break;
             }
         }
     }

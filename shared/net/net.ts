@@ -316,6 +316,7 @@ export class UpdatePassMsg {
 export { JoinMsg } from "./joinMsg";
 export { DisconnectMsg } from "./disconnectMsg";
 export { InputMsg } from "./inputMsg";
+export { EditMsg } from "./editMsg";
 export { JoinedMsg } from "./joinedMsg";
 export { UpdateMsg, getPlayerStatusUpdateRate } from "./updateMsg";
 export { KillMsg } from "./killMsg";

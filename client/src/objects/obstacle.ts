@@ -9,9 +9,9 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
+import type { DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
-import { device } from "../device";
-import type { Ctx, DebugOptions } from "../game";
+import type { Ctx } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import type { Emitter, ParticleBarn } from "./particles";
@@ -476,8 +476,11 @@ export class Obstacle implements AbstractObject {
             this.door.casingSprite.visible = !this.dead;
         }
 
-        if (device.debug && debug.obstacles && util.sameLayer(layer, this.layer)) {
-            debugLines.addCollider(this.collider, 0xff0000, 0);
+        if (IS_DEV && debug.render.obstacles && util.sameLayer(layer, this.layer)) {
+            const def = MapObjectDefs[this.type] as ObstacleDef;
+
+            const color = def.collidable ? 0xff0000 : 0xffff00;
+            debugLines.addCollider(this.collider, color, 0.1);
         }
     }
 }

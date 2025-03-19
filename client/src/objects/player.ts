@@ -33,9 +33,10 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Animations, Bones, IdlePoses, Pose } from "../animData";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
+import type { DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { Ctx, DebugOptions } from "../game";
+import type { Ctx } from "../game";
 import { helpers } from "../helpers";
 import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
@@ -1291,18 +1292,28 @@ export class Player implements AbstractObject {
         this.auraContainer.position.set(screenPos.x, screenPos.y);
         this.auraContainer.scale.set(screenScale, screenScale);
 
-        if (device.debug && debug.players) {
+        if (IS_DEV && debug.render.players) {
             debugLines.addCircle(this.m_pos, this.m_rad, 0xff0000, 0);
 
             const weapDef = GameObjectDefs[this.m_netData.m_activeWeapon];
+            const renderGun = (offHand: boolean) => {
+                if (weapDef.type !== "gun") return;
+
+                const gunOff = weapDef.isDual
+                    ? weapDef.dualOffset! * (offHand ? 1.0 : -1.0)
+                    : weapDef.barrelOffset;
+                const gunPos = v2.add(this.m_pos, v2.mul(v2.perp(this.m_dir), gunOff));
+
+                debugLines.addRay(gunPos, this.m_dir, weapDef.barrelLength, 0xff0000, 0);
+            };
             if (weapDef.type === "gun") {
-                debugLines.addRay(
-                    this.m_pos,
-                    this.m_dir,
-                    weapDef.barrelLength,
-                    0xff0000,
-                    0,
-                );
+                renderGun(false);
+                if (weapDef.isDual) {
+                    renderGun(true);
+                }
+            } else if (weapDef.type === "melee") {
+                const coll = this.getMeleeCollider();
+                debugLines.addCollider(coll, 0xff0000, 0.1);
             }
         }
     }

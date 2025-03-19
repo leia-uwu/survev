@@ -11,9 +11,9 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
+import type { DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
-import type { DebugOptions } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import { Pool } from "./objectPool";
@@ -232,12 +232,12 @@ export class LootBarn {
                 const screenPos = camera.m_pointToScreen(pos);
                 const screenScale = camera.m_pixels(loot.imgScale * scale);
 
-                if (device.debug && debug.loot && activePlayer.layer === loot.layer) {
-                    debugLines.addCircle(loot.pos, loot.rad, 0xff0000, 0);
-                }
-
                 loot.container.position.set(screenPos.x, screenPos.y);
                 loot.container.scale.set(screenScale, screenScale);
+
+                if (IS_DEV && debug.render.loot && activePlayer.layer === loot.layer) {
+                    debugLines.addCircle(loot.pos, loot.rad, 0xff0000, 0);
+                }
             }
         }
     }

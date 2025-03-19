@@ -46,7 +46,9 @@ type Shape = LineShape | RayShape | CircleShape | AabbShape;
 class DebugLines {
     shapes: Shape[] = [];
 
-    addLine(start: Vec2, end: Vec2, color: number, fill: number) {
+    addLine(start: Vec2, end: Vec2, color: number, fill = 0) {
+        if (!IS_DEV) return;
+
         this.shapes.push({
             type: kShapes.Line,
             start: v2.copy(start),
@@ -56,7 +58,9 @@ class DebugLines {
         });
     }
 
-    addRay(pos: Vec2, dir: Vec2, len: number, color: number, fill: number) {
+    addRay(pos: Vec2, dir: Vec2, len: number, color: number, fill = 0) {
+        if (!IS_DEV) return;
+
         this.shapes.push({
             type: kShapes.Ray,
             pos: v2.copy(pos),
@@ -68,6 +72,8 @@ class DebugLines {
     }
 
     addCircle(pos: Vec2, rad: number, color: number, fill: number) {
+        if (!IS_DEV) return;
+
         this.shapes.push({
             type: kShapes.Circle,
             pos: v2.copy(pos),
@@ -78,6 +84,8 @@ class DebugLines {
     }
 
     addAabb(min: Vec2, max: Vec2, color: number, fill: number) {
+        if (!IS_DEV) return;
+
         this.shapes.push({
             type: kShapes.Aabb,
             min: v2.copy(min),
@@ -88,6 +96,8 @@ class DebugLines {
     }
 
     addCollider(col: Collider, color: number, fill: number) {
+        if (!IS_DEV) return;
+
         if (col.type == collider.Type.Aabb) {
             this.addAabb(col.min, col.max, color, fill);
         } else {
@@ -96,8 +106,7 @@ class DebugLines {
     }
 
     m_render(camera: Camera, gfx: Graphics) {
-        /* STRIP_FROM_PROD_CLIENT:START */
-        gfx.clear();
+        if (!IS_DEV) return;
         for (let i = 0; i < this.shapes.length; i++) {
             const shape = this.shapes[i];
 
@@ -144,7 +153,6 @@ class DebugLines {
             }
             gfx.closePath();
         }
-        /* STRIP_FROM_PROD_CLIENT:END */
     }
 
     flush() {

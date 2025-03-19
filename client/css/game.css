@@ -3204,6 +3204,10 @@ span.ui-stats-header-value {
   font-size: 36px;
   margin-bottom: 8px;
   padding: 8px;
+  max-height: 500px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
 }
 
 .ui-editor-list {
@@ -3211,13 +3215,17 @@ span.ui-stats-header-value {
   list-style: none;
 }
 
+.ui-editor-list ul {
+  padding-inline-start: 15px;
+}
+
 #ui-editor-info-list {
   padding: 0px;
 }
 
 /*
-     * Profiler
-     */
+* Profiler
+*/
 #ui-profiler-top-left {
   position: absolute;
   color: #fff;
