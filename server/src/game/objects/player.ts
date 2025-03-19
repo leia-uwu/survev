@@ -1800,7 +1800,8 @@ export class Player extends BaseGameObject {
                 }
             } else if (obj.__type === ObjectType.Obstacle) {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
-                if (!(obj.isDoor && obj.door && obj.door.autoOpen)) continue;
+                if (!(obj.isDoor && obj.door && !obj.door.locked && obj.door.autoOpen))
+                    continue;
 
                 const res = collider.intersectCircle(
                     obj.collider,
