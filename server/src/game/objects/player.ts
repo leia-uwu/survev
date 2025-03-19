@@ -739,6 +739,11 @@ export class Player extends BaseGameObject {
 
     mapIndicator?: MapIndicator;
 
+    // spud gun variables
+
+    fatModifier = 0;
+    fatTicker = 0;
+
     promoteToRole(role: string) {
         const roleDef = GameObjectDefs[role] as RoleDef;
         if (!roleDef || roleDef.type !== "role") {
@@ -1542,6 +1547,15 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.fatModifier > 0) {
+            this.fatTicker -= dt;
+            if (this.fatTicker < 0) {
+                this.fatModifier -= 0.2 * dt;
+                this.fatModifier = math.max(0, this.fatModifier);
+                this.recalculateScale();
+            }
+        }
+
         //
         // Calculate new speed, position and check for collision with obstacles
         //
@@ -1581,7 +1595,7 @@ export class Player extends BaseGameObject {
 
         const circle = collider.createCircle(
             this.pos,
-            GameConfig.player.maxVisualRadius + this.speed * dt,
+            GameConfig.player.maxVisualRadius * this.scale + this.speed * dt,
         );
         const objs = this.game.grid.intersectCollider(circle);
 
@@ -3728,7 +3742,13 @@ export class Player extends BaseGameObject {
         const [chosenWeaponType, chosenWeaponDef] =
             weaponChoices[util.randomInt(0, weaponChoices.length - 1)];
 
-        let index = this.weaponManager.weapons.findIndex((w) => w.type == oldWeapon);
+        let index;
+        if (this.activeWeapon === oldWeapon) {
+            index = this.curWeapIdx;
+        } else {
+            index = this.weaponManager.weapons.findIndex((w) => w.type == oldWeapon);
+        }
+
         if (index == -1) {
             //defaults if we can't figure out what slot was used to "trigger" the weapon swap
             switch (oldWeaponDef.type) {
@@ -3745,6 +3765,10 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (index === this.curWeapIdx && this.isReloading()) {
+            this.cancelAction();
+        }
+
         this.weaponManager.setWeapon(
             index,
             chosenWeaponType,
@@ -3753,7 +3777,27 @@ export class Player extends BaseGameObject {
                 : 0,
         );
 
-        if (chosenWeaponDef.type == "throwable") {
+        if ("switchDelay" in chosenWeaponDef) {
+            this.weaponManager.weapons[index].cooldown = chosenWeaponDef.switchDelay;
+        }
+
+        if (chosenWeaponDef.type == "gun") {
+            const backpackLevel = this.getGearLevel(this.backpack);
+            const bagSpace = this.bagSizes[chosenWeaponDef.ammo]
+                ? this.bagSizes[chosenWeaponDef.ammo][backpackLevel]
+                : 0;
+
+            const ammo = math.clamp(
+                chosenWeaponDef.ammoSpawnCount - chosenWeaponDef.maxClip,
+                0,
+                bagSpace,
+            );
+
+            if (this.inventory[chosenWeaponDef.ammo] < ammo) {
+                this.inventory[chosenWeaponDef.ammo] = ammo;
+                this.inventoryDirty = true;
+            }
+        } else if (chosenWeaponDef.type == "throwable") {
             const backpackLevel = this.getGearLevel(this.backpack);
             const bagSpace = this.bagSizes[chosenWeaponType]
                 ? this.bagSizes[chosenWeaponType][backpackLevel]
@@ -4106,6 +4150,13 @@ export class Player extends BaseGameObject {
         }
     }
 
+    incrementFat() {
+        this.fatTicker = 2.5;
+        if (this.fatModifier > 0.6) return;
+        this.fatModifier += 0.06;
+        this.recalculateScale();
+    }
+
     giveHaste(type: HasteType, duration: number): void {
         this.hasteType = type;
         this.hasteSeq++;
@@ -4142,12 +4193,29 @@ export class Player extends BaseGameObject {
             scale += PerkProperties.final_bugle.scaleOnDeath;
         }
 
-        this.scale = math.clamp(
+        scale += this.fatModifier;
+
+        scale = math.clamp(
             scale,
             net.Constants.PlayerMinScale,
             net.Constants.PlayerMaxScale,
         );
+
+        if (scale === this.scale) return;
+
+        this.scale = scale;
+
         this.collider.rad = this.rad;
+
+        this.bounds = collider.createAabbExtents(
+            v2.create(0, 0),
+            v2.create(
+                GameConfig.player.maxVisualRadius * this.scale,
+                GameConfig.player.maxVisualRadius * this.scale,
+            ),
+        );
+        this.game.grid.updateObject(this);
+        this.setDirty();
     }
 
     recalculateSpeed(hasTreeClimbing: boolean): void {

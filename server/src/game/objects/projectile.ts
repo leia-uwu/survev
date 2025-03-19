@@ -10,7 +10,9 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import { BaseGameObject } from "./gameObject";
 
-const gravity = 10;
+// 10.5 is based on the distance a potato cannon projectile traveled before hitting the floor
+// and exploding, from recorded packets from the original game
+const gravity = 10.5;
 
 export class ProjectileBarn {
     projectiles: Projectile[] = [];
@@ -64,6 +66,8 @@ export class Projectile extends BaseGameObject {
 
     posZ: number;
     dir: Vec2;
+    initialDir: Vec2;
+
     type: string;
 
     rad: number;
@@ -104,6 +108,7 @@ export class Projectile extends BaseGameObject {
         this.fuseTime = fuseTime;
         this.damageType = damageType;
         this.dir = v2.normalizeSafe(vel);
+        this.initialDir = v2.copy(this.dir);
 
         const def = GameObjectDefs[type] as ThrowableDef;
         this.velZ = def.throwPhysics.velZ;
@@ -144,7 +149,7 @@ export class Projectile extends BaseGameObject {
                     util.random(-Math.PI / 2, Math.PI / 2),
                 );
                 const pos = v2.add(this.pos, v2.mul(randomDir, 7));
-                this.game.planeBarn.addAirStrike(pos, this.dir, this.playerId);
+                this.game.planeBarn.addAirStrike(pos, this.initialDir, this.playerId);
                 this.strobe.airstrikesLeft--;
                 this.strobe.airstrikeTicker = 0.85;
             }
@@ -164,6 +169,7 @@ export class Projectile extends BaseGameObject {
             // velocity needs to stay constant to reach max throw dist
             this.vel = v2.mul(this.vel, 1 / (1 + dt * (this.posZ != 0 ? 1.2 : 2)));
         }
+        const posOld = v2.copy(this.pos);
         this.pos = v2.add(this.pos, v2.mul(this.vel, dt));
 
         //
@@ -196,8 +202,13 @@ export class Projectile extends BaseGameObject {
                 );
                 if (intersection) {
                     if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
+                        let damage = 1;
+                        if (def.destroyNonCollidables && !obj.collidable) {
+                            damage = 999;
+                        }
+
                         obj.damage({
-                            amount: 1,
+                            amount: damage,
                             damageType: this.damageType,
                             gameSourceType: this.type,
                             mapSourceType: "",
@@ -206,10 +217,23 @@ export class Projectile extends BaseGameObject {
 
                         if (obj.dead || !obj.collidable) continue;
 
-                        this.pos = v2.add(
+                        const lineIntersection = collider.intersectSegment(
+                            obj.collider,
+                            posOld,
                             this.pos,
-                            v2.mul(intersection.dir, intersection.pen),
                         );
+
+                        if (lineIntersection) {
+                            this.pos = v2.add(
+                                lineIntersection.point,
+                                v2.mul(lineIntersection.normal, this.rad + 0.1),
+                            );
+                        } else {
+                            this.pos = v2.add(
+                                this.pos,
+                                v2.mul(intersection.dir, intersection.pen + 0.1),
+                            );
+                        }
 
                         if (def.explodeOnImpact) {
                             this.explode();
@@ -218,8 +242,9 @@ export class Projectile extends BaseGameObject {
                             const dir = v2.div(this.vel, len);
                             const normal = intersection.dir;
                             const dot = v2.dot(dir, normal);
-                            const newDir = v2.add(v2.mul(normal, dot * -2), this.dir);
-                            this.vel = v2.mul(newDir, len * 0.2);
+                            const newDir = v2.add(v2.mul(normal, dot * -2), dir);
+                            this.vel = v2.mul(newDir, len * 0.3);
+                            this.dir = v2.normalizeSafe(this.vel);
                         }
                     } else if (obj.collidable) {
                         this.obstacleBellowId = obj.__id;
@@ -238,6 +263,8 @@ export class Projectile extends BaseGameObject {
         }
 
         this.game.map.clampToMapBounds(this.pos, this.rad);
+
+        if (this.destroyed) return;
 
         const originalLayer = this.layer;
         this.checkStairs(objs, this.rad);
