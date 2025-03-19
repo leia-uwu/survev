@@ -3731,7 +3731,23 @@ export class Player extends BaseGameObject {
                 : 0,
         );
 
-        if (chosenWeaponDef.type == "throwable") {
+        if (chosenWeaponDef.type == "gun") {
+            const backpackLevel = this.getGearLevel(this.backpack);
+            const bagSpace = this.bagSizes[chosenWeaponDef.ammo]
+                ? this.bagSizes[chosenWeaponDef.ammo][backpackLevel]
+                : 0;
+
+            const ammo = math.clamp(
+                chosenWeaponDef.ammoSpawnCount - chosenWeaponDef.maxClip,
+                0,
+                bagSpace,
+            );
+
+            if (this.inventory[chosenWeaponDef.ammo] < ammo) {
+                this.inventory[chosenWeaponDef.ammo] = ammo;
+                this.inventoryDirty = true;
+            }
+        } else if (chosenWeaponDef.type == "throwable") {
             const backpackLevel = this.getGearLevel(this.backpack);
             const bagSpace = this.bagSizes[chosenWeaponType]
                 ? this.bagSizes[chosenWeaponType][backpackLevel]
