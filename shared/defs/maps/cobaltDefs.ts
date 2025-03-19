@@ -38,8 +38,8 @@ const mapDef: PartialMapDef = {
                 {
                     type: "bunker_twins_sublevel_01",
                     stagger: 0.2,
-                    circleIdx: 0,
-                    wait: 5,
+                    circleIdx: 2,
+                    wait: 0,
                 },
             ],
         },
