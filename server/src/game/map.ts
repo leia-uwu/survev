@@ -1561,6 +1561,11 @@ export class GameMap {
         return obstacle;
     }
 
+    perkModeSpawnData?: {
+        pos: Vec2;
+        layer: number;
+    };
+
     genBuilding(
         type: string,
         pos: Vec2,
@@ -1570,6 +1575,13 @@ export class GameMap {
         hideFromMap?: boolean,
     ): Building {
         const def = MapObjectDefs[type] as BuildingDef;
+
+        if (this.perkMode && type == "bunker_twins_sublevel_01") {
+            this.perkModeSpawnData = {
+                pos,
+                layer,
+            };
+        }
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
 
@@ -1667,7 +1679,7 @@ export class GameMap {
 
         let getPos: () => Vec2;
 
-        if (!group?.players[0]) {
+        if (!group?.spawnLeader) {
             const spawnMin = v2.create(this.shoreInset, this.shoreInset);
             const spawnMax = v2.create(
                 this.width - this.shoreInset,
@@ -1695,7 +1707,7 @@ export class GameMap {
             };
         } else {
             const rad = GameConfig.player.teammateSpawnRadius;
-            const pos = group.players[0].pos;
+            const pos = group.spawnLeader.pos;
             getPos = () => {
                 return v2.add(pos, util.randomPointInCircle(rad));
             };

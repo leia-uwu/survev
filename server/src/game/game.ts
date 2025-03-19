@@ -324,6 +324,9 @@ export class Game {
                 player.spectate(msg as net.SpectateMsg);
                 break;
             }
+            case net.MsgType.PerkModeRoleSelect: {
+                player.roleSelect(msg as net.PerkModeRoleSelectMsg);
+            }
         }
     }
 
