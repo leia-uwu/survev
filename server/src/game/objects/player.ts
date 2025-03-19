@@ -3735,6 +3735,10 @@ export class Player extends BaseGameObject {
                 : 0,
         );
 
+        if ("switchDelay" in chosenWeaponDef) {
+            this.weaponManager.weapons[index].cooldown = chosenWeaponDef.switchDelay;
+        }
+
         if (chosenWeaponDef.type == "gun") {
             const backpackLevel = this.getGearLevel(this.backpack);
             const bagSpace = this.bagSizes[chosenWeaponDef.ammo]
