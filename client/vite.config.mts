@@ -121,6 +121,7 @@ export default defineConfig(({ mode }) => {
             }),
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
             AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
+            IS_DEV: isDev,
         },
         plugins: !isDev
             ? [

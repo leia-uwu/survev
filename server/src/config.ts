@@ -44,6 +44,7 @@ export const Config = {
     debug: {
         spawnMode: "default",
         allowBots: !isProduction,
+        allowEditMsg: !isProduction,
     },
 
     rateLimitsEnabled: isProduction,
@@ -187,6 +188,7 @@ export interface ConfigType {
         // spawn pos for fixed, defaults to map center if not set
         spawnPos?: Vec2;
         allowBots: boolean;
+        allowEditMsg: boolean;
     };
 
     // overrides for default items; doesn't apply to bots

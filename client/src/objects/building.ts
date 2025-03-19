@@ -12,10 +12,15 @@ import { util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
-import { renderBridge, renderMapBuildingBounds } from "../debugHelpers";
+import type { DebugOptions } from "../config";
+import {
+    renderBridge,
+    renderMapBuildingBounds,
+    renderMapObstacleBounds,
+    renderWaterEdge,
+} from "../debugHelpers";
 import { debugLines } from "../debugLines";
-import { device } from "../device";
-import type { Ctx, DebugOptions } from "../game";
+import type { Ctx } from "../game";
 import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
@@ -376,6 +381,7 @@ export class Building implements AbstractObject {
         activePlayer: Player,
         renderer: Renderer,
         camera: Camera,
+        debug: DebugOptions,
     ) {
         // Puzzle effects
         if (this.hasPuzzle) {
@@ -469,6 +475,8 @@ export class Building implements AbstractObject {
                     vision.width! * 2,
                     vision.dist!,
                     5,
+                    debug.render.buildings?.ceiling,
+                    debugLines,
                 )
             ) {
                 canSeeInside = true;
@@ -653,15 +661,20 @@ export class Building implements AbstractObject {
     }
 
     render(_camera: Camera, debug: DebugOptions, layer: number) {
-        if (device.debug && layer === this.layer) {
-            if (debug.buildings?.bounds) {
+        if (IS_DEV && layer === this.layer) {
+            if (debug.render.buildings?.buildingBounds) {
                 renderMapBuildingBounds(this);
             }
-            if (debug?.bridge) {
+            if (debug.render.buildings?.obstacleBounds) {
+                renderMapObstacleBounds(this);
+            }
+            if (debug.render.buildings?.bridge) {
                 renderBridge(this);
             }
-
-            if (debug.buildings?.ceiling) {
+            if (debug.render.buildings.waterEdge) {
+                renderWaterEdge(this);
+            }
+            if (debug.render.buildings?.ceiling) {
                 for (let i = 0; i < this.ceiling.zoomRegions.length; i++) {
                     const region = this.ceiling.zoomRegions[i];
                     if (region.zoomIn) {
@@ -669,6 +682,15 @@ export class Building implements AbstractObject {
                     }
                     if (region.zoomOut) {
                         debugLines.addCollider(region.zoomOut, 0x0000ff, 0);
+                    }
+                }
+            }
+
+            if (debug.render.buildings?.floors) {
+                for (let i = 0; i < this.surfaces.length; i++) {
+                    const colliders = this.surfaces[i].colliders;
+                    for (let j = 0; j < colliders.length; j++) {
+                        debugLines.addCollider(colliders[j], 0xff0000, 0);
                     }
                 }
             }

@@ -127,6 +127,10 @@ export const collisionHelpers = {
         scanWidth: number,
         scanDist: number,
         rayCount: number,
+        debug?: boolean,
+        debugLines?: {
+            addRay: (pos: Vec2, dir: Vec2, dist: number, color: number) => void;
+        },
     ) {
         const toCol = collider.intersectCircle(col, pos, scanDist);
         if (!toCol) {
@@ -189,7 +193,10 @@ export const collisionHelpers = {
             );
             const dist = res ? v2.length(v2.sub(res.point, rayPos)) : 0.0;
             const rayHit = res && dist <= maxDist;
-
+            if (debug) {
+                const color = rayHit ? 0x00ff00 : 0xff0000;
+                debugLines?.addRay(rayPos, rayDir, scanDist, color);
+            }
             if (rayHit) {
                 return { dist };
             }

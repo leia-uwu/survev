@@ -13,10 +13,15 @@ import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Ambiance } from "../ambiance";
 import type Camera from "../camera";
-import { renderBridge, renderMapBuildingBounds, renderWaterEdge } from "../debugHelpers";
+import type { DebugOptions } from "../config";
+import {
+    renderBridge,
+    renderMapBuildingBounds,
+    renderMapObstacleBounds,
+    renderWaterEdge,
+} from "../debugHelpers";
 import { debugLines } from "../debugLines";
-import { device } from "../device";
-import type { Ctx, DebugOptions } from "../game";
+import type { Ctx } from "../game";
 import type { Map } from "../map";
 import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import type { AbstractObject, Player } from "./player";
@@ -241,21 +246,24 @@ export class Structure implements AbstractObject {
     }
 
     render(_camera: Camera, debug: DebugOptions, _layer: number) {
-        if (device.debug) {
-            if (debug.structures?.bounds) {
-                renderMapBuildingBounds(this);
-            }
-            if (debug?.bridge) {
-                renderBridge(this);
-            }
-            if (debug.structures?.waterEdge) {
-                renderWaterEdge(this);
-            }
-            if (debug.structures?.stairs) {
-                for (let i = 0; i < this.stairs.length; i++) {
-                    debugLines.addCollider(this.stairs[i].downAabb, 0x0000ff, 0);
-                    debugLines.addCollider(this.stairs[i].upAabb, 0x00ff00, 0);
-                }
+        if (!IS_DEV) return; // only debug rendering code here
+
+        if (debug.render.structures.buildingBounds) {
+            renderMapBuildingBounds(this);
+        }
+        if (debug.render.structures.obstacleBounds) {
+            renderMapObstacleBounds(this);
+        }
+        if (debug.render.structures.bridge) {
+            renderBridge(this);
+        }
+        if (debug.render.structures.waterEdge) {
+            renderWaterEdge(this);
+        }
+        if (debug.render.structures.stairs) {
+            for (let i = 0; i < this.stairs.length; i++) {
+                debugLines.addCollider(this.stairs[i].downAabb, 0x0000ff, 0);
+                debugLines.addCollider(this.stairs[i].upAabb, 0x00ff00, 0);
             }
         }
     }

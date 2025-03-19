@@ -15,9 +15,10 @@ import { type Vec2, v2 } from "../../shared/utils/v2";
 import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
 import type { Camera } from "./camera";
+import type { DebugOptions } from "./config";
+import { renderSpline } from "./debugHelpers";
 import { debugLines } from "./debugLines";
 import { device } from "./device";
-import type { DebugOptions } from "./game";
 import { Building } from "./objects/building";
 import type { DecalBarn } from "./objects/decal";
 import { Pool } from "./objects/objectPool";
@@ -58,6 +59,44 @@ function traceGroundPatch(canvas: PIXI.Graphics, patch: GroundPatch, seed: numbe
         canvas,
         generateJaggedAabbPoints(patch, divisionsX, divisionsY, offset, seededRand),
     );
+}
+
+function renderRiverDebug(river: River, playerPos: Vec2) {
+    const drawPoly = function drawPoly(poly: Vec2[], color: number) {
+        for (let i = 0; i < poly.length; i++) {
+            const a = poly[i];
+            const b = i < poly.length - 1 ? poly[i + 1] : poly[0];
+            debugLines.addLine(a, b, color, 0.0);
+        }
+    };
+
+    drawPoly(river.waterPoly, 0xffff00);
+    drawPoly(river.shorePoly, 0xff00ff);
+
+    const splinePts = river.spline.points;
+    for (let i = 0; i < splinePts.length; i++) {
+        debugLines.addCircle(splinePts[i], 1.0, 0x00ff00, 0.0);
+        if (i < splinePts.length - 1) {
+            debugLines.addLine(splinePts[i], splinePts[i + 1], 0xffff00, 0.0);
+        }
+    }
+
+    const { spline } = river;
+    const t = spline.getClosestTtoPoint(playerPos);
+    const closestPos = spline.getPos(t);
+    const closestTangent = v2.normalizeSafe(spline.getTangent(t), v2.create(1.0, 0.0));
+    const closestNormal = v2.perp(closestTangent);
+    const arcLen = spline.getArcLen(t);
+    const arcT = spline.getTfromArcLen(arcLen);
+    const arcPos = spline.getPos(arcT);
+
+    renderSpline(spline, spline.totalArcLen * 0.5);
+    debugLines.addCircle(arcPos, 0.9, 0xff00ff, 0.0);
+    debugLines.addCircle(closestPos, 1.0, 0xff0000, 0.0);
+    debugLines.addLine(closestPos, playerPos, 0x00ff00);
+    debugLines.addLine(closestPos, v2.add(closestPos, closestTangent), 0xff0000, 0.0);
+    debugLines.addLine(closestPos, v2.add(closestPos, closestNormal), 0x00ffff, 0.0);
+    debugLines.addAabb(river.aabb.min, river.aabb.max, 0xffffff, 0.0);
 }
 
 export class Map {
@@ -231,6 +270,7 @@ export class Map {
                     activePlayer,
                     renderer,
                     camera,
+                    debug,
                 );
                 building.render(camera, debug, activePlayer.layer);
             }
@@ -265,6 +305,12 @@ export class Map {
                 this.cameraEmitter.alpha,
                 alphaTarget,
             );
+        }
+
+        if (IS_DEV && debug.render.rivers) {
+            for (const river of this.terrain!.rivers) {
+                renderRiverDebug(river, camera.m_pos);
+            }
         }
     }
 
@@ -409,18 +455,6 @@ export class Map {
         // Translate and scale the map polygons to move the with camera
         this.display.ground.position.set(p0.x, p0.y);
         this.display.ground.scale.set(s.x, s.y);
-
-        if (device.debug) {
-            for (const river of this.terrain!.rivers) {
-                for (let i = 0; i < river.spline.points.length; i++) {
-                    const pointA = river.spline.points[i];
-                    debugLines.addCircle(pointA, 1, 0xff0000, 1);
-                    let pointB = river.spline.points[i + 1];
-                    if (!pointB) continue;
-                    debugLines.addLine(pointA, pointB, 0xff0000, 0);
-                }
-            }
-        }
     }
 
     getMinimapRender(obj: (typeof this.mapData.objects)[number]) {

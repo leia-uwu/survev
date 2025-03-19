@@ -572,6 +572,7 @@ export class Player extends BaseGameObject {
         this._zoom = zoom;
         this.zoomDirty = true;
     }
+    cullingZoom = 0;
 
     scopeZoomRadius: Record<string, number>;
 
@@ -1052,6 +1053,12 @@ export class Player extends BaseGameObject {
     isMobile: boolean;
 
     bot: boolean;
+
+    debug = {
+        zoomOverride: GameConfig.scopeZoomRadius["desktop"]["1xscope"],
+        overrideZoom: false,
+        zoomOverrideCulling: false,
+    };
 
     teamId = 1;
     groupId = 0;
@@ -1818,7 +1825,14 @@ export class Player extends BaseGameObject {
         if (insideSmoke || this.downed) {
             finalZoom = lowestZoom;
         }
-        this.zoom = finalZoom;
+
+        if (this.debug.overrideZoom) {
+            this.zoom = this.debug.zoomOverride;
+            this.cullingZoom = this.debug.zoomOverrideCulling ? finalZoom : this.zoom;
+        } else {
+            this.zoom = finalZoom;
+            this.cullingZoom = finalZoom;
+        }
 
         if (insideNoZoomRegion) {
             this.insideZoomRegion = false;
@@ -1963,7 +1977,7 @@ export class Player extends BaseGameObject {
             player = this.spectating;
         }
 
-        const radius = player.zoom + 4;
+        const radius = player.cullingZoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
 
         const newVisibleObjects = game.grid.intersectColliderSet(rect);
@@ -4037,6 +4051,35 @@ export class Player extends BaseGameObject {
             emoteMsg.type,
             emoteMsg.isPing,
         );
+    }
+
+    processEditMsg(msg: net.EditMsg) {
+        if (!Config.debug.allowEditMsg) return;
+
+        if (msg.loadNewMap) {
+            this.game.map.regenerate(msg.newMapSeed);
+        }
+
+        this.debug.overrideZoom = msg.overrideZoom;
+        this.debug.zoomOverrideCulling = msg.cull;
+        this.debug.zoomOverride = msg.zoom;
+
+        if (msg.spawnLootType) {
+            const def = GameObjectDefs[msg.spawnLootType];
+            if (!def || !("lootImg" in def)) return;
+            let count = 1;
+            if (this.bagSizes[msg.spawnLootType]) {
+                count = this.bagSizes[msg.spawnLootType][0];
+            }
+            this.game.lootBarn.addLoot(
+                msg.spawnLootType,
+                this.pos,
+                this.layer,
+                count,
+                false,
+                0,
+            );
+        }
     }
 
     isOnOtherSide(door: Obstacle): boolean {

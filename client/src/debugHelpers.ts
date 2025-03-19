@@ -42,7 +42,7 @@ export function renderMapBuildingBounds(mapObj: Building | Structure) {
     }
 }
 
-export function renderMapObstacleBounds(mapObj: Obstacle) {
+export function renderMapObstacleBounds(mapObj: Obstacle | Building | Structure) {
     const def = MapObjectDefs[mapObj.type] as ObstacleDef | BuildingDef | StructureDef;
     const boundScale = def.type == "building" || def.type == "structure" ? 1.1 : 1.0;
     let bounds = [
@@ -71,8 +71,8 @@ export function renderMapObstacleBounds(mapObj: Obstacle) {
     }
 }
 
-export function renderWaterEdge(mapObj: Structure) {
-    const def = MapObjectDefs[mapObj.type] as StructureDef;
+export function renderWaterEdge(mapObj: Structure | Building) {
+    const def = MapObjectDefs[mapObj.type] as StructureDef | BuildingDef;
     if (def.terrain.waterEdge !== undefined) {
         const { waterEdge } = def.terrain;
         const bounds = collider.transform(

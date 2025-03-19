@@ -72,7 +72,6 @@ class Device {
     tablet: boolean;
     touch: boolean;
     uiLayout: number;
-    debug = false;
     UiLayout = {
         Lg: 0,
         Sm: 1,

@@ -9,9 +9,10 @@ import { v2 } from "../../shared/utils/v2";
 import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
 import { Camera } from "./camera";
-import type { ConfigManager } from "./config";
+import type { ConfigManager, DebugOptions } from "./config";
 import { debugLines } from "./debugLines";
 import { device } from "./device";
+import { Editor } from "./editor";
 import { EmoteBarn } from "./emote";
 import { Gas } from "./gas";
 import { helpers } from "./helpers";
@@ -47,22 +48,6 @@ export interface Ctx {
     map: Map;
     smokeBarn: SmokeBarn;
     decalBarn: DecalBarn;
-}
-
-export interface DebugOptions {
-    players?: boolean;
-    obstacles?: boolean;
-    loot?: boolean;
-    buildings?: {
-        ceiling?: boolean;
-        bounds?: boolean;
-    };
-    bridge?: boolean;
-    structures?: {
-        bounds?: boolean;
-        waterEdge?: boolean;
-        stairs?: boolean;
-    };
 }
 
 export class Game {
@@ -117,6 +102,8 @@ export class Game {
     m_targetZoom!: number;
     m_debugZoom!: number;
     m_useDebugZoom!: boolean;
+
+    editor!: Editor;
 
     seq!: number;
     seqInFlight!: boolean;
@@ -268,6 +255,10 @@ export class Game {
         // this.audioManager,
         // this.uiManager
 
+        if (IS_DEV) {
+            this.editor = new Editor(this.m_config);
+        }
+
         // Register types
         const TypeToPool = {
             [ObjectType.Player]: this.m_playerBarn.playerPool,
@@ -395,9 +386,25 @@ export class Game {
     }
 
     update(dt: number) {
-        const smokeParticles = this.m_smokeBarn.m_particles;
+        if (IS_DEV) {
+            if (this.m_input.keyPressed(Key.Tilde)) {
+                this.editor.setEnabled(!this.editor.enabled);
+            }
+            if (this.editor.enabled) {
+                this.editor.m_update(dt, this.m_input, this.m_activePlayer, this.m_map);
+            }
+        }
 
-        const debug: DebugOptions = {};
+        let debug: DebugOptions;
+        if (IS_DEV) {
+            debug = this.m_config.get("debug")!;
+        } else {
+            debug = {
+                render: {},
+            } as DebugOptions;
+        }
+
+        const smokeParticles = this.m_smokeBarn.m_particles;
 
         if (this.m_playing) {
             this.m_playingTicker += dt;
@@ -422,6 +429,7 @@ export class Game {
         this.m_camera.m_pos = v2.copy(this.m_activePlayer.m_visualPos);
         this.m_camera.m_applyShake();
         const zoom = this.m_activePlayer.m_getZoom();
+
         const minDim = math.min(
             this.m_camera.m_screenWidth,
             this.m_camera.m_screenHeight,
@@ -785,6 +793,12 @@ export class Game {
         // Clear cached data
         this.m_ui2Manager.flushInput();
 
+        if (IS_DEV && this.editor.enabled && this.editor.sendMsg) {
+            var msg = this.editor.getMsg();
+            this.m_sendMessage(net.MsgType.Edit, msg);
+            this.editor.postSerialization();
+        }
+
         this.m_map.m_update(
             dt,
             this.m_activePlayer,
@@ -1016,10 +1030,13 @@ export class Game {
             debug,
         );
         this.m_emoteBarn.m_render(this.m_camera);
-        if (device.debug) {
-            debugLines.m_render(this.m_camera, this.m_debugDisplay);
+        if (IS_DEV) {
+            this.m_debugDisplay.clear();
+            if (debug.render.enabled) {
+                debugLines.m_render(this.m_camera, this.m_debugDisplay);
+            }
+            debugLines.flush();
         }
-        debugLines.flush();
     }
 
     updateAmbience() {
@@ -1588,7 +1605,7 @@ export class Game {
         }
     }
 
-    m_sendMessage(type: net.MsgType, data: net.Msg, maxLen: number) {
+    m_sendMessage(type: net.MsgType, data: net.Msg, maxLen?: number) {
         const bufSz = maxLen || 128;
         const msgStream = new net.MsgStream(new ArrayBuffer(bufSz));
         msgStream.serializeMsg(type, data);

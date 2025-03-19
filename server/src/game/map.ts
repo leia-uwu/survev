@@ -316,8 +316,8 @@ export class GameMap {
         );
     }
 
-    init() {
-        this.seed = util.randomInt(0, 2 ** 32 - 1);
+    init(seed?: number) {
+        this.seed = seed ?? util.randomInt(0, 2 ** 32 - 1);
 
         this.objectCount = {};
         this.obstacles = [];
@@ -403,7 +403,7 @@ export class GameMap {
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
 
-    regenerate() {
+    regenerate(seed?: number) {
         for (const obj of this.game.objectRegister.objects) {
             if (!obj) continue;
             // destroy everything :3
@@ -420,7 +420,7 @@ export class GameMap {
             }
         }
 
-        this.init();
+        this.init(seed);
 
         for (const player of this.game.playerBarn.players) {
             player.sendData(this.mapStream.getBuffer());
