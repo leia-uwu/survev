@@ -3700,7 +3700,13 @@ export class Player extends BaseGameObject {
         const [chosenWeaponType, chosenWeaponDef] =
             weaponChoices[util.randomInt(0, weaponChoices.length - 1)];
 
-        let index = this.weaponManager.weapons.findIndex((w) => w.type == oldWeapon);
+        let index;
+        if (this.activeWeapon === oldWeapon) {
+            index = this.curWeapIdx;
+        } else {
+            index = this.weaponManager.weapons.findIndex((w) => w.type == oldWeapon);
+        }
+
         if (index == -1) {
             //defaults if we can't figure out what slot was used to "trigger" the weapon swap
             switch (oldWeaponDef.type) {
