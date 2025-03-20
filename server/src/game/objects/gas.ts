@@ -356,6 +356,10 @@ export class Gas {
                 this.game.playerBarn.scheduleRoleAssignments();
             }
 
+            if (this.game.map.mapDef.gameConfig.unlocks) {
+                this.game.map.scheduleUnlocks();
+            }
+
             for (const plane of this.game.map.mapDef.gameConfig.planes.timings) {
                 if (plane.circleIdx === this.circleIdx) {
                     this.game.planeBarn.schedulePlane(plane.wait, plane.options);

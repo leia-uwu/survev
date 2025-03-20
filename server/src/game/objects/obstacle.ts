@@ -39,7 +39,7 @@ export class Obstacle extends BaseGameObject {
 
     interactionRad = 0;
 
-    door!: {
+    door?: {
         open: boolean;
         canUse: boolean;
         locked: boolean;
@@ -460,13 +460,13 @@ export class Obstacle extends BaseGameObject {
 
         this.interactedBy = player;
 
-        if (this.isDoor) {
+        if (this.isDoor && this.door) {
             if (this.door.autoOpen && !auto) return;
             clearTimeout(this.closeTimeout);
 
             if (this.door.autoClose) {
                 this.closeTimeout = setTimeout(() => {
-                    if (this.door.open) {
+                    if (this.door && this.door.open) {
                         this.toggleDoor(player);
                     }
                 }, this.door.autoCloseDelay * 1000);
@@ -501,6 +501,11 @@ export class Obstacle extends BaseGameObject {
         if (this.isButton && this.button.canUse) {
             this.useButton();
         }
+    }
+
+    unlock(): void {
+        this.interact(undefined, true);
+        this.game.playerBarn.addEmote(0, this.pos, "ping_unlock", true);
     }
 
     useButton(): void {
@@ -538,6 +543,8 @@ export class Obstacle extends BaseGameObject {
     }
 
     toggleDoor(player?: Player, useDir?: Vec2): void {
+        if (!this.door) return;
+
         this.door.open = !this.door.open;
 
         if (!this.door.slideToOpen) {

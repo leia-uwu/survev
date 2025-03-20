@@ -32,6 +32,18 @@ const mapDef: PartialMapDef = {
         },
         particles: {},
     },
+    gameConfig: {
+        unlocks: {
+            timings: [
+                {
+                    type: "bunker_twins_sublevel_01",
+                    stagger: 0.2,
+                    circleIdx: 2,
+                    wait: 0,
+                },
+            ],
+        },
+    },
     /* STRIP_FROM_PROD_CLIENT:START */
     mapGen: {
         customSpawnRules: {
