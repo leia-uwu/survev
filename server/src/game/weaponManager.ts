@@ -770,7 +770,7 @@ export class WeaponManager {
                 damageMult,
                 shotFx: i === 0,
                 shotOffhand: offHand,
-                trailSaturated: saturated,
+                trailSaturated: shouldApplyChambered || saturated,
                 trailSmall: false,
                 trailThick: shouldApplyChambered,
                 reflectCount: 0,
