@@ -14,8 +14,8 @@ import { Config } from "./config";
 import {
     HTTPRateLimit,
     WebSocketRateLimit,
-    checkForBadWords,
     getIp,
+    validateUserName,
 } from "./utils/serverHelpers";
 
 export interface TeamSocketData {
@@ -252,15 +252,6 @@ export class TeamMenu {
         }
     }
 
-    cleanUserName(name: string): string {
-        if (!name || typeof name !== "string") return "Player";
-        name = name.trim();
-        if (checkForBadWords(name) || !name || name.length > 16) {
-            return "Player";
-        }
-        return name;
-    }
-
     validateMsg(msg: ClientToServerTeamMsg) {
         assert(typeof msg.type === "string");
 
@@ -327,7 +318,7 @@ export class TeamMenu {
 
         switch (type) {
             case "create": {
-                const name = this.cleanUserName(parsedMessage.data.playerData.name);
+                const name = validateUserName(parsedMessage.data.playerData.name);
 
                 const player: RoomPlayer = {
                     name,
@@ -376,7 +367,7 @@ export class TeamMenu {
                     break;
                 }
 
-                const name = this.cleanUserName(parsedMessage.data.playerData.name);
+                const name = validateUserName(parsedMessage.data.playerData.name);
 
                 const player = {
                     name,
@@ -393,7 +384,7 @@ export class TeamMenu {
                 break;
             }
             case "changeName": {
-                const newName = this.cleanUserName(parsedMessage.data.name);
+                const newName = validateUserName(parsedMessage.data.name);
                 const room = this.rooms.get(localPlayerData.roomUrl)!;
                 const player = room.players.find(
                     (p) => p.socketData === localPlayerData,

@@ -37,7 +37,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
-import { checkForBadWords } from "../../utils/serverHelpers";
+import { validateUserName } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
@@ -1102,10 +1102,8 @@ export class Player extends BaseGameObject {
 
         this.socketId = socketId;
 
-        this.name = joinMsg.name.trim();
-        if (this.name === "" || checkForBadWords(this.name)) {
-            this.name = "Player";
-        }
+        this.name = validateUserName(joinMsg.name);
+
         this.isMobile = joinMsg.isMobile;
 
         this.weapons = this.weaponManager.weapons;
