@@ -127,9 +127,11 @@ export class PlayerBarn {
             const stream = new net.MsgStream(new ArrayBuffer(128));
             stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
             this.game.sendSocketMsg(socketId, stream.getBuffer());
+
             setTimeout(() => {
                 this.game.closeSocket(socketId);
-            }, 1);
+            }, 250);
+            return;
         }
 
         const result = this.getGroupAndTeam(joinData);
