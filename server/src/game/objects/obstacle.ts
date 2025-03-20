@@ -11,32 +11,45 @@ import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
 import type { Building } from "./building";
 import { BaseGameObject, type DamageParams } from "./gameObject";
-import { Player } from "./player";
+import type { Player } from "./player";
 
 export class Obstacle extends BaseGameObject {
     override readonly __type = ObjectType.Obstacle;
     bounds: AABB;
-    collider!: Collider;
+
     // just to cope with shared client function typing
     active = true;
 
-    mapObstacleBounds: Collider[];
+    dead = false;
 
     type: string;
     ori: number;
-    scale: number;
+    rot: number;
 
-    healthT = 1;
+    layer: number;
+    originalLayer: number;
+
+    collider!: Collider;
+    mapObstacleBounds: Collider[];
+    collidable: boolean;
+    destructible: boolean;
 
     health: number;
     maxHealth: number;
+    healthT = 1;
 
+    scale: number;
     minScale: number;
     maxScale: number;
 
-    dead = false;
+    height: number;
 
     interactionRad = 0;
+    interactedBy?: Player;
+
+    get interactable() {
+        return this.button?.canUse ?? this.door?.canUse;
+    }
 
     isDoor: boolean;
     door?: {
@@ -76,14 +89,10 @@ export class Obstacle extends BaseGameObject {
 
     isPuzzlePiece: boolean;
     puzzlePiece?: string;
-    parentBuildingId?: number;
-    parentBuilding?: Building;
+
     isSkin: boolean;
     skinPlayerId?: number;
 
-    height: number;
-
-    collidable: boolean;
     isWindow: boolean;
     isWall: boolean;
     isTree: boolean;
@@ -91,24 +100,14 @@ export class Obstacle extends BaseGameObject {
     // auto opening / closing doors, regrowing potatos etc
     isDynamic: boolean;
 
-    layer: number;
-
-    originalLayer: number;
-
-    destructible: boolean;
-
-    rot: number;
-
-    get interactable() {
-        return this.button?.canUse ?? this.door?.canUse;
-    }
+    parentBuildingId?: number;
+    parentBuilding?: Building;
 
     toggleTicker = 0;
     togglePlayer: Player | undefined = undefined;
     toggleDir: Vec2 | undefined = undefined;
 
     killTicker = 0;
-
     regrowTicker = 0;
 
     constructor(
@@ -451,7 +450,7 @@ export class Obstacle extends BaseGameObject {
         //potatos in potato mode
         if (
             def.swapWeaponOnDestroy &&
-            params.source instanceof Player &&
+            params.source?.__type === ObjectType.Player &&
             params.gameSourceType
         ) {
             params.source.randomWeaponSwap(params.gameSourceType);
@@ -468,7 +467,10 @@ export class Obstacle extends BaseGameObject {
 
         const loot = [...def.loot];
 
-        if (params.source instanceof Player && params.source.hasPerk("scavenger")) {
+        if (
+            params.source?.__type === ObjectType.Player &&
+            params.source.hasPerk("scavenger")
+        ) {
             loot.push({
                 tier: "tier_world",
                 min: 1,
@@ -552,8 +554,6 @@ export class Obstacle extends BaseGameObject {
             }
         }
     }
-
-    interactedBy?: Player;
 
     interact(player?: Player, auto = false): void {
         if (this.dead) return;
