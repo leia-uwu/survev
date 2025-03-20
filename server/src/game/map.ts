@@ -261,11 +261,18 @@ export class GameMap {
     factionModeSplitOri: 0 | 1 = 0;
 
     obstacles!: Obstacle[];
+    /**
+     * Most obstacles are static
+     * This is used for ones that are not
+     * Like auto opening doors, regrowing potatos, etc
+     */
+    dynamicObstacles!: Obstacle[];
     buildings!: Building[];
     buildingsWithEmitters!: Building[];
     structures!: Structure[];
     bridges!: Structure[];
     objectCount!: Record<string, number>;
+
     incrementCount(type: string) {
         if (!this.objectCount[type]) {
             this.objectCount[type] = 1;
@@ -333,6 +340,7 @@ export class GameMap {
 
         this.objectCount = {};
         this.obstacles = [];
+        this.dynamicObstacles = [];
         this.buildings = [];
         this.buildingsWithEmitters = [];
         this.structures = [];
@@ -440,6 +448,10 @@ export class GameMap {
     }
 
     update(dt: number) {
+        for (let i = 0; i < this.dynamicObstacles.length; i++) {
+            this.dynamicObstacles[i].update(dt);
+        }
+
         for (let i = 0; i < this.buildingsWithEmitters.length; i++) {
             const building = this.buildingsWithEmitters[i];
 
@@ -1617,6 +1629,9 @@ export class GameMap {
         );
         this.game.objectRegister.register(obstacle);
         this.obstacles.push(obstacle);
+        if (obstacle.isDynamic) {
+            this.dynamicObstacles.push(obstacle);
+        }
 
         if (def.map?.display && layer === 0 && !hideFromMap)
             this.msg.objects.push(obstacle);
@@ -1642,6 +1657,9 @@ export class GameMap {
         obstacle.skinPlayerId = player.__id;
         this.game.objectRegister.register(obstacle);
         this.obstacles.push(obstacle);
+        if (obstacle.isDynamic) {
+            this.dynamicObstacles.push(obstacle);
+        }
         return obstacle;
     }
 

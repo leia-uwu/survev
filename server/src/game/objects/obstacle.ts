@@ -35,10 +35,10 @@ export class Obstacle extends BaseGameObject {
     maxScale: number;
 
     dead = false;
-    isDoor = false;
 
     interactionRad = 0;
 
+    isDoor: boolean;
     door?: {
         open: boolean;
         canUse: boolean;
@@ -63,9 +63,7 @@ export class Obstacle extends BaseGameObject {
         closedCollider: Collider;
     };
 
-    closeTimeout?: NodeJS.Timeout;
-
-    isButton = false;
+    isButton: boolean;
     button!: {
         onOff: boolean;
         canUse: boolean;
@@ -76,7 +74,7 @@ export class Obstacle extends BaseGameObject {
         useDir: Vec2;
     };
 
-    isPuzzlePiece = false;
+    isPuzzlePiece: boolean;
     puzzlePiece?: string;
     parentBuildingId?: number;
     parentBuilding?: Building;
@@ -90,6 +88,9 @@ export class Obstacle extends BaseGameObject {
     isWall: boolean;
     isTree: boolean;
 
+    // auto opening / closing doors, regrowing potatos etc
+    isDynamic: boolean;
+
     layer: number;
 
     originalLayer: number;
@@ -101,6 +102,14 @@ export class Obstacle extends BaseGameObject {
     get interactable() {
         return this.button?.canUse ?? this.door?.canUse;
     }
+
+    toggleTicker = 0;
+    togglePlayer: Player | undefined = undefined;
+    toggleDir: Vec2 | undefined = undefined;
+
+    killTicker = 0;
+
+    regrowTicker = 0;
 
     constructor(
         game: Game,
@@ -159,9 +168,8 @@ export class Obstacle extends BaseGameObject {
 
         this.destructible = !!def.destructible;
 
+        this.isDoor = !!def.door;
         if (def.door) {
-            this.isDoor = true;
-
             let openOri = this.ori;
             let openAltOri = this.ori;
             if (!def.door.slideToOpen) {
@@ -228,8 +236,8 @@ export class Obstacle extends BaseGameObject {
             this.checkLayer();
         }
 
+        this.isButton = !!def.button;
         if (def.button) {
-            this.isButton = true;
             this.button = {
                 onOff: false,
                 canUse: true,
@@ -242,6 +250,8 @@ export class Obstacle extends BaseGameObject {
             this.interactionRad = def.button.interactionRad;
         }
 
+        this.isDynamic = def.regrow || this.isDoor || this.isButton;
+
         if (this.interactionRad) {
             // add interaction radius margin to the bounds
             const margin = v2.create(this.interactionRad, this.interactionRad);
@@ -250,10 +260,96 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
+    update(dt: number): void {
+        if (this.toggleTicker > 0) {
+            this.toggleTicker -= dt;
+
+            if (this.toggleTicker < 0) {
+                // for auto closing doors
+                // check if theres a player near by before closing
+                // to avoid it closing for a single tick to open again
+                if (
+                    !(
+                        this.door &&
+                        this.door.open &&
+                        this.door.autoClose &&
+                        this.checkNearByPlayers()
+                    )
+                ) {
+                    this.toggleDoor(this.togglePlayer, this.toggleDir);
+                }
+            }
+        }
+
+        if (this.killTicker > 0) {
+            this.killTicker -= dt;
+            if (this.killTicker < 0) {
+                this.kill({
+                    dir: v2.create(0, 0),
+                    // obstacles that can kill themselves are airdrops being opened ig
+                    damageType: GameConfig.DamageType.Airdrop,
+                });
+            }
+        }
+
+        if (this.regrowTicker > 0) {
+            this.regrowTicker -= dt;
+            if (this.regrowTicker < 0) {
+                this.regrow();
+            }
+        }
+    }
+
+    delayedToggle(delay: number, player?: Player, dir?: Vec2) {
+        this.toggleTicker = delay;
+        this.togglePlayer = player;
+        this.toggleDir = dir;
+    }
+
     updateCollider() {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
         this.game.grid.updateObject(this);
+    }
+
+    checkNearByPlayers() {
+        if (!this.door) return false;
+
+        const coll = collider.createCircle(
+            this.door.openPos,
+            this.interactionRad + GameConfig.player.maxInteractionRad,
+        );
+        const objs = this.game.grid.intersectCollider(coll);
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (obj.__type !== ObjectType.Player) continue;
+            if (!util.sameLayer(this.layer, obj.layer)) continue;
+
+            const res = collider.intersectCircle(
+                this.collider,
+                this.pos,
+                this.interactionRad + obj.rad,
+            );
+
+            if (res) {
+                this.delayedToggle(this.door.autoCloseDelay);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    regrow() {
+        this.dead = false;
+        this.scale = this.maxScale;
+
+        this.health = this.maxHealth;
+        this.healthT = 1;
+
+        this.updateCollider();
+
+        this.setDirty();
     }
 
     checkLayer(): void {
@@ -361,6 +457,10 @@ export class Obstacle extends BaseGameObject {
             params.source.randomWeaponSwap(params.gameSourceType);
         }
 
+        if (def.regrow && def.regrowTimer) {
+            this.regrowTicker = def.regrowTimer;
+        }
+
         const lootPos = v2.copy(this.pos);
         if (def.lootSpawn) {
             v2.set(lootPos, v2.add(this.pos, v2.rotate(def.lootSpawn.offset, this.rot)));
@@ -462,14 +562,9 @@ export class Obstacle extends BaseGameObject {
 
         if (this.isDoor && this.door) {
             if (this.door.autoOpen && !auto) return;
-            clearTimeout(this.closeTimeout);
 
             if (this.door.autoClose) {
-                this.closeTimeout = setTimeout(() => {
-                    if (this.door && this.door.open) {
-                        this.toggleDoor(player);
-                    }
-                }, this.door.autoCloseDelay * 1000);
+                this.delayedToggle(this.door.autoCloseDelay, player);
             }
 
             if (this.door.autoOpen && this.door.open) return;
@@ -485,13 +580,8 @@ export class Obstacle extends BaseGameObject {
 
                 this.setDirty();
                 if (this.door.openDelay > 0) {
-                    setTimeout(
-                        () => {
-                            this.toggleDoor(player);
-                        },
-                        this.door.openDelay * 1000,
-                        this,
-                    );
+                    this.delayedToggle(this.door.openDelay, player);
+                    this.toggleTicker = this.door.openDelay;
                 } else {
                     this.toggleDoor(player);
                 }
@@ -520,10 +610,16 @@ export class Obstacle extends BaseGameObject {
 
         if (this.button.useType && this.parentBuilding) {
             for (const obj of this.parentBuilding.childObjects) {
-                if (obj instanceof Obstacle && obj.type === this.button.useType) {
-                    setTimeout(() => {
-                        obj.toggleDoor(undefined, this.button.useDir);
-                    }, this.button.useDelay * 1000);
+                if (
+                    obj.__type === ObjectType.Obstacle &&
+                    obj.type === this.button.useType &&
+                    obj.isDoor
+                ) {
+                    obj.delayedToggle(
+                        this.button.useDelay,
+                        undefined,
+                        this.button.useDir,
+                    );
                 }
             }
         }
@@ -532,12 +628,7 @@ export class Obstacle extends BaseGameObject {
         }
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (def.button?.destroyOnUse && def.destroyType) {
-            setTimeout(() => {
-                this.kill({
-                    damageType: GameConfig.DamageType.Airdrop,
-                    dir: v2.create(0, 0),
-                });
-            }, this.button.useDelay * 1000);
+            this.killTicker = this.button.useDelay;
         }
         this.setDirty();
     }
