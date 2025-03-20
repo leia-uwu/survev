@@ -4257,7 +4257,7 @@ export class Player extends BaseGameObject {
                 GameConfig.player.maxVisualRadius * this.scale,
             ),
         );
-        this.game.grid.updateObject(this);
+
         this.setDirty();
     }
 
