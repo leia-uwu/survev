@@ -315,7 +315,7 @@ export class Obstacle extends BaseGameObject {
         if (!this.door) return false;
 
         const coll = collider.createCircle(
-            this.door.openPos,
+            this.door.closedPos,
             this.interactionRad + GameConfig.player.maxInteractionRad,
         );
         const objs = this.game.grid.intersectCollider(coll);
@@ -326,8 +326,8 @@ export class Obstacle extends BaseGameObject {
             if (!util.sameLayer(this.layer, obj.layer)) continue;
 
             const res = collider.intersectCircle(
-                this.collider,
-                this.pos,
+                this.door.closedCollider,
+                obj.pos,
                 this.interactionRad + obj.rad,
             );
 
