@@ -182,6 +182,7 @@ class GameProcess implements GameData {
         this.id = id;
         this.teamMode = config.teamMode;
         this.mapName = config.mapName;
+        this.stopped = false;
 
         const mapDef = MapDefs[this.mapName as keyof typeof MapDefs] as MapDef;
         this.avaliableSlots = mapDef.gameMode.maxPlayers;
@@ -217,10 +218,6 @@ class GameProcess implements GameData {
     }
 }
 
-/**
- * Game manager that runs all game in the same process
- * Used for dev server
- */
 export class GameProcessManager implements GameManager {
     readonly sockets = new Map<string, WebSocket<GameSocketData>>();
 
