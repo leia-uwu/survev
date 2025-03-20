@@ -9,13 +9,13 @@ import { invalidateUserStatsCache } from "./routes/stats/user_stats";
 
 // @leia HELP!!!!!!!
 export async function saveGameInfoToDatabase(game: Game) {
-    const players = game.playerBarn.allPlayers;
+    const players = [...game.playerBarn.allPlayers];
     const values: Omit<MatchDataTable, "slug" | "createdAt">[] = [];
     const mapId = (MapDefs[game.mapName as keyof typeof MapDefs] as MapDef).mapId;
 
     await invalidateLeaderboards(players, mapId, game.teamMode);
 
-    // allPlayers has duplicates :sob:
+    // allPlayers has duplicates for some fucking reason :sob:
     const processedPlayers = new Set();
 
     for (let i = 0; i < players.length; i++) {
@@ -57,7 +57,7 @@ export async function saveGameInfoToDatabase(game: Game) {
     }
 
     if (!values.length) return;
-
+    
     try {
         await db.insert(matchDataTable).values(values);
         console.log(`Saved game data for ${game.id}`);

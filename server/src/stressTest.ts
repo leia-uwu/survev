@@ -421,6 +421,9 @@ void (() => {
             const response = (await (
                 await fetch(`${config.address}/api/find_game`, {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                     body: JSON.stringify({
                         region: config.region,
                         autoFill: true,

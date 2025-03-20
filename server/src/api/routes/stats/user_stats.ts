@@ -42,7 +42,6 @@ UserStatsRouter.post(
     validateParams(userStatsSchema),
     async (c) => {
         try {
-            // TODO: filter by interval
             const { interval, mapIdFilter, slug } = c.req.valid("json");
 
             const result = await db.query.usersTable.findFirst({

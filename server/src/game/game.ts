@@ -412,7 +412,7 @@ export class Game {
     private _saveGameToDatabase() {
         try {
             saveGameInfoToDatabase(this);
-            this.playerBarn.players.length = 0;
+            this.playerBarn.allPlayers.length = 0;
         } catch (e) {
             console.log(e);
         }

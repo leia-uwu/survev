@@ -203,13 +203,6 @@ export class PlayerBarn {
 
         this.game.updateData();
 
-        if (Config.accountsEnabled) {
-            lucia.validateSession(joinMsg.data).then((data) => {
-                if (data?.user && data.user.id) {
-                    player.authId = data.user.id;
-                }
-            });
-        }
         return player;
     }
 
@@ -1184,6 +1177,7 @@ export class Player extends BaseGameObject {
         }
 
         setLoadout(joinMsg, this);
+        this.setAuthId(joinMsg.authCookie);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
@@ -2205,6 +2199,20 @@ export class Player extends BaseGameObject {
 
         this.sendData(msgStream.getBuffer());
         this._firstUpdate = false;
+    }
+
+    /**
+     * gets authId from cookie to identify user when saving games to database
+     */
+    setAuthId(authCookie: string): void {
+        if (!Config.accountsEnabled || !authCookie) return;
+        lucia.validateSession(authCookie)
+        .then((data) => {
+            if (data?.user && data.user.id) {
+                this.authId = data.user.id;
+            }
+        })
+        .catch(err => console.warn("Failed to set player auth id", err));
     }
 
     spectate(spectateMsg: net.SpectateMsg): void {

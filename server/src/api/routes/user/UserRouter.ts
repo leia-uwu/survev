@@ -169,6 +169,7 @@ UserRouter.post(
     async (c) => {
         try {
             const user = c.get("user")!;
+            // !! TODO: validate the loadout sent from the client against the unlocked itmes that user have
             const { loadout } = c.req.valid("json");
             const validatedLoadout = validateLoadout(loadout);
 
@@ -345,6 +346,9 @@ UserRouter.post(
     },
 );
 
+//
+// NOT IMPLEMENTED
+//
 UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
     try {
         const user = c.get("user")!;
@@ -361,10 +365,6 @@ UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
     }
 });
 
-//
-// NOT IMPLEMENTED
-//
-
 UserRouter.post(
     "/get_pass",
     validateParams(
@@ -376,6 +376,7 @@ UserRouter.post(
         return c.json({ success: true }, 200);
     },
 );
+
 
 //
 // TYPES

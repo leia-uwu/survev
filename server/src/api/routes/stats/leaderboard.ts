@@ -115,7 +115,7 @@ const typeToQuery: Record<LeaderboardParams["type"], string> = {
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
-function soloLeaderboardQuery({ interval, mapId, teamMode, type }: LeaderboardParams) {
+async function soloLeaderboardQuery({ interval, mapId, teamMode, type }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
@@ -150,38 +150,29 @@ function soloLeaderboardQuery({ interval, mapId, teamMode, type }: LeaderboardPa
     return result.rows;
 }
 
-function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
+async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
     const query = sql.raw(`
-    WITH team_stats AS (
-      SELECT
-        game_id,
-        team_id,
-        region,
-        JSON_AGG(username) as usernames,
-        JSON_AGG(slug) as slugs,
-        SUM(kills) as val,
-        COUNT(DISTINCT(match_data.game_id)) as games
-      FROM match_data
-      team_mode = ${teamMode}
+        SELECT
+ JSON_AGG(match_data.username) as usernames,
+ JSON_AGG(users.slug) as slugs,
+ match_data.region,
+ COUNT(DISTINCT(match_data.game_id)) as games,
+ SUM(match_data.kills) as val
+FROM match_data
+INNER JOIN users ON users.id = match_data.user_id
+      WHERE 1=1
       ${intervalFilterQuery}
       ${mapIdFilterQuery}
-      GROUP BY game_id, team_id, region
-    )
-    SELECT
-      usernames,
-      slugs,
-      region,
-      games,
-      val
-    FROM team_stats
-    ORDER BY val DESC
-    LIMIT ${MAX_RESULT_COUNT};
-  `);
+      AND team_mode = ${teamMode}
+GROUP BY match_data.game_id, match_data.team_id, match_data.region
+ORDER BY val DESC
+LIMIT 100;`);
 
     const result = await db.execute<LeaderboardReturnType>(query);
+    console.log(result.rows)
     return result.rows;
 }
 
@@ -207,20 +198,12 @@ export async function shouldUpdateLeaderboard(
     return true;
 }
 
-export function getLowestScoreCacheKey({
-    teamMode,
-    mapId,
-    type,
-    interval,
-}: LeaderboardParams) {
+export function getLowestScoreCacheKey(params: LeaderboardParams) {
+    const { teamMode, mapId, type, interval } = params;
     return `leaderboard:lowest:${teamMode}:${mapId}:${type}:${interval}`;
 }
-export function getLeaderboardCacheKey({
-    teamMode,
-    mapId,
-    type,
-    interval,
-}: LeaderboardParams) {
+export function getLeaderboardCacheKey(params: LeaderboardParams) {
+    const { teamMode, mapId, type, interval } = params;
     return `leaderboard:${teamMode}:${mapId}:${type}:${interval}`;
 }
 async function setLeaderboardCache({
