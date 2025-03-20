@@ -4285,12 +4285,12 @@ export class Player extends BaseGameObject {
             | MeleeDef
             | ThrowableDef;
         if (!this.weaponManager.meleeAttacks.length) {
-            let speedBonus = 0;
+            let equipSpeed = weaponDef.speed.equip;
             if (this.hasPerk("small_arms") && weaponDef.type == "gun") {
-                speedBonus += 1;
+                equipSpeed = 1;
             }
 
-            this.speed += weaponDef.speed.equip + speedBonus;
+            this.speed += equipSpeed;
         }
 
         if (this.shotSlowdownTimer > 0 && weaponDef.speed.attack !== undefined) {
