@@ -135,7 +135,7 @@ app.post(
                 return ctx.json({ message: "Forbidden" }, 403);
             }
 
-            const message = handleModerationAction(data.action, data.ip, data.name);
+            const message = await handleModerationAction(data.action, data.ip, data.name);
 
             return ctx.json({ message });
         } catch (err) {

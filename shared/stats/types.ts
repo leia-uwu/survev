@@ -1,6 +1,6 @@
-//
+// TODO: use those typings ig?
 
-type MatchHistory = {
+export type MatchHistory = {
     guid: string;
     region: string;
     map_id: number;
@@ -16,15 +16,15 @@ type MatchHistory = {
     damage_taken: number;
 };
 
-type MatchHistoryRequest = {
+export type MatchHistoryRequest = {
     slug: string;
     offset: number;
     count: number;
     teamModeFilter: number;
 };
-type MatchHistoryResponse = MatchHistory[];
+export type MatchHistoryResponse = MatchHistory[];
 
-type MatchData = {
+export type MatchData = {
     slug: string | null;
     username: string;
     player_id: number;
@@ -39,16 +39,16 @@ type MatchData = {
     killed_ids: number[];
 };
 
-type MatchDataRequest = { gameId: string };
-type MatchDataResponse = MatchData;
+export type MatchDataRequest = { gameId: string };
+export type MatchDataResponse = MatchData;
 
-type UserStatsRequest = {
+export type UserStatsRequest = {
     slug: string;
     interval: string;
     mapIdFilter: 3;
 };
 
-type UserStatsResponse = {
+export type UserStatsResponse = {
     slug: string;
     username: string;
     player_icon: string;
@@ -60,7 +60,7 @@ type UserStatsResponse = {
     modes: Mode[];
 };
 
-interface Mode {
+export interface Mode {
     teamMode: number;
     games: number;
     wins: number;

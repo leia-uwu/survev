@@ -115,12 +115,7 @@ const typeToQuery: Record<LeaderboardParams["type"], string> = {
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
-async function soloLeaderboardQuery({
-    interval,
-    mapId,
-    teamMode,
-    type,
-}: LeaderboardParams) {
+function soloLeaderboardQuery({ interval, mapId, teamMode, type }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
@@ -155,7 +150,7 @@ async function soloLeaderboardQuery({
     return result.rows;
 }
 
-async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
+function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
