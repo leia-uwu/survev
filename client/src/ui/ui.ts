@@ -2365,7 +2365,7 @@ export class UiManager {
     setRoleMenuActive(active: boolean) {
         this.roleMenuActive = active;
         if (this.roleMenuActive) {
-            this.roleMenuTicker = 20;
+            this.roleMenuTicker = GameConfig.player.perkModeRoleSelectDuration;
             this.displayRoleMenu();
         } else {
             if (this.roleMenuInst) {
