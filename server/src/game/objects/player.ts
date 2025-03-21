@@ -2478,6 +2478,7 @@ export class Player extends BaseGameObject {
         this.cancelAction();
 
         this.weaponManager.throwThrowable();
+        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
         if (this.weapons[GameConfig.WeaponSlot.Melee].type === "pan") {
             this.wearingPan = true;
@@ -4327,7 +4328,7 @@ export class Player extends BaseGameObject {
             | GunDef
             | MeleeDef
             | ThrowableDef;
-        if (!this.weaponManager.meleeAttacks.length) {
+        if (this.weaponManager.meleeAttacks.length == 0) {
             let equipSpeed = weaponDef.speed.equip;
             if (this.hasPerk("small_arms") && weaponDef.type == "gun") {
                 equipSpeed = 1;
