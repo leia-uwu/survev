@@ -1,15 +1,16 @@
 import type { Context, Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
-import type {
-    ClientToServerTeamMsg,
-    RoomData,
-    ServerToClientTeamMsg,
-    TeamErrorMsg,
-    TeamMenuPlayer,
-    TeamStateMsg,
-} from "../../shared/net/team";
+import {
+    type ClientRoomData,
+    type ClientToServerTeamMsg,
+    type RoomData,
+    type ServerToClientTeamMsg,
+    type TeamErrorMsg,
+    type TeamMenuPlayer,
+    type TeamStateMsg,
+    zTeamClientMsg,
+} from "../../shared/types/team";
 import { math } from "../../shared/utils/math";
-import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
 import { Config } from "./config";
 import {
@@ -135,7 +136,7 @@ export class TeamMenu {
         );
     }
 
-    addRoom(roomUrl: string, initialRoomData: RoomData, roomLeader: RoomPlayer) {
+    addRoom(roomUrl: string, initialRoomData: ClientRoomData, roomLeader: RoomPlayer) {
         const enabledGameModeIdxs = Config.modes
             .slice(1)
             .filter((m) => m.enabled)
@@ -204,7 +205,7 @@ export class TeamMenu {
     /**
      * the only properties that can change are: region, gameModeIdx, autoFill, and maxPlayers (by virtue of gameModeIdx)
      */
-    modifyRoom(newRoomData: RoomData, room: Room): void {
+    modifyRoom(newRoomData: ClientRoomData, room: Room): void {
         room.roomData.gameModeIdx = newRoomData.gameModeIdx;
         room.roomData.maxPlayers = math.clamp(room.roomData.gameModeIdx * 2, 2, 4);
         room.roomData.autoFill = newRoomData.autoFill;
@@ -235,71 +236,24 @@ export class TeamMenu {
     }
 
     validateMsg(msg: ClientToServerTeamMsg) {
-        assert(typeof msg.type === "string");
-
-        function validateRoomData(data: RoomData) {
-            assert(typeof data.roomUrl === "string");
-            assert(typeof data.region === "string");
-            assert(typeof data.autoFill === "boolean");
-            assert(typeof data.gameModeIdx === "number");
-        }
-
-        switch (msg.type) {
-            case "create": {
-                assert(typeof msg.data === "object");
-                assert(typeof msg.data.playerData === "object");
-                assert(typeof msg.data.roomData === "object");
-                validateRoomData(msg.data.roomData);
-                break;
-            }
-            case "join": {
-                assert(typeof msg.data === "object");
-                assert(typeof msg.data.roomUrl === "string");
-                assert(typeof msg.data.playerData === "object");
-                break;
-            }
-            case "changeName": {
-                assert(typeof msg.data === "object");
-                break;
-            }
-            case "setRoomProps": {
-                assert(typeof msg.data === "object");
-                validateRoomData(msg.data);
-                break;
-            }
-            case "kick": {
-                assert(typeof msg.data === "object");
-                assert(typeof msg.data.playerId === "number");
-                break;
-            }
-            case "playGame": {
-                assert(typeof msg.data === "object");
-                assert(typeof msg.data.region === "string");
-                assert(Array.isArray(msg.data.zones));
-                assert(msg.data.zones.length < 5);
-                for (const zone of msg.data.zones) {
-                    assert(typeof zone === "string");
-                }
-                break;
-            }
-        }
+        zTeamClientMsg.parse(msg);
     }
 
     async handleMsg(message: string, localPlayerData: TeamSocketData) {
         let parsedMessage: ClientToServerTeamMsg;
         try {
             parsedMessage = JSON.parse(message);
+            console.log(parsedMessage);
             this.validateMsg(parsedMessage);
-        } catch {
+        } catch (e) {
             localPlayerData.closeSocket();
-            console.error("Failed parsing message");
+            console.error("Failed parsing message", e);
             return;
         }
 
-        const type = parsedMessage.type;
         let response: ServerToClientTeamMsg;
 
-        switch (type) {
+        switch (parsedMessage.type) {
             case "create": {
                 const name = validateUserName(parsedMessage.data.playerData.name);
 
@@ -444,18 +398,16 @@ export class TeamMenu {
                 this.sendRoomState(room);
 
                 const data = parsedMessage.data;
-                const playData = (
-                    await this.server.findGame({
-                        version: data.version,
-                        region: data.region,
-                        zones: data.zones,
-                        gameModeIdx: room.roomData.gameModeIdx,
-                        autoFill: room.roomData.autoFill,
-                        playerCount: room.players.length,
-                    })
-                ).res[0];
+                const findGameRes = await this.server.findGame({
+                    version: data.version,
+                    region: data.region,
+                    zones: data.zones,
+                    gameModeIdx: room.roomData.gameModeIdx,
+                    autoFill: room.roomData.autoFill,
+                    playerCount: room.players.length,
+                });
 
-                if ("err" in playData) {
+                if ("err" in findGameRes) {
                     response = teamErrorMsg("find_game_error");
                     this.sendResponse(response, player);
                     return;
@@ -464,8 +416,8 @@ export class TeamMenu {
                 response = {
                     type: "joinGame",
                     data: {
-                        ...playData,
-                        data: playData.data,
+                        ...findGameRes.res[0],
+                        data: findGameRes.res[0].data,
                     },
                 };
                 this.sendResponses(response, room.players);

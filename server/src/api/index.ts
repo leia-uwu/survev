@@ -7,8 +7,12 @@ import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
 import { z } from "zod";
 import { version } from "../../../package.json";
+import {
+    type FindGameBody,
+    type FindGameResponse,
+    zFindGameBody,
+} from "../../../shared/types/api";
 import { Config } from "../config";
-import type { FindGameBody } from "../gameServer";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp } from "../utils/serverHelpers";
 import { server } from "./apiServer";
@@ -66,7 +70,7 @@ server.init(app, upgradeWebSocket);
 
 const findGameRateLimit = new HTTPRateLimit(5, 3000);
 
-app.post("/api/find_game", async (c) => {
+app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
     try {
         const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
@@ -75,12 +79,7 @@ app.post("/api/find_game", async (c) => {
         }
 
         if (findGameRateLimit.isRateLimited(ip)) {
-            return c.json(
-                {
-                    res: [{ err: "you are being rate limited" }],
-                },
-                429,
-            );
+            return c.json<FindGameResponse>({ err: "rate-limited" }, 429);
         }
 
         const body = (await c.req.json()) as FindGameBody;
@@ -89,30 +88,37 @@ app.post("/api/find_game", async (c) => {
         return c.json(data);
     } catch (err) {
         server.logger.warn("/api/find_game: Error retrieving body", err);
-        return c.json(
-            {
-                res: [{ err: "Internal server error" }],
-            },
-            500,
-        );
+        return c.json({}, 500);
     }
 });
 
-app.post("/api/update_region", async (c) => {
-    try {
-        const { apiKey, regionId, data } = await c.req.json();
+app.post(
+    "/api/update_region",
+    validateParams(
+        z.object({
+            apiKey: z.string(),
+            regionId: z.string(),
+            data: z.object({
+                playerCount: z.number(),
+            }),
+        }),
+    ),
+    async (c) => {
+        try {
+            const { apiKey, regionId, data } = await c.req.json();
 
-        if (apiKey !== Config.apiKey || !(regionId in server.regions)) {
-            return c.body("Forbidden", 403);
+            if (apiKey !== Config.apiKey || !(regionId in server.regions)) {
+                return c.body("Forbidden", 403);
+            }
+
+            server.updateRegion(regionId, data);
+            return c.json({}, 200);
+        } catch (err) {
+            server.logger.warn("/api/find_game: Error processing request", err);
+            return c.json({ error: "Error processing request" }, 500);
         }
-
-        server.updateRegion(regionId, data);
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.warn("/api/find_game: Error processing request", err);
-        return c.json({ error: "Error processing request" }, 500);
-    }
-});
+    },
+);
 
 app.post(
     "/api/moderation",

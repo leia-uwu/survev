@@ -1,7 +1,7 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
+import type { FindGameBody, FindGameResponse } from "../../../shared/types/api";
 import { Config, type ConfigType } from "../config";
-import type { FindGameBody, FindGameResponse } from "../gameServer";
 import { TeamMenu } from "../teamMenu";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { Logger } from "../utils/logger";
@@ -118,9 +118,7 @@ export class ApiServer {
             );
         }
         this.logger.warn("/api/find_game: Invalid region");
-        return {
-            res: [{ err: "Invalid Region" }],
-        };
+        return { err: "full" };
     }
 }
 

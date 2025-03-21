@@ -4,8 +4,9 @@ import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
+import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
-import type { FindGameBody, GameSocketData } from "../gameServer";
+import type { GameSocketData } from "../gameServer";
 import { Game } from "./game";
 
 export interface ServerGameConfig {
@@ -23,7 +24,7 @@ export interface GameData {
     stopped: boolean;
 }
 
-export interface FindGameResponse {
+export interface JoinData {
     gameId: string;
     data: string;
 }
@@ -35,7 +36,7 @@ export abstract class GameManager {
 
     abstract getById(id: string): GameData | undefined;
 
-    abstract findGame(body: FindGameBody): Promise<FindGameResponse>;
+    abstract findGame(body: FindGameBody): Promise<JoinData>;
 
     abstract onOpen(socketId: string, socket: WebSocket<GameSocketData>): void;
 
@@ -139,7 +140,7 @@ export class SingleThreadGameManager implements GameManager {
         return this.gamesById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGameBody): Promise<JoinData> {
         const config = Config.modes[body.gameModeIdx];
 
         let game = this.games

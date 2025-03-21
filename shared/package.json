@@ -1,4 +1,7 @@
 {
-  "name": "@survev/shared",
-  "private": true
+    "name": "@survev/shared",
+    "private": true,
+    "dependencies": {
+        "zod": "^3.23.8"
+    }
 }

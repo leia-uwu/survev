@@ -2,6 +2,12 @@ import $ from "jquery";
 import * as PIXI from "pixi.js-legacy";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
+import type {
+    FindGameBody,
+    FindGameError,
+    FindGameMatchData,
+    FindGameResponse,
+} from "../../shared/types/api";
 import { math } from "../../shared/utils/math";
 import { Account } from "./account";
 import { Ambiance } from "./ambiance";
@@ -26,15 +32,6 @@ import { Pass } from "./ui/pass";
 import { ProfileUi } from "./ui/profileUi";
 import { TeamMenu } from "./ui/teamMenu";
 import { loadStaticDomImages } from "./ui/ui2";
-
-export interface MatchData {
-    zone: string;
-    gameId: number;
-    useHttps: boolean;
-    hosts: string[];
-    addrs: string[];
-    data: string;
-}
 
 class Application {
     nameInput = $("#player-name-input-solo");
@@ -417,7 +414,7 @@ class Application {
             );
     }
 
-    onTeamMenuJoinGame(data: MatchData) {
+    onTeamMenuJoinGame(data: FindGameMatchData) {
         this.waitOnAccount(() => {
             this.joinGame(data);
         });
@@ -590,7 +587,7 @@ class Application {
                 zones = [paramZone];
             }
 
-            const matchArgs = {
+            const matchArgs: FindGameBody = {
                 version,
                 region,
                 zones,
@@ -624,8 +621,8 @@ class Application {
     }
 
     findGame(
-        matchArgs: unknown,
-        cb: (err?: string | null, matchData?: MatchData) => void,
+        matchArgs: FindGameBody,
+        cb: (err?: FindGameError | null, matchData?: FindGameMatchData) => void,
     ) {
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
@@ -643,12 +640,13 @@ class Application {
                 data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
-                success: function (data: { err?: string; res: [MatchData] }) {
-                    if (data?.err && data.err != "full") {
+                success: function (data: FindGameResponse) {
+                    if ("err" in data && data.err != "full") {
                         cb(data.err);
                         return;
                     }
-                    const matchData = data?.res ? data.res[0] : null;
+
+                    const matchData = data.res ? data.res[0] : null;
                     if (matchData?.hosts && matchData.addrs) {
                         cb(null, matchData);
                     } else {
@@ -662,7 +660,7 @@ class Application {
         })(0, 2);
     }
 
-    joinGame(matchData: MatchData) {
+    joinGame(matchData: FindGameMatchData) {
         if (!this.game) {
             setTimeout(() => {
                 this.joinGame(matchData);
@@ -678,7 +676,7 @@ class Application {
                 }`,
             );
         }
-        const joinGameImpl = (urls: string[], matchData: MatchData) => {
+        const joinGameImpl = (urls: string[], matchData: FindGameMatchData) => {
             const url = urls.shift();
             if (!url) {
                 this.onJoinGameError("join_game_failed");
@@ -698,8 +696,8 @@ class Application {
         joinGameImpl(urls, matchData);
     }
 
-    onJoinGameError(err: string) {
-        const errMap = {
+    onJoinGameError(err: FindGameError) {
+        const errMap: Record<string, string> = {
             full: this.localization.translate("index-failed-finding-game"),
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
             join_game_failed: this.localization.translate("index-failed-joining-game"),
@@ -707,7 +705,7 @@ class Application {
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
         }
-        this.errorMessage = errMap[err as keyof typeof errMap] || errMap.full;
+        this.errorMessage = errMap[err] || errMap.full;
         this.quickPlayPendingModeIdx = -1;
         this.teamMenu.leave("join_game_failed");
         this.refreshUi();

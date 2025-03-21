@@ -3,15 +3,11 @@ import { randomBytes } from "crypto";
 import type { WebSocket } from "uWebSockets.js";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
+import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
-import type { FindGameBody, GameSocketData } from "../gameServer";
+import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
-import type {
-    FindGameResponse,
-    GameData,
-    GameManager,
-    ServerGameConfig,
-} from "./gameManager";
+import type { GameData, GameManager, JoinData, ServerGameConfig } from "./gameManager";
 
 let path: string;
 let args: string[];
@@ -336,7 +332,7 @@ export class GameProcessManager implements GameManager {
         return this.processById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGameBody): Promise<JoinData> {
         const mode = Config.modes[body.gameModeIdx];
 
         let game = this.processes

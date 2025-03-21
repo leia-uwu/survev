@@ -1,17 +1,17 @@
 import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import type { FindGameMatchData } from "../../../shared/types/api";
 import type {
     RoomData,
     ServerToClientTeamMsg,
     TeamStateMsg,
-} from "../../../shared/net/team";
+} from "../../../shared/types/team";
 import { api } from "../api";
 import type { AudioManager } from "../audioManager";
 import type { ConfigManager } from "../config";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import type { MatchData } from "../main";
 import type { PingTest } from "../pingTest";
 import type { SiteInfo } from "../siteInfo";
 import type { Localization } from "./localization";
@@ -77,7 +77,7 @@ export class TeamMenu {
         public siteInfo: SiteInfo,
         public localization: Localization,
         public audioManager: AudioManager,
-        public joinGameCb: (data: MatchData) => void,
+        public joinGameCb: (data: FindGameMatchData) => void,
         public leaveCb: (err: string) => void,
     ) {
         // Listen for ui modifications
@@ -307,7 +307,7 @@ export class TeamMenu {
             }
             case "joinGame":
                 this.joiningGame = true;
-                this.joinGameCb(data as MatchData);
+                this.joinGameCb(data as FindGameMatchData);
                 break;
             case "keepAlive":
                 break;

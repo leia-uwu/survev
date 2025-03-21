@@ -167,7 +167,11 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
 
-  shared: {}
+  shared:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.24.2
 
 packages:
 

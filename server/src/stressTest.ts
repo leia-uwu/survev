@@ -11,9 +11,13 @@ import {
     type ObjectsPartialData,
 } from "../../shared/net/objectSerializeFns";
 import type { LocalData } from "../../shared/net/updateMsg";
+import type {
+    FindGameBody,
+    FindGameMatchData,
+    FindGameResponse,
+} from "../../shared/types/api";
 import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
-import type { FindGameResponse } from "./gameServer";
 
 const config = {
     address: "http://127.0.0.1:8000",
@@ -151,7 +155,7 @@ class Bot {
 
     weapons: LocalData["weapons"] = [];
 
-    constructor(id: number, res: FindGameResponse["res"][0]) {
+    constructor(id: number, res: FindGameMatchData) {
         this.id = id;
 
         assert("gameId" in res);
@@ -422,11 +426,13 @@ void (() => {
                         autoFill: true,
                         gameModeIdx: config.gameModeIdx,
                         playerCount: 1,
-                    }),
+                        version: GameConfig.protocolVersion,
+                        zones: [config.region],
+                    } satisfies FindGameBody),
                 })
             ).json()) as FindGameResponse;
-            if ("err" in response.res[0]) {
-                console.log("Failed finding game, err:", response.res[0].err);
+            if ("err" in response) {
+                console.log("Failed finding game, err:", response.err);
                 return;
             }
 

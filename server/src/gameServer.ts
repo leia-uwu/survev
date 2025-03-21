@@ -1,6 +1,11 @@
 import { randomBytes } from "crypto";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
+import type {
+    FindGameBody,
+    FindGameMatchData,
+    FindGameResponse,
+} from "../../shared/types/api";
 import { math } from "../../shared/utils/math";
 import { Config } from "./config";
 import { SingleThreadGameManager } from "./game/gameManager";
@@ -16,29 +21,6 @@ import {
     readPostedJSON,
     returnJson,
 } from "./utils/serverHelpers";
-
-export interface FindGameBody {
-    region: string;
-    zones: string[];
-    version: number;
-    playerCount: number;
-    autoFill: boolean;
-    gameModeIdx: number;
-}
-
-export type FindGameResponse = {
-    res: Array<
-        | {
-              zone: string;
-              gameId: string;
-              useHttps: boolean;
-              hosts: string[];
-              addrs: string[];
-              data: string;
-          }
-        | { err: string }
-    >;
-};
 
 export interface GameSocketData {
     gameId: string;
@@ -225,11 +207,7 @@ export class GameServer {
         if (body.region !== this.regionId) {
             this.logger.warn("/api/find_game: Invalid region");
             return {
-                res: [
-                    {
-                        err: "Invalid Region",
-                    },
-                ],
+                err: "full",
             };
         }
 
@@ -245,11 +223,7 @@ export class GameServer {
 
         if (!mode || !mode.enabled) {
             return {
-                res: [
-                    {
-                        err: "Invalid game mode index",
-                    },
-                ],
+                err: "full",
             };
         }
 
@@ -261,7 +235,7 @@ export class GameServer {
 
         const data = await this.manager.findGame(body);
 
-        let response: FindGameResponse["res"][0] = {
+        let response: FindGameMatchData = {
             zone: "",
             data: data.data,
             gameId: data.gameId,
