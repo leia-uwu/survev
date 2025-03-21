@@ -1,0 +1,1 @@
+ALTER TABLE "match_data" ALTER COLUMN "map_seed" SET DATA TYPE bigint;
