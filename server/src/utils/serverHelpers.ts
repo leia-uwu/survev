@@ -1,5 +1,6 @@
 import { isIP } from "net";
 import type { Context } from "hono";
+import ProxyCheck, { type IPAddressInfo } from "proxycheck-ts";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
@@ -273,4 +274,58 @@ export class HTTPRateLimit {
             return ++ipData.count > this.limit;
         }
     }
+}
+
+const proxyCheck = Config.PROXYCHECK_KEY
+    ? new ProxyCheck({
+          api_key: Config.PROXYCHECK_KEY,
+      })
+    : undefined;
+
+const proxyCheckCache = new Map<
+    string,
+    {
+        info: IPAddressInfo;
+        expiresAt: number;
+    }
+>();
+
+export async function isBehindProxy(ip: string): Promise<boolean> {
+    if (!proxyCheck) return false;
+
+    let info: IPAddressInfo | undefined = undefined;
+    const cached = proxyCheckCache.get(ip);
+    if (cached && cached.expiresAt > Date.now()) {
+        info = cached.info;
+    }
+    if (!info) {
+        try {
+            const proxyRes = await proxyCheck.checkIP(ip);
+            switch (proxyRes.status) {
+                case "ok":
+                case "warning":
+                    info = proxyRes[ip];
+                    if (proxyRes.status === "warning") {
+                        console.warn(`ProxyCheck warning, res:`, proxyRes);
+                    }
+                    break;
+                case "denied":
+                case "error":
+                    console.error(`Failed to check for ip ${ip}:`, proxyRes);
+                    break;
+            }
+        } catch (error) {
+            console.error(`Proxycheck error:`, error);
+            return true;
+        }
+    }
+    if (!info) {
+        return true;
+    }
+    proxyCheckCache.set(ip, {
+        info,
+        expiresAt: Date.now() + 60 * 60 * 24, // a day
+    });
+
+    return info.proxy === "yes" || info.vpn === "yes";
 }

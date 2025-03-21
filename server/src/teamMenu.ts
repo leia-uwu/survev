@@ -17,6 +17,7 @@ import {
     HTTPRateLimit,
     WebSocketRateLimit,
     getHonoIp,
+    isBehindProxy,
     validateUserName,
 } from "./utils/serverHelpers";
 
@@ -82,16 +83,21 @@ export class TeamMenu {
 
         app.get(
             "/team_v2",
-            upgradeWebSocket((c) => {
+            upgradeWebSocket(async (c) => {
                 const ip = getHonoIp(c, Config.gameServer.proxyIPHeader);
 
-                let closeOnOpen = false;
+                let closeReason = "";
+
                 if (
                     !ip ||
                     httpRateLimit.isRateLimited(ip) ||
                     wsRateLimit.isIpRateLimited(ip)
                 ) {
-                    closeOnOpen = true;
+                    closeReason = "rate_limited";
+                }
+
+                if (await isBehindProxy(ip)) {
+                    closeReason = "behind_proxy";
                 }
 
                 wsRateLimit.ipConnected(ip!);
@@ -109,7 +115,15 @@ export class TeamMenu {
                         userData.closeSocket = () => ws.close();
                         userDataMap.set(c, userData);
 
-                        if (closeOnOpen) {
+                        if (closeReason) {
+                            ws.send(
+                                JSON.stringify({
+                                    type: "error",
+                                    data: {
+                                        type: closeReason,
+                                    },
+                                } satisfies TeamErrorMsg),
+                            );
                             ws.close();
                         }
                     },

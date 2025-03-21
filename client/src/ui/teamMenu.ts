@@ -28,6 +28,7 @@ function errorTypeToString(type: string, localization: Localization) {
         find_game_full: localization.translate("index-failed-finding-game"),
         find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
         kicked: localization.translate("index-team-kicked"),
+        behind_proxy: "behind_proxy", // this will get passed to the main app to show a modal
     };
     return typeMap[type as keyof typeof typeMap] || typeMap.lost_conn;
 }

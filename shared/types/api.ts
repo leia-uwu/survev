@@ -24,8 +24,9 @@ export type FindGameError =
     | "full"
     | "invalid_protocol"
     | "join_game_failed"
-    | "rate-limited"
-    | "banned";
+    | "rate_limited"
+    | "banned"
+    | "behind_proxy";
 
 export type FindGameResponse =
     | {

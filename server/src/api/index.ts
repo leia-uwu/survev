@@ -14,7 +14,7 @@ import {
 } from "../../../shared/types/api";
 import { Config } from "../config";
 import { GIT_VERSION } from "../utils/gitRevision";
-import { HTTPRateLimit, getHonoIp } from "../utils/serverHelpers";
+import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
 import { server } from "./apiServer";
 import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
@@ -79,7 +79,11 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         }
 
         if (findGameRateLimit.isRateLimited(ip)) {
-            return c.json<FindGameResponse>({ err: "rate-limited" }, 429);
+            return c.json<FindGameResponse>({ err: "rate_limited" }, 429);
+        }
+
+        if (await isBehindProxy(ip)) {
+            return c.json<FindGameResponse>({ err: "behind_proxy" });
         }
 
         const body = (await c.req.json()) as FindGameBody;

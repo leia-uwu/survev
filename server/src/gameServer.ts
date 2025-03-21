@@ -1,6 +1,7 @@
 import { randomBytes } from "crypto";
 import { App, SSLApp, type TemplatedApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
+import * as net from "../../shared/net/net";
 import type {
     FindGameBody,
     FindGameMatchData,
@@ -18,6 +19,7 @@ import {
     cors,
     forbidden,
     getIp,
+    isBehindProxy,
     readPostedJSON,
     returnJson,
 } from "./utils/serverHelpers";
@@ -28,6 +30,7 @@ export interface GameSocketData {
     closed: boolean;
     rateLimit: Record<symbol, number>;
     ip: string;
+    disconnectReason: string;
 }
 
 export class GameServer {
@@ -66,6 +69,9 @@ export class GameServer {
                 res.onAborted((): void => {
                     res.aborted = true;
                 });
+                const wskey = req.getHeader("sec-websocket-key");
+                const wsProtocol = req.getHeader("sec-websocket-protocol");
+                const wsExtensions = req.getHeader("sec-websocket-extensions");
 
                 const ip = getIp(res, req, Config.gameServer.proxyIPHeader);
 
@@ -95,19 +101,28 @@ export class GameServer {
                 gameWsRateLimit.ipConnected(ip);
 
                 const socketId = randomBytes(20).toString("hex");
-                res.upgrade(
-                    {
-                        gameId,
-                        id: socketId,
-                        closed: false,
-                        rateLimit: {},
-                        ip,
-                    },
-                    req.getHeader("sec-websocket-key"),
-                    req.getHeader("sec-websocket-protocol"),
-                    req.getHeader("sec-websocket-extensions"),
-                    context,
-                );
+                res.cork(async () => {
+                    let disconnectReason = "";
+
+                    if (await isBehindProxy(ip)) {
+                        disconnectReason = "behind_proxy";
+                    }
+
+                    res.upgrade(
+                        {
+                            gameId,
+                            id: socketId,
+                            closed: false,
+                            rateLimit: {},
+                            ip,
+                            disconnectReason,
+                        },
+                        wskey,
+                        wsProtocol,
+                        wsExtensions,
+                        context,
+                    );
+                });
             },
 
             /**
@@ -115,7 +130,19 @@ export class GameServer {
              * @param socket The socket being opened.
              */
             open(socket: WebSocket<GameSocketData>) {
-                server.manager.onOpen(socket.getUserData().id, socket);
+                const data = socket.getUserData();
+
+                if (data.disconnectReason) {
+                    const disconnectMsg = new net.DisconnectMsg();
+                    disconnectMsg.reason = data.disconnectReason;
+                    const stream = new net.MsgStream(new ArrayBuffer(128));
+                    stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
+                    socket.send(stream.getBuffer(), true, false);
+                    socket.end();
+                    return;
+                }
+
+                server.manager.onOpen(data.id, socket);
             },
 
             /**

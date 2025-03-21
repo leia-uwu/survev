@@ -50,6 +50,8 @@ export const Config = {
     GOOGLE_CLIENT_ID: "",
     GOOGLE_SECRET_ID: "",
 
+    PROXYCHECK_KEY: "",
+
     modes: [
         { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
@@ -180,6 +182,8 @@ export interface ConfigType {
     // ##### GOOGLE OAUTH #####
     GOOGLE_CLIENT_ID?: string;
     GOOGLE_SECRET_ID?: string;
+
+    PROXYCHECK_KEY?: string;
 
     /**
      * used to hide/disable account-related features in both client and server.

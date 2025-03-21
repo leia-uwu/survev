@@ -315,6 +315,9 @@ class Application {
                 if (errMsg == "index-invalid-protocol") {
                     this.showInvalidProtocolModal();
                 }
+                if (errMsg) {
+                    this.showErrorModal(errMsg);
+                }
             };
             this.game = new Game(
                 this.pixi,
@@ -424,6 +427,8 @@ class Application {
         if (errTxt && errTxt != "" && window.history) {
             window.history.replaceState("", "", "/");
         }
+        this.showErrorModal(errTxt);
+
         this.errorMessage = errTxt;
         this.setDOMFromConfig();
         this.refreshUi();
@@ -705,6 +710,8 @@ class Application {
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
         }
+        this.showErrorModal(err);
+
         this.errorMessage = errMap[err] || errMap.full;
         this.quickPlayPendingModeIdx = -1;
         this.teamMenu.leave("join_game_failed");
@@ -713,6 +720,21 @@ class Application {
 
     showInvalidProtocolModal() {
         this.refreshModal.show(true);
+    }
+
+    showErrorModal(err: string) {
+        console.trace();
+        const typeText: Record<string, string> = {
+            // TODO: translate those?
+            behind_proxy: this.localization.translate("index-behind-proxy"),
+            ip_banned: `Your IP has been banned`,
+        };
+        const text = typeText[err];
+
+        if (text) {
+            this.errorModal.selector.find(".modal-body-text").html(text);
+            this.errorModal.show();
+        }
     }
 
     update() {
