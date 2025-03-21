@@ -243,7 +243,6 @@ export class TeamMenu {
         let parsedMessage: ClientToServerTeamMsg;
         try {
             parsedMessage = JSON.parse(message);
-            console.log(parsedMessage);
             this.validateMsg(parsedMessage);
         } catch (e) {
             localPlayerData.closeSocket();

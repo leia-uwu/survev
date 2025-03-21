@@ -377,7 +377,6 @@ UserRouter.post(
     },
 );
 
-
 //
 // TYPES
 //

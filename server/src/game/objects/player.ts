@@ -2206,13 +2206,14 @@ export class Player extends BaseGameObject {
      */
     setAuthId(authCookie: string): void {
         if (!Config.accountsEnabled || !authCookie) return;
-        lucia.validateSession(authCookie)
-        .then((data) => {
-            if (data?.user && data.user.id) {
-                this.authId = data.user.id;
-            }
-        })
-        .catch(err => console.warn("Failed to set player auth id", err));
+        lucia
+            .validateSession(authCookie)
+            .then((data) => {
+                if (data?.user && data.user.id) {
+                    this.authId = data.user.id;
+                }
+            })
+            .catch((err) => console.warn("Failed to set player auth id", err));
     }
 
     spectate(spectateMsg: net.SpectateMsg): void {

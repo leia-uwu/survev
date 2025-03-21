@@ -57,7 +57,7 @@ export async function saveGameInfoToDatabase(game: Game) {
     }
 
     if (!values.length) return;
-    
+
     try {
         await db.insert(matchDataTable).values(values);
         console.log(`Saved game data for ${game.id}`);

@@ -166,7 +166,6 @@ async function userStatsSqlQuery(
     `);
 
     const data = await db.execute(query);
-    console.log(data.rows);
     const userStats = data.rows[0] as any;
 
     if (!userStats) return emptyState as unknown as UserStatsResponse;

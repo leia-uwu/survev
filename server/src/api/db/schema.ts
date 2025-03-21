@@ -92,7 +92,15 @@ export const matchDataTable = pgTable(
         ),
         index("idx_game_id").on(table.gameId),
         index("idx_user_id").on(table.userId),
-        index("idx_match_data_team_query").on(table.teamMode, table.mapId, table.createdAt, table.gameId, table.teamId, table.region, table.kills),
+        index("idx_match_data_team_query").on(
+            table.teamMode,
+            table.mapId,
+            table.createdAt,
+            table.gameId,
+            table.teamId,
+            table.region,
+            table.kills,
+        ),
     ],
 );
 
