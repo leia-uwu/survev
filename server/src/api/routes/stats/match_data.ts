@@ -43,8 +43,8 @@ matchDataRouter.post(
                 .where(eq(matchDataTable.gameId, gameId));
 
             return c.json<MatchData[]>(result);
-        } catch (_err) {
-            server.logger.warn("/api/match_data: Error getting match data");
+        } catch (err) {
+            server.logger.warn("/api/match_data: Error getting match data", err);
             return c.json({}, 500);
         }
     },

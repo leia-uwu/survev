@@ -20,8 +20,8 @@ function decryptLoadout(encodedLoadout: string): Loadout | undefined {
         const extractedSecret = decoded.slice(-loadoutSecret.length);
 
         if (extractedSecret === loadoutSecret) return JSON.parse(loadoutStr) as Loadout;
-    } catch (_err) {
-        console.log(_err);
+    } catch (err) {
+        console.log(err);
     }
 }
 

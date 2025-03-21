@@ -42,8 +42,8 @@ export const AuthMiddleware = async (c: Context, next: Next) => {
         c.set("user", user);
         c.set("session", session);
         return next();
-    } catch (_err) {
-        server.logger.warn("Error trying to authenticate user");
+    } catch (err) {
+        server.logger.warn("Error trying to authenticate user", err);
         return c.json({ error: "Authentication failed" }, 500);
     }
 };

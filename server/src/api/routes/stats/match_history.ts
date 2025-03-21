@@ -85,8 +85,8 @@ matchHistoryRouter.post(
                 .limit(10);
 
             return c.json(data);
-        } catch (_err) {
-            server.logger.warn("/api/match_history: Error getting match history");
+        } catch (err) {
+            server.logger.warn("/api/match_history: Error getting match history", err);
             return c.json({}, 500);
         }
     },

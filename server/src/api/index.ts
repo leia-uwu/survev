@@ -88,8 +88,8 @@ app.post("/api/find_game", async (c) => {
 
         const data = await server.findGame(body);
         return c.json(data);
-    } catch (_err) {
-        server.logger.warn("/api/find_game: Error retrieving body");
+    } catch (err) {
+        server.logger.warn("/api/find_game: Error retrieving body", err);
         return c.json(
             {
                 res: [{ err: "Internal server error" }],
@@ -109,8 +109,8 @@ app.post("/api/update_region", async (c) => {
 
         server.updateRegion(regionId, data);
         return c.json({}, 200);
-    } catch (_err) {
-        server.logger.warn("/api/find_game: Error processing request");
+    } catch (err) {
+        server.logger.warn("/api/find_game: Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
     }
 });
@@ -138,8 +138,8 @@ app.post(
             const message = handleModerationAction(data.action, data.ip, data.name);
 
             return ctx.json({ message });
-        } catch (_err) {
-            server.logger.warn("/api/moderation: Error processing request");
+        } catch (err) {
+            server.logger.warn("/api/moderation: Error processing request", err);
             return ctx.json({ message: "An unexpected error occurred." }, 500);
         }
     },
@@ -162,8 +162,8 @@ app.post("/api/report_error", async (c) => {
             }),
         });
         return c.json({ success: true }, 200);
-    } catch (_err) {
-        server.logger.warn("/api/report_error: Invalid request");
+    } catch (err) {
+        server.logger.warn("/api/report_error: Invalid request", err);
         return c.json({ error: "Invalid request" }, 400);
     }
 });

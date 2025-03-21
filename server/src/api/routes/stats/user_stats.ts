@@ -63,8 +63,8 @@ UserStatsRouter.post(
             if (!data?.slug) return c.json(emptyState, 200);
 
             return c.json<UserStatsResponse>(data, 200);
-        } catch (_err) {
-            server.logger.warn("/api/user_stats: Error getting user stats", _err);
+        } catch (err) {
+            server.logger.warn("/api/user_stats: Error getting user stats", err);
             return c.json({ error: "" }, 500);
         }
     },

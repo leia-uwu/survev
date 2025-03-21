@@ -88,8 +88,8 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             },
             200,
         );
-    } catch (_err) {
-        server.logger.warn("/api/profile: Error fetching user profile");
+    } catch (err) {
+        server.logger.warn("/api/profile: Error fetching user profile", err);
         return c.json({}, 500);
     }
 });
@@ -155,8 +155,8 @@ UserRouter.post(
             await invalidateUserStatsCache(user.id, "*");
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
-        } catch (_err) {
-            server.logger.warn("/api/username: Error updating username");
+        } catch (err) {
+            server.logger.warn("/api/username: Error updating username", err);
             return c.json<UsernameResponse>({ result: "failed" }, 500);
         }
     },
@@ -187,8 +187,8 @@ UserRouter.post(
                 },
                 200,
             );
-        } catch (_err) {
-            server.logger.warn("/api/username: Error updating loadout");
+        } catch (err) {
+            server.logger.warn("/api/username: Error updating loadout", err);
             return c.json({}, 500);
         }
     },
@@ -203,8 +203,8 @@ UserRouter.post("/logout", AuthMiddleware, async (c) => {
             append: true,
         });
         return c.json({}, 200);
-    } catch (_err) {
-        server.logger.warn("/api/logout: Error logging out");
+    } catch (err) {
+        server.logger.warn("/api/logout: Error logging out", err);
         return c.json({}, 500);
     }
 });
@@ -224,8 +224,8 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
         await db.delete(usersTable).where(eq(usersTable.id, user.id));
 
         return c.json({}, 200);
-    } catch (_err) {
-        server.logger.warn("/api/delete: Error deleting account");
+    } catch (err) {
+        server.logger.warn("/api/delete: Error deleting account", err);
         return c.json({}, 500);
     }
 });
@@ -275,8 +275,8 @@ UserRouter.post(
                 .where(eq(usersTable.id, user.id));
 
             return c.json({}, 200);
-        } catch (_err) {
-            server.logger.warn("/api/set_item_status: Error setting item status");
+        } catch (err) {
+            server.logger.warn("/api/set_item_status: Error setting item status", err);
             return c.json({}, 500);
         }
     },
@@ -338,8 +338,8 @@ UserRouter.post(
                 .where(eq(usersTable.authId, MOCK_USER_ID));
 
             return c.json({ success: true }, 200);
-        } catch (_err) {
-            server.logger.warn("/api/set_item_status: Error unlocking item");
+        } catch (err) {
+            server.logger.warn("/api/set_item_status: Error unlocking item", err);
             return c.json({}, 500);
         }
     },
@@ -355,8 +355,8 @@ UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
             .where(eq(matchDataTable.userId, user.id));
 
         return c.json({}, 200);
-    } catch (_err) {
-        server.logger.warn("/api/reset_stats: Error reseting stats");
+    } catch (err) {
+        server.logger.warn("/api/reset_stats: Error reseting stats", err);
         return c.json({}, 500);
     }
 });
