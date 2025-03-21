@@ -96,7 +96,7 @@ export class TeamMenu {
                     closeReason = "rate_limited";
                 }
 
-                if (await isBehindProxy(ip)) {
+                if (!closeReason && (await isBehindProxy(ip!))) {
                     closeReason = "behind_proxy";
                 }
 

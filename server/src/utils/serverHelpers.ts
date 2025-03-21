@@ -20,15 +20,13 @@ export function cors(res: HttpResponse): void {
         .writeHeader("Access-Control-Max-Age", "3600");
 }
 
-export function getHonoIp(c: Context, proxyHeader?: string): string {
-    if (proxyHeader) {
-        return c.req.raw.headers.get(proxyHeader) || "";
-    }
-    return (
-        c.req.raw.headers.get("remote-addr") ||
-        c.env?.incoming?.socket?.remoteAddress ||
-        ""
-    );
+export function getHonoIp(c: Context, proxyHeader?: string): string | undefined {
+    const ip = proxyHeader
+        ? c.req.header(proxyHeader)
+        : c.env?.incoming?.socket?.remoteAddress;
+
+    if (!ip || isIP(ip) == 0) return undefined;
+    return ip;
 }
 
 export function forbidden(res: HttpResponse): void {
