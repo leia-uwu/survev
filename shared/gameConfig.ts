@@ -172,6 +172,7 @@ export const GameConfig = {
         spectateDeadTimeout: 2,
         killLeaderMinKills: 3,
         minSpawnRad: 25,
+        perkModeRoleSelectDuration: 20,
 
         /* STRIP_FROM_PROD_CLIENT:START */
         defaultItems: {

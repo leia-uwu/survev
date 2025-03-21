@@ -145,7 +145,7 @@ export class PlayerBarn {
         let pos: Vec2;
         let layer: number;
         if (this.game.map.perkMode && this.game.map.perkModeTwinsBunker) {
-            //intermediate spawn point while the player chooses a perk before theyre moved to their real spawn point
+            //intermediate spawn point while the player chooses a role before theyre moved to their real spawn point
             const spawnBuilding = this.game.map.perkModeTwinsBunker;
             pos = spawnBuilding.pos;
             layer = spawnBuilding.layer;
@@ -173,6 +173,15 @@ export class PlayerBarn {
         }
         if (player.game.map.factionMode) {
             player.playerStatusDirty = true;
+        }
+
+        if (player.game.map.perkMode) {
+            /*
+             * +5 because the client has its own timer
+             * this timer is only a safety net in case a player modifies the client code
+             * if this timer reaches 0, we know for a fact the client timer didn't end when it should've
+             */
+            player.roleMenuTicker = GameConfig.player.perkModeRoleSelectDuration + 5;
         }
 
         if (!this.game.map.perkMode && group && !group.spawnLeader) {
@@ -731,6 +740,9 @@ export class Player extends BaseGameObject {
     role = "";
     isKillLeader = false;
 
+    /** for cobalt mode role menu, will spawn the player by force if timer runs out */
+    roleMenuTicker = 0;
+
     /** for the perk fabricate, fills inventory with frags every 12 seconds */
     fabricateRefillTicker = 0;
     fabricateGiveTicker = 0;
@@ -903,13 +915,13 @@ export class Player extends BaseGameObject {
         }
     }
 
-    roleSelect(perkModeRoleSelectMsg: net.PerkModeRoleSelectMsg): void {
+    roleSelect(role: string): void {
         if (!this.game.map.perkModeTwinsBunker || this.role) return;
 
-        const role = perkModeRoleSelectMsg.role;
         //so the client can't be manipulated to send lone survivr or something
         if (!this.game.map.mapDef.gameMode.perkModeRoles!.includes(role)) return;
 
+        this.roleMenuTicker = 0;
         this.promoteToRole(role);
         //v2.set() necessary since this.collider.pos is linked to this.pos by reference
         v2.set(this.pos, this.game.map.getSpawnPos(this.group, this.team));
@@ -1246,6 +1258,16 @@ export class Player extends BaseGameObject {
 
         if (this.game.map.factionMode) {
             this.timeUntilHidden -= dt;
+        }
+
+        if (this.roleMenuTicker > 0) {
+            this.roleMenuTicker -= dt;
+            if (this.roleMenuTicker <= 0) {
+                this.roleMenuTicker = 0;
+                const roleChoices = this.game.map.mapDef.gameMode.perkModeRoles!;
+                const randomRole = roleChoices[util.randomInt(0, roleChoices.length - 1)];
+                this.roleSelect(randomRole);
+            }
         }
 
         // players are still choosing a perk from the perk select menu
