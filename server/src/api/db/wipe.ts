@@ -11,5 +11,4 @@ async function clearDb(): Promise<void> {
     }
 }
 
-// @ts-expect-error meh
-await clearDb();
+clearDb();

@@ -1,77 +1,83 @@
+import { sql } from "drizzle-orm";
 import {
     boolean,
-    datetime,
     index,
-    int,
+    integer,
     json,
-    mysqlTable,
+    pgTable,
+    text,
     timestamp,
-    varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 import type { TeamMode } from "../../../../shared/gameConfig";
 import { validateLoadout } from "../../../../shared/utils/helpers";
 import type { Region } from "../../config";
 import type { Item } from "../routes/user/UserRouter";
 import type { Loadout } from "../zodSchemas";
 
-export const sessionTable = mysqlTable("session", {
-    id: varchar("id", {
-        length: 255,
-    }).primaryKey(),
-    userId: varchar("user_id", {
-        length: 255,
-    })
+export const sessionTable = pgTable("session", {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
         .notNull()
         .references(() => usersTable.id, {
             onDelete: "cascade",
             onUpdate: "cascade",
         }),
-    expiresAt: datetime("expires_at").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
 });
 
-export const usersTable = mysqlTable("users", {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    authId: varchar("auth_id", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull().unique(),
+// timestamp().defaultNow() will use the system time zone for some reason
+// which will display with the timezone offset eg in the client match history
+// using this fixes it
+const defaultNow = sql.raw(`timezone('utc', now())`);
+
+export const usersTable = pgTable("users", {
+    id: text("id").notNull().primaryKey(),
+    authId: text("auth_id").notNull(),
+    slug: text("slug").notNull().unique(),
     banned: boolean("banned").notNull().default(false),
-    banReason: varchar("ban_reason", { length: 255 }).notNull().default(""),
-    username: varchar("username", { length: 255 }).notNull().default(""),
+    banReason: text("ban_reason").notNull().default(""),
+    username: text("username").notNull().default(""),
     usernameSet: boolean("username_set").notNull().default(false),
-    userCreated: timestamp("user_created").notNull().defaultNow(),
+    userCreated: timestamp("user_created").notNull().default(defaultNow),
     lastUsernameChangeTime: timestamp("last_username_change_time"),
     linked: boolean("linked").notNull().default(false),
     linkedGoogle: boolean("linked_google").notNull().default(false),
     linkedDiscord: boolean("linked_discord").notNull().default(false),
     loadout: json("loadout")
-        .$type<Loadout>()
         .notNull()
-        .default(validateLoadout({} as Loadout)),
-    items: json("items").$type<Item[]>().notNull().default([]),
+        .default(validateLoadout({} as Loadout))
+        .$type<Loadout>(),
+    items: json("items").notNull().$type<Item[]>().default([]),
+    // STATS
+    wins: integer("wins").notNull().default(0),
+    games: integer("games").notNull().default(0),
+    kills: integer("kills").notNull().default(0),
+    kpg: integer("kpg").notNull().default(0),
 });
 
 export type UsersTable = typeof usersTable.$inferInsert;
 
-export const matchDataTable = mysqlTable(
+export const matchDataTable = pgTable(
     "match_data",
     {
-        userId: varchar("user_id", { length: 255 }).default(""),
-        createdAt: timestamp("created_at").notNull().defaultNow(),
-        region: varchar("region", { length: 255 }).notNull().$type<Region>(),
-        mapId: int("map_id").notNull(),
-        gameId: varchar("game_id", { length: 255 }).notNull(),
-        username: varchar("username", { length: 255 }).notNull(),
-        playerId: int("player_id").notNull(),
-        teamMode: int("team_mode").$type<TeamMode>().notNull(),
-        teamCount: int("team_count").notNull(),
-        teamTotal: int("team_total").notNull(),
-        teamId: int("team_id").notNull(),
-        timeAlive: int("time_alive").notNull(),
-        rank: int("rank").notNull(),
+        userId: text("user_id").default(""),
+        createdAt: timestamp("created_at").notNull().default(defaultNow),
+        region: text("region").notNull().$type<Region>(),
+        mapId: integer("map_id").notNull(),
+        gameId: text("game_id").notNull(),
+        username: text("username").notNull(),
+        playerId: integer("player_id").notNull(),
+        teamMode: integer("team_mode").$type<TeamMode>().notNull(),
+        teamCount: integer("team_count").notNull(),
+        teamTotal: integer("team_total").notNull(),
+        teamId: integer("team_id").notNull(),
+        timeAlive: integer("time_alive").notNull(),
+        rank: integer("rank").notNull(),
         died: boolean("died").notNull(),
-        kills: int("kills").notNull(),
-        damageDealt: int("damage_dealt").notNull(),
-        damageTaken: int("damage_taken").notNull(),
-        killerId: int("killer_id").notNull(),
+        kills: integer("kills").notNull(),
+        damageDealt: integer("damage_dealt").notNull(),
+        damageTaken: integer("damage_taken").notNull(),
+        killerId: integer("killer_id").notNull(),
         killedIds: json("killed_ids").$type<number[]>().notNull(),
     },
     (table) => [
@@ -98,20 +104,20 @@ export type MatchDataTable = typeof matchDataTable.$inferInsert;
 //
 // LOGS
 //
-export const ipLogsTable = mysqlTable(
+export const ipLogsTable = pgTable(
     "ip_logs",
     {
-        createdAt: timestamp("created_at").notNull().defaultNow(),
-        realIp: varchar("real_ip", { length: 255 }).notNull(),
-        encodedIp: varchar("encoded_ip", { length: 255 }).notNull(),
-        name: varchar("name", { length: 255 }).notNull(),
-        gameId: varchar("game_id", { length: 255 }).notNull(),
+        createdAt: timestamp("created_at").notNull().default(defaultNow),
+        realIp: text("real_ip").notNull(),
+        encodedIp: text("encoded_ip").notNull(),
+        name: text("name").notNull(),
+        gameId: text("game_id").notNull(),
     },
     (table) => [index("name_created_at_idx").on(table.name, table.createdAt)],
 );
 
-export const bannedIpsTable = mysqlTable("banned_ips", {
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+export const bannedIpsTable = pgTable("banned_ips", {
+    createdAt: timestamp("created_at").notNull().default(defaultNow),
     expiresIn: timestamp("expries_in").notNull(),
-    encodedIp: varchar("encoded_ip", { length: 255 }).notNull().primaryKey(),
+    encodedIp: text("encoded_ip").notNull().primaryKey(),
 });

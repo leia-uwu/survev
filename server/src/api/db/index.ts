@@ -1,21 +1,22 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as schema from "./schema";
 
 const dbConfig = {
     host: "127.0.0.1",
-    user: "root",
-    password: "root",
+    user: "survev",
+    password: "survev",
     database: "survev",
-    port: 3306,
+    port: 5432,
 };
 
-const poolConnection = mysql.createPool(dbConfig);
+export const DATABASE_URL = `postgresql://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
 
-export const DATABASE_URL = `mysql://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
+const poolConnection = new Pool({
+    connectionString: DATABASE_URL,
+});
 
-export const db = drizzle(poolConnection, {
-    schema: schema,
-    mode: "default",
+export const db = drizzle({
+    client: poolConnection,
+    schema,
 });

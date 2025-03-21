@@ -1,5 +1,4 @@
 import { sql } from "drizzle-orm";
-import type { MySqlQueryResult } from "drizzle-orm/mysql2";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
@@ -76,8 +75,8 @@ leaderboardRouter.post(
             }
 
             return c.json<LeaderboardReturnType[]>(data, 200);
-        } catch (_err) {
-            server.logger.warn("/api/user_stats: Error getting leaderboard data");
+        } catch (err) {
+            server.logger.warn("/api/user_stats: Error getting leaderboard data", err);
             return c.json({ error: "" }, 500);
         }
     },
@@ -137,10 +136,10 @@ async function soloLeaderboardQuery({
         ${typeToQuery[type]} as val
       FROM match_data
       LEFT JOIN users ON match_data.user_id = users.id
-      WHERE 1=1
+      WHERE
+      team_mode = ${teamMode}
       ${intervalFilterQuery}
       ${mapIdFilterQuery}
-      AND team_mode = ${teamMode}
       GROUP BY
       map_id,
       match_data.kills,
@@ -151,11 +150,9 @@ async function soloLeaderboardQuery({
     ORDER BY val DESC
     LIMIT ${MAX_RESULT_COUNT};
   `);
-    const [result] = (await db.execute(
-        query,
-    )) as unknown as MySqlQueryResult<LeaderboardReturnType>;
 
-    return result;
+    const result = await db.execute<LeaderboardReturnType>(query);
+    return result.rows;
 }
 
 async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
@@ -168,15 +165,14 @@ async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardPa
         game_id,
         team_id,
         region,
-        JSON_ARRAYAGG(username) as usernames,
-        JSON_ARRAYAGG(slug) as slugs,
+        JSON_AGG(username) as usernames,
+        JSON_AGG(slug) as slugs,
         SUM(kills) as val,
         COUNT(DISTINCT(match_data.game_id)) as games
       FROM match_data
-      WHERE 1=1
+      team_mode = ${teamMode}
       ${intervalFilterQuery}
       ${mapIdFilterQuery}
-      AND team_mode = ${teamMode}
       GROUP BY game_id, team_id, region
     )
     SELECT
@@ -190,10 +186,8 @@ async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardPa
     LIMIT ${MAX_RESULT_COUNT};
   `);
 
-    const [result] = (await db.execute(
-        query,
-    )) as unknown as MySqlQueryResult<LeaderboardReturnType>;
-    return result;
+    const result = await db.execute<LeaderboardReturnType>(query);
+    return result.rows;
 }
 
 /**

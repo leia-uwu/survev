@@ -115,7 +115,6 @@ app.post("/api/update_region", async (c) => {
     }
 });
 
-
 app.post(
     "/api/moderation",
     validateParams(

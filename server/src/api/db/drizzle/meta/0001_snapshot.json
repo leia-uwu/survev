@@ -1,6 +1,6 @@
 {
-  "id": "27dc3162-4ff8-4509-9cd9-f0fbdaf5bf09",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "40cf5f52-6ee0-4a3b-a2e6-7117465c769f",
+  "prevId": "27dc3162-4ff8-4509-9cd9-f0fbdaf5bf09",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -13,7 +13,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "expries_in": {
           "name": "expries_in",
@@ -45,7 +45,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "real_ip": {
           "name": "real_ip",
@@ -118,7 +118,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "region": {
           "name": "region",
@@ -425,7 +425,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "last_username_change_time": {
           "name": "last_username_change_time",

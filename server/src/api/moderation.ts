@@ -63,7 +63,8 @@ async function banIP(encodedIp: string, durationInDays = 3) {
                 encodedIp,
                 expiresIn,
             })
-            .onDuplicateKeyUpdate({
+            .onConflictDoUpdate({
+                target: bannedIpsTable.expiresIn,
                 set: {
                     expiresIn: expiresIn,
                 },

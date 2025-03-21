@@ -64,7 +64,7 @@ UserStatsRouter.post(
 
             return c.json<UserStatsResponse>(data, 200);
         } catch (_err) {
-            server.logger.warn("/api/user_stats: Error getting user stats");
+            server.logger.warn("/api/user_stats: Error getting user stats", _err);
             return c.json({ error: "" }, 500);
         }
     },
@@ -97,10 +97,10 @@ export interface ModeStat {
 
 export function filterByInterval(interval: string) {
     if (interval === "weekly") {
-        return "AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+        return `AND created_at >= (NOW() - INTERVAL '7 DAY')`;
     }
     if (interval === "daily") {
-        return "AND created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
+        return ` AND created_at >= (NOW() - INTERVAL '1 DAY')`;
     }
     return ""; // Default case for "all" or "alltime"
 }
@@ -140,14 +140,14 @@ async function userStatsSqlQuery(
                 u.slug,
                 u.username,
                 u.banned,
-                JSON_EXTRACT(u.loadout, '$.player_icon') AS player_icon,
+                JSON_EXTRACT_PATH(ANY_VALUE(u.loadout), 'player_icon') AS player_icon,
                 COALESCE(SUM(ms.games), 0) AS games,
                 COALESCE(SUM(ms.wins), 0) AS wins,
                 COALESCE(SUM(ms.kills), 0) AS kills,  
                 COALESCE(ROUND(SUM(ms.kills) * 1.0 / NULLIF(SUM(ms.games), 0), 1), 0) AS kpg,
-        COALESCE(JSON_ARRAYAGG(
+        COALESCE(JSON_AGG(
             CASE WHEN ms.team_mode IS NOT NULL THEN
-                JSON_OBJECT(
+                JSON_BUILD_OBJECT(
                     'wins', ms.wins,
                     'kills', ms.kills,
                     'teamMode', ms.team_mode,
@@ -165,12 +165,14 @@ async function userStatsSqlQuery(
             GROUP BY u.slug, u.username, u.banned
             LIMIT 1;
     `);
-    const [data] = await db.execute(query);
-    const userStats = (data as any)[0];
+
+    const data = await db.execute(query);
+    console.log(data.rows);
+    const userStats = data.rows[0] as any;
 
     if (!userStats) return emptyState as unknown as UserStatsResponse;
 
-    const modes = JSON.parse(userStats?.modes);
+    const modes = userStats?.modes;
     const formatedData: UserStatsResponse = {
         ...userStats,
         // sql fuckery, it returns [null] where no result
