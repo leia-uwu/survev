@@ -4,9 +4,12 @@ import { v2 } from "../../../shared/utils/v2";
 import { saveGameInfoToDatabase } from "../api/saveGameHelpers";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
-import type { ServerGameConfig } from "./gameManager";
+import {
+    ProcessMsgType,
+    type ServerGameConfig,
+    type UpdateDataMsg,
+} from "../utils/types";
 import { GameModeManager } from "./gameModeManager";
-import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";

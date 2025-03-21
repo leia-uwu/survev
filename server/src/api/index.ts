@@ -7,14 +7,13 @@ import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
 import { z } from "zod";
 import { version } from "../../../package.json";
-import {
-    type FindGameBody,
-    type FindGameResponse,
-    zFindGameBody,
-} from "../../../shared/types/api";
+import { GameConfig } from "../../../shared/gameConfig";
+import { type FindGameResponse, zFindGameBody } from "../../../shared/types/api";
+import { math } from "../../../shared/utils/math";
 import { Config } from "../config";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
+import { zUpdateRegionBody } from "../utils/types";
 import { server } from "./apiServer";
 import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
@@ -68,6 +67,10 @@ app.route("/api/", StatsRouter);
 
 server.init(app, upgradeWebSocket);
 
+app.get("/api/site_info", (c) => {
+    return c.json(server.getSiteInfo(), 200);
+});
+
 const findGameRateLimit = new HTTPRateLimit(5, 3000);
 
 app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
@@ -86,9 +89,22 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
             return c.json<FindGameResponse>({ err: "behind_proxy" });
         }
 
-        const body = (await c.req.json()) as FindGameBody;
+        const body = c.req.valid("json");
+        if (body.version !== GameConfig.protocolVersion) {
+            return c.json<FindGameResponse>({ err: "invalid_protocol" });
+        }
 
-        const data = await server.findGame(body);
+        body.gameModeIdx = math.clamp(body.gameModeIdx, 0, Config.modes.length - 1);
+
+        const data = await server.findGame({
+            region: body.region,
+            zones: body.zones,
+            version: body.version,
+            gameModeIdx: math.clamp(body.gameModeIdx, 0, Config.modes.length - 1),
+            playerCount: 1, // only team menu can request more
+            autoFill: true,
+        });
+
         return c.json(data);
     } catch (err) {
         server.logger.warn("/api/find_game: Error retrieving body", err);
@@ -96,53 +112,37 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
     }
 });
 
-app.post(
-    "/api/update_region",
-    validateParams(
-        z.object({
-            apiKey: z.string(),
-            regionId: z.string(),
-            data: z.object({
-                playerCount: z.number(),
-            }),
-        }),
-    ),
-    async (c) => {
-        try {
-            const { apiKey, regionId, data } = await c.req.json();
+app.use("/private/*", async (c, next) => {
+    if (c.req.header("survev-api-key") !== Config.apiKey) {
+        return c.json({ message: "Forbidden" }, 403);
+    }
+    await next();
+});
 
-            if (apiKey !== Config.apiKey || !(regionId in server.regions)) {
-                return c.body("Forbidden", 403);
-            }
+app.post("/private/update_region", validateParams(zUpdateRegionBody), async (c) => {
+    try {
+        const { regionId, data } = c.req.valid("json");
 
-            server.updateRegion(regionId, data);
-            return c.json({}, 200);
-        } catch (err) {
-            server.logger.warn("/api/find_game: Error processing request", err);
-            return c.json({ error: "Error processing request" }, 500);
-        }
-    },
-);
+        server.updateRegion(regionId, data);
+        return c.json({}, 200);
+    } catch (err) {
+        server.logger.warn("/api/find_game: Error processing request", err);
+        return c.json({ error: "Error processing request" }, 500);
+    }
+});
 
 app.post(
-    "/api/moderation",
+    "/private/moderation",
     validateParams(
         z.object({
-            apiKey: z.string(),
-            data: z.object({
-                action: z.enum(["ban", "unban", "isbanned", "clear", "get-player-ip"]),
-                ip: z.string(),
-                name: z.string().optional(),
-            }),
+            action: z.enum(["ban", "unban", "isbanned", "clear", "get-player-ip"]),
+            ip: z.string(),
+            name: z.string().optional(),
         }),
     ),
     async (ctx) => {
         try {
-            const { apiKey, data } = ctx.req.valid("json");
-
-            if (apiKey !== Config.apiKey) {
-                return ctx.json({ message: "Forbidden" }, 403);
-            }
+            const data = ctx.req.valid("json");
 
             const message = await handleModerationAction(data.action, data.ip, data.name);
 
@@ -177,10 +177,6 @@ app.post("/api/report_error", async (c) => {
     }
 });
 
-server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);
-server.logger.log(`Listening on ${Config.apiServer.host}:${Config.apiServer.port}`);
-server.logger.log("Press Ctrl+C to exit.");
-
 // reset player count to 0 if region seems to be down
 setInterval(() => {
     for (const regionId in server.regions) {
@@ -199,3 +195,7 @@ const honoServer = serve({
     port: Config.apiServer.port,
 });
 injectWebSocket(honoServer);
+
+server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);
+server.logger.log(`Listening on ${Config.apiServer.host}:${Config.apiServer.port}`);
+server.logger.log("Press Ctrl+C to exit.");

@@ -19,32 +19,31 @@ class Region {
     async fetch<Data extends object>(endPoint: string, body: object) {
         const url = `http${this.data.https ? "s" : ""}://${this.data.address}/${endPoint}`;
 
-        return new Promise<Data>((resolve) => {
-            fetch(url, {
-                body: JSON.stringify({
-                    ...body,
-                    apiKey: Config.apiKey,
-                }),
-                method: "post",
+        try {
+            const res = await fetch(url, {
+                method: "POST",
                 headers: {
-                    "Content-type": "application/json",
+                    "content-type": "application/json",
+                    "survev-api-key": Config.apiKey,
                 },
-            })
-                .catch(console.warn)
-                .then((response) => {
-                    if (response?.ok) {
-                        return response.json();
-                    }
-                    return [{ err: "Error connecting to region, is it down?" }];
-                })
-                .then((json) => {
-                    resolve(json);
-                })
-                .catch((error) => {
-                    console.warn(error);
-                    return [{ err: "Error parsing region response JSON" }];
-                });
-        });
+                body: JSON.stringify(body),
+            });
+
+            if (res.ok) {
+                return (await res.json()) as Data;
+            }
+        } catch (err) {
+            console.warn(`Error fetching region ${this.id}`, err);
+            return undefined;
+        }
+    }
+
+    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+        const data = await this.fetch<FindGameResponse>("api/find_game", body);
+        if (!data) {
+            return { err: "full" };
+        }
+        return data;
     }
 }
 
@@ -59,8 +58,6 @@ export class ApiServer {
 
     regions: Record<string, Region> = {};
 
-    proxyCheckEnabled = true;
-
     constructor() {
         for (const region in Config.regions) {
             this.regions[region] = new Region(region);
@@ -69,10 +66,6 @@ export class ApiServer {
 
     init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
         this.teamMenu.init(app, upgradeWebSocket);
-
-        app.get("/api/site_info", (c) => {
-            return c.json(this.getSiteInfo(), 200);
-        });
     }
 
     getSiteInfo() {
@@ -100,10 +93,6 @@ export class ApiServer {
         return data;
     }
 
-    getUserProfile() {
-        return { err: "" };
-    }
-
     updateRegion(regionId: string, regionData: RegionData) {
         const region = this.regions[regionId];
         region.playerCount = regionData.playerCount;
@@ -112,12 +101,8 @@ export class ApiServer {
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
         if (body.region in this.regions) {
-            return await this.regions[body.region].fetch<FindGameResponse>(
-                "api/find_game",
-                body,
-            );
+            return await this.regions[body.region].findGame(body);
         }
-        this.logger.warn("/api/find_game: Invalid region");
         return { err: "full" };
     }
 }

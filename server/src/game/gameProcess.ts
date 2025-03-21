@@ -1,8 +1,8 @@
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import { Config } from "../config";
+import { type ProcessMsg, ProcessMsgType } from "../utils/types";
 import { Game } from "./game";
-import { type ProcessMsg, ProcessMsgType } from "./gameProcessManager";
 
 let game: Game | undefined;
 

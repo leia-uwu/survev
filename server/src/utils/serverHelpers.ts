@@ -30,7 +30,10 @@ export function getHonoIp(c: Context, proxyHeader?: string): string | undefined 
 }
 
 export function forbidden(res: HttpResponse): void {
-    res.writeStatus("403 Forbidden").end("403 Forbidden");
+    res.cork(() => {
+        if (res.aborted) return;
+        res.writeStatus("403 Forbidden").end("403 Forbidden");
+    });
 }
 
 export function returnJson(res: HttpResponse, data: Record<string, unknown>): void {

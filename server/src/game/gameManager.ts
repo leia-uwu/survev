@@ -2,32 +2,15 @@ import { randomBytes } from "crypto";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
-import type { MapDefs } from "../../../shared/defs/mapDefs";
-import type { TeamMode } from "../../../shared/gameConfig";
 import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
-import type { GameSocketData } from "../gameServer";
+import type {
+    GameData,
+    GameSocketData,
+    JoinData,
+    ServerGameConfig,
+} from "../utils/types";
 import { Game } from "./game";
-
-export interface ServerGameConfig {
-    readonly mapName: keyof typeof MapDefs;
-    readonly teamMode: TeamMode;
-}
-
-export interface GameData {
-    id: string;
-    teamMode: TeamMode;
-    mapName: string;
-    canJoin: boolean;
-    aliveCount: number;
-    startedTime: number;
-    stopped: boolean;
-}
-
-export interface JoinData {
-    gameId: string;
-    data: string;
-}
 
 export abstract class GameManager {
     abstract sockets: Map<string, WebSocket<GameSocketData>>;

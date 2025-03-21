@@ -5,9 +5,16 @@ import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
 import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
-import type { GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
-import type { GameData, GameManager, JoinData, ServerGameConfig } from "./gameManager";
+import {
+    type GameData,
+    type GameSocketData,
+    type JoinData,
+    type ProcessMsg,
+    ProcessMsgType,
+    type ServerGameConfig,
+} from "../utils/types";
+import type { GameManager } from "./gameManager";
 
 let path: string;
 let args: string[];
@@ -18,74 +25,6 @@ if (process.env.NODE_ENV === "production") {
     path = "src/game/gameProcess.ts";
     args = [];
 }
-
-export enum ProcessMsgType {
-    Create,
-    Created,
-    KeepAlive,
-    UpdateData,
-    AddJoinToken,
-    SocketMsg,
-    SocketClose,
-}
-
-export interface CreateGameMsg {
-    type: ProcessMsgType.Create;
-    config: ServerGameConfig;
-    id: string;
-}
-
-export interface GameCreatedMsg {
-    type: ProcessMsgType.Created;
-}
-
-export interface KeepAliveMsg {
-    type: ProcessMsgType.KeepAlive;
-}
-
-export interface UpdateDataMsg extends GameData {
-    type: ProcessMsgType.UpdateData;
-}
-
-export interface AddJoinTokenMsg {
-    type: ProcessMsgType.AddJoinToken;
-    token: string;
-    autoFill: boolean;
-    playerCount: number;
-}
-
-/**
- * Used for server to send websocket msgs to game
- * And game to send websocket msgs to clients
- * msgs is an array to batch all msgs created in the same game net tick
- * into the same send call
- */
-export interface SocketMsgsMsg {
-    type: ProcessMsgType.SocketMsg;
-    msgs: Array<{
-        socketId: string;
-        ip: string;
-        data: ArrayBuffer | Uint8Array;
-    }>;
-}
-
-/**
- * Sent by the server to the game when the socket is closed
- * Or by the game to the server when the game wants to close the socket
- */
-export interface SocketCloseMsg {
-    type: ProcessMsgType.SocketClose;
-    socketId: string;
-}
-
-export type ProcessMsg =
-    | CreateGameMsg
-    | GameCreatedMsg
-    | KeepAliveMsg
-    | UpdateDataMsg
-    | AddJoinTokenMsg
-    | SocketMsgsMsg
-    | SocketCloseMsg;
 
 class GameProcess implements GameData {
     process: ChildProcess;
