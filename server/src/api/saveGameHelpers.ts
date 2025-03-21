@@ -49,6 +49,7 @@ export async function saveGameInfoToDatabase(game: Game) {
             killerId: player.killedBy?.__id || 0,
             gameId: game.id,
             mapId: mapId,
+            mapSeed: game.map.seed,
             killedIds: player.killedIds,
             rank: player.rank,
         };

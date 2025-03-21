@@ -1,5 +1,5 @@
 {
-  "id": "27dc3162-4ff8-4509-9cd9-f0fbdaf5bf09",
+  "id": "35354bc7-3465-4663-8d12-00bba4afcbc7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -13,7 +13,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "expries_in": {
           "name": "expries_in",
@@ -45,7 +45,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "real_ip": {
           "name": "real_ip",
@@ -118,7 +118,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "region": {
           "name": "region",
@@ -135,6 +135,12 @@
         "game_id": {
           "name": "game_id",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "map_seed": {
+          "name": "map_seed",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -425,7 +431,7 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "timezone('utc', now())"
         },
         "last_username_change_time": {
           "name": "last_username_change_time",

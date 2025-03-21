@@ -139,6 +139,7 @@ function generateMatchHistory(
             teamCount: player.teamCount,
             teamMode,
             gameId,
+            mapSeed: util.randomInt(0, 1 << 30),
             userId: 0 === i ? userId : playerUserId,
             slug: 0 === i ? slug : playerSlug,
             username: generateUsername(),

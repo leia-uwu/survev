@@ -1,11 +1,11 @@
 CREATE TABLE "banned_ips" (
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp DEFAULT timezone('utc', now()) NOT NULL,
 	"expries_in" timestamp NOT NULL,
 	"encoded_ip" text PRIMARY KEY NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "ip_logs" (
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp DEFAULT timezone('utc', now()) NOT NULL,
 	"real_ip" text NOT NULL,
 	"encoded_ip" text NOT NULL,
 	"name" text NOT NULL,
@@ -14,10 +14,11 @@ CREATE TABLE "ip_logs" (
 --> statement-breakpoint
 CREATE TABLE "match_data" (
 	"user_id" text DEFAULT '',
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp DEFAULT timezone('utc', now()) NOT NULL,
 	"region" text NOT NULL,
 	"map_id" integer NOT NULL,
 	"game_id" text NOT NULL,
+	"map_seed" integer NOT NULL,
 	"username" text NOT NULL,
 	"player_id" integer NOT NULL,
 	"team_mode" integer NOT NULL,
@@ -48,7 +49,7 @@ CREATE TABLE "users" (
 	"ban_reason" text DEFAULT '' NOT NULL,
 	"username" text DEFAULT '' NOT NULL,
 	"username_set" boolean DEFAULT false NOT NULL,
-	"user_created" timestamp DEFAULT now() NOT NULL,
+	"user_created" timestamp DEFAULT timezone('utc', now()) NOT NULL,
 	"last_username_change_time" timestamp,
 	"linked" boolean DEFAULT false NOT NULL,
 	"linked_google" boolean DEFAULT false NOT NULL,
