@@ -66,6 +66,9 @@ importers:
       vite-plugin-html:
         specifier: ^3.2.2
         version: 3.2.2(vite@6.2.0(@types/node@22.13.9)(terser@5.39.0)(tsx@4.19.3))
+      vite-plugin-strip-block:
+        specifier: ^1.0.1
+        version: 1.0.1
 
   client/atlas-builder:
     dependencies:
@@ -2407,6 +2410,10 @@ packages:
     peerDependencies:
       vite: '>=2.0.0'
 
+  vite-plugin-strip-block@1.0.1:
+    resolution: {integrity: sha512-L43UM9ogJ0Qj2Sb/fLwLhKkflvrLrvtGCeGeh5vsGirWUEH9eE1yDFmdCYIgFxoqMlbX9Zpr3SScDdTKM1T5VA==}
+    engines: {node: '>=18.13.0'}
+
   vite@6.2.0:
     resolution: {integrity: sha512-7dPxoo+WsT/64rDcwoOjk76XHj+TqNTIvHKcuMQ1k4/SeHDaQt5GFAeLYzrimZrMpn/O6DtdI03WUjdxuPM0oQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
@@ -4477,6 +4484,8 @@ snapshots:
       node-html-parser: 5.4.2
       pathe: 0.2.0
       vite: 6.2.0(@types/node@22.13.9)(terser@5.39.0)(tsx@4.19.3)
+
+  vite-plugin-strip-block@1.0.1: {}
 
   vite@6.2.0(@types/node@22.13.9)(terser@5.39.0)(tsx@4.19.3):
     dependencies:

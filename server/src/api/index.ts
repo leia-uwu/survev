@@ -10,12 +10,7 @@ import { version } from "../../../package.json";
 import { Config } from "../config";
 import type { FindGameBody } from "../gameServer";
 import { GIT_VERSION } from "../utils/gitRevision";
-import {
-    HTTPRateLimit,
-    getHonoIp,
-    isBehindProxy,
-    verifyTurnsStile,
-} from "../utils/serverHelpers";
+import { HTTPRateLimit, getHonoIp } from "../utils/serverHelpers";
 import { server } from "./apiServer";
 import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
@@ -91,29 +86,6 @@ app.post("/api/find_game", async (c) => {
 
         const body = (await c.req.json()) as FindGameBody;
 
-        if (server.proxyCheckEnabled && (await isBehindProxy(ip))) {
-            c.json(
-                {
-                    res: [
-                        {
-                            err: "IP is behind a proxy",
-                        },
-                    ],
-                },
-                200,
-            );
-            return;
-        }
-
-        if (server.captchaEnabled && !(await verifyTurnsStile(body.token, ip))) {
-            return c.json(
-                {
-                    res: [{ err: "Invalid captcha token" }],
-                },
-                400,
-            );
-        }
-
         const data = await server.findGame(body);
         return c.json(data);
     } catch (_err) {
@@ -143,48 +115,6 @@ app.post("/api/update_region", async (c) => {
     }
 });
 
-app.post("/api/toggleSettings", async (c) => {
-    const body = await c.req.json<{
-        apiKey: string;
-        state?: { captcha: boolean; proxyCheck: boolean };
-    }>();
-
-    if (body.apiKey !== Config.apiKey) {
-        return c.json({ error: "Invalid token" }, 401);
-    }
-
-    if (typeof body.state === "object") {
-        server.captchaEnabled = body.state.captcha;
-        server.proxyCheckEnabled = body.state.proxyCheck;
-    }
-
-    return c.json({
-        state: {
-            captcha: server.captchaEnabled,
-            proxyCheck: server.proxyCheckEnabled,
-        },
-    });
-});
-
-app.post("/api/toggleCaptcha", async (c) => {
-    try {
-        const body = await c.req.json();
-        if (body.apiKey !== Config.apiKey) {
-            return c.json({ error: "Invalid token" }, 403);
-        }
-
-        if (typeof body.state === "boolean") {
-            server.captchaEnabled = body.state;
-        }
-
-        return c.json({
-            state: server.captchaEnabled,
-        });
-    } catch (_err) {
-        server.logger.warn("/api/toggleCaptcha: Invalid request");
-        return c.json({ error: "Invalid request" }, 400);
-    }
-});
 
 app.post(
     "/api/moderation",
@@ -209,7 +139,7 @@ app.post(
             const message = handleModerationAction(data.action, data.ip, data.name);
 
             return ctx.json({ message });
-        } catch (err) {
+        } catch (_err) {
             server.logger.warn("/api/moderation: Error processing request");
             return ctx.json({ message: "An unexpected error occurred." }, 500);
         }
@@ -233,22 +163,10 @@ app.post("/api/report_error", async (c) => {
             }),
         });
         return c.json({ success: true }, 200);
-    } catch (err) {
+    } catch (_err) {
         server.logger.warn("/api/report_error: Invalid request");
         return c.json({ error: "Invalid request" }, 400);
     }
-});
-
-// TODO: HACK: this is just temporary
-// waiting for accounts to do a proper dashboard for stuff
-// since accounts pr refactors a lot of the API server and i dont want many conflicts
-// accessible at http://localhost:8000/dashboard
-const dashboard = readFileSync(
-    path.resolve(__dirname.replace("dist/server/", ""), "static/dashboard.html"),
-    "utf-8",
-);
-app.get("/dashboard", (c) => {
-    return c.html(dashboard);
 });
 
 server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);

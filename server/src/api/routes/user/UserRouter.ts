@@ -88,7 +88,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             },
             200,
         );
-    } catch (err) {
+    } catch (_err) {
         server.logger.warn("/api/profile: Error fetching user profile");
         return c.json({}, 500);
     }
@@ -155,7 +155,7 @@ UserRouter.post(
             await invalidateUserStatsCache(user.id, "*");
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
-        } catch (err) {
+        } catch (_err) {
             server.logger.warn("/api/username: Error updating username");
             return c.json<UsernameResponse>({ result: "failed" }, 500);
         }
@@ -187,7 +187,7 @@ UserRouter.post(
                 },
                 200,
             );
-        } catch (err) {
+        } catch (_err) {
             server.logger.warn("/api/username: Error updating loadout");
             return c.json({}, 500);
         }
@@ -203,7 +203,7 @@ UserRouter.post("/logout", AuthMiddleware, async (c) => {
             append: true,
         });
         return c.json({}, 200);
-    } catch (err) {
+    } catch (_err) {
         server.logger.warn("/api/logout: Error logging out");
         return c.json({}, 500);
     }
@@ -224,7 +224,7 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
         await db.delete(usersTable).where(eq(usersTable.id, user.id));
 
         return c.json({}, 200);
-    } catch (err) {
+    } catch (_err) {
         server.logger.warn("/api/delete: Error deleting account");
         return c.json({}, 500);
     }
@@ -275,7 +275,7 @@ UserRouter.post(
                 .where(eq(usersTable.id, user.id));
 
             return c.json({}, 200);
-        } catch (err) {
+        } catch (_err) {
             server.logger.warn("/api/set_item_status: Error setting item status");
             return c.json({}, 500);
         }
@@ -338,7 +338,7 @@ UserRouter.post(
                 .where(eq(usersTable.authId, MOCK_USER_ID));
 
             return c.json({ success: true }, 200);
-        } catch (err) {
+        } catch (_err) {
             server.logger.warn("/api/set_item_status: Error unlocking item");
             return c.json({}, 500);
         }

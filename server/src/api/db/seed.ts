@@ -8,7 +8,7 @@ import type { MatchDataTable } from "../../api/db/schema";
 import { createNewUser } from "../routes/user/auth/authUtils";
 import { matchDataTable } from "./schema";
 
-const playersWithAccounts = Array.from({ length: 3000 }, (_, idx) => ({
+const playersWithAccounts = Array.from({ length: 3000 }, (_, _idx) => ({
     slug: generateUsername(),
     userId: generateId(15),
 }));
@@ -59,13 +59,13 @@ function generateMatchHistory(
     const maxTeamSize = teamMode;
 
     const players: Record<number, Player> = {};
-    let currTeamId = 0;
+    let _currTeamId = 0;
     let playersInTeam = 0;
 
     // Initialize players
     for (let id = 0; id < numPlayers; id++) {
         if (playersInTeam === maxTeamSize) {
-            currTeamId++;
+            _currTeamId++;
             playersInTeam = 0;
         }
         playersInTeam++;

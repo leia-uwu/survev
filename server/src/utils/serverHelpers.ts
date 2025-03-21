@@ -1,7 +1,7 @@
 import { isIP } from "net";
 import type { Context } from "hono";
-import { Constants } from "../../../shared/net/net";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
+import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
 
 /**
@@ -103,6 +103,17 @@ const badWordsFilter = [
     /ch[i1líĩî|!]nks?/i,
 ];
 
+export function checkForBadWords(name: string) {
+    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
+
+    for (const regex of badWordsFilter) {
+        if (name.match(regex) || santized.match(regex)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function validateUserName(name: string) {
     if (!name || typeof name !== "string") return "Player";
 
@@ -112,15 +123,8 @@ export function validateUserName(name: string) {
         // remove extended ascii etc
         .replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, "");
 
-    if (!name.length) return "Player";
+    if (!name.length || checkForBadWords(name)) return "Player";
 
-    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
-
-    for (const regex of badWordsFilter) {
-        if (name.match(regex) || santized.match(regex)) {
-            return "Player";
-        }
-    }
     return name;
 }
 

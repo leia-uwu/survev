@@ -59,7 +59,6 @@ export class ApiServer {
 
     regions: Record<string, Region> = {};
 
-    captchaEnabled = false;
     proxyCheckEnabled = true;
 
     constructor() {
@@ -90,7 +89,6 @@ export class ApiServer {
             twitch: [],
             country: "US",
             gitRevision: GIT_VERSION,
-            captchaEnabled: this.captchaEnabled,
         };
 
         for (const region in this.regions) {

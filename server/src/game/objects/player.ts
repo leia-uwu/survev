@@ -34,11 +34,11 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import { Config } from "../../config";
 import { lucia } from "../../api/auth/lucia";
+import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
-import { validateUserName } from "../../utils/serverHelpers";
 import { setLoadout } from "../../utils/loadoutHelpers";
+import { validateUserName } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
@@ -111,7 +111,6 @@ export class PlayerBarn {
         return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
-
     addPlayer(socketId: string, joinMsg: net.JoinMsg) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
@@ -141,9 +140,9 @@ export class PlayerBarn {
         const group = result?.group;
         // solo 50v50 just chooses the smallest team everytime no matter what
         const team =
-        this.game.map.factionMode && !this.game.isTeamMode
-        ? this.getSmallestTeam()
-        : result?.team;
+            this.game.map.factionMode && !this.game.isTeamMode
+                ? this.getSmallestTeam()
+                : result?.team;
 
         let pos: Vec2;
         let layer: number;

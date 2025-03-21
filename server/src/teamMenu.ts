@@ -14,16 +14,9 @@ import type { ApiServer } from "./api/apiServer";
 import { Config } from "./config";
 import {
     HTTPRateLimit,
-    validateUserName,
     WebSocketRateLimit,
     getHonoIp,
-<<<<<<< HEAD
-||||||| parent of 3604e06b (fix: fix merge)
-    isBehindProxy,
-    verifyTurnsStile,
-=======
-    verifyTurnsStile,
->>>>>>> 3604e06b (fix: fix merge)
+    validateUserName,
 } from "./utils/serverHelpers";
 
 export interface TeamSocketData {
@@ -89,16 +82,7 @@ export class TeamMenu {
         app.get(
             "/team_v2",
             upgradeWebSocket((c) => {
-<<<<<<< HEAD
-                const ip = getHonoIp(c);
-||||||| parent of 3604e06b (fix: fix merge)
                 const ip = getHonoIp(c, Config.gameServer.proxyIPHeader);
-                teamMenu.server.logger.log(`/team_menu IP: ${ip}`);
-                
-=======
-                const ip = getHonoIp(c, Config.gameServer.proxyIPHeader);
-                teamMenu.server.logger.log(`/team_menu IP: ${ip}`);
->>>>>>> 3604e06b (fix: fix merge)
 
                 let closeOnOpen = false;
                 if (
@@ -118,7 +102,7 @@ export class TeamMenu {
                     onOpen(_event, ws) {
                         const userData = {
                             ip,
-                             rateLimit: {},
+                            rateLimit: {},
                         } as TeamSocketData;
                         userData.sendMsg = (data) => ws.send(data);
                         userData.closeSocket = () => ws.close();
