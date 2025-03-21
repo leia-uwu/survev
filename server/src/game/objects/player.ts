@@ -2809,9 +2809,12 @@ export class Player extends BaseGameObject {
 
     /** returns player to revive if can revive */
     getPlayerToRevive(): Player | undefined {
-        if (!this.game.modeManager.isReviveSupported()) return undefined;
-        if (this.downed && !this.hasPerk("self_revive")) return undefined;
         if (this.actionType != GameConfig.Action.None) return undefined; //action in progress already
+
+        if (this.downed && this.hasPerk("self_revive")) return this;
+
+        if (!this.game.modeManager.isReviveSupported()) return undefined; //no revives in solos
+        if (this.downed) return undefined; //can't revive players while downed
 
         const nearbyDownedTeammates = this.game.grid
             .intersectCollider(
