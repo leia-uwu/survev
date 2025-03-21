@@ -1763,9 +1763,10 @@ export class Player extends BaseGameObject {
                 if (
                     !this.downed &&
                     obj.healRegions &&
-                    util.sameLayer(this.layer, obj.layer)
+                    util.sameLayer(this.layer, obj.layer) &&
+                    !this.game.gas.isInGas(this.pos) //heal regions don't work in gas
                 ) {
-                    const healRegion = obj.healRegions.find((hr) => {
+                    const effectiveHealRegions = obj.healRegions.filter((hr) => {
                         return coldet.testPointAabb(
                             this.pos,
                             hr.collision.min,
@@ -1773,8 +1774,12 @@ export class Player extends BaseGameObject {
                         );
                     });
 
-                    if (healRegion && !this.game.gas.isInGas(this.pos)) {
-                        this.health += healRegion.healRate * dt;
+                    if (effectiveHealRegions.length != 0) {
+                        const totalHealRate = effectiveHealRegions.reduce(
+                            (total, hr) => total + hr.healRate,
+                            0,
+                        );
+                        this.health += totalHealRate * dt;
                     }
                 }
 
