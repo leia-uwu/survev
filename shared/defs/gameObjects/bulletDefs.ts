@@ -715,6 +715,21 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerLength: 1.2,
         skipCollision: true,
     },
+    //used for guns that shoot projectiles since they still technically have to shoot a bullet of some kind
+    bullet_invis: {
+        type: "bullet",
+        damage: 0,
+        obstacleDamage: 1,
+        falloff: 1,
+        distance: 1,
+        speed: 100,
+        variance: 0,
+        shrapnel: false,
+        tracerColor: "invis",
+        tracerWidth: 0,
+        tracerLength: 1.2,
+        skipCollision: true,
+    },
     shrapnel_barrel: {
         type: "bullet",
         damage: 2,
