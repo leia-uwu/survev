@@ -69,7 +69,6 @@ const findGameRateLimit = new HTTPRateLimit(5, 3000);
 app.post("/api/find_game", async (c) => {
     try {
         const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
-        server.logger.log(`/api/find_game IP: ${ip}`, ip);
 
         if (!ip) {
             return c.json({}, 500);

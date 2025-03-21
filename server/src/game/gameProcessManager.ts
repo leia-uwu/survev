@@ -68,6 +68,7 @@ export interface SocketMsgsMsg {
     type: ProcessMsgType.SocketMsg;
     msgs: Array<{
         socketId: string;
+        ip: string;
         data: ArrayBuffer | Uint8Array;
     }>;
 }
@@ -198,13 +199,14 @@ class GameProcess implements GameData {
         this.avaliableSlots--;
     }
 
-    handleMsg(data: ArrayBuffer, socketId: string) {
+    handleMsg(data: ArrayBuffer, socketId: string, ip: string) {
         this.send({
             type: ProcessMsgType.SocketMsg,
             msgs: [
                 {
                     socketId,
                     data,
+                    ip,
                 },
             ],
         });
@@ -394,7 +396,7 @@ export class GameProcessManager implements GameManager {
     onMsg(socketId: string, msg: ArrayBuffer): void {
         const data = this.sockets.get(socketId)?.getUserData();
         if (!data) return;
-        this.processById.get(data.gameId)?.handleMsg(msg, socketId);
+        this.processById.get(data.gameId)?.handleMsg(msg, socketId, data.ip);
     }
 
     onClose(socketId: string) {

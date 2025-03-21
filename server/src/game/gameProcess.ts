@@ -17,6 +17,7 @@ process.on("disconnect", () => {
 const socketMsgs: Array<{
     socketId: string;
     data: Uint8Array;
+    ip: string;
 }> = [];
 
 let lastMsgTime = Date.now();
@@ -34,6 +35,7 @@ process.on("message", async (msg: ProcessMsg) => {
                 socketMsgs.push({
                     socketId: id,
                     data,
+                    ip: "",
                 });
             },
             (id) => {
@@ -63,7 +65,8 @@ process.on("message", async (msg: ProcessMsg) => {
             game.addJoinToken(msg.token, msg.autoFill, msg.playerCount);
             break;
         case ProcessMsgType.SocketMsg:
-            game.handleMsg(msg.msgs[0].data as ArrayBuffer, msg.msgs[0].socketId);
+            const sMsg = msg.msgs[0];
+            game.handleMsg(sMsg.data as ArrayBuffer, sMsg.socketId, sMsg.ip);
             break;
         case ProcessMsgType.SocketClose:
             game.handleSocketClose(msg.socketId);

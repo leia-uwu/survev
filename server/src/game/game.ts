@@ -284,7 +284,7 @@ export class Game {
         };
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+    handleMsg(buff: ArrayBuffer | Buffer, socketId: string, ip: string): void {
         if (!(buff instanceof ArrayBuffer)) return;
 
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
@@ -305,7 +305,7 @@ export class Game {
         if (!msg) return;
 
         if (type === net.MsgType.Join && !player) {
-            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg);
+            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg, ip);
             return;
         }
 

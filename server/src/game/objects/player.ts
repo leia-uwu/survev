@@ -111,7 +111,7 @@ export class PlayerBarn {
         return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
-    addPlayer(socketId: string, joinMsg: net.JoinMsg) {
+    addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
         if (!joinData || joinData.expiresAt < Date.now() || joinData.availableUses <= 0) {
@@ -156,7 +156,7 @@ export class PlayerBarn {
             layer = 0;
         }
 
-        const player = new Player(this.game, pos, layer, socketId, joinMsg);
+        const player = new Player(this.game, pos, layer, socketId, joinMsg, ip);
 
         this.socketIdToPlayer.set(socketId, player);
 
@@ -1102,6 +1102,7 @@ export class Player extends BaseGameObject {
     obstacleOutfit?: Obstacle;
 
     authId: string | null = null;
+    ip: string;
 
     constructor(
         game: Game,
@@ -1109,12 +1110,14 @@ export class Player extends BaseGameObject {
         layer: number,
         socketId: string,
         joinMsg: net.JoinMsg,
+        ip: string,
     ) {
         super(game, pos);
 
         this.layer = layer;
 
         this.socketId = socketId;
+        this.ip = ip;
 
         this.name = validateUserName(joinMsg.name);
 
