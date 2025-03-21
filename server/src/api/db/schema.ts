@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+    bigint,
     boolean,
     index,
     integer,
@@ -65,7 +66,7 @@ export const matchDataTable = pgTable(
         region: text("region").notNull().$type<Region>(),
         mapId: integer("map_id").notNull(),
         gameId: text("game_id").notNull(),
-        mapSeed: integer("map_seed").notNull(),
+        mapSeed: bigint("map_seed", { mode: "number" }).notNull(),
         username: text("username").notNull(),
         playerId: integer("player_id").notNull(),
         teamMode: integer("team_mode").$type<TeamMode>().notNull(),

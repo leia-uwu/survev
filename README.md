@@ -29,7 +29,6 @@ After [installing PostgreSQL](https://www.postgresql.org/download/), start the s
 ```bash
 sudo -u postgres initdb --locale=C.UTF-8 --encoding=UTF8 -D /var/lib/postgres/data --data-checksums
 
-
 systemctl enable --now postgresql.service
 
 sudo -u postgres createuser survev
