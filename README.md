@@ -22,9 +22,25 @@ First generate a private key and set encryptLoadoutSecret to it, this is used to
 openssl rand -base64 10
 ```
  
-After that, you need to create and populate the SQLite file and apply the database schema.
+After that, you need to create and populate the PostgreSQL database and apply the database schema.
+
+After [installing PostgreSQL](https://www.postgresql.org/download/), start the service and create a database:
+
 ```bash
- cd /server
+sudo -u postgres initdb --locale=C.UTF-8 --encoding=UTF8 -D /var/lib/postgres/data --data-checksums
+
+
+systemctl enable --now postgresql.service
+
+sudo -u postgres createuser survev
+sudo -u postgres createdb survev -O survev
+```
+
+Then populate the database with the schema:
+
+```bash
+
+ cd server
  
  # run this everytime you make changes to the schema.ts
  pnpm run db:generate
