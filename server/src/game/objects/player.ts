@@ -1753,6 +1753,13 @@ export class Player extends BaseGameObject {
 
         this.indoors = false;
 
+        /*
+         * checking when a player leaves a heal region is a pain,
+         * so we just set healEffect to false by default and set it to true when theyre inside a heal region
+         */
+        const oldHealEffect = this.healEffect;
+        this.healEffect = false;
+
         let zoomRegionZoom = lowestZoom;
         let insideNoZoomRegion = true;
         let insideSmoke = false;
@@ -1780,6 +1787,7 @@ export class Player extends BaseGameObject {
                             0,
                         );
                         this.health += totalHealRate * dt;
+                        this.healEffect = true;
                     }
                 }
 
@@ -1844,6 +1852,11 @@ export class Player extends BaseGameObject {
                     insideSmoke = true;
                 }
             }
+        }
+
+        //only dirty if healEffect changed from last tick to current tick (leaving or entering a heal region)
+        if (oldHealEffect != this.healEffect) {
+            this.setDirty();
         }
 
         if (this.insideZoomRegion) {
