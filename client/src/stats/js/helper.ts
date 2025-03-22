@@ -4,14 +4,12 @@ import EnJs from "../l10n/en";
 export function getCensoredBattletag(content: string) {
     if (content) {
         // @ts-expect-error can't bother
-        var words = EnJs?.words || [];
+        const words = EnJs?.words || [];
 
-        var asterisk = "*";
+        const asterisk = "*";
 
-        var re = new RegExp(words.join("|"), "ig");
-        var newString = content.replace(re, function (matched) {
-            return asterisk.repeat(matched.length);
-        });
+        const re = new RegExp(words.join("|"), "ig");
+        const newString = content.replace(re, (matched) => asterisk.repeat(matched.length));
 
         return newString;
     }
@@ -23,12 +21,12 @@ export function getCensoredBattletag(content: string) {
 //
 
 export function formatTime(time: number) {
-    var minutes = Math.floor(time / 60) % 60;
-    var seconds: string | number = Math.floor(time) % 60;
+    const minutes = Math.floor(time / 60) % 60;
+    let seconds: string | number = Math.floor(time) % 60;
     if (seconds < 10) {
         seconds = `0${seconds}`;
     }
-    var timeSurv = "";
+    let timeSurv = "";
     timeSurv += `${minutes}:`;
     timeSurv += seconds;
     return timeSurv;

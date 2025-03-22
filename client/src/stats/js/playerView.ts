@@ -11,7 +11,7 @@ import matchHistory from "./templates/matchHistory.ejs?raw";
 import player from "./templates/player.ejs?raw";
 import playerCards from "./templates/playerCards.ejs?raw";
 
-var templates = {
+const templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
     matchData: (params: Record<string, any>) => renderEjs(matchData, params),
     matchHistory: (params: Record<string, any>) => renderEjs(matchHistory, params),
@@ -19,7 +19,7 @@ var templates = {
     playerCards: (params: Record<string, any>) => renderEjs(playerCards, params),
 };
 
-var TeamModeToString = {
+const TeamModeToString = {
     1: "solo",
     2: "duo",
     4: "squad",
@@ -102,21 +102,21 @@ function getPlayerCardData(
         };
     }
 
-    var emoteDef = EmotesDefs[userData.player_icon];
-    var texture = emoteDef ? emoteImgToSvg(emoteDef.texture) : "/img/gui/player-gui.svg";
+    const emoteDef = EmotesDefs[userData.player_icon];
+    const texture = emoteDef ? emoteImgToSvg(emoteDef.texture) : "/img/gui/player-gui.svg";
     console.log({
         emoteDef,
         texture: emoteDef ? emoteImgToSvg(emoteDef.texture) : null,
     });
-    var tmpSlug = userData.slug.toLowerCase();
+    let tmpSlug = userData.slug.toLowerCase();
     tmpSlug = tmpSlug.replace(userData.username.toLowerCase(), "");
 
-    var tmpslugToShow =
+    const tmpslugToShow =
         tmpSlug != ""
             ? getCensoredBattletag(`${userData.username}#${tmpSlug}`)
             : getCensoredBattletag(userData.username);
 
-    var profile = {
+    const profile = {
         username: getCensoredBattletag(userData.username),
         slugToShow: tmpslugToShow,
         banned: userData.banned,
@@ -128,7 +128,7 @@ function getPlayerCardData(
     };
 
     // Gather card data
-    var addStat = function addStat(
+    const addStat = function addStat(
         arr: { name: string; val: number | string }[],
         name: string,
         val: number | string,
@@ -138,16 +138,16 @@ function getPlayerCardData(
             val: val,
         });
     };
-    var teamModes: Partial<TeamModes>[] = [];
-    for (var i = 0; i < userData.modes.length; i++) {
-        var mode = userData.modes[i];
+    const teamModes: Partial<TeamModes>[] = [];
+    for (let i = 0; i < userData.modes.length; i++) {
+        const mode = userData.modes[i];
 
         // Overall rank / rating not available yet
-        var mid: { name: string; val: string }[] = [];
+        const mid: { name: string; val: string }[] = [];
         addStat(mid, "Rating", "-");
         addStat(mid, "Rank", "-");
 
-        var bot: { name: string; val: string }[] = [];
+        const bot: { name: string; val: string }[] = [];
         addStat(bot, "Wins", mode.wins);
         addStat(bot, "Win %", mode.winPct);
         addStat(bot, "Kills", mode.kills);
@@ -166,14 +166,12 @@ function getPlayerCardData(
     }
 
     // Insert blank cards for all teammodes
-    var keys = Object.keys(TeamModeToString) as unknown as TeamMode[];
+    const keys = Object.keys(TeamModeToString) as unknown as TeamMode[];
 
-    for (var _i = 0; _i < keys.length; _i++) {
-        var teamMode = keys[_i];
+    for (let _i = 0; _i < keys.length; _i++) {
+        const teamMode = keys[_i];
         if (
-            !teamModes.find(function (x) {
-                return x.teamMode == teamMode;
-            })
+            !teamModes.find((x) => x.teamMode == teamMode)
         ) {
             teamModes.push({
                 teamMode,
@@ -181,15 +179,13 @@ function getPlayerCardData(
             });
         }
     }
-    teamModes.sort(function (a, b) {
-        return a.teamMode! - b.teamMode!;
-    });
-    for (var _i2 = 0; _i2 < teamModes.length; _i2++) {
-        var _teamMode = teamModes[_i2].teamMode!;
+    teamModes.sort((a, b) => a.teamMode! - b.teamMode!);
+    for (let _i2 = 0; _i2 < teamModes.length; _i2++) {
+        const _teamMode = teamModes[_i2].teamMode!;
         teamModes[_i2].name = TeamModeToString[_teamMode];
     }
 
-    var gameModes = helpers.getGameModes();
+    const gameModes = helpers.getGameModes();
 
     return {
         profile: profile,
@@ -217,8 +213,6 @@ class Query {
         debugTimeout: number,
         onComplete: (err: any, res: any) => void,
     ) {
-        var _this = this;
-
         if (this.inProgress) {
             return;
         }
@@ -232,18 +226,18 @@ class Query {
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
             timeout: 10 * 1000,
-            success: function success(data, _status, _xhr) {
-                _this.data = data;
-                _this.dataValid = !!data;
+            success: (data, _status, _xhr) => {
+                this.data = data;
+                this.dataValid = !!data;
             },
-            error: function error(_xhr, _err) {
-                _this.error = true;
-                _this.dataValid = false;
+            error: (_xhr, _err) => {
+                this.error = true;
+                this.dataValid = false;
             },
-            complete: function complete() {
-                setTimeout(function () {
-                    _this.inProgress = false;
-                    onComplete(_this.error, _this.data);
+            complete: () => {
+                setTimeout(() => {
+                    this.inProgress = false;
+                    onComplete(this.error, this.data);
                 }, debugTimeout);
             },
         });
@@ -272,11 +266,11 @@ export class PlayerView {
     );
     constructor(readonly app: App) {}
     getUrlParams() {
-        var location = window.location.href;
-        var params = new RegExp("stats/([^/?#]+).*$").exec(location) || [];
-        var slug = params[1] || "";
-        var interval = helpers.getParameterByName("t") || "all";
-        var mapId = helpers.getParameterByName("mapId") || "-1";
+        const location = window.location.href;
+        const params = new RegExp("stats/([^/?#]+).*$").exec(location) || [];
+        const slug = params[1] || "";
+        const interval = helpers.getParameterByName("t") || "all";
+        const mapId = helpers.getParameterByName("mapId") || "-1";
         return {
             slug: slug,
             interval: interval,
@@ -284,12 +278,10 @@ export class PlayerView {
         };
     }
     getGameByGameId(gameId: string) {
-        return this.games.find(function (x) {
-            return x.summary.guid == gameId;
-        });
+        return this.games.find((x) => x.summary.guid == gameId);
     }
     load() {
-        var _getUrlParams = this.getUrlParams(),
+        const _getUrlParams = this.getUrlParams(),
             slug = _getUrlParams.slug,
             interval = _getUrlParams.interval,
             mapId = _getUrlParams.mapId;
@@ -300,75 +292,70 @@ export class PlayerView {
         this.render();
     }
     loadUserStats(slug: string, interval: string, mapIdFilter: string) {
-        var _this2 = this;
 
-        var args = {
+        const args = {
             slug: slug,
             interval: interval,
             mapIdFilter: mapIdFilter,
         };
-        this.userStats.query("/api/user_stats", args, 0, function (_err, _data) {
-            _this2.render();
+        this.userStats.query("/api/user_stats", args, 0, (_err, _data) => {
+            this.render();
         });
     }
     loadMatchHistory(slug: string, offset: number, teamModeFilter: number) {
-        var This = this;
 
-        var count = 10;
-        var args = {
+        const count = 10;
+        const args = {
             slug: slug,
             offset: offset,
             count: count,
             teamModeFilter: teamModeFilter,
         };
-        this.matchHistory.query("/api/match_history", args, 0, function (_err, data) {
-            var gameModes = helpers.getGameModes();
+        this.matchHistory.query("/api/match_history", args, 0, (_err, data) => {
+            const gameModes = helpers.getGameModes();
 
-            var games = data || [];
+            const games = data || [];
 
-            for (var i = 0; i < games.length; i++) {
+            for (let i = 0; i < games.length; i++) {
                 games[i].team_mode =
                     TeamModeToString[games[i].team_mode as unknown as TeamMode];
 
-                var gameMode = gameModes.find(function (x) {
-                    return x.mapId == games[i].map_id;
-                });
+                const gameMode = gameModes.find((x) => x.mapId == games[i].map_id);
                 games[i].icon = gameMode ? gameMode.desc.icon : "";
 
-                This.games.push({
+                this.games.push({
                     expanded: false,
                     summary: games[i],
                     data: null,
                     dataError: false,
                 });
             }
-            This.moreGamesAvailable = games.length >= count;
-            This.render();
+            this.moreGamesAvailable = games.length >= count;
+            this.render();
         });
     }
     loadMatchData(gameId: string) {
-        var This = this;
 
-        var args = {
+        const args = {
             gameId: gameId,
         };
-        this.matchData.query("/api/match_data", args, 0, function (err, data) {
-            var game = This.getGameByGameId(gameId);
+        this.matchData.query("/api/match_data", args, 0, (err, data) => {
+            const game = this.getGameByGameId(gameId);
             if (game) {
                 game.data = data;
                 game.dataError = err || !data;
             }
-            This.render();
+            this.render();
         });
     }
     toggleMatchData(gameId: string) {
-        var game = this.getGameByGameId(gameId);
+        const game = this.getGameByGameId(gameId);
         if (!game) {
             return;
         }
 
-        var wasExpanded = game.expanded;
-        for (var i = 0; i < this.games.length; i++) {
+        const wasExpanded = game.expanded;
+        for (let i = 0; i < this.games.length; i++) {
             this.games[i].expanded = false;
         }
         game.expanded = !wasExpanded;
@@ -380,26 +367,25 @@ export class PlayerView {
         this.render();
     }
     onChangedParams() {
-        var time = $("#player-time").val();
-        var mapId = $("#player-map-id").val();
+        const time = $("#player-time").val();
+        const mapId = $("#player-map-id").val();
         window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
 
-        var params = this.getUrlParams();
+        const params = this.getUrlParams();
         this.loadUserStats(params.slug, params.interval, params.mapId);
     }
     render() {
-        var _this5 = this;
 
-        var params = this.getUrlParams();
+        const params = this.getUrlParams();
 
         // User stats
-        var content = "";
+        let content = "";
         if (this.userStats.inProgress) {
             content = templates.loading({
                 type: "player",
             });
         } else {
-            var cardData = getPlayerCardData(
+            const cardData = getPlayerCardData(
                 this.userStats.data!,
                 this.userStats.error,
                 this.teamModeFilter,
@@ -408,24 +394,24 @@ export class PlayerView {
         }
         this.el.find(".content").html(content);
 
-        var timeSelector = this.el.find("#player-time");
+        const timeSelector = this.el.find("#player-time");
         if (timeSelector) {
             timeSelector.val(params.interval);
-            timeSelector.change(function () {
-                _this5.onChangedParams();
+            timeSelector.change(() => {
+                this.onChangedParams();
             });
         }
 
-        var mapIdSelector = this.el.find("#player-map-id");
+        const mapIdSelector = this.el.find("#player-map-id");
         if (mapIdSelector) {
             mapIdSelector.val(params.mapId);
-            mapIdSelector.change(function () {
-                _this5.onChangedParams();
+            mapIdSelector.change(() => {
+                this.onChangedParams();
             });
         }
 
         // Match history
-        var historyContent = "";
+        let historyContent = "";
         if (this.games.length == 0 && this.matchHistory.inProgress) {
             historyContent = templates.loading({
                 type: "match_history",
@@ -439,48 +425,46 @@ export class PlayerView {
             });
         }
 
-        var historySelector = this.el.find("#match-history");
+        const historySelector = this.el.find("#match-history");
         if (historySelector) {
             historySelector.html(historyContent);
 
-            $(".js-match-data").click(function (e) {
+            $(".js-match-data").click((e) => {
                 if (!$(e.target).is("a")) {
-                    _this5.toggleMatchData($(e.currentTarget).data("game-id"));
+                    this.toggleMatchData($(e.currentTarget).data("game-id"));
                 }
             });
 
-            $(".js-match-load-more").click(function (_e) {
-                var params = _this5.getUrlParams();
-                _this5.loadMatchHistory(
+            $(".js-match-load-more").click((_e) => {
+                const params = this.getUrlParams();
+                this.loadMatchHistory(
                     params.slug,
-                    _this5.games.length,
-                    _this5.teamModeFilter,
+                    this.games.length,
+                    this.teamModeFilter,
                 );
-                _this5.render();
+                this.render();
             });
 
-            $(".extra-team-mode-filter").click(function (e) {
-                if (!_this5.matchHistory.inProgress) {
-                    var _params = _this5.getUrlParams();
-                    _this5.games = [];
-                    _this5.teamModeFilter = $(e.currentTarget).data("filter");
-                    _this5.loadMatchHistory(_params.slug, 0, _this5.teamModeFilter);
-                    _this5.render();
+            $(".extra-team-mode-filter").click((e) => {
+                if (!this.matchHistory.inProgress) {
+                    const _params = this.getUrlParams();
+                    this.games = [];
+                    this.teamModeFilter = $(e.currentTarget).data("filter");
+                    this.loadMatchHistory(_params.slug, 0, this.teamModeFilter);
+                    this.render();
                 }
             });
 
             // Match data
-            var matchDataContent = "";
-            var expandedGame = this.games.find(function (x) {
-                return x.expanded;
-            });
+            let matchDataContent = "";
+            const expandedGame = this.games.find((x) => x.expanded);
             if (expandedGame) {
-                var _params2 = this.getUrlParams();
-                var localId = 0;
+                const _params2 = this.getUrlParams();
+                let localId = 0;
                 // Get this player's player_id in this match
                 if (expandedGame.data) {
-                    for (var i = 0; i < expandedGame.data.length; i++) {
-                        var d = expandedGame.data[i];
+                    for (let i = 0; i < expandedGame.data.length; i++) {
+                        const d = expandedGame.data[i];
                         if (_params2.slug == d.slug) {
                             localId = d.player_id || 0;
                             break;

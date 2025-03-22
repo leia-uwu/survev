@@ -18,9 +18,9 @@ export class Localization {
     translations = {} as Record<AcceptedLocales, Record<string, string>>;
 
     constructor() {
-        for (var i = 0; i < this.acceptedLocales.length; i++) {
-            var locale = this.acceptedLocales[i];
-            var translation = {};
+        for (let i = 0; i < this.acceptedLocales.length; i++) {
+            const locale = this.acceptedLocales[i];
+            let translation = {};
             try {
                 translation = map[locale];
             } catch (_err) {
@@ -37,7 +37,7 @@ export class Localization {
     }
     translate(key: string) {
         // Also try spaces as dashes
-        var spacedKey = key.replace(" ", "-");
+        const spacedKey = key.replace(" ", "-");
         return (
             this.translations[this.locale][key] ||
             this.translations[this.locale][spacedKey] ||
@@ -46,14 +46,13 @@ export class Localization {
         );
     }
     localizeIndex() {
-        var _this = this;
 
         // Go through index and replace data-l10n tagged elements
-        var localizedElements = $("*[data-l10n]");
+        const localizedElements = $("*[data-l10n]");
         localizedElements.each((_idx, el): any => {
-            var el$ = $(el);
-            var datal10n = el$.attr("data-l10n")!;
-            var localizedText = _this.translate(datal10n);
+            const el$ = $(el);
+            const datal10n = el$.attr("data-l10n")!;
+            let localizedText = this.translate(datal10n);
             if (localizedText) {
                 if (el$.attr("data-caps") == "true") {
                     localizedText = localizedText.toUpperCase();

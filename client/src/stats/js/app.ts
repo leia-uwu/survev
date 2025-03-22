@@ -11,7 +11,7 @@ import language from "./templates/langauge.ejs?raw";
 import { ConfigManager } from "../../config";
 import { renderEjs } from "./helper";
 
-var templates = {
+const templates = {
     language: (params: Record<string, any>) => renderEjs(language, params),
 };
 
@@ -22,7 +22,7 @@ class Router {
     routes: { name: string; url: string }[] = [];
 
     constructor(readonly app: App) {
-        var routeChange = this.onRouteChange.bind(this);
+        const routeChange = this.onRouteChange.bind(this);
         window.addEventListener("load", routeChange);
     }
     addRoute(name: string, url: string) {
@@ -32,10 +32,8 @@ class Router {
         });
     }
     onRouteChange() {
-        var location = window.location.href;
-        var route = this.routes.find(function (r) {
-            return location.match(new RegExp(r.url));
-        });
+        const location = window.location.href;
+        const route = this.routes.find((r) => location.match(new RegExp(r.url)));
         if (route) {
             this.app.setView(route.name);
         } else {
@@ -71,20 +69,20 @@ export class App {
     constructor() {
         this.mainView = new MainView(this);
         this.playerView = new PlayerView(this);
-        var router = new Router(this);
+        const router = new Router(this);
         router.addRoute("player", "stats/([^/?#]+).*$");
         router.addRoute("main", "stats");
 
-        $("#search-players").on("submit", function (e) {
+        $("#search-players").on("submit", (e) => {
             e.preventDefault();
-            var name = $("#search-players :input").val() as string;
-            var slug = slugify(name);
+            const name = $("#search-players :input").val() as string;
+            const slug = slugify(name);
             window.location.href = `/stats/${slug}`;
         });
 
         // Load slug for "My Profile" link
         try {
-            var config = JSON.parse(localStorage.getItem("survev_config")!);
+            const config = JSON.parse(localStorage.getItem("survev_config")!);
             if (config.profile && config.profile.slug) {
                 $("#my-profile")
                     .css("display", "block")
@@ -103,12 +101,12 @@ export class App {
         this.adManager = new Ads();
     }
     setView(name?: string) {
-        var phoneDetected = device.mobile && !device.tablet;
-        var elAdsLeaderboardTop = $("#adsLeaderBoardTop");
-        var elAdsLeaderboardBottom = $("#adsLeaderBoardBottom");
-        var elAdsPlayerTop = $("#adsPlayerTop");
-        var elAdsPlayerBottom = $("#adsPlayerBottom");
-        var premiumPass = localStorage.getItem("premium");
+        const phoneDetected = device.mobile && !device.tablet;
+        const elAdsLeaderboardTop = $("#adsLeaderBoardTop");
+        const elAdsLeaderboardBottom = $("#adsLeaderBoardBottom");
+        const elAdsPlayerTop = $("#adsPlayerTop");
+        const elAdsPlayerBottom = $("#adsPlayerBottom");
+        const premiumPass = localStorage.getItem("premium");
 
         if (name == "player") {
             elAdsLeaderboardTop.css("display", "none");
@@ -136,7 +134,7 @@ export class App {
         }
 
         // show ads
-        var slotIds = [];
+        const slotIds = [];
         if (
             elAdsLeaderboardTop &&
             elAdsLeaderboardTop.css("display") != "none" &&
@@ -176,7 +174,6 @@ export class App {
     }
 
     render() {
-        var _this = this;
 
         $("#language-select").html(
             templates.language({
@@ -190,15 +187,15 @@ export class App {
                 called: true,
                 ele: $("#selected-language"),
             });
-            var el = e.target;
-            var code = $(el).attr("value") as AcceptedLocales;
-            var _language = $(el).html();
+            const el = e.target;
+            const code = $(el).attr("value") as AcceptedLocales;
+            const _language = $(el).html();
             if (code) {
                 // Set the config language
                 $("#selected-language").html(code.toUpperCase());
-                _this.localization.setLocale(code);
-                _this.localization.localizeIndex();
-                _this.config.set("language", code);
+                this.localization.setLocale(code);
+                this.localization.localizeIndex();
+                this.config.set("language", code);
             }
         });
     }

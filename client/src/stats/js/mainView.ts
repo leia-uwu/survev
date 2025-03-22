@@ -8,7 +8,7 @@ import leaderboardError from "./templates/leaderboardError.ejs?raw";
 import loading from "./templates/loading.ejs?raw";
 import main from "./templates/main.ejs?raw";
 
-var templates = {
+const templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
     main: (params: Record<string, any>) => renderEjs(main, params),
     leaderboard: (params: Record<string, any>) => renderEjs(leaderboard, params),
@@ -48,17 +48,14 @@ export class MainView {
     );
 
     constructor(readonly app: App) {
-        var _this = this;
 
         this.app = app;
 
-        this.el.find(".leaderboard-opt").change(function () {
-            _this.onChangedParams();
+        this.el.find(".leaderboard-opt").change(() => {
+            this.onChangedParams();
         });
     }
     load() {
-        var _this2 = this;
-
         this.loading = true;
         this.error = false;
 
@@ -67,17 +64,17 @@ export class MainView {
         //   interval: daily, weekly, alltime
         //   teamMode: solo, duo, squad
         //   maxCount: 10, 100
-        var type = helpers.getParameterByName("type") || "most_kills";
-        var interval = helpers.getParameterByName("t") || "daily";
-        var teamMode = helpers.getParameterByName("team") || "solo";
-        var mapId = helpers.getParameterByName("mapId") || "0";
+        let type = helpers.getParameterByName("type") || "most_kills";
+        const interval = helpers.getParameterByName("t") || "daily";
+        const teamMode = helpers.getParameterByName("team") || "solo";
+        const mapId = helpers.getParameterByName("mapId") || "0";
         // Change to most_damage_dealt if faction mode and most_kills selected
         if (type == "most_kills" && Number(mapId) == 3) {
             type = "most_damage_dealt";
         }
-        var maxCount = 100;
+        const maxCount = 100;
 
-        var args = {
+        const args = {
             type: type,
             interval: interval,
             teamMode: teamMode,
@@ -90,8 +87,8 @@ export class MainView {
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
-            success: function success(data, _status, _xhr) {
-                _this2.data = {
+            success: (data, _status, _xhr) => {
+                this.data = {
                     type: type,
                     interval: interval,
                     teamMode: teamMode,
@@ -100,22 +97,22 @@ export class MainView {
                     data: data,
                 };
             },
-            error: function error(_xhr, _err) {
-                _this2.error = true;
+            error: (_xhr, _err) => {
+                this.error = true;
             },
-            complete: function complete() {
-                _this2.loading = false;
-                _this2.render();
+            complete: () => {
+                this.loading = false;
+                this.render();
             },
         });
 
         this.render();
     }
     onChangedParams() {
-        var type = $("#leaderboard-type").val();
-        var time = $("#leaderboard-time").val();
-        var teamMode = $("#leaderboard-team-mode").val();
-        var mapId = $("#leaderboard-map-id").val();
+        const type = $("#leaderboard-type").val();
+        const time = $("#leaderboard-time").val();
+        const teamMode = $("#leaderboard-team-mode").val();
+        const mapId = $("#leaderboard-map-id").val();
         window.history.pushState(
             "",
             "",
@@ -125,7 +122,7 @@ export class MainView {
     }
     render() {
         // Compute derived values
-        var TypeToString = {
+        const TypeToString = {
             most_kills: "stats-most-kills",
             most_damage_dealt: "stats-most-damage",
             kills: "stats-total-kills",
@@ -133,7 +130,7 @@ export class MainView {
             kpg: "stats-kpg",
         };
         // @TODO: Refactor shared leaderboard constants with app/src/db.js
-        var MinGames = {
+        const MinGames = {
             kpg: {
                 daily: 15,
                 weekly: 50,
@@ -141,7 +138,7 @@ export class MainView {
             },
         };
 
-        var content = "";
+        let content = "";
         if (this.loading) {
             content = templates.loading({
                 type: "leaderboard",
@@ -149,7 +146,7 @@ export class MainView {
         } else if (this.error || !this.data.data) {
             content = templates.leaderboardError({});
         } else {
-            for (var i = 0; i < this.data.data.length; i++) {
+            for (let i = 0; i < this.data.data.length; i++) {
                 if (this.data.data[i].username) {
                     this.data.data[i].username = getCensoredBattletag(
                         this.data.data[i].username,
@@ -167,9 +164,9 @@ export class MainView {
                 }
             }
 
-            var statName =
+            const statName =
                 TypeToString[this.data.type as keyof typeof TypeToString] || "";
-            var minGames = MinGames[this.data.type as keyof typeof MinGames]
+            let minGames = MinGames[this.data.type as keyof typeof MinGames]
                 ? // @ts-expect-error go away
                   MinGames[this.data.type][this.data.interval]
                 : 1;
@@ -188,7 +185,7 @@ export class MainView {
             $("#leaderboard-time").val(this.data.interval!);
 
             // Disable most kills option if 50v50 selected
-            var factionMode = Number(this.data.mapId) == 3;
+            const factionMode = Number(this.data.mapId) == 3;
             if (factionMode) {
                 $('#leaderboard-type option[value="most_kills"]').attr(
                     "disabled",
