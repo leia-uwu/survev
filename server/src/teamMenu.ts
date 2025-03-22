@@ -384,7 +384,7 @@ export class TeamMenu {
                         }
                     },
 
-                    onClose: (_event, ws) => {
+                    onClose(_event, ws) {
                         teamMenu.onClose(ws as WSContext<SocketData>);
 
                         const data = ws.raw! as SocketData;
@@ -404,7 +404,7 @@ export class TeamMenu {
         };
     }
 
-    async onMsg(ws: WSContext<SocketData>, data: string) {
+    onMsg(ws: WSContext<SocketData>, data: string) {
         let msg: ClientToServerTeamMsg;
         try {
             assert(data.length < 1024);
