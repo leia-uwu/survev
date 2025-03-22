@@ -12,7 +12,6 @@ import {
     type TeamPlayGameMsg,
     zTeamClientMsg,
 } from "../../shared/types/team";
-import { math } from "../../shared/utils/math";
 import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
 import { Config } from "./config";
@@ -125,6 +124,15 @@ class Player {
     }
 }
 
+function allowedGameModeIdxs() {
+    return Config.modes
+        .map((_, i) => i)
+        .filter((i) => {
+            const mode = Config.modes[i];
+            return mode.enabled && mode.teamMode > 1;
+        });
+}
+
 class Room {
     players: Player[] = [];
 
@@ -134,7 +142,7 @@ class Room {
         lastError: "",
         region: "",
         autoFill: true,
-        enabledGameModeIdxs: [1, 2],
+        enabledGameModeIdxs: allowedGameModeIdxs(),
         gameModeIdx: 1,
         maxPlayers: 4,
     };
@@ -167,13 +175,9 @@ class Room {
         }
         this.data.region = region;
 
-        let gameModeIdx = math.clamp(props.gameModeIdx, 0, Config.modes.length - 1);
+        let gameModeIdx = props.gameModeIdx;
 
-        if (
-            !Config.modes[gameModeIdx] ||
-            !Config.modes[gameModeIdx].enabled ||
-            Config.modes[gameModeIdx].teamMode < 2
-        ) {
+        if (!this.data.enabledGameModeIdxs.includes(gameModeIdx)) {
             // we don't allow creating teams if there's no valid team mode
             // so this will never be -1
             gameModeIdx = Config.modes.findIndex(
@@ -424,10 +428,7 @@ export class TeamMenu {
             switch (msg.type) {
                 case "create": {
                     // don't allow creating a team if there's no team mode enabled
-                    if (
-                        !Config.modes.filter((mode) => mode.enabled && mode.teamMode > 1)
-                            .length
-                    ) {
+                    if (!allowedGameModeIdxs().length) {
                         player.send("error", { type: "create_failed" });
                         break;
                     }
