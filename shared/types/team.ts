@@ -3,10 +3,24 @@
 import { z } from "zod";
 import type { FindGameMatchData } from "./api";
 
+export type TeamMenuErrorType =
+    | "join_full"
+    | "join_not_found"
+    | "join_failed"
+    | "create_failed"
+    | "lost_conn"
+    | "join_game_failed"
+    | "find_game_error"
+    | "find_game_full"
+    | "find_game_invalid_protocol"
+    | "kicked"
+    | "behind_proxy"
+    | "rate_limited";
+
 export interface RoomData {
     roomUrl: string;
     findingGame: boolean;
-    lastError: string;
+    lastError: TeamMenuErrorType | "";
     region: string;
     autoFill: boolean;
     enabledGameModeIdxs: number[];
@@ -56,7 +70,7 @@ export interface TeamKickedMsg {
 export interface TeamErrorMsg {
     readonly type: "error";
     data: {
-        type: string;
+        type: TeamMenuErrorType;
     };
 }
 

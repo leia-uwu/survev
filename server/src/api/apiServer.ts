@@ -1,5 +1,6 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
+import { GameConfig } from "../../../shared/gameConfig";
 import type { FindGameBody, FindGameResponse } from "../../../shared/types/api";
 import { Config, type ConfigType } from "../config";
 import { TeamMenu } from "../teamMenu";
@@ -39,6 +40,15 @@ class Region {
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
+        if (body.version !== GameConfig.protocolVersion) {
+            return { err: "invalid_protocol" };
+        }
+
+        const mode = Config.modes[body.gameModeIdx];
+        if (!mode || !mode.enabled) {
+            return { err: "full" };
+        }
+
         const data = await this.fetch<FindGameResponse>("api/find_game", body);
         if (!data) {
             return { err: "full" };
@@ -100,6 +110,15 @@ export class ApiServer {
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
+        if (body.version !== GameConfig.protocolVersion) {
+            return { err: "invalid_protocol" };
+        }
+
+        const mode = Config.modes[body.gameModeIdx];
+        if (!mode || !mode.enabled) {
+            return { err: "full" };
+        }
+
         if (body.region in this.regions) {
             return await this.regions[body.region].findGame(body);
         }

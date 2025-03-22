@@ -723,7 +723,6 @@ class Application {
     }
 
     showErrorModal(err: string) {
-        console.trace();
         const typeText: Record<string, string> = {
             // TODO: translate those?
             behind_proxy: this.localization.translate("index-behind-proxy"),
