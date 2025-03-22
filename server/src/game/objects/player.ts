@@ -20,7 +20,6 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import { PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
@@ -35,8 +34,10 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
+import { lucia } from "../../api/auth/lucia";
 import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
+import { setLoadout } from "../../utils/loadoutHelpers";
 import { validateUserName } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
@@ -60,6 +61,7 @@ interface Emote {
 }
 
 export class PlayerBarn {
+    allPlayers: Player[] = [];
     players: Player[] = [];
     livingPlayers: Player[] = [];
     newPlayers: Player[] = [];
@@ -109,7 +111,7 @@ export class PlayerBarn {
         return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
-    addPlayer(socketId: string, joinMsg: net.JoinMsg) {
+    addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
         if (!joinData || joinData.expiresAt < Date.now() || joinData.availableUses <= 0) {
@@ -154,7 +156,7 @@ export class PlayerBarn {
             layer = 0;
         }
 
-        const player = new Player(this.game, pos, layer, socketId, joinMsg);
+        const player = new Player(this.game, pos, layer, socketId, joinMsg, ip);
 
         this.socketIdToPlayer.set(socketId, player);
 
@@ -191,6 +193,7 @@ export class PlayerBarn {
         this.game.logger.log(`Player ${player.name} joined`);
 
         this.newPlayers.push(player);
+        this.allPlayers.push(player);
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
@@ -604,7 +607,7 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    _disconnected = false;
+    private _disconnected = false;
 
     get disconnected(): boolean {
         return this._disconnected;
@@ -1088,6 +1091,8 @@ export class Player extends BaseGameObject {
 
     damageTaken = 0;
     damageDealt = 0;
+    // @LEIAAAAA
+    rank = 0;
     kills = 0;
     timeAlive = 0;
 
@@ -1101,18 +1106,23 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
+    authId: string | null = null;
+    ip: string;
+
     constructor(
         game: Game,
         pos: Vec2,
         layer: number,
         socketId: string,
         joinMsg: net.JoinMsg,
+        ip: string,
     ) {
         super(game, pos);
 
         this.layer = layer;
 
         this.socketId = socketId;
+        this.ip = ip;
 
         this.name = validateUserName(joinMsg.name);
 
@@ -1178,54 +1188,8 @@ export class Player extends BaseGameObject {
             this.addPerk(perk.type, perk.droppable);
         }
 
-        /**
-         * Checks if an item is present in the player's loadout
-         */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
-        if (
-            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
-            joinMsg.loadout.outfit !== "outfitBase"
-        ) {
-            this.setOutfit(joinMsg.loadout.outfit);
-        } else {
-            this.setOutfit(defaultItems.outfit);
-        }
-
-        if (
-            isItemInLoadout(joinMsg.loadout.melee, "melee") &&
-            joinMsg.loadout.melee != "fists"
-        ) {
-            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        }
-
-        const loadout = this.loadout;
-
-        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-            loadout.heal = joinMsg.loadout.heal;
-        }
-        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-            loadout.boost = joinMsg.loadout.boost;
-        }
-
-        const emotes = joinMsg.loadout.emotes;
-        for (let i = 0; i < emotes.length; i++) {
-            const emote = emotes[i];
-            if (i > GameConfig.EmoteSlot.Count) break;
-
-            if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                continue;
-            }
-
-            loadout.emotes[i] = emote;
-        }
+        setLoadout(joinMsg, this);
+        this.setAuthId(joinMsg.authCookie);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
@@ -2277,6 +2241,21 @@ export class Player extends BaseGameObject {
         this._firstUpdate = false;
     }
 
+    /**
+     * gets authId from cookie to identify user when saving games to database
+     */
+    setAuthId(authCookie: string): void {
+        if (!Config.accountsEnabled || !authCookie) return;
+        lucia
+            .validateSession(authCookie)
+            .then((data) => {
+                if (data?.user && data.user.id) {
+                    this.authId = data.user.id;
+                }
+            })
+            .catch((err) => console.warn("Failed to set player auth id", err));
+    }
+
     spectate(spectateMsg: net.SpectateMsg): void {
         const spectatablePlayers = this.game.modeManager.getSpectatablePlayers(this);
         let playerToSpec: Player | undefined;
@@ -2509,6 +2488,7 @@ export class Player extends BaseGameObject {
     }
 
     killedBy: Player | undefined;
+    killedIds: number[] = [];
 
     kill(params: DamageParams): void {
         if (this.dead) return;
@@ -2558,7 +2538,9 @@ export class Player extends BaseGameObject {
         if (params.source instanceof Player) {
             const source = params.source;
             this.killedBy = source;
+
             if (source !== this && source.teamId !== this.teamId) {
+                source.killedIds.push(this.__id);
                 source.kills++;
 
                 if (source.isKillLeader) {
@@ -2575,7 +2557,6 @@ export class Player extends BaseGameObject {
                     this.game.playerBarn.addEmote(0, this.pos, "ping_woodsking", true);
                 }
             }
-
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;
@@ -4389,7 +4370,7 @@ export class Player extends BaseGameObject {
         this.sendData(stream.getBuffer());
     }
 
-    sendData(buffer: ArrayBuffer | Uint8Array): void {
+    sendData(buffer: Uint8Array): void {
         this.game.sendSocketMsg(this.socketId, buffer);
     }
 }

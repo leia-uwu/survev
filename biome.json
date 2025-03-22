@@ -28,15 +28,17 @@
       "suspicious": {
         "noDoubleEquals": "off",
         "noExplicitAny": "off",
-        "noPrototypeBuiltins": "off"
+        "noPrototypeBuiltins": "off",
+        "useAwait": "warn"
       }
-    }
+    },
+    "ignore": ["drizzle/*"]
   },
   "formatter": {
     "indentWidth": 4,
     "indentStyle": "space",
     "lineWidth": 90,
-    "ignore": ["package.json"]
+    "ignore": ["package.json", "drizzle/*"]
   },
   "vcs": {
     "enabled": true,

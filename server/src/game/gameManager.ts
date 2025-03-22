@@ -2,31 +2,15 @@ import { randomBytes } from "crypto";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
-import type { MapDefs } from "../../../shared/defs/mapDefs";
-import type { TeamMode } from "../../../shared/gameConfig";
+import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
-import type { FindGameBody, GameSocketData } from "../gameServer";
+import type {
+    GameData,
+    GameSocketData,
+    JoinData,
+    ServerGameConfig,
+} from "../utils/types";
 import { Game } from "./game";
-
-export interface ServerGameConfig {
-    readonly mapName: keyof typeof MapDefs;
-    readonly teamMode: TeamMode;
-}
-
-export interface GameData {
-    id: string;
-    teamMode: TeamMode;
-    mapName: string;
-    canJoin: boolean;
-    aliveCount: number;
-    startedTime: number;
-    stopped: boolean;
-}
-
-export interface FindGameResponse {
-    gameId: string;
-    data: string;
-}
 
 export abstract class GameManager {
     abstract sockets: Map<string, WebSocket<GameSocketData>>;
@@ -35,7 +19,7 @@ export abstract class GameManager {
 
     abstract getById(id: string): GameData | undefined;
 
-    abstract findGame(body: FindGameBody): Promise<FindGameResponse>;
+    abstract findGame(body: FindGameBody): Promise<JoinData>;
 
     abstract onOpen(socketId: string, socket: WebSocket<GameSocketData>): void;
 
@@ -139,7 +123,7 @@ export class SingleThreadGameManager implements GameManager {
         return this.gamesById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGameBody): Promise<JoinData> {
         const config = Config.modes[body.gameModeIdx];
 
         let game = this.games
@@ -184,7 +168,7 @@ export class SingleThreadGameManager implements GameManager {
     onMsg(socketId: string, msg: ArrayBuffer): void {
         const data = this.sockets.get(socketId)?.getUserData();
         if (!data) return;
-        this.gamesById.get(data.gameId)?.handleMsg(msg, socketId);
+        this.gamesById.get(data.gameId)?.handleMsg(msg, socketId, data.ip);
     }
 
     onClose(socketId: string) {

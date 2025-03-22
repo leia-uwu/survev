@@ -75,13 +75,12 @@ export default defineConfig(({ mode }) => {
             ? {
                   local: {
                       https: false,
-                      address: `${Config.devServer.host}:${Config.devServer.port}`,
+                      address: `${Config.gameServer.host}:${Config.gameServer.port}`,
                       l10n: "index-local",
                   },
               }
             : {}),
     };
-
     return {
         base: "",
         build: {
@@ -135,17 +134,23 @@ export default defineConfig(({ mode }) => {
         json: {
             stringify: true,
         },
+        assetsInclude: ["**/*.ejs"],
         server: {
             port: 3000,
             host: "0.0.0.0",
             proxy: {
+                "/stats": {
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
+                    changeOrigin: true,
+                    secure: false,
+                },
                 "/api": {
-                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
                 },
                 "/team_v2": {
-                    target: `http://${Config.devServer.host}:${Config.devServer.port}`,
+                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
                     changeOrigin: true,
                     secure: false,
                     ws: true,

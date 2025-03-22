@@ -1,11 +1,15 @@
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
+import { saveGameInfoToDatabase } from "../api/saveGameHelpers";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
-import type { ServerGameConfig } from "./gameManager";
+import {
+    ProcessMsgType,
+    type ServerGameConfig,
+    type UpdateDataMsg,
+} from "../utils/types";
 import { GameModeManager } from "./gameModeManager";
-import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
@@ -97,7 +101,7 @@ export class Game {
     constructor(
         id: string,
         config: ServerGameConfig,
-        readonly sendSocketMsg: (id: string, data: ArrayBuffer) => void,
+        readonly sendSocketMsg: (id: string, data: Uint8Array) => void,
         readonly closeSocket: (id: string) => void,
         readonly sendData?: (data: UpdateDataMsg) => void,
     ) {
@@ -283,7 +287,7 @@ export class Game {
         };
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+    handleMsg(buff: ArrayBuffer | Buffer, socketId: string, ip: string): void {
         if (!(buff instanceof ArrayBuffer)) return;
 
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
@@ -304,7 +308,7 @@ export class Game {
         if (!msg) return;
 
         if (type === net.MsgType.Join && !player) {
-            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg);
+            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg, ip);
             return;
         }
 
@@ -405,5 +409,15 @@ export class Game {
         }
         this.logger.log("Game Ended");
         this.updateData();
+        this._saveGameToDatabase();
+    }
+
+    private _saveGameToDatabase() {
+        try {
+            saveGameInfoToDatabase(this);
+            this.playerBarn.allPlayers.length = 0;
+        } catch (e) {
+            console.log(e);
+        }
     }
 }

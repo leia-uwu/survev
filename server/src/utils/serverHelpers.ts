@@ -1,4 +1,6 @@
 import { isIP } from "net";
+import type { Context } from "hono";
+import ProxyCheck, { type IPAddressInfo } from "proxycheck-ts";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
@@ -18,8 +20,20 @@ export function cors(res: HttpResponse): void {
         .writeHeader("Access-Control-Max-Age", "3600");
 }
 
+export function getHonoIp(c: Context, proxyHeader?: string): string | undefined {
+    const ip = proxyHeader
+        ? c.req.header(proxyHeader)
+        : c.env?.incoming?.socket?.remoteAddress;
+
+    if (!ip || isIP(ip) == 0) return undefined;
+    return ip;
+}
+
 export function forbidden(res: HttpResponse): void {
-    res.writeStatus("403 Forbidden").end("403 Forbidden");
+    res.cork(() => {
+        if (res.aborted) return;
+        res.writeStatus("403 Forbidden").end("403 Forbidden");
+    });
 }
 
 export function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
@@ -91,6 +105,17 @@ const badWordsFilter = [
     /ch[i1líĩî|!]nks?/i,
 ];
 
+export function checkForBadWords(name: string) {
+    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
+
+    for (const regex of badWordsFilter) {
+        if (name.match(regex) || santized.match(regex)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function validateUserName(name: string) {
     if (!name || typeof name !== "string") return "Player";
 
@@ -100,15 +125,8 @@ export function validateUserName(name: string) {
         // remove extended ascii etc
         .replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, "");
 
-    if (!name.length) return "Player";
+    if (!name.length || checkForBadWords(name)) return "Player";
 
-    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
-
-    for (const regex of badWordsFilter) {
-        if (name.match(regex) || santized.match(regex)) {
-            return "Player";
-        }
-    }
     return name;
 }
 
@@ -257,4 +275,58 @@ export class HTTPRateLimit {
             return ++ipData.count > this.limit;
         }
     }
+}
+
+const proxyCheck = Config.PROXYCHECK_KEY
+    ? new ProxyCheck({
+          api_key: Config.PROXYCHECK_KEY,
+      })
+    : undefined;
+
+const proxyCheckCache = new Map<
+    string,
+    {
+        info: IPAddressInfo;
+        expiresAt: number;
+    }
+>();
+
+export async function isBehindProxy(ip: string): Promise<boolean> {
+    if (!proxyCheck) return false;
+
+    let info: IPAddressInfo | undefined = undefined;
+    const cached = proxyCheckCache.get(ip);
+    if (cached && cached.expiresAt > Date.now()) {
+        info = cached.info;
+    }
+    if (!info) {
+        try {
+            const proxyRes = await proxyCheck.checkIP(ip);
+            switch (proxyRes.status) {
+                case "ok":
+                case "warning":
+                    info = proxyRes[ip];
+                    if (proxyRes.status === "warning") {
+                        console.warn(`ProxyCheck warning, res:`, proxyRes);
+                    }
+                    break;
+                case "denied":
+                case "error":
+                    console.error(`Failed to check for ip ${ip}:`, proxyRes);
+                    break;
+            }
+        } catch (error) {
+            console.error(`Proxycheck error:`, error);
+            return true;
+        }
+    }
+    if (!info) {
+        return true;
+    }
+    proxyCheckCache.set(ip, {
+        info,
+        expiresAt: Date.now() + 60 * 60 * 24, // a day
+    });
+
+    return info.proxy === "yes" || info.vpn === "yes";
 }
