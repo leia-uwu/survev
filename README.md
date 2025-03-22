@@ -60,6 +60,8 @@ to interact with the database through an interface
 to wipe the db and start over run, useful when messing up things
 DO NOT RUN THIS IN PRODUCTION
 ```bash
+ # set database permissions
+ sudo -u postgres psql -c "ALTER USER survev WITH PASSWORD 'survev';"
  pnpm run db:wipe
 ```
 

@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-const dbConfig = {
+export const dbConfig = {
     host: "127.0.0.1",
     user: "survev",
     password: "survev",
