@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
@@ -10,6 +10,7 @@ import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
+import { matchDataTable, usersTable } from "../../db/schema";
 import { validateParams } from "../../zodSchemas";
 import { filterByInterval, filterByMapId } from "./user_stats";
 
@@ -76,7 +77,7 @@ leaderboardRouter.post(
 
             return c.json<LeaderboardReturnType[]>(data, 200);
         } catch (err) {
-            server.logger.warn("/api/user_stats: Error getting leaderboard data", err);
+            server.logger.warn("/api/leaderboard: Error getting leaderboard data", err);
             return c.json({ error: "" }, 500);
         }
     },
@@ -115,12 +116,8 @@ const typeToQuery: Record<LeaderboardParams["type"], string> = {
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
-async function soloLeaderboardQuery({
-    interval,
-    mapId,
-    teamMode,
-    type,
-}: LeaderboardParams) {
+async function soloLeaderboardQuery(params: LeaderboardParams) {
+    const { interval, mapId, teamMode, type } = params;
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
 
@@ -155,29 +152,85 @@ async function soloLeaderboardQuery({
     return result.rows;
 }
 
-async function multiplePlayersQuery({ interval, mapId, teamMode }: LeaderboardParams) {
-    const intervalFilterQuery = filterByInterval(interval);
-    const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
+async function multiplePlayersQuery({
+    interval,
+    mapId,
+    teamMode,
+}: LeaderboardParams): Promise<LeaderboardReturnType[]> {
+    const intervalFilter = {
+        daily: gte(matchDataTable.createdAt, sql`DATE_SUB(NOW(), INTERVAL 1 DAY)`),
+        weekly: gte(matchDataTable.createdAt, sql`DATE_SUB(NOW(), INTERVAL 7 DAY)`),
+    };
 
-    const query = sql.raw(`
-        SELECT
- JSON_AGG(match_data.username) as usernames,
- JSON_AGG(users.slug) as slugs,
- match_data.region,
- COUNT(DISTINCT(match_data.game_id)) as games,
- SUM(match_data.kills) as val
-FROM match_data
-INNER JOIN users ON users.id = match_data.user_id
-      WHERE 1=1
-      ${intervalFilterQuery}
-      ${mapIdFilterQuery}
-      AND team_mode = ${teamMode}
-GROUP BY match_data.game_id, match_data.team_id, match_data.region
-ORDER BY val DESC
-LIMIT 100;`);
+    const data = await db
+        .select({
+            matchedUsers: sql<
+                {
+                    username: string;
+                    userId: string | null;
+                }[]
+            >`json_agg(
+                json_build_object(
+                    'username', ${matchDataTable.username},
+                    'userId', ${matchDataTable.userId}
+                )
+            )`,
+            region: matchDataTable.region,
+            val: sql<number>`SUM(${matchDataTable.kills}) as val`,
+        })
+        .from(matchDataTable)
+        .where(
+            and(
+                interval === "alltime" ? undefined : intervalFilter[interval],
+                eq(matchDataTable.teamMode, teamMode),
+                eq(matchDataTable.mapId, mapId),
+            ),
+        )
+        .groupBy(matchDataTable.gameId, matchDataTable.teamId, matchDataTable.region)
+        .orderBy(sql`val DESC`)
+        .limit(MAX_RESULT_COUNT);
 
-    const result = await db.execute<LeaderboardReturnType>(query);
-    return result.rows;
+    // get slugs using userIds
+    // @NOTE: previously this was done in SQL using a join
+    // but performance degraded significantly with larger table
+    // splitting it into two separate queries is much faster
+
+    const userIds: string[] = [];
+    for (const row of data) {
+        for (const { userId } of row.matchedUsers) {
+            if (!userId) continue;
+            userIds.push(userId);
+        }
+    }
+
+    const slugsFromUserIds = await db
+        .select({
+            slug: usersTable.slug,
+            id: usersTable.id,
+        })
+        .from(usersTable)
+        .where(inArray(usersTable.id, userIds));
+
+    const slugMap = Object.fromEntries(
+        slugsFromUserIds.map(({ id, slug }) => [id, slug]),
+    );
+
+    return data.map((row) => {
+        const usernames = [];
+        const slugs = [];
+
+        for (const { userId, username } of row.matchedUsers) {
+            usernames.push(username);
+            slugs.push(userId ? slugMap[userId] || null : null);
+        }
+
+        return {
+            region: row.region,
+            slugs,
+            usernames,
+            val: row.val,
+        };
+    }) satisfies LeaderboardReturnType[];
 }
 
 /**
