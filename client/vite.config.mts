@@ -75,7 +75,7 @@ export default defineConfig(({ mode }) => {
             ? {
                   local: {
                       https: false,
-                      address: `${Config.devServer.host}:${Config.devServer.port}`,
+                      address: `${Config.gameServer.host}:${Config.gameServer.port}`,
                       l10n: "index-local",
                   },
               }
