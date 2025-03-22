@@ -40,15 +40,6 @@ class Region {
     }
 
     async findGame(body: FindGameBody): Promise<FindGameResponse> {
-        if (body.version !== GameConfig.protocolVersion) {
-            return { err: "invalid_protocol" };
-        }
-
-        const mode = Config.modes[body.gameModeIdx];
-        if (!mode || !mode.enabled) {
-            return { err: "full" };
-        }
-
         const data = await this.fetch<FindGameResponse>("api/find_game", body);
         if (!data) {
             return { err: "full" };
