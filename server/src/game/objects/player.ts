@@ -1753,6 +1753,13 @@ export class Player extends BaseGameObject {
 
         this.indoors = false;
 
+        /*
+         * checking when a player leaves a heal region is a pain,
+         * so we just set healEffect to false by default and set it to true when theyre inside a heal region
+         */
+        const oldHealEffect = this.healEffect;
+        this.healEffect = false;
+
         let zoomRegionZoom = lowestZoom;
         let insideNoZoomRegion = true;
         let insideSmoke = false;
@@ -1763,9 +1770,10 @@ export class Player extends BaseGameObject {
                 if (
                     !this.downed &&
                     obj.healRegions &&
-                    util.sameLayer(this.layer, obj.layer)
+                    util.sameLayer(this.layer, obj.layer) &&
+                    !this.game.gas.isInGas(this.pos) //heal regions don't work in gas
                 ) {
-                    const healRegion = obj.healRegions.find((hr) => {
+                    const effectiveHealRegions = obj.healRegions.filter((hr) => {
                         return coldet.testPointAabb(
                             this.pos,
                             hr.collision.min,
@@ -1773,8 +1781,13 @@ export class Player extends BaseGameObject {
                         );
                     });
 
-                    if (healRegion && !this.game.gas.isInGas(this.pos)) {
-                        this.health += healRegion.healRate * dt;
+                    if (effectiveHealRegions.length != 0) {
+                        const totalHealRate = effectiveHealRegions.reduce(
+                            (total, hr) => total + hr.healRate,
+                            0,
+                        );
+                        this.health += totalHealRate * dt;
+                        this.healEffect = true;
                     }
                 }
 
@@ -1839,6 +1852,11 @@ export class Player extends BaseGameObject {
                     insideSmoke = true;
                 }
             }
+        }
+
+        //only dirty if healEffect changed from last tick to current tick (leaving or entering a heal region)
+        if (oldHealEffect != this.healEffect) {
+            this.setDirty();
         }
 
         if (this.insideZoomRegion) {
@@ -2460,6 +2478,7 @@ export class Player extends BaseGameObject {
         this.cancelAction();
 
         this.weaponManager.throwThrowable();
+        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
         if (this.weapons[GameConfig.WeaponSlot.Melee].type === "pan") {
             this.wearingPan = true;
@@ -2791,9 +2810,12 @@ export class Player extends BaseGameObject {
 
     /** returns player to revive if can revive */
     getPlayerToRevive(): Player | undefined {
-        if (!this.game.modeManager.isReviveSupported()) return undefined;
-        if (this.downed && !this.hasPerk("self_revive")) return undefined;
         if (this.actionType != GameConfig.Action.None) return undefined; //action in progress already
+
+        if (this.downed && this.hasPerk("self_revive")) return this;
+
+        if (!this.game.modeManager.isReviveSupported()) return undefined; //no revives in solos
+        if (this.downed) return undefined; //can't revive players while downed
 
         const nearbyDownedTeammates = this.game.grid
             .intersectCollider(
@@ -4306,7 +4328,7 @@ export class Player extends BaseGameObject {
             | GunDef
             | MeleeDef
             | ThrowableDef;
-        if (!this.weaponManager.meleeAttacks.length) {
+        if (this.weaponManager.meleeAttacks.length == 0) {
             let equipSpeed = weaponDef.speed.equip;
             if (this.hasPerk("small_arms") && weaponDef.type == "gun") {
                 equipSpeed = 1;
