@@ -225,6 +225,8 @@ class Room {
 
     async findGame(data: TeamPlayGameMsg["data"]) {
         if (this.data.findingGame) return;
+        if (this.players.some(p => p.inGame)) return;
+
         this.data.findingGame = true;
         this.sendState();
 
