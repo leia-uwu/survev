@@ -2286,38 +2286,13 @@ export class Player extends BaseGameObject {
                     this.game.isTeamMode && this.group!.livingPlayers.length > 0;
                 const teamExistsOrAlive =
                     this.game.map.factionMode && this.team!.livingPlayers.length > 0;
-                if (groupExistsOrAlive || teamExistsOrAlive) {
-                    playerToSpec =
-                        spectatablePlayers[
-                            util.randomInt(0, spectatablePlayers.length - 1)
-                        ];
-                } else {
-                    let attempts = 0;
-                    const getAliveKiller = (
-                        killer: Player | undefined,
-                    ): Player | undefined => {
-                        attempts++;
-                        if (attempts > 80) return undefined;
+                const aliveKiller = this.getAliveKiller();
 
-                        if (!killer) return undefined;
-                        if (!killer.dead) return killer;
-                        if (
-                            killer.killedBy &&
-                            killer.killedBy != this &&
-                            killer.killedBy !== killer
-                        ) {
-                            return getAliveKiller(killer.killedBy);
-                        }
-
-                        return undefined;
-                    };
-                    const aliveKiller = getAliveKiller(this.killedBy);
-                    playerToSpec =
-                        aliveKiller ??
-                        spectatablePlayers[
-                            util.randomInt(0, spectatablePlayers.length - 1)
-                        ];
-                }
+                const shouldSpecRandom =
+                    groupExistsOrAlive || teamExistsOrAlive || !aliveKiller;
+                playerToSpec = shouldSpecRandom
+                    ? spectatablePlayers[util.randomInt(0, spectatablePlayers.length - 1)]
+                    : aliveKiller;
                 break;
             case spectateMsg.specNext:
             case spectateMsg.specPrev:
@@ -2799,6 +2774,27 @@ export class Player extends BaseGameObject {
 
         // send data to parent process
         this.game.updateData();
+    }
+
+    getAliveKiller(): Player | undefined {
+        let attempts = 0;
+        const findAliveKiller = (killer: Player | undefined): Player | undefined => {
+            attempts++;
+            if (attempts > 80) return undefined;
+
+            if (!killer) return undefined;
+            if (!killer.dead) return killer;
+            if (
+                killer.killedBy &&
+                killer.killedBy !== this &&
+                killer.killedBy !== killer
+            ) {
+                return findAliveKiller(killer.killedBy);
+            }
+
+            return undefined;
+        };
+        return findAliveKiller(this.killedBy);
     }
 
     isReloading() {
