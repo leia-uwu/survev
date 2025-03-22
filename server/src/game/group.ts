@@ -24,7 +24,10 @@ export class Group {
     totalCount = 0;
 
     canJoin(players: number) {
-        return this.maxPlayers - this.reservedSlots - players >= 0;
+        return (
+            this.maxPlayers - this.reservedSlots - players >= 0 &&
+            !this.allDeadOrDisconnected
+        );
     }
 
     constructor(hash: string, groupId: number, autoFill: boolean, maxPlayers: number) {

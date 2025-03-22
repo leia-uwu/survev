@@ -147,7 +147,7 @@ export class PlayerBarn {
         let pos: Vec2;
         let layer: number;
         if (this.game.map.perkMode && this.game.map.perkModeTwinsBunker) {
-            //intermediate spawn point while the player chooses a perk before theyre moved to their real spawn point
+            //intermediate spawn point while the player chooses a role before theyre moved to their real spawn point
             const spawnBuilding = this.game.map.perkModeTwinsBunker;
             pos = spawnBuilding.pos;
             layer = spawnBuilding.layer;
@@ -175,6 +175,15 @@ export class PlayerBarn {
         }
         if (player.game.map.factionMode) {
             player.playerStatusDirty = true;
+        }
+
+        if (player.game.map.perkMode) {
+            /*
+             * +5 because the client has its own timer
+             * this timer is only a safety net in case a player modifies the client code
+             * if this timer reaches 0, we know for a fact the client timer didn't end when it should've
+             */
+            player.roleMenuTicker = GameConfig.player.perkModeRoleSelectDuration + 5;
         }
 
         if (!this.game.map.perkMode && group && !group.spawnLeader) {
@@ -734,6 +743,9 @@ export class Player extends BaseGameObject {
     role = "";
     isKillLeader = false;
 
+    /** for cobalt mode role menu, will spawn the player by force if timer runs out */
+    roleMenuTicker = 0;
+
     /** for the perk fabricate, fills inventory with frags every 12 seconds */
     fabricateRefillTicker = 0;
     fabricateGiveTicker = 0;
@@ -906,13 +918,13 @@ export class Player extends BaseGameObject {
         }
     }
 
-    roleSelect(perkModeRoleSelectMsg: net.PerkModeRoleSelectMsg): void {
+    roleSelect(role: string): void {
         if (!this.game.map.perkModeTwinsBunker || this.role) return;
 
-        const role = perkModeRoleSelectMsg.role;
         //so the client can't be manipulated to send lone survivr or something
         if (!this.game.map.mapDef.gameMode.perkModeRoles!.includes(role)) return;
 
+        this.roleMenuTicker = 0;
         this.promoteToRole(role);
         //v2.set() necessary since this.collider.pos is linked to this.pos by reference
         v2.set(this.pos, this.game.map.getSpawnPos(this.group, this.team));
@@ -1210,6 +1222,16 @@ export class Player extends BaseGameObject {
 
         if (this.game.map.factionMode) {
             this.timeUntilHidden -= dt;
+        }
+
+        if (this.roleMenuTicker > 0) {
+            this.roleMenuTicker -= dt;
+            if (this.roleMenuTicker <= 0) {
+                this.roleMenuTicker = 0;
+                const roleChoices = this.game.map.mapDef.gameMode.perkModeRoles!;
+                const randomRole = roleChoices[util.randomInt(0, roleChoices.length - 1)];
+                this.roleSelect(randomRole);
+            }
         }
 
         // players are still choosing a perk from the perk select menu
@@ -1695,6 +1717,13 @@ export class Player extends BaseGameObject {
 
         this.indoors = false;
 
+        /*
+         * checking when a player leaves a heal region is a pain,
+         * so we just set healEffect to false by default and set it to true when theyre inside a heal region
+         */
+        const oldHealEffect = this.healEffect;
+        this.healEffect = false;
+
         let zoomRegionZoom = lowestZoom;
         let insideNoZoomRegion = true;
         let insideSmoke = false;
@@ -1705,9 +1734,10 @@ export class Player extends BaseGameObject {
                 if (
                     !this.downed &&
                     obj.healRegions &&
-                    util.sameLayer(this.layer, obj.layer)
+                    util.sameLayer(this.layer, obj.layer) &&
+                    !this.game.gas.isInGas(this.pos) //heal regions don't work in gas
                 ) {
-                    const healRegion = obj.healRegions.find((hr) => {
+                    const effectiveHealRegions = obj.healRegions.filter((hr) => {
                         return coldet.testPointAabb(
                             this.pos,
                             hr.collision.min,
@@ -1715,8 +1745,13 @@ export class Player extends BaseGameObject {
                         );
                     });
 
-                    if (healRegion && !this.game.gas.isInGas(this.pos)) {
-                        this.health += healRegion.healRate * dt;
+                    if (effectiveHealRegions.length != 0) {
+                        const totalHealRate = effectiveHealRegions.reduce(
+                            (total, hr) => total + hr.healRate,
+                            0,
+                        );
+                        this.health += totalHealRate * dt;
+                        this.healEffect = true;
                     }
                 }
 
@@ -1781,6 +1816,11 @@ export class Player extends BaseGameObject {
                     insideSmoke = true;
                 }
             }
+        }
+
+        //only dirty if healEffect changed from last tick to current tick (leaving or entering a heal region)
+        if (oldHealEffect != this.healEffect) {
+            this.setDirty();
         }
 
         if (this.insideZoomRegion) {
@@ -2417,6 +2457,7 @@ export class Player extends BaseGameObject {
         this.cancelAction();
 
         this.weaponManager.throwThrowable();
+        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
 
         if (this.weapons[GameConfig.WeaponSlot.Melee].type === "pan") {
             this.wearingPan = true;
@@ -2750,9 +2791,12 @@ export class Player extends BaseGameObject {
 
     /** returns player to revive if can revive */
     getPlayerToRevive(): Player | undefined {
-        if (!this.game.modeManager.isReviveSupported()) return undefined;
-        if (this.downed && !this.hasPerk("self_revive")) return undefined;
         if (this.actionType != GameConfig.Action.None) return undefined; //action in progress already
+
+        if (this.downed && this.hasPerk("self_revive")) return this;
+
+        if (!this.game.modeManager.isReviveSupported()) return undefined; //no revives in solos
+        if (this.downed) return undefined; //can't revive players while downed
 
         const nearbyDownedTeammates = this.game.grid
             .intersectCollider(
@@ -4136,7 +4180,7 @@ export class Player extends BaseGameObject {
         this.game.bulletBarn.fireBullet({
             dir: this.dir,
             pos: this.pos,
-            bulletType: "bullet_bugle",
+            bulletType: "bullet_invis",
             gameSourceType: "bugle",
             layer: this.layer,
             damageMult: 1,
@@ -4265,7 +4309,7 @@ export class Player extends BaseGameObject {
             | GunDef
             | MeleeDef
             | ThrowableDef;
-        if (!this.weaponManager.meleeAttacks.length) {
+        if (this.weaponManager.meleeAttacks.length == 0) {
             let equipSpeed = weaponDef.speed.equip;
             if (this.hasPerk("small_arms") && weaponDef.type == "gun") {
                 equipSpeed = 1;

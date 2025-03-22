@@ -12,6 +12,7 @@ import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
+import type { Player } from "./player";
 
 interface ScheduledAirDrop {
     type: string;
@@ -112,14 +113,27 @@ export class PlaneBarn {
                             ? util.weightedRandom(options.numPlanes).count
                             : 3;
 
-                        let pos = v2.copy(this.game.gas.posNew); //defaults to center of safe zone if no players are inside it
-                        let attempts = 0;
-                        //finds random player inside safe zone
-                        while (attempts++ < 100) {
-                            const tempPos = this.game.playerBarn.randomPlayer().pos;
-                            if (!this.game.gas.isOutSideSafeZone(tempPos)) {
-                                pos = v2.copy(tempPos);
-                                break;
+                        //airstrike zones should occur over high player density areas
+                        //will look for the highest density area until an area with at least 25% of the players is found
+                        let pos = v2.copy(this.game.gas.posNew); //defaults to center of safe zone
+                        const livingPlayers = this.game.playerBarn.livingPlayers;
+                        let highestPlayerCount = 0;
+                        //if this is met, the zone is covering enough players and can break the loop
+                        const minPlayerCount = Math.floor(livingPlayers.length / 4);
+                        for (let i = 0; i < livingPlayers.length; i++) {
+                            const testPos = livingPlayers[i].pos;
+
+                            const playerPercentage = this.game.grid
+                                .intersectCollider(collider.createCircle(testPos, rad))
+                                .filter(
+                                    (obj): obj is Player =>
+                                        obj.__type == ObjectType.Player && !obj.dead,
+                                ).length;
+
+                            if (highestPlayerCount < playerPercentage) {
+                                highestPlayerCount = playerPercentage;
+                                pos = testPos;
+                                if (highestPlayerCount > minPlayerCount) break;
                             }
                         }
 
