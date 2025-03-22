@@ -7,9 +7,7 @@ import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
 import { z } from "zod";
 import { version } from "../../../package.json";
-import { GameConfig } from "../../../shared/gameConfig";
 import { type FindGameResponse, zFindGameBody } from "../../../shared/types/api";
-import { math } from "../../../shared/utils/math";
 import { Config } from "../config";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
@@ -90,17 +88,12 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         }
 
         const body = c.req.valid("json");
-        if (body.version !== GameConfig.protocolVersion) {
-            return c.json<FindGameResponse>({ err: "invalid_protocol" });
-        }
-
-        body.gameModeIdx = math.clamp(body.gameModeIdx, 0, Config.modes.length - 1);
 
         const data = await server.findGame({
             region: body.region,
             zones: body.zones,
             version: body.version,
-            gameModeIdx: math.clamp(body.gameModeIdx, 0, Config.modes.length - 1),
+            gameModeIdx: body.gameModeIdx,
             playerCount: 1, // only team menu can request more
             autoFill: true,
         });

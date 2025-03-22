@@ -18,11 +18,6 @@ export type Region = "eu" | "na" | "as" | "kr" | "sa";
  * Default config
  */
 export const Config = {
-    devServer: {
-        host: "127.0.0.1",
-        port: 8001,
-    },
-
     apiServer: {
         host: "0.0.0.0",
         port: 8000,
@@ -99,7 +94,7 @@ if (!isProduction) {
         regions: {
             local: {
                 https: false,
-                address: `${Config.devServer.host}:${Config.devServer.port}`,
+                address: `${Config.gameServer.host}:${Config.gameServer.port}`,
                 l10n: "index-local",
             },
         },
@@ -157,7 +152,6 @@ interface ServerConfig {
 }
 
 export interface ConfigType {
-    devServer: ServerConfig;
     apiServer: ServerConfig;
     gameServer: ServerConfig & {
         apiServerUrl: string;
