@@ -71,7 +71,7 @@ export class PingTest {
         for (let i = 0; i < this.tests.length; i++) {
             const test = this.tests[i];
             if (!test.active) {
-                return "continue";
+                continue;
             }
             if (!test.ws) {
                 const ws = new WebSocket(`ws${test.https ? "s" : ""}://${test.url}/ptc`);
