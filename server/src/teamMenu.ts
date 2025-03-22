@@ -85,43 +85,6 @@ class Player {
             }),
         );
     }
-
-    onMsg(msg: ClientToServerTeamMsg) {
-        if (!this.room) return;
-
-        switch (msg.type) {
-            case "changeName": {
-                this.setName(msg.data.name);
-                this.room.sendState();
-                break;
-            }
-            case "keepAlive": {
-                this.lastMsgTime = Date.now();
-                this.send("keepAlive", {});
-                break;
-            }
-            case "gameComplete": {
-                this.inGame = false;
-                this.room.sendState();
-                break;
-            }
-            case "setRoomProps": {
-                if (!this.isLeader) break;
-                this.room.setProps(msg.data);
-                break;
-            }
-            case "kick": {
-                if (!this.isLeader) break;
-                this.room.kick(msg.data.playerId);
-                break;
-            }
-            case "playGame": {
-                if (!this.isLeader) break;
-                this.room.findGame(msg.data);
-                break;
-            }
-        }
-    }
 }
 
 function allowedGameModeIdxs() {
@@ -166,6 +129,43 @@ class Room {
         clearTimeout(player.disconnectTimeout);
 
         this.sendState();
+    }
+
+    onMsg(player: Player, msg: ClientToServerTeamMsg) {
+        if (player.room !== this) return;
+
+        switch (msg.type) {
+            case "changeName": {
+                player.setName(msg.data.name);
+                this.sendState();
+                break;
+            }
+            case "keepAlive": {
+                player.lastMsgTime = Date.now();
+                player.send("keepAlive", {});
+                break;
+            }
+            case "gameComplete": {
+                player.inGame = false;
+                this.sendState();
+                break;
+            }
+            case "setRoomProps": {
+                if (!player.isLeader) break;
+                this.setProps(msg.data);
+                break;
+            }
+            case "kick": {
+                if (!player.isLeader) break;
+                this.kick(msg.data.playerId);
+                break;
+            }
+            case "playGame": {
+                if (!player.isLeader) break;
+                this.findGame(msg.data);
+                break;
+            }
+        }
     }
 
     setProps(props: ClientRoomData) {
@@ -225,7 +225,7 @@ class Room {
 
     async findGame(data: TeamPlayGameMsg["data"]) {
         if (this.data.findingGame) return;
-        if (this.players.some(p => p.inGame)) return;
+        if (this.players.some((p) => p.inGame)) return;
 
         this.data.findingGame = true;
         this.sendState();
@@ -468,7 +468,7 @@ export class TeamMenu {
         }
 
         // handle messages for when the player is already inside a room
-        player.onMsg(msg);
+        player.room.onMsg(player, msg);
     }
 
     onClose(ws: WSContext<SocketData>) {
