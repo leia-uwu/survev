@@ -3316,7 +3316,7 @@ export const GunDefs: Record<string, GunDef> = {
         moveSpread: 1,
         shotSpread: 1,
         bulletCount: 1,
-        bulletType: "bullet_bugle",
+        bulletType: "bullet_invis",
         noSplinter: true,
         headshotMult: 1,
         speed: { equip: 0, attack: 0 },

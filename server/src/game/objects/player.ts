@@ -4199,7 +4199,7 @@ export class Player extends BaseGameObject {
         this.game.bulletBarn.fireBullet({
             dir: this.dir,
             pos: this.pos,
-            bulletType: "bullet_bugle",
+            bulletType: "bullet_invis",
             gameSourceType: "bugle",
             layer: this.layer,
             damageMult: 1,
