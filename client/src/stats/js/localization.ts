@@ -46,7 +46,6 @@ export class Localization {
         );
     }
     localizeIndex() {
-
         // Go through index and replace data-l10n tagged elements
         const localizedElements = $("*[data-l10n]");
         localizedElements.each((_idx, el): any => {

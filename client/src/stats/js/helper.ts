@@ -9,7 +9,9 @@ export function getCensoredBattletag(content: string) {
         const asterisk = "*";
 
         const re = new RegExp(words.join("|"), "ig");
-        const newString = content.replace(re, (matched) => asterisk.repeat(matched.length));
+        const newString = content.replace(re, (matched) =>
+            asterisk.repeat(matched.length),
+        );
 
         return newString;
     }

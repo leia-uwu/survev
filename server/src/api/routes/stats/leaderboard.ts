@@ -159,7 +159,7 @@ async function multiplePlayersQuery({
 }: LeaderboardParams): Promise<LeaderboardReturnType[]> {
     const intervalFilter = {
         daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
-        weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`)
+        weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
     };
 
     const data = await db

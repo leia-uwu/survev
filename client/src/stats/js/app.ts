@@ -174,7 +174,6 @@ export class App {
     }
 
     render() {
-
         $("#language-select").html(
             templates.language({
                 code: this.localization.getLocale(),

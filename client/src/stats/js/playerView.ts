@@ -103,7 +103,9 @@ function getPlayerCardData(
     }
 
     const emoteDef = EmotesDefs[userData.player_icon];
-    const texture = emoteDef ? emoteImgToSvg(emoteDef.texture) : "/img/gui/player-gui.svg";
+    const texture = emoteDef
+        ? emoteImgToSvg(emoteDef.texture)
+        : "/img/gui/player-gui.svg";
     console.log({
         emoteDef,
         texture: emoteDef ? emoteImgToSvg(emoteDef.texture) : null,
@@ -170,9 +172,7 @@ function getPlayerCardData(
 
     for (let _i = 0; _i < keys.length; _i++) {
         const teamMode = keys[_i];
-        if (
-            !teamModes.find((x) => x.teamMode == teamMode)
-        ) {
+        if (!teamModes.find((x) => x.teamMode == teamMode)) {
             teamModes.push({
                 teamMode,
                 games: 0,
@@ -292,7 +292,6 @@ export class PlayerView {
         this.render();
     }
     loadUserStats(slug: string, interval: string, mapIdFilter: string) {
-
         const args = {
             slug: slug,
             interval: interval,
@@ -303,7 +302,6 @@ export class PlayerView {
         });
     }
     loadMatchHistory(slug: string, offset: number, teamModeFilter: number) {
-
         const count = 10;
         const args = {
             slug: slug,
@@ -335,7 +333,6 @@ export class PlayerView {
         });
     }
     loadMatchData(gameId: string) {
-
         const args = {
             gameId: gameId,
         };
@@ -375,7 +372,6 @@ export class PlayerView {
         this.loadUserStats(params.slug, params.interval, params.mapId);
     }
     render() {
-
         const params = this.getUrlParams();
 
         // User stats
