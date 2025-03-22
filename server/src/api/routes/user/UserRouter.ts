@@ -169,8 +169,34 @@ UserRouter.post(
     async (c) => {
         try {
             const user = c.get("user")!;
-            // !! TODO: validate the loadout sent from the client against the unlocked itmes that user have
             const { loadout } = c.req.valid("json");
+
+            const unlockedItemTypes = await db.query.usersTable.findFirst({
+                where: eq(usersTable.id, user.id),
+                columns: {
+                    items: true,
+                },
+            });
+
+            const unlockedItems = new Set([
+                ...(unlockedItemTypes?.items.map((item) => item.type) || []),
+                ...UnlockDefs.unlock_default.unlocks,
+            ]);
+
+            for (const [key, value] of Object.entries(loadout as Loadout)) {
+                if (key === "crosshair") continue;
+
+                const itemsToCheck = key === "emotes" ? value : [value];
+
+                for (const item of itemsToCheck as string[]) {
+                    if (!unlockedItems.has(item)) {
+                        // Will be set to a valid default value when calling validateLoadout
+                        // @ts-expect-error it's 4 am
+                        loadout[key] = "";
+                    }
+                }
+            }
+
             const validatedLoadout = validateLoadout(loadout);
 
             await db
