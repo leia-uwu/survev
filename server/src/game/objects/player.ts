@@ -3782,16 +3782,14 @@ export class Player extends BaseGameObject {
             GunDef | ThrowableDef | MeleeDef,
         ][];
 
-        let filterCb: ([_type, def]: [
+        const filterCb: ([_type, def]: [
             string,
             GunDef | ThrowableDef | MeleeDef,
-        ]) => boolean;
-        if (this.hasPerk("rare_potato")) {
-            filterCb = ([_type, def]) =>
-                !def.noPotatoSwap && def.quality == PerkProperties.rare_potato.quality;
-        } else {
-            filterCb = ([_type, def]) => !def.noPotatoSwap;
-        }
+        ]) => boolean = this.hasPerk("rare_potato")
+            ? ([_type, def]) =>
+                  !def.noPotatoSwap && def.quality == PerkProperties.rare_potato.quality
+            : ([_type, def]) => !def.noPotatoSwap;
+
         const weaponChoices = enumerableDefs.filter(filterCb);
         const [chosenWeaponType, chosenWeaponDef] =
             weaponChoices[util.randomInt(0, weaponChoices.length - 1)];
@@ -4303,7 +4301,7 @@ export class Player extends BaseGameObject {
 
     recalculateSpeed(hasTreeClimbing: boolean): void {
         // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
-
+        if (this.name == "a") console.log(this.speed);
         if (this.actionType == GameConfig.Action.Revive) {
             //prevents self reviving players from getting an unnecessary speed boost
             if (this.action.targetId && !(this.downed && this.hasPerk("self_revive"))) {
