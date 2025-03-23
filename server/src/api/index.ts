@@ -17,7 +17,7 @@ import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
-import { validateParams } from "./zodSchemas";
+import { validateParams } from "./auth/middleware";
 
 export type Context = {
     Variables: {

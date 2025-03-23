@@ -3,7 +3,7 @@ import { setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
-import { ItemStatus } from "../../../../../../shared/utils/helpers";
+import { ItemStatus } from "../../../../../../shared/utils/loadout";
 import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";

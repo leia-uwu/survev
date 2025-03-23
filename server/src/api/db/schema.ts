@@ -10,10 +10,9 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 import type { TeamMode } from "../../../../shared/gameConfig";
-import { validateLoadout } from "../../../../shared/utils/helpers";
 import type { Region } from "../../config";
 import type { Item } from "../routes/user/UserRouter";
-import type { Loadout } from "../zodSchemas";
+import { loadout, type Loadout } from "../../../../shared/utils/loadout";
 
 export const sessionTable = pgTable("session", {
     id: text("id").primaryKey(),
@@ -46,7 +45,7 @@ export const usersTable = pgTable("users", {
     linkedDiscord: boolean("linked_discord").notNull().default(false),
     loadout: json("loadout")
         .notNull()
-        .default(validateLoadout({} as Loadout))
+        .default(loadout.validate({} as Loadout))
         .$type<Loadout>(),
     items: json("items").notNull().$type<Item[]>().default([]),
     // STATS

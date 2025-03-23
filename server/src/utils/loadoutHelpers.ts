@@ -2,7 +2,7 @@ import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import type { JoinMsg } from "../../../shared/net/joinMsg";
-import type { Loadout } from "../../../shared/utils/helpers";
+import type { Loadout } from "../../../shared/utils/loadout";
 import { Config } from "../config";
 import type { Player } from "../game/objects/player";
 

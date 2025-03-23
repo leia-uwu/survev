@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { CrosshairDefs } from "../../shared/defs/gameObjects/crosshairDefs";
-import type { Crosshair } from "../../shared/utils/helpers";
+import type { Crosshair } from "../../shared/utils/loadout";
 import { util } from "../../shared/utils/util";
 
 function getCrosshairDims(crosshairDef: Crosshair) {

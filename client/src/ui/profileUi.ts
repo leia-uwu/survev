@@ -4,9 +4,9 @@ import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { LoadoutMenu } from "./loadoutMenu";
-import loadout from "./loadouts";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
+import loadout from "../../../shared/utils/loadout";
 
 function createLoginOptions(
     parentElem: JQuery<HTMLElement>,
