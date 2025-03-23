@@ -335,7 +335,7 @@ export class Game {
                 break;
             }
             case net.MsgType.PerkModeRoleSelect: {
-                player.roleSelect(msg as net.PerkModeRoleSelectMsg);
+                player.roleSelect((msg as net.PerkModeRoleSelectMsg).role);
                 break;
             }
             case net.MsgType.Edit: {

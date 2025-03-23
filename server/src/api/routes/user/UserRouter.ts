@@ -25,6 +25,7 @@ import { MOCK_USER_ID } from "./auth/mock";
 export const UserRouter = new Hono<Context>();
 
 UserRouter.use(accountsEnabledMiddleware);
+UserRouter.use(AuthMiddleware);
 
 UserRouter.post("/profile", AuthMiddleware, async (c) => {
     try {

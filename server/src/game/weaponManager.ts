@@ -18,6 +18,7 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { BulletParams } from "../game/objects/bullet";
 import type { GameObject } from "../game/objects/gameObject";
 import type { Player } from "../game/objects/player";
+import type { Projectile } from "./objects/projectile";
 
 /**
  * List of throwables to cycle based on the definition `inventoryOrder`
@@ -783,6 +784,7 @@ export class WeaponManager {
             this.player.game.bulletBarn.fireBullet(params);
 
             // Shoot a projectile if defined
+            let projectile: Projectile | undefined;
             if (itemDef.projType) {
                 const projDef = GameObjectDefs[itemDef.projType];
                 assert(
@@ -791,7 +793,7 @@ export class WeaponManager {
                 );
 
                 const vel = v2.mul(shotDir, projDef.throwPhysics.speed);
-                this.player.game.projectileBarn.addProjectile(
+                projectile = this.player.game.projectileBarn.addProjectile(
                     this.player.__id,
                     itemDef.projType,
                     shotPos,
@@ -821,6 +823,19 @@ export class WeaponManager {
                     sParams.damageMult *= PerkProperties.splinter.splitsDamageMult;
 
                     this.player.game.bulletBarn.fireBullet(sParams);
+                    //
+                    if (projectile) {
+                        this.player.game.projectileBarn.addProjectile(
+                            this.player.__id,
+                            projectile.type,
+                            shotPos,
+                            0.5,
+                            bulletLayer,
+                            v2.rotate(projectile.vel, math.deg2rad(deviation)),
+                            projectile.fuseTime,
+                            GameConfig.DamageType.Player,
+                        );
+                    }
                 }
             }
         }
