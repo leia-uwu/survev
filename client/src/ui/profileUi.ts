@@ -67,13 +67,13 @@ function createLoginOptions(
 
     // Define the available login methods
     addLoginOption("google", account.profile.linkedGoogle, () => {
-        window.location.href = "/api/user/auth/google";
+        window.location.href = "/api/auth/google";
     });
     addLoginOption("discord", account.profile.linkedDiscord, () => {
-        window.location.href = "/api/user/auth/discord";
+        window.location.href = "/api/auth/discord";
     });
     addLoginOption("mock", false, () => {
-        window.location.href = "/api/user/auth/mock";
+        window.location.href = "/api/auth/mock";
     });
 }
 

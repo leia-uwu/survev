@@ -60,7 +60,7 @@ app.get("/stats/:slug", (c) => {
 });
 
 app.route("/api/user/", UserRouter);
-app.route("/api/user/auth/", AuthRouter);
+app.route("/api/auth/", AuthRouter);
 app.route("/api/", StatsRouter);
 
 server.init(app, upgradeWebSocket);

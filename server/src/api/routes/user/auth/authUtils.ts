@@ -66,7 +66,7 @@ export function getRedirectUri(method: "discord" | "google") {
         : // uh don't hardcode me
           `http://localhost:3000`;
 
-    return `${baseUrl}/api/user/auth/${method}/callback`;
+    return `${baseUrl}/api/auth/${method}/callback`;
 }
 
 export const dayInMs = 24 * 60 * 60 * 1000;
