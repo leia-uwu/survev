@@ -1,4 +1,5 @@
 import $ from "jquery";
+import type { LeaderboardRequest } from "../../../../shared/types/stats";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
@@ -7,7 +8,6 @@ import leaderboard from "./templates/leaderboard.ejs?raw";
 import leaderboardError from "./templates/leaderboardError.ejs?raw";
 import loading from "./templates/loading.ejs?raw";
 import main from "./templates/main.ejs?raw";
-import { LeaderboardRequest } from "../../../../shared/types/stats";
 
 const templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
@@ -23,14 +23,16 @@ const templates = {
 export class MainView {
     loading = false;
     error = false;
-    data = {} as Partial<LeaderboardRequest & { 
-        data: {
-            username: string;
-            usernames: string[];
-            slug: string;
-            slugs: string[];
-        }[];
-    }>;
+    data = {} as Partial<
+        LeaderboardRequest & {
+            data: {
+                username: string;
+                usernames: string[];
+                slug: string;
+                slugs: string[];
+            }[];
+        }
+    >;
     el = $(
         templates.main({
             phoneDetected: device.mobile && !device.tablet,
@@ -54,8 +56,11 @@ export class MainView {
         //   interval: daily, weekly, alltime
         //   teamMode: solo, duo, squad
         //   maxCount: 10, 100
-        let type = helpers.getParameterByName<LeaderboardRequest["type"]>("type") || "most_kills";
-        const interval = helpers.getParameterByName<LeaderboardRequest["interval"]>("t") || "daily";
+        let type =
+            helpers.getParameterByName<LeaderboardRequest["type"]>("type") ||
+            "most_kills";
+        const interval =
+            helpers.getParameterByName<LeaderboardRequest["interval"]>("t") || "daily";
         const teamMode = helpers.getParameterByName("team") || "solo";
         const mapId = helpers.getParameterByName("mapId") || "0";
         // Change to most_damage_dealt if faction mode and most_kills selected

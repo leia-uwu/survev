@@ -10,9 +10,9 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 import type { TeamMode } from "../../../../shared/gameConfig";
+import { type Loadout, loadout } from "../../../../shared/utils/loadout";
 import type { Region } from "../../config";
 import type { Item } from "../routes/user/UserRouter";
-import { loadout, type Loadout } from "../../../../shared/utils/loadout";
 
 export const sessionTable = pgTable("session", {
     id: text("id").primaryKey(),

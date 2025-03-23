@@ -1,16 +1,19 @@
 import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { z } from "zod";
 import type { Context } from "../..";
-import { TeamMode } from "../../../../../shared/gameConfig";
+import type { TeamMode } from "../../../../../shared/gameConfig";
+import {
+    ALL_TEAM_MODES,
+    type MatchHistoryResponse,
+    zMatchHistoryRequest,
+} from "../../../../../shared/types/stats";
 import { Config } from "../../../config";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
+import { validateParams } from "../../auth/middleware";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { validateParams } from "../../auth/middleware";
-import { ALL_TEAM_MODES, MatchHistoryResponse, zMatchHistoryRequest } from "../../../../../shared/types/stats";
 
 export const matchHistoryRouter = new Hono<Context>();
 

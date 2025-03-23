@@ -1,13 +1,12 @@
 import { asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { z } from "zod";
 import type { Context } from "../..";
+import { type MatchData, zMatchDataRequest } from "../../../../../shared/types/stats";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
+import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { validateParams } from "../../auth/middleware";
-import { MatchData, zMatchDataRequest } from "../../../../../shared/types/stats";
 
 export const matchDataRouter = new Hono<Context>();
 

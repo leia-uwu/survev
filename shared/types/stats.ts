@@ -1,8 +1,8 @@
 // TODO: use those typings ig?
 
 import { z } from "zod";
+import type { Region } from "../../server/src/config";
 import { TeamMode } from "../gameConfig";
-import { Region } from "../../server/src/config";
 
 //
 // Match History
@@ -90,7 +90,6 @@ export const zUserStatsRequest = z.object({
 
 export type UserStatsRequest = z.infer<typeof zUserStatsRequest>;
 
-
 export type UserStatsResponse = {
     slug: string;
     username: string;
@@ -163,4 +162,3 @@ export type LeaderboardResponse = {
 );
 
 export type LeaderboardRequest = z.infer<typeof zLeaderboardsRequest>;
-

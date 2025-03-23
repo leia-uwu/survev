@@ -1,6 +1,15 @@
 import $ from "jquery";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
 import type { TeamMode } from "../../../../shared/gameConfig";
+import type {
+    LeaderboardRequest,
+    MatchData,
+    MatchDataRequest,
+    MatchHistory,
+    MatchHistoryParams,
+    UserStatsRequest,
+    UserStatsResponse,
+} from "../../../../shared/types/stats";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
@@ -10,7 +19,6 @@ import matchData from "./templates/matchData.ejs?raw";
 import matchHistory from "./templates/matchHistory.ejs?raw";
 import player from "./templates/player.ejs?raw";
 import playerCards from "./templates/playerCards.ejs?raw";
-import { LeaderboardRequest, MatchData, MatchHistory, UserStatsResponse, MatchHistoryParams, UserStatsRequest, MatchDataRequest } from "../../../../shared/types/stats";
 
 const templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
@@ -238,8 +246,11 @@ export class PlayerView {
 
         this.render();
     }
-    loadUserStats(slug: string, interval: UserStatsRequest["interval"], mapIdFilter: string) {
-
+    loadUserStats(
+        slug: string,
+        interval: UserStatsRequest["interval"],
+        mapIdFilter: string,
+    ) {
         const args: UserStatsRequest = {
             slug: slug,
             interval: interval,
@@ -317,7 +328,11 @@ export class PlayerView {
         window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
 
         const params = this.getUrlParams();
-        this.loadUserStats(params.slug, params.interval as LeaderboardRequest["interval"], params.mapId);
+        this.loadUserStats(
+            params.slug,
+            params.interval as LeaderboardRequest["interval"],
+            params.mapId,
+        );
     }
     render() {
         const params = this.getUrlParams();

@@ -2,8 +2,8 @@ import { z } from "zod";
 
 import { GameObjectDefs } from "../defs/gameObjectDefs";
 import { UnlockDefs } from "../defs/gameObjects/unlockDefs";
-import { deepEqual } from "./deepEqual";
 import { GameConfig } from "../gameConfig";
+import { deepEqual } from "./deepEqual";
 
 export const loadoutSchema = z.object({
     outfit: z.string(),
@@ -31,8 +31,12 @@ export enum ItemStatus {
 
 export const loadout = {
     ItemStatus,
-    validate: function(userLoadout: Loadout): Loadout {
-        const getGameType = function (type: string, gameType: string, defaultValue: string) {
+    validate: function (userLoadout: Loadout): Loadout {
+        const getGameType = function (
+            type: string,
+            gameType: string,
+            defaultValue: string,
+        ) {
             const def = GameObjectDefs[gameType];
             if (def && def.type == type) {
                 return gameType;
@@ -71,30 +75,34 @@ export const loadout = {
                     "crosshair_default",
                 ),
                 color:
-                    parseInt(mergedLoadout.crosshair.color as unknown as string) || 0xffffff,
+                    parseInt(mergedLoadout.crosshair.color as unknown as string) ||
+                    0xffffff,
                 size: getFloat(mergedLoadout.crosshair.size, 1).toFixed(2),
                 stroke: getFloat(mergedLoadout.crosshair.stroke, 0).toFixed(2),
             },
             emotes: [] as string[],
         };
-    
+
         const defaultEmotes = GameConfig.defaultEmoteLoadout.slice();
         for (let i = 0; i < GameConfig.EmoteSlot.Count; i++) {
-            const inputEmote = i < mergedLoadout.emotes.length ? mergedLoadout.emotes[i] : "";
-            validatedLoadout.emotes.push(getGameType("emote", inputEmote, defaultEmotes[i]));
+            const inputEmote =
+                i < mergedLoadout.emotes.length ? mergedLoadout.emotes[i] : "";
+            validatedLoadout.emotes.push(
+                getGameType("emote", inputEmote, defaultEmotes[i]),
+            );
         }
         return validatedLoadout;
     },
-    validateWithAvailableItems: function(userLoadout: Loadout, userItems: { type: string}[]) {
+    validateWithAvailableItems: function (
+        userLoadout: Loadout,
+        userItems: { type: string }[],
+    ) {
         const unlockedItems = new Set([
             ...(userItems?.map((item) => item.type) || []),
             ...UnlockDefs.unlock_default.unlocks,
         ]);
-        const checkTypeExists = function(type: string) {
-            if (
-                type &&
-                unlockedItems.has(type)
-            ) {
+        const checkTypeExists = function (type: string) {
+            if (type && unlockedItems.has(type)) {
                 return type;
             }
             return "";
@@ -104,17 +112,19 @@ export const loadout = {
                 crosshair: {},
                 emotes: [],
             },
-            ...userLoadout
+            ...userLoadout,
         };
         const itemsToCheck = ["outfit", "melee", "heal", "boost", "player_icon"] as const;
 
-        itemsToCheck.forEach(item => {
+        itemsToCheck.forEach((item) => {
             newLoadout[item] = checkTypeExists(newLoadout[item]);
         });
 
         newLoadout.crosshair.type = checkTypeExists(newLoadout.crosshair.type);
 
-        newLoadout.emotes = newLoadout.emotes.map(emote => checkTypeExists(newLoadout.emotes[emote as any]));
+        newLoadout.emotes = newLoadout.emotes.map((emote) =>
+            checkTypeExists(newLoadout.emotes[emote as any]),
+        );
 
         return loadout.validate(newLoadout);
     },
@@ -124,13 +134,15 @@ export const loadout = {
     modified: function (a: Loadout, b: Loadout) {
         return !deepEqual(a, b);
     },
-    getUserAvailableItems: function (heroItems: {
-        type: string;
-        source: string;
-        timeAcquired: number;
-        status?: ItemStatus;
-        ackd?: ItemStatus.Ackd;
-    }[]) {
+    getUserAvailableItems: function (
+        heroItems: {
+            type: string;
+            source: string;
+            timeAcquired: number;
+            status?: ItemStatus;
+            ackd?: ItemStatus.Ackd;
+        }[],
+    ) {
         const items: typeof heroItems = [];
         // Add default items
         const unlockDefaultDef =

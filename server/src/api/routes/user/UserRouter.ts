@@ -1,10 +1,15 @@
-import { zValidator } from "@hono/zod-validator";
 import { eq, or } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
 import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
+import { Constants } from "../../../../../shared/net/net";
+import loadout, {
+    ItemStatus,
+    type Loadout,
+    loadoutSchema,
+} from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
@@ -13,15 +18,9 @@ import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";
-import loadout, {
-    ItemStatus,
-    type Loadout,
-    loadoutSchema,
-} from "../../../../../shared/utils/loadout";
 import { invalidateUserStatsCache } from "../stats/user_stats";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
-import { Constants } from "../../../../../shared/net/net";
 
 export const UserRouter = new Hono<Context>();
 
@@ -99,7 +98,7 @@ UserRouter.post(
         z.object({
             username: z.string().trim().min(1).max(Constants.PlayerNameMaxLen),
         }),
-        { result: "invalid" }
+        { result: "invalid" },
     ),
     AuthMiddleware,
     async (c) => {
@@ -178,7 +177,10 @@ UserRouter.post(
                 },
             });
 
-            const validatedLoadout = loadout.validateWithAvailableItems(userLoadout, userItems!.items);
+            const validatedLoadout = loadout.validateWithAvailableItems(
+                userLoadout,
+                userItems!.items,
+            );
 
             await db
                 .update(usersTable)

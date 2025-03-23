@@ -5,7 +5,8 @@ import { EmoteCategory, type EmoteDef } from "../../../shared/defs/gameObjects/e
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import type { UnlockDef } from "../../../shared/defs/gameObjects/unlockDefs";
 import { EmoteSlot } from "../../../shared/gameConfig";
-import type { ItemStatus  } from "../../../shared/utils/loadout";
+import type { ItemStatus } from "../../../shared/utils/loadout";
+import { type Crosshair, type Loadout, loadout } from "../../../shared/utils/loadout";
 import { util } from "../../../shared/utils/util";
 import type { Account } from "../account";
 import { crosshair } from "../crosshair";
@@ -14,7 +15,6 @@ import { helpers } from "../helpers";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 import type { LoadoutDisplay } from "./opponentDisplay";
-import { Crosshair, Loadout, loadout } from "../../../shared/utils/loadout";
 
 function emoteSlotToDomElem(e: Exclude<EmoteSlot, EmoteSlot.Count>) {
     const emoteSlotToDomId = {

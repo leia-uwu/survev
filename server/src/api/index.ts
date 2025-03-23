@@ -13,11 +13,11 @@ import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
 import { zUpdateRegionBody } from "../utils/types";
 import { server } from "./apiServer";
+import { validateParams } from "./auth/middleware";
 import { handleModerationAction } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
-import { validateParams } from "./auth/middleware";
 
 export type Context = {
     Variables: {

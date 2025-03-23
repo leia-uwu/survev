@@ -1,19 +1,22 @@
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import { z } from "zod";
 import type { Context } from "../..";
 import { TeamMode } from "../../../../../shared/gameConfig";
+import {
+    type LeaderboardRequest,
+    type LeaderboardResponse,
+    zLeaderboardsRequest,
+} from "../../../../../shared/types/stats";
 import { math } from "../../../../../shared/utils/math";
-import { Config, type Region } from "../../../config";
+import { Config } from "../../../config";
 import type { Player } from "../../../game/objects/player";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
+import { validateParams } from "../../auth/middleware";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { validateParams } from "../../auth/middleware";
 import { filterByInterval, filterByMapId } from "./user_stats";
-import { LeaderboardRequest, LeaderboardResponse, zLeaderboardsRequest } from "../../../../../shared/types/stats";
 
 export const leaderboardRouter = new Hono<Context>();
 

@@ -1,4 +1,5 @@
 import $ from "jquery";
+import loadout from "../../../shared/utils/loadout";
 import type { Account } from "../account";
 import { api } from "../api";
 import { device } from "../device";
@@ -6,7 +7,6 @@ import { helpers } from "../helpers";
 import type { LoadoutMenu } from "./loadoutMenu";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
-import loadout from "../../../shared/utils/loadout";
 
 function createLoginOptions(
     parentElem: JQuery<HTMLElement>,

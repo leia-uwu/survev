@@ -1,16 +1,17 @@
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import { z } from "zod";
 import type { Context } from "../..";
-import type { TeamMode } from "../../../../../shared/gameConfig";
+import {
+    type UserStatsResponse,
+    zUserStatsRequest,
+} from "../../../../../shared/types/stats";
 import { Config } from "../../../config";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
+import { validateParams } from "../../auth/middleware";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
-import { validateParams } from "../../auth/middleware";
-import { UserStatsResponse, UserStatsRequest, zUserStatsRequest } from "../../../../../shared/types/stats";
 
 export const UserStatsRouter = new Hono<Context>();
 
