@@ -9,23 +9,10 @@ import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
-import { validateParams } from "../../zodSchemas";
+import { validateParams } from "../../auth/middleware";
+import { UserStatsResponse, UserStatsRequest, zUserStatsRequest } from "../../../../../shared/types/stats";
 
 export const UserStatsRouter = new Hono<Context>();
-
-const userStatsSchema = z.object({
-    // why is the client sending null as the default value
-    // and why is there all and alltime???
-    // TODO: remove all and send "alltime" as the default
-    interval: z
-        .enum(["all", "daily", "weekly", "alltime"])
-        .nullable()
-        .catch("all")
-        .transform((v) => v ?? "all"),
-    slug: z.string().min(1),
-    // TODO: use mapId eenum for extra validation
-    mapIdFilter: z.string().catch("-1"),
-});
 
 /*
  * minimum data required for the ui to show the user doesn't exist
@@ -39,7 +26,7 @@ const emptyState = {
 UserStatsRouter.post(
     "/",
     accountsEnabledMiddleware,
-    validateParams(userStatsSchema),
+    validateParams(zUserStatsRequest),
     async (c) => {
         try {
             const { interval, mapIdFilter, slug } = c.req.valid("json");
@@ -68,31 +55,6 @@ UserStatsRouter.post(
         }
     },
 );
-
-type UserStatsResponse = {
-    slug: string;
-    username: string;
-    player_icon: string;
-    banned: boolean;
-    wins: number;
-    kills: number;
-    games: number;
-    kpg: number;
-    modes: ModeStat[];
-};
-
-export interface ModeStat {
-    teamMode: TeamMode;
-    games: number;
-    wins: number;
-    kills: number;
-    winPct: number;
-    mostKills: number;
-    mostDamage: number;
-    kpg: number;
-    avgDamage: number;
-    avgTimeAlive: number;
-}
 
 export function filterByInterval(interval: string) {
     if (interval === "weekly") {

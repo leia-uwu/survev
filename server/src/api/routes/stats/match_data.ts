@@ -6,18 +6,15 @@ import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { validateParams } from "../../zodSchemas";
+import { validateParams } from "../../auth/middleware";
+import { MatchData, zMatchDataRequest } from "../../../../../shared/types/stats";
 
 export const matchDataRouter = new Hono<Context>();
-
-const matchDataSchema = z.object({
-    gameId: z.string(),
-});
 
 matchDataRouter.post(
     "/",
     accountsEnabledMiddleware,
-    validateParams(matchDataSchema),
+    validateParams(zMatchDataRequest),
     async (c) => {
         try {
             const { gameId } = c.req.valid("json");
@@ -49,18 +46,3 @@ matchDataRouter.post(
         }
     },
 );
-
-export type MatchData = {
-    slug: string | null;
-    username: string;
-    player_id: number;
-    team_id: number;
-    time_alive: number;
-    rank: number;
-    died: boolean;
-    kills: number;
-    damage_dealt: number;
-    damage_taken: number;
-    killer_id: number;
-    killed_ids: number[];
-};

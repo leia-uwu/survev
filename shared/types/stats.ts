@@ -1,5 +1,33 @@
 // TODO: use those typings ig?
 
+import { z } from "zod";
+import { TeamMode } from "../gameConfig";
+import { Region } from "../../server/src/config";
+
+//
+// Match History
+//
+
+/**
+ * sent by the client when to teammode filter is selected
+ */
+export const ALL_TEAM_MODES = 7;
+export const zMatchHistoryRequest = z.object({
+    slug: z.string(),
+    offset: z.number(),
+    count: z.number(),
+    teamModeFilter: z
+        .union([
+            z.literal(TeamMode.Solo),
+            z.literal(TeamMode.Duo),
+            z.literal(TeamMode.Squad),
+            z.literal(ALL_TEAM_MODES),
+        ])
+        .catch(ALL_TEAM_MODES),
+});
+
+export type MatchHistoryParams = z.infer<typeof zMatchHistoryRequest>;
+
 export type MatchHistory = {
     guid: string;
     region: string;
@@ -7,7 +35,7 @@ export type MatchHistory = {
     team_mode: number;
     team_count: number;
     team_total: number;
-    end_time: string;
+    end_time: string | Date;
     time_alive: number;
     rank: number;
     kills: number;
@@ -15,14 +43,17 @@ export type MatchHistory = {
     damage_dealt: number;
     damage_taken: number;
 };
-
-export type MatchHistoryRequest = {
-    slug: string;
-    offset: number;
-    count: number;
-    teamModeFilter: number;
-};
 export type MatchHistoryResponse = MatchHistory[];
+
+//
+// Match Data
+//
+export const zMatchDataRequest = z.object({
+    gameId: z.string(),
+});
+
+export type MatchDataRequest = z.infer<typeof zMatchDataRequest>;
+export type MatchDataResponse = MatchData;
 
 export type MatchData = {
     slug: string | null;
@@ -39,14 +70,26 @@ export type MatchData = {
     killed_ids: number[];
 };
 
-export type MatchDataRequest = { gameId: string };
-export type MatchDataResponse = MatchData;
+//
+// User Stats
+//
+const ALL_MAPS = "-1";
+export const zUserStatsRequest = z.object({
+    // why is the client sending null as the default value
+    // and why is there all and alltime???
+    // TODO: remove all and send "alltime" as the default
+    interval: z
+        .enum(["all", "daily", "weekly", "alltime"])
+        .nullable()
+        .catch("all")
+        .transform((v) => v ?? "all"),
+    slug: z.string().min(1),
+    // TODO: use mapId eenum for extra validation
+    mapIdFilter: z.string().catch(ALL_MAPS),
+});
 
-export type UserStatsRequest = {
-    slug: string;
-    interval: string;
-    mapIdFilter: 3;
-};
+export type UserStatsRequest = z.infer<typeof zUserStatsRequest>;
+
 
 export type UserStatsResponse = {
     slug: string;
@@ -72,3 +115,52 @@ export interface Mode {
     avgDamage: number;
     avgTimeAlive: number;
 }
+
+//
+// Leaderboard
+//
+const teamModeMap = {
+    solo: TeamMode.Solo,
+    duo: TeamMode.Duo,
+    squad: TeamMode.Squad,
+};
+
+export const zLeaderboardsRequest = z.object({
+    interval: z.enum(["daily", "weekly", "alltime"]).catch("daily"),
+    mapId: z
+        .string()
+        .min(1)
+        .transform((v) => Number(v)),
+    type: z.enum(["most_kills", "most_damage_dealt", "kpg", "kills", "wins"]),
+    // why tf is this sent as a string
+    // TODO: refactor the client to use TeamMode enum
+    teamMode: z
+        .enum(["solo", "duo", "squad"])
+        .catch("solo")
+        .transform((mode) => teamModeMap[mode]),
+});
+
+export type LeaderboardResponse = {
+    val: number;
+    region: Region;
+    /**
+     * not used
+     */
+    active?: boolean;
+    /**
+     * required for all types except most_kills & win_streak
+     */
+    games?: number;
+} & (
+    | {
+          slug: string | null;
+          username: string;
+      }
+    | {
+          slugs: (string | null)[];
+          usernames: string[];
+      }
+);
+
+export type LeaderboardRequest = z.infer<typeof zLeaderboardsRequest>;
+

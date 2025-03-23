@@ -5,24 +5,23 @@ import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
 import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
-import { ItemStatus, validateLoadout } from "../../../../../shared/utils/helpers";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
-import { AuthMiddleware } from "../../auth/middleware";
+import { AuthMiddleware, validateParams } from "../../auth/middleware";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";
-import {
+import loadout, {
+    ItemStatus,
     type Loadout,
     loadoutSchema,
-    usernameSchema,
-    validateParams,
-} from "../../zodSchemas";
+} from "../../../../../shared/utils/loadout";
 import { invalidateUserStatsCache } from "../stats/user_stats";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
+import { Constants } from "../../../../../shared/net/net";
 
 export const UserRouter = new Hono<Context>();
 
@@ -96,11 +95,12 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
 
 UserRouter.post(
     "/username",
-    zValidator("json", usernameSchema, (result, c) => {
-        if (!result.success) {
-            return c.json<UsernameResponse>({ result: "invalid" }, 400);
-        }
-    }),
+    validateParams(
+        z.object({
+            username: z.string().trim().min(1).max(Constants.PlayerNameMaxLen),
+        }),
+        { result: "invalid" }
+    ),
     AuthMiddleware,
     async (c) => {
         try {

@@ -7,6 +7,7 @@ import leaderboard from "./templates/leaderboard.ejs?raw";
 import leaderboardError from "./templates/leaderboardError.ejs?raw";
 import loading from "./templates/loading.ejs?raw";
 import main from "./templates/main.ejs?raw";
+import { LeaderboardRequest } from "../../../../shared/types/stats";
 
 const templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
@@ -22,22 +23,12 @@ const templates = {
 export class MainView {
     loading = false;
     error = false;
-    data = {} as Partial<{
-        username: string;
-        statName: string;
-        minGames: number;
-        teamMode: string;
-        mapId: string;
-        type: string;
-        interval: string;
-        maxCount: number;
+    data = {} as Partial<LeaderboardRequest & { 
         data: {
             username: string;
             usernames: string[];
             slug: string;
             slugs: string[];
-            slugUncensored: string;
-            slugsUncensored: string[];
         }[];
     }>;
     el = $(
@@ -63,22 +54,20 @@ export class MainView {
         //   interval: daily, weekly, alltime
         //   teamMode: solo, duo, squad
         //   maxCount: 10, 100
-        let type = helpers.getParameterByName("type") || "most_kills";
-        const interval = helpers.getParameterByName("t") || "daily";
+        let type = helpers.getParameterByName<LeaderboardRequest["type"]>("type") || "most_kills";
+        const interval = helpers.getParameterByName<LeaderboardRequest["interval"]>("t") || "daily";
         const teamMode = helpers.getParameterByName("team") || "solo";
         const mapId = helpers.getParameterByName("mapId") || "0";
         // Change to most_damage_dealt if faction mode and most_kills selected
         if (type == "most_kills" && Number(mapId) == 3) {
             type = "most_damage_dealt";
         }
-        const maxCount = 100;
 
-        const args = {
+        const args: LeaderboardRequest = {
             type: type,
             interval: interval,
-            teamMode: teamMode,
-            mapId: mapId,
-            maxCount: maxCount,
+            teamMode: teamMode as unknown as number,
+            mapId: mapId as unknown as number,
         };
 
         $.ajax({
@@ -86,17 +75,16 @@ export class MainView {
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
-            success: (data, _status, _xhr) => {
+            success: (data) => {
                 this.data = {
                     type: type,
                     interval: interval,
-                    teamMode: teamMode,
-                    mapId: mapId,
-                    maxCount: maxCount,
+                    teamMode: teamMode as unknown as number,
+                    mapId: mapId as unknown as number,
                     data: data,
                 };
             },
-            error: (_xhr, _err) => {
+            error: () => {
                 this.error = true;
             },
             complete: () => {
@@ -127,8 +115,9 @@ export class MainView {
             kills: "stats-total-kills",
             wins: "stats-total-wins",
             kpg: "stats-kpg",
-        };
+        } satisfies Record<LeaderboardRequest["type"], string>;
         // @TODO: Refactor shared leaderboard constants with app/src/db.js
+        // uummmm?
         const MinGames = {
             kpg: {
                 daily: 15,

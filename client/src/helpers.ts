@@ -8,9 +8,9 @@ import { device } from "./device";
 
 const truncateCanvas = document.createElement("canvas");
 
-export function getParameterByName(name: string, url?: string) {
+export function getParameterByName<T extends string>(name: string, url?: string): T {
     const searchParams = new URLSearchParams(url || window.location.search);
-    return searchParams.get(name) || "";
+    return (searchParams.get(name) || "") as T;
 }
 
 export const helpers = {

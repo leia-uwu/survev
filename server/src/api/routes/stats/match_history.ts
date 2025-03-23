@@ -9,33 +9,15 @@ import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { validateParams } from "../../zodSchemas";
+import { validateParams } from "../../auth/middleware";
+import { ALL_TEAM_MODES, MatchHistoryResponse, zMatchHistoryRequest } from "../../../../../shared/types/stats";
 
 export const matchHistoryRouter = new Hono<Context>();
-
-/**
- * sent by the client when to teammode filter is selected
- */
-const ALL_TEAM_MODES = 7;
-
-const matchHistorySchema = z.object({
-    slug: z.string(),
-    offset: z.number(),
-    count: z.number(),
-    teamModeFilter: z
-        .union([
-            z.literal(TeamMode.Solo),
-            z.literal(TeamMode.Duo),
-            z.literal(TeamMode.Squad),
-            z.literal(ALL_TEAM_MODES),
-        ])
-        .catch(ALL_TEAM_MODES),
-});
 
 matchHistoryRouter.post(
     "/",
     accountsEnabledMiddleware,
-    validateParams(matchHistorySchema),
+    validateParams(zMatchHistoryRequest),
     async (c) => {
         try {
             const { slug, offset, teamModeFilter } = c.req.valid("json");
@@ -84,7 +66,7 @@ matchHistoryRouter.post(
                 // NOTE: we ignore the count sent from the client; not safe;
                 .limit(10);
 
-            return c.json(data);
+            return c.json<MatchHistoryResponse>(data);
         } catch (err) {
             server.logger.warn("/api/match_history: Error getting match history", err);
             return c.json({}, 500);

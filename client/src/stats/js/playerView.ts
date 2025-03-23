@@ -10,6 +10,7 @@ import matchData from "./templates/matchData.ejs?raw";
 import matchHistory from "./templates/matchHistory.ejs?raw";
 import player from "./templates/player.ejs?raw";
 import playerCards from "./templates/playerCards.ejs?raw";
+import { LeaderboardRequest, MatchData, MatchHistory, UserStatsResponse, MatchHistoryParams, UserStatsRequest, MatchDataRequest } from "../../../../shared/types/stats";
 
 const templates = {
     loading: (params: Record<string, any>) => renderEjs(loading, params),
@@ -25,60 +26,6 @@ const TeamModeToString = {
     4: "squad",
 };
 
-export interface MatchData {
-    team_id: number;
-    player_id: number;
-    killer_id: number;
-    rank: number;
-    killed_ids: number[];
-    slug: string;
-    username: string;
-    kills: number;
-    damage_dealt: number;
-    time_alive: number;
-}
-
-interface ModeStats {
-    teamMode: TeamMode;
-    games: number;
-    wins: number;
-    kills: number;
-    winPct: string;
-    mostKills: number;
-    mostDamage: number;
-    kpg: string;
-    avgDamage: number;
-    avgTimeAlive: number;
-}
-
-export interface PlayerStats {
-    slug: string;
-    username: string;
-    player_icon: string;
-    banned: boolean;
-    wins: number;
-    kills: number;
-    games: number;
-    kpg: string;
-    modes: ModeStats[];
-}
-
-export interface MatchStats {
-    guid: string;
-    region: string;
-    map_id: number;
-    team_mode: string;
-    team_count: number;
-    team_total: number;
-    end_time: string;
-    time_alive: number;
-    rank: number;
-    kills: number;
-    team_kills: number;
-    damage_dealt: number;
-    damage_taken: number;
-    icon?: string;
-}
 export interface TeamModes {
     teamMode: TeamMode;
     games: number;
@@ -88,7 +35,7 @@ export interface TeamModes {
 }
 
 function getPlayerCardData(
-    userData: PlayerStats,
+    userData: UserStatsResponse,
     error: boolean,
     teamModeFilter: number,
 ) {
@@ -170,8 +117,8 @@ function getPlayerCardData(
     // Insert blank cards for all teammodes
     const keys = Object.keys(TeamModeToString) as unknown as TeamMode[];
 
-    for (let _i = 0; _i < keys.length; _i++) {
-        const teamMode = keys[_i];
+    for (let i = 0; i < keys.length; i++) {
+        const teamMode = keys[i];
         if (!teamModes.find((x) => x.teamMode == teamMode)) {
             teamModes.push({
                 teamMode,
@@ -180,9 +127,9 @@ function getPlayerCardData(
         }
     }
     teamModes.sort((a, b) => a.teamMode! - b.teamMode!);
-    for (let _i2 = 0; _i2 < teamModes.length; _i2++) {
-        const _teamMode = teamModes[_i2].teamMode!;
-        teamModes[_i2].name = TeamModeToString[_teamMode];
+    for (let i = 0; i < teamModes.length; i++) {
+        const teamMode = teamModes[i].teamMode!;
+        teamModes[i].name = TeamModeToString[teamMode];
     }
 
     const gameModes = helpers.getGameModes();
@@ -205,7 +152,7 @@ class Query {
     dataValid = false;
     error = false;
     args = {};
-    data: PlayerStats | null = null;
+    data: UserStatsResponse | null = null;
 
     query(
         url: string,
@@ -252,7 +199,7 @@ export class PlayerView {
         expanded: boolean;
         dataError: boolean;
         data: MatchData[] | null;
-        summary: MatchStats;
+        summary: MatchHistory;
     }[] = [];
     moreGamesAvailable = true;
     teamModeFilter = 7;
@@ -281,18 +228,19 @@ export class PlayerView {
         return this.games.find((x) => x.summary.guid == gameId);
     }
     load() {
-        const _getUrlParams = this.getUrlParams(),
-            slug = _getUrlParams.slug,
-            interval = _getUrlParams.interval,
-            mapId = _getUrlParams.mapId;
+        const getUrlParams = this.getUrlParams();
+        const slug = getUrlParams.slug;
+        const interval = getUrlParams.interval as UserStatsRequest["interval"];
+        const mapId = getUrlParams.mapId;
 
         this.loadUserStats(slug, interval, mapId);
         this.loadMatchHistory(slug, 0, 7);
 
         this.render();
     }
-    loadUserStats(slug: string, interval: string, mapIdFilter: string) {
-        const args = {
+    loadUserStats(slug: string, interval: UserStatsRequest["interval"], mapIdFilter: string) {
+
+        const args: UserStatsRequest = {
             slug: slug,
             interval: interval,
             mapIdFilter: mapIdFilter,
@@ -303,7 +251,7 @@ export class PlayerView {
     }
     loadMatchHistory(slug: string, offset: number, teamModeFilter: number) {
         const count = 10;
-        const args = {
+        const args: MatchHistoryParams = {
             slug: slug,
             offset: offset,
             count: count,
@@ -333,7 +281,7 @@ export class PlayerView {
         });
     }
     loadMatchData(gameId: string) {
-        const args = {
+        const args: MatchDataRequest = {
             gameId: gameId,
         };
         this.matchData.query("/api/match_data", args, 0, (err, data) => {
@@ -369,7 +317,7 @@ export class PlayerView {
         window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
 
         const params = this.getUrlParams();
-        this.loadUserStats(params.slug, params.interval, params.mapId);
+        this.loadUserStats(params.slug, params.interval as LeaderboardRequest["interval"], params.mapId);
     }
     render() {
         const params = this.getUrlParams();

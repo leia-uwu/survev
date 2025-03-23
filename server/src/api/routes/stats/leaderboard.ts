@@ -11,39 +11,16 @@ import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { validateParams } from "../../zodSchemas";
+import { validateParams } from "../../auth/middleware";
 import { filterByInterval, filterByMapId } from "./user_stats";
+import { LeaderboardRequest, LeaderboardResponse, zLeaderboardsRequest } from "../../../../../shared/types/stats";
 
 export const leaderboardRouter = new Hono<Context>();
-
-const teamModeMap = {
-    solo: TeamMode.Solo,
-    duo: TeamMode.Duo,
-    squad: TeamMode.Squad,
-};
-
-const LeaderboardsParamsSchema = z.object({
-    interval: z.enum(["daily", "weekly", "alltime"]).catch("daily"),
-    mapId: z
-        .string()
-        .min(1)
-        .transform((v) => Number(v)),
-    maxCount: z.number().optional(),
-    type: z.enum(["most_kills", "most_damage_dealt", "kpg", "kills", "wins"]),
-    // why tf is this sent as a string
-    // TODO: refactor the client to use TeamMode enum
-    teamMode: z
-        .enum(["solo", "duo", "squad"])
-        .catch("solo")
-        .transform((mode) => teamModeMap[mode]),
-});
-
-export type LeaderboardParams = z.infer<typeof LeaderboardsParamsSchema>;
 
 leaderboardRouter.post(
     "/",
     accountsEnabledMiddleware,
-    validateParams(LeaderboardsParamsSchema),
+    validateParams(zLeaderboardsRequest),
     async (c) => {
         try {
             const { teamMode, mapId, type, interval } = c.req.valid("json");
@@ -75,7 +52,7 @@ leaderboardRouter.post(
                 await setLeaderboardCache({ cacheKey, data });
             }
 
-            return c.json<LeaderboardReturnType[]>(data, 200);
+            return c.json<LeaderboardResponse[]>(data, 200);
         } catch (err) {
             server.logger.warn("/api/leaderboard: Error getting leaderboard data", err);
             return c.json({ error: "" }, 500);
@@ -83,32 +60,10 @@ leaderboardRouter.post(
     },
 );
 
-type LeaderboardReturnType = {
-    val: number;
-    region: Region;
-    /**
-     * not used
-     */
-    active?: boolean;
-    /**
-     * required for all types except most_kills & win_streak
-     */
-    games?: number;
-} & (
-    | {
-          slug: string | null;
-          username: string;
-      }
-    | {
-          slugs: (string | null)[];
-          usernames: string[];
-      }
-);
-
 // we don't use the one sent by the client lol.
 const MAX_RESULT_COUNT = 100;
 
-const typeToQuery: Record<LeaderboardParams["type"], string> = {
+const typeToQuery: Record<LeaderboardRequest["type"], string> = {
     kills: "match_data.kills",
     most_damage_dealt: "MAX(match_data.damage_dealt)",
     kpg: "SUM(match_data.kills) / COUNT(DISTINCT match_data.game_id)",
@@ -116,7 +71,7 @@ const typeToQuery: Record<LeaderboardParams["type"], string> = {
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
-async function soloLeaderboardQuery(params: LeaderboardParams) {
+async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const { interval, mapId, teamMode, type } = params;
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
@@ -148,7 +103,7 @@ async function soloLeaderboardQuery(params: LeaderboardParams) {
     LIMIT ${MAX_RESULT_COUNT};
   `);
 
-    const result = await db.execute<LeaderboardReturnType>(query);
+    const result = await db.execute<LeaderboardResponse>(query);
     return result.rows;
 }
 
@@ -156,7 +111,7 @@ async function multiplePlayersQuery({
     interval,
     mapId,
     teamMode,
-}: LeaderboardParams): Promise<LeaderboardReturnType[]> {
+}: LeaderboardRequest): Promise<LeaderboardResponse[]> {
     const intervalFilter = {
         daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
         weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
@@ -230,7 +185,7 @@ async function multiplePlayersQuery({
             usernames,
             val: row.val,
         };
-    }) satisfies LeaderboardReturnType[];
+    }) satisfies LeaderboardResponse[];
 }
 
 /**
@@ -255,11 +210,11 @@ export async function shouldUpdateLeaderboard(
     return true;
 }
 
-export function getLowestScoreCacheKey(params: LeaderboardParams) {
+export function getLowestScoreCacheKey(params: LeaderboardRequest) {
     const { teamMode, mapId, type, interval } = params;
     return `leaderboard:lowest:${teamMode}:${mapId}:${type}:${interval}`;
 }
-export function getLeaderboardCacheKey(params: LeaderboardParams) {
+export function getLeaderboardCacheKey(params: LeaderboardRequest) {
     const { teamMode, mapId, type, interval } = params;
     return `leaderboard:${teamMode}:${mapId}:${type}:${interval}`;
 }
@@ -268,7 +223,7 @@ async function setLeaderboardCache({
     data,
 }: {
     cacheKey: string;
-    data: LeaderboardReturnType[];
+    data: LeaderboardResponse[];
 }) {
     if (!Config.cachingEnabled) return;
     const client = await getRedisClient();
@@ -305,15 +260,15 @@ export async function invalidateLeaderboards(
         {
             most_kills: 0,
             most_damage_dealt: 0,
-        } as Record<LeaderboardParams["type"], number>,
+        } as Record<LeaderboardRequest["type"], number>,
     );
 
     for (const [type, maxGameValue] of Object.entries(maxValues) as [
-        LeaderboardParams["type"],
+        LeaderboardRequest["type"],
         number,
     ][]) {
         for (const interval of ["daily", "weekly", "alltime"] as const) {
-            const gameData: LeaderboardParams = {
+            const gameData: LeaderboardRequest = {
                 type,
                 teamMode,
                 mapId,

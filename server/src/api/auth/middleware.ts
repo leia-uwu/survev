@@ -3,13 +3,8 @@ import { deleteCookie, getCookie } from "hono/cookie";
 import { Config } from "../../config";
 import { server } from "../apiServer";
 import { lucia } from "./lucia";
-
-export async function accountsEnabledMiddleware(c: Context, next: Next) {
-    if (!Config.accountsEnabled) {
-        return c.json({ err: "Account-related features are disabled" }, 403);
-    }
-    await next();
-}
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
 
 export const AuthMiddleware = async (c: Context, next: Next) => {
     try {
@@ -47,3 +42,27 @@ export const AuthMiddleware = async (c: Context, next: Next) => {
         return c.json({ error: "Authentication failed" }, 500);
     }
 };
+
+/**
+ * middleware for validating JSON request parameters against a Zod schema.
+ */
+export function validateParams<Schema extends z.ZodSchema>(schema: Schema, response?: object) {
+    return zValidator("json", schema, (result, c) => {
+        if (!result.success) {
+            return c.json(
+                response ?? 
+                {
+                    message: "Invalid params",
+                },
+                400,
+            );
+        }
+    });
+}
+
+export async function accountsEnabledMiddleware(c: Context, next: Next) {
+    if (!Config.accountsEnabled) {
+        return c.json({ err: "Account-related features are disabled" }, 403);
+    }
+    await next();
+}
