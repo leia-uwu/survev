@@ -771,6 +771,15 @@ export class Player extends BaseGameObject {
         }
         if (this.role === role) return;
 
+        //switching from one role to another
+        //need to delete any non-droppables so they can be overwritten
+        if (this.role) {
+            if (this.helmet && (GameObjectDefs[this.helmet] as HelmetDef).noDrop)
+                this.helmet = "";
+            if (this.chest && (GameObjectDefs[this.chest] as ChestDef).noDrop)
+                this.chest = "";
+        }
+
         this.role = role;
         this.inventoryDirty = true;
         this.setDirty();
@@ -4117,6 +4126,12 @@ export class Player extends BaseGameObject {
                 false,
                 0,
             );
+        }
+
+        if (msg.promoteToRoleType) {
+            const def = GameObjectDefs[msg.promoteToRoleType];
+            if (!def) return;
+            this.promoteToRole(msg.promoteToRoleType);
         }
     }
 

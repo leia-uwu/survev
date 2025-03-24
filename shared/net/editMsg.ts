@@ -8,6 +8,7 @@ export class EditMsg implements AbstractMsg {
     newMapSeed = 0;
     printLootStats = false;
     spawnLootType = "";
+    promoteToRoleType = "";
 
     serialize(s: BitStream) {
         s.writeBoolean(this.overrideZoom);
@@ -20,6 +21,7 @@ export class EditMsg implements AbstractMsg {
         s.writeUint32(this.newMapSeed);
 
         s.writeGameType(this.spawnLootType);
+        s.writeGameType(this.promoteToRoleType);
 
         s.writeAlignToNextByte();
     }
@@ -35,6 +37,7 @@ export class EditMsg implements AbstractMsg {
         this.newMapSeed = s.readUint32();
 
         this.spawnLootType = s.readGameType();
+        this.promoteToRoleType = s.readGameType();
         s.readAlignToNextByte();
     }
 }

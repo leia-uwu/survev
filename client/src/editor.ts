@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { EditMsg } from "../../shared/net/editMsg";
 import { math } from "../../shared/utils/math";
@@ -17,6 +18,7 @@ export class Editor {
     mapSeed = 0;
     printLootStats = false;
     spawnLootType = "";
+    promoteToRoleType = "";
 
     sendMsg = false;
 
@@ -119,7 +121,7 @@ export class Editor {
             },
         });
 
-        const optGroups: Record<string, JQuery<HTMLOptGroupElement>> = {};
+        const lootOptGroups: Record<string, JQuery<HTMLOptGroupElement>> = {};
         for (const [type, def] of Object.entries(GameObjectDefs)) {
             if (!("lootImg" in def)) continue;
 
@@ -133,13 +135,13 @@ export class Editor {
                 html: name,
             });
 
-            let optGroup = optGroups[def.type];
+            let optGroup = lootOptGroups[def.type];
             if (!optGroup) {
                 optGroup = $("<optgroup/>", {
                     label: def.type,
                 });
                 lootTypeInput.append(optGroup);
-                optGroups[def.type] = optGroup;
+                lootOptGroups[def.type] = optGroup;
             }
             optGroup.append(opt);
         }
@@ -148,6 +150,41 @@ export class Editor {
         createLootUi.append(
             createButton("Spawn Loot", () => {
                 this.spawnLootType = lootTypeInput.val() as string;
+                this.sendMsg = true;
+            }),
+        );
+
+        const createRoleUi = $("<div/>", {
+            css: { display: "flex" },
+        });
+        const roleTypeDropdown = $<HTMLSelectElement>("<select/>", {
+            css: {
+                height: "30px",
+                width: "180px",
+                "line-height": "28px",
+                "margin-top": "5px",
+                "margin-bottom": "5px",
+            },
+        });
+
+        const invalidRoleTypes = ["kill_leader", "the_hunted"];
+
+        for (const [type, _def] of Object.entries(RoleDefs)) {
+            if (invalidRoleTypes.includes(type)) continue;
+
+            const opt = $<HTMLOptionElement>("<option/>", {
+                value: type,
+                html: type,
+            });
+
+            roleTypeDropdown.append(opt);
+        }
+
+        createRoleUi.append(roleTypeDropdown);
+        createRoleUi.append($("<span/>", { css: { width: "12px" } }));
+        createRoleUi.append(
+            createButton("Promote To Role", () => {
+                this.promoteToRoleType = roleTypeDropdown.val() as string;
                 this.sendMsg = true;
             }),
         );
@@ -212,6 +249,7 @@ export class Editor {
         list.append($("<li/>").append(mapBtns));
         // list.append($("<li/>").append(lootSummaryBtn)); // not implemented yet
         list.append($("<li/>").append(createLootUi));
+        list.append($("<li/>").append(createRoleUi));
         list.append($("<li/>").append($("<hr/>")));
         list.append($("<li/>").append(uiConfig));
 
@@ -263,6 +301,7 @@ export class Editor {
         msg.loadNewMap = this.loadNewMap;
         msg.newMapSeed = this.mapSeed;
         msg.spawnLootType = this.spawnLootType;
+        msg.promoteToRoleType = this.promoteToRoleType;
 
         return msg;
     }
@@ -271,6 +310,7 @@ export class Editor {
         this.loadNewMap = false;
         this.printLootStats = false;
         this.spawnLootType = "";
+        this.promoteToRoleType = "";
         this.sendMsg = false;
     }
 }
