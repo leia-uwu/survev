@@ -2,9 +2,9 @@ import Database from "better-sqlite3";
 import { Config, type Region } from "../config";
 import type { Game } from "../game/game";
 import { type MapDef, MapDefs } from "./../../../shared/defs/mapDefs";
+import { invalidateLeaderboards } from "./cache/leaderboard";
 import { db } from "./db";
 import { type MatchDataTable, matchDataTable } from "./db/schema";
-import { invalidateLeaderboards } from "./cache/leaderboard";
 
 // @leia HELP!!!!!!!
 export async function saveGameInfoToDatabase(game: Game) {
