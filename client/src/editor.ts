@@ -22,12 +22,17 @@ export class Editor {
     spawnLootType = "";
     promoteToRoleType = "";
     speed = SPEED_DEFAULT;
+    layer = 0;
 
     sendMsg = false;
 
     uiPos!: JQuery;
     uiZoom!: JQuery;
     uiMapSeed!: JQuery;
+
+    uiLayerValueDisplay!: JQuery;
+    /** differentiates between player movement vs manual toggle when changing layers */
+    layerChangedByToggle = false;
 
     constructor(config: ConfigManager) {
         this.config = config;
@@ -204,7 +209,7 @@ export class Editor {
             value: this.speed,
         });
 
-        const ssValueDisplay = $("<span/>").text(speedSlider.val() as number);
+        const ssValueDisplay = $("<span/>").text(this.speed);
 
         /** doesn't change the slider value */
         const setSpeed = (speed: number) => {
@@ -237,6 +242,31 @@ export class Editor {
                 this.sendMsg = true;
             }),
         );
+
+        const layerToggleContainer = $("<div/>", {
+            css: { display: "flex", alignItems: "center" },
+        });
+
+        const layerToggleValueDisplay = $("<span/>").text(this.layer);
+        this.uiLayerValueDisplay = layerToggleValueDisplay;
+
+        const layerToggle = createButton("Toggle Layer", () => {
+            this.layer = util.toGroundLayer(this.layer) ^ 1;
+            this.layerChangedByToggle = true;
+            layerToggleValueDisplay.text(this.layer);
+            this.sendMsg = true;
+        });
+
+        const layerToggleLabel = $("<label>", {
+            text: "Layer:",
+            for: layerToggle.attr("id"),
+        });
+
+        layerToggleContainer.append(layerToggleLabel);
+        layerToggleContainer.append($("<span/>", { css: { width: "5px" } }));
+        layerToggleContainer.append(layerToggleValueDisplay);
+        layerToggleContainer.append($("<span/>", { css: { width: "10px" } }));
+        layerToggleContainer.append(layerToggle);
 
         const createCheckbox = (_name: string, key: string) => {
             const check = $("<input/>", {
@@ -300,6 +330,7 @@ export class Editor {
         list.append($("<li/>").append(createLootUi));
         list.append($("<li/>").append(createRoleUi));
         list.append($("<li/>").append(speedSliderContainer));
+        list.append($("<li/>").append(layerToggleContainer));
         list.append($("<li/>").append($("<hr/>")));
         list.append($("<li/>").append(uiConfig));
 
@@ -329,6 +360,14 @@ export class Editor {
         }
         this.zoom = math.clamp(this.zoom, 1.0, 255.0);
 
+        //layer changed naturally so need to update the state + ui
+        //used != instead of util.sameLayer() because we want every layer change not just ground-underground
+        if (!this.layerChangedByToggle && this.layer != player.layer) {
+            this.layerChangedByToggle = false;
+            this.layer = player.layer;
+            this.uiLayerValueDisplay.text(this.layer);
+        }
+
         // Ui
         const posX = player.m_pos.x.toFixed(2);
         const posY = player.m_pos.y.toFixed(2);
@@ -347,6 +386,7 @@ export class Editor {
         msg.overrideZoom = debug.overrideZoom;
         msg.zoom = this.zoom;
         msg.speed = this.speed;
+        msg.layer = this.layer;
         msg.cull = debug.cull;
         msg.printLootStats = this.printLootStats;
         msg.loadNewMap = this.loadNewMap;
@@ -363,6 +403,7 @@ export class Editor {
         this.printLootStats = false;
         this.spawnLootType = "";
         this.promoteToRoleType = "";
+        this.layerChangedByToggle = false;
         this.sendMsg = false;
     }
 }

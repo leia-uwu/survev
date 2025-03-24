@@ -46,6 +46,7 @@ import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject
 import type { Loot } from "./loot";
 import type { MapIndicator } from "./mapIndicator";
 import type { Obstacle } from "./obstacle";
+import type { Structure } from "./structure";
 
 interface Emote {
     playerId: number;
@@ -1637,9 +1638,15 @@ export class Player extends BaseGameObject {
             this.pos,
             GameConfig.player.maxVisualRadius * this.scale + this.speed * dt,
         );
-        //can't interact with the map in spectator mode
+        //can't collide with objects in spectator mode
         const objs = this.debug.spectatorMode
-            ? []
+            ? //so spectators can go underground, need to be able to interact with stairs
+              this.game.grid
+                  .intersectCollider(circle)
+                  .filter(
+                      (o): o is Structure =>
+                          o.__type == ObjectType.Structure && o.stairs.length != 0,
+                  )
             : this.game.grid.intersectCollider(circle);
 
         for (let i = 0; i < steps; i++) {
@@ -4123,6 +4130,12 @@ export class Player extends BaseGameObject {
         this.debug.zoomOverride = msg.zoom;
 
         this.debug.baseSpeedOverride = math.clamp(msg.speed, 1, 10000);
+
+        //only accept ground or underground
+        if ((msg.layer == 0 || msg.layer == 1) && this.layer != msg.layer) {
+            this.layer = msg.layer;
+            this.setDirty();
+        }
 
         //removed from grid while in spectator mode so other players can't see/interact with the player
         if (this.debug.spectatorMode != msg.spectatorMode) {

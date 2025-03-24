@@ -4,6 +4,7 @@ export class EditMsg implements AbstractMsg {
     overrideZoom = false;
     zoom = 1;
     speed = -1;
+    layer = 0;
     cull = false;
     loadNewMap = false;
     newMapSeed = 0;
@@ -17,6 +18,7 @@ export class EditMsg implements AbstractMsg {
         s.writeBoolean(this.cull);
         s.writeFloat32(this.zoom);
         s.writeFloat32(this.speed);
+        s.writeBits(this.layer, 2);
 
         s.writeBoolean(this.printLootStats);
 
@@ -35,6 +37,7 @@ export class EditMsg implements AbstractMsg {
         this.cull = s.readBoolean();
         this.zoom = s.readFloat32();
         this.speed = s.readFloat32();
+        this.layer = s.readBits(2);
 
         this.printLootStats = s.readBoolean();
 
