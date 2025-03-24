@@ -4334,7 +4334,6 @@ export class Player extends BaseGameObject {
 
     recalculateSpeed(hasTreeClimbing: boolean): void {
         // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
-        if (this.name == "a") console.log(this.speed);
         if (this.actionType == GameConfig.Action.Revive) {
             //prevents self reviving players from getting an unnecessary speed boost
             if (this.action.targetId && !(this.downed && this.hasPerk("self_revive"))) {
