@@ -10,6 +10,8 @@ import { type InputHandler, Key } from "./input";
 import type { Map } from "./map";
 import type { Player } from "./objects/player";
 
+const SPEED_DEFAULT = GameConfig.player.moveSpeed;
+
 export class Editor {
     config: ConfigManager;
     enabled = false;
@@ -19,6 +21,7 @@ export class Editor {
     printLootStats = false;
     spawnLootType = "";
     promoteToRoleType = "";
+    speed = SPEED_DEFAULT;
 
     sendMsg = false;
 
@@ -190,6 +193,51 @@ export class Editor {
             }),
         );
 
+        const speedSliderContainer = $("<div/>", {
+            css: { display: "flex", alignItems: "center" },
+        });
+
+        const speedSlider = $("<input/>", {
+            type: "range",
+            min: "1",
+            max: "75",
+            value: this.speed,
+        });
+
+        const ssValueDisplay = $("<span/>").text(speedSlider.val() as number);
+
+        /** doesn't change the slider value */
+        const setSpeed = (speed: number) => {
+            this.speed = speed;
+            ssValueDisplay.text(speed);
+            this.sendMsg = true;
+        };
+
+        speedSlider.on("change", (e) => {
+            e.stopPropagation();
+            const target = $(e.target) as JQuery<HTMLInputElement>;
+            setSpeed(Number(target.val()));
+        });
+
+        const speedSliderLabel = $("<label>", {
+            text: "Speed:",
+            for: speedSlider.attr("id"),
+        });
+
+        speedSliderContainer.append(speedSliderLabel);
+        speedSliderContainer.append($("<span/>", { css: { width: "5px" } }));
+        speedSliderContainer.append(ssValueDisplay);
+        speedSliderContainer.append($("<span/>", { css: { width: "10px" } }));
+        speedSliderContainer.append(speedSlider);
+        speedSliderContainer.append($("<span/>", { css: { width: "10px" } }));
+        speedSliderContainer.append(
+            createButton("Reset", () => {
+                speedSlider.val(SPEED_DEFAULT);
+                setSpeed(SPEED_DEFAULT);
+                this.sendMsg = true;
+            }),
+        );
+
         const createCheckbox = (_name: string, key: string) => {
             const check = $("<input/>", {
                 type: "checkbox",
@@ -251,6 +299,7 @@ export class Editor {
         // list.append($("<li/>").append(lootSummaryBtn)); // not implemented yet
         list.append($("<li/>").append(createLootUi));
         list.append($("<li/>").append(createRoleUi));
+        list.append($("<li/>").append(speedSliderContainer));
         list.append($("<li/>").append($("<hr/>")));
         list.append($("<li/>").append(uiConfig));
 
@@ -297,6 +346,7 @@ export class Editor {
         const debug = this.config.get("debug")!;
         msg.overrideZoom = debug.overrideZoom;
         msg.zoom = this.zoom;
+        msg.speed = this.speed;
         msg.cull = debug.cull;
         msg.printLootStats = this.printLootStats;
         msg.loadNewMap = this.loadNewMap;

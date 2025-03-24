@@ -1080,6 +1080,8 @@ export class Player extends BaseGameObject {
         zoomOverride: GameConfig.scopeZoomRadius["desktop"]["1xscope"],
         overrideZoom: false,
         zoomOverrideCulling: false,
+        /** only overrides base speed so modifiers like haste and freeze still apply */
+        baseSpeedOverride: -1,
         spectatorMode: false,
     };
 
@@ -4120,6 +4122,8 @@ export class Player extends BaseGameObject {
         this.debug.zoomOverrideCulling = msg.cull;
         this.debug.zoomOverride = msg.zoom;
 
+        this.debug.baseSpeedOverride = math.clamp(msg.speed, 1, 10000);
+
         //removed from grid while in spectator mode so other players can't see/interact with the player
         if (this.debug.spectatorMode != msg.spectatorMode) {
             msg.spectatorMode
@@ -4333,8 +4337,9 @@ export class Player extends BaseGameObject {
     }
 
     recalculateSpeed(hasTreeClimbing: boolean): void {
-        // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
-        if (this.actionType == GameConfig.Action.Revive) {
+        if (this.debug.baseSpeedOverride != -1) {
+            this.speed = this.debug.baseSpeedOverride;
+        } else if (this.actionType == GameConfig.Action.Revive) {
             //prevents self reviving players from getting an unnecessary speed boost
             if (this.action.targetId && !(this.downed && this.hasPerk("self_revive"))) {
                 // player reviving
