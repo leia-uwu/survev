@@ -118,7 +118,11 @@ export function checkForBadWords(name: string) {
 }
 
 export function validateUserName(name: string) {
-    if (!name || typeof name !== "string") return "Player";
+    const randomNumber = Math.random().toString(10).slice(2, 6);
+    const defaultName = Config.randomizeDefaultPlayerName
+        ? `Player#${randomNumber}`
+        : "Player";
+    if (!name || typeof name !== "string") return defaultName;
 
     name = name
         .trim()
@@ -126,7 +130,7 @@ export function validateUserName(name: string) {
         // remove extended ascii etc
         .replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, "");
 
-    if (!name.length || checkForBadWords(name)) return "Player";
+    if (!name.length || checkForBadWords(name)) return defaultName;
 
     return name;
 }

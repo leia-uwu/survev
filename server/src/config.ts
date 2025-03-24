@@ -61,6 +61,8 @@ export const Config = {
         allowEditMsg: !isProduction,
     },
 
+    randomizeDefaultPlayerName: false,
+
     accountsEnabled: true,
 
     cachingEnabled: false,
@@ -179,11 +181,6 @@ export interface ConfigType {
 
     PROXYCHECK_KEY?: string;
 
-    /**
-     * used to hide/disable account-related features in both client and server.
-     */
-    readonly accountsEnabled: boolean;
-
     regions: Record<
         string,
         {
@@ -224,6 +221,13 @@ export interface ConfigType {
          */
         time: number;
     };
+
+    /**
+     * used to hide/disable account-related features in both client and server.
+     */
+    accountsEnabled: boolean;
+
+    randomizeDefaultPlayerName: boolean;
 
     cachingEnabled: boolean;
 
