@@ -18,7 +18,6 @@ import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";
-import { invalidateUserStatsCache } from "../stats/user_stats";
 import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
 
@@ -151,8 +150,6 @@ UserRouter.post(
                     lastUsernameChangeTime: now,
                 })
                 .where(eq(usersTable.id, user.id));
-
-            await invalidateUserStatsCache(user.id, "*");
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {

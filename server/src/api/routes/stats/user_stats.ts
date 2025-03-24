@@ -5,11 +5,9 @@ import {
     type UserStatsResponse,
     zUserStatsRequest,
 } from "../../../../../shared/types/stats";
-import { Config } from "../../../config";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
-import { getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
 
@@ -46,8 +44,6 @@ UserStatsRouter.post(
             const { id: userId } = result;
 
             const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
-
-            if (!data?.slug) return c.json(emptyState, 200);
 
             return c.json<UserStatsResponse>(data, 200);
         } catch (err) {
@@ -128,10 +124,10 @@ async function userStatsSqlQuery(
             LIMIT 1;
     `);
 
-    const data = await db.execute(query);
-    const userStats = data.rows[0] as any;
+    const data = await db.execute<UserStatsResponse>(query);
+    const userStats = data.rows[0];
 
-    if (!userStats) return emptyState as unknown as UserStatsResponse;
+    if (!userStats || !userStats.slug) return emptyState as unknown as UserStatsResponse;
 
     const modes = userStats?.modes;
     const formatedData: UserStatsResponse = {
@@ -140,38 +136,4 @@ async function userStatsSqlQuery(
         modes: modes[0] === null ? [] : modes,
     };
     return formatedData;
-}
-
-function getUserStatsCacheKey(userId: string, mapIdFilter: string) {
-    return `user-stats:${userId}:${mapIdFilter}`;
-}
-
-async function getUserStatsFromCache(cacheKey: string) {
-    if (!Config.cachingEnabled) return;
-
-    const client = await getRedisClient();
-    const data = await client.get(cacheKey);
-    return data ? JSON.parse(data) : null;
-}
-
-async function setUserStatsCache(cacheKey: string, data: UserStatsResponse) {
-    if (!Config.cachingEnabled) return;
-
-    const client = await getRedisClient();
-    await client.set(cacheKey, JSON.stringify(data));
-}
-/*
-  this needss to be called every time a game is played.
-  also if any of these {banned, username, slug, laodout.avatar} changes :sob:
-*/
-export async function invalidateUserStatsCache(userId: string, mapIdFilter: string) {
-    if (!Config.cachingEnabled) return false;
-
-    const client = await getRedisClient();
-    const cacheKey = getUserStatsCacheKey(userId, mapIdFilter);
-    // clear the cached stat for that sepcific map
-    await client.del(cacheKey);
-    // clear the cached stat for when no map filter is applied
-    await client.del(getUserStatsCacheKey(userId, "-1"));
-    return true;
 }

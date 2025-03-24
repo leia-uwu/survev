@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { Config } from "../config";
+import { Config } from "../../config";
 
 export const CACHE_TTL = 3 * 24 * 60 * 60;
 

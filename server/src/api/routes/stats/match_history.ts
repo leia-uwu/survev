@@ -7,11 +7,9 @@ import {
     type MatchHistoryResponse,
     zMatchHistoryRequest,
 } from "../../../../../shared/types/stats";
-import { Config } from "../../../config";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
-import { CACHE_TTL, getRedisClient } from "../../cache";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 
@@ -32,7 +30,7 @@ matchHistoryRouter.post(
                 },
             });
 
-            if (result == undefined || result?.id == undefined) {
+            if (result?.id == undefined) {
                 return c.json({}, 200);
             }
 
@@ -66,7 +64,6 @@ matchHistoryRouter.post(
                 )
                 .orderBy(desc(matchDataTable.createdAt))
                 .offset(offset)
-                // NOTE: we ignore the count sent from the client; not safe;
                 .limit(10);
 
             return c.json<MatchHistoryResponse>(data);
@@ -76,34 +73,3 @@ matchHistoryRouter.post(
         }
     },
 );
-
-function getMatchHistoryCacheKey(userId: string) {
-    // NOTE: we only cache match_history with no teammode filter
-    // since this get request page load
-    return `match-history:${userId}:${ALL_TEAM_MODES}`;
-}
-
-async function getMatchHistoryCache(cacheKey: string) {
-    if (!Config.cachingEnabled) return;
-
-    const client = await getRedisClient();
-    const data = await client.get(cacheKey);
-    return data ? JSON.parse(data) : null;
-}
-
-async function setMatchHistoryCache(cacheKey: string, data: any) {
-    if (!Config.cachingEnabled) return;
-    const client = await getRedisClient();
-    await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data));
-}
-
-/**
- * needs to be called everytime a player plays a game
- * does it make sense to cache then?
- */
-async function invalidateMatchHistoryCache(cacheKey: string) {
-    if (!Config.cachingEnabled) return false;
-    const client = await getRedisClient();
-    await client.del(cacheKey);
-    return true;
-}

@@ -4,8 +4,7 @@ import type { Game } from "../game/game";
 import { type MapDef, MapDefs } from "./../../../shared/defs/mapDefs";
 import { db } from "./db";
 import { type MatchDataTable, matchDataTable } from "./db/schema";
-import { invalidateLeaderboards } from "./routes/stats/leaderboard";
-import { invalidateUserStatsCache } from "./routes/stats/user_stats";
+import { invalidateLeaderboards } from "./cache/leaderboard";
 
 // @leia HELP!!!!!!!
 export async function saveGameInfoToDatabase(game: Game) {
@@ -24,9 +23,6 @@ export async function saveGameInfoToDatabase(game: Game) {
         if (processedPlayers.has(player.__id)) continue;
         processedPlayers.add(player.__id);
 
-        if (player.authId) {
-            invalidateUserStatsCache(player.authId, mapId.toString());
-        }
         /**
          * teamTotal is for total teams that started the match, i hope?
          */
