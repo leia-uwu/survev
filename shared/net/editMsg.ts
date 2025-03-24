@@ -9,6 +9,7 @@ export class EditMsg implements AbstractMsg {
     printLootStats = false;
     spawnLootType = "";
     promoteToRoleType = "";
+    spectatorMode = false;
 
     serialize(s: BitStream) {
         s.writeBoolean(this.overrideZoom);
@@ -22,6 +23,7 @@ export class EditMsg implements AbstractMsg {
 
         s.writeGameType(this.spawnLootType);
         s.writeGameType(this.promoteToRoleType);
+        s.writeBoolean(this.spectatorMode);
 
         s.writeAlignToNextByte();
     }
@@ -38,6 +40,7 @@ export class EditMsg implements AbstractMsg {
 
         this.spawnLootType = s.readGameType();
         this.promoteToRoleType = s.readGameType();
+        this.spectatorMode = s.readBoolean();
         s.readAlignToNextByte();
     }
 }

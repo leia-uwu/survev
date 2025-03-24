@@ -40,6 +40,7 @@ export class Editor {
     setEnabled(e: boolean) {
         this.enabled = e;
         this.refreshUi();
+        if (e) this.sendMsg = true;
     }
 
     newMap(seed: number) {
@@ -302,6 +303,7 @@ export class Editor {
         msg.newMapSeed = this.mapSeed;
         msg.spawnLootType = this.spawnLootType;
         msg.promoteToRoleType = this.promoteToRoleType;
+        msg.spectatorMode = debug.spectatorMode;
 
         return msg;
     }

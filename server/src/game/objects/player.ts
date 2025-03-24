@@ -1080,6 +1080,7 @@ export class Player extends BaseGameObject {
         zoomOverride: GameConfig.scopeZoomRadius["desktop"]["1xscope"],
         overrideZoom: false,
         zoomOverrideCulling: false,
+        spectatorMode: false,
     };
 
     teamId = 1;
@@ -1634,7 +1635,10 @@ export class Player extends BaseGameObject {
             this.pos,
             GameConfig.player.maxVisualRadius * this.scale + this.speed * dt,
         );
-        const objs = this.game.grid.intersectCollider(circle);
+        //can't interact with the map in spectator mode
+        const objs = this.debug.spectatorMode
+            ? []
+            : this.game.grid.intersectCollider(circle);
 
         for (let i = 0; i < steps; i++) {
             v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
@@ -1921,7 +1925,8 @@ export class Player extends BaseGameObject {
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
-            this.game.grid.updateObject(this);
+            //player doesn't exist in grid while in spectator mode
+            if (!this.debug.spectatorMode) this.game.grid.updateObject(this);
 
             //
             // Halloween obstacle skin
@@ -3015,7 +3020,6 @@ export class Player extends BaseGameObject {
             this.dirOld = v2.copy(this.dir);
             this.dir = v2.normalizeSafe(msg.toMouseDir);
         }
-        this.shootHold = msg.shootHold;
 
         this.moveLeft = msg.moveLeft;
         this.moveRight = msg.moveRight;
@@ -3025,11 +3029,16 @@ export class Player extends BaseGameObject {
         this.touchMoveActive = msg.touchMoveActive;
         this.touchMoveDir = v2.normalizeSafe(msg.touchMoveDir);
         this.touchMoveLen = msg.touchMoveLen;
+        this.toMouseLen = msg.toMouseLen;
+
+        //spectators are only allowed to send movement related inputs
+        if (this.debug.spectatorMode) return;
+
+        this.shootHold = msg.shootHold;
 
         if (msg.shootStart) {
             this.shootStart = true;
         }
-        this.toMouseLen = msg.toMouseLen;
 
         // HACK? client for some reason sends Interact followed by Cancel on mobile
         // so we ignore the cancel request when reviving a player
@@ -4110,6 +4119,15 @@ export class Player extends BaseGameObject {
         this.debug.overrideZoom = msg.overrideZoom;
         this.debug.zoomOverrideCulling = msg.cull;
         this.debug.zoomOverride = msg.zoom;
+
+        //removed from grid while in spectator mode so other players can't see/interact with the player
+        if (this.debug.spectatorMode != msg.spectatorMode) {
+            msg.spectatorMode
+                ? this.game.grid.remove(this)
+                : this.game.grid.addObject(this);
+        }
+
+        this.debug.spectatorMode = msg.spectatorMode;
 
         if (msg.spawnLootType) {
             const def = GameObjectDefs[msg.spawnLootType];
