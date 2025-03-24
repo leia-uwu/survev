@@ -35,7 +35,8 @@ import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { lucia } from "../../api/auth/lucia";
-import { Config } from "../../config";
+import { logPlayerIP } from "../../api/moderation";
+import { Config, type Region } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { setLoadout } from "../../utils/loadoutHelpers";
 import { validateUserName } from "../../utils/serverHelpers";
@@ -1106,7 +1107,7 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
-    authId: string | null = null;
+    userId: string | null = null;
     ip: string;
 
     constructor(
@@ -1189,7 +1190,7 @@ export class Player extends BaseGameObject {
         }
 
         setLoadout(joinMsg, this);
-        this.setAuthId(joinMsg.authCookie);
+        this.setUserId(joinMsg.authCookie);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
@@ -2242,18 +2243,34 @@ export class Player extends BaseGameObject {
     }
 
     /**
-     * gets authId from cookie to identify user when saving games to database
+     * gets userId from cookie to identify user when saving games to database
+     * don't await the function when calling
      */
-    setAuthId(authCookie: string): void {
-        if (!Config.accountsEnabled || !authCookie) return;
-        lucia
-            .validateSession(authCookie)
-            .then((data) => {
-                if (data?.user && data.user.id) {
-                    this.authId = data.user.id;
+    async setUserId(authCookie: string) {
+        const playerData = {
+            name: this.name,
+            gameId: this.game.id,
+            ip: this.ip,
+            region: Config.thisRegion as Region,
+        };
+
+        try {
+            if (Config.accountsEnabled && authCookie) {
+                const data = await lucia.validateSession(authCookie);
+
+                if (data?.user?.id) {
+                    this.userId = data.user.id;
+                    await logPlayerIP({ ...playerData, userId: this.userId });
+                    return;
                 }
-            })
-            .catch((err) => console.warn("Failed to set player auth id", err));
+
+                await logPlayerIP(playerData);
+            } else {
+                await logPlayerIP(playerData);
+            }
+        } catch (err) {
+            console.warn("Failed to set player auth id", err);
+        }
     }
 
     spectate(spectateMsg: net.SpectateMsg): void {

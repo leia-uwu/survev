@@ -13,8 +13,10 @@ import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
 import { zUpdateRegionBody } from "../utils/types";
 import { server } from "./apiServer";
+import { lucia } from "./auth/lucia";
 import { validateParams } from "./auth/middleware";
 import { handleModerationAction } from "./moderation";
+import { isBanned } from "./moderation";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
@@ -79,6 +81,10 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
             return c.json({}, 500);
         }
 
+        if (await isBanned(ip)) {
+            return c.json<FindGameResponse>({ err: "banned" });
+        }
+
         if (findGameRateLimit.isRateLimited(ip)) {
             return c.json<FindGameResponse>({ err: "rate_limited" }, 429);
         }
@@ -119,33 +125,51 @@ app.post("/private/update_region", validateParams(zUpdateRegionBody), async (c) 
         server.updateRegion(regionId, data);
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("/api/find_game: Error processing request", err);
+        server.logger.warn("/private/update_region: Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
     }
 });
 
-app.post(
-    "/private/moderation",
-    validateParams(
-        z.object({
-            action: z.enum(["ban", "unban", "isbanned", "clear", "get-player-ip"]),
-            ip: z.string(),
-            name: z.string().optional(),
-        }),
-    ),
-    async (ctx) => {
-        try {
-            const data = ctx.req.valid("json");
+const zModerationParms = z.discriminatedUnion("action", [
+    z.object({
+        action: z.literal("get-player-ip"),
+        playerName: z.string().toLowerCase(),
+    }),
+    z.object({
+        action: z.literal("clean-all-bans"),
+    }),
+    z.object({
+        action: z.enum(["ban-ip", "unban-ip", "check-ban-status"]),
+        ip: z.string(),
+    }),
+]);
+export type ModerationParms = z.infer<typeof zModerationParms>;
 
-            const message = await handleModerationAction(data.action, data.ip, data.name);
+app.post("/private/moderation", validateParams(zModerationParms), async (ctx) => {
+    const data = ctx.req.valid("json");
+    try {
+        return ctx.json({ message: await handleModerationAction(data) });
+    } catch (err) {
+        server.logger.warn(
+            `/private/moderation: Error processing ${data.action} request`,
+            err,
+        );
+        return ctx.json({ message: "An unexpected error occurred." }, 500);
+    }
+});
 
-            return ctx.json({ message });
-        } catch (err) {
-            server.logger.warn("/api/moderation: Error processing request", err);
-            return ctx.json({ message: "An unexpected error occurred." }, 500);
-        }
-    },
-);
+// TODO: use a cron job instead
+app.post("/private/delete-expired-sessions", async (ctx) => {
+    try {
+        await lucia.deleteExpiredSessions();
+    } catch (err) {
+        server.logger.warn(
+            `/private/delete-expired-sessions: Error deleting expired sessinos`,
+            err,
+        );
+        return ctx.json({ message: "An unexpected error occurred." }, 500);
+    }
+});
 
 app.post("/api/report_error", async (c) => {
     try {

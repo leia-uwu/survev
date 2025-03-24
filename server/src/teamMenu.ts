@@ -14,6 +14,7 @@ import {
 } from "../../shared/types/team";
 import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
+import { isBanned } from "./api/moderation";
 import { Config } from "./config";
 import {
     HTTPRateLimit,
@@ -335,7 +336,7 @@ export class TeamMenu {
             upgradeWebSocket(async (c) => {
                 const ip = getHonoIp(c, Config.gameServer.proxyIPHeader);
 
-                let closeReason = "";
+                let closeReason: TeamMenuErrorType | undefined;
 
                 if (
                     !ip ||
@@ -343,6 +344,10 @@ export class TeamMenu {
                     wsRateLimit.isIpRateLimited(ip)
                 ) {
                     closeReason = "rate_limited";
+                }
+
+                if (await isBanned(ip!)) {
+                    closeReason = "banned";
                 }
 
                 if (!closeReason && (await isBehindProxy(ip!))) {

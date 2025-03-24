@@ -26,6 +26,7 @@ export function getHonoIp(c: Context, proxyHeader?: string): string | undefined 
         : c.env?.incoming?.socket?.remoteAddress;
 
     if (!ip || isIP(ip) == 0) return undefined;
+    if (ip.includes("::ffff:")) return ip.split("::ffff:")[1];
     return ip;
 }
 

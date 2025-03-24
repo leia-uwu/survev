@@ -14,6 +14,7 @@ export type TeamMenuErrorType =
     | "find_game_full"
     | "find_game_invalid_protocol"
     | "kicked"
+    | "banned"
     | "behind_proxy"
     | "rate_limited";
 

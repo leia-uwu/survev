@@ -1,147 +1,133 @@
 import { desc, eq, lt } from "drizzle-orm";
-import { Config } from "../config";
+import type { ModerationParms } from ".";
+import { Config, type Region } from "../config";
+import { server } from "./apiServer";
 import { db } from "./db";
 import { bannedIpsTable, ipLogsTable } from "./db/schema";
 
-export async function handleModerationAction(
-    action: string,
-    ip: string,
-    name = "",
-): Promise<string> {
-    const actionHandlers = {
-        ban: async () => await banIP(ip),
-        unban: async () => await unbanIp(ip),
-        clear: async () => await clearAllBans(),
-        "get-player-ip": async () => await getPlayerIp(name),
-        isbanned: async () => {
-            const isIpBanned = await isBanned(ip);
-            return isIpBanned ? `IP ${ip} is banned.` : `IP ${ip} is not banned.`;
-        },
-    };
-
-    if (action in actionHandlers) {
-        return await actionHandlers[action as keyof typeof actionHandlers]();
+export async function handleModerationAction(data: ModerationParms) {
+    switch (data.action) {
+        case "clean-all-bans": {
+            return await clearAllBans();
+        }
+        case "ban-ip": {
+            return await banIP(data.ip);
+        }
+        case "unban-ip": {
+            return await unbanIp(data.ip);
+        }
+        case "check-ban-status": {
+            return await isBanned(data.ip);
+        }
+        case "get-player-ip": {
+            return await getPlayerIp(data.playerName);
+        }
+        default: {
+            return "Invalid action.";
+        }
     }
-
-    return "Invalid action.";
 }
 
-async function isBanned(ip: string, shouldEncode = true) {
-    try {
-        const encodedIp = shouldEncode ? encodeIP(ip) : ip;
-        console.log(`Checking if ${encodedIp} is banned.`);
-        const banned = await db.query.bannedIpsTable.findFirst({
-            where: eq(bannedIpsTable.encodedIp, encodedIp),
-            columns: {
-                expiresIn: true,
+export async function isBanned(ip: string) {
+    const encodedIp = encodeIP(ip);
+    const banned = await db.query.bannedIpsTable.findFirst({
+        where: eq(bannedIpsTable.encodedIp, encodedIp),
+        columns: {
+            expiresIn: true,
+        },
+    });
+    if (banned) {
+        const { expiresIn } = banned;
+        if (expiresIn.getTime() > Date.now()) {
+            console.log(`${encodedIp} is banned.`);
+            return true;
+        }
+        await unbanIp(encodedIp);
+        console.log(`${encodedIp} is not banned.`);
+        return false;
+    }
+    return false;
+}
+
+async function banIP(encodedIp: string, durationInDays = 7) {
+    const expiresIn = new Date(Date.now() + durationInDays * 24 * 60 * 60 * 1000);
+
+    await db
+        .insert(bannedIpsTable)
+        .values({
+            encodedIp,
+            expiresIn,
+        })
+        .onConflictDoUpdate({
+            target: bannedIpsTable.encodedIp,
+            set: {
+                expiresIn: expiresIn,
             },
         });
-        if (banned) {
-            const { expiresIn } = banned;
-            if (expiresIn.getTime() > Date.now()) {
-                console.log(`${encodedIp} is banned.`);
-                return true;
-            }
-            await unbanIp(encodedIp);
-            console.log(`${encodedIp} is not banned.`);
-            return false;
-        }
-        return false;
-    } catch (err) {
-        console.log("Failed to check if IP is banned", err);
-        return false;
-    }
-}
 
-async function banIP(encodedIp: string, durationInDays = 3) {
-    try {
-        const expiresIn = new Date(Date.now() + durationInDays * 24 * 60 * 60 * 1000);
-
-        await db
-            .insert(bannedIpsTable)
-            .values({
-                encodedIp,
-                expiresIn,
-            })
-            .onConflictDoUpdate({
-                target: bannedIpsTable.expiresIn,
-                set: {
-                    expiresIn: expiresIn,
-                },
-            });
-
-        return `IP ${encodedIp} has been banned for ${durationInDays} days.`;
-    } catch (err) {
-        console.log("Failed to ban IP", err);
-        return "An error occurred while banning IP.";
-    }
+    return `IP ${encodedIp} has been banned for ${durationInDays} days.`;
 }
 
 async function unbanIp(encodedIp: string) {
-    try {
-        await db
-            .delete(bannedIpsTable)
-            .where(eq(bannedIpsTable.encodedIp, encodedIp))
-            .execute();
-        return `IP ${encodedIp} has been unbanned.`;
-    } catch (err) {
-        console.log("Failed to unban IP", err);
-        return "An error occurred while unbanning IP.";
-    }
+    await db
+        .delete(bannedIpsTable)
+        .where(eq(bannedIpsTable.encodedIp, encodedIp))
+        .execute();
+    return `IP ${encodedIp} has been unbanned.`;
 }
 
 async function clearAllBans() {
-    try {
-        await db.delete(bannedIpsTable).execute();
-        return `All bans have been cleared.`;
-    } catch (err) {
-        console.log("Failed to clear all bans", err);
-        return "An error occurred while clearing all bans.";
-    }
+    await db.delete(bannedIpsTable).execute();
+    return `All bans have been cleared.`;
 }
 
 async function getPlayerIp(name: string) {
     if (!name) return "Please enter a valid name";
-    try {
-        const result = await db
-            .select({
-                ip: ipLogsTable.encodedIp,
-                name: ipLogsTable.name,
-            })
-            .from(ipLogsTable)
-            .where(eq(ipLogsTable.name, name))
-            .orderBy(desc(ipLogsTable.createdAt))
-            .limit(10);
 
-        if (result.length === 0) {
-            return `No IP found for ${name}. Make sure the name matches the one in game.`;
-        }
+    const result = await db
+        .select({
+            ip: ipLogsTable.encodedIp,
+            name: ipLogsTable.name,
+            region: ipLogsTable.region,
+        })
+        .from(ipLogsTable)
+        .where(eq(ipLogsTable.name, name))
+        .orderBy(desc(ipLogsTable.createdAt))
+        .limit(10);
 
-        return JSON.stringify(result.map(({ ip, name }) => `${name}'s IP is ${ip}`));
-    } catch (err) {
-        console.log("Failed to search IP", err);
-        return "An error occurred while searching IP.";
+    if (result.length === 0) {
+        return `No IP found for ${name}. Make sure the name matches the one in game.`;
     }
+
+    return result.map(({ ip, name, region }) => `[${region}] ${name}'s IP is ${ip}`);
 }
 
-export async function logPlayerIP(name: string, ip: string, gameId: string) {
+export async function logPlayerIP({
+    name,
+    ip,
+    gameId,
+    userId,
+    region,
+}: { region: Region; name: string; ip: string; gameId: string; userId?: string }) {
     try {
         await db.insert(ipLogsTable).values({
             realIp: ip,
             encodedIp: encodeIP(ip),
-            name,
+            name: name.toLowerCase(),
             gameId,
+            userId,
+            region,
         });
     } catch (err) {
-        console.log("Failed to log IP", err);
+        server.logger.warn("Failed to log player ip", err);
     }
 }
 
+// TODO: set up a cron job for this
 async function cleanupOldLogs() {
     try {
-        const DAYS = 7;
-        const sevenDaysAgo = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000);
-        await db.delete(ipLogsTable).where(lt(ipLogsTable.createdAt, sevenDaysAgo));
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        await db.delete(ipLogsTable).where(lt(ipLogsTable.createdAt, thirtyDaysAgo));
     } catch (err) {
         console.log("Failed to cleanup old logs", err);
     }

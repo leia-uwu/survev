@@ -6,6 +6,7 @@ import {
     integer,
     json,
     pgTable,
+    serial,
     text,
     timestamp,
 } from "drizzle-orm/pg-core";
@@ -112,11 +113,14 @@ export type MatchDataTable = typeof matchDataTable.$inferInsert;
 export const ipLogsTable = pgTable(
     "ip_logs",
     {
+        id: serial().primaryKey(),
         createdAt: timestamp("created_at").notNull().default(defaultNow),
         realIp: text("real_ip").notNull(),
         encodedIp: text("encoded_ip").notNull(),
         name: text("name").notNull(),
         gameId: text("game_id").notNull(),
+        userId: text("user_id").default(""),
+        region: text("region").notNull().$type<Region>(),
     },
     (table) => [index("name_created_at_idx").on(table.name, table.createdAt)],
 );

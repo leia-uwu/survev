@@ -5,6 +5,7 @@ import type { FindGameMatchData } from "../../../shared/types/api";
 import type {
     RoomData,
     ServerToClientTeamMsg,
+    TeamMenuErrorType,
     TeamStateMsg,
 } from "../../../shared/types/team";
 import { api } from "../api";
@@ -28,8 +29,9 @@ function errorTypeToString(type: string, localization: Localization) {
         find_game_full: localization.translate("index-failed-finding-game"),
         find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
         kicked: localization.translate("index-team-kicked"),
+        banned: localization.translate("index-ip-banned"),
         behind_proxy: "behind_proxy", // this will get passed to the main app to show a modal
-    };
+    } as Record<TeamMenuErrorType, string>;
     return typeMap[type as keyof typeof typeMap] || typeMap.lost_conn;
 }
 

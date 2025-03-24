@@ -5,11 +5,13 @@ CREATE TABLE "banned_ips" (
 );
 --> statement-breakpoint
 CREATE TABLE "ip_logs" (
+	"id" serial PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT timezone('utc', now()) NOT NULL,
 	"real_ip" text NOT NULL,
 	"encoded_ip" text NOT NULL,
 	"name" text NOT NULL,
-	"game_id" text NOT NULL
+	"game_id" text NOT NULL,
+	"user_id" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "match_data" (
@@ -18,7 +20,7 @@ CREATE TABLE "match_data" (
 	"region" text NOT NULL,
 	"map_id" integer NOT NULL,
 	"game_id" text NOT NULL,
-	"map_seed" integer NOT NULL,
+	"map_seed" bigint NOT NULL,
 	"username" text NOT NULL,
 	"player_id" integer NOT NULL,
 	"team_mode" integer NOT NULL,

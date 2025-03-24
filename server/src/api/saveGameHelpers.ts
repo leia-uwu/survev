@@ -33,7 +33,7 @@ export async function saveGameInfoToDatabase(game: Game) {
         const teamTotal = new Set(players.map((player) => player.teamId)).size;
         const matchData = {
             // *NOTE: userId is optional; we save the game stats for non logged users too
-            userId: player.authId,
+            userId: player.userId,
             region: Config.thisRegion as Region,
             username: player.name,
             playerId: player.__id,

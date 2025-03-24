@@ -702,17 +702,18 @@ class Application {
     }
 
     onJoinGameError(err: FindGameError) {
-        const errMap: Record<string, string> = {
+        const errMap: Partial<Record<FindGameError, string>> = {
             full: this.localization.translate("index-failed-finding-game"),
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
             join_game_failed: this.localization.translate("index-failed-joining-game"),
+            banned: this.localization.translate("index-ip-banned"),
         };
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
         }
         this.showErrorModal(err);
 
-        this.errorMessage = errMap[err] || errMap.full;
+        this.errorMessage = errMap[err] || errMap.full!;
         this.quickPlayPendingModeIdx = -1;
         this.teamMenu.leave("join_game_failed");
         this.refreshUi();
