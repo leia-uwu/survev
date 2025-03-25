@@ -454,7 +454,7 @@ function createBush<T extends ObstacleDef>(e: Partial<T>): T {
 function createCache<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { displayType: "stone_01" },
+        map: { display: true, displayType: "stone_01" },
         terrain: { grass: true, beach: false },
         ori: 0,
         floor: {
@@ -12993,7 +12993,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             {
                 type: "tree_03cb",
                 pos: v2.create(0, 0),
-                scale: 1,
+                scale: 1.3,
                 ori: 0,
             },
             {
