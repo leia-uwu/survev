@@ -200,7 +200,13 @@ export class Projectile extends BaseGameObject {
                     this.pos,
                     this.rad,
                 );
-                if (intersection) {
+                const lineIntersection = collider.intersectSegment(
+                    obj.collider,
+                    posOld,
+                    this.pos,
+                );
+
+                if (intersection || lineIntersection) {
                     if (obj.height >= height && obj.__id !== this.obstacleBellowId) {
                         let damage = 1;
                         if (def.destroyNonCollidables && !obj.collidable) {
@@ -217,18 +223,12 @@ export class Projectile extends BaseGameObject {
 
                         if (obj.dead || !obj.collidable) continue;
 
-                        const lineIntersection = collider.intersectSegment(
-                            obj.collider,
-                            posOld,
-                            this.pos,
-                        );
-
                         if (lineIntersection) {
                             this.pos = v2.add(
                                 lineIntersection.point,
                                 v2.mul(lineIntersection.normal, this.rad + 0.1),
                             );
-                        } else {
+                        } else if (intersection) {
                             this.pos = v2.add(
                                 this.pos,
                                 v2.mul(intersection.dir, intersection.pen + 0.1),
@@ -240,7 +240,9 @@ export class Projectile extends BaseGameObject {
                         } else {
                             const len = v2.length(this.vel);
                             const dir = v2.div(this.vel, len);
-                            const normal = intersection.dir;
+                            const normal = intersection
+                                ? intersection.dir
+                                : lineIntersection!.normal;
                             const dot = v2.dot(dir, normal);
                             const newDir = v2.add(v2.mul(normal, dot * -2), dir);
                             this.vel = v2.mul(newDir, len * 0.3);

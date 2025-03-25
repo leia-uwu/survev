@@ -254,30 +254,11 @@ export class GameModeManager {
         // If there are no spectators, we have no need to run any logic.
         if (player.spectatorCount === 0) return;
 
-        // Utility function to find a derivative of the original killer.
-        let attempts = 0;
-        const getAliveKiller = (killer: Player | undefined): Player | undefined => {
-            attempts++;
-            if (attempts > 80) return undefined;
-
-            if (!killer) return undefined;
-            if (!killer.dead) return killer;
-            if (
-                killer.killedBy &&
-                killer.killedBy !== player &&
-                killer.killedBy !== killer
-            ) {
-                return getAliveKiller(killer.killedBy);
-            }
-
-            return undefined;
-        };
-
         // Priority list of spectate targets.
         const spectateTargets = [
             player.group?.randomPlayer(), // undefined if no player to choose
             player.team?.randomPlayer(), // undefined if no player to choose
-            getAliveKiller(player.killedBy),
+            player.getAliveKiller(),
             player.game.playerBarn.randomPlayer(),
         ];
 

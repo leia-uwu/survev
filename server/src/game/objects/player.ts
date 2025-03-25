@@ -46,6 +46,7 @@ import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject
 import type { Loot } from "./loot";
 import type { MapIndicator } from "./mapIndicator";
 import type { Obstacle } from "./obstacle";
+import type { Structure } from "./structure";
 
 interface Emote {
     playerId: number;
@@ -771,6 +772,15 @@ export class Player extends BaseGameObject {
         }
         if (this.role === role) return;
 
+        //switching from one role to another
+        //need to delete any non-droppables so they can be overwritten
+        if (this.role) {
+            if (this.helmet && (GameObjectDefs[this.helmet] as HelmetDef).noDrop)
+                this.helmet = "";
+            if (this.chest && (GameObjectDefs[this.chest] as ChestDef).noDrop)
+                this.chest = "";
+        }
+
         this.role = role;
         this.inventoryDirty = true;
         this.setDirty();
@@ -1071,6 +1081,9 @@ export class Player extends BaseGameObject {
         zoomOverride: GameConfig.scopeZoomRadius["desktop"]["1xscope"],
         overrideZoom: false,
         zoomOverrideCulling: false,
+        /** only overrides base speed so modifiers like haste and freeze still apply */
+        baseSpeedOverride: -1,
+        spectatorMode: false,
     };
 
     teamId = 1;
@@ -1625,7 +1638,16 @@ export class Player extends BaseGameObject {
             this.pos,
             GameConfig.player.maxVisualRadius * this.scale + this.speed * dt,
         );
-        const objs = this.game.grid.intersectCollider(circle);
+        //can't collide with objects in spectator mode
+        const objs = this.debug.spectatorMode
+            ? //so spectators can go underground, need to be able to interact with stairs
+              this.game.grid
+                  .intersectCollider(circle)
+                  .filter(
+                      (o): o is Structure =>
+                          o.__type == ObjectType.Structure && o.stairs.length != 0,
+                  )
+            : this.game.grid.intersectCollider(circle);
 
         for (let i = 0; i < steps; i++) {
             v2.set(this.pos, v2.add(this.pos, v2.mul(movement, speedToAdd)));
@@ -1835,7 +1857,14 @@ export class Player extends BaseGameObject {
                 }
             } else if (obj.__type === ObjectType.Obstacle) {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
-                if (!(obj.isDoor && obj.door && !obj.door.locked && obj.door.autoOpen))
+                if (!obj.door || !obj.isDoor) continue;
+                if (obj.door.locked) continue;
+                if (!obj.door.autoOpen) continue;
+                if (obj.door.open) continue;
+                if (
+                    obj.door.openOneWay &&
+                    obj.getPlayerSide(this) !== obj.door.openOneWay
+                )
                     continue;
 
                 const res = collider.intersectCircle(
@@ -1912,7 +1941,8 @@ export class Player extends BaseGameObject {
 
         if (!v2.eq(this.pos, this.posOld)) {
             this.setPartDirty();
-            this.game.grid.updateObject(this);
+            //player doesn't exist in grid while in spectator mode
+            if (!this.debug.spectatorMode) this.game.grid.updateObject(this);
 
             //
             // Halloween obstacle skin
@@ -2286,38 +2316,13 @@ export class Player extends BaseGameObject {
                     this.game.isTeamMode && this.group!.livingPlayers.length > 0;
                 const teamExistsOrAlive =
                     this.game.map.factionMode && this.team!.livingPlayers.length > 0;
-                if (groupExistsOrAlive || teamExistsOrAlive) {
-                    playerToSpec =
-                        spectatablePlayers[
-                            util.randomInt(0, spectatablePlayers.length - 1)
-                        ];
-                } else {
-                    let attempts = 0;
-                    const getAliveKiller = (
-                        killer: Player | undefined,
-                    ): Player | undefined => {
-                        attempts++;
-                        if (attempts > 80) return undefined;
+                const aliveKiller = this.getAliveKiller();
 
-                        if (!killer) return undefined;
-                        if (!killer.dead) return killer;
-                        if (
-                            killer.killedBy &&
-                            killer.killedBy != this &&
-                            killer.killedBy !== killer
-                        ) {
-                            return getAliveKiller(killer.killedBy);
-                        }
-
-                        return undefined;
-                    };
-                    const aliveKiller = getAliveKiller(this.killedBy);
-                    playerToSpec =
-                        aliveKiller ??
-                        spectatablePlayers[
-                            util.randomInt(0, spectatablePlayers.length - 1)
-                        ];
-                }
+                const shouldSpecRandom =
+                    groupExistsOrAlive || teamExistsOrAlive || !aliveKiller;
+                playerToSpec = shouldSpecRandom
+                    ? spectatablePlayers[util.randomInt(0, spectatablePlayers.length - 1)]
+                    : aliveKiller;
                 break;
             case spectateMsg.specNext:
             case spectateMsg.specPrev:
@@ -2801,6 +2806,27 @@ export class Player extends BaseGameObject {
         this.game.updateData();
     }
 
+    getAliveKiller(): Player | undefined {
+        let attempts = 0;
+        const findAliveKiller = (killer: Player | undefined): Player | undefined => {
+            attempts++;
+            if (attempts > 80) return undefined;
+
+            if (!killer) return undefined;
+            if (!killer.dead) return killer;
+            if (
+                killer.killedBy &&
+                killer.killedBy !== this &&
+                killer.killedBy !== killer
+            ) {
+                return findAliveKiller(killer.killedBy);
+            }
+
+            return undefined;
+        };
+        return findAliveKiller(this.killedBy);
+    }
+
     isReloading() {
         return (
             this.actionType == GameConfig.Action.Reload ||
@@ -3010,7 +3036,6 @@ export class Player extends BaseGameObject {
             this.dirOld = v2.copy(this.dir);
             this.dir = v2.normalizeSafe(msg.toMouseDir);
         }
-        this.shootHold = msg.shootHold;
 
         this.moveLeft = msg.moveLeft;
         this.moveRight = msg.moveRight;
@@ -3020,11 +3045,16 @@ export class Player extends BaseGameObject {
         this.touchMoveActive = msg.touchMoveActive;
         this.touchMoveDir = v2.normalizeSafe(msg.touchMoveDir);
         this.touchMoveLen = msg.touchMoveLen;
+        this.toMouseLen = msg.toMouseLen;
+
+        //spectators are only allowed to send movement related inputs
+        if (this.debug.spectatorMode) return;
+
+        this.shootHold = msg.shootHold;
 
         if (msg.shootStart) {
             this.shootStart = true;
         }
-        this.toMouseLen = msg.toMouseLen;
 
         // HACK? client for some reason sends Interact followed by Cancel on mobile
         // so we ignore the cancel request when reviving a player
@@ -3786,16 +3816,14 @@ export class Player extends BaseGameObject {
             GunDef | ThrowableDef | MeleeDef,
         ][];
 
-        let filterCb: ([_type, def]: [
+        const filterCb: ([_type, def]: [
             string,
             GunDef | ThrowableDef | MeleeDef,
-        ]) => boolean;
-        if (this.hasPerk("rare_potato")) {
-            filterCb = ([_type, def]) =>
-                !def.noPotatoSwap && def.quality == PerkProperties.rare_potato.quality;
-        } else {
-            filterCb = ([_type, def]) => !def.noPotatoSwap;
-        }
+        ]) => boolean = this.hasPerk("rare_potato")
+            ? ([_type, def]) =>
+                  !def.noPotatoSwap && def.quality == PerkProperties.rare_potato.quality
+            : ([_type, def]) => !def.noPotatoSwap;
+
         const weaponChoices = enumerableDefs.filter(filterCb);
         const [chosenWeaponType, chosenWeaponDef] =
             weaponChoices[util.randomInt(0, weaponChoices.length - 1)];
@@ -4108,6 +4136,23 @@ export class Player extends BaseGameObject {
         this.debug.zoomOverrideCulling = msg.cull;
         this.debug.zoomOverride = msg.zoom;
 
+        this.debug.baseSpeedOverride = math.clamp(msg.speed, 1, 10000);
+
+        //only accept ground or underground
+        if ((msg.layer == 0 || msg.layer == 1) && this.layer != msg.layer) {
+            this.layer = msg.layer;
+            this.setDirty();
+        }
+
+        //removed from grid while in spectator mode so other players can't see/interact with the player
+        if (this.debug.spectatorMode != msg.spectatorMode) {
+            msg.spectatorMode
+                ? this.game.grid.remove(this)
+                : this.game.grid.addObject(this);
+        }
+
+        this.debug.spectatorMode = msg.spectatorMode;
+
         if (msg.spawnLootType) {
             const def = GameObjectDefs[msg.spawnLootType];
             if (!def || !("lootImg" in def)) return;
@@ -4124,20 +4169,12 @@ export class Player extends BaseGameObject {
                 0,
             );
         }
-    }
 
-    isOnOtherSide(door: Obstacle): boolean {
-        switch (door.ori) {
-            case 0:
-                return this.pos.x < door.pos.x;
-            case 1:
-                return this.pos.y < door.pos.y;
-            case 2:
-                return this.pos.x > door.pos.x;
-            case 3:
-                return this.pos.y > door.pos.y;
+        if (msg.promoteToRoleType) {
+            const def = GameObjectDefs[msg.promoteToRoleType];
+            if (!def) return;
+            this.promoteToRole(msg.promoteToRoleType);
         }
-        return false;
     }
 
     doAction(
@@ -4306,9 +4343,9 @@ export class Player extends BaseGameObject {
     }
 
     recalculateSpeed(hasTreeClimbing: boolean): void {
-        // this.speed = this.downed ? GameConfig.player.downedMoveSpeed : GameConfig.player.moveSpeed;
-
-        if (this.actionType == GameConfig.Action.Revive) {
+        if (this.debug.baseSpeedOverride != -1) {
+            this.speed = this.debug.baseSpeedOverride;
+        } else if (this.actionType == GameConfig.Action.Revive) {
             //prevents self reviving players from getting an unnecessary speed boost
             if (this.action.targetId && !(this.downed && this.hasPerk("self_revive"))) {
                 // player reviving

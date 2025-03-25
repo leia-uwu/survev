@@ -859,25 +859,33 @@ export class Player implements AbstractObject {
         let insideObstacle: Obstacle | null = null;
         let doorErrorObstacle = null;
         const obstacles = map.m_obstaclePool.m_getPool();
-        for (let N = 0; N < obstacles.length; N++) {
-            const H = obstacles[N];
-            if (H.active && !H.dead && H.layer == this.m_netData.m_layer) {
-                if (H.isBush) {
+        for (let i = 0; i < obstacles.length; i++) {
+            const obstacle = obstacles[i];
+            if (
+                obstacle.active &&
+                !obstacle.dead &&
+                obstacle.layer == this.m_netData.m_layer
+            ) {
+                if (obstacle.isBush) {
                     const rad = this.m_rad * 0.25;
-                    if (collider.intersectCircle(H.collider, this.m_pos, rad)) {
-                        insideObstacle = H;
+                    if (collider.intersectCircle(obstacle.collider, this.m_pos, rad)) {
+                        insideObstacle = obstacle;
                     }
-                } else if (H.isDoor) {
+                } else if (obstacle.isDoor) {
                     const rad = this.m_rad + 0.25;
-                    const toDoor = v2.sub(H.pos, this.m_pos);
-                    const doorDir = v2.rotate(v2.create(1, 0), H.rot);
-                    const res = collider.intersectCircle(H.collider, this.m_pos, rad);
+                    const toDoor = v2.sub(obstacle.pos, this.m_pos);
+                    const doorDir = v2.rotate(v2.create(1, 0), obstacle.rot);
+                    const res = collider.intersectCircle(
+                        obstacle.collider,
+                        this.m_pos,
+                        rad,
+                    );
                     if (
                         res &&
-                        (H.door.locked ||
-                            (H.door.openOneWay && v2.dot(toDoor, doorDir) < 0))
+                        (obstacle.door.locked ||
+                            (obstacle.door.openOneWay && v2.dot(toDoor, doorDir) < 0))
                     ) {
-                        doorErrorObstacle = H;
+                        doorErrorObstacle = obstacle;
                     }
                 }
             }
@@ -1725,8 +1733,8 @@ export class Player implements AbstractObject {
 
         // Class visors
         if (
-            map.perkMode &&
             this.m_netData.m_role != "" &&
+            (GameObjectDefs[this.m_netData.m_role] as RoleDef)?.visorImg &&
             this.m_netData.m_helmet != "" &&
             !outfitDef.ghillie
         ) {

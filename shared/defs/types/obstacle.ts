@@ -50,7 +50,7 @@ export interface ObstacleDef {
         interactionRad: number;
         canUse: boolean;
         openSpeed: number;
-        openOneWay: boolean | number;
+        openOneWay: number;
         openDelay: number;
         openOnce: boolean;
         autoOpen: boolean;
