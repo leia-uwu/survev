@@ -3,6 +3,7 @@ import loadout from "./ui/loadouts";
 import type { Locale } from "./ui/localization";
 
 const defaultDebugConfig = {
+    spectatorMode: false,
     overrideZoom: false,
     cull: false,
     render: {

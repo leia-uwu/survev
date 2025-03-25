@@ -1725,8 +1725,8 @@ export class Player implements AbstractObject {
 
         // Class visors
         if (
-            map.perkMode &&
             this.m_netData.m_role != "" &&
+            (GameObjectDefs[this.m_netData.m_role] as RoleDef)?.visorImg &&
             this.m_netData.m_helmet != "" &&
             !outfitDef.ghillie
         ) {
