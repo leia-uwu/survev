@@ -931,7 +931,7 @@ function createLabDoor<T extends ObstacleDef>(e: Partial<T>): T {
         extents: v2.create(0.3, 2),
         door: {
             interactionRad: 2,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: true,
             autoClose: true,
@@ -11137,14 +11137,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     lab_door_01: createLabDoor({ img: { tint: 5373952 } }),
     lab_door_02: createLabDoor({
         door: {
-            openOneWay: true,
+            openOneWay: 1,
             slideOffset: -3.75,
             casingImg: { pos: v2.create(6, 0) },
         },
         img: { tint: 5373952 },
     } as unknown as Partial<ObstacleDef>),
     lab_door_03: createLabDoor({
-        door: { openOneWay: true },
+        door: { openOneWay: 1 },
         img: { tint: 5373952 },
     } as unknown as Partial<ObstacleDef>),
     lab_door_locked_01: createLabDoor({
@@ -11509,7 +11509,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,
@@ -17937,7 +17937,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 36,
             autoOpen: false,
             autoClose: false,
@@ -18806,7 +18806,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: { tint: 14537141, alpha: 0.95 },
         door: {
             interactionRad: 2,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,
@@ -20220,7 +20220,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,
@@ -20266,7 +20266,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,

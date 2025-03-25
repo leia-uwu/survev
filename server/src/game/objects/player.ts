@@ -1857,7 +1857,14 @@ export class Player extends BaseGameObject {
                 }
             } else if (obj.__type === ObjectType.Obstacle) {
                 if (!util.sameLayer(this.layer, obj.layer)) continue;
-                if (!(obj.isDoor && obj.door && !obj.door.locked && obj.door.autoOpen))
+                if (!obj.door || !obj.isDoor) continue;
+                if (obj.door.locked) continue;
+                if (!obj.door.autoOpen) continue;
+                if (obj.door.open) continue;
+                if (
+                    obj.door.openOneWay &&
+                    obj.getPlayerSide(this) !== obj.door.openOneWay
+                )
                     continue;
 
                 const res = collider.intersectCircle(
@@ -4168,20 +4175,6 @@ export class Player extends BaseGameObject {
             if (!def) return;
             this.promoteToRole(msg.promoteToRoleType);
         }
-    }
-
-    isOnOtherSide(door: Obstacle): boolean {
-        switch (door.ori) {
-            case 0:
-                return this.pos.x < door.pos.x;
-            case 1:
-                return this.pos.y < door.pos.y;
-            case 2:
-                return this.pos.x > door.pos.x;
-            case 3:
-                return this.pos.y > door.pos.y;
-        }
-        return false;
     }
 
     doAction(
