@@ -4117,6 +4117,10 @@ export class Player extends BaseGameObject {
                     : GameConfig.player.emoteHardCooldown * 1.5;
         }
 
+        if (this.game.map.potatoMode && emoteDef.type === "emote") {
+            emoteMsg.type = "emote_potato";
+        }
+
         this.game.playerBarn.addEmote(
             this.__id,
             emoteMsg.pos,
