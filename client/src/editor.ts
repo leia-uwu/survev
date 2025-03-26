@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { GameObjectDefs } from "../../shared/defs/gameObjectDefs";
+import { RoleDefs } from "../../shared/defs/gameObjects/roleDefs";
 import { GameConfig } from "../../shared/gameConfig";
 import { EditMsg } from "../../shared/net/editMsg";
 import { math } from "../../shared/utils/math";
@@ -9,6 +10,8 @@ import { type InputHandler, Key } from "./input";
 import type { Map } from "./map";
 import type { Player } from "./objects/player";
 
+const SPEED_DEFAULT = GameConfig.player.moveSpeed;
+
 export class Editor {
     config: ConfigManager;
     enabled = false;
@@ -17,12 +20,19 @@ export class Editor {
     mapSeed = 0;
     printLootStats = false;
     spawnLootType = "";
+    promoteToRoleType = "";
+    speed = SPEED_DEFAULT;
+    layer = 0;
 
     sendMsg = false;
 
     uiPos!: JQuery;
     uiZoom!: JQuery;
     uiMapSeed!: JQuery;
+
+    uiLayerValueDisplay!: JQuery;
+    /** differentiates between player movement vs manual toggle when changing layers */
+    layerChangedByToggle = false;
 
     constructor(config: ConfigManager) {
         this.config = config;
@@ -38,6 +48,7 @@ export class Editor {
     setEnabled(e: boolean) {
         this.enabled = e;
         this.refreshUi();
+        if (e) this.sendMsg = true;
     }
 
     newMap(seed: number) {
@@ -119,7 +130,7 @@ export class Editor {
             },
         });
 
-        const optGroups: Record<string, JQuery<HTMLOptGroupElement>> = {};
+        const lootOptGroups: Record<string, JQuery<HTMLOptGroupElement>> = {};
         for (const [type, def] of Object.entries(GameObjectDefs)) {
             if (!("lootImg" in def)) continue;
 
@@ -133,13 +144,13 @@ export class Editor {
                 html: name,
             });
 
-            let optGroup = optGroups[def.type];
+            let optGroup = lootOptGroups[def.type];
             if (!optGroup) {
                 optGroup = $("<optgroup/>", {
                     label: def.type,
                 });
                 lootTypeInput.append(optGroup);
-                optGroups[def.type] = optGroup;
+                lootOptGroups[def.type] = optGroup;
             }
             optGroup.append(opt);
         }
@@ -151,6 +162,111 @@ export class Editor {
                 this.sendMsg = true;
             }),
         );
+
+        const createRoleUi = $("<div/>", {
+            css: { display: "flex" },
+        });
+        const roleTypeDropdown = $<HTMLSelectElement>("<select/>", {
+            css: {
+                height: "30px",
+                width: "180px",
+                "line-height": "28px",
+                "margin-top": "5px",
+                "margin-bottom": "5px",
+            },
+        });
+
+        const invalidRoleTypes = ["kill_leader", "the_hunted"];
+
+        for (const [type, _def] of Object.entries(RoleDefs)) {
+            if (invalidRoleTypes.includes(type)) continue;
+
+            const opt = $<HTMLOptionElement>("<option/>", {
+                value: type,
+                html: type,
+            });
+
+            roleTypeDropdown.append(opt);
+        }
+
+        createRoleUi.append(roleTypeDropdown);
+        createRoleUi.append($("<span/>", { css: { width: "12px" } }));
+        createRoleUi.append(
+            createButton("Promote To Role", () => {
+                this.promoteToRoleType = roleTypeDropdown.val() as string;
+                this.sendMsg = true;
+            }),
+        );
+
+        const speedSliderContainer = $("<div/>", {
+            css: { display: "flex", alignItems: "center" },
+        });
+
+        const speedSlider = $("<input/>", {
+            type: "range",
+            min: "1",
+            max: "75",
+            value: this.speed,
+        });
+
+        const ssValueDisplay = $("<span/>").text(this.speed);
+
+        /** doesn't change the slider value */
+        const setSpeed = (speed: number) => {
+            this.speed = speed;
+            ssValueDisplay.text(speed);
+            this.sendMsg = true;
+        };
+
+        speedSlider.on("change", (e) => {
+            e.stopPropagation();
+            const target = $(e.target) as JQuery<HTMLInputElement>;
+            setSpeed(Number(target.val()));
+        });
+
+        const speedSliderLabel = $("<label>", {
+            text: "Speed:",
+            for: speedSlider.attr("id"),
+        });
+
+        speedSliderContainer.append(speedSliderLabel);
+        speedSliderContainer.append($("<span/>", { css: { width: "5px" } }));
+        speedSliderContainer.append(ssValueDisplay);
+        speedSliderContainer.append($("<span/>", { css: { width: "10px" } }));
+        speedSliderContainer.append(speedSlider);
+        speedSliderContainer.append($("<span/>", { css: { width: "10px" } }));
+        speedSliderContainer.append(
+            createButton("Reset", () => {
+                speedSlider.val(SPEED_DEFAULT);
+                setSpeed(SPEED_DEFAULT);
+                this.sendMsg = true;
+            }),
+        );
+
+        const layerToggleContainer = $("<div/>", {
+            css: { display: "flex", alignItems: "center" },
+        });
+
+        const layerToggleValueDisplay = $("<span/>").text(this.layer);
+        this.uiLayerValueDisplay = layerToggleValueDisplay;
+
+        const layerToggle = createButton("Toggle Layer", () => {
+            this.layer = util.toGroundLayer(this.layer) ^ 1;
+            this.layerChangedByToggle = true;
+            layerToggleValueDisplay.text(this.layer);
+            this.sendMsg = true;
+        });
+
+        const layerToggleLabel = $("<label>", {
+            text: "Layer:",
+            for: layerToggle.attr("id"),
+        });
+
+        layerToggleContainer.append(layerToggleLabel);
+        layerToggleContainer.append($("<span/>", { css: { width: "5px" } }));
+        layerToggleContainer.append(layerToggleValueDisplay);
+        layerToggleContainer.append($("<span/>", { css: { width: "10px" } }));
+        layerToggleContainer.append(layerToggle);
 
         const createCheckbox = (_name: string, key: string) => {
             const check = $("<input/>", {
@@ -212,6 +328,9 @@ export class Editor {
         list.append($("<li/>").append(mapBtns));
         // list.append($("<li/>").append(lootSummaryBtn)); // not implemented yet
         list.append($("<li/>").append(createLootUi));
+        list.append($("<li/>").append(createRoleUi));
+        list.append($("<li/>").append(speedSliderContainer));
+        list.append($("<li/>").append(layerToggleContainer));
         list.append($("<li/>").append($("<hr/>")));
         list.append($("<li/>").append(uiConfig));
 
@@ -241,6 +360,14 @@ export class Editor {
         }
         this.zoom = math.clamp(this.zoom, 1.0, 255.0);
 
+        //layer changed naturally so need to update the state + ui
+        //used != instead of util.sameLayer() because we want every layer change not just ground-underground
+        if (!this.layerChangedByToggle && this.layer != player.layer) {
+            this.layerChangedByToggle = false;
+            this.layer = player.layer;
+            this.uiLayerValueDisplay.text(this.layer);
+        }
+
         // Ui
         const posX = player.m_pos.x.toFixed(2);
         const posY = player.m_pos.y.toFixed(2);
@@ -258,11 +385,15 @@ export class Editor {
         const debug = this.config.get("debug")!;
         msg.overrideZoom = debug.overrideZoom;
         msg.zoom = this.zoom;
+        msg.speed = this.speed;
+        msg.layer = this.layer;
         msg.cull = debug.cull;
         msg.printLootStats = this.printLootStats;
         msg.loadNewMap = this.loadNewMap;
         msg.newMapSeed = this.mapSeed;
         msg.spawnLootType = this.spawnLootType;
+        msg.promoteToRoleType = this.promoteToRoleType;
+        msg.spectatorMode = debug.spectatorMode;
 
         return msg;
     }
@@ -271,6 +402,8 @@ export class Editor {
         this.loadNewMap = false;
         this.printLootStats = false;
         this.spawnLootType = "";
+        this.promoteToRoleType = "";
+        this.layerChangedByToggle = false;
         this.sendMsg = false;
     }
 }
