@@ -254,6 +254,7 @@ export class Building extends BaseGameObject {
         const deltaPos = v2.sub(newPos, this.pos);
         const dfs = (obj: Obstacle | Building | Structure | Decal) => {
             obj.pos = v2.add(obj.pos, deltaPos);
+            this.game.map.clampToMapBounds(obj.pos);
             switch (obj.__type) {
                 case ObjectType.Obstacle:
                     obj.setPartDirty();

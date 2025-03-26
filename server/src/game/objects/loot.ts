@@ -233,6 +233,7 @@ export class Loot extends BaseGameObject {
 
     updatePos(newPos: Vec2): void {
         this.pos = v2.copy(newPos);
+        this.game.map.clampToMapBounds(this.pos, this.rad);
         this.setPartDirty();
     }
 

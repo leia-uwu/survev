@@ -636,6 +636,7 @@ export class Obstacle extends BaseGameObject {
 
     updatePos(newPos: Vec2) {
         this.pos = v2.copy(newPos);
+        this.game.map.clampToMapBounds(this.pos);
         this.setPartDirty();
     }
 
