@@ -9,7 +9,7 @@ export const zFindGameBody = z.object({
     gameModeIdx: z.number(),
 });
 
-export type FindGameBody = (typeof zFindGameBody)["_type"];
+export type FindGameBody = z.infer<typeof zFindGameBody>;
 
 export interface FindGameMatchData {
     zone: string;

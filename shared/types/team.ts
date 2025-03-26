@@ -95,13 +95,13 @@ export const zClientRoomData = z.object({
     gameModeIdx: z.number(),
 });
 
-export type ClientRoomData = (typeof zClientRoomData)["_type"];
+export type ClientRoomData = z.infer<typeof zClientRoomData>;
 
 export const zKeepAliveMsg = z.object({
     type: z.literal("keepAlive"),
     data: z.object({}).optional(),
 });
-export type TeamKeepAliveMsg = (typeof zKeepAliveMsg)["_type"];
+export type TeamKeepAliveMsg = z.infer<typeof zKeepAliveMsg>;
 
 export const zTeamJoinMsg = z.object({
     type: z.literal("join"),
@@ -112,7 +112,7 @@ export const zTeamJoinMsg = z.object({
         }),
     }),
 });
-export type TeamJoinMsg = (typeof zTeamJoinMsg)["_type"];
+export type TeamJoinMsg = z.infer<typeof zTeamJoinMsg>;
 
 export const zTeamChangeNameMsg = z.object({
     type: z.literal("changeName"),
@@ -121,14 +121,14 @@ export const zTeamChangeNameMsg = z.object({
     }),
 });
 
-export type TeamChangeNameMsg = (typeof zTeamChangeNameMsg)["_type"];
+export type TeamChangeNameMsg = z.infer<typeof zTeamChangeNameMsg>;
 
 export const zTeamSetRoomPropsMsg = z.object({
     type: z.literal("setRoomProps"),
     data: zClientRoomData,
 });
 
-export type TeamSetRoomPropsMsg = (typeof zTeamSetRoomPropsMsg)["_type"];
+export type TeamSetRoomPropsMsg = z.infer<typeof zTeamSetRoomPropsMsg>;
 
 export const zTeamCreateMsg = z.object({
     type: z.literal("create"),
@@ -140,7 +140,7 @@ export const zTeamCreateMsg = z.object({
     }),
 });
 
-export type TeamCreateMsg = (typeof zTeamCreateMsg)["_type"];
+export type TeamCreateMsg = z.infer<typeof zTeamCreateMsg>;
 
 export const zTeamKickMsg = z.object({
     type: z.literal("kick"),
@@ -149,7 +149,7 @@ export const zTeamKickMsg = z.object({
     }),
 });
 
-export type TeamKickMsg = (typeof zTeamKickMsg)["_type"];
+export type TeamKickMsg = z.infer<typeof zTeamKickMsg>;
 
 export const zTeamPlayGameMsg = z.object({
     type: z.literal("playGame"),
@@ -160,14 +160,14 @@ export const zTeamPlayGameMsg = z.object({
     }),
 });
 
-export type TeamPlayGameMsg = (typeof zTeamPlayGameMsg)["_type"];
+export type TeamPlayGameMsg = z.infer<typeof zTeamPlayGameMsg>;
 
 export const zGameCompleteMsg = z.object({
     type: z.literal("gameComplete"),
     data: z.object({}).optional(),
 });
 
-export type TeamGameCompleteMsg = (typeof zGameCompleteMsg)["_type"];
+export type TeamGameCompleteMsg = z.infer<typeof zGameCompleteMsg>;
 
 export const zTeamClientMsg = z.discriminatedUnion("type", [
     zTeamCreateMsg,
