@@ -11,12 +11,12 @@
     "base64-js": "^1.5.1",
     "bit-buffer": "^0.2.5",
     "jquery": "^3.7.1",
-    "pixi.js-legacy": "^7.4.2"
+    "pixi.js-legacy": "^7.4.3"
   },
   "devDependencies": {
     "@types/jquery": "^3.5.32",
     "codefend": "^3.2.0",
-    "vite": "^6.2.0",
+    "vite": "^6.2.3",
     "vite-plugin-strip-block": "^1.0.1"
   }
 }

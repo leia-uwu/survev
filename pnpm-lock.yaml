@@ -12,8 +12,8 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
       '@types/node':
-        specifier: ^22.13.9
-        version: 22.13.9
+        specifier: ^22.13.13
+        version: 22.13.13
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
@@ -33,8 +33,8 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       pixi.js-legacy:
-        specifier: ^7.4.2
-        version: 7.4.2(vwgtc5milyk4u22qnicuqfvytu)
+        specifier: ^7.4.3
+        version: 7.4.3(etkmkgak4r6wtkbhxz4i4nifqa)
     devDependencies:
       '@types/jquery':
         specifier: ^3.5.32
@@ -43,8 +43,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
       vite:
-        specifier: ^6.2.0
-        version: 6.2.0(@types/node@22.13.9)
+        specifier: ^6.2.3
+        version: 6.2.3(@types/node@22.13.13)
       vite-plugin-strip-block:
         specifier: ^1.0.1
         version: 1.0.1
@@ -77,11 +77,11 @@ importers:
         specifier: ^0.3.2
         version: 0.3.2
       '@types/node':
-        specifier: ^22.13.9
-        version: 22.13.9
+        specifier: ^22.13.13
+        version: 22.13.13
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@types/node@22.13.9)(typescript@5.8.2)
+        version: 10.9.2(@types/node@22.13.13)(typescript@5.8.2)
 
   shared: {}
 
@@ -151,152 +151,152 @@ packages:
   '@emnapi/runtime@1.3.1':
     resolution: {integrity: sha512-kEBmG8KyqtxJZv+ygbEim+KCGtIq1fC22Ms3S4ziXmYKm8uyoLX0MHONVKwp+9opg390VaKRNt4a7A9NwmpNhw==}
 
-  '@esbuild/aix-ppc64@0.25.0':
-    resolution: {integrity: sha512-O7vun9Sf8DFjH2UtqK8Ku3LkquL9SZL8OLY1T5NZkA34+wG3OQF7cl4Ql8vdNzM6fzBbYfLaiRLIOZ+2FOCgBQ==}
+  '@esbuild/aix-ppc64@0.25.1':
+    resolution: {integrity: sha512-kfYGy8IdzTGy+z0vFGvExZtxkFlA4zAxgKEahG9KE1ScBjpQnFsNOX8KTU5ojNru5ed5CVoJYXFtoxaq5nFbjQ==}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [aix]
 
-  '@esbuild/android-arm64@0.25.0':
-    resolution: {integrity: sha512-grvv8WncGjDSyUBjN9yHXNt+cq0snxXbDxy5pJtzMKGmmpPxeAmAhWxXI+01lU5rwZomDgD3kJwulEnhTRUd6g==}
+  '@esbuild/android-arm64@0.25.1':
+    resolution: {integrity: sha512-50tM0zCJW5kGqgG7fQ7IHvQOcAn9TKiVRuQ/lN0xR+T2lzEFvAi1ZcS8DiksFcEpf1t/GYOeOfCAgDHFpkiSmA==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [android]
 
-  '@esbuild/android-arm@0.25.0':
-    resolution: {integrity: sha512-PTyWCYYiU0+1eJKmw21lWtC+d08JDZPQ5g+kFyxP0V+es6VPPSUhM6zk8iImp2jbV6GwjX4pap0JFbUQN65X1g==}
+  '@esbuild/android-arm@0.25.1':
+    resolution: {integrity: sha512-dp+MshLYux6j/JjdqVLnMglQlFu+MuVeNrmT5nk6q07wNhCdSnB7QZj+7G8VMUGh1q+vj2Bq8kRsuyA00I/k+Q==}
     engines: {node: '>=18'}
     cpu: [arm]
     os: [android]
 
-  '@esbuild/android-x64@0.25.0':
-    resolution: {integrity: sha512-m/ix7SfKG5buCnxasr52+LI78SQ+wgdENi9CqyCXwjVR2X4Jkz+BpC3le3AoBPYTC9NHklwngVXvbJ9/Akhrfg==}
+  '@esbuild/android-x64@0.25.1':
+    resolution: {integrity: sha512-GCj6WfUtNldqUzYkN/ITtlhwQqGWu9S45vUXs7EIYf+7rCiiqH9bCloatO9VhxsL0Pji+PF4Lz2XXCES+Q8hDw==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [android]
 
-  '@esbuild/darwin-arm64@0.25.0':
-    resolution: {integrity: sha512-mVwdUb5SRkPayVadIOI78K7aAnPamoeFR2bT5nszFUZ9P8UpK4ratOdYbZZXYSqPKMHfS1wdHCJk1P1EZpRdvw==}
+  '@esbuild/darwin-arm64@0.25.1':
+    resolution: {integrity: sha512-5hEZKPf+nQjYoSr/elb62U19/l1mZDdqidGfmFutVUjjUZrOazAtwK+Kr+3y0C/oeJfLlxo9fXb1w7L+P7E4FQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [darwin]
 
-  '@esbuild/darwin-x64@0.25.0':
-    resolution: {integrity: sha512-DgDaYsPWFTS4S3nWpFcMn/33ZZwAAeAFKNHNa1QN0rI4pUjgqf0f7ONmXf6d22tqTY+H9FNdgeaAa+YIFUn2Rg==}
+  '@esbuild/darwin-x64@0.25.1':
+    resolution: {integrity: sha512-hxVnwL2Dqs3fM1IWq8Iezh0cX7ZGdVhbTfnOy5uURtao5OIVCEyj9xIzemDi7sRvKsuSdtCAhMKarxqtlyVyfA==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
 
-  '@esbuild/freebsd-arm64@0.25.0':
-    resolution: {integrity: sha512-VN4ocxy6dxefN1MepBx/iD1dH5K8qNtNe227I0mnTRjry8tj5MRk4zprLEdG8WPyAPb93/e4pSgi1SoHdgOa4w==}
+  '@esbuild/freebsd-arm64@0.25.1':
+    resolution: {integrity: sha512-1MrCZs0fZa2g8E+FUo2ipw6jw5qqQiH+tERoS5fAfKnRx6NXH31tXBKI3VpmLijLH6yriMZsxJtaXUyFt/8Y4A==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [freebsd]
 
-  '@esbuild/freebsd-x64@0.25.0':
-    resolution: {integrity: sha512-mrSgt7lCh07FY+hDD1TxiTyIHyttn6vnjesnPoVDNmDfOmggTLXRv8Id5fNZey1gl/V2dyVK1VXXqVsQIiAk+A==}
+  '@esbuild/freebsd-x64@0.25.1':
+    resolution: {integrity: sha512-0IZWLiTyz7nm0xuIs0q1Y3QWJC52R8aSXxe40VUxm6BB1RNmkODtW6LHvWRrGiICulcX7ZvyH6h5fqdLu4gkww==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [freebsd]
 
-  '@esbuild/linux-arm64@0.25.0':
-    resolution: {integrity: sha512-9QAQjTWNDM/Vk2bgBl17yWuZxZNQIF0OUUuPZRKoDtqF2k4EtYbpyiG5/Dk7nqeK6kIJWPYldkOcBqjXjrUlmg==}
+  '@esbuild/linux-arm64@0.25.1':
+    resolution: {integrity: sha512-jaN3dHi0/DDPelk0nLcXRm1q7DNJpjXy7yWaWvbfkPvI+7XNSc/lDOnCLN7gzsyzgu6qSAmgSvP9oXAhP973uQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
 
-  '@esbuild/linux-arm@0.25.0':
-    resolution: {integrity: sha512-vkB3IYj2IDo3g9xX7HqhPYxVkNQe8qTK55fraQyTzTX/fxaDtXiEnavv9geOsonh2Fd2RMB+i5cbhu2zMNWJwg==}
+  '@esbuild/linux-arm@0.25.1':
+    resolution: {integrity: sha512-NdKOhS4u7JhDKw9G3cY6sWqFcnLITn6SqivVArbzIaf3cemShqfLGHYMx8Xlm/lBit3/5d7kXvriTUGa5YViuQ==}
     engines: {node: '>=18'}
     cpu: [arm]
     os: [linux]
 
-  '@esbuild/linux-ia32@0.25.0':
-    resolution: {integrity: sha512-43ET5bHbphBegyeqLb7I1eYn2P/JYGNmzzdidq/w0T8E2SsYL1U6un2NFROFRg1JZLTzdCoRomg8Rvf9M6W6Gg==}
+  '@esbuild/linux-ia32@0.25.1':
+    resolution: {integrity: sha512-OJykPaF4v8JidKNGz8c/q1lBO44sQNUQtq1KktJXdBLn1hPod5rE/Hko5ugKKZd+D2+o1a9MFGUEIUwO2YfgkQ==}
     engines: {node: '>=18'}
     cpu: [ia32]
     os: [linux]
 
-  '@esbuild/linux-loong64@0.25.0':
-    resolution: {integrity: sha512-fC95c/xyNFueMhClxJmeRIj2yrSMdDfmqJnyOY4ZqsALkDrrKJfIg5NTMSzVBr5YW1jf+l7/cndBfP3MSDpoHw==}
+  '@esbuild/linux-loong64@0.25.1':
+    resolution: {integrity: sha512-nGfornQj4dzcq5Vp835oM/o21UMlXzn79KobKlcs3Wz9smwiifknLy4xDCLUU0BWp7b/houtdrgUz7nOGnfIYg==}
     engines: {node: '>=18'}
     cpu: [loong64]
     os: [linux]
 
-  '@esbuild/linux-mips64el@0.25.0':
-    resolution: {integrity: sha512-nkAMFju7KDW73T1DdH7glcyIptm95a7Le8irTQNO/qtkoyypZAnjchQgooFUDQhNAy4iu08N79W4T4pMBwhPwQ==}
+  '@esbuild/linux-mips64el@0.25.1':
+    resolution: {integrity: sha512-1osBbPEFYwIE5IVB/0g2X6i1qInZa1aIoj1TdL4AaAb55xIIgbg8Doq6a5BzYWgr+tEcDzYH67XVnTmUzL+nXg==}
     engines: {node: '>=18'}
     cpu: [mips64el]
     os: [linux]
 
-  '@esbuild/linux-ppc64@0.25.0':
-    resolution: {integrity: sha512-NhyOejdhRGS8Iwv+KKR2zTq2PpysF9XqY+Zk77vQHqNbo/PwZCzB5/h7VGuREZm1fixhs4Q/qWRSi5zmAiO4Fw==}
+  '@esbuild/linux-ppc64@0.25.1':
+    resolution: {integrity: sha512-/6VBJOwUf3TdTvJZ82qF3tbLuWsscd7/1w+D9LH0W/SqUgM5/JJD0lrJ1fVIfZsqB6RFmLCe0Xz3fmZc3WtyVg==}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [linux]
 
-  '@esbuild/linux-riscv64@0.25.0':
-    resolution: {integrity: sha512-5S/rbP5OY+GHLC5qXp1y/Mx//e92L1YDqkiBbO9TQOvuFXM+iDqUNG5XopAnXoRH3FjIUDkeGcY1cgNvnXp/kA==}
+  '@esbuild/linux-riscv64@0.25.1':
+    resolution: {integrity: sha512-nSut/Mx5gnilhcq2yIMLMe3Wl4FK5wx/o0QuuCLMtmJn+WeWYoEGDN1ipcN72g1WHsnIbxGXd4i/MF0gTcuAjQ==}
     engines: {node: '>=18'}
     cpu: [riscv64]
     os: [linux]
 
-  '@esbuild/linux-s390x@0.25.0':
-    resolution: {integrity: sha512-XM2BFsEBz0Fw37V0zU4CXfcfuACMrppsMFKdYY2WuTS3yi8O1nFOhil/xhKTmE1nPmVyvQJjJivgDT+xh8pXJA==}
+  '@esbuild/linux-s390x@0.25.1':
+    resolution: {integrity: sha512-cEECeLlJNfT8kZHqLarDBQso9a27o2Zd2AQ8USAEoGtejOrCYHNtKP8XQhMDJMtthdF4GBmjR2au3x1udADQQQ==}
     engines: {node: '>=18'}
     cpu: [s390x]
     os: [linux]
 
-  '@esbuild/linux-x64@0.25.0':
-    resolution: {integrity: sha512-9yl91rHw/cpwMCNytUDxwj2XjFpxML0y9HAOH9pNVQDpQrBxHy01Dx+vaMu0N1CKa/RzBD2hB4u//nfc+Sd3Cw==}
+  '@esbuild/linux-x64@0.25.1':
+    resolution: {integrity: sha512-xbfUhu/gnvSEg+EGovRc+kjBAkrvtk38RlerAzQxvMzlB4fXpCFCeUAYzJvrnhFtdeyVCDANSjJvOvGYoeKzFA==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
 
-  '@esbuild/netbsd-arm64@0.25.0':
-    resolution: {integrity: sha512-RuG4PSMPFfrkH6UwCAqBzauBWTygTvb1nxWasEJooGSJ/NwRw7b2HOwyRTQIU97Hq37l3npXoZGYMy3b3xYvPw==}
+  '@esbuild/netbsd-arm64@0.25.1':
+    resolution: {integrity: sha512-O96poM2XGhLtpTh+s4+nP7YCCAfb4tJNRVZHfIE7dgmax+yMP2WgMd2OecBuaATHKTHsLWHQeuaxMRnCsH8+5g==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [netbsd]
 
-  '@esbuild/netbsd-x64@0.25.0':
-    resolution: {integrity: sha512-jl+qisSB5jk01N5f7sPCsBENCOlPiS/xptD5yxOx2oqQfyourJwIKLRA2yqWdifj3owQZCL2sn6o08dBzZGQzA==}
+  '@esbuild/netbsd-x64@0.25.1':
+    resolution: {integrity: sha512-X53z6uXip6KFXBQ+Krbx25XHV/NCbzryM6ehOAeAil7X7oa4XIq+394PWGnwaSQ2WRA0KI6PUO6hTO5zeF5ijA==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [netbsd]
 
-  '@esbuild/openbsd-arm64@0.25.0':
-    resolution: {integrity: sha512-21sUNbq2r84YE+SJDfaQRvdgznTD8Xc0oc3p3iW/a1EVWeNj/SdUCbm5U0itZPQYRuRTW20fPMWMpcrciH2EJw==}
+  '@esbuild/openbsd-arm64@0.25.1':
+    resolution: {integrity: sha512-Na9T3szbXezdzM/Kfs3GcRQNjHzM6GzFBeU1/6IV/npKP5ORtp9zbQjvkDJ47s6BCgaAZnnnu/cY1x342+MvZg==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [openbsd]
 
-  '@esbuild/openbsd-x64@0.25.0':
-    resolution: {integrity: sha512-2gwwriSMPcCFRlPlKx3zLQhfN/2WjJ2NSlg5TKLQOJdV0mSxIcYNTMhk3H3ulL/cak+Xj0lY1Ym9ysDV1igceg==}
+  '@esbuild/openbsd-x64@0.25.1':
+    resolution: {integrity: sha512-T3H78X2h1tszfRSf+txbt5aOp/e7TAz3ptVKu9Oyir3IAOFPGV6O9c2naym5TOriy1l0nNf6a4X5UXRZSGX/dw==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [openbsd]
 
-  '@esbuild/sunos-x64@0.25.0':
-    resolution: {integrity: sha512-bxI7ThgLzPrPz484/S9jLlvUAHYMzy6I0XiU1ZMeAEOBcS0VePBFxh1JjTQt3Xiat5b6Oh4x7UC7IwKQKIJRIg==}
+  '@esbuild/sunos-x64@0.25.1':
+    resolution: {integrity: sha512-2H3RUvcmULO7dIE5EWJH8eubZAI4xw54H1ilJnRNZdeo8dTADEZ21w6J22XBkXqGJbe0+wnNJtw3UXRoLJnFEg==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [sunos]
 
-  '@esbuild/win32-arm64@0.25.0':
-    resolution: {integrity: sha512-ZUAc2YK6JW89xTbXvftxdnYy3m4iHIkDtK3CLce8wg8M2L+YZhIvO1DKpxrd0Yr59AeNNkTiic9YLf6FTtXWMw==}
+  '@esbuild/win32-arm64@0.25.1':
+    resolution: {integrity: sha512-GE7XvrdOzrb+yVKB9KsRMq+7a2U/K5Cf/8grVFRAGJmfADr/e/ODQ134RK2/eeHqYV5eQRFxb1hY7Nr15fv1NQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
 
-  '@esbuild/win32-ia32@0.25.0':
-    resolution: {integrity: sha512-eSNxISBu8XweVEWG31/JzjkIGbGIJN/TrRoiSVZwZ6pkC6VX4Im/WV2cz559/TXLcYbcrDN8JtKgd9DJVIo8GA==}
+  '@esbuild/win32-ia32@0.25.1':
+    resolution: {integrity: sha512-uOxSJCIcavSiT6UnBhBzE8wy3n0hOkJsBOzy7HDAuTDE++1DJMRRVCPGisULScHL+a/ZwdXPpXD3IyFKjA7K8A==}
     engines: {node: '>=18'}
     cpu: [ia32]
     os: [win32]
 
-  '@esbuild/win32-x64@0.25.0':
-    resolution: {integrity: sha512-ZENoHJBxA20C2zFzh6AI4fT6RraMzjYw4xKWemRTRmRVtN9c5DcH9r/f2ihEkMjOW5eGgrwCslG/+Y/3bL+DHQ==}
+  '@esbuild/win32-x64@0.25.1':
+    resolution: {integrity: sha512-Y1EQdcfwMSeQN/ujR5VayLOJ1BHaK+ssyk0AEzPjC+t1lITgsnccPqFjb6V+LsTp/9Iov4ysfjxLaGJ9RPtkVg==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -416,368 +416,373 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@pixi/accessibility@7.4.2':
-    resolution: {integrity: sha512-R6VEolm8uyy1FB1F2qaLKxVbzXAFTZCF2ka8fl9lsz7We6ZfO4QpXv9ur7DvzratjCQUQVCKo0/V7xL5q1EV/g==}
+  '@pixi/accessibility@7.4.3':
+    resolution: {integrity: sha512-tCr0yeWpMe0yucFvEPidy5a7gVJGpTjqGrDpSEBYT/kbScfUwcoX49RrckCCCiXDlyO4WRh9lVVuHXTvqRLIMg==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/events': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/events': 7.4.3
 
-  '@pixi/app@7.4.2':
-    resolution: {integrity: sha512-ugkH3kOgjT8P1mTMY29yCOgEh+KuVMAn8uBxeY0aMqaUgIMysfpnFv+Aepp2CtvI9ygr22NC+OiKl+u+eEaQHw==}
+  '@pixi/app@7.4.3':
+    resolution: {integrity: sha512-opyWMuO0Ir8pf1DYUR++wAA6ZfNU+nIX2z95R2OD172HbcdhB4/HD7leLIIAny/LciEdMqlWEBhXK7N93YWbdg==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
 
-  '@pixi/assets@7.4.2':
-    resolution: {integrity: sha512-anxho59H9egZwoaEdM5aLvYyxoz6NCy3CaQIvNHD1bbGg8L16Ih0e26QSBR5fu53jl8OjT6M7s+p6n7uu4+fGA==}
+  '@pixi/assets@7.4.3':
+    resolution: {integrity: sha512-StvjiJBSp/j9hHkGu8AFHNvwYUazXq64WhyhytztyDMRkg/l/cL7EcttY5T0qZNWlIpccdr60LUKrWDOuMpkiw==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/canvas-display@7.4.2':
-    resolution: {integrity: sha512-cKplWdhy+ReYRQK9ideLlKoBdTI9cB10382jWkLDiBeguM9cWSIOrmY5Bd84V0/5FOTLc/AFl4LL1wws27MVKg==}
+  '@pixi/canvas-display@7.4.3':
+    resolution: {integrity: sha512-Y33a6DL2s6RFIPKfC1tCw8eimVnaQVrzhOUgSZ03jE5B2pC7FwcOIZ64sDi2VpVToXMl2f5EgkgtEXYkWjTYHg==}
     peerDependencies:
-      '@pixi/display': 7.4.2
+      '@pixi/display': 7.4.3
 
-  '@pixi/canvas-extract@7.4.2':
-    resolution: {integrity: sha512-4rbH4sLPcPEz+OjehFUluFHN8mup9zwzedJLYc7KtqScg/npYKtVmDSaI/0cZBr9vmael+ZuCg/hjaDYTJhubg==}
+  '@pixi/canvas-extract@7.4.3':
+    resolution: {integrity: sha512-sSpIf1C7nlEO22sW/bcVPZzUJyyh+4QcekhwzyYVbr1LVz0zk1WPOXu82MgiRxaHkyCfWdxes7drKQ2XHYk3eA==}
     peerDependencies:
-      '@pixi/canvas-renderer': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/extract': 7.4.2
+      '@pixi/canvas-renderer': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/extract': 7.4.3
 
-  '@pixi/canvas-graphics@7.4.2':
-    resolution: {integrity: sha512-1ANBcV5IietfQuABT2PUxTs4TsQP4kmpwUnkRLpZgvM5NL0UBMUZCqBhcBnbfAyV7zvpPm3i+eWhIwn6Xz/2Tg==}
+  '@pixi/canvas-graphics@7.4.3':
+    resolution: {integrity: sha512-E3kizZDI6m8WZg1AeHryanEhVGqMVsu75NZIwWu6mWkjHqGqvj/vG17Ua0jl9ThSFfPc4Y/xI9eAewni12IG8A==}
     peerDependencies:
-      '@pixi/canvas-display': 7.4.2
-      '@pixi/canvas-renderer': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/graphics': 7.4.2
+      '@pixi/canvas-display': 7.4.3
+      '@pixi/canvas-renderer': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/graphics': 7.4.3
 
-  '@pixi/canvas-mesh@7.4.2':
-    resolution: {integrity: sha512-CdxlV6a6H3wULwwFtURIycQT7oCtvFGDMotz3glyAj625EEx+mwSLo1mAVzs8Hl9pmetFmNKj4Z1gy890VSemw==}
+  '@pixi/canvas-mesh@7.4.3':
+    resolution: {integrity: sha512-0yBalm1bRIfozdbuOqRcCWYN4XxxsDLcBA0NjpPFQn8LKImUpYxPayGbraxfIu8kF+z5rFubk5JiAGZc5UHorw==}
     peerDependencies:
-      '@pixi/canvas-display': 7.4.2
-      '@pixi/canvas-renderer': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/mesh': 7.4.2
-      '@pixi/mesh-extras': 7.4.2
+      '@pixi/canvas-display': 7.4.3
+      '@pixi/canvas-renderer': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/mesh': 7.4.3
+      '@pixi/mesh-extras': 7.4.3
 
-  '@pixi/canvas-particle-container@7.4.2':
-    resolution: {integrity: sha512-775rF/d7atlZTq5oODr6K3qDZ+awWkDe0QQ4BvGqPAXaWXB5doGs3j5KpTEoFD/JnbX7Q7o8ZTVGla6qsBnT6A==}
+  '@pixi/canvas-particle-container@7.4.3':
+    resolution: {integrity: sha512-0gBIt2q8NtX9ZrHiY371AVM2Vmip1azQEy1ruOXq3b2PZgIaegZT7eAQ0997ljynheXWf3DBY/9Z6m3ejoV3jw==}
     peerDependencies:
-      '@pixi/particle-container': 7.4.2
+      '@pixi/particle-container': 7.4.3
 
-  '@pixi/canvas-prepare@7.4.2':
-    resolution: {integrity: sha512-BB50HZb8ttPMkef+9BXfzeT1HS/AUkXRS0uwhwpq4L75D7XwIlIfwS0lCv2bw2KflavA8wT0qWuwlQTgHSalcA==}
+  '@pixi/canvas-prepare@7.4.3':
+    resolution: {integrity: sha512-ATCvDO9sMpteZl4LvZkFlOjCAAwa2i756oXQBDWiAEF/WkkyZ4y2O3CX4w5oYg+9G+S8b1iEDfKLcWr4HHk9yA==}
     peerDependencies:
-      '@pixi/canvas-renderer': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/prepare': 7.4.2
+      '@pixi/canvas-renderer': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/prepare': 7.4.3
 
-  '@pixi/canvas-renderer@7.4.2':
-    resolution: {integrity: sha512-5qBrr4hJ3hQYMJwxIkKCnvMxL9m7aL26h4zbacK0KH7SQ0i+RCcZS2NzvPa451FtnhquIUjwuuWQyjPFdM5R7g==}
+  '@pixi/canvas-renderer@7.4.3':
+    resolution: {integrity: sha512-mZnx/tUaNlREh6Yn/z54g0NRvLEdlWIgA5qioeZbJA2HeG+zKEio7hUEOsNIu2o6xzliUoFGzFr7jaS+m7onfg==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/canvas-sprite-tiling@7.4.2':
-    resolution: {integrity: sha512-3/YEohGAiiVHnkOkL1wyjGBJlndXsLPG4XFn3Lpc84Cm5kbR/C6RvNvDcRckQod+jWmqQ8n4x4SjhoFBjdP+dQ==}
+  '@pixi/canvas-sprite-tiling@7.4.3':
+    resolution: {integrity: sha512-o8PVghNynaFr2bVcxFj1TB6BrnK27yHDLyHaBhw67cijl0Fjf1uSy5ywVTDCP9ihcK3vadY65tKhQNytuu7uFA==}
     peerDependencies:
-      '@pixi/canvas-renderer': 7.4.2
-      '@pixi/canvas-sprite': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/sprite-tiling': 7.4.2
+      '@pixi/canvas-renderer': 7.4.3
+      '@pixi/canvas-sprite': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/sprite-tiling': 7.4.3
 
-  '@pixi/canvas-sprite@7.4.2':
-    resolution: {integrity: sha512-XM6O6liAm2okHlSpUd0+muQAqLzY6EdQtfuqVP628FjHQkLJ/nb6Rg7qqtt3a3T4eyxzMBkqkzqBNBXomgf1SA==}
+  '@pixi/canvas-sprite@7.4.3':
+    resolution: {integrity: sha512-Qr17o6AgDihXJGg+lZr8HV5mhvWW46v/+15AY7TFQhJytPv32Y6tJMfojVWquOpzREczMqryun1K5vJpAuinQA==}
     peerDependencies:
-      '@pixi/canvas-display': 7.4.2
-      '@pixi/canvas-renderer': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/canvas-display': 7.4.3
+      '@pixi/canvas-renderer': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/canvas-text@7.4.2':
-    resolution: {integrity: sha512-EOzYNaNcD4QWwL7LQ3v2WM4LQNXeS0aJbNOwJ1+9xiNjY53iF0w5XgSGcfGef4itym6nrwTBft1QwKyTE23zhQ==}
+  '@pixi/canvas-text@7.4.3':
+    resolution: {integrity: sha512-tbh4+k3Q0rEAhK42KvDhrEA6qSU1rFT4Y/Nj3kvK2QOqO6m+LwkbFPFnoSVRvN6jGJ+wA3RZG1LKS0kxAxoxTA==}
     peerDependencies:
-      '@pixi/canvas-sprite': 7.4.2
-      '@pixi/sprite': 7.4.2
-      '@pixi/text': 7.4.2
+      '@pixi/canvas-sprite': 7.4.3
+      '@pixi/sprite': 7.4.3
+      '@pixi/text': 7.4.3
 
-  '@pixi/color@7.4.2':
-    resolution: {integrity: sha512-av1LOvhHsiaW8+T4n/FgnOKHby55/w7VcA1HzPIHRBtEcsmxvSCDanT1HU2LslNhrxLPzyVx18nlmalOyt5OBg==}
+  '@pixi/color@7.4.3':
+    resolution: {integrity: sha512-a6R+bXKeXMDcRmjYQoBIK+v2EYqxSX49wcjAY579EYM/WrFKS98nSees6lqVUcLKrcQh2DT9srJHX7XMny3voQ==}
 
   '@pixi/colord@2.9.6':
     resolution: {integrity: sha512-nezytU2pw587fQstUu1AsJZDVEynjskwOL+kibwcdxsMBFqPsFFNA7xl0ii/gXuDi6M0xj3mfRJj8pBSc2jCfA==}
 
-  '@pixi/compressed-textures@7.4.2':
-    resolution: {integrity: sha512-VJrt7el6O4ZJSWkeOGXwrhJaiLg1UBhHB3fj42VR4YloYkAxpfd9K6s6IcbcVz7n9L48APKBMgHyaB2pX2Ck/A==}
+  '@pixi/compressed-textures@7.4.3':
+    resolution: {integrity: sha512-uJ3CC+lNX4HIxs6IxEESO50/0A1KxSVm6CO9UlkXzTsNj9ynmdy5BkJ1dzii7LCdqGcHIXHO01yvKuUbJBBQtw==}
     peerDependencies:
-      '@pixi/assets': 7.4.2
-      '@pixi/core': 7.4.2
+      '@pixi/assets': 7.4.3
+      '@pixi/core': 7.4.3
 
-  '@pixi/constants@7.4.2':
-    resolution: {integrity: sha512-N9vn6Wpz5WIQg7ugUg2+SdqD2u2+NM0QthE8YzLJ4tLH2Iz+/TrnPKUJzeyIqbg3sxJG5ZpGGPiacqIBpy1KyA==}
+  '@pixi/constants@7.4.3':
+    resolution: {integrity: sha512-QGmwJUNQy/vVEHzL6VGQvnwawLZ1wceZMI8HwJAT4/I2uAzbBeFDdmCS8WsTpSWLZjF/DszDc1D8BFp4pVJ5UQ==}
 
-  '@pixi/core@7.4.2':
-    resolution: {integrity: sha512-UbMtgSEnyCOFPzbE6ThB9qopXxbZ5GCof2ArB4FXOC5Xi/83MOIIYg5kf5M8689C5HJMhg2SrJu3xLKppF+CMg==}
+  '@pixi/core@7.4.3':
+    resolution: {integrity: sha512-5YDs11faWgVVTL8VZtLU05/Fl47vaP5Tnsbf+y/WRR0VSW3KhRRGTBU1J3Gdc2xEWbJhUK07KGP7eSZpvtPVgA==}
 
-  '@pixi/display@7.4.2':
-    resolution: {integrity: sha512-DaD0J7gIlNlzO0Fdlby/0OH+tB5LtCY6rgFeCBKVDnzmn8wKW3zYZRenWBSFJ0Psx6vLqXYkSIM/rcokaKviIw==}
+  '@pixi/display@7.4.3':
+    resolution: {integrity: sha512-b5m2dAaoNAVdxz1oDaxl3XZ059NEOcNtGkxTOZ4EYCw/jcp9sZXkgSROHRzsGn4k+NugH7+9MP4Id2Z0kkdUhw==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/events@7.4.2':
-    resolution: {integrity: sha512-Jw/w57heZjzZShIXL0bxOvKB+XgGIevyezhGtfF2ZSzQoSBWo+Fj1uE0QwKd0RIaXegZw/DhSmiMJSbNmcjifA==}
+  '@pixi/events@7.4.3':
+    resolution: {integrity: sha512-o3j/5Dxq6WDVS6eHfURB/cf/MP+NcsF/eC5PnbSHjXxJmDE7PoTVwLvxexm5uuvNRpFh/6/Fn0V8Vl4gV8sc8w==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
 
-  '@pixi/extensions@7.4.2':
-    resolution: {integrity: sha512-Hmx2+O0yZ8XIvgomHM9GZEGcy9S9Dd8flmtOK5Aa3fXs/8v7xD08+ANQpN9ZqWU2Xs+C6UBlpqlt2BWALvKKKA==}
+  '@pixi/extensions@7.4.3':
+    resolution: {integrity: sha512-FhoiYkHQEDYHUE7wXhqfsTRz6KxLXjuMbSiAwnLb9uG1vAgp6q6qd6HEsf4X30YaZbLFY8a4KY6hFZWjF+4Fdw==}
 
-  '@pixi/extract@7.4.2':
-    resolution: {integrity: sha512-JOX27TRWjVEjauGBbF8PU7/g6LYXnivehdgqS5QlVDv1CNHTOrz/j3MdKcVWOhyZPbH5c9sh7lxyRxvd9AIuTQ==}
+  '@pixi/extract@7.4.3':
+    resolution: {integrity: sha512-HNvGNrEVaeVsbcnIO1MsHpjZbTwo9nIlaOEBzDGcL6JWwzuB1RnzUke7WUCndCUt91sGUdvPnvgCvy9/NNFg3w==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-alpha@7.4.2':
-    resolution: {integrity: sha512-9OsKJ+yvY2wIcQXwswj5HQBiwNGymwmqdxfp7mo+nZSBoDmxUqvMZzE9UNJ3eUlswuNvNRO8zNOsQvwdz7WFww==}
+  '@pixi/filter-alpha@7.4.3':
+    resolution: {integrity: sha512-YFdUB1I53USQb+9TEhS849dV2KZhbnNGIoBbOSThUJfXQc4pDguIFWMagVToAQYgmZ4C4AtYfVjaSEELrMcCdA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-blur@7.4.2':
-    resolution: {integrity: sha512-gOXBbIUx6CRZP1fmsis2wLzzSsofrqmIHhbf1gIkZMIQaLsc9T7brj+PaLTTiOiyJgnvGN5j20RZnkERWWKV0Q==}
+  '@pixi/filter-blur@7.4.3':
+    resolution: {integrity: sha512-ZFzS9L/whdRbs5A/EUgF3yQaBcxNarmbuwaMgrfnpQ84mRczkGByqDLGToadiufyals07ufTrXBGRle9lbtEDA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-color-matrix@7.4.2':
-    resolution: {integrity: sha512-ykZiR59Gvj80UKs9qm7jeUTKvn+wWk6HBVJOmJbK9jFK5juakDWp7BbH26U78Q61EWj97kI1FdfcbMkuQ7rqkA==}
+  '@pixi/filter-color-matrix@7.4.3':
+    resolution: {integrity: sha512-TNu0h20SrzjUWIb5v19dAp1vPpqtG0w2XF9kIHN91bMNaf3R1jzhpWG6TtaVO9eo1IolWcEJLw38jIohyC+KNw==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-displacement@7.4.2':
-    resolution: {integrity: sha512-QS/eWp/ivsxef3xapNeGwpPX7vrqQQeo99Fux4k5zsvplnNEsf91t6QYJLG776AbZEu/qh8VYRBA5raIVY/REw==}
+  '@pixi/filter-displacement@7.4.3':
+    resolution: {integrity: sha512-ax+cFA2mEnKgqf9F8qInpv09GNWzjwnASLETpwPXzWBtlAlNCeHV2tCv3+SlMdEKUkwG9sA7AmjjjC2JBUyt+Q==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-fxaa@7.4.2':
-    resolution: {integrity: sha512-U/ptJgDsfs/r8y2a6gCaiPfDu2IFAxpQ4wtfmBpz6vRhqeE4kI8yNIUx5dZbui57zlsJaW0BNacOQxHU0vLkyQ==}
+  '@pixi/filter-fxaa@7.4.3':
+    resolution: {integrity: sha512-y9jhho5cCflhEsPtNqqsd+XJHsb+/ysht4rG/VHQ8Z6pScHYpbgiEpowryGq8uSMQQwx6zKNS2DPiXdiOHPZsg==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-noise@7.4.2':
-    resolution: {integrity: sha512-Vy9ViBFhZEGh6xKkd3kFWErolZTwv1Y5Qb1bV7qPIYbvBECYsqzlR4uCrrjBV6KKm0PufpG/+NKC5vICZaqKzg==}
+  '@pixi/filter-noise@7.4.3':
+    resolution: {integrity: sha512-rwgSO3BKe1jW/P5CaOcfLKjfpl674aBEo/igi/3QLxA3ORhILNqWRsKkOwP8xF/ejI5NE4rMEkdv0LScbdGFhA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/graphics@7.4.2':
-    resolution: {integrity: sha512-jH4/Tum2RqWzHGzvlwEr7HIVduoLO57Ze705N2zQPkUD57TInn5911aGUeoua7f/wK8cTLGzgB9BzSo2kTdcHw==}
+  '@pixi/graphics@7.4.3':
+    resolution: {integrity: sha512-wWLivD8/URb8A7X4TqCZGG39C91IE+aOuWY/z9NCz5Z6WvA/VWnsc5fLTlO+ggjGHgKF0cSucCXZfUe1wm0AOQ==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/math@7.4.2':
-    resolution: {integrity: sha512-7jHmCQoYk6e0rfSKjdNFOPl0wCcdgoraxgteXJTTHv3r0bMNx2pHD9FJ0VvocEUG7XHfj55O3+u7yItOAx0JaQ==}
+  '@pixi/math@7.4.3':
+    resolution: {integrity: sha512-/uJOVhR2DOZ+zgdI6Bs/CwcXT4bNRKsS+TqX3ekRIxPCwaLra+Qdm7aDxT5cTToDzdxbKL5+rwiLu3Y1egILDw==}
 
-  '@pixi/mesh-extras@7.4.2':
-    resolution: {integrity: sha512-vNR/7wjxjs7sv9fGoKkHyU91ZAD+7EnMHBS5F3CVISlOIFxLi96NNZCB81oUIdky/90pHw40johd/4izR5zTyw==}
+  '@pixi/mesh-extras@7.4.3':
+    resolution: {integrity: sha512-EqpxpVZoTObyupxMSzuUsCGmWPQioW84n9EO9Ajawkk/HYA+qKFZ5viKiEThIUBYgv4Apn/7c0U3Feg7Ez4uQQ==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/mesh': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/mesh': 7.4.3
 
-  '@pixi/mesh@7.4.2':
-    resolution: {integrity: sha512-mEkKyQvvMrYXC3pahvH5WBIKtrtB63WixRr91ANFI7zXD+ESG6Ap6XtxMCJmXDQPwBDNk7SWVMiCflYuchG7kA==}
+  '@pixi/mesh@7.4.3':
+    resolution: {integrity: sha512-CikqFPtKvU3Zj986/MSoC8X39CWv5CEpiEW/tYp47p4tgQNDSkNWYnDiNYgb+4VX6pNsBrgX4DALLdTR17SlSA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
 
-  '@pixi/mixin-cache-as-bitmap@7.4.2':
-    resolution: {integrity: sha512-6dgthi2ruUT/lervSrFDQ7vXkEsHo6CxdgV7W/wNdW1dqgQlKfDvO6FhjXzyIMRLSooUf5FoeluVtfsjkUIYrw==}
+  '@pixi/mixin-cache-as-bitmap@7.4.3':
+    resolution: {integrity: sha512-NgvDdgSgd2tfcTSc+SWF12JJjVVz5ZrkSlhX0idSp/LSako82AiFJlD2xqH9GUsEcA6sqBBlnu7nrGkPTHQdhA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/mixin-get-child-by-name@7.4.2':
-    resolution: {integrity: sha512-0Cfw8JpQhsixprxiYph4Lj+B5n83Kk4ftNMXgM5xtZz+tVLz5s91qR0MqcdzwTGTJ7utVygiGmS4/3EfR/duRQ==}
+  '@pixi/mixin-get-child-by-name@7.4.3':
+    resolution: {integrity: sha512-HLhDxHwafQT+CxbqQx9w9ivJIyAOg9JJ/6m4fNymVuDWeuMGcxDxBD7DukdUYIieT+RD/RlxdPEmq8YoromlFA==}
     peerDependencies:
-      '@pixi/display': 7.4.2
+      '@pixi/display': 7.4.3
 
-  '@pixi/mixin-get-global-position@7.4.2':
-    resolution: {integrity: sha512-LcsahbVdX4DFS2IcGfNp4KaXuu7SjAwUp/flZSGIfstyKOKb5FWFgihtqcc9ZT4coyri3gs2JbILZub/zPZj1w==}
+  '@pixi/mixin-get-global-position@7.4.3':
+    resolution: {integrity: sha512-k09kvkS379EypCIWgXMY7uiXtWk1BsaJyTYlV16Co0AsmNPdFd+wUozMx1xV6rxcGiWXsxr/1k9fbETuYkcXCQ==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
 
-  '@pixi/particle-container@7.4.2':
-    resolution: {integrity: sha512-B78Qq86kt0lEa5WtB2YFIm3+PjhKfw9La9R++GBSgABl+g13s2UaZ6BIPxvY3JxWMdxPm4iPrQPFX1QWRN68mw==}
+  '@pixi/particle-container@7.4.3':
+    resolution: {integrity: sha512-0DfJF5C0XTfuI2FsLYvMKCOtqWjXWGOWfA6m4l0W/Ke/qw5zKIOEhgjPLw4qNRtOhmEfkVKJUGp66Ap/ya2YzA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/prepare@7.4.2':
-    resolution: {integrity: sha512-PugyMzReCHXUzc3so9PPJj2OdHwibpUNWyqG4mWY2UUkb6c8NAGK1AnAPiscOvLilJcv/XQSFoNhX+N1jrvJEg==}
+  '@pixi/prepare@7.4.3':
+    resolution: {integrity: sha512-OjJHGKXPzwP5OLKxBnTBnKMOktHynLvO0TQPqTYgNtmGQzY109mypCqM4M+s/V+uYmBo/T+sXvBahj98q/f1tA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/graphics': 7.4.2
-      '@pixi/text': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/graphics': 7.4.3
+      '@pixi/text': 7.4.3
 
-  '@pixi/runner@7.4.2':
-    resolution: {integrity: sha512-LPBpwym4vdyyDY5ucF4INQccaGyxztERyLTY1YN6aqJyyMmnc7iqXlIKt+a0euMBtNoLoxy6MWMvIuZj0JfFPA==}
+  '@pixi/runner@7.4.3':
+    resolution: {integrity: sha512-TJyfp7y23u5vvRAyYhVSa7ytq0PdKSvPLXu4G3meoFh1oxTLHH6g/RIzLuxUAThPG2z7ftthuW3qWq6dRV+dhw==}
 
-  '@pixi/settings@7.4.2':
-    resolution: {integrity: sha512-pMN+L6aWgvUbwhFIL/BTHKe2ShYGPZ8h9wlVBnFHMtUcJcFLMF1B3lzuvCayZRepOphs6RY0TqvnDvVb585JhQ==}
+  '@pixi/settings@7.4.3':
+    resolution: {integrity: sha512-SmGK8smc0PxRB9nr0UJioEtE9hl4gvj9OedCvZx3bxBwA3omA5BmP3CyhQfN8XJ29+o2OUL01r3zAPVol4l4lA==}
 
-  '@pixi/sprite-animated@7.4.2':
-    resolution: {integrity: sha512-QPT6yxCUGOBN+98H3pyIZ1ZO6Y7BN1o0Q2IMZEsD1rNfZJrTYS3Q8VlCG5t2YlFlcB8j5iBo24bZb6FUxLOmsQ==}
+  '@pixi/sprite-animated@7.4.3':
+    resolution: {integrity: sha512-mw5YIec8KfO1Jv9qrDNvGoD7Dlmcgww5YlMtd+ARi7Zzo+6ziNw899LXtoaKX1+3BXdZbYNyJAx3C5r30NtwXA==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/sprite-tiling@7.4.2':
-    resolution: {integrity: sha512-Z8PP6ewy3nuDYL+NeEdltHAhuucVgia33uzAitvH3OqqRSx6a6YRBFbNLUM9Sx+fBO2Lk3PpV1g6QZX+NE5LOg==}
+  '@pixi/sprite-tiling@7.4.3':
+    resolution: {integrity: sha512-kUa9cEcMsGXSIZoXA7LhW4oo0eWa30w0KYd7mZ0bqalBMfOcvsGZMN701Lc5lpE8URw+8yu5bnyGLbrxhWBTuw==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/sprite@7.4.2':
-    resolution: {integrity: sha512-Ccf/OVQsB+HQV0Fyf5lwD+jk1jeU7uSIqEjbxenNNssmEdB7S5qlkTBV2EJTHT83+T6Z9OMOHsreJZerydpjeg==}
+  '@pixi/sprite@7.4.3':
+    resolution: {integrity: sha512-iNBrpOFF9nXDT6m2jcyYy6l/sRzklLDDck1eFHprHZwvNquY2nzRfh+RGBCecxhBcijiLJ3fsZN33fP0LDXkvw==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
 
-  '@pixi/spritesheet@7.4.2':
-    resolution: {integrity: sha512-YIvHdpXW+AYp8vD0NkjJmrdnVHTZKidCnx6k8ATSuuvCT6O5Tuh2N/Ul2oDj4/QaePy0lVhyhAbZpJW00Jr7mQ==}
+  '@pixi/spritesheet@7.4.3':
+    resolution: {integrity: sha512-Ce4xZzUxUSKfiROUjjVCBYNLuCcDEWKJ822bSV9rkgVHItu3q04VnEww0DXO+9K0hKv4Ukjjk8aP6Pz0LgPm7A==}
     peerDependencies:
-      '@pixi/assets': 7.4.2
-      '@pixi/core': 7.4.2
+      '@pixi/assets': 7.4.3
+      '@pixi/core': 7.4.3
 
-  '@pixi/text-bitmap@7.4.2':
-    resolution: {integrity: sha512-lPBMJ83JnpFVL+6ckQ8KO8QmwdPm0z9Zs/M0NgFKH2F+BcjelRNnk80NI3O0qBDYSEDQIE+cFbKoZ213kf7zwA==}
+  '@pixi/text-bitmap@7.4.3':
+    resolution: {integrity: sha512-TnBocJm7f5nMAYwYcsojc62uCrOYauAGH26o3pNrlqmHDRDQ7FzPOGvkYZGYFREbUycloLSRlYpSy0FB9ZdV4Q==}
     peerDependencies:
-      '@pixi/assets': 7.4.2
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/mesh': 7.4.2
-      '@pixi/text': 7.4.2
+      '@pixi/assets': 7.4.3
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/mesh': 7.4.3
+      '@pixi/text': 7.4.3
 
-  '@pixi/text-html@7.4.2':
-    resolution: {integrity: sha512-duOu8oDYeDNuyPozj2DAsQ5VZBbRiwIXy78Gn7H2pCiEAefw/Uv5jJYwdgneKME0e1tOxz1eOUGKPcI6IJnZjw==}
+  '@pixi/text-html@7.4.3':
+    resolution: {integrity: sha512-nm9K9gjSZAU8ETwQZBE3kMGNdO1IzyghxoRTcJCWKhekiGDpUQhopfNhqieNZ7reVJpvhpFQWjbyaHDehndUaQ==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2
-      '@pixi/sprite': 7.4.2
-      '@pixi/text': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3
+      '@pixi/sprite': 7.4.3
+      '@pixi/text': 7.4.3
 
-  '@pixi/text@7.4.2':
-    resolution: {integrity: sha512-rZZWpJNsIQ8WoCWrcVg8Gi6L/PDakB941clo6dO3XjoII2ucoOUcnpe5HIkudxi2xPvS/8Bfq990gFEx50TP5A==}
+  '@pixi/text@7.4.3':
+    resolution: {integrity: sha512-IAF0iu04rPg3oiL0HZsEZI44fpJxq3UZ4xTmx8l1RyhhSXiElLvvSlSH57vt/BKMQZtCs+AqEit7yn8heK2+nQ==}
     peerDependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/sprite': 7.4.2
+      '@pixi/core': 7.4.3
+      '@pixi/sprite': 7.4.3
 
-  '@pixi/ticker@7.4.2':
-    resolution: {integrity: sha512-cAvxCh/KI6IW4m3tp2b+GQIf+DoSj9NNmPJmsOeEJ7LzvruG8Ps7SKI6CdjQob5WbceL1apBTDbqZ/f77hFDiQ==}
+  '@pixi/ticker@7.4.3':
+    resolution: {integrity: sha512-tHsAD0iOUb6QSGGw+c8cyRBvxsq/NlfzIFBZLEHhWZ+Bx4a0MmXup6I/yJDGmyPCYE+ctCcAfY13wKAzdiVFgQ==}
 
-  '@pixi/utils@7.4.2':
-    resolution: {integrity: sha512-aU/itcyMC4TxFbmdngmak6ey4kC5c16Y5ntIYob9QnjNAfD/7GTsYIBnP6FqEAyO1eq0MjkAALxdONuay1BG3g==}
+  '@pixi/utils@7.4.3':
+    resolution: {integrity: sha512-NO3Y9HAn2UKS1YdxffqsPp+kDpVm8XWvkZcS/E+rBzY9VTLnNOI7cawSRm+dacdET3a8Jad3aDKEDZ0HmAqAFA==}
 
-  '@rollup/rollup-android-arm-eabi@4.34.9':
-    resolution: {integrity: sha512-qZdlImWXur0CFakn2BJ2znJOdqYZKiedEPEVNTBrpfPjc/YuTGcaYZcdmNFTkUj3DU0ZM/AElcM8Ybww3xVLzA==}
+  '@rollup/rollup-android-arm-eabi@4.37.0':
+    resolution: {integrity: sha512-l7StVw6WAa8l3vA1ov80jyetOAEo1FtHvZDbzXDO/02Sq/QVvqlHkYoFwDJPIMj0GKiistsBudfx5tGFnwYWDQ==}
     cpu: [arm]
     os: [android]
 
-  '@rollup/rollup-android-arm64@4.34.9':
-    resolution: {integrity: sha512-4KW7P53h6HtJf5Y608T1ISKvNIYLWRKMvfnG0c44M6In4DQVU58HZFEVhWINDZKp7FZps98G3gxwC1sb0wXUUg==}
+  '@rollup/rollup-android-arm64@4.37.0':
+    resolution: {integrity: sha512-6U3SlVyMxezt8Y+/iEBcbp945uZjJwjZimu76xoG7tO1av9VO691z8PkhzQ85ith2I8R2RddEPeSfcbyPfD4hA==}
     cpu: [arm64]
     os: [android]
 
-  '@rollup/rollup-darwin-arm64@4.34.9':
-    resolution: {integrity: sha512-0CY3/K54slrzLDjOA7TOjN1NuLKERBgk9nY5V34mhmuu673YNb+7ghaDUs6N0ujXR7fz5XaS5Aa6d2TNxZd0OQ==}
+  '@rollup/rollup-darwin-arm64@4.37.0':
+    resolution: {integrity: sha512-+iTQ5YHuGmPt10NTzEyMPbayiNTcOZDWsbxZYR1ZnmLnZxG17ivrPSWFO9j6GalY0+gV3Jtwrrs12DBscxnlYA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@rollup/rollup-darwin-x64@4.34.9':
-    resolution: {integrity: sha512-eOojSEAi/acnsJVYRxnMkPFqcxSMFfrw7r2iD9Q32SGkb/Q9FpUY1UlAu1DH9T7j++gZ0lHjnm4OyH2vCI7l7Q==}
+  '@rollup/rollup-darwin-x64@4.37.0':
+    resolution: {integrity: sha512-m8W2UbxLDcmRKVjgl5J/k4B8d7qX2EcJve3Sut7YGrQoPtCIQGPH5AMzuFvYRWZi0FVS0zEY4c8uttPfX6bwYQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@rollup/rollup-freebsd-arm64@4.34.9':
-    resolution: {integrity: sha512-2lzjQPJbN5UnHm7bHIUKFMulGTQwdvOkouJDpPysJS+QFBGDJqcfh+CxxtG23Ik/9tEvnebQiylYoazFMAgrYw==}
+  '@rollup/rollup-freebsd-arm64@4.37.0':
+    resolution: {integrity: sha512-FOMXGmH15OmtQWEt174v9P1JqqhlgYge/bUjIbiVD1nI1NeJ30HYT9SJlZMqdo1uQFyt9cz748F1BHghWaDnVA==}
     cpu: [arm64]
     os: [freebsd]
 
-  '@rollup/rollup-freebsd-x64@4.34.9':
-    resolution: {integrity: sha512-SLl0hi2Ah2H7xQYd6Qaiu01kFPzQ+hqvdYSoOtHYg/zCIFs6t8sV95kaoqjzjFwuYQLtOI0RZre/Ke0nPaQV+g==}
+  '@rollup/rollup-freebsd-x64@4.37.0':
+    resolution: {integrity: sha512-SZMxNttjPKvV14Hjck5t70xS3l63sbVwl98g3FlVVx2YIDmfUIy29jQrsw06ewEYQ8lQSuY9mpAPlmgRD2iSsA==}
     cpu: [x64]
     os: [freebsd]
 
-  '@rollup/rollup-linux-arm-gnueabihf@4.34.9':
-    resolution: {integrity: sha512-88I+D3TeKItrw+Y/2ud4Tw0+3CxQ2kLgu3QvrogZ0OfkmX/DEppehus7L3TS2Q4lpB+hYyxhkQiYPJ6Mf5/dPg==}
+  '@rollup/rollup-linux-arm-gnueabihf@4.37.0':
+    resolution: {integrity: sha512-hhAALKJPidCwZcj+g+iN+38SIOkhK2a9bqtJR+EtyxrKKSt1ynCBeqrQy31z0oWU6thRZzdx53hVgEbRkuI19w==}
     cpu: [arm]
     os: [linux]
 
-  '@rollup/rollup-linux-arm-musleabihf@4.34.9':
-    resolution: {integrity: sha512-3qyfWljSFHi9zH0KgtEPG4cBXHDFhwD8kwg6xLfHQ0IWuH9crp005GfoUUh/6w9/FWGBwEHg3lxK1iHRN1MFlA==}
+  '@rollup/rollup-linux-arm-musleabihf@4.37.0':
+    resolution: {integrity: sha512-jUb/kmn/Gd8epbHKEqkRAxq5c2EwRt0DqhSGWjPFxLeFvldFdHQs/n8lQ9x85oAeVb6bHcS8irhTJX2FCOd8Ag==}
     cpu: [arm]
     os: [linux]
 
-  '@rollup/rollup-linux-arm64-gnu@4.34.9':
-    resolution: {integrity: sha512-6TZjPHjKZUQKmVKMUowF3ewHxctrRR09eYyvT5eFv8w/fXarEra83A2mHTVJLA5xU91aCNOUnM+DWFMSbQ0Nxw==}
+  '@rollup/rollup-linux-arm64-gnu@4.37.0':
+    resolution: {integrity: sha512-oNrJxcQT9IcbcmKlkF+Yz2tmOxZgG9D9GRq+1OE6XCQwCVwxixYAa38Z8qqPzQvzt1FCfmrHX03E0pWoXm1DqA==}
     cpu: [arm64]
     os: [linux]
 
-  '@rollup/rollup-linux-arm64-musl@4.34.9':
-    resolution: {integrity: sha512-LD2fytxZJZ6xzOKnMbIpgzFOuIKlxVOpiMAXawsAZ2mHBPEYOnLRK5TTEsID6z4eM23DuO88X0Tq1mErHMVq0A==}
+  '@rollup/rollup-linux-arm64-musl@4.37.0':
+    resolution: {integrity: sha512-pfxLBMls+28Ey2enpX3JvjEjaJMBX5XlPCZNGxj4kdJyHduPBXtxYeb8alo0a7bqOoWZW2uKynhHxF/MWoHaGQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@rollup/rollup-linux-loongarch64-gnu@4.34.9':
-    resolution: {integrity: sha512-dRAgTfDsn0TE0HI6cmo13hemKpVHOEyeciGtvlBTkpx/F65kTvShtY/EVyZEIfxFkV5JJTuQ9tP5HGBS0hfxIg==}
+  '@rollup/rollup-linux-loongarch64-gnu@4.37.0':
+    resolution: {integrity: sha512-yCE0NnutTC/7IGUq/PUHmoeZbIwq3KRh02e9SfFh7Vmc1Z7atuJRYWhRME5fKgT8aS20mwi1RyChA23qSyRGpA==}
     cpu: [loong64]
     os: [linux]
 
-  '@rollup/rollup-linux-powerpc64le-gnu@4.34.9':
-    resolution: {integrity: sha512-PHcNOAEhkoMSQtMf+rJofwisZqaU8iQ8EaSps58f5HYll9EAY5BSErCZ8qBDMVbq88h4UxaNPlbrKqfWP8RfJA==}
+  '@rollup/rollup-linux-powerpc64le-gnu@4.37.0':
+    resolution: {integrity: sha512-NxcICptHk06E2Lh3a4Pu+2PEdZ6ahNHuK7o6Np9zcWkrBMuv21j10SQDJW3C9Yf/A/P7cutWoC/DptNLVsZ0VQ==}
     cpu: [ppc64]
     os: [linux]
 
-  '@rollup/rollup-linux-riscv64-gnu@4.34.9':
-    resolution: {integrity: sha512-Z2i0Uy5G96KBYKjeQFKbbsB54xFOL5/y1P5wNBsbXB8yE+At3oh0DVMjQVzCJRJSfReiB2tX8T6HUFZ2k8iaKg==}
+  '@rollup/rollup-linux-riscv64-gnu@4.37.0':
+    resolution: {integrity: sha512-PpWwHMPCVpFZLTfLq7EWJWvrmEuLdGn1GMYcm5MV7PaRgwCEYJAwiN94uBuZev0/J/hFIIJCsYw4nLmXA9J7Pw==}
     cpu: [riscv64]
     os: [linux]
 
-  '@rollup/rollup-linux-s390x-gnu@4.34.9':
-    resolution: {integrity: sha512-U+5SwTMoeYXoDzJX5dhDTxRltSrIax8KWwfaaYcynuJw8mT33W7oOgz0a+AaXtGuvhzTr2tVKh5UO8GVANTxyQ==}
+  '@rollup/rollup-linux-riscv64-musl@4.37.0':
+    resolution: {integrity: sha512-DTNwl6a3CfhGTAOYZ4KtYbdS8b+275LSLqJVJIrPa5/JuIufWWZ/QFvkxp52gpmguN95eujrM68ZG+zVxa8zHA==}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@rollup/rollup-linux-s390x-gnu@4.37.0':
+    resolution: {integrity: sha512-hZDDU5fgWvDdHFuExN1gBOhCuzo/8TMpidfOR+1cPZJflcEzXdCy1LjnklQdW8/Et9sryOPJAKAQRw8Jq7Tg+A==}
     cpu: [s390x]
     os: [linux]
 
-  '@rollup/rollup-linux-x64-gnu@4.34.9':
-    resolution: {integrity: sha512-FwBHNSOjUTQLP4MG7y6rR6qbGw4MFeQnIBrMe161QGaQoBQLqSUEKlHIiVgF3g/mb3lxlxzJOpIBhaP+C+KP2A==}
+  '@rollup/rollup-linux-x64-gnu@4.37.0':
+    resolution: {integrity: sha512-pKivGpgJM5g8dwj0ywBwe/HeVAUSuVVJhUTa/URXjxvoyTT/AxsLTAbkHkDHG7qQxLoW2s3apEIl26uUe08LVQ==}
     cpu: [x64]
     os: [linux]
 
-  '@rollup/rollup-linux-x64-musl@4.34.9':
-    resolution: {integrity: sha512-cYRpV4650z2I3/s6+5/LONkjIz8MBeqrk+vPXV10ORBnshpn8S32bPqQ2Utv39jCiDcO2eJTuSlPXpnvmaIgRA==}
+  '@rollup/rollup-linux-x64-musl@4.37.0':
+    resolution: {integrity: sha512-E2lPrLKE8sQbY/2bEkVTGDEk4/49UYRVWgj90MY8yPjpnGBQ+Xi1Qnr7b7UIWw1NOggdFQFOLZ8+5CzCiz143w==}
     cpu: [x64]
     os: [linux]
 
-  '@rollup/rollup-win32-arm64-msvc@4.34.9':
-    resolution: {integrity: sha512-z4mQK9dAN6byRA/vsSgQiPeuO63wdiDxZ9yg9iyX2QTzKuQM7T4xlBoeUP/J8uiFkqxkcWndWi+W7bXdPbt27Q==}
+  '@rollup/rollup-win32-arm64-msvc@4.37.0':
+    resolution: {integrity: sha512-Jm7biMazjNzTU4PrQtr7VS8ibeys9Pn29/1bm4ph7CP2kf21950LgN+BaE2mJ1QujnvOc6p54eWWiVvn05SOBg==}
     cpu: [arm64]
     os: [win32]
 
-  '@rollup/rollup-win32-ia32-msvc@4.34.9':
-    resolution: {integrity: sha512-KB48mPtaoHy1AwDNkAJfHXvHp24H0ryZog28spEs0V48l3H1fr4i37tiyHsgKZJnCmvxsbATdZGBpbmxTE3a9w==}
+  '@rollup/rollup-win32-ia32-msvc@4.37.0':
+    resolution: {integrity: sha512-e3/1SFm1OjefWICB2Ucstg2dxYDkDTZGDYgwufcbsxTHyqQps1UQf33dFEChBNmeSsTOyrjw2JJq0zbG5GF6RA==}
     cpu: [ia32]
     os: [win32]
 
-  '@rollup/rollup-win32-x64-msvc@4.34.9':
-    resolution: {integrity: sha512-AyleYRPU7+rgkMWbEh71fQlrzRfeP6SyMnRf9XX4fCdDPAJumdSBqYEcWPMzVQ4ScAl7E4oFfK0GUVn77xSwbw==}
+  '@rollup/rollup-win32-x64-msvc@4.37.0':
+    resolution: {integrity: sha512-LWbXUBwn/bcLx2sSsqy7pK5o+Nr+VCoRoAohfJ5C/aBio9nfJmGQqHAhU6pwxV/RmyTk5AqdySma7uwWGlmeuA==}
     cpu: [x64]
     os: [win32]
 
@@ -811,8 +816,8 @@ packages:
   '@types/nanotimer@0.3.2':
     resolution: {integrity: sha512-KdUvVLlifjNSkjb5OOyu0hJmHtNfLv/IUXmSOyf3cAMluefhBpY3XikvvC5wKBEVKbMnFLeJ1cb15PbRq/nDQA==}
 
-  '@types/node@22.13.9':
-    resolution: {integrity: sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==}
+  '@types/node@22.13.13':
+    resolution: {integrity: sha512-ClsL5nMwKaBRwPcCvH8E7+nU4GxHVx1axNvMZTFHMEfNI7oahimt26P5zjVCRrjiIWj6YFXfE1v3dEp94wLcGQ==}
 
   '@types/sizzle@2.3.9':
     resolution: {integrity: sha512-xzLEyKB50yqCUPUJkIsrVvoWNfFUbIZI+RspLWt8u+tIW/BetMBZtgV2LY/2o+tYH8dRvQ+eoPf3NdhQCcLE2w==}
@@ -821,8 +826,8 @@ packages:
     resolution: {integrity: sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g==}
     engines: {node: '>=0.4.0'}
 
-  acorn@8.14.0:
-    resolution: {integrity: sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==}
+  acorn@8.14.1:
+    resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -927,8 +932,8 @@ packages:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
 
-  esbuild@0.25.0:
-    resolution: {integrity: sha512-BXq5mqc8ltbaN34cDqWuYKyNhX8D/Z0J1xdtdQ8UcIIIyJyz+ZMKUt58tF3SrZ85jcfN/PZYhjR5uDQAYNVbuw==}
+  esbuild@0.25.1:
+    resolution: {integrity: sha512-BGO5LtrGC7vxnqucAe/rmvKdJllfGaYWdyABvyMoXQlfYMb2bbRuReWR5tEGE//4LcNJj9XrkovTqNYRFZHAMQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1015,8 +1020,8 @@ packages:
   mkdirp-classic@0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
 
-  nanoid@3.3.8:
-    resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
+  nanoid@3.3.11:
+    resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -1047,11 +1052,11 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  pixi.js-legacy@7.4.2:
-    resolution: {integrity: sha512-azGsuJvLHk/VJwt45AjlathtTNdUjLDSoaGt8JBNjzG/05cxVswFLL7GsSe83eNSe0eEuIrxiNIt3vBRNyU3AA==}
+  pixi.js-legacy@7.4.3:
+    resolution: {integrity: sha512-vFw/CSk05C4eSOtELeXY8cizjoEx444MW4o7xdwcu6Rxw3UJioJXccp6Vkchvb46xVd+v51pVL6KDpcMAsGa+g==}
 
-  pixi.js@7.4.2:
-    resolution: {integrity: sha512-TifqgHGNofO7UCEbdZJOpUu7dUnpu4YZ0o76kfCqxDa4RS8ITc9zjECCbtalmuNXkVhSEZmBKQvE7qhHMqw/xg==}
+  pixi.js@7.4.3:
+    resolution: {integrity: sha512-uIWdH0EI2dVgNoqN9aFaHCmR0V65OEhMkXs2sek3c/QP2ItV6UoM+ouX9esSv3ibo20F+J5D1XwnQhUZI6wqeQ==}
 
   postcss@8.5.3:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
@@ -1080,8 +1085,8 @@ packages:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
     engines: {node: '>= 6'}
 
-  rollup@4.34.9:
-    resolution: {integrity: sha512-nF5XYqWWp9hx/LrpC8sZvvvmq0TeTjQgaZHYmAgwysT9nh8sWnZhBnM8ZyVbbJFIQBLwHDNoMqsBZBbUo4U8sQ==}
+  rollup@4.37.0:
+    resolution: {integrity: sha512-iAtQy/L4QFU+rTJ1YUjXqJOJzuwEghqWzCEYD2FEghT7Gsy1VdABntrO4CLopA5IkflTyqNiLNwPcOJ3S7UKLg==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -1194,8 +1199,8 @@ packages:
     resolution: {integrity: sha512-L43UM9ogJ0Qj2Sb/fLwLhKkflvrLrvtGCeGeh5vsGirWUEH9eE1yDFmdCYIgFxoqMlbX9Zpr3SScDdTKM1T5VA==}
     engines: {node: '>=18.13.0'}
 
-  vite@6.2.0:
-    resolution: {integrity: sha512-7dPxoo+WsT/64rDcwoOjk76XHj+TqNTIvHKcuMQ1k4/SeHDaQt5GFAeLYzrimZrMpn/O6DtdI03WUjdxuPM0oQ==}
+  vite@6.2.3:
+    resolution: {integrity: sha512-IzwM54g4y9JA/xAeBPNaDXiBF8Jsgl3VBQ2YQ/wOY6fyW3xMdSoltIV3Bo59DErdqdE6RxUfv8W69DvUorE4Eg==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -1290,79 +1295,79 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@esbuild/aix-ppc64@0.25.0':
+  '@esbuild/aix-ppc64@0.25.1':
     optional: true
 
-  '@esbuild/android-arm64@0.25.0':
+  '@esbuild/android-arm64@0.25.1':
     optional: true
 
-  '@esbuild/android-arm@0.25.0':
+  '@esbuild/android-arm@0.25.1':
     optional: true
 
-  '@esbuild/android-x64@0.25.0':
+  '@esbuild/android-x64@0.25.1':
     optional: true
 
-  '@esbuild/darwin-arm64@0.25.0':
+  '@esbuild/darwin-arm64@0.25.1':
     optional: true
 
-  '@esbuild/darwin-x64@0.25.0':
+  '@esbuild/darwin-x64@0.25.1':
     optional: true
 
-  '@esbuild/freebsd-arm64@0.25.0':
+  '@esbuild/freebsd-arm64@0.25.1':
     optional: true
 
-  '@esbuild/freebsd-x64@0.25.0':
+  '@esbuild/freebsd-x64@0.25.1':
     optional: true
 
-  '@esbuild/linux-arm64@0.25.0':
+  '@esbuild/linux-arm64@0.25.1':
     optional: true
 
-  '@esbuild/linux-arm@0.25.0':
+  '@esbuild/linux-arm@0.25.1':
     optional: true
 
-  '@esbuild/linux-ia32@0.25.0':
+  '@esbuild/linux-ia32@0.25.1':
     optional: true
 
-  '@esbuild/linux-loong64@0.25.0':
+  '@esbuild/linux-loong64@0.25.1':
     optional: true
 
-  '@esbuild/linux-mips64el@0.25.0':
+  '@esbuild/linux-mips64el@0.25.1':
     optional: true
 
-  '@esbuild/linux-ppc64@0.25.0':
+  '@esbuild/linux-ppc64@0.25.1':
     optional: true
 
-  '@esbuild/linux-riscv64@0.25.0':
+  '@esbuild/linux-riscv64@0.25.1':
     optional: true
 
-  '@esbuild/linux-s390x@0.25.0':
+  '@esbuild/linux-s390x@0.25.1':
     optional: true
 
-  '@esbuild/linux-x64@0.25.0':
+  '@esbuild/linux-x64@0.25.1':
     optional: true
 
-  '@esbuild/netbsd-arm64@0.25.0':
+  '@esbuild/netbsd-arm64@0.25.1':
     optional: true
 
-  '@esbuild/netbsd-x64@0.25.0':
+  '@esbuild/netbsd-x64@0.25.1':
     optional: true
 
-  '@esbuild/openbsd-arm64@0.25.0':
+  '@esbuild/openbsd-arm64@0.25.1':
     optional: true
 
-  '@esbuild/openbsd-x64@0.25.0':
+  '@esbuild/openbsd-x64@0.25.1':
     optional: true
 
-  '@esbuild/sunos-x64@0.25.0':
+  '@esbuild/sunos-x64@0.25.1':
     optional: true
 
-  '@esbuild/win32-arm64@0.25.0':
+  '@esbuild/win32-arm64@0.25.1':
     optional: true
 
-  '@esbuild/win32-ia32@0.25.0':
+  '@esbuild/win32-ia32@0.25.1':
     optional: true
 
-  '@esbuild/win32-x64@0.25.0':
+  '@esbuild/win32-x64@0.25.1':
     optional: true
 
   '@img/sharp-darwin-arm64@0.33.5':
@@ -1449,311 +1454,314 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@pixi/accessibility@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/events@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/accessibility@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/events@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/events': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/events': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/app@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/app@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/assets@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/assets@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
       '@types/css-font-loading-module': 0.0.12
 
-  '@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/canvas-extract@7.4.2(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/extract@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/canvas-extract@7.4.3(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/extract@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/extract': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/extract': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/canvas-graphics@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/canvas-graphics@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/graphics': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/canvas-display': 7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/graphics': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/canvas-mesh@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/mesh-extras@7.4.2(@pixi/core@7.4.2)(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/canvas-mesh@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/mesh-extras@7.4.3(@pixi/core@7.4.3)(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/mesh': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/mesh-extras': 7.4.2(@pixi/core@7.4.2)(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/canvas-display': 7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/mesh': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/mesh-extras': 7.4.3(@pixi/core@7.4.3)(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/canvas-particle-container@7.4.2(@pixi/particle-container@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/canvas-particle-container@7.4.3(@pixi/particle-container@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/particle-container': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/particle-container': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/canvas-prepare@7.4.2(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/prepare@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))))':
+  '@pixi/canvas-prepare@7.4.3(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/prepare@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))))':
     dependencies:
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/prepare': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/prepare': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
 
-  '@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/canvas-sprite-tiling@7.4.2(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/canvas-sprite@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/core@7.4.2)(@pixi/sprite-tiling@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/canvas-sprite-tiling@7.4.3(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/canvas-sprite@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/core@7.4.3)(@pixi/sprite-tiling@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/canvas-sprite': 7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/core': 7.4.2
-      '@pixi/sprite-tiling': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/canvas-sprite': 7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/core': 7.4.3
+      '@pixi/sprite-tiling': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/canvas-sprite@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/canvas-sprite@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/canvas-display': 7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/canvas-text@7.4.2(@pixi/canvas-sprite@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/canvas-text@7.4.3(@pixi/canvas-sprite@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/canvas-sprite': 7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/text': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/canvas-sprite': 7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/color@7.4.2':
+  '@pixi/color@7.4.3':
     dependencies:
       '@pixi/colord': 2.9.6
 
   '@pixi/colord@2.9.6': {}
 
-  '@pixi/compressed-textures@7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)':
+  '@pixi/compressed-textures@7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/assets': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
+      '@pixi/assets': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
 
-  '@pixi/constants@7.4.2': {}
+  '@pixi/constants@7.4.3': {}
 
-  '@pixi/core@7.4.2':
+  '@pixi/core@7.4.3':
     dependencies:
-      '@pixi/color': 7.4.2
-      '@pixi/constants': 7.4.2
-      '@pixi/extensions': 7.4.2
-      '@pixi/math': 7.4.2
-      '@pixi/runner': 7.4.2
-      '@pixi/settings': 7.4.2
-      '@pixi/ticker': 7.4.2
-      '@pixi/utils': 7.4.2
+      '@pixi/color': 7.4.3
+      '@pixi/constants': 7.4.3
+      '@pixi/extensions': 7.4.3
+      '@pixi/math': 7.4.3
+      '@pixi/runner': 7.4.3
+      '@pixi/settings': 7.4.3
+      '@pixi/ticker': 7.4.3
+      '@pixi/utils': 7.4.3
 
-  '@pixi/display@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/display@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/events@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/events@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/extensions@7.4.2': {}
+  '@pixi/extensions@7.4.3': {}
 
-  '@pixi/extract@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/extract@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-alpha@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/filter-alpha@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-blur@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/filter-blur@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-color-matrix@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/filter-color-matrix@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-displacement@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/filter-displacement@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-fxaa@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/filter-fxaa@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/filter-noise@7.4.2(@pixi/core@7.4.2)':
+  '@pixi/filter-noise@7.4.3(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/core': 7.4.2
+      '@pixi/core': 7.4.3
 
-  '@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/math@7.4.2': {}
+  '@pixi/math@7.4.3': {}
 
-  '@pixi/mesh-extras@7.4.2(@pixi/core@7.4.2)(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/mesh-extras@7.4.3(@pixi/core@7.4.3)(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/mesh': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/mesh': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/mixin-cache-as-bitmap@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/mixin-cache-as-bitmap@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/mixin-get-child-by-name@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/mixin-get-child-by-name@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/mixin-get-global-position@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/mixin-get-global-position@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/particle-container@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/particle-container@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/prepare@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/prepare@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/graphics': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/text': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/graphics': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/runner@7.4.2': {}
+  '@pixi/runner@7.4.3': {}
 
-  '@pixi/settings@7.4.2':
+  '@pixi/settings@7.4.3':
     dependencies:
-      '@pixi/constants': 7.4.2
+      '@pixi/constants': 7.4.3
       '@types/css-font-loading-module': 0.0.12
       ismobilejs: 1.1.1
 
-  '@pixi/sprite-animated@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/sprite-animated@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/sprite-tiling@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/sprite-tiling@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))':
+  '@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/spritesheet@7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)':
+  '@pixi/spritesheet@7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)':
     dependencies:
-      '@pixi/assets': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
+      '@pixi/assets': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
 
-  '@pixi/text-bitmap@7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/text-bitmap@7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/assets': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/mesh': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/text': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/assets': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/mesh': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/text-html@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))':
+  '@pixi/text-html@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/text': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
 
-  '@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))':
+  '@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))':
     dependencies:
-      '@pixi/core': 7.4.2
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
+      '@pixi/core': 7.4.3
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
 
-  '@pixi/ticker@7.4.2':
+  '@pixi/ticker@7.4.3':
     dependencies:
-      '@pixi/extensions': 7.4.2
-      '@pixi/settings': 7.4.2
-      '@pixi/utils': 7.4.2
+      '@pixi/extensions': 7.4.3
+      '@pixi/settings': 7.4.3
+      '@pixi/utils': 7.4.3
 
-  '@pixi/utils@7.4.2':
+  '@pixi/utils@7.4.3':
     dependencies:
-      '@pixi/color': 7.4.2
-      '@pixi/constants': 7.4.2
-      '@pixi/settings': 7.4.2
+      '@pixi/color': 7.4.3
+      '@pixi/constants': 7.4.3
+      '@pixi/settings': 7.4.3
       '@types/earcut': 2.1.4
       earcut: 2.2.4
       eventemitter3: 4.0.7
       url: 0.11.4
 
-  '@rollup/rollup-android-arm-eabi@4.34.9':
+  '@rollup/rollup-android-arm-eabi@4.37.0':
     optional: true
 
-  '@rollup/rollup-android-arm64@4.34.9':
+  '@rollup/rollup-android-arm64@4.37.0':
     optional: true
 
-  '@rollup/rollup-darwin-arm64@4.34.9':
+  '@rollup/rollup-darwin-arm64@4.37.0':
     optional: true
 
-  '@rollup/rollup-darwin-x64@4.34.9':
+  '@rollup/rollup-darwin-x64@4.37.0':
     optional: true
 
-  '@rollup/rollup-freebsd-arm64@4.34.9':
+  '@rollup/rollup-freebsd-arm64@4.37.0':
     optional: true
 
-  '@rollup/rollup-freebsd-x64@4.34.9':
+  '@rollup/rollup-freebsd-x64@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-arm-gnueabihf@4.34.9':
+  '@rollup/rollup-linux-arm-gnueabihf@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-arm-musleabihf@4.34.9':
+  '@rollup/rollup-linux-arm-musleabihf@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-arm64-gnu@4.34.9':
+  '@rollup/rollup-linux-arm64-gnu@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-arm64-musl@4.34.9':
+  '@rollup/rollup-linux-arm64-musl@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-loongarch64-gnu@4.34.9':
+  '@rollup/rollup-linux-loongarch64-gnu@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-powerpc64le-gnu@4.34.9':
+  '@rollup/rollup-linux-powerpc64le-gnu@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-riscv64-gnu@4.34.9':
+  '@rollup/rollup-linux-riscv64-gnu@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-s390x-gnu@4.34.9':
+  '@rollup/rollup-linux-riscv64-musl@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-x64-gnu@4.34.9':
+  '@rollup/rollup-linux-s390x-gnu@4.37.0':
     optional: true
 
-  '@rollup/rollup-linux-x64-musl@4.34.9':
+  '@rollup/rollup-linux-x64-gnu@4.37.0':
     optional: true
 
-  '@rollup/rollup-win32-arm64-msvc@4.34.9':
+  '@rollup/rollup-linux-x64-musl@4.37.0':
     optional: true
 
-  '@rollup/rollup-win32-ia32-msvc@4.34.9':
+  '@rollup/rollup-win32-arm64-msvc@4.37.0':
     optional: true
 
-  '@rollup/rollup-win32-x64-msvc@4.34.9':
+  '@rollup/rollup-win32-ia32-msvc@4.37.0':
+    optional: true
+
+  '@rollup/rollup-win32-x64-msvc@4.37.0':
     optional: true
 
   '@taufik-nurrohman/color-picker@1.4.2':
@@ -1780,7 +1788,7 @@ snapshots:
 
   '@types/nanotimer@0.3.2': {}
 
-  '@types/node@22.13.9':
+  '@types/node@22.13.13':
     dependencies:
       undici-types: 6.20.0
 
@@ -1788,9 +1796,9 @@ snapshots:
 
   acorn-walk@8.3.4:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
 
-  acorn@8.14.0: {}
+  acorn@8.14.1: {}
 
   ansi-regex@5.0.1: {}
 
@@ -1888,33 +1896,33 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
 
-  esbuild@0.25.0:
+  esbuild@0.25.1:
     optionalDependencies:
-      '@esbuild/aix-ppc64': 0.25.0
-      '@esbuild/android-arm': 0.25.0
-      '@esbuild/android-arm64': 0.25.0
-      '@esbuild/android-x64': 0.25.0
-      '@esbuild/darwin-arm64': 0.25.0
-      '@esbuild/darwin-x64': 0.25.0
-      '@esbuild/freebsd-arm64': 0.25.0
-      '@esbuild/freebsd-x64': 0.25.0
-      '@esbuild/linux-arm': 0.25.0
-      '@esbuild/linux-arm64': 0.25.0
-      '@esbuild/linux-ia32': 0.25.0
-      '@esbuild/linux-loong64': 0.25.0
-      '@esbuild/linux-mips64el': 0.25.0
-      '@esbuild/linux-ppc64': 0.25.0
-      '@esbuild/linux-riscv64': 0.25.0
-      '@esbuild/linux-s390x': 0.25.0
-      '@esbuild/linux-x64': 0.25.0
-      '@esbuild/netbsd-arm64': 0.25.0
-      '@esbuild/netbsd-x64': 0.25.0
-      '@esbuild/openbsd-arm64': 0.25.0
-      '@esbuild/openbsd-x64': 0.25.0
-      '@esbuild/sunos-x64': 0.25.0
-      '@esbuild/win32-arm64': 0.25.0
-      '@esbuild/win32-ia32': 0.25.0
-      '@esbuild/win32-x64': 0.25.0
+      '@esbuild/aix-ppc64': 0.25.1
+      '@esbuild/android-arm': 0.25.1
+      '@esbuild/android-arm64': 0.25.1
+      '@esbuild/android-x64': 0.25.1
+      '@esbuild/darwin-arm64': 0.25.1
+      '@esbuild/darwin-x64': 0.25.1
+      '@esbuild/freebsd-arm64': 0.25.1
+      '@esbuild/freebsd-x64': 0.25.1
+      '@esbuild/linux-arm': 0.25.1
+      '@esbuild/linux-arm64': 0.25.1
+      '@esbuild/linux-ia32': 0.25.1
+      '@esbuild/linux-loong64': 0.25.1
+      '@esbuild/linux-mips64el': 0.25.1
+      '@esbuild/linux-ppc64': 0.25.1
+      '@esbuild/linux-riscv64': 0.25.1
+      '@esbuild/linux-s390x': 0.25.1
+      '@esbuild/linux-x64': 0.25.1
+      '@esbuild/netbsd-arm64': 0.25.1
+      '@esbuild/netbsd-x64': 0.25.1
+      '@esbuild/openbsd-arm64': 0.25.1
+      '@esbuild/openbsd-x64': 0.25.1
+      '@esbuild/sunos-x64': 0.25.1
+      '@esbuild/win32-arm64': 0.25.1
+      '@esbuild/win32-ia32': 0.25.1
+      '@esbuild/win32-x64': 0.25.1
 
   eventemitter3@4.0.7: {}
 
@@ -1981,7 +1989,7 @@ snapshots:
 
   mkdirp-classic@0.5.3: {}
 
-  nanoid@3.3.8: {}
+  nanoid@3.3.11: {}
 
   nanotimer@0.3.15: {}
 
@@ -2003,19 +2011,19 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  pixi.js-legacy@7.4.2(vwgtc5milyk4u22qnicuqfvytu):
+  pixi.js-legacy@7.4.3(etkmkgak4r6wtkbhxz4i4nifqa):
     dependencies:
-      '@pixi/canvas-display': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/canvas-extract': 7.4.2(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/extract@7.4.2(@pixi/core@7.4.2))
-      '@pixi/canvas-graphics': 7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
-      '@pixi/canvas-mesh': 7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/mesh-extras@7.4.2(@pixi/core@7.4.2)(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/canvas-particle-container': 7.4.2(@pixi/particle-container@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
-      '@pixi/canvas-prepare': 7.4.2(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/prepare@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))))
-      '@pixi/canvas-renderer': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/canvas-sprite': 7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/canvas-sprite-tiling': 7.4.2(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/canvas-sprite@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/core@7.4.2)(@pixi/sprite-tiling@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
-      '@pixi/canvas-text': 7.4.2(@pixi/canvas-sprite@7.4.2(@pixi/canvas-display@7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/canvas-renderer@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
-      pixi.js: 7.4.2
+      '@pixi/canvas-display': 7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/canvas-extract': 7.4.3(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/extract@7.4.3(@pixi/core@7.4.3))
+      '@pixi/canvas-graphics': 7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      '@pixi/canvas-mesh': 7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/mesh-extras@7.4.3(@pixi/core@7.4.3)(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/canvas-particle-container': 7.4.3(@pixi/particle-container@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      '@pixi/canvas-prepare': 7.4.3(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/prepare@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))))
+      '@pixi/canvas-renderer': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/canvas-sprite': 7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/canvas-sprite-tiling': 7.4.3(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/canvas-sprite@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/core@7.4.3)(@pixi/sprite-tiling@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      '@pixi/canvas-text': 7.4.3(@pixi/canvas-sprite@7.4.3(@pixi/canvas-display@7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      pixi.js: 7.4.3
     transitivePeerDependencies:
       - '@pixi/core'
       - '@pixi/display'
@@ -2029,42 +2037,42 @@ snapshots:
       - '@pixi/sprite-tiling'
       - '@pixi/text'
 
-  pixi.js@7.4.2:
+  pixi.js@7.4.3:
     dependencies:
-      '@pixi/accessibility': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/events@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/app': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/assets': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/compressed-textures': 7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)
-      '@pixi/core': 7.4.2
-      '@pixi/display': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/events': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/extensions': 7.4.2
-      '@pixi/extract': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/filter-alpha': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/filter-blur': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/filter-color-matrix': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/filter-displacement': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/filter-fxaa': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/filter-noise': 7.4.2(@pixi/core@7.4.2)
-      '@pixi/graphics': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/mesh': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/mesh-extras': 7.4.2(@pixi/core@7.4.2)(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/mixin-cache-as-bitmap': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/mixin-get-child-by-name': 7.4.2(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/mixin-get-global-position': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/particle-container': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/prepare': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/graphics@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
-      '@pixi/sprite': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))
-      '@pixi/sprite-animated': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/sprite-tiling': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/spritesheet': 7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)
-      '@pixi/text': 7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))
-      '@pixi/text-bitmap': 7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
-      '@pixi/text-html': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
+      '@pixi/accessibility': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/events@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/app': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/assets': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/compressed-textures': 7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+      '@pixi/display': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/events': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/extensions': 7.4.3
+      '@pixi/extract': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/filter-alpha': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/filter-blur': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/filter-color-matrix': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/filter-displacement': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/filter-fxaa': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/filter-noise': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/graphics': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/mesh': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/mesh-extras': 7.4.3(@pixi/core@7.4.3)(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/mixin-cache-as-bitmap': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/mixin-get-child-by-name': 7.4.3(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/mixin-get-global-position': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/particle-container': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/prepare': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@pixi/sprite-animated': 7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/sprite-tiling': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/spritesheet': 7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)
+      '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/text-bitmap': 7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      '@pixi/text-html': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
 
   postcss@8.5.3:
     dependencies:
-      nanoid: 3.3.8
+      nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -2107,29 +2115,30 @@ snapshots:
       string_decoder: 1.3.0
       util-deprecate: 1.0.2
 
-  rollup@4.34.9:
+  rollup@4.37.0:
     dependencies:
       '@types/estree': 1.0.6
     optionalDependencies:
-      '@rollup/rollup-android-arm-eabi': 4.34.9
-      '@rollup/rollup-android-arm64': 4.34.9
-      '@rollup/rollup-darwin-arm64': 4.34.9
-      '@rollup/rollup-darwin-x64': 4.34.9
-      '@rollup/rollup-freebsd-arm64': 4.34.9
-      '@rollup/rollup-freebsd-x64': 4.34.9
-      '@rollup/rollup-linux-arm-gnueabihf': 4.34.9
-      '@rollup/rollup-linux-arm-musleabihf': 4.34.9
-      '@rollup/rollup-linux-arm64-gnu': 4.34.9
-      '@rollup/rollup-linux-arm64-musl': 4.34.9
-      '@rollup/rollup-linux-loongarch64-gnu': 4.34.9
-      '@rollup/rollup-linux-powerpc64le-gnu': 4.34.9
-      '@rollup/rollup-linux-riscv64-gnu': 4.34.9
-      '@rollup/rollup-linux-s390x-gnu': 4.34.9
-      '@rollup/rollup-linux-x64-gnu': 4.34.9
-      '@rollup/rollup-linux-x64-musl': 4.34.9
-      '@rollup/rollup-win32-arm64-msvc': 4.34.9
-      '@rollup/rollup-win32-ia32-msvc': 4.34.9
-      '@rollup/rollup-win32-x64-msvc': 4.34.9
+      '@rollup/rollup-android-arm-eabi': 4.37.0
+      '@rollup/rollup-android-arm64': 4.37.0
+      '@rollup/rollup-darwin-arm64': 4.37.0
+      '@rollup/rollup-darwin-x64': 4.37.0
+      '@rollup/rollup-freebsd-arm64': 4.37.0
+      '@rollup/rollup-freebsd-x64': 4.37.0
+      '@rollup/rollup-linux-arm-gnueabihf': 4.37.0
+      '@rollup/rollup-linux-arm-musleabihf': 4.37.0
+      '@rollup/rollup-linux-arm64-gnu': 4.37.0
+      '@rollup/rollup-linux-arm64-musl': 4.37.0
+      '@rollup/rollup-linux-loongarch64-gnu': 4.37.0
+      '@rollup/rollup-linux-powerpc64le-gnu': 4.37.0
+      '@rollup/rollup-linux-riscv64-gnu': 4.37.0
+      '@rollup/rollup-linux-riscv64-musl': 4.37.0
+      '@rollup/rollup-linux-s390x-gnu': 4.37.0
+      '@rollup/rollup-linux-x64-gnu': 4.37.0
+      '@rollup/rollup-linux-x64-musl': 4.37.0
+      '@rollup/rollup-win32-arm64-msvc': 4.37.0
+      '@rollup/rollup-win32-ia32-msvc': 4.37.0
+      '@rollup/rollup-win32-x64-msvc': 4.37.0
       fsevents: 2.3.3
 
   safe-buffer@5.2.1: {}
@@ -2235,15 +2244,15 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 3.6.2
 
-  ts-node@10.9.2(@types/node@22.13.9)(typescript@5.8.2):
+  ts-node@10.9.2(@types/node@22.13.13)(typescript@5.8.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 22.13.9
-      acorn: 8.14.0
+      '@types/node': 22.13.13
+      acorn: 8.14.1
       acorn-walk: 8.3.4
       arg: 4.1.3
       create-require: 1.1.1
@@ -2277,13 +2286,13 @@ snapshots:
 
   vite-plugin-strip-block@1.0.1: {}
 
-  vite@6.2.0(@types/node@22.13.9):
+  vite@6.2.3(@types/node@22.13.13):
     dependencies:
-      esbuild: 0.25.0
+      esbuild: 0.25.1
       postcss: 8.5.3
-      rollup: 4.34.9
+      rollup: 4.37.0
     optionalDependencies:
-      '@types/node': 22.13.9
+      '@types/node': 22.13.13
       fsevents: 2.3.3
 
   wrappy@1.0.2: {}
