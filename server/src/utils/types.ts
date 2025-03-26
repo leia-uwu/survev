@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
+import type { MatchDataTable } from "../api/db/schema";
 
 export interface GameSocketData {
     gameId: string;
@@ -18,7 +19,11 @@ export const zUpdateRegionBody = z.object({
     }),
 });
 
-export type UpdateRegionBody = (typeof zUpdateRegionBody)["_type"];
+export type UpdateRegionBody = z.infer<typeof zUpdateRegionBody>;
+
+export interface SaveGameBody {
+    matchData: MatchDataTable[];
+}
 
 export interface ServerGameConfig {
     readonly mapName: keyof typeof MapDefs;

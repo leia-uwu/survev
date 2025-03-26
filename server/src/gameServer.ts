@@ -19,6 +19,7 @@ import {
     HTTPRateLimit,
     WebSocketRateLimit,
     cors,
+    fetchApiServer,
     forbidden,
     getIp,
     isBehindProxy,
@@ -91,27 +92,8 @@ class GameServer {
         return { res: [response] };
     }
 
-    async fetchApiServer(route: string, body: object) {
-        const url = `${Config.gameServer.apiServerUrl}/${route}`;
-        try {
-            const res = await fetch(url, {
-                method: "post",
-                headers: {
-                    "Content-type": "application/json",
-                    "survev-api-key": Config.apiKey,
-                },
-                body: JSON.stringify(body),
-                signal: AbortSignal.timeout(5000),
-            });
-
-            return res;
-        } catch (err) {
-            console.warn(`Error fetching routed ${route}`, err);
-        }
-    }
-
     sendData() {
-        this.fetchApiServer("private/update_region", {
+        fetchApiServer("private/update_region", {
             data: {
                 playerCount: this.manager.getPlayerCount(),
             },

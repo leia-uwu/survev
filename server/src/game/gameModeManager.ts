@@ -46,6 +46,60 @@ export class GameModeManager {
         }
     }
 
+    // used when saving the game match data
+    getPlayersSortedByRank(): Array<{ player: Player; rank: number }> {
+        const players = [...this.game.playerBarn.allPlayers];
+
+        switch (this.mode) {
+            case GameMode.Solo: {
+                return players
+                    .sort((a, b) => {
+                        return b.killedIndex - a.killedIndex;
+                    })
+                    .map((player, idx) => {
+                        return {
+                            player,
+                            rank: idx + 1,
+                        };
+                    });
+            }
+            case GameMode.Team:
+            case GameMode.Faction: {
+                // the logic is basically the exact same for both
+                // just uses team instead of group on faction...
+
+                const key = this.mode === GameMode.Faction ? "teams" : "groups";
+
+                // calculate each group killed index
+                // by basing it on the last player to die killed index
+                const groups = this.game.playerBarn[key].map((group) => {
+                    return {
+                        killedIndex:
+                            group.players.sort((a, b) => {
+                                return b.killedIndex - a.killedIndex;
+                            })[0].killedIndex ?? Infinity,
+                        players: group.players,
+                    };
+                });
+
+                groups.sort((b, a) => b.killedIndex - a.killedIndex);
+
+                let data: Array<{ player: Player; rank: number }> = [];
+
+                for (let i = 0; i < groups.length; i++) {
+                    for (const player of groups[i].players) {
+                        data.push({
+                            player,
+                            rank: i + 1,
+                        });
+                    }
+                }
+
+                return data;
+            }
+        }
+    }
+
     /** true if game needs to end */
     handleGameEnd(): boolean {
         if (!this.game.started || this.aliveCount() > 1) return false;

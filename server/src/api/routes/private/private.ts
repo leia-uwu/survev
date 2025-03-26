@@ -1,10 +1,13 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
-import { zUpdateRegionBody } from "../../../utils/types";
+import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
 import { privateMiddleware, validateParams } from "../../auth/middleware";
+import { invalidateLeaderboards } from "../../cache/leaderboard";
+import { db } from "../../db";
+import { matchDataTable } from "../../db/schema";
 import { handleModerationAction } from "../../moderation";
 
 export const PrivateRouter = new Hono<Context>();
@@ -19,6 +22,28 @@ PrivateRouter.post("/update_region", validateParams(zUpdateRegionBody), (c) => {
         return c.json({}, 200);
     } catch (err) {
         server.logger.warn("/private/update_region: Error processing request", err);
+        return c.json({ error: "Error processing request" }, 500);
+    }
+});
+
+PrivateRouter.post("/save_game", async (c) => {
+    try {
+        const data = (await c.req.json()) as SaveGameBody;
+
+        const matchData = data.matchData;
+
+        if (!matchData.length) {
+            return c.json({ error: "Empty match data" }, 500);
+        }
+
+        await invalidateLeaderboards(matchData);
+
+        await db.insert(matchDataTable).values(matchData);
+        server.logger.log(`Saved game data for ${matchData[0].gameId}`);
+
+        return c.json({}, 200);
+    } catch (err) {
+        server.logger.warn("save_game Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
     }
 });

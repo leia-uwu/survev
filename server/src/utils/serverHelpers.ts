@@ -335,3 +335,32 @@ export async function isBehindProxy(ip: string): Promise<boolean> {
 
     return info.proxy === "yes" || info.vpn === "yes";
 }
+
+export async function fetchApiServer<
+    Body extends object = object,
+    Res extends object = object,
+>(route: string, body: Body): Promise<Res | undefined> {
+    const url = `${Config.gameServer.apiServerUrl}/${route}`;
+
+    try {
+        const res = await fetch(url, {
+            method: "post",
+            headers: {
+                "content-type": "application/json",
+                "survev-api-key": Config.apiKey,
+            },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(5000),
+        });
+
+        if (res.ok) {
+            return res as Res;
+        }
+
+        console.warn(`Error fetching API server ${route}`, res.status, res.statusText);
+    } catch (err) {
+        console.warn(`Error fetching API server ${route}`, err);
+    }
+
+    return undefined;
+}

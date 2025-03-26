@@ -1,11 +1,13 @@
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
-import { saveGameInfoToDatabase } from "../api/saveGameHelpers";
-import { Config } from "../config";
+import type { MatchDataTable } from "../api/db/schema";
+import { Config, type Region } from "../config";
 import { Logger } from "../utils/logger";
+import { fetchApiServer } from "../utils/serverHelpers";
 import {
     ProcessMsgType,
+    type SaveGameBody,
     type ServerGameConfig,
     type UpdateDataMsg,
 } from "../utils/types";
@@ -412,12 +414,76 @@ export class Game {
         this._saveGameToDatabase();
     }
 
-    private _saveGameToDatabase() {
-        try {
-            saveGameInfoToDatabase(this);
-            this.playerBarn.allPlayers.length = 0;
-        } catch (e) {
-            console.log(e);
+    private async _saveGameToDatabase() {
+        const players = this.modeManager.getPlayersSortedByRank();
+        /**
+         * teamTotal is for total teams that started the match, i hope?
+         *
+         * it also seems to be unused by the client so we could also remove it?
+         */
+        const teamTotal = new Set(players.map(({ player }) => player.teamId)).size;
+
+        const values: MatchDataTable[] = players.map(({ player, rank }) => {
+            return {
+                // *NOTE: userId is optional; we save the game stats for non logged users too
+                userId: player.userId,
+                region: Config.thisRegion as Region,
+                username: player.name,
+                playerId: player.matchDataId,
+                teamMode: this.teamMode,
+                teamCount: player.group?.totalCount ?? 1,
+                teamTotal: teamTotal,
+                teamId: player.teamId,
+                timeAlive: Math.round(player.timeAlive),
+                died: player.dead,
+                kills: player.kills,
+                damageDealt: Math.round(player.damageDealt),
+                damageTaken: Math.round(player.damageTaken),
+                killerId: player.killedBy?.__id || 0,
+                gameId: this.id,
+                mapId: this.map.mapId,
+                mapSeed: this.map.seed,
+                killedIds: player.killedIds,
+                rank: rank,
+            };
+        });
+
+        if (!values.length) return;
+
+        // FIXME: maybe move this to the parent game server process?
+        // to avoid blocking the game from being GC'd until this request is done
+        // and opening a database in each process if it fails
+        // etc
+        const res = await fetchApiServer<SaveGameBody, { error: string }>(
+            "private/save_game",
+            {
+                matchData: values,
+            },
+        );
+
+        if (!res || res.error) {
+            this.logger.warn(`Failed to save game data, saving locally instead`);
+
+            // we dump the game  to a local db if we failed to save;
+            // avoid importing sqlite and creating the database at process startup
+            // since this code should rarely run anyway
+            const sqliteDb = (await import("better-sqlite3")).default(
+                "lost_game_data.db",
+            );
+
+            sqliteDb
+                .prepare(`
+                    CREATE TABLE IF NOT EXISTS lost_game_data (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        data TEXT NOT NULL,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                `)
+                .run();
+
+            sqliteDb
+                .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
+                .run(JSON.stringify(values));
         }
     }
 }

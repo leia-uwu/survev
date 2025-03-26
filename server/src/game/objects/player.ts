@@ -97,6 +97,10 @@ export class PlayerBarn {
 
     bagSizes: (typeof GameConfig)["bagSizes"];
 
+    nextMatchDataId = 1;
+
+    nextKilledNumber = 0;
+
     constructor(readonly game: Game) {
         this.bagSizes = util.mergeDeep(
             {},
@@ -1092,8 +1096,12 @@ export class Player extends BaseGameObject {
 
     damageTaken = 0;
     damageDealt = 0;
-    // @LEIAAAAA
-    rank = 0;
+
+    // infinity since we aren't dead yet ;)
+    // this is used for sorting and getting player ranks
+    // first player to die is 0, second is 1 etc
+    killedIndex = Infinity;
+
     kills = 0;
     timeAlive = 0;
 
@@ -1107,6 +1115,13 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
+    /**
+     * Only used for match data saving!
+     * __id is for the game itself, __id can be reused when a player despawns
+     * which can break the matchData
+     */
+    matchDataId: number;
+
     userId: string | null = null;
     ip: string;
 
@@ -1119,6 +1134,8 @@ export class Player extends BaseGameObject {
         ip: string,
     ) {
         super(game, pos);
+
+        this.matchDataId = game.playerBarn.nextMatchDataId++;
 
         this.layer = layer;
 
@@ -2511,6 +2528,7 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
         if (this.downed) this.downed = false;
         this.dead = true;
+        this.killedIndex = this.game.playerBarn.nextKilledNumber++;
         this.boost = 0;
         this.actionType = GameConfig.Action.None;
         this.actionSeq++;
@@ -2593,7 +2611,7 @@ export class Player extends BaseGameObject {
             for (let i = 0; i < 12; i++) {
                 const velocity = v2.mul(v2.randomUnit(), util.random(2, 5));
                 this.game.projectileBarn.addProjectile(
-                    this.playerId,
+                    this.matchDataId,
                     martyrNadeType,
                     this.pos,
                     1,

@@ -1,12 +1,11 @@
 import { CACHE_TTL, getRedisClient } from ".";
-import type { TeamMode } from "../../../../shared/gameConfig";
 import type {
     LeaderboardRequest,
     LeaderboardResponse,
 } from "../../../../shared/types/stats";
 import { math } from "../../../../shared/utils/math";
 import { Config } from "../../config";
-import type { Player } from "../../game/objects/player";
+import type { MatchDataTable } from "../db/schema";
 
 /**
  * WE KEEP TRACK OF THE LOWEST VALUE IN THE LEADERBOARD
@@ -65,13 +64,11 @@ export async function invalidateLeaderboardCache(cacheKey: string) {
     return true;
 }
 
-export async function invalidateLeaderboards(
-    players: Player[],
-    mapId: number,
-    teamMode: TeamMode,
-) {
+export async function invalidateLeaderboards(matchData: MatchDataTable[]) {
     if (!Config.cachingEnabled) return;
-    const maxValues = players.reduce(
+    if (!matchData.length) return;
+
+    const maxValues = matchData.reduce(
         (obj, player) => {
             obj.most_kills = math.max(obj.most_kills, player.kills);
             obj.most_damage_dealt = math.max(obj.most_damage_dealt, player.damageDealt);
@@ -90,8 +87,8 @@ export async function invalidateLeaderboards(
         for (const interval of ["daily", "weekly", "alltime"] as const) {
             const gameData: LeaderboardRequest = {
                 type,
-                teamMode,
-                mapId,
+                teamMode: matchData[0].teamMode,
+                mapId: matchData[0].mapId,
                 interval,
             };
             const lowestScoreCacheKey = getLowestScoreCacheKey(gameData);
