@@ -1,4 +1,4 @@
-import { randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
@@ -99,7 +99,7 @@ export class SingleThreadGameManager implements GameManager {
     }
 
     async newGame(config: ServerGameConfig): Promise<Game> {
-        const id = randomBytes(20).toString("hex");
+        const id = randomUUID();
         const game = new Game(
             id,
             config,
@@ -146,7 +146,7 @@ export class SingleThreadGameManager implements GameManager {
             });
         }
 
-        const id = randomBytes(20).toString("hex");
+        const id = randomUUID();
         game.addJoinToken(id, body.autoFill, body.playerCount);
 
         return {

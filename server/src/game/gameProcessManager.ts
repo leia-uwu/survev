@@ -1,5 +1,5 @@
 import { type ChildProcess, fork } from "child_process";
-import { randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 import type { WebSocket } from "uWebSockets.js";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
@@ -213,7 +213,7 @@ export class GameProcessManager implements GameManager {
             }
         }
 
-        const id = randomBytes(20).toString("hex");
+        const id = randomUUID();
         if (!gameProc) {
             gameProc = new GameProcess(this, id, config);
 
@@ -287,7 +287,7 @@ export class GameProcessManager implements GameManager {
                 return a.startedTime - b.startedTime;
             })[0];
 
-        const joinToken = randomBytes(20).toString("hex");
+        const joinToken = randomUUID();
 
         if (!game) {
             game = await this.newGame({

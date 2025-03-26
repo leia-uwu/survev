@@ -1,4 +1,4 @@
-import { randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 import { App, SSLApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
 import { GameConfig } from "../../shared/gameConfig";
@@ -205,7 +205,7 @@ app.ws<GameSocketData>("/play", {
         }
         gameWsRateLimit.ipConnected(ip);
 
-        const socketId = randomBytes(20).toString("hex");
+        const socketId = randomUUID();
         res.cork(async () => {
             let disconnectReason = "";
 
