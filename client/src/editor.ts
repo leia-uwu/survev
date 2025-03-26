@@ -394,6 +394,7 @@ export class Editor {
         msg.spawnLootType = this.spawnLootType;
         msg.promoteToRoleType = this.promoteToRoleType;
         msg.spectatorMode = debug.spectatorMode;
+        msg.godMode = debug.godMode;
 
         return msg;
     }

@@ -677,4 +677,24 @@ export class Obstacle extends BaseGameObject {
         this.checkLayer();
         this.setDirty();
     }
+
+    updatePos(newPos: Vec2) {
+        this.pos = v2.copy(newPos);
+        this.setPartDirty();
+    }
+
+    refresh(): void {
+        const newObstacle = this.game.map.genObstacle(
+            this.type,
+            v2.copy(this.pos),
+            this.layer,
+            this.ori,
+            this.scale,
+            this.parentBuildingId,
+            this.puzzlePiece,
+        );
+        if (newObstacle.parentBuilding)
+            newObstacle.parentBuilding.childObjects.push(newObstacle);
+        this.destroy();
+    }
 }

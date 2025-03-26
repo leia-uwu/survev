@@ -3,6 +3,8 @@ import loadout from "./ui/loadouts";
 import type { Locale } from "./ui/localization";
 
 const defaultDebugConfig = {
+    /** drag and drop loot, obstacles, and buildings */
+    godMode: false,
     spectatorMode: false,
     overrideZoom: false,
     cull: false,
