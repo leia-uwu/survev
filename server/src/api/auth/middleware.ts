@@ -68,3 +68,10 @@ export async function accountsEnabledMiddleware(c: Context, next: Next) {
     }
     await next();
 }
+
+export async function privateMiddleware(c: Context, next: Next) {
+    if (c.req.header("survev-api-key") !== Config.apiKey) {
+        return c.json({ message: "Forbidden" }, 403);
+    }
+    await next();
+}

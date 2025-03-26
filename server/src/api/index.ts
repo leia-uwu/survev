@@ -5,18 +5,15 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
-import { z } from "zod";
 import { version } from "../../../package.json";
 import { type FindGameResponse, zFindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
-import { zUpdateRegionBody } from "../utils/types";
 import { server } from "./apiServer";
-import { lucia } from "./auth/lucia";
 import { validateParams } from "./auth/middleware";
-import { handleModerationAction } from "./moderation";
 import { isBanned } from "./moderation";
+import { PrivateRouter } from "./routes/private/private";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
@@ -64,6 +61,7 @@ app.get("/stats/:slug", (c) => {
 app.route("/api/user/", UserRouter);
 app.route("/api/auth/", AuthRouter);
 app.route("/api/", StatsRouter);
+app.route("/private/", PrivateRouter);
 
 server.init(app, upgradeWebSocket);
 
@@ -108,66 +106,6 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
     } catch (err) {
         server.logger.warn("/api/find_game: Error retrieving body", err);
         return c.json({}, 500);
-    }
-});
-
-app.use("/private/*", async (c, next) => {
-    if (c.req.header("survev-api-key") !== Config.apiKey) {
-        return c.json({ message: "Forbidden" }, 403);
-    }
-    await next();
-});
-
-app.post("/private/update_region", validateParams(zUpdateRegionBody), async (c) => {
-    try {
-        const { regionId, data } = c.req.valid("json");
-
-        server.updateRegion(regionId, data);
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.warn("/private/update_region: Error processing request", err);
-        return c.json({ error: "Error processing request" }, 500);
-    }
-});
-
-const zModerationParms = z.discriminatedUnion("action", [
-    z.object({
-        action: z.literal("get-player-ip"),
-        playerName: z.string().toLowerCase(),
-    }),
-    z.object({
-        action: z.literal("clean-all-bans"),
-    }),
-    z.object({
-        action: z.enum(["ban-ip", "unban-ip", "check-ban-status"]),
-        ip: z.string(),
-    }),
-]);
-export type ModerationParms = z.infer<typeof zModerationParms>;
-
-app.post("/private/moderation", validateParams(zModerationParms), async (ctx) => {
-    const data = ctx.req.valid("json");
-    try {
-        return ctx.json({ message: await handleModerationAction(data) });
-    } catch (err) {
-        server.logger.warn(
-            `/private/moderation: Error processing ${data.action} request`,
-            err,
-        );
-        return ctx.json({ message: "An unexpected error occurred." }, 500);
-    }
-});
-
-// TODO: use a cron job instead
-app.post("/private/delete-expired-sessions", async (ctx) => {
-    try {
-        await lucia.deleteExpiredSessions();
-    } catch (err) {
-        server.logger.warn(
-            `/private/delete-expired-sessions: Error deleting expired sessinos`,
-            err,
-        );
-        return ctx.json({ message: "An unexpected error occurred." }, 500);
     }
 });
 

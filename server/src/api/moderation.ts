@@ -1,9 +1,9 @@
 import { desc, eq, lt } from "drizzle-orm";
-import type { ModerationParms } from ".";
 import { Config, type Region } from "../config";
 import { server } from "./apiServer";
 import { db } from "./db";
 import { bannedIpsTable, ipLogsTable } from "./db/schema";
+import type { ModerationParms } from "./routes/private/private";
 
 export async function handleModerationAction(data: ModerationParms) {
     switch (data.action) {
