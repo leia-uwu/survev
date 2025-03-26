@@ -39,13 +39,13 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       pixi.js-legacy:
-        specifier: ^7.4.2
+        specifier: ^7.4.3
         version: 7.4.3(etkmkgak4r6wtkbhxz4i4nifqa)
       slugify:
         specifier: ^1.6.6
         version: 1.6.6
       tsx-dom:
-        specifier: ^3.0.1
+        specifier: ^3.1.0
         version: 3.1.0
     devDependencies:
       '@types/ejs':
@@ -85,10 +85,10 @@ importers:
   server:
     dependencies:
       '@hono/node-server':
-        specifier: ^1.13.7
+        specifier: ^1.14.0
         version: 1.14.0(hono@4.7.5)
       '@hono/node-ws':
-        specifier: ^1.0.4
+        specifier: ^1.1.0
         version: 1.1.0(@hono/node-server@1.14.0(hono@4.7.5))(hono@4.7.5)
       '@hono/zod-validator':
         specifier: ^0.2.2
@@ -100,16 +100,16 @@ importers:
         specifier: ^1.9.2
         version: 1.9.2
       better-sqlite3:
-        specifier: ^11.8.1
+        specifier: ^11.9.1
         version: 11.9.1
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
       drizzle-orm:
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4(@types/better-sqlite3@7.6.12)(@types/pg@8.11.11)(better-sqlite3@11.9.1)(bun-types@1.2.5)(mysql2@3.14.0)(pg@8.14.1)
       hono:
-        specifier: ^4.6.7
+        specifier: ^4.7.5
         version: 4.7.5
       lucia:
         specifier: 3.2.2
@@ -136,7 +136,7 @@ importers:
         specifier: github:uNetworking/uWebSockets.js#v20.51.0
         version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6609a88ffa9a16ac5158046761356ce03250a0df
       zod:
-        specifier: ^3.23.8
+        specifier: ^3.24.2
         version: 3.24.2
     devDependencies:
       '@types/better-sqlite3':
@@ -152,13 +152,13 @@ importers:
         specifier: ^8.11.11
         version: 8.11.11
       concurrently:
-        specifier: ^9.1.0
+        specifier: ^9.1.2
         version: 9.1.2
       drizzle-kit:
-        specifier: ^0.30.1
+        specifier: ^0.30.5
         version: 0.30.5
       tsx:
-        specifier: ^4.19.2
+        specifier: ^4.19.3
         version: 4.19.3
       unique-username-generator:
         specifier: ^1.4.0
@@ -167,7 +167,7 @@ importers:
   shared:
     dependencies:
       zod:
-        specifier: ^3.23.8
+        specifier: ^3.24.2
         version: 3.24.2
 
 packages:
