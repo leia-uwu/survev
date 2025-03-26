@@ -2616,7 +2616,7 @@ export class Player extends BaseGameObject {
             for (let i = 0; i < 12; i++) {
                 const velocity = v2.mul(v2.randomUnit(), util.random(2, 5));
                 this.game.projectileBarn.addProjectile(
-                    this.matchDataId,
+                    this.__id,
                     martyrNadeType,
                     this.pos,
                     1,
