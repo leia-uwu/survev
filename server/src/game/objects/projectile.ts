@@ -130,7 +130,7 @@ export class Projectile extends BaseGameObject {
 
             if (this.strobe.strobeTicker <= 0) {
                 this.game.playerBarn.addEmote(0, this.pos, "ping_airstrike", true);
-                this.game.planeBarn.addAirStrike(this.pos, this.dir, this.playerId);
+                this.game.planeBarn.addAirStrike(this.pos, this.throwDir, this.playerId);
                 this.strobe.airstrikesLeft--;
                 this.strobe.airstrikeTicker = 0.85;
             }
@@ -148,7 +148,7 @@ export class Projectile extends BaseGameObject {
                 //the position can only be "past" the strobe
                 //meaning that the random direction can be a MAX of 90 degrees offset from the regular direction so it doesnt go backwards
                 const randomDir = v2.rotate(
-                    this.dir,
+                    this.throwDir,
                     util.random(-Math.PI / 2, Math.PI / 2),
                 );
                 const pos = v2.add(this.pos, v2.mul(randomDir, 7));
