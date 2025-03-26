@@ -2580,7 +2580,7 @@ export class Player extends BaseGameObject {
             this.killedBy = source;
 
             if (source !== this && source.teamId !== this.teamId) {
-                source.killedIds.push(this.__id);
+                source.killedIds.push(this.matchDataId);
                 source.kills++;
 
                 if (source.isKillLeader) {

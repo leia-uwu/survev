@@ -439,7 +439,7 @@ export class Game {
                 kills: player.kills,
                 damageDealt: Math.round(player.damageDealt),
                 damageTaken: Math.round(player.damageTaken),
-                killerId: player.killedBy?.__id || 0,
+                killerId: player.killedBy?.matchDataId || 0,
                 gameId: this.id,
                 mapId: this.map.mapId,
                 mapSeed: this.map.seed,

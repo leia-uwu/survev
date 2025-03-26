@@ -82,7 +82,7 @@ export class GameModeManager {
                     };
                 });
 
-                groups.sort((b, a) => b.killedIndex - a.killedIndex);
+                groups.sort((a, b) => b.killedIndex - a.killedIndex);
 
                 let data: Array<{ player: Player; rank: number }> = [];
 
