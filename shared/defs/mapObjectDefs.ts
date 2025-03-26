@@ -454,7 +454,7 @@ function createBush<T extends ObstacleDef>(e: Partial<T>): T {
 function createCache<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { displayType: "stone_01" },
+        map: { display: true, displayType: "stone_01" },
         terrain: { grass: true, beach: false },
         ori: 0,
         floor: {
@@ -931,7 +931,7 @@ function createLabDoor<T extends ObstacleDef>(e: Partial<T>): T {
         extents: v2.create(0.3, 2),
         door: {
             interactionRad: 2,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: true,
             autoClose: true,
@@ -10299,16 +10299,27 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
     }),
     stone_02: createStone({
+        map: { display: false },
         img: { tint: 15066597 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("ak47", 1)],
     }),
     stone_02sv: createStone({
+        map: { display: false },
         img: { tint: 15066597 },
         loot: [
             tierLoot("tier_surviv", 2, 3),
             autoLoot("m39", 1),
             tierLoot("tier_perks", 1, 1),
         ],
+    }),
+    stone_02cb: createStone({
+        map: { display: false, color: 10265256, scale: 1 },
+        img: {
+            sprite: "map-stone-01cb.img",
+            residue: "map-stone-res-01cb.img",
+            tint: 15066597,
+        },
+        loot: [tierLoot("tier_surviv", 2, 3), autoLoot("ak47", 1)],
     }),
     stone_03: createRiverStone({}),
     stone_03b: createRiverStone({
@@ -10615,11 +10626,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
     }),
     tree_03: createTree({
+        map: { display: false },
         img: { tint: 11645361 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     }),
     tree_03sv: createTree({
-        map: { color: 4411673 },
+        map: { display: false, color: 4411673 },
         img: {
             sprite: "map-tree-03sv.img",
             tint: 11645361,
@@ -10629,15 +10641,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     // woods cache
     tree_03w: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { color: 5199637, scale: 2.5 },
+        map: { display: false, color: 5199637, scale: 2.5 },
         img: { sprite: "map-tree-07.img", tint: 11645361 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
     // spring cache
     tree_03sp: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { color: 16697057, scale: 2.5 },
+        map: { display: false, color: 16697057, scale: 2.5 },
         img: { sprite: "map-tree-07sp.img", tint: 11645361 },
+        loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
+    } as unknown as Partial<ObstacleDef>),
+    // cobalt cache
+    tree_03cb: createTree({
+        scale: {
+            createMin: 1.1,
+            createMax: 1.3,
+            destroy: 0.5,
+        },
+        collision: collider.createCircle(v2.create(0, 0), 1.2),
+        aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(7.75, 7.75)),
+        map: { display: false, color: 2900834 },
+        img: { sprite: "map-tree-03cb.img", tint: 11645361 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
     tree_05: createTree({
@@ -11137,14 +11162,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     lab_door_01: createLabDoor({ img: { tint: 5373952 } }),
     lab_door_02: createLabDoor({
         door: {
-            openOneWay: true,
+            openOneWay: 1,
             slideOffset: -3.75,
             casingImg: { pos: v2.create(6, 0) },
         },
         img: { tint: 5373952 },
     } as unknown as Partial<ObstacleDef>),
     lab_door_03: createLabDoor({
-        door: { openOneWay: true },
+        door: { openOneWay: 1 },
         img: { tint: 5373952 },
     } as unknown as Partial<ObstacleDef>),
     lab_door_locked_01: createLabDoor({
@@ -11509,7 +11534,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,
@@ -12873,6 +12898,24 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ],
         map: { displayType: "stone_01" },
     }),
+    cache_01cb: createCache({
+        mapObjects: [
+            {
+                type: "stone_02cb",
+                pos: v2.create(0, 0),
+                scale: 1,
+                ori: 0,
+            },
+            {
+                type: "decal_initiative_01",
+                pos: v2.create(0, 0),
+                scale: 1,
+                ori: 0,
+                inheritOri: false,
+            },
+        ],
+        map: { displayType: "stone_01cb" },
+    }),
     cache_02: createCache({
         mapObjects: [
             {
@@ -12944,6 +12987,24 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             },
         ],
         map: { displayType: "tree_07sp" },
+    }),
+    cache_02cb: createCache({
+        mapObjects: [
+            {
+                type: "tree_03cb",
+                pos: v2.create(0, 0),
+                scale: 1.3,
+                ori: 0,
+            },
+            {
+                type: "decal_initiative_01",
+                pos: v2.create(0, 0),
+                scale: 1.3,
+                ori: 0,
+                inheritOri: false,
+            },
+        ],
+        map: { displayType: "tree_01cb" },
     }),
     cache_03: createCache({
         mapObjects: [
@@ -17937,7 +17998,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 36,
             autoOpen: false,
             autoClose: false,
@@ -18806,7 +18867,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: { tint: 14537141, alpha: 0.95 },
         door: {
             interactionRad: 2,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,
@@ -20220,7 +20281,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,
@@ -20266,7 +20327,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         door: {
             canUse: false,
             openOnce: true,
-            openOneWay: false,
+            openOneWay: 0,
             openSpeed: 7,
             autoOpen: false,
             autoClose: false,

@@ -100,6 +100,7 @@ class GameProcess implements GameData {
     aliveCount = 0;
     startedTime = 0;
     stopped = true;
+    created = false;
 
     manager: GameProcessManager;
 
@@ -124,10 +125,11 @@ class GameProcess implements GameData {
 
             switch (msg.type) {
                 case ProcessMsgType.Created:
+                    this.created = true;
+                    this.stopped = false;
                     for (const cb of this.onCreatedCbs) {
                         cb(this);
                     }
-                    this.stopped = false;
                     this.onCreatedCbs.length = 0;
                     break;
                 case ProcessMsgType.UpdateData:
@@ -144,6 +146,7 @@ class GameProcess implements GameData {
                     this.stopped = msg.stopped;
                     if (this.stopped) {
                         this.stoppedTime = Date.now();
+                        this.created = false;
                     }
                     break;
                 case ProcessMsgType.SocketMsg:
@@ -359,9 +362,9 @@ export class GameProcessManager implements GameManager {
             });
         }
 
-        // if the game is not running
+        // if the game has not finished creating
         // wait for it to be created to send the find game response
-        if (game.stopped) {
+        if (!game.created) {
             return new Promise((resolve) => {
                 game.onCreatedCbs.push((game) => {
                     game.addJoinToken(joinToken, body.autoFill, body.playerCount);
