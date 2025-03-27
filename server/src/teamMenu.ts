@@ -362,7 +362,7 @@ export class TeamMenu {
         app.get(
             "/team_v2",
             upgradeWebSocket(async (c) => {
-                const ip = getHonoIp(c, Config.gameServer.proxyIPHeader);
+                const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
                 let closeReason: TeamMenuErrorType | undefined;
 
