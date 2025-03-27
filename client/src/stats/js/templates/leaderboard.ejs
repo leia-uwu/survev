@@ -6,15 +6,15 @@
       <!--
       <th class='header-active' scope="col" data-l10n='stats-active' data-caps='true'>ACTIVE</th>
       -->
-      <th class='header-stat' scope="col" data-l10n='<%= statName %>' data-caps='true'>STAT</th>
-      <% if (type != 'most_kills' && type != 'win_streak') { %>
-          <th class='header-games' scope="col" data-l10n='stats-games' data-caps='true'>GAMES (><%= minGames %>)</th>
+      <th class='header-stat' scope="col" data-l10n='<%= env.statName %>' data-caps='true'>STAT</th>
+      <% if (env.type != 'most_kills' && env.type != 'win_streak') { %>
+          <th class='header-games' scope="col" data-l10n='stats-games' data-caps='true'>GAMES (><%= env.minGames %>)</th>
       <% } %>
       <th class='header-region' scope="col" data-l10n='stats-region' data-caps='true'>REGION</th>
     </tr>
   </thead>
   <tbody class='leaderboard-values'>
-    <% for (var i = 0; i < data.length; i++) { %>
+    <% for (var i = 0, data = env.data; i < data.length; i++) { %>
       <% if (Array.isArray(data[i].slugs)) { %>
         <tr class='main multiple-players'>
           <td class='data-rank' scope="row">#<%= i + 1 %></td>
@@ -51,7 +51,7 @@
           <td class='<%= data[i].active ? 'active' : 'inactive' %>'></td>
           -->
           <td><%= data[i].val %></td>
-          <% if (type != 'most_kills' && type != 'win_streak') { %>
+          <% if (env.type != 'most_kills' && env.type != 'win_streak') { %>
               <td><%= data[i].games %></td>
           <% } %>
           <td class='data-region'><%= data[i].region ? data[i].region.toUpperCase() : '' %></td>

@@ -4,20 +4,20 @@
     <div class="card-body">
       <div class='row card-row-top'>
 
-        <% if (error) { %>
+        <% if (env.error) { %>
           <div class='col-lg-10'>
             <div class="card-player-name mt-3 ml-3">Error loading content, please try again.</div>
           </div>
-        <% } else if (!profile.username) { %>
+        <% } else if (!env.profile.username) { %>
           <div class='col-lg-10'>
             <div class="card-player-name mt-3 ml-3">That player doesn't exist.</div>
           </div>
         <% } else { %>
           <div class='col-md-1 col-sm-2 col-3'>
-              <div class='player-image' style='background-image: url("<%= profile.avatarTexture %>")'></div>
+              <div class='player-image' style='background-image: url("<%= env.profile.avatarTexture %>")'></div>
           </div>
           <div class='col-md-5 col-sm-10 col-9'>
-              <div class="card-player-name mt-3 ml-md-5 ml-sm-1 ml-xs-1"><%= profile.username %></div>
+              <div class="card-player-name mt-3 ml-md-5 ml-sm-1 ml-xs-1"><%= env.profile.username %></div>
           </div>
           <div class='col-md-6 col-12'>
             <table class='player-stats-overview'>
@@ -31,10 +31,10 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><%= profile.wins %></td>
-                  <td><%= profile.kills %></td>
-                  <td><%= profile.games %></td>
-                  <td><%= profile.kpg %></td>
+                  <td><%= env.profile.wins %></td>
+                  <td><%= env.profile.kills %></td>
+                  <td><%= env.profile.games %></td>
+                  <td><%= env.profile.kpg %></td>
                 </tr>
               </tbody>
             </table>
@@ -46,7 +46,7 @@
 </div>
 
 <!-- Season/Region selectors -->
-<% if (teamModes.length > 0) { %>
+<% if (env.teamModes.length > 0) { %>
 <div class='container mt-3'>
   <div class='row'>
     <div class='col-lg-2 col-6'>
@@ -59,8 +59,8 @@
     <div class='col-lg-2 col-6 pl-0'>
       <select id="player-map-id" class="player-opt custom-select">
         <option value="-1" data-l10n='all'>All modes</option>
-        <% for (var i = 0; i < gameModes.length; i++) { %>
-          <option value="<%= gameModes[i].mapId %>"><%= gameModes[i].desc.name%></option>
+        <% for (var i = 0; i < env.gameModes.length; i++) { %>
+          <option value="<%= env.gameModes[i].mapId %>"><%= env.gameModes[i].desc.name%></option>
         <% } %>
       </select>
     </div>
@@ -75,11 +75,11 @@
 <div class="container mt-3">
   <div class='row'>
 
-    <% for (var i = 0; i < teamModes.length; i++) { %>
+    <% for (var i = 0; i < env.teamModes.length; i++) { %>
 
     <!-- Mode Card -->
     <!-- pad the last card -->
-    <% if (i == teamModes.length - 1) { %>
+    <% if (i == env.teamModes.length - 1) { %>
       <div class='col-lg-4 col-12'>
     <% } else { %>
       <div class='col-lg-4 col-12 pr-lg-0'>
@@ -88,14 +88,14 @@
         <div class="card-body p-1">
           <div class='row card-mode-row-top'>
             <div class='col-2 p-0'>
-              <div class='mode-image mode-image-<%= teamModes[i].name %>'></div>
+              <div class='mode-image mode-image-<%= env.teamModes[i].name %>'></div>
             </div>
             <div class='col-5 p-0'>
-              <div class="mode-name mode-name-<%= teamModes[i].name %>" data-l10n='stats-<%= teamModes[i].name %>' data-caps='true'><%= teamModes[i].name.toUpperCase() %></div>
+              <div class="mode-name mode-name-<%= env.teamModes[i].name %>" data-l10n='stats-<%= env.teamModes[i].name %>' data-caps='true'><%= env.teamModes[i].name.toUpperCase() %></div>
             </div>
             <div class='col-5 mt-2'>
-              <% if (teamModes[i].games > 0) { %>
-                <div class="mode-games"><span><%= teamModes[i].games %></span> <span data-l10n='stats-games' data-caps='true''>Games</span></div>
+              <% if (env.teamModes[i].games > 0) { %>
+                <div class="mode-games"><span><%= env.teamModes[i].games %></span> <span data-l10n='stats-games' data-caps='true''>Games</span></div>
               <% } %>
             </div>
           </div>
@@ -103,7 +103,7 @@
       </div>
 
       <!-- Show "no games played" if no games played -->
-      <% if (teamModes[i].games == 0) { %>
+      <% if (env.teamModes[i].games == 0) { %>
         <div class="card card-mode card-mode-no-games">
           <div class='col-12'>No games played.</div>
         </div>
@@ -112,12 +112,12 @@
           <div class="card-body p-1">
             <div class='row m-1'>
 
-              <% for (var j = 0; j < teamModes[i].midStats.length; j++) { %>
+              <% for (var j = 0; j < env.teamModes[i].midStats.length; j++) { %>
 
               <div class='col-6 mt-1 mb-1'>
                 <div class='card-mode-stat-mid'>
-                  <div class='card-mode-stat-name' data-l10n='stats-<%= teamModes[i].midStats[j].name %>' data-caps='true'><%= teamModes[i].midStats[j].name.toUpperCase() %></div>
-                  <div class='card-mode-stat-value' data-l10n='stats-<%= teamModes[i].midStats[j].val %>' data-caps='true'><%= teamModes[i].midStats[j].val %></div>
+                  <div class='card-mode-stat-name' data-l10n='stats-<%= env.teamModes[i].midStats[j].name %>' data-caps='true'><%= env.teamModes[i].midStats[j].name.toUpperCase() %></div>
+                  <div class='card-mode-stat-value' data-l10n='stats-<%= env.teamModes[i].midStats[j].val %>' data-caps='true'><%= env.teamModes[i].midStats[j].val %></div>
                 </div>
               </div>
 
@@ -129,12 +129,12 @@
         <div class="card card-mode card-mode-bg-bot">
           <div class="card-body p-1">
             <div class='row m-1'>
-               <% for (var j = 0; j < teamModes[i].botStats.length; j++) { %>
+               <% for (var j = 0; j < env.teamModes[i].botStats.length; j++) { %>
 
                 <div class='col-6 mt-1 mb-1'>
                   <div class='card-mode-stat-bot'>
-                    <div class='card-mode-stat-name' data-l10n='stats-<%= teamModes[i].botStats[j].name %>' data-caps='true'><%= teamModes[i].botStats[j].name.toUpperCase() %></div>
-                    <div class='card-mode-stat-value'><%= teamModes[i].botStats[j].val %></div>
+                    <div class='card-mode-stat-name' data-l10n='stats-<%= env.teamModes[i].botStats[j].name %>' data-caps='true'><%= env.teamModes[i].botStats[j].name.toUpperCase() %></div>
+                    <div class='card-mode-stat-value'><%= env.teamModes[i].botStats[j].val %></div>
                   </div>
                 </div>
 
@@ -155,20 +155,20 @@
 <!-- Close Mode Cards -->
 
 <!-- Extra Stats -->
-<% if (profile.username) { %>
+<% if (env.profile.username) { %>
   <div class="container mt-3">
     <div class='row m-0'>
       <div class='offset-0 offset-md-8 col-3 col-md-1 p-0'>
-        <div class='extra-team-mode-filter <%= teamModeFilter == 7 ? 'extra-team-mode-filter-selected' : '' %> btn-darken' data-filter='7'>All</div>
+        <div class='extra-team-mode-filter <%= env.teamModeFilter == 7 ? 'extra-team-mode-filter-selected' : '' %> btn-darken' data-filter='7'>All</div>
       </div>
       <div class='col-3 col-md-1 p-0'>
-        <div class='extra-team-mode-filter <%= teamModeFilter == 1 ? 'extra-team-mode-filter-selected' : '' %> btn-darken' data-filter='1'>Solo</div>
+        <div class='extra-team-mode-filter <%= env.teamModeFilter == 1 ? 'extra-team-mode-filter-selected' : '' %> btn-darken' data-filter='1'>Solo</div>
       </div>
       <div class='col-3 col-md-1 p-0'>
-        <div class='extra-team-mode-filter <%= teamModeFilter == 2 ? 'extra-team-mode-filter-selected' : '' %>  btn-darken' data-filter='2'>Duo</div>
+        <div class='extra-team-mode-filter <%= env.teamModeFilter == 2 ? 'extra-team-mode-filter-selected' : '' %>  btn-darken' data-filter='2'>Duo</div>
       </div>
       <div class='col-3 col-md-1 p-0'>
-        <div class='extra-team-mode-filter <%= teamModeFilter == 4 ? 'extra-team-mode-filter-selected' : '' %> btn-darken' data-filter='4'>Squad</div>
+        <div class='extra-team-mode-filter <%= env.teamModeFilter == 4 ? 'extra-team-mode-filter-selected' : '' %> btn-darken' data-filter='4'>Squad</div>
       </div>
     </div>
   </div>

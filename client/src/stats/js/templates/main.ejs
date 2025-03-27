@@ -2,7 +2,7 @@
 <div id='leaderboard-bg' class='stats-bg'></div>
 
 <!-- Top ad -->
-<% if (!phoneDetected) { %>
+<% if (!env.phoneDetected) { %>
 <div id='ad-block-top' class='container mt-3'>
   <div class='ad-block-top-leaderboard'>
     <div id='surviv-io_728x90_Leaderboard'>
@@ -62,8 +62,8 @@
     </div>
     <div class='col-lg-2 col-3 pl-0'>
       <select id="leaderboard-map-id" class="leaderboard-opt custom-select">
-        <% for (var i = 0; i < gameModes.length; i++) { %>
-          <option value="<%= gameModes[i].mapId %>"><%= gameModes[i].desc.name%></option>
+        <% for (var i = 0; i < env.gameModes.length; i++) { %>
+          <option value="<%= env.gameModes[i].mapId %>"><%= env.gameModes[i].desc.name%></option>
         <% } %>
       </select>
     </div>
@@ -78,7 +78,7 @@
   </div>
 </div>
 
-<% if (phoneDetected) { %>
+<% if (env.phoneDetected) { %>
 <div class='col-12'>
   <div class='ad-block-bot-med-rect'>
     <div id='surviv-io_300x250_leaderboard'>

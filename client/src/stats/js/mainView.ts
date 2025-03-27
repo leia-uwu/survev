@@ -3,18 +3,17 @@ import type { LeaderboardRequest } from "../../../../shared/types/stats";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
-import { getCensoredBattletag, renderEjs } from "./helper";
-import leaderboard from "./templates/leaderboard.ejs?raw";
-import leaderboardError from "./templates/leaderboardError.ejs?raw";
-import loading from "./templates/loading.ejs?raw";
-import main from "./templates/main.ejs?raw";
+import { getCensoredBattletag } from "./helper";
+import leaderboard from "./templates/leaderboard.ejs";
+import leaderboardError from "./templates/leaderboardError.ejs";
+import loading from "./templates/loading.ejs";
+import main from "./templates/main.ejs";
 
 const templates = {
-    loading: (params: Record<string, any>) => renderEjs(loading, params),
-    main: (params: Record<string, any>) => renderEjs(main, params),
-    leaderboard: (params: Record<string, any>) => renderEjs(leaderboard, params),
-    leaderboardError: (params: Record<string, any>) =>
-        renderEjs(leaderboardError, params),
+    loading,
+    main,
+    leaderboard,
+    leaderboardError,
 };
 
 //

@@ -1,9 +1,9 @@
-<% if (loading) { %>
+<% if (env.loading) { %>
   <!-- Loading game data -->
   <div class="col-12 spinner-wrapper-match-data">
       <div class="spinner"></div>
   </div>
-<% } else if (error || !data || data.length == 0) {%>
+<% } else if (env.error || !env.data || env.data.length == 0) {%>
   <!-- Error loading data -->
   <div class='col-lg-10'>
       <div class='m-3'>Error loading content, please try again.</div>
@@ -38,9 +38,9 @@
         <tbody class='match-values'>
           <% var team_id = 0;
              var teamIdx = 0; %>
-          <% for (var i = 0; i < data.length; i++) { %>
+          <% for (var i = 0; i < env.data.length; i++) { %>
               <%
-                  var d = data[i];
+                  var d = env.data[i];
                   var showRank = false;
                   if (team_id != d.team_id) {
                       team_id = d.team_id;
@@ -48,19 +48,19 @@
                       showRank = true;
                   }
               %>
-              <tr class='main single-player <%= teamIdx % 2 == 0 ? 'match-row-dark' : 'match-row-light' %> <%= d.player_id == localId ? 'match-row-local' : '' %>'>
+              <tr class='main single-player <%= teamIdx % 2 == 0 ? 'match-row-dark' : 'match-row-light' %> <%= d.player_id == env.localId ? 'match-row-local' : '' %>'>
                   <% if (showRank) { %>
                       <td class='data-rank' scope="row">#<%= d.rank %></td>
                   <% } else { %>
                       <td></td>
                   <% } %>
                   <td class='data-player-status hide-xs'>
-                      <% if (localId != 0 && d.killer_id == localId) { %>
+                      <% if (env.localId != 0 && d.killer_id == env.localId) { %>
                           <div class='player-icon player-kill'></div>
                       <% } %>
                       <% var killed_ids = d.killed_ids || []; %>
                       <% for (var j = 0; j < killed_ids.length; j++) { %>
-                          <% if (localId != 0 && killed_ids[j] == localId) { %>
+                          <% if (env.localId != 0 && killed_ids[j] == env.localId) { %>
                               <div class='player-icon player-death'></div>
                               <% break %>
                           <% } %>

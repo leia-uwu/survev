@@ -6,13 +6,12 @@ import { device } from "../../device";
 import { type AcceptedLocales, Localization } from "./localization";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
-import language from "./templates/langauge.ejs?raw";
+import language from "./templates/langauge.ejs";
 
 import { ConfigManager } from "../../config";
-import { renderEjs } from "./helper";
 
 const templates = {
-    language: (params: Record<string, any>) => renderEjs(language, params),
+    language,
 };
 
 //

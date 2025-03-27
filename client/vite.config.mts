@@ -1,9 +1,12 @@
-import { defineConfig } from "vite";
-import stripBlockPlugin from "vite-plugin-strip-block";
+import { resolve } from "node:path";
+import { type Plugin, type ServerOptions, defineConfig } from "vite";
 import { version } from "../package.json";
 import { Config } from "../server/src/config";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
 import { codefendPlugin } from "./vite-plugins/codefendPlugin";
+import { ejsPlugin } from "./vite-plugins/ejsPlugin";
+
+import stripBlockPlugin from "vite-plugin-strip-block";
 
 export const SplashThemes = {
     main: {
@@ -69,24 +72,59 @@ export default defineConfig(({ mode }) => {
 
     const isDev = mode === "development";
 
-    const regions = {
-        ...Config.regions,
-        ...(isDev
-            ? {
-                  local: {
-                      https: false,
-                      address: `${Config.gameServer.host}:${Config.gameServer.port}`,
-                      l10n: "index-local",
-                  },
-              }
-            : {}),
+    const plugins: Plugin[] = [ejsPlugin()];
+
+    if (!isDev) {
+        plugins.push(codefendPlugin());
+
+        plugins.push(
+            stripBlockPlugin({
+                start: "STRIP_FROM_PROD_CLIENT:START",
+                end: "STRIP_FROM_PROD_CLIENT:END",
+            }),
+        );
+    }
+
+    const port = 3000;
+    const host = "0.0.0.0";
+    const serverOptions: ServerOptions = {
+        port,
+        host,
+        proxy: {
+            // regex that matches /stats, /stats/slug but doesn't match /stats/
+            // since if it matches /stats/ it will infinite loop :p
+            // also why does vite not work without trailing slashes at the end of paths 😭
+            "^/stats(?!/$).*": {
+                target: `http://${host}:${port}`,
+                rewrite: (path) => path.replace(/^\/stats(?!\/$).*/, "/stats/"),
+                changeOrigin: true,
+                secure: false,
+            },
+            "/api": {
+                target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/team_v2": {
+                target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
+                changeOrigin: true,
+                secure: false,
+                ws: true,
+            },
+        },
     };
+
     return {
+        appType: "mpa",
         base: "",
         build: {
             target: "es2022",
             chunkSizeWarningLimit: 2000,
             rollupOptions: {
+                input: {
+                    main: resolve(import.meta.dirname, "index.html"),
+                    stats: resolve(import.meta.dirname, "stats/index.html"),
+                },
                 output: {
                     assetFileNames(assetInfo) {
                         if (assetInfo.names[0]?.endsWith(".css")) {
@@ -108,9 +146,9 @@ export default defineConfig(({ mode }) => {
             extensions: [".ts", ".js"],
         },
         define: {
-            GAME_REGIONS: regions,
+            GAME_REGIONS: Config.regions,
             GIT_VERSION: JSON.stringify(GIT_VERSION),
-            PING_TEST_URLS: Object.entries(regions).map(([key, data]) => {
+            PING_TEST_URLS: Object.entries(Config.regions).map(([key, data]) => {
                 return {
                     region: key,
                     zone: key,
@@ -122,57 +160,11 @@ export default defineConfig(({ mode }) => {
             AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
             IS_DEV: isDev,
         },
-        plugins: !isDev
-            ? [
-                  codefendPlugin(),
-                  stripBlockPlugin({
-                      start: "STRIP_FROM_PROD_CLIENT:START",
-                      end: "STRIP_FROM_PROD_CLIENT:END",
-                  }),
-              ]
-            : undefined,
+        plugins,
         json: {
             stringify: true,
         },
-        assetsInclude: ["**/*.ejs"],
-        server: {
-            port: 3000,
-            host: "0.0.0.0",
-            proxy: {
-                "/stats": {
-                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
-                    changeOrigin: true,
-                    secure: false,
-                },
-                "/api": {
-                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
-                    changeOrigin: true,
-                    secure: false,
-                },
-                "/team_v2": {
-                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
-                    changeOrigin: true,
-                    secure: false,
-                    ws: true,
-                },
-            },
-        },
-        preview: {
-            port: 3000,
-            host: "0.0.0.0",
-            proxy: {
-                "/api": {
-                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
-                    changeOrigin: true,
-                    secure: false,
-                },
-                "/team_v2": {
-                    target: `http://${Config.apiServer.host}:${Config.apiServer.port}`,
-                    changeOrigin: true,
-                    secure: false,
-                    ws: true,
-                },
-            },
-        },
+        server: serverOptions,
+        preview: serverOptions,
     };
 });

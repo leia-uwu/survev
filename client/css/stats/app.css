@@ -174,6 +174,7 @@ a.nav-link-bright:hover {
   text-shadow: 0 2px 2px black;
 }
 
+/*
 .btn-surviv {
   background-image: url("/img/ui/logo-surviv.svg");
   background-position: center;
@@ -182,6 +183,7 @@ a.nav-link-bright:hover {
   min-height: 48px;
   height: 100%;
 }
+*/
 
 .stats-bg {
   background-repeat: no-repeat;
@@ -637,6 +639,7 @@ table.player-stats-overview td {
   }
 }
 
+/*
 .player-coming-soon-lg {
   background-image: url("/img/ui/player_coming_soon.png");
   background-position: center;
@@ -650,6 +653,7 @@ table.player-stats-overview td {
     display: none;
   }
 }
+*/
 
 .selector-extra {
   background-color: rgba(0, 0, 0, 0.4);
@@ -697,13 +701,15 @@ table.player-stats-overview td {
   background-image: url("/img/ui/history.svg");
 }
 
+/*
 .extra-weapons {
   background-image: url("/img/ui/gun.svg");
 }
 
 .extra-misc {
-  background-image: url("/img/ui/loot-medical-soda.svg");
+  background-image: url("/img/loot/loot-medical-soda.svg");
 }
+*/
 
 .header-extra {
   background-color: rgba(0, 0, 0, 0.75);

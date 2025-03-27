@@ -60,9 +60,6 @@ importers:
       vite:
         specifier: ^6.2.3
         version: 6.2.3(@types/node@22.13.13)(terser@5.39.0)(tsx@4.19.3)
-      vite-plugin-ejs:
-        specifier: ^1.7.0
-        version: 1.7.0(vite@6.2.3(@types/node@22.13.13)(terser@5.39.0)(tsx@4.19.3))
       vite-plugin-html:
         specifier: ^3.2.2
         version: 3.2.2(vite@6.2.3(@types/node@22.13.13)(terser@5.39.0)(tsx@4.19.3))
@@ -2443,11 +2440,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  vite-plugin-ejs@1.7.0:
-    resolution: {integrity: sha512-JNP3zQDC4mSbfoJ3G73s5mmZITD8NGjUmLkq4swxyahy/W0xuokK9U9IJGXw7KCggq6UucT6hJ0p+tQrNtqTZw==}
-    peerDependencies:
-      vite: '>=5.0.0'
-
   vite-plugin-html@3.2.2:
     resolution: {integrity: sha512-vb9C9kcdzcIo/Oc3CLZVS03dL5pDlOFuhGlZYDCJ840BhWl/0nGeZWf3Qy7NlOayscY4Cm/QRgULCQkEZige5Q==}
     peerDependencies:
@@ -4555,11 +4547,6 @@ snapshots:
       qs: 6.14.0
 
   util-deprecate@1.0.2: {}
-
-  vite-plugin-ejs@1.7.0(vite@6.2.3(@types/node@22.13.13)(terser@5.39.0)(tsx@4.19.3)):
-    dependencies:
-      ejs: 3.1.10
-      vite: 6.2.3(@types/node@22.13.13)(terser@5.39.0)(tsx@4.19.3)
 
   vite-plugin-html@3.2.2(vite@6.2.3(@types/node@22.13.13)(terser@5.39.0)(tsx@4.19.3)):
     dependencies:

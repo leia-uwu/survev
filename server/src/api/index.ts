@@ -1,5 +1,3 @@
-import { readFileSync } from "fs";
-import path from "path";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
 import { Hono } from "hono";
@@ -43,19 +41,10 @@ app.use(
     }),
 );
 
-const stats = readFileSync(
-    path.resolve(__dirname.replace("dist/server/", ""), "static/stats.html"),
-    "utf-8",
-);
-
 ["/stats", "/stats/"].forEach((route) => {
     app.get(route, (c) => {
         return c.redirect("/leaderboard/");
     });
-});
-
-app.get("/stats/:slug", (c) => {
-    return c.html(stats);
 });
 
 app.route("/api/user/", UserRouter);

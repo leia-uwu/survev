@@ -13,19 +13,19 @@ import type {
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
-import { emoteImgToSvg, formatTime, getCensoredBattletag, renderEjs } from "./helper";
-import loading from "./templates/loading.ejs?raw";
-import matchData from "./templates/matchData.ejs?raw";
-import matchHistory from "./templates/matchHistory.ejs?raw";
-import player from "./templates/player.ejs?raw";
-import playerCards from "./templates/playerCards.ejs?raw";
+import { emoteImgToSvg, formatTime, getCensoredBattletag } from "./helper";
+import loading from "./templates/loading.ejs";
+import matchData from "./templates/matchData.ejs";
+import matchHistory from "./templates/matchHistory.ejs";
+import player from "./templates/player.ejs";
+import playerCards from "./templates/playerCards.ejs";
 
 const templates = {
-    loading: (params: Record<string, any>) => renderEjs(loading, params),
-    matchData: (params: Record<string, any>) => renderEjs(matchData, params),
-    matchHistory: (params: Record<string, any>) => renderEjs(matchHistory, params),
-    player: (params: Record<string, any>) => renderEjs(player, params),
-    playerCards: (params: Record<string, any>) => renderEjs(playerCards, params),
+    loading,
+    matchData,
+    matchHistory,
+    player,
+    playerCards,
 };
 
 const TeamModeToString = {

@@ -1,4 +1,3 @@
-import ejs from "ejs";
 import EnJs from "../l10n/en";
 
 export function getCensoredBattletag(content: string) {
@@ -36,8 +35,4 @@ export function formatTime(time: number) {
 
 export function emoteImgToSvg(img: string) {
     return img && img.length > 4 ? `../img/emotes/${img.slice(0, -4)}.svg` : "";
-}
-
-export function renderEjs(template: string, params: Record<string, any>) {
-    return ejs.render(template, params, { client: true });
 }
